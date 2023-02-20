@@ -44,7 +44,7 @@
 <a name="docarray-DocumentArrayProto"></a>
 
 ### DocumentArrayProto
-this file is just a placeholder for the DA coming from docarray dependency
+this file is just a placeholder for the DA coming from jina._docarray dependency
 
 
 
@@ -355,7 +355,7 @@ jina gRPC service to expose information about running jina version and environme
 <a name="jina-JinaRPC"></a>
 
 ### JinaRPC
-jina Gateway gRPC service.
+jina streaming gRPC service.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|

@@ -6,10 +6,10 @@
 <meta property="og:title" content=" Command-Line Interface" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/cli/" />
-<meta property="og:site_name" content="Jina 3.13.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.14.0 Documentation" />
 <meta property="og:description" content="Command-Line Interface: Positional Arguments: cli,, Possible choices: executor, flow, ping, export, new, gateway, auth, hub, cloud, help, pod, deployment, client,. Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. Sub-commands:: ex..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.13.2 Documentation" />
+<meta property="og:image:alt" content="Jina 3.14.0 Documentation" />
 <meta name="description" content="Command-Line Interface: Positional Arguments: cli,, Possible choices: executor, flow, ping, export, new, gateway, auth, hub, cloud, help, pod, deployment, client,. Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. Sub-commands:: ex..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/cli/index.html" />
 
     <link rel="shortcut icon" href="../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Command-Line Interface - Jina 3.13.2 documentation</title>
+        <title>Command-Line Interface - Jina 3.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../">
-                <div class="brand">Jina 3.13.2 documentation</div>
+                <div class="brand">Jina 3.14.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -261,9 +261,8 @@
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../concepts/executor/"><span class="fas fa-gears"></span> Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../concepts/executor/basics/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts/executor/create/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/executor/add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../concepts/executor/run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/executor/serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/executor/dynamic-batching/">Dynamic Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/executor/health-check/">Health Check</a></li>
@@ -271,6 +270,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../concepts/executor/file-structure/">File Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/executor/containerize/">Containerize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts/executor/executor-in-flow/">Executors in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts/executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -326,6 +327,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../concepts/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../concepts/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../concepts/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../concepts/executor/hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../concepts/executor/hub/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../concepts/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -497,7 +500,7 @@
 <dd><p>The working directory for any IO operations in this object. If not set, then derive from its parent <cite>workspace</cite>.</p>
 </dd>
 <dt><kbd>--log-config</kbd></dt>
-<dd><p>The YAML config of the logger used in this object.</p>
+<dd><p>The config name or the absolute path to the YAML config file of the logger used in this object.</p>
 <p>Default: “default”</p>
 </dd>
 <dt><kbd>--quiet</kbd></dt>
@@ -683,7 +686,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [63505]</p>
+<p>Default: [55559]</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -691,7 +694,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [57506]</p>
+<p>Default: [51445]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -757,10 +760,20 @@ container.</p>
 <h3>flow<a class="headerlink" href="#flow" title="Permalink to this heading">#</a></h3>
 <p>Start a Flow. Flow is how Jina streamlines and distributes Executors.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">flow</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span>
-          <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reload</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+          <span class="p">[</span><span class="o">--</span><span class="n">suppress</span><span class="o">-</span><span class="n">root</span><span class="o">-</span><span class="n">logging</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reload</span><span class="p">]</span>
+          <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
           <span class="p">[</span><span class="o">--</span><span class="n">inspect</span> <span class="p">{</span><span class="n">HANG</span><span class="p">,</span> <span class="n">REMOVE</span><span class="p">,</span> <span class="n">COLLECT</span><span class="p">}]</span>
 </pre></div>
 </div>
+<section id="Named Arguments_repeat1">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat1" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--suppress-root-logging</kbd></dt>
+<dd><p>If set, then no root handlers will be suppressed from logging.</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
 <section id="Essential arguments_repeat1">
 <h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat1" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
@@ -779,7 +792,7 @@ container.</p>
 <dd><p>The working directory for any IO operations in this object. If not set, then derive from its parent <cite>workspace</cite>.</p>
 </dd>
 <dt><kbd>--log-config</kbd></dt>
-<dd><p>The YAML config of the logger used in this object.</p>
+<dd><p>The config name or the absolute path to the YAML config file of the logger used in this object.</p>
 <p>Default: “default”</p>
 </dd>
 <dt><kbd>--quiet</kbd></dt>
@@ -836,8 +849,8 @@ container.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat1">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat1" title="Permalink to this heading">#</a></h4>
+<section id="Named Arguments_repeat2">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat2" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--timeout</kbd></dt>
 <dd><p>Timeout in millisecond of one check
@@ -882,15 +895,15 @@ Use -1 for waiting forever</p>
 <h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat2" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>INPUT</kbd></dt>
-<dd><p>The input file path of a Flow YAML</p>
+<dd><p>The input file path of a Flow or Deployment YAML</p>
 </dd>
 <dt><kbd>OUTPUT</kbd></dt>
 <dd><p>The output path</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat2">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat2" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat3">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--vertical-layout</kbd></dt>
 <dd><p>If set, then the flowchart is rendered vertically from top to down.</p>
@@ -909,15 +922,15 @@ Use -1 for waiting forever</p>
 <h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat3" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>INPUT</kbd></dt>
-<dd><p>The input file path of a Flow YAML</p>
+<dd><p>The input file path of a Flow or Deployment YAML</p>
 </dd>
 <dt><kbd>OUTPUT</kbd></dt>
 <dd><p>The output path</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat3">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat4">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--k8s-namespace</kbd></dt>
 <dd><p>The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.</p>
@@ -935,15 +948,15 @@ Use -1 for waiting forever</p>
 <h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat4" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>INPUT</kbd></dt>
-<dd><p>The input file path of a Flow YAML</p>
+<dd><p>The input file path of a Flow or Deployment YAML</p>
 </dd>
 <dt><kbd>OUTPUT</kbd></dt>
 <dd><p>The output path</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat4">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat5">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--network_name</kbd></dt>
 <dd><p>The name of the network that will be used by the deployment name.</p>
@@ -959,8 +972,8 @@ Use -1 for waiting forever</p>
                    <span class="p">[</span><span class="o">--</span><span class="n">schema</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat5">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat6">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--yaml-path</kbd></dt>
 <dd><p>The YAML file path for storing the exported API</p>
@@ -1020,8 +1033,8 @@ Use -1 for waiting forever</p>
              <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat6">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this heading">#</a></h4>
+<section id="Named Arguments_repeat7">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--protocol, --protocols</kbd></dt>
 <dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
@@ -1049,7 +1062,7 @@ Use -1 for waiting forever</p>
 <dd><p>The working directory for any IO operations in this object. If not set, then derive from its parent <cite>workspace</cite>.</p>
 </dd>
 <dt><kbd>--log-config</kbd></dt>
-<dd><p>The YAML config of the logger used in this object.</p>
+<dd><p>The config name or the absolute path to the YAML config file of the logger used in this object.</p>
 <p>Default: “default”</p>
 </dd>
 <dt><kbd>--quiet</kbd></dt>
@@ -1253,7 +1266,7 @@ which should be structured as a python package.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [58984]</p>
+<p>Default: [53956]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1304,8 +1317,8 @@ which should be structured as a python package.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">login</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat7">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat8">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>-f, --force</kbd></dt>
 <dd><p>Force to login</p>
@@ -1351,8 +1364,8 @@ which should be structured as a python package.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat8">
-<h6 aria-level="8">Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat9">
+<h6 aria-level="8">Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>-e, --expire</kbd></dt>
 <dd><p>Validity period (days)</p>
@@ -1451,8 +1464,8 @@ which should be structured as a python package.</p>
               <span class="n">path</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat9">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat10">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat10" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--no-usage</kbd></dt>
 <dd><p>If set, Hub executor usage will not be printed.</p>
@@ -1526,8 +1539,8 @@ which should be structured as a python package.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat10">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat10" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat11">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--no-usage</kbd></dt>
 <dd><p>If set, Hub executor usage will not be printed.</p>
@@ -1603,8 +1616,8 @@ which should be structured as a python package.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat11">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this heading">#</a></h4>
+<section id="Named Arguments_repeat12">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat12" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>-v, --version</kbd></dt>
 <dd><p>Show version.</p>
@@ -1650,14 +1663,26 @@ which should be structured as a python package.</p>
 <section id="normalize">
 <h5>normalize<a class="headerlink" href="#normalize" title="Permalink to this heading">#</a></h5>
 <p>Normalize a Flow.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="n">normalize</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">path</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="n">normalize</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">o</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="n">path</span>
 </pre></div>
 </div>
 <section id="Positional Arguments_repeat13">
 <h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat13" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>path</kbd></dt>
-<dd><p>The local path to a Jina flow project directory or yml file.</p>
+<dd><p>The local path to a Jina Flow project directory or yml file.</p>
+</dd>
+</dl>
+</section>
+<section id="Named Arguments_repeat13">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat13" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>-o, --output</kbd></dt>
+<dd><p>The output path to the normalized Jina Flow yml file.</p>
+</dd>
+<dt><kbd>-v, --verbose</kbd></dt>
+<dd><p>Increase verbosity.</p>
+<p>Default: False</p>
 </dd>
 </dl>
 </section>
@@ -1670,13 +1695,12 @@ which should be structured as a python package.</p>
                 <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat12">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat12" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat14">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat14" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--phase</kbd></dt>
 <dd><p>Possible choices: , Pending, Starting, Serving, Failed, Updating, Deleted, Paused, All</p>
 <p>Pass the phase of Flows to be listed.</p>
-<p>Default: Serving</p>
 </dd>
 <dt><kbd>--name</kbd></dt>
 <dd><p>Pass the name of Flows to be listed.</p>
@@ -1698,8 +1722,8 @@ which should be structured as a python package.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat13">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat13" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat15">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat15" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--verbose</kbd></dt>
 <dd><p>Pass if you want to see the full details of the Flow.</p>
@@ -1718,7 +1742,7 @@ which should be structured as a python package.</p>
 <h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat15" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>flows</kbd></dt>
-<dd><p>The string ID of a flow for single removal, or a list of space seperated string IDs for multiple removal, or string ‘all’ for deleting ALL ALIVE flows.</p>
+<dd><p>The string ID of a flow for single removal, or a list of space seperated string IDs for multiple removal, or string ‘all’ for deleting ALL SERVING flows.</p>
 </dd>
 </dl>
 </section>
@@ -1771,8 +1795,8 @@ which should be structured as a python package.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat14">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat14" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat16">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat16" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--gateway</kbd></dt>
 <dd><p>to restart only gateway</p>
@@ -1824,12 +1848,12 @@ which should be structured as a python package.</p>
 <h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat21" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>flow</kbd></dt>
-<dd><p>The string ID of the flow to be resumed</p>
+<dd><p>The string ID of the flow to scale</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat15">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat15" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat17">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat17" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--executor</kbd></dt>
 <dd><p>The name of the executor to scale</p>
@@ -1908,7 +1932,7 @@ which should be structured as a python package.</p>
 <dd><p>The working directory for any IO operations in this object. If not set, then derive from its parent <cite>workspace</cite>.</p>
 </dd>
 <dt><kbd>--log-config</kbd></dt>
-<dd><p>The YAML config of the logger used in this object.</p>
+<dd><p>The config name or the absolute path to the YAML config file of the logger used in this object.</p>
 <p>Default: “default”</p>
 </dd>
 <dt><kbd>--quiet</kbd></dt>
@@ -2094,7 +2118,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [55639]</p>
+<p>Default: [61923]</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -2102,7 +2126,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [56015]</p>
+<p>Default: [49636]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2208,12 +2232,13 @@ container.</p>
 - …</p>
 <p>When not given, then the default naming strategy will apply.</p>
 </div></blockquote>
+<p>Default: “executor”</p>
 </dd>
 <dt><kbd>--workspace</kbd></dt>
 <dd><p>The working directory for any IO operations in this object. If not set, then derive from its parent <cite>workspace</cite>.</p>
 </dd>
 <dt><kbd>--log-config</kbd></dt>
-<dd><p>The YAML config of the logger used in this object.</p>
+<dd><p>The config name or the absolute path to the YAML config file of the logger used in this object.</p>
 <p>Default: “default”</p>
 </dd>
 <dt><kbd>--quiet</kbd></dt>
@@ -2399,7 +2424,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [51433]</p>
+<p>Default: [59363]</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -2407,7 +2432,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [54828]</p>
+<p>Default: [57799]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2499,12 +2524,13 @@ container.</p>
 <p>Start a Python client that connects to a Jina Gateway</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">client</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">asyncio</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span>
             <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span>
-            <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
+            <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span>
             <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="p">]</span>
+            <span class="p">[</span><span class="o">--</span><span class="n">suppress</span><span class="o">-</span><span class="n">root</span><span class="o">-</span><span class="n">logging</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat16">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat16" title="Permalink to this heading">#</a></h4>
+<section id="Named Arguments_repeat18">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat18" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--asyncio</kbd></dt>
 <dd><p>If set, then the input and output of this Client work in an asynchronous manner.</p>
@@ -2530,10 +2556,18 @@ container.</p>
 <dt><kbd>--metrics-exporter-port</kbd></dt>
 <dd><p>If tracing is enabled, this port will be used to configure the metrics exporter agent.</p>
 </dd>
+<dt><kbd>--log-config</kbd></dt>
+<dd><p>The config name or the absolute path to the YAML config file of the logger used in this object.</p>
+<p>Default: “default”</p>
+</dd>
 <dt><kbd>--protocol</kbd></dt>
 <dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
 <p>Communication protocol between server and client.</p>
 <p>Default: GRPC</p>
+</dd>
+<dt><kbd>--suppress-root-logging</kbd></dt>
+<dd><p>If set, then no root handlers will be suppressed from logging.</p>
+<p>Default: False</p>
 </dd>
 </dl>
 </section>
@@ -2604,7 +2638,7 @@ container.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 20, 2023</div>
+                            Last updated on Feb 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -2652,13 +2686,14 @@ container.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#flow">flow</a><ul>
+<li><a class="reference internal" href="#Named Arguments_repeat1">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments_repeat1">Essential arguments</a></li>
 <li><a class="reference internal" href="#Flow Feature arguments">Flow Feature arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#ping">ping</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat1">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat1">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat2">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#export">export</a><ul>
@@ -2666,21 +2701,21 @@ container.</p>
 <li><a class="reference internal" href="#Sub-commands:_repeat1">Sub-commands:</a><ul>
 <li><a class="reference internal" href="#flowchart">flowchart</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat2">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat2">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat3">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#kubernetes">kubernetes</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat3">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat3">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat4">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#docker-compose">docker-compose</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat4">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat4">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat5">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#schema">schema</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat5">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
 </ul>
 </li>
 </ul>
@@ -2692,7 +2727,7 @@ container.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#gateway">gateway</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments_repeat2">Essential arguments</a></li>
 <li><a class="reference internal" href="#Base Deployment arguments">Base Deployment arguments</a></li>
 <li><a class="reference internal" href="#ContainerRuntime arguments_repeat1">ContainerRuntime arguments</a></li>
@@ -2707,7 +2742,7 @@ container.</p>
 <li><a class="reference internal" href="#Positional Arguments_repeat6">Positional Arguments</a></li>
 <li><a class="reference internal" href="#Sub-commands:_repeat2">Sub-commands:</a><ul>
 <li><a class="reference internal" href="#login">login</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat8">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#logout">logout</a></li>
@@ -2716,7 +2751,7 @@ container.</p>
 <li><a class="reference internal" href="#Sub-commands:_repeat3">Sub-commands:</a><ul>
 <li><a class="reference internal" href="#create">create</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat8">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat8">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat9">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#delete">delete</a><ul>
@@ -2740,14 +2775,14 @@ container.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#push">push</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat9">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat10">Named Arguments</a></li>
 <li><a class="reference internal" href="#Push arguments">Push arguments</a></li>
 <li><a class="reference internal" href="#Visibility arguments">Visibility arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#pull">pull</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat10">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat10">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat11">Named Arguments</a></li>
 <li><a class="reference internal" href="#Pull arguments_repeat1">Pull arguments</a></li>
 </ul>
 </li>
@@ -2762,7 +2797,7 @@ container.</p>
 </li>
 <li><a class="reference internal" href="#cloud">cloud</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat11">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat11">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat12">Named Arguments</a></li>
 <li><a class="reference internal" href="#Sub-commands:_repeat5">Sub-commands:</a><ul>
 <li><a class="reference internal" href="#login_repeat1">login</a></li>
 <li><a class="reference internal" href="#logout_repeat1">logout</a></li>
@@ -2772,15 +2807,16 @@ container.</p>
 </li>
 <li><a class="reference internal" href="#normalize">normalize</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat13">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat13">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#list_repeat2">list</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat12">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat14">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#status_repeat1">status</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat14">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat13">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat15">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#remove">remove</a><ul>
@@ -2797,7 +2833,7 @@ container.</p>
 </li>
 <li><a class="reference internal" href="#restart">restart</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat18">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat14">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat16">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#pause">pause</a><ul>
@@ -2810,7 +2846,7 @@ container.</p>
 </li>
 <li><a class="reference internal" href="#scale">scale</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat21">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat15">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat17">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#survey">survey</a></li>
@@ -2846,7 +2882,7 @@ container.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#client">client</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat16">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat18">Named Arguments</a></li>
 <li><a class="reference internal" href="#ClientGateway arguments">ClientGateway arguments</a></li>
 <li><a class="reference internal" href="#Prefetch arguments_repeat1">Prefetch arguments</a></li>
 </ul>

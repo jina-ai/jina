@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/helper.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>jina.helper - Jina 3.13.2 documentation</title>
+        <title>jina.helper - Jina 3.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.13.2 documentation</div>
+                <div class="brand">Jina 3.14.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -234,9 +234,8 @@
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../concepts/executor/"><span class="fas fa-gears"></span> Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../concepts/executor/basics/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../concepts/executor/create/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/executor/add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../concepts/executor/run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/executor/serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/executor/dynamic-batching/">Dynamic Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/executor/health-check/">Health Check</a></li>
@@ -244,6 +243,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/executor/file-structure/">File Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/executor/containerize/">Containerize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../concepts/executor/executor-in-flow/">Executors in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../concepts/executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -299,6 +300,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../concepts/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../concepts/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../concepts/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../concepts/executor/hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../concepts/executor/hub/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../concepts/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -566,8 +569,8 @@
 
 
 <div class="viewcode-block" id="retry"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.retry">[docs]</a><span class="k">def</span> <span class="nf">retry</span><span class="p">(</span>
-    <span class="n">num_retry</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Calling </span><span class="si">{func_name}</span><span class="s1"> failed, retry attempt </span><span class="si">{attempt}</span><span class="s1">/</span><span class="si">{num_retry}</span><span class="s1">. Error: </span><span class="si">{error!r}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="n">num_retry</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Calling </span><span class="si">{func_name}</span><span class="s1"> failed, retry attempt </span><span class="si">{attempt}</span><span class="s1">/</span><span class="si">{num_retry}</span><span class="s1">. Error: </span><span class="si">{error!r}</span><span class="s1">&#39;</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retry calling a function again in case of an error.</span>
@@ -611,18 +614,18 @@
     <span class="n">num_bytes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_bytes</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">num_bytes</span> <span class="o">&lt;</span> <span class="mi">1024</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">num_bytes</span><span class="si">}</span><span class="s1"> Bytes&#39;</span>
-    <span class="k">elif</span> <span class="n">num_bytes</span> <span class="o">&lt;</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">num_bytes</span> <span class="o">&lt;</span> <span class="mi">1024</span> <span class="o">**</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">num_bytes</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> KB&#39;</span>
-    <span class="k">elif</span> <span class="n">num_bytes</span> <span class="o">&lt;</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">num_bytes</span> <span class="o">&lt;</span> <span class="mi">1024</span> <span class="o">**</span> <span class="mi">3</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">num_bytes</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mi">1024</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> MB&#39;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">num_bytes</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mi">1024</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> GB&#39;</span></div>
 
 
 <div class="viewcode-block" id="batch_iterator"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.batch_iterator">[docs]</a><span class="k">def</span> <span class="nf">batch_iterator</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
-    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get an iterator of batches of data.</span>
@@ -661,7 +664,7 @@
             <span class="k">yield</span> <span class="n">data</span>
             <span class="k">return</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">):</span>
-            <span class="k">yield</span> <span class="n">data</span><span class="p">[</span><span class="n">_</span> <span class="p">:</span> <span class="n">_</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">]</span>
+            <span class="k">yield</span> <span class="n">data</span><span class="p">[</span><span class="n">_</span><span class="p">:</span> <span class="n">_</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">]</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
         <span class="c1"># as iterator, there is no way to know the length of it</span>
         <span class="n">iterator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -966,7 +969,7 @@
 
 
 <span class="k">def</span> <span class="nf">expand_dict</span><span class="p">(</span>
-    <span class="n">d</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">expand_fn</span><span class="o">=</span><span class="n">expand_env_var</span><span class="p">,</span> <span class="n">resolve_cycle_ref</span><span class="o">=</span><span class="kc">True</span>
+        <span class="n">d</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">expand_fn</span><span class="o">=</span><span class="n">expand_env_var</span><span class="p">,</span> <span class="n">resolve_cycle_ref</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Expand variables from YAML file.</span>
@@ -1068,10 +1071,10 @@
 
 
 <div class="viewcode-block" id="colored"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.colored">[docs]</a><span class="k">def</span> <span class="nf">colored</span><span class="p">(</span>
-    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">on_color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">attrs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">on_color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">attrs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Give the text with color.</span>
@@ -1128,10 +1131,10 @@
 
 
 <span class="k">def</span> <span class="nf">colored_rich</span><span class="p">(</span>
-    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">on_color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">attrs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">on_color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">attrs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Give the text with color. You should only use it when printing with rich print. Othersiwe please see the colored</span>
@@ -1227,11 +1230,11 @@
 
 <div class="viewcode-block" id="ArgNamespace.kwargs2namespace"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.ArgNamespace.kwargs2namespace">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">kwargs2namespace</span><span class="p">(</span>
-        <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]],</span>
-        <span class="n">parser</span><span class="p">:</span> <span class="n">ArgumentParser</span><span class="p">,</span>
-        <span class="n">warn_unknown</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">fallback_parsers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ArgumentParser</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">positional_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]],</span>
+            <span class="n">parser</span><span class="p">:</span> <span class="n">ArgumentParser</span><span class="p">,</span>
+            <span class="n">warn_unknown</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">fallback_parsers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ArgumentParser</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">positional_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert dict to a namespace.</span>
@@ -1265,7 +1268,7 @@
 
 <div class="viewcode-block" id="ArgNamespace.get_non_defaults_args"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.ArgNamespace.get_non_defaults_args">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_non_defaults_args</span><span class="p">(</span>
-        <span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">ArgumentParser</span><span class="p">,</span> <span class="n">taboo</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">ArgumentParser</span><span class="p">,</span> <span class="n">taboo</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get non-default args in a dict.</span>
@@ -1286,7 +1289,7 @@
 
 <div class="viewcode-block" id="ArgNamespace.flatten_to_dict"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.ArgNamespace.flatten_to_dict">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">flatten_to_dict</span><span class="p">(</span>
-        <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;Namespace&#39;</span><span class="p">],</span> <span class="s1">&#39;Namespace&#39;</span><span class="p">]</span>
+            <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;Namespace&#39;</span><span class="p">],</span> <span class="s1">&#39;Namespace&#39;</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert argparse.Namespace to dict to be uploaded via REST.</span>
 
@@ -1381,7 +1384,7 @@
             <span class="s1">&#39;uptime&#39;</span><span class="p">:</span> <span class="n">__uptime__</span><span class="p">,</span>
             <span class="s1">&#39;ci-vendor&#39;</span><span class="p">:</span> <span class="n">get_ci_vendor</span><span class="p">()</span> <span class="ow">or</span> <span class="n">__unset_msg__</span><span class="p">,</span>
             <span class="s1">&#39;internal&#39;</span><span class="p">:</span> <span class="s1">&#39;jina-ai&#39;</span>
-            <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;GITHUB_ACTION_REPOSITORY&#39;</span><span class="p">,</span> <span class="n">__unset_msg__</span><span class="p">),</span>
+                        <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;GITHUB_ACTION_REPOSITORY&#39;</span><span class="p">,</span> <span class="n">__unset_msg__</span><span class="p">),</span>
         <span class="p">}</span>
 
         <span class="n">env_info</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">__unset_msg__</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">__jina_env__</span><span class="p">}</span>
@@ -1619,14 +1622,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">urllib.request</span>
 
-    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-
     <span class="k">def</span> <span class="nf">_get_ip</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0&#39;</span><span class="p">})</span>
             <span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
                 <span class="n">_ip</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_ip</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">_ip</span>
 
         <span class="k">except</span><span class="p">:</span>
             <span class="k">pass</span>  <span class="c1"># intentionally ignored, public ip is not showed</span>
@@ -1637,17 +1638,8 @@
         <span class="s1">&#39;https://checkip.amazonaws.com/&#39;</span><span class="p">,</span>
     <span class="p">]</span>
 
-    <span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
-
     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ip</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ip_server_list</span><span class="p">):</span>
-        <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_get_ip</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">ip</span><span class="p">,))</span>
-        <span class="n">threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-        <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-
-    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span>
-        <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">_get_ip</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">r</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">r</span></div>
 
@@ -2053,7 +2045,7 @@
             <span class="k">return</span> <span class="n">_single_port_free</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">_single_port_free</span><span class="p">(</span><span class="n">_h</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span> <span class="k">for</span> <span class="n">_h</span> <span class="ow">in</span> <span class="n">host</span><span class="p">])</span>
-    
+
 
 <span class="k">def</span> <span class="nf">send_telemetry_event</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Sends in a thread a request with telemetry for a given event</span>
@@ -2086,7 +2078,6 @@
             <span class="k">pass</span>
 
     <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_telemetry</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-
 </pre></div>
                 </article>
             </div>
@@ -2101,7 +2092,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 20, 2023</div>
+                            Last updated on Feb 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -6,9 +6,9 @@
 <meta property="og:title" content="jina.types.request.data module" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.types.request.data/" />
-<meta property="og:site_name" content="Jina 3.13.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.14.0 Documentation" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.13.2 Documentation" />
+<meta property="og:image:alt" content="Jina 3.14.0 Documentation" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -31,7 +31,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.types.request.data.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>jina.types.request.data module - Jina 3.13.2 documentation</title>
+        <title>jina.types.request.data module - Jina 3.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.13.2 documentation</div>
+                <div class="brand">Jina 3.14.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -259,9 +259,8 @@
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../concepts/executor/"><span class="fas fa-gears"></span> Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/basics/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/create/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/dynamic-batching/">Dynamic Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/health-check/">Health Check</a></li>
@@ -269,6 +268,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/file-structure/">File Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/containerize/">Containerize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/executor-in-flow/">Executors in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -324,6 +325,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../concepts/executor/hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../concepts/executor/hub/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../concepts/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -433,6 +436,17 @@
 the provided input <code class="xref py py-class docutils literal notranslate"><span class="pre">docarray.DocumentArray</span></code> will be
 converted to a <a class="reference internal" href="#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a> before being sent to a Flow.</p>
 <dl class="py property">
+<dt class="sig sig-object py" id="jina.types.request.data.DataRequest.document_array_cls">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">document_array_cls</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.types.request.data.DataRequest.document_array_cls" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the DocumentArray class to be used for deserialization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="jina.types.request.data.DataRequest.is_decompressed">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_decompressed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.types.request.data.DataRequest.is_decompressed" title="Permalink to this definition">#</a></dt>
 <dd><p>Checks if the underlying proto object was already deserialized into a <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.proto.jina_pb2.DataRequestProto</span></code> or
@@ -533,19 +547,27 @@ will be converted to Python list.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.request.data.DataRequest.docs">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">docs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><span class="pre">DocumentArray</span></a></em><a class="headerlink" href="#jina.types.request.data.DataRequest.docs" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">docs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DocumentArray</span></em><a class="headerlink" href="#jina.types.request.data.DataRequest.docs" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the :class: <cite>DocumentArray</cite> with sequence <cite>data.docs</cite> as content.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="py property">
 <dt class="sig sig-object py" id="jina.types.request.data.DataRequest.data">
-<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#jina.types.request.data.DataRequest.data" title="Permalink to this definition">#</a></dt>
-<dd><p>The decorator to cache property of a class.</p>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">_DataContent</span></em><a class="headerlink" href="#jina.types.request.data.DataRequest.data" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the data contained in this data request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_DataContent</span></code></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the data content as an instance of _DataContent wrapping docs</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -569,17 +591,6 @@ will be converted to Python list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>the response of this request (self) as an instance of Response</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.request.data.DataRequest.status">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#jina.types.request.data.DataRequest.status" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns the status from the header field</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the status object of this request</p>
 </dd>
 </dl>
 </dd></dl>
@@ -654,17 +665,6 @@ will be converted to Python list.</p>
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="jina.types.request.data.DataRequest.last_executor">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">last_executor</span></span><a class="headerlink" href="#jina.types.request.data.DataRequest.last_executor" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns the name of the last Executor that has processed this Request</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the name of the last Executor that processed this Request</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
 <dt class="sig sig-object py" id="jina.types.request.data.DataRequest.nbytes">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nbytes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#jina.types.request.data.DataRequest.nbytes" title="Permalink to this definition">#</a></dt>
 <dd><p>Return total bytes consumed by protobuf.</p>
@@ -688,6 +688,17 @@ will be converted to Python list.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.types.request.data.DataRequest.status">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#jina.types.request.data.DataRequest.status" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the status from the header field</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the status object of this request</p>
 </dd>
 </dl>
 </dd></dl>
@@ -717,6 +728,17 @@ will be converted to Python list.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>JSON string of the object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.types.request.data.DataRequest.last_executor">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">last_executor</span></span><a class="headerlink" href="#jina.types.request.data.DataRequest.last_executor" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the name of the last Executor that has processed this Request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the name of the last Executor that processed this Request</p>
 </dd>
 </dl>
 </dd></dl>
@@ -844,6 +866,20 @@ the client API: send a <a class="reference internal" href="#jina.types.request.d
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.types.request.data.Response.data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">_DataContent</span></em><a class="headerlink" href="#jina.types.request.data.Response.data" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the data contained in this data request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_DataContent</span></code></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the data content as an instance of _DataContent wrapping docs</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.request.data.Response.dict">
 <span class="sig-name descname"><span class="pre">dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.data.Response.dict" title="Permalink to this definition">#</a></dt>
@@ -851,11 +887,22 @@ the client API: send a <a class="reference internal" href="#jina.types.request.d
 
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.request.data.Response.docs">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">docs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><span class="pre">DocumentArray</span></a></em><a class="headerlink" href="#jina.types.request.data.Response.docs" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">docs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DocumentArray</span></em><a class="headerlink" href="#jina.types.request.data.Response.docs" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the :class: <cite>DocumentArray</cite> with sequence <cite>data.docs</cite> as content.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.types.request.data.Response.document_array_cls">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">document_array_cls</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.types.request.data.Response.document_array_cls" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the DocumentArray class to be used for deserialization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1116,7 +1163,7 @@ will be converted to Python list.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 20, 2023</div>
+                            Last updated on Feb 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -1150,6 +1197,7 @@ will be converted to Python list.</p>
                         <ul>
 <li><a class="reference internal" href="#">jina.types.request.data module</a><ul>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest"><code class="docutils literal notranslate"><span class="pre">DataRequest</span></code></a><ul>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.document_array_cls"><code class="docutils literal notranslate"><span class="pre">DataRequest.document_array_cls</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.is_decompressed"><code class="docutils literal notranslate"><span class="pre">DataRequest.is_decompressed</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.is_decompressed_with_data"><code class="docutils literal notranslate"><span class="pre">DataRequest.is_decompressed_with_data</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.is_decompressed_wo_data"><code class="docutils literal notranslate"><span class="pre">DataRequest.is_decompressed_wo_data</span></code></a></li>
@@ -1161,7 +1209,6 @@ will be converted to Python list.</p>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.data"><code class="docutils literal notranslate"><span class="pre">DataRequest.data</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.parameters"><code class="docutils literal notranslate"><span class="pre">DataRequest.parameters</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.response"><code class="docutils literal notranslate"><span class="pre">DataRequest.response</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.data.DataRequest.status"><code class="docutils literal notranslate"><span class="pre">DataRequest.status</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.CopyFrom"><code class="docutils literal notranslate"><span class="pre">DataRequest.CopyFrom()</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.MergeFrom"><code class="docutils literal notranslate"><span class="pre">DataRequest.MergeFrom()</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.add_exception"><code class="docutils literal notranslate"><span class="pre">DataRequest.add_exception()</span></code></a></li>
@@ -1169,11 +1216,12 @@ will be converted to Python list.</p>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.clear"><code class="docutils literal notranslate"><span class="pre">DataRequest.clear()</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.dict"><code class="docutils literal notranslate"><span class="pre">DataRequest.dict()</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.json"><code class="docutils literal notranslate"><span class="pre">DataRequest.json()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.data.DataRequest.last_executor"><code class="docutils literal notranslate"><span class="pre">DataRequest.last_executor</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.nbytes"><code class="docutils literal notranslate"><span class="pre">DataRequest.nbytes</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.pop"><code class="docutils literal notranslate"><span class="pre">DataRequest.pop()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.status"><code class="docutils literal notranslate"><span class="pre">DataRequest.status</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.to_bytes"><code class="docutils literal notranslate"><span class="pre">DataRequest.to_bytes()</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.to_json"><code class="docutils literal notranslate"><span class="pre">DataRequest.to_json()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.last_executor"><code class="docutils literal notranslate"><span class="pre">DataRequest.last_executor</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.add_executor"><code class="docutils literal notranslate"><span class="pre">DataRequest.add_executor()</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.routes"><code class="docutils literal notranslate"><span class="pre">DataRequest.routes</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.DataRequest.request_id"><code class="docutils literal notranslate"><span class="pre">DataRequest.request_id</span></code></a></li>
@@ -1187,8 +1235,10 @@ will be converted to Python list.</p>
 <li><a class="reference internal" href="#jina.types.request.data.Response.add_executor"><code class="docutils literal notranslate"><span class="pre">Response.add_executor()</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.Response.binary_str"><code class="docutils literal notranslate"><span class="pre">Response.binary_str()</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.Response.clear"><code class="docutils literal notranslate"><span class="pre">Response.clear()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.data"><code class="docutils literal notranslate"><span class="pre">Response.data</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.Response.dict"><code class="docutils literal notranslate"><span class="pre">Response.dict()</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.Response.docs"><code class="docutils literal notranslate"><span class="pre">Response.docs</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.document_array_cls"><code class="docutils literal notranslate"><span class="pre">Response.document_array_cls</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.Response.from_proto"><code class="docutils literal notranslate"><span class="pre">Response.from_proto()</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.Response.is_decompressed"><code class="docutils literal notranslate"><span class="pre">Response.is_decompressed</span></code></a></li>
 <li><a class="reference internal" href="#jina.types.request.data.Response.is_decompressed_with_data"><code class="docutils literal notranslate"><span class="pre">Response.is_decompressed_with_data</span></code></a></li>

@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/orchestrate/flow/base.html" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>jina.orchestrate.flow.base - Jina 3.13.2 documentation</title>
+        <title>jina.orchestrate.flow.base - Jina 3.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.13.2 documentation</div>
+                <div class="brand">Jina 3.14.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -234,9 +234,8 @@
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../concepts/executor/"><span class="fas fa-gears"></span> Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/executor/basics/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/executor/create/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/executor/add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/executor/run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/executor/serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/executor/dynamic-batching/">Dynamic Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/executor/health-check/">Health Check</a></li>
@@ -244,6 +243,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/executor/file-structure/">File Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/executor/containerize/">Containerize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/executor/executor-in-flow/">Executors in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -299,6 +300,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../../concepts/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../concepts/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../concepts/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../concepts/executor/hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../concepts/executor/hub/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../concepts/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -435,7 +438,6 @@
     <span class="n">TextColumn</span><span class="p">,</span>
     <span class="n">TimeElapsedColumn</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">rich.table</span> <span class="kn">import</span> <span class="n">Table</span>
 
 <span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">jina.clients.mixin</span> <span class="kn">import</span> <span class="n">AsyncPostMixin</span><span class="p">,</span> <span class="n">HealthCheckMixin</span><span class="p">,</span> <span class="n">PostMixin</span><span class="p">,</span> <span class="n">ProfileMixin</span>
@@ -455,10 +457,7 @@
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">GATEWAY_NAME</span><span class="p">,</span>
     <span class="n">ArgNamespace</span><span class="p">,</span>
-    <span class="n">CatchAllCleanupContextManager</span><span class="p">,</span>
     <span class="n">download_mermaid_url</span><span class="p">,</span>
-    <span class="n">get_internal_ip</span><span class="p">,</span>
-    <span class="n">get_public_ip</span><span class="p">,</span>
     <span class="n">is_port_free</span><span class="p">,</span>
     <span class="n">random_ports</span><span class="p">,</span>
     <span class="n">send_telemetry_event</span><span class="p">,</span>
@@ -476,7 +475,7 @@
     <span class="n">set_gateway_parser</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.flow</span> <span class="kn">import</span> <span class="n">set_flow_parser</span>
-<span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">host_is_local</span><span class="p">,</span> <span class="n">in_docker</span>
+<span class="kn">from</span> <span class="nn">jina.serve.networking.utils</span> <span class="kn">import</span> <span class="n">host_is_local</span><span class="p">,</span> <span class="n">in_docker</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">]</span>
 <span class="n">GATEWAY_ARGS_BLACKLIST</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;uses&#39;</span><span class="p">,</span> <span class="s1">&#39;uses_with&#39;</span><span class="p">]</span>
@@ -521,6 +520,7 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">asyncio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span>
+        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">metrics_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">metrics_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -528,6 +528,7 @@
         <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
         <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="s1">&#39;GRPC&#39;</span><span class="p">,</span>
         <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">suppress_root_logging</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">tls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">traces_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">traces_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -538,6 +539,7 @@
 
 <span class="sd">        :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
 <span class="sd">        :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.</span>
+<span class="sd">        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
 <span class="sd">        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</span>
 <span class="sd">        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</span>
 <span class="sd">        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.</span>
@@ -547,6 +549,7 @@
 <span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)</span>
 <span class="sd">        :param protocol: Communication protocol between server and client.</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
+<span class="sd">        :param suppress_root_logging: If set, then no root handlers will be suppressed from logging.</span>
 <span class="sd">        :param tls: If set, connect to gateway using tls encryption</span>
 <span class="sd">        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.</span>
 <span class="sd">        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.</span>
@@ -637,7 +640,7 @@
 <span class="sd">        :param graph_description: Routing graph for the gateway</span>
 <span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
-<span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
+<span class="sd">        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
 <span class="sd">        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</span>
 <span class="sd">        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</span>
 <span class="sd">        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.</span>
@@ -715,6 +718,7 @@
         <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">reload</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">suppress_root_logging</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -725,7 +729,7 @@
 <span class="sd">        :param inspect: The strategy on those inspect deployments in the flow.</span>
 
 <span class="sd">              If `REMOVE` is given then all inspect deployments are removed when building the flow.</span>
-<span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
+<span class="sd">        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
 <span class="sd">        :param name: The name of this object.</span>
 
 <span class="sd">              This will be used in the following places:</span>
@@ -738,6 +742,7 @@
 <span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
 <span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
 <span class="sd">        :param reload: If set, auto-reloading on file changes is enabled: the Flow will restart while blocked if  YAML configuration source is changed. This also applies apply to underlying Executors, if their source code or YAML configuration has changed.</span>
+<span class="sd">        :param suppress_root_logging: If set, then no root handlers will be suppressed from logging.</span>
 <span class="sd">        :param uses: The YAML path represents a flow. It can be either a local file path or a URL.</span>
 <span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
 
@@ -787,6 +792,7 @@
 
 <span class="sd">        :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
 <span class="sd">        :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.</span>
+<span class="sd">        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
 <span class="sd">        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</span>
 <span class="sd">        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</span>
 <span class="sd">        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.</span>
@@ -796,6 +802,7 @@
 <span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)</span>
 <span class="sd">        :param protocol: Communication protocol between server and client.</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
+<span class="sd">        :param suppress_root_logging: If set, then no root handlers will be suppressed from logging.</span>
 <span class="sd">        :param tls: If set, connect to gateway using tls encryption</span>
 <span class="sd">        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.</span>
 <span class="sd">        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.</span>
@@ -820,7 +827,7 @@
 <span class="sd">        :param graph_description: Routing graph for the gateway</span>
 <span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
-<span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
+<span class="sd">        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
 <span class="sd">        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</span>
 <span class="sd">        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</span>
 <span class="sd">        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.</span>
@@ -883,7 +890,7 @@
 <span class="sd">        :param inspect: The strategy on those inspect deployments in the flow.</span>
 
 <span class="sd">              If `REMOVE` is given then all inspect deployments are removed when building the flow.</span>
-<span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
+<span class="sd">        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
 <span class="sd">        :param name: The name of this object.</span>
 
 <span class="sd">              This will be used in the following places:</span>
@@ -896,6 +903,7 @@
 <span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
 <span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
 <span class="sd">        :param reload: If set, auto-reloading on file changes is enabled: the Flow will restart while blocked if  YAML configuration source is changed. This also applies apply to underlying Executors, if their source code or YAML configuration has changed.</span>
+<span class="sd">        :param suppress_root_logging: If set, then no root handlers will be suppressed from logging.</span>
 <span class="sd">        :param uses: The YAML path represents a flow. It can be either a local file path or a URL.</span>
 <span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
 
@@ -922,6 +930,8 @@
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_update_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">ArgNamespace</span>
@@ -1035,6 +1045,9 @@
                 <span class="n">deployment_role</span><span class="o">=</span><span class="n">DeploymentRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">,</span>
                 <span class="n">expose_endpoints</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_endpoints_mapping</span><span class="p">),</span>
                 <span class="n">env</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="p">,</span>
+                <span class="n">log_config</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;log_config&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s1">&#39;log_config&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">log_config</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
@@ -1055,7 +1068,7 @@
         <span class="n">args</span><span class="o">.</span><span class="n">deployments_metadata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">deployments_metadata</span><span class="p">)</span>
         <span class="n">args</span><span class="o">.</span><span class="n">deployments_no_reduce</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">deployments_no_reduce</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span>
-            <span class="n">args</span><span class="p">,</span> <span class="n">needs</span><span class="p">,</span> <span class="n">include_gateway</span><span class="o">=</span><span class="kc">False</span>
+            <span class="n">args</span><span class="p">,</span> <span class="n">needs</span><span class="p">,</span> <span class="n">include_gateway</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">noblock_on_start</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_deployments_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
@@ -1126,44 +1139,14 @@
 
         <span class="k">return</span> <span class="n">graph_dict</span> <span class="k">if</span> <span class="n">graph_dict</span> <span class="k">else</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">_get_k8s_deployments_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-        <span class="n">graph_dict</span> <span class="o">=</span> <span class="p">{}</span>
-
-        <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">grpc_metadata</span><span class="p">:</span>
-                <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">grpc_metadata</span>
-
-        <span class="k">return</span> <span class="n">graph_dict</span> <span class="ow">or</span> <span class="kc">None</span>
-
     <span class="k">def</span> <span class="nf">_get_docker_compose_deployments_addresses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
         <span class="n">graph_dict</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.config.docker_compose</span> <span class="kn">import</span> <span class="n">port</span>
-        <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.config.helper</span> <span class="kn">import</span> <span class="n">to_compatible_name</span>
 
         <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="n">GATEWAY_NAME</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
-                <span class="n">deployment_docker_compose_address</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
-                <span class="p">]</span>
-            <span class="k">elif</span> <span class="n">v</span><span class="o">.</span><span class="n">head_args</span><span class="p">:</span>
-                <span class="n">deployment_docker_compose_address</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
-                <span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">deployment_docker_compose_address</span> <span class="o">=</span> <span class="p">[</span>
-                        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
-                    <span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">deployment_docker_compose_address</span> <span class="o">=</span> <span class="p">[]</span>
-                    <span class="k">for</span> <span class="n">rep_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span><span class="p">):</span>
-                        <span class="n">node_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">/rep-</span><span class="si">{</span><span class="n">rep_id</span><span class="si">}</span><span class="s1">&#39;</span>
-                        <span class="n">deployment_docker_compose_address</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="n">node_name</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
-                        <span class="p">)</span>
+            <span class="n">deployment_docker_compose_address</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">_docker_compose_address</span>
             <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">deployment_docker_compose_address</span>
 
         <span class="k">return</span> <span class="n">graph_dict</span>
@@ -1278,7 +1261,7 @@
         <span class="n">metrics_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">metrics_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;executor&#39;</span><span class="p">,</span>
         <span class="n">native</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">no_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">output_array_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1343,7 +1326,7 @@
 <span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
 <span class="sd">        :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param install_requirements: If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.</span>
-<span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
+<span class="sd">        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
 <span class="sd">        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</span>
 <span class="sd">        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</span>
 <span class="sd">        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.</span>
@@ -1459,6 +1442,7 @@
 <div class="viewcode-block" id="Flow.add"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.add">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
+        <span class="n">deployment</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Deployment</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">,</span> <span class="s1">&#39;AsyncFlow&#39;</span><span class="p">]:</span>
         <span class="c1"># implementation_stub_inject_start_add</span>
@@ -1492,7 +1476,7 @@
 <span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
 <span class="sd">        :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param install_requirements: If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.</span>
-<span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
+<span class="sd">        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
 <span class="sd">        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</span>
 <span class="sd">        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</span>
 <span class="sd">        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.</span>
@@ -1615,46 +1599,61 @@
             <span class="n">op_flow</span><span class="p">,</span> <span class="n">deployment_name</span><span class="p">,</span> <span class="n">needs</span><span class="p">,</span> <span class="n">connect_to_last_deployment</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
 
-        <span class="c1"># set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">deployment</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 
-            <span class="c1"># do not inherit from all the argument from the flow and respect EXECUTOR_ARGS_BLACKLIST</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">EXECUTOR_ARGS_BLACKLIST</span><span class="p">:</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="c1"># set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
 
-        <span class="c1"># update kwargs of this Deployment</span>
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-            <span class="nb">dict</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="n">deployment_name</span><span class="p">,</span>
-                <span class="n">deployment_role</span><span class="o">=</span><span class="n">deployment_role</span><span class="p">,</span>
+                <span class="c1"># do not inherit from all the argument from the flow and respect EXECUTOR_ARGS_BLACKLIST</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">EXECUTOR_ARGS_BLACKLIST</span><span class="p">:</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="c1"># update kwargs of this Deployment</span>
+            <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">deployment_name</span><span class="p">,</span>
+                    <span class="n">deployment_role</span><span class="o">=</span><span class="n">deployment_role</span><span class="p">,</span>
+                    <span class="n">log_config</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;log_config&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="s1">&#39;log_config&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span>
+                    <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">log_config</span><span class="p">,</span>
+                <span class="p">)</span>
             <span class="p">)</span>
-        <span class="p">)</span>
-        <span class="n">parser</span> <span class="o">=</span> <span class="n">set_deployment_parser</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">deployment_role</span> <span class="o">==</span> <span class="n">DeploymentRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
-            <span class="n">parser</span> <span class="o">=</span> <span class="n">set_gateway_parser</span><span class="p">()</span>
+            <span class="n">parser</span> <span class="o">=</span> <span class="n">set_deployment_parser</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">deployment_role</span> <span class="o">==</span> <span class="n">DeploymentRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
+                <span class="n">parser</span> <span class="o">=</span> <span class="n">set_gateway_parser</span><span class="p">()</span>
 
-        <span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span>
-            <span class="n">kwargs</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">fallback_parsers</span><span class="o">=</span><span class="n">FALLBACK_PARSERS</span>
-        <span class="p">)</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span>
+                <span class="n">kwargs</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">fallback_parsers</span><span class="o">=</span><span class="n">FALLBACK_PARSERS</span>
+            <span class="p">)</span>
 
-        <span class="c1"># deployment workspace if not set then derive from flow workspace</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">workspace</span><span class="p">:</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">workspace</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">workspace</span><span class="p">)</span>
+            <span class="c1"># deployment workspace if not set then derive from flow workspace</span>
+            <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">workspace</span><span class="p">:</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">workspace</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">workspace</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">workspace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace</span>
+
+            <span class="n">args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">needs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">external</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">no_reduce</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s1">&#39;External Executors with multiple needs have to do auto reduce.&#39;</span>
+                <span class="p">)</span>
+            <span class="n">deployment</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span>
+                <span class="n">args</span><span class="p">,</span> <span class="n">needs</span><span class="p">,</span> <span class="n">include_gateway</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">noblock_on_start</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">floating</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">floating</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">deployment</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">deployment</span> <span class="o">=</span> <span class="n">Deployment</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span>
+                <span class="n">deployment</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="n">needs</span><span class="p">,</span> <span class="n">include_gateway</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">noblock_on_start</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">floating</span> <span class="o">=</span> <span class="n">deployment</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">floating</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">workspace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace</span>
+            <span class="n">deployment</span><span class="o">.</span><span class="n">needs</span> <span class="o">=</span> <span class="n">needs</span>
+            <span class="n">floating</span> <span class="o">=</span> <span class="n">deployment</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">floating</span>
 
-        <span class="n">args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">op_flow</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">[</span><span class="n">deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">deployment</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">needs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">external</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">no_reduce</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s1">&#39;External Executors with multiple needs have to do auto reduce.&#39;</span>
-            <span class="p">)</span>
-
-        <span class="n">op_flow</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">[</span><span class="n">deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span>
-            <span class="n">args</span><span class="p">,</span> <span class="n">needs</span><span class="p">,</span> <span class="n">include_gateway</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">floating</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">floating</span><span class="p">:</span>
             <span class="n">op_flow</span><span class="o">.</span><span class="n">_last_deployment</span> <span class="o">=</span> <span class="n">deployment_name</span>
 
         <span class="k">return</span> <span class="n">op_flow</span></div>
@@ -1737,7 +1736,7 @@
 <span class="sd">        :param graph_description: Routing graph for the gateway</span>
 <span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
-<span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
+<span class="sd">        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
 <span class="sd">        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</span>
 <span class="sd">        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</span>
 <span class="sd">        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.</span>
@@ -1834,7 +1833,7 @@
 <span class="sd">        :param graph_description: Routing graph for the gateway</span>
 <span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
-<span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
+<span class="sd">        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
 <span class="sd">        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</span>
 <span class="sd">        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</span>
 <span class="sd">        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.</span>
@@ -2147,6 +2146,9 @@
 
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">teardown_instrumentation</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># unset all envs to avoid any side-effect</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="p">:</span>
@@ -2216,51 +2218,74 @@
     <span class="k">def</span> <span class="nf">_wait_until_all_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">results_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
 
         <span class="k">async</span> <span class="k">def</span> <span class="nf">_async_wait_ready</span><span class="p">(</span><span class="n">_deployment_name</span><span class="p">,</span> <span class="n">_deployment</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">_deployment</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
-                    <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pending&#39;</span>
+                    <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
+                        <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pending&#39;</span>
                     <span class="k">await</span> <span class="n">_deployment</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">()</span>
-                    <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;done&#39;</span>
+                    <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
+                        <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;done&#39;</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                 <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">_wait_ready</span><span class="p">(</span><span class="n">_deployment_name</span><span class="p">,</span> <span class="n">_deployment</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">_deployment</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
-                    <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pending&#39;</span>
+                    <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
+                        <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pending&#39;</span>
                     <span class="n">_deployment</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
-                    <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;done&#39;</span>
+                    <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
+                        <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;done&#39;</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">_polling_status</span><span class="p">(</span><span class="n">progress</span><span class="p">,</span> <span class="n">task</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">_polling_status</span><span class="p">(</span><span class="n">num_tasks_to_wait</span><span class="p">):</span>
+            <span class="n">progress</span> <span class="o">=</span> <span class="n">Progress</span><span class="p">(</span>
+                <span class="n">SpinnerColumn</span><span class="p">(),</span>
+                <span class="n">TextColumn</span><span class="p">(</span>
+                    <span class="s1">&#39;Waiting [b]</span><span class="si">{task.fields[pending_str]}</span><span class="s1">[/]...&#39;</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s1">&#39;right&#39;</span>
+                <span class="p">),</span>
+                <span class="n">BarColumn</span><span class="p">(),</span>
+                <span class="n">MofNCompleteColumn</span><span class="p">(),</span>
+                <span class="n">TimeElapsedColumn</span><span class="p">(),</span>
+                <span class="n">transient</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">with</span> <span class="n">progress</span><span class="p">:</span>
+                <span class="n">task</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span>
+                    <span class="s1">&#39;wait&#39;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">num_tasks_to_wait</span><span class="p">,</span> <span class="n">pending_str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">)</span>
+                <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
+                    <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
+                <span class="n">progress</span><span class="o">.</span><span class="n">start_task</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
 
-            <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
-            <span class="n">progress</span><span class="o">.</span><span class="n">start_task</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">num_done</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">pendings</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">_k</span><span class="p">,</span> <span class="n">_v</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+                            <span class="k">if</span> <span class="n">_v</span> <span class="o">==</span> <span class="s1">&#39;pending&#39;</span><span class="p">:</span>
+                                <span class="n">pendings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_k</span><span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">_v</span> <span class="o">==</span> <span class="s1">&#39;done&#39;</span><span class="p">:</span>
+                                <span class="n">num_done</span> <span class="o">+=</span> <span class="mi">1</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="s1">&#39;JINA_EARLY_STOP&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                                        <span class="sa">f</span><span class="s1">&#39;Flow is aborted due to </span><span class="si">{</span><span class="n">_k</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">_v</span><span class="si">}</span><span class="s1">.&#39;</span>
+                                    <span class="p">)</span>
+                                    <span class="n">os</span><span class="o">.</span><span class="n">_exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="n">num_done</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="n">pendings</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="k">for</span> <span class="n">_k</span><span class="p">,</span> <span class="n">_v</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="n">_v</span> <span class="o">==</span> <span class="s1">&#39;pending&#39;</span><span class="p">:</span>
-                        <span class="n">pendings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_k</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">_v</span> <span class="o">==</span> <span class="s1">&#39;done&#39;</span><span class="p">:</span>
-                        <span class="n">num_done</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="s1">&#39;JINA_EARLY_STOP&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Flow is aborted due to </span><span class="si">{</span><span class="n">_k</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">_v</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
-                            <span class="n">os</span><span class="o">.</span><span class="n">_exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">pending_str</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pendings</span><span class="p">)</span>
 
-                <span class="n">pending_str</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pendings</span><span class="p">)</span>
+                    <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">completed</span><span class="o">=</span><span class="n">num_done</span><span class="p">,</span> <span class="n">pending_str</span><span class="o">=</span><span class="n">pending_str</span><span class="p">)</span>
 
-                <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">completed</span><span class="o">=</span><span class="n">num_done</span><span class="p">,</span> <span class="n">pending_str</span><span class="o">=</span><span class="n">pending_str</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">pendings</span><span class="p">:</span>
-                    <span class="k">break</span>
-                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">pendings</span><span class="p">:</span>
+                        <span class="k">break</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
 
         <span class="n">wait_for_ready_coros</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
@@ -2269,81 +2294,68 @@
         <span class="k">async</span> <span class="k">def</span> <span class="nf">_async_wait_all</span><span class="p">():</span>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">wait_for_ready_coros</span><span class="p">)</span>
 
-        <span class="n">progress</span> <span class="o">=</span> <span class="n">Progress</span><span class="p">(</span>
-            <span class="n">SpinnerColumn</span><span class="p">(),</span>
-            <span class="n">TextColumn</span><span class="p">(</span><span class="s1">&#39;Waiting [b]</span><span class="si">{task.fields[pending_str]}</span><span class="s1">[/]...&#39;</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">),</span>
-            <span class="n">BarColumn</span><span class="p">(),</span>
-            <span class="n">MofNCompleteColumn</span><span class="p">(),</span>
-            <span class="n">TimeElapsedColumn</span><span class="p">(),</span>
-            <span class="n">transient</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="c1"># kick off spinner thread</span>
+        <span class="n">polling_status_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="n">_polling_status</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wait_for_ready_coros</span><span class="p">),),</span>
+            <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">with</span> <span class="n">progress</span><span class="p">:</span>
-            <span class="n">task</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span>
-                <span class="s1">&#39;wait&#39;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">wait_for_ready_coros</span><span class="p">),</span> <span class="n">pending_str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">False</span>
-            <span class="p">)</span>
 
-            <span class="c1"># kick off ip getter thread, address, http, graphq</span>
-            <span class="n">all_panels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">polling_status_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
-            <span class="n">t_ip</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
-                <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_summary_table</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">all_panels</span><span class="p">,</span> <span class="n">results</span><span class="p">),</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span>
-            <span class="p">)</span>
-            <span class="n">threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t_ip</span><span class="p">)</span>
+        <span class="c1"># kick off all deployments wait-ready tasks</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
 
-            <span class="c1"># kick off spinner thread</span>
-            <span class="n">t_m</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
-                <span class="n">target</span><span class="o">=</span><span class="n">_polling_status</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">progress</span><span class="p">,</span> <span class="n">task</span><span class="p">),</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span>
-            <span class="p">)</span>
-            <span class="n">threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t_m</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">_f</span><span class="p">():</span>
+            <span class="k">pass</span>
 
-            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span>
+        <span class="n">running_in_event_loop</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">_f</span><span class="p">())</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">running_in_event_loop</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">wait_ready_threads</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">running_in_event_loop</span><span class="p">:</span>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">_async_wait_all</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="n">wait_ready_threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_wait_ready</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">wait_ready_threads</span><span class="p">:</span>
                 <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
-            <span class="c1"># kick off all deployments wait-ready tasks</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">_</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
-                <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
+        <span class="n">polling_status_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">wait_ready_threads</span><span class="p">:</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
-            <span class="k">async</span> <span class="k">def</span> <span class="nf">_f</span><span class="p">():</span>
-                <span class="k">pass</span>
+        <span class="n">error_deployments</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="s1">&#39;done&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">error_deployments</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Flow is aborted due to </span><span class="si">{</span><span class="n">error_deployments</span><span class="si">}</span><span class="s1"> can not be started.&#39;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="n">RuntimeFailToStart</span>
+        <span class="kn">from</span> <span class="nn">rich.rule</span> <span class="kn">import</span> <span class="n">Rule</span>
 
-            <span class="n">running_in_event_loop</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">_f</span><span class="p">())</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="n">running_in_event_loop</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">all_panels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_summary_table</span><span class="p">(</span><span class="n">all_panels</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">running_in_event_loop</span><span class="p">:</span>
-                <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">_async_wait_all</span><span class="p">())</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">new_threads</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-                    <span class="n">new_threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_wait_ready</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="n">threads</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_threads</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">new_threads</span><span class="p">:</span>
-                    <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-
-            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span>
-                <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-
-            <span class="n">error_deployments</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="s1">&#39;done&#39;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">error_deployments</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;Flow is aborted due to </span><span class="si">{</span><span class="n">error_deployments</span><span class="si">}</span><span class="s1"> can not be started.&#39;</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-                <span class="k">raise</span> <span class="n">RuntimeFailToStart</span>
-            <span class="kn">from</span> <span class="nn">rich.rule</span> <span class="kn">import</span> <span class="n">Rule</span>
-
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;:tada: Flow is ready to serve!&#39;</span><span class="p">),</span> <span class="o">*</span><span class="n">all_panels</span>
-            <span class="p">)</span>  <span class="c1"># can&#39;t use logger here see : https://github.com/Textualize/rich/discussions/2024</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;:tada: Flow is ready to serve!&#39;</span><span class="p">),</span> <span class="o">*</span><span class="n">all_panels</span>
+        <span class="p">)</span>  <span class="c1"># can&#39;t use logger here see : https://github.com/Textualize/rich/discussions/2024</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_deployments</span><span class="si">}</span><span class="s1"> Deployments (i.e. </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_pods</span><span class="si">}</span><span class="s1"> Pods) are running in this Flow&#39;</span>
+        <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s1">&#39;Do you love Open Source? Help us get better and be heard in just 1 minute and 30 seconds :sparkling_heart:&#39;</span>
+            <span class="s1">&#39;Your feedback will help us build better features for [link=https://github.com/jina-ai/jina]Jina[/link], your loved open-source project :tada: https://10sw1tcpld4.typeform.com/jinasurveyfeb23?utm_source=jina Take the Jina user survey!&#39;</span>
         <span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -2391,13 +2403,17 @@
 
 <span class="sd">        .. # noqa: DAR201&quot;&quot;&quot;</span>
 
-        <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
-            <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
-            <span class="n">protocol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Client</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+                <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+                <span class="n">protocol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span>
+                <span class="n">log_config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">log_config</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_mermaid_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2652,10 +2668,7 @@
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_get_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_panels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Panel</span><span class="p">],</span> <span class="n">results</span><span class="p">):</span>
-
-        <span class="n">results</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pending&#39;</span>
-
+    <span class="k">def</span> <span class="nf">_get_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_panels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Panel</span><span class="p">]):</span>
         <span class="n">address_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_table</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -2804,7 +2817,6 @@
                 <span class="p">)</span>
             <span class="p">)</span>
 
-        <span class="n">results</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;done&#39;</span>
         <span class="k">return</span> <span class="n">all_panels</span>
 
 <div class="viewcode-block" id="Flow.block"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.block">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">])</span>
@@ -3115,53 +3127,25 @@
 <span class="sd">        :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.</span>
 <span class="sd">        :param include_gateway: Defines if the gateway deployment should be included, defaults to True</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">yaml</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">copy_flow</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.config.k8s</span> <span class="kn">import</span> <span class="n">K8sDeploymentConfig</span>
-
         <span class="n">k8s_namespace</span> <span class="o">=</span> <span class="n">k8s_namespace</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s1">&#39;default&#39;</span>
 
         <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">external</span> <span class="ow">or</span> <span class="p">(</span><span class="n">node</span> <span class="o">==</span> <span class="s1">&#39;gateway&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">include_gateway</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="s1">&#39;gateway&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">include_gateway</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="s1">&#39;gateway&#39;</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">default_port</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
-
-                <span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span>
-                <span class="n">v</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span>
-
-                <span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_MONITORING</span>
-                <span class="n">v</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_MONITORING</span>
-                <span class="p">)</span>
-
-                <span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">default_port</span> <span class="o">=</span> <span class="kc">False</span>
 
             <span class="n">deployment_base</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_base_path</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
-            <span class="n">k8s_deployment</span> <span class="o">=</span> <span class="n">K8sDeploymentConfig</span><span class="p">(</span>
-                <span class="n">args</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">v</span><span class="o">.</span><span class="n">_to_kubernetes_yaml</span><span class="p">(</span>
+                <span class="n">deployment_base</span><span class="p">,</span>
                 <span class="n">k8s_namespace</span><span class="o">=</span><span class="n">k8s_namespace</span><span class="p">,</span>
                 <span class="n">k8s_deployments_addresses</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_k8s_deployments_addresses</span><span class="p">(</span>
                     <span class="n">k8s_namespace</span>
-                <span class="p">)</span>
-                <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="s1">&#39;gateway&#39;</span>
-                <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="n">k8s_deployments_metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_k8s_deployments_metadata</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="s1">&#39;gateway&#39;</span>
-                <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="p">),</span>
             <span class="p">)</span>
-            <span class="n">configs</span> <span class="o">=</span> <span class="n">k8s_deployment</span><span class="o">.</span><span class="n">to_kubernetes_yaml</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">k8s_objects</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">:</span>
-                <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">deployment_base</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">.yml&#39;</span><span class="p">)</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">deployment_base</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k8s_object</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">k8s_objects</span><span class="p">):</span>
-                        <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">k8s_object</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">k8s_objects</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-                            <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;---</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;K8s yaml files have been created under [b]</span><span class="si">{</span><span class="n">output_base_path</span><span class="si">}</span><span class="s1">[/]. You can use it by running [b]kubectl apply -R -f </span><span class="si">{</span><span class="n">output_base_path</span><span class="si">}</span><span class="s1">[/]&#39;</span>
@@ -3189,10 +3173,6 @@
         <span class="n">output_path</span> <span class="o">=</span> <span class="n">output_path</span> <span class="ow">or</span> <span class="s1">&#39;docker-compose.yml&#39;</span>
         <span class="n">network_name</span> <span class="o">=</span> <span class="n">network_name</span> <span class="ow">or</span> <span class="s1">&#39;jina-network&#39;</span>
 
-        <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.config.docker_compose</span> <span class="kn">import</span> <span class="p">(</span>
-            <span class="n">DockerComposeConfig</span><span class="p">,</span>
-        <span class="p">)</span>
-
         <span class="n">docker_compose_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;3.3&#39;</span><span class="p">,</span>
             <span class="s1">&#39;networks&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">network_name</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;driver&#39;</span><span class="p">:</span> <span class="s1">&#39;bridge&#39;</span><span class="p">}},</span>
@@ -3204,11 +3184,10 @@
             <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">external</span> <span class="ow">or</span> <span class="p">(</span><span class="n">node</span> <span class="o">==</span> <span class="s1">&#39;gateway&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">include_gateway</span><span class="p">):</span>
                 <span class="k">continue</span>
 
-            <span class="n">docker_compose_deployment</span> <span class="o">=</span> <span class="n">DockerComposeConfig</span><span class="p">(</span>
-                <span class="n">args</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">service_configs</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">_to_docker_compose_config</span><span class="p">(</span>
                 <span class="n">deployments_addresses</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_docker_compose_deployments_addresses</span><span class="p">(),</span>
             <span class="p">)</span>
-            <span class="n">service_configs</span> <span class="o">=</span> <span class="n">docker_compose_deployment</span><span class="o">.</span><span class="n">to_docker_compose_config</span><span class="p">()</span>
+
             <span class="k">for</span> <span class="n">service_name</span><span class="p">,</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">service_configs</span><span class="p">:</span>
                 <span class="n">service</span><span class="p">[</span><span class="s1">&#39;networks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">network_name</span><span class="p">]</span>
                 <span class="n">services</span><span class="p">[</span><span class="n">service_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">service</span>
@@ -3228,18 +3207,6 @@
         <span class="p">)</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">client_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Client settings.</span>
-
-<span class="sd">        # noqa: DAR201</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s1">&#39;port&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">:</span>
-            <span class="n">kwargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">)</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span>
-
-        <span class="k">return</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">set_client_cli_parser</span><span class="p">())</span>
-
-    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">gateway_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Gateway settings.</span>
 
@@ -3253,6 +3220,8 @@
 <span class="sd">        :param kwargs: new network settings</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># reset client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="fm">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
@@ -3264,16 +3233,7 @@
                 <span class="s2">&quot;Calling `load_config` from a Flow instance will override all of the instance&#39;s initial parameters. We recommend to use `Flow.load_config(...)` instead&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">obj</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">_entity_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="kn">import</span> <span class="nn">uuid</span>
-
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_entity_id_&#39;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entity_id_</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_entity_id_</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entity_id_</span></div>
+        <span class="k">return</span> <span class="n">obj</span></div>
 </pre></div>
                 </article>
             </div>
@@ -3288,7 +3248,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 20, 2023</div>
+                            Last updated on Feb 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

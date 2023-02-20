@@ -6,10 +6,10 @@
 <meta property="og:title" content=" YAML specification" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/jcloud/yaml-spec/" />
-<meta property="og:site_name" content="Jina 3.13.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.14.0 Documentation" />
 <meta property="og:description" content="YAML specification: JCloud extends Jina’s Flow YAML specification by introducing the special field jcloud. This lets you define resources and scaling policies for each Executor and gateway. Here’s a Flow with two Executors that have specific resource needs. indexer demands 10G ebs disk, whereas e..." />
 <meta property="og:image" content="https://docs.jina.ai/_images/expose-executor.png" />
-<meta property="og:image:alt" content="Jina 3.13.2 Documentation" />
+<meta property="og:image:alt" content="Jina 3.14.0 Documentation" />
 <meta name="description" content="YAML specification: JCloud extends Jina’s Flow YAML specification by introducing the special field jcloud. This lets you define resources and scaling policies for each Executor and gateway. Here’s a Flow with two Executors that have specific resource needs. indexer demands 10G ebs disk, whereas e..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/jcloud/yaml-spec.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>YAML specification - Jina 3.13.2 documentation</title>
+        <title>YAML specification - Jina 3.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.13.2 documentation</div>
+                <div class="brand">Jina 3.14.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -261,9 +261,8 @@
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/"><span class="fas fa-gears"></span> Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../executor/basics/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/create/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../executor/run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/dynamic-batching/">Dynamic Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/health-check/">Health Check</a></li>
@@ -271,6 +270,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../executor/file-structure/">File Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/containerize/">Containerize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-in-flow/">Executors in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -326,6 +327,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/hub/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../">Jina AI Cloud Hosting</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -436,7 +439,7 @@
 </span><span class="hll"><span class="w">      </span><span class="nt">resources</span><span class="p">:</span>
 </span><span class="hll"><span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 </span><span class="hll"><span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8G</span>
-</span><span class="hll"><span class="w">        </span><span class="nt">gpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+</span><span class="hll"><span class="w">        </span><span class="nt">gpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 </span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer</span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Indexer</span>
 <span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
@@ -503,7 +506,7 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
 <span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
 </span><span class="hll"><span class="w">      </span><span class="nt">resources</span><span class="p">:</span>
-</span><span class="hll"><span class="w">        </span><span class="nt">gpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+</span><span class="hll"><span class="w">        </span><span class="nt">gpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 </span></pre></div>
 </div>
 </section>
@@ -562,27 +565,27 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 <span class="nt">executors</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
-<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
-</span><span class="hll"><span class="w">      </span><span class="nt">resources</span><span class="p">:</span>
-</span><span class="hll"><span class="w">        </span><span class="nt">storage</span><span class="p">:</span>
-</span><span class="hll"><span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ebs</span>
+<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">resources</span><span class="p">:</span>
+<span class="hll"><span class="w">        </span><span class="nt">storage</span><span class="p">:</span>
+</span><span class="hll"><span class="w">          </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ebs</span>
 </span><span class="hll"><span class="w">          </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10G</span>
 </span><span class="hll"><span class="w">          </span><span class="nt">retain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor2</span>
-<span class="hll"><span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor2</span>
-</span><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor2</span>
+<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">resources</span><span class="p">:</span>
 <span class="hll"><span class="w">        </span><span class="nt">storage</span><span class="p">:</span>
-</span><span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">efs</span>
-</pre></div>
+</span><span class="hll"><span class="w">          </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">efs</span>
+</span></pre></div>
 </div>
 </section>
 </section>
 <section id="scale-out-executors">
 <h2>Scale out Executors<a class="headerlink" href="#scale-out-executors" title="Permalink to this heading">#</a></h2>
 <p>On JCloud, demand-based autoscaling functionality is naturally offered thanks to the underlying Kubernetes architecture. This means that you can maintain <a class="reference external" href="https://en.wikipedia.org/wiki/Serverless_computing">serverless</a> deployments in a cost-effective way with no headache of setting the <a class="reference external" href="https://docs.jina.ai/how-to/scale-out/#scale-out-your-executor">right number of replicas</a> anymore!</p>
-<section id="autoscaling-with-jinahub-serveless">
-<h3>Autoscaling with <code class="docutils literal notranslate"><span class="pre">jinahub+serveless://</span></code><a class="headerlink" href="#autoscaling-with-jinahub-serveless" title="Permalink to this heading">#</a></h3>
+<section id="autoscaling-with-jinaai-serverless">
+<h3>Autoscaling with <code class="docutils literal notranslate"><span class="pre">jinaai+serverless://</span></code><a class="headerlink" href="#autoscaling-with-jinaai-serverless" title="Permalink to this heading">#</a></h3>
 <p>The easiest way to scale out your Executor is to use a Serverless Executor. This can be enabled by using <code class="docutils literal notranslate"><span class="pre">jinaai+serverless://</span></code> instead of <code class="docutils literal notranslate"><span class="pre">jinaai+docker://</span></code> in Executor’s <code class="docutils literal notranslate"><span class="pre">uses</span></code>, such as:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
 <span class="nt">executors</span><span class="p">:</span>
@@ -645,11 +648,61 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 </tbody>
 </table>
 </div>
-<p>After JCloud deployment using the autoscaling configuration, the Flow serving part is just the same; the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you should only worry about the code!</p>
+<p>After JCloud deployment using the autoscaling configuration, the Flow serving part is just the same: the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you can deal with the code!</p>
 </section>
+</section>
+<section id="configure-availability-tolerance">
+<h2>Configure availability tolerance<a class="headerlink" href="#configure-availability-tolerance" title="Permalink to this heading">#</a></h2>
+<p>If service issues cause disruption of Executors, JCloud lets you specify a tolerance level for number of replicas that stay up or go down.</p>
+<p>The JCloud parameters <code class="docutils literal notranslate"><span class="pre">minAvailable</span></code> and <code class="docutils literal notranslate"><span class="pre">maxUnavailable</span></code> ensure that Executors will stay up even if a certain number of replicas go down.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Name</p></th>
+<th class="head text-center"><p>Default</p></th>
+<th class="head text-center"><p>Allowed</p></th>
+<th class="head text-left"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">minAvailable</span></code></p></td>
+<td class="text-center"><p>N/A</p></td>
+<td class="text-center"><p>Lower than number of <a class="reference external" href="https://docs.jina.ai/concepts/flow/scale-out/#scale-out">replicas</a></p></td>
+<td class="text-left"><p>Minimum number of replicas available during disruption</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">maxUnavailable</span></code></p></td>
+<td class="text-center"><p>N/A</p></td>
+<td class="text-center"><p>Lower than numbers of <a class="reference external" href="https://docs.jina.ai/concepts/flow/scale-out/#scale-out">replicas</a></p></td>
+<td class="text-left"><p>Maximum number of replicas unavailable during disruption</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
+<span class="w">    </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">      </span><span class="nt">minAvailable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+</span></pre></div>
+</div>
+<blockquote>
+<div><p>In case of disruption, ensure at least two replicas will still be available, while three may be down.</p>
+</div></blockquote>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
+<span class="w">    </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">      </span><span class="nt">maxUnavailable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+</span></pre></div>
+</div>
+<blockquote>
+<div><p>In case of disruption, ensure that if a maximum of two replicas are down, at least three replicas will still be available.</p>
+</div></blockquote>
 </section>
 <section id="configure-gateway">
-<h2>Configure gateway<a class="headerlink" href="#configure-gateway" title="Permalink to this heading">#</a></h2>
+<h2>Configure Gateway<a class="headerlink" href="#configure-gateway" title="Permalink to this heading">#</a></h2>
 <p>JCloud provides support Ingress gateways to expose your Flows to the public internet with TLS.</p>
 <p>In JCloud. We use <a class="reference external" href="https://letsencrypt.org/">Let’s Encrypt</a> for TLS.</p>
 <div class="admonition hint">
@@ -760,6 +813,43 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 </ul>
 </div>
 </section>
+<section id="monitoring">
+<h3>Monitoring<a class="headerlink" href="#monitoring" title="Permalink to this heading">#</a></h3>
+<p>To enable <a class="reference external" href="https://docs.jina.ai/cloud-nativeness/opentelemetry/">tracing support</a> in Flows, you can pass <code class="docutils literal notranslate"><span class="pre">enable:</span> <span class="pre">true</span></code> argument in the Flow YAML. (Tracing support is not enabled by default in JCloud)</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="hll"><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">  </span><span class="nt">monitor</span><span class="p">:</span>
+</span><span class="hll"><span class="w">    </span><span class="nt">traces</span><span class="p">:</span>
+</span><span class="hll"><span class="w">      </span><span class="nt">enable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
+</pre></div>
+</div>
+<p>You can pass the <code class="docutils literal notranslate"><span class="pre">enable:</span> <span class="pre">true</span></code> argument to <code class="docutils literal notranslate"><span class="pre">gateway</span></code>, so as to only enable the tracing support in gateway:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="hll"><span class="nt">gateway</span><span class="p">:</span>
+</span><span class="hll"><span class="w">  </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">      </span><span class="nt">monitor</span><span class="p">:</span>
+</span><span class="hll"><span class="w">        </span><span class="nt">traces</span><span class="p">:</span>
+</span><span class="w">          </span><span class="nt">enable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
+</pre></div>
+</div>
+<p>You can also only enable tracing support in <code class="docutils literal notranslate"><span class="pre">executor1</span></code>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">      </span><span class="nt">monitor</span><span class="p">:</span>
+</span><span class="hll"><span class="w">        </span><span class="nt">traces</span><span class="p">:</span>
+</span><span class="hll"><span class="w">          </span><span class="nt">enable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span></pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -794,7 +884,7 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 20, 2023</div>
+                            Last updated on Feb 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -840,11 +930,12 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 </ul>
 </li>
 <li><a class="reference internal" href="#scale-out-executors">Scale out Executors</a><ul>
-<li><a class="reference internal" href="#autoscaling-with-jinahub-serveless">Autoscaling with <code class="docutils literal notranslate"><span class="pre">jinahub+serveless://</span></code></a></li>
+<li><a class="reference internal" href="#autoscaling-with-jinaai-serverless">Autoscaling with <code class="docutils literal notranslate"><span class="pre">jinaai+serverless://</span></code></a></li>
 <li><a class="reference internal" href="#autoscaling-with-custom-args">Autoscaling with custom args</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#configure-gateway">Configure gateway</a><ul>
+<li><a class="reference internal" href="#configure-availability-tolerance">Configure availability tolerance</a></li>
+<li><a class="reference internal" href="#configure-gateway">Configure Gateway</a><ul>
 <li><a class="reference internal" href="#set-timeout">Set timeout</a></li>
 <li><a class="reference internal" href="#control-gateway-resources">Control gateway resources</a></li>
 </ul>
@@ -853,6 +944,7 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 <li><a class="reference internal" href="#other-deployment-options">Other deployment options</a><ul>
 <li><a class="reference internal" href="#specify-jina-version">Specify Jina version</a></li>
 <li><a class="reference internal" href="#add-labels">Add Labels</a></li>
+<li><a class="reference internal" href="#monitoring">Monitoring</a></li>
 </ul>
 </li>
 </ul>

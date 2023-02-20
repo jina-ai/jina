@@ -6,10 +6,10 @@
 <meta property="og:title" content="Sandbox" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/executor/hub/sandbox/" />
-<meta property="og:site_name" content="Jina 3.13.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.14.0 Documentation" />
 <meta property="og:description" content="Sandbox lets you run Executors in a cloud environment without downloading them to your own machine. Sandbox gives you a host and port to connect to. Jina automatically takes care of this connection. This saves a lot of time and compute when you just want to try one Executor. This graph shows the ..." />
-<meta property="og:image" content="https://docs.jina.ai/concepts/executor/hub/sandbox/concepts/.github/sandbox-advantage.png" />
-<meta property="og:image:alt" content="Jina 3.13.2 Documentation" />
+<meta property="og:image" content="https://docs.jina.ai/concepts/executor/hub/sandbox/.github/sandbox-advantage.png" />
+<meta property="og:image:alt" content="Jina 3.14.0 Documentation" />
 <meta name="description" content="Sandbox lets you run Executors in a cloud environment without downloading them to your own machine. Sandbox gives you a host and port to connect to. Jina automatically takes care of this connection. This saves a lot of time and compute when you just want to try one Executor. This graph shows the ..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -29,11 +29,11 @@
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     
-<link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
+<link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" /><link rel="next" title="Debug" href="../debug-executor/" /><link rel="prev" title="Use" href="../use-hub-executor/" />
         <link rel="canonical" href="https://docs.jina.ai/concepts/executor/hub/sandbox.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Sandbox - Jina 3.13.2 documentation</title>
+        <title>Sandbox - Jina 3.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.13.2 documentation</div>
+                <div class="brand">Jina 3.14.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -261,9 +261,8 @@
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../"><span class="fas fa-gears"></span> Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../basics/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../create/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../dynamic-batching/">Dynamic Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../health-check/">Health Check</a></li>
@@ -271,6 +270,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../file-structure/">File Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../containerize/">Containerize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor-in-flow/">Executors in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -308,7 +309,7 @@
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cloud Native</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../cloud-nativeness/k8s/"><span class="fas fa-dharmachakra"></span> Kubernetes Support</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../cloud-nativeness/kubernetes/">Deploy on Kubernetes</a></li>
 </ul>
@@ -319,13 +320,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../cloud-nativeness/monitoring/">Prometheus/Grafana Support (Legacy)</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../">Executor Hub</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../hub-portal/">Portal</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../push-executor/">Publish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../use-hub-executor/">Use</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -429,68 +432,49 @@
 <p>Sandbox lets you run Executors in a cloud environment without downloading them to your own machine. Sandbox gives you a host and port to connect to. Jina automatically takes care of this connection. This saves a lot of time and compute when you just want to try one Executor.</p>
 <p>This graph shows the difference between using and not using Sandbox.</p>
 <figure class="align-center">
-<img alt="concepts/.github/sandbox-advantage.png" src="concepts/.github/sandbox-advantage.png" />
+<img alt=".github/sandbox-advantage.png" src=".github/sandbox-advantage.png" />
 </figure>
 <section id="using-sandbox">
 <h2>Using Sandbox<a class="headerlink" href="#using-sandbox" title="Permalink to this heading">#</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+sandbox://jina-ai/Hello&#39;</span><span class="p">)</span>
+<span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+sandbox://jina-ai/Hello&#39;</span><span class="p">)</span>
 
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;world&#39;</span><span class="p">))</span>
+<span class="k">with</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;world&#39;</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This starts a Flow with one Executor, and sends a Document to it. The Executor processes the Document and returns the result.</p>
-<section id="use-with-other-executors">
-<h3>Use with other Executors<a class="headerlink" href="#use-with-other-executors" title="Permalink to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span>
-
-
-<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
-            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;(first hello, from MyExecutor)&#39;</span> <span class="o">+</span> <span class="n">doc</span><span class="o">.</span><span class="n">text</span>
-
-
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+sandbox://jina-ai/Hello&#39;</span><span class="p">)</span>
-
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;world&#39;</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
+<p>This starts a Deployment with one Executor, and sends a Document to it. The Executor processes the Document and returns the result.</p>
 </section>
 <section id="lifecycle">
 <h2>Lifecycle<a class="headerlink" href="#lifecycle" title="Permalink to this heading">#</a></h2>
-<p>Sandbox is serverless. It will not be removed immediately after the Flow is closed but kept alive for several minutes. If there is no traffic, it will automatically scale down to 0 to save resources, but it will start again and send a response whenever a new request is sent to the same Sandbox.</p>
-<p><strong>Sandboxes are shared with other users</strong>. Sometimes you can access the sandbox quickly because other users have already started it.</p>
+<p>Sandbox is serverless. It is not removed immediately after the Deployment is closed but kept alive for several minutes. If there is no traffic, it automatically scales down to zero to save resources, but it will start again and send a response whenever a new request is sent to the same Sandbox.</p>
+<p><strong>Sandboxes are shared with other users</strong>. Sometimes you can access the Sandbox quickly because other users have already started it.</p>
 <p>Executor Hub finds existing sandboxes based on three factors:</p>
 <ul class="simple">
 <li><p>Executor name</p></li>
 <li><p>Executor tag</p></li>
 <li><p>Jina version of the driver program</p></li>
 </ul>
-<p>If all these three factors match, then it will reuse existing sandbox.</p>
+<p>If all these three factors match, then Jina reuses the existing sandbox.</p>
 <div class="caution admonition">
 <p class="admonition-title">Caution</p>
-<p>If the Jina version of Gateway is later than the latest released Jina version (which happens when you are in the master branch of jina repository), the sandbox will always be created rather than reused.</p>
+<p>If the Jina version of Gateway is later than the latest released Jina version (which happens when you are in the master branch of jina repository), the Sandbox will always be created rather than reused.</p>
 </div>
 </section>
 <section id="version-consistency">
 <h2>Version consistency<a class="headerlink" href="#version-consistency" title="Permalink to this heading">#</a></h2>
-<p>The sandboxed Jina version matches your Flow’s Jina version. For example, if you run a Jina 3.10 Flow on your local machine, then any sandboxed Executors you run will also use Jina 3.10.</p>
+<p>The sandboxed Jina version matches your Deployment’s Jina version. For example, if you run a Jina 3.13 Deployment on your local machine, then any sandboxed Executors you run will also use Jina 3.13.</p>
 </section>
 <section id="caveats">
 <h2>Caveats<a class="headerlink" href="#caveats" title="Permalink to this heading">#</a></h2>
 <p>There are some caveats when using Sandbox Executors compared to other Executors:</p>
 <section id="unmanaged-lifetime">
 <h3>Unmanaged lifetime<a class="headerlink" href="#unmanaged-lifetime" title="Permalink to this heading">#</a></h3>
-<p>The lifetime of Sandbox Executors is not handled by the Flow, but rather by the Hub infrastructure, so there is no way
-to override its default configurations: You can’t use <code class="docutils literal notranslate"><span class="pre">uses_with</span></code>, <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code>.</p>
+<p>The lifetime of Sandbox Executors is not handled by the Deployment, but rather by the Hub infrastructure, so there is no way
+to override its default configuration: You can’t use <code class="docutils literal notranslate"><span class="pre">uses_with</span></code> or <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code>.</p>
 <p>You can think of a Sandbox Executor as an external Executor where you have no control over its initialization or configuration.</p>
 </section>
 <section id="no-gpu-support">
@@ -505,15 +489,33 @@ to override its default configurations: You can’t use <code class="docutils li
             <footer>
                 
                 <div class="related-pages">
-                    
-                    
+                    <a class="next-page" href="../debug-executor/">
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Next</span>
+                            </div>
+                            <div class="title">Debug</div>
+                        </div>
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+                    </a>
+                    <a class="prev-page" href="../use-hub-executor/">
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Previous</span>
+                            </div>
+                            
+                            <div class="title">Use</div>
+                            
+                        </div>
+                    </a>
                 </div>
                 <div class="bottom-of-page">
                     <div class="left-details">
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 20, 2023</div>
+                            Last updated on Feb 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -546,10 +548,7 @@ to override its default configurations: You can’t use <code class="docutils li
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Sandbox</a><ul>
-<li><a class="reference internal" href="#using-sandbox">Using Sandbox</a><ul>
-<li><a class="reference internal" href="#use-with-other-executors">Use with other Executors</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#using-sandbox">Using Sandbox</a></li>
 <li><a class="reference internal" href="#lifecycle">Lifecycle</a></li>
 <li><a class="reference internal" href="#version-consistency">Version consistency</a></li>
 <li><a class="reference internal" href="#caveats">Caveats</a><ul>

@@ -6,9 +6,9 @@
 <meta property="og:title" content="jina.serve.streamer module" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve.streamer/" />
-<meta property="og:site_name" content="Jina 3.13.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.14.0 Documentation" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.13.2 Documentation" />
+<meta property="og:image:alt" content="Jina 3.14.0 Documentation" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -31,7 +31,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.streamer.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>jina.serve.streamer module - Jina 3.13.2 documentation</title>
+        <title>jina.serve.streamer module - Jina 3.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.13.2 documentation</div>
+                <div class="brand">Jina 3.14.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -259,9 +259,8 @@
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../concepts/executor/"><span class="fas fa-gears"></span> Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/basics/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/create/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/dynamic-batching/">Dynamic Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/health-check/">Health Check</a></li>
@@ -269,6 +268,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/file-structure/">File Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/containerize/">Containerize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/executor-in-flow/">Executors in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -324,6 +325,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../concepts/executor/hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../concepts/executor/hub/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../concepts/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -454,8 +457,8 @@ provide information associated with the request to the deployment.</p></li>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.streamer.GatewayStreamer.stream">
-<span class="sig-name descname"><span class="pre">stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/streamer/#GatewayStreamer.stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.streamer.GatewayStreamer.stream" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="jina.serve.streamer.GatewayStreamer.rpc_stream">
+<span class="sig-name descname"><span class="pre">rpc_stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/streamer/#GatewayStreamer.rpc_stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.streamer.GatewayStreamer.rpc_stream" title="Permalink to this definition">#</a></dt>
 <dd><p>stream requests from client iterator and stream responses back.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -471,16 +474,41 @@ provide information associated with the request to the deployment.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.streamer.GatewayStreamer.stream">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exec_endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/streamer/#GatewayStreamer.stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.streamer.GatewayStreamer.stream" title="Permalink to this definition">#</a></dt>
+<dd><p>stream Documents and yield Documents or Responses and unpacked Executor error if any.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>docs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code>) – The Documents to be sent to all the Executors</p></li>
+<li><p><strong>request_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – The amount of Documents to be put inside a single request.</p></li>
+<li><p><strong>return_results</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set to True, the generator will yield Responses and not <cite>DocumentArrays</cite></p></li>
+<li><p><strong>exec_endpoint</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The Executor endpoint to which to send the Documents</p></li>
+<li><p><strong>target_executor</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – A regex expression indicating the Executors that should receive the Request</p></li>
+<li><p><strong>parameters</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – Parameters to be attached to the Requests</p></li>
+<li><p><strong>results_in_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – return the results in the same order as the request_iterator</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yield<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple of Documents or Responses and unpacked error from Executors if any</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncIterator</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code>, <a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a>], <a class="reference internal" href="../jina.excepts/#jina.excepts.ExecutorError" title="jina.excepts.ExecutorError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecutorError</span></code></a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.streamer.GatewayStreamer.stream_docs">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stream_docs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exec_endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/streamer/#GatewayStreamer.stream_docs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.streamer.GatewayStreamer.stream_docs" title="Permalink to this definition">#</a></dt>
 <dd><p>stream documents and stream responses back.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>docs</strong> (<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>) – The Documents to be sent to all the Executors</p></li>
+<li><p><strong>docs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code>) – The Documents to be sent to all the Executors</p></li>
 <li><p><strong>request_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – The amount of Documents to be put inside a single request.</p></li>
 <li><p><strong>return_results</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set to True, the generator will yield Responses and not <cite>DocumentArrays</cite></p></li>
-<li><p><strong>exec_endpoint</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The executor endpoint to which to send the Documents</p></li>
+<li><p><strong>exec_endpoint</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The Executor endpoint to which to send the Documents</p></li>
 <li><p><strong>target_executor</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – A regex expression indicating the Executors that should receive the Request</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – Parameters to be attached to the Requests</p></li>
 <li><p><strong>results_in_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – return the results in the same order as the request_iterator</p></li>
@@ -568,7 +596,7 @@ eastablishing a brand new gRPC channel.
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 20, 2023</div>
+                            Last updated on Feb 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -602,6 +630,7 @@ eastablishing a brand new gRPC channel.
                         <ul>
 <li><a class="reference internal" href="#">jina.serve.streamer module</a><ul>
 <li><a class="reference internal" href="#jina.serve.streamer.GatewayStreamer"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer</span></code></a><ul>
+<li><a class="reference internal" href="#jina.serve.streamer.GatewayStreamer.rpc_stream"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer.rpc_stream()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.streamer.GatewayStreamer.stream"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer.stream()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.streamer.GatewayStreamer.stream_docs"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer.stream_docs()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.streamer.GatewayStreamer.close"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer.close()</span></code></a></li>

@@ -6,11 +6,11 @@
 <meta property="og:title" content="Serve" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/executor/serve/" />
-<meta property="og:site_name" content="Jina 3.13.2 Documentation" />
-<meta property="og:description" content="Executor s can be served and accessed over gRPC, allowing you to use them to create a gRPC-based service for various tasks such as model inference, data processing, generative AI, and search services. There are different options for deploying and running a standalone Executor: Run the Executor di..." />
+<meta property="og:site_name" content="Jina 3.14.0 Documentation" />
+<meta property="og:description" content="Executor s can be served and accessed over gRPC, allowing you to use them to create a gRPC-based service for tasks like model inference, data processing, generative AI, and search services. There are different options for deploying and running a standalone Executor: Run the Executor directly from..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.13.2 Documentation" />
-<meta name="description" content="Executor s can be served and accessed over gRPC, allowing you to use them to create a gRPC-based service for various tasks such as model inference, data processing, generative AI, and search services. There are different options for deploying and running a standalone Executor: Run the Executor di..." />
+<meta property="og:image:alt" content="Jina 3.14.0 Documentation" />
+<meta name="description" content="Executor s can be served and accessed over gRPC, allowing you to use them to create a gRPC-based service for tasks like model inference, data processing, generative AI, and search services. There are different options for deploying and running a standalone Executor: Run the Executor directly from..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -29,11 +29,11 @@
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     
-<link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Dynamic Batching" href="../dynamic-batching/" /><link rel="prev" title="Run" href="../run/" />
+<link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Dynamic Batching" href="../dynamic-batching/" /><link rel="prev" title="Add Endpoints" href="../add-endpoints/" />
         <link rel="canonical" href="https://docs.jina.ai/concepts/executor/serve.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Serve - Jina 3.13.2 documentation</title>
+        <title>Serve - Jina 3.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.13.2 documentation</div>
+                <div class="brand">Jina 3.14.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -261,9 +261,8 @@
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../"><span class="fas fa-gears"></span> Executor</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../basics/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../create/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../run/">Run</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dynamic-batching/">Dynamic Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../health-check/">Health Check</a></li>
@@ -271,6 +270,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../file-structure/">File Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../containerize/">Containerize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../executor-in-flow/">Executors in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -326,6 +327,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../hub/push-executor/">Publish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../hub/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -426,11 +429,12 @@
                 <article role="main">
                     <section id="serve">
 <span id="serve-executor-standalone"></span><h1>Serve<a class="headerlink" href="#serve" title="Permalink to this heading">#</a></h1>
-<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s can be served and accessed over gRPC, allowing you to use them to create a gRPC-based service for various tasks such as model inference, data processing, generative AI, and search services.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s can be served and accessed over gRPC, allowing you to use them to create a gRPC-based service for tasks like model inference, data processing, generative AI, and search services.</p>
 <p>There are different options for deploying and running a standalone Executor:</p>
 <ul class="simple">
 <li><p>Run the Executor directly from Python with the <a class="reference internal" href="../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment" title="jina.orchestrate.deployments.Deployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></a> class</p></li>
-<li><p>Run the static <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.to_kubernetes_yaml" title="jina.serve.executors.BaseExecutor.to_kubernetes_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code></a> method to generate Kubernetes deployment configuration files</p></li>
+<li><p>Run the <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code> method to generate Kubernetes deployment configuration files
+from an instance of <a class="reference internal" href="../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment" title="jina.orchestrate.deployments.Deployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></a></p></li>
 <li><p>Run the static <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.to_docker_compose_yaml" title="jina.serve.executors.BaseExecutor.to_docker_compose_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_docker_compose_yaml()</span></code></a> method to generate a Docker Compose service file</p></li>
 </ul>
 <div class="admonition seealso">
@@ -443,14 +447,13 @@ to achieve this with the <a class="reference internal" href="../../flow/#flow-co
 <p>In Jina there are two ways of running standalone Executors: <em>Served Executors</em> and <em>shared Executors</em>.</p>
 <ul class="simple">
 <li><p>A <strong>served Executor</strong> is launched by one of the following methods: <a class="reference internal" href="../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment" title="jina.orchestrate.deployments.Deployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></a>, <code class="docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code>, or <code class="docutils literal notranslate"><span class="pre">to_docker_compose_yaml()</span></code>.
-It resides behind a <a class="reference internal" href="../../preliminaries/#architecture-overview"><span class="std std-ref">Gateway</span></a> and can thus be directly accessed by a <a class="reference internal" href="../../client/#client"><span class="std std-ref">Client</span></a>.
+It resides behind a <a class="reference internal" href="../../preliminaries/#architecture-overview"><span class="std std-ref">Gateway</span></a> and can be directly accessed by a <a class="reference internal" href="../../client/#client"><span class="std std-ref">Client</span></a>.
 It can also be used as part of a Flow.</p></li>
 <li><p>A <strong>shared Executor</strong> is launched using the <a class="reference internal" href="../../../cli/"><span class="doc std std-doc">Jina CLI</span></a> and does <em>not</em> sit behind a Gateway.
-It is intended to be used in one or more Flows.
-Because a shared Executor does not reside behind a Gataway, it cannot be directly accessed by a Client, but it requires
-fewer networking hops when used inside of a Flow.</p></li>
+It is intended to be used in one or more Flows. However, it can be also accessed by a <a class="reference internal" href="../../client/#client"><span class="std std-ref">Client</span></a>.
+Because a shared Executor does not reside behind a Gataway, it requires fewer networking hops when used inside of a Flow.
+However, it is not suitable for exposing a standalone service, outside the scope of a Flow.</p></li>
 </ul>
-<p>Both served and shared Executors can be used as part of a Flow, by adding them as an <a class="reference internal" href="../../flow/add-executors/#external-executors"><span class="std std-ref">external Executor</span></a>.</p>
 </div>
 <section id="serve-directly">
 <h2>Serve directly<a class="headerlink" href="#serve-directly" title="Permalink to this heading">#</a></h2>
@@ -533,33 +536,151 @@ served in multiple ways/configurations using Deployment.</p>
 </pre></div>
 </div>
 </div>
-<p>The <a class="reference internal" href="../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment" title="jina.orchestrate.deployments.Deployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></a> class accepts configuration options similar to
-<a class="reference internal" href="../../flow/add-executors/#flow-configure-executors"><span class="std std-ref">Executor configuration with Flows</span></a>.</p>
-<div class="seealso admonition">
-<p class="admonition-title">See Also</p>
-<p>For more details on these arguments and the workings of a Flow, see the <a class="reference internal" href="../../flow/#flow-cookbook"><span class="std std-ref">Flow section</span></a>.</p>
-</div>
 </section>
-<section id="serve-via-kubernetes">
-<span id="kubernetes-executor"></span><h2>Serve via Kubernetes<a class="headerlink" href="#serve-via-kubernetes" title="Permalink to this heading">#</a></h2>
-<p>You can generate Kubernetes configuration files for your containerized Executor by using the static <code class="docutils literal notranslate"><span class="pre">Executor.to_kubernetes_yaml()</span></code> method. This works like <a class="reference internal" href="../../../cloud-nativeness/kubernetes/#kubernetes"><span class="std std-ref">deploying a Flow in Kubernetes</span></a>, because your Executor is wrapped automatically in a Flow and uses the very same deployment techniques.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
-
-<span class="n">Executor</span><span class="o">.</span><span class="n">to_kubernetes_yaml</span><span class="p">(</span>
-    <span class="n">output_base_path</span><span class="o">=</span><span class="s1">&#39;/tmp/config_out_folder&#39;</span><span class="p">,</span>
-    <span class="n">port_expose</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span>
-    <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://jina-ai/DummyHubExecutor&#39;</span><span class="p">,</span>
-    <span class="n">executor_type</span><span class="o">=</span><span class="n">Executor</span><span class="o">.</span><span class="n">StandaloneExecutorType</span><span class="o">.</span><span class="n">EXTERNAL</span><span class="p">,</span>
-<span class="p">)</span>
+<section id="serve-from-the-cli">
+<h2>Serve from the CLI<a class="headerlink" href="#serve-from-the-cli" title="Permalink to this heading">#</a></h2>
+<p>You can run an Executor from CLI. In this case, the Executor occupies one process. The lifetime of the Executor is the lifetime of the process.</p>
+<section id="from-a-local-executor-python-class">
+<h3>From a local Executor python class<a class="headerlink" href="#from-a-local-executor-python-class" title="Permalink to this heading">#</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>executor<span class="w"> </span>--uses<span class="w"> </span>MyExec<span class="w"> </span>--py-modules<span class="w"> </span>executor.py
 </pre></div>
 </div>
+</section>
+<section id="from-a-local-executor-yaml-configuration">
+<h3>From a local Executor YAML configuration<a class="headerlink" href="#from-a-local-executor-yaml-configuration" title="Permalink to this heading">#</a></h3>
+<p>With <code class="docutils literal notranslate"><span class="pre">executor.py</span></code> containing the definition of <code class="docutils literal notranslate"><span class="pre">MyExec</span></code>, now creating a new file called <code class="docutils literal notranslate"><span class="pre">my-exec.yml</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExec</span>
+<span class="nt">py_modules</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor.py</span>
+</pre></div>
+</div>
+<p>This simply points Jina to our file and Executor class. Now we can run the command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>executor<span class="w"> </span>--uses<span class="w"> </span>my-exec.yml<span class="w"> </span>--port<span class="w"> </span><span class="m">12345</span>
+</pre></div>
+</div>
+</section>
+<section id="from-executor-hub">
+<h3>From Executor Hub<a class="headerlink" href="#from-executor-hub" title="Permalink to this heading">#</a></h3>
+<p>In this example, we use <a class="reference external" href="https://cloud.jina.ai/executor/livtkbkg"><code class="docutils literal notranslate"><span class="pre">CLIPTextEncoder</span></code></a> to create embeddings for our Documents.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">With Docker</label><div class="tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>executor<span class="w"> </span>--uses<span class="w"> </span>jinaai+docker://jina-ai/CLIPTextEncoder
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">Without Docker</label><div class="tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>executor<span class="w"> </span>--uses<span class="w"> </span>jinaai://jina-ai/CLIPTextEncoder
+</pre></div>
+</div>
+</div>
+</div>
+<p>This might take a few seconds, but in the end you should be greeted with the
+following message:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>WorkerRuntime@<span class="w"> </span><span class="m">1</span><span class="o">[</span>L<span class="o">]</span>:<span class="w"> </span>Executor<span class="w"> </span>CLIPTextEncoder<span class="w"> </span>started
+</pre></div>
+</div>
+<p>Just like that, our Executor is up and running.</p>
+</section>
+</section>
+<section id="serve-from-deployment-yaml">
+<span id="kubernetes-executor"></span><h2>Serve from Deployment YAML<a class="headerlink" href="#serve-from-deployment-yaml" title="Permalink to this heading">#</a></h2>
+<p>If you want a clear separation between deployment configuration and Executor logic, you can define the
+configuration in a <code class="docutils literal notranslate"><span class="pre">Deployment</span></code> YAML configuration.
+This is an example <code class="docutils literal notranslate"><span class="pre">deployment.yml</span></code> config file:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">  </span><span class="nt">shards</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span>
+<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executor.py</span>
+</pre></div>
+</div>
+<p>Then, you can run the Deployment through the CLI or Python API:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--1">Python API</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
+
+<span class="k">with</span> <span class="n">Deployment</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">&#39;deployment.yml&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">dep</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--2">CLI</label><div class="tab-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>deployment<span class="w"> </span>--uses<span class="w"> </span>deployment.yml
+</pre></div>
+</div>
+<p>Unlike the <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">executor</span></code> CLI, this command supports replication and sharding.</p>
+</div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>─────────────────────── 🎉 Deployment is ready to serve! ───────────────────────
+╭────────────── 🔗 Endpoint ────────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:12345   │
+│  🔒     Private     192.168.3.147:12345   │
+│  🌍      Public    87.191.159.105:12345   │
+╰───────────────────────────────────────────╯
+</pre></div>
+</div>
+<p>Read more about the <a class="reference internal" href="../deployment-yaml-spec/#deployment-yaml-spec"><span class="std std-ref">YAML specifications of Deployments</span></a>.</p>
+</section>
+<section id="serve-via-kubernetes">
+<h2>Serve via Kubernetes<a class="headerlink" href="#serve-via-kubernetes" title="Permalink to this heading">#</a></h2>
+<p>You can generate Kubernetes configuration files for your containerized Executor by using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
+
+
+<span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span>
+    <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://jina-ai/DummyHubExecutor&#39;</span><span class="p">,</span> <span class="n">port_expose</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">3</span>
+<span class="p">)</span>
+<span class="n">dep</span><span class="o">.</span><span class="n">to_kubernetes_yaml</span><span class="p">(</span><span class="s1">&#39;/tmp/config_out_folder&#39;</span><span class="p">,</span> <span class="n">k8s_namespace</span><span class="o">=</span><span class="s1">&#39;my-namespace&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will give the following output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO   executor@8065 K8s yaml files have been created under  [02/07/23 10:03:50]
+       [b]/tmp/config_out_folder[/]. You can use it by                          
+       running [b]kubectl apply -R -f                                           
+       /tmp/config_out_folder[/] 
+</pre></div>
+</div>
+<p>Afterwards, you can apply this configuration to your cluster:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>apply<span class="w"> </span>-R<span class="w"> </span>-f<span class="w"> </span>/tmp/config_out_folder
 </pre></div>
 </div>
 <p>The above example deploys the <code class="docutils literal notranslate"><span class="pre">DummyHubExecutor</span></code> from Executor Hub into your Kubernetes cluster.</p>
 <div class="hint admonition">
 <p class="admonition-title">Hint</p>
-<p>The Executor you use needs to be already containerized and stored in a registry accessible from your Kubernetes cluster. We recommend Executor Hub for this.</p>
+<p>The Executor you use needs to be already containerized and stored in a registry accessible from your Kubernetes cluster. We recommend <a class="reference external" href="https://cloud.jina.ai/executors">Executor Hub</a> for this.</p>
+</div>
+<p>Once the Executor is deployed, you can expose a service:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>expose<span class="w"> </span>deployment<span class="w"> </span>executor<span class="w"> </span>--name<span class="o">=</span>executor-exposed<span class="w"> </span>--type<span class="w"> </span>LoadBalancer<span class="w"> </span>--port<span class="w"> </span><span class="m">80</span><span class="w"> </span>--target-port<span class="w"> </span><span class="m">8080</span><span class="w"> </span>-n<span class="w"> </span>my-namespace
+sleep<span class="w"> </span><span class="m">60</span><span class="w"> </span><span class="c1"># wait until the external ip is configured</span>
+</pre></div>
+</div>
+<p>Let’s export the external IP address created and use it to send requests to the Executor.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">EXTERNAL_IP</span><span class="o">=</span><span class="sb">`</span>kubectl<span class="w"> </span>get<span class="w"> </span>service<span class="w"> </span>executor-exposed<span class="w"> </span>-n<span class="w"> </span>my-namespace<span class="w"> </span>-o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.status.loadBalancer.ingress[0].ip}&#39;</span><span class="sb">`</span>
+</pre></div>
+</div>
+<p>Then, we can send requests using <code class="xref py py-meth docutils literal notranslate"><span class="pre">Client()</span></code>. Since Kubernetes load balancers cannot load balance streaming
+gRPC requests, it is recommended to set <code class="docutils literal notranslate"><span class="pre">stream=False</span></code> (note that this is only applicable for Kubernetes deployments of Executors):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Document</span>
+
+<span class="n">host</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;EXTERNAL_IP&#39;</span><span class="p">]</span>
+<span class="n">port</span> <span class="o">=</span> <span class="mi">80</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(),</span> <span class="n">stream</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[&#39;hello&#39;]
+</pre></div>
+</div>
+<div class="hint admonition">
+<p class="admonition-title">Hint</p>
+<p>You can also export an Executor deployment to kubernetes YAML files using the CLI command, in case you define a Deployment YAML config:
+<code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">export</span> <span class="pre">kubernetes</span> <span class="pre">deployment.yml</span> <span class="pre">output_path</span></code></p>
 </div>
 <section id="external-and-shared-executors">
 <span id="external-shared-executor"></span><h3>External and shared Executors<a class="headerlink" href="#external-and-shared-executors" title="Permalink to this heading">#</a></h3>
@@ -568,19 +689,22 @@ served in multiple ways/configurations using Deployment.</p>
 <li><p>An external Executor is deployed alongside a <a class="reference internal" href="../../preliminaries/#architecture-overview"><span class="std std-ref">Gateway</span></a>.</p></li>
 <li><p>A shared Executor has no Gateway.</p></li>
 </ul>
-<p>Both types of Executor <a class="reference internal" href="../../flow/add-executors/#external-executors"><span class="std std-ref">can be used directly in any Flow</span></a>.
-Having a Gateway may be useful if you want to access your Executor with the <a class="reference internal" href="../../client/#client"><span class="std std-ref">Client</span></a> without an additional Flow. If the Executor is only used inside other Flows, you should define a shared Executor to save the costs of running the Gateway in Kubernetes.</p>
+<p>Although both types can join a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>, use a shared Executor if the Executor is only intended to join Flows
+to have less network hops and save the costs of running running the Gateway in Kubernetes.</p>
 </section>
 </section>
 <section id="serve-via-docker-compose">
 <h2>Serve via Docker Compose<a class="headerlink" href="#serve-via-docker-compose" title="Permalink to this heading">#</a></h2>
-<p>You can generate a Docker Compose service file for your containerized Executor by using the static <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.to_docker_compose_yaml" title="jina.serve.executors.BaseExecutor.to_docker_compose_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_docker_compose_yaml()</span></code></a> method. This works like <a class="reference internal" href="../../../cloud-nativeness/docker-compose/#docker-compose"><span class="std std-ref">running a Flow with Docker Compose</span></a>, because your Executor is wrapped automatically in a Flow and uses the very same deployment techniques.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
+<p>You can generate a Docker Compose service file for your containerized Executor with the static <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_docker_compose_yaml()</span></code> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
 
-<span class="n">Executor</span><span class="o">.</span><span class="n">to_docker_compose_yaml</span><span class="p">(</span>
+
+<span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span>
+    <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://jina-ai/DummyHubExecutor&#39;</span><span class="p">,</span> <span class="n">port_expose</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">3</span>
+<span class="p">)</span>
+
+<span class="n">dep</span><span class="o">.</span><span class="n">to_docker_compose_yaml</span><span class="p">(</span>
     <span class="n">output_path</span><span class="o">=</span><span class="s1">&#39;/tmp/docker-compose.yml&#39;</span><span class="p">,</span>
-    <span class="n">port_expose</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span>
-    <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://jina-ai/DummyHubExecutor&#39;</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -590,7 +714,12 @@ Having a Gateway may be useful if you want to access your Executor with the <a c
 <p>The above example runs the <code class="docutils literal notranslate"><span class="pre">DummyHubExecutor</span></code> from Executor Hub locally on your computer using Docker Compose.</p>
 <div class="hint admonition">
 <p class="admonition-title">Hint</p>
-<p>The Executor you use needs to be already containerized and stored in an accessible registry. We recommend Executor Hub for this.</p>
+<p>The Executor you use needs to be already containerized and stored in an accessible registry. We recommend <a class="reference external" href="https://cloud.jina.ai/executors">Executor Hub</a> for this.</p>
+</div>
+<div class="hint admonition">
+<p class="admonition-title">Hint</p>
+<p>You can also export an Executor deployment to Docker compose YAML files using the CLI command, in case you define a Deployment YAML config:
+<code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">export</span> <span class="pre">docker-compose</span> <span class="pre">deployment.yml</span> <span class="pre">output_path</span></code></p>
 </div>
 </section>
 </section>
@@ -609,14 +738,14 @@ Having a Gateway may be useful if you want to access your Executor with the <a c
                         </div>
                         <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
                     </a>
-                    <a class="prev-page" href="../run/">
+                    <a class="prev-page" href="../add-endpoints/">
                         <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
                         <div class="page-info">
                             <div class="context">
                                 <span>Previous</span>
                             </div>
                             
-                            <div class="title">Run</div>
+                            <div class="title">Add Endpoints</div>
                             
                         </div>
                     </a>
@@ -626,7 +755,7 @@ Having a Gateway may be useful if you want to access your Executor with the <a c
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 20, 2023</div>
+                            Last updated on Feb 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -660,6 +789,13 @@ Having a Gateway may be useful if you want to access your Executor with the <a c
                         <ul>
 <li><a class="reference internal" href="#">Serve</a><ul>
 <li><a class="reference internal" href="#serve-directly">Serve directly</a></li>
+<li><a class="reference internal" href="#serve-from-the-cli">Serve from the CLI</a><ul>
+<li><a class="reference internal" href="#from-a-local-executor-python-class">From a local Executor python class</a></li>
+<li><a class="reference internal" href="#from-a-local-executor-yaml-configuration">From a local Executor YAML configuration</a></li>
+<li><a class="reference internal" href="#from-executor-hub">From Executor Hub</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#serve-from-deployment-yaml">Serve from Deployment YAML</a></li>
 <li><a class="reference internal" href="#serve-via-kubernetes">Serve via Kubernetes</a><ul>
 <li><a class="reference internal" href="#external-and-shared-executors">External and shared Executors</a></li>
 </ul>

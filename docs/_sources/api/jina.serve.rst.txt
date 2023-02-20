@@ -9,6 +9,7 @@ Subpackages
 
    jina.serve.executors
    jina.serve.instrumentation
+   jina.serve.networking
    jina.serve.runtimes
    jina.serve.stream
 
@@ -21,7 +22,6 @@ Submodules
    jina.serve.gateway
    jina.serve.helper
    jina.serve.monitoring
-   jina.serve.networking
    jina.serve.streamer
 
 Module contents

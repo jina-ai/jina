@@ -6,10 +6,10 @@
 <meta property="og:title" content="Basics" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/flow/basics/" />
-<meta property="og:site_name" content="Jina 3.13.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.14.0 Documentation" />
 <meta property="og:description" content="A Flow defines how your Executors are connected together and how your data flows through them. Create: The most trivial Flow is the empty Flow. It can be defined purely in Python or from a YAML file: Python YAML For production, you should define your Flows with YAML. This is because YAML files ar..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.13.2 Documentation" />
+<meta property="og:image:alt" content="Jina 3.14.0 Documentation" />
 <meta name="description" content="A Flow defines how your Executors are connected together and how your data flows through them. Create: The most trivial Flow is the empty Flow. It can be defined purely in Python or from a YAML file: Python YAML For production, you should define your Flows with YAML. This is because YAML files ar..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/flow/basics.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Basics - Jina 3.13.2 documentation</title>
+        <title>Basics - Jina 3.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.13.2 documentation</div>
+                <div class="brand">Jina 3.14.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -261,9 +261,8 @@
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/"><span class="fas fa-gears"></span> Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../executor/basics/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/create/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../executor/run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/dynamic-batching/">Dynamic Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/health-check/">Health Check</a></li>
@@ -271,6 +270,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../executor/file-structure/">File Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/containerize/">Containerize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-in-flow/">Executors in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -326,6 +327,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/hub/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -595,7 +598,7 @@ This can be achieved by <code class="docutils literal notranslate"><span class="
 </section>
 <section id="serve-on-google-colab">
 <h3>Serve on Google Colab<a class="headerlink" href="#serve-on-google-colab" title="Permalink to this heading">#</a></h3>
-<p>Google Colab provides an easy-to-use Jupyter notebook environment with GPU/TPU support. Flow is fully compatible with Google Colab and you can use it in the following ways:</p>
+<p><a class="reference external" href="https://colab.research.google.com/">Google Colab</a> provides an easy-to-use Jupyter notebook environment with GPU/TPU support. Flow is fully compatible with Google Colab and you can use it in the following ways:</p>
 <figure class="align-center">
 <a class="reference internal image-reference" href="../../../_images/jina-on-colab.svg"><img alt="../../../_images/jina-on-colab.svg" src="../../../_images/jina-on-colab.svg" width="70%" /></a>
 </figure>
@@ -685,6 +688,67 @@ You can control the access mode, storage class name and capacity of the attached
 </div>
 </section>
 </section>
+<section id="logging-configuration">
+<span id="id1"></span><h2>Logging Configuration<a class="headerlink" href="#logging-configuration" title="Permalink to this heading">#</a></h2>
+<p>The default <a class="reference internal" href="../../../api/jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.logging.logger.JinaLogger</span></code></a> uses rich console logging that writes to the system console.
+The <code class="docutils literal notranslate"><span class="pre">log_config</span></code> argument can be used to pass in a string of the pre-configured logging configuration names in Jina or
+the absolute YAML file path of the custom logging configuration. For most cases, the default logging configuration
+sufficiently covers local, Docker and Kubernetes environments.</p>
+<p>Custom logging handlers can be configured by following
+the Python official <a class="reference external" href="https://docs.python.org/3/howto/logging-cookbook.html#logging-cookbook">Logging Cookbook</a> examples.
+An example custom logging configuration file defined in a YAML file <code class="docutils literal notranslate"><span class="pre">logging.json.yml</span></code> is:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">handlers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">StreamHandler</span>
+<span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">INFO</span>
+<span class="nt">configs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">StreamHandler</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">format</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;%(asctime)s:{name:&gt;15}@%(process)2d[%(levelname).1s]:%(message)s&#39;</span>
+<span class="w">    </span><span class="nt">formatter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">JsonFormatter</span>
+</pre></div>
+</div>
+<p>The logging configuration can be used as follows:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--1">Python</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">log_config</span><span class="o">=</span><span class="s1">&#39;./logging.json.yml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--2">YAML</label><div class="tab-content docutils">
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">log_config</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;./logging.json.yml&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="overriding-logging-configuration">
+<h3>Overriding logging configuration<a class="headerlink" href="#overriding-logging-configuration" title="Permalink to this heading">#</a></h3>
+<p>The default logging or custom logging configuration at the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> level will be propagated to the <code class="docutils literal notranslate"><span class="pre">Gateway</span></code> and <code class="docutils literal notranslate"><span class="pre">Executor</span></code> entities.
+If that is not desired, every <code class="docutils literal notranslate"><span class="pre">Gateway</span></code> or <code class="docutils literal notranslate"><span class="pre">Executor</span></code> entity can be provided with a custom logging configuration.</p>
+<p>You can configure two different <code class="docutils literal notranslate"><span class="pre">Executors</span></code> as in the below example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">log_config</span><span class="o">=</span><span class="s1">&#39;./logging.json.yml&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">log_config</span><span class="o">=</span><span class="s1">&#39;./logging.file.yml&#39;</span><span class="p">)</span>
+<span class="p">)</span>  <span class="c1"># Create a Flow with two Executors</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">logging.file.yml</span></code> is another YAML file with a custom <code class="docutils literal notranslate"><span class="pre">FileHandler</span></code> configuration.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Refer to <a class="reference internal" href="../../gateway/#gateway-logging-configuration"><span class="std std-ref">Gateway logging configuration</span></a> section for configuring the <code class="docutils literal notranslate"><span class="pre">Gateway</span></code> logging.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>When exporting the Flow to Kubernetes, the log_config file path must refer to the absolute local path of each container. The custom logging
+file must be included during the containerization process. If the availability of the file is unknown then its best to rely on the default
+configuration. This restriction also applies to dockerized <code class="docutils literal notranslate"><span class="pre">Executors</span></code>. When running a dockerized Executor locally, the logging configuration
+file can be mounted using <a class="reference internal" href="../../executor/hub/use-hub-executor/#mount-local-volumes"><span class="std std-ref">volumes</span></a>.</p>
+</div>
+</section>
+</section>
 </section>
 
                 </article>
@@ -718,7 +782,7 @@ You can control the access mode, storage class name and capacity of the attached
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 20, 2023</div>
+                            Last updated on Feb 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -768,6 +832,10 @@ You can control the access mode, storage class name and capacity of the attached
 <li><a class="reference internal" href="#export">Export</a><ul>
 <li><a class="reference internal" href="#docker-compose">Docker Compose</a></li>
 <li><a class="reference internal" href="#kubernetes">Kubernetes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#logging-configuration">Logging Configuration</a><ul>
+<li><a class="reference internal" href="#overriding-logging-configuration">Overriding logging configuration</a></li>
 </ul>
 </li>
 </ul>

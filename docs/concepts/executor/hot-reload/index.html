@@ -6,11 +6,11 @@
 <meta property="og:title" content="Hot Reload" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/executor/hot-reload/" />
-<meta property="og:site_name" content="Jina 3.13.2 Documentation" />
-<meta property="og:description" content="While developing your Executor, it can be useful to have the Executor be refreshed from the source code while you are working on it, without needing to restart the Flow server. For this you can use the Executor’s reload argument to watch changes in the source code and the Executor YAML configurat..." />
+<meta property="og:site_name" content="Jina 3.14.0 Documentation" />
+<meta property="og:description" content="While developing your Executor, it can be useful to have the Executor be refreshed from the source code while you are working on it. For this you can use the Executor’s reload argument to watch changes in the source code and the Executor YAML configuration and ensure changes are applied to the se..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.13.2 Documentation" />
-<meta name="description" content="While developing your Executor, it can be useful to have the Executor be refreshed from the source code while you are working on it, without needing to restart the Flow server. For this you can use the Executor’s reload argument to watch changes in the source code and the Executor YAML configurat..." />
+<meta property="og:image:alt" content="Jina 3.14.0 Documentation" />
+<meta name="description" content="While developing your Executor, it can be useful to have the Executor be refreshed from the source code while you are working on it. For this you can use the Executor’s reload argument to watch changes in the source code and the Executor YAML configuration and ensure changes are applied to the se..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/executor/hot-reload.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Hot Reload - Jina 3.13.2 documentation</title>
+        <title>Hot Reload - Jina 3.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.13.2 documentation</div>
+                <div class="brand">Jina 3.14.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -261,9 +261,8 @@
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../"><span class="fas fa-gears"></span> Executor</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../basics/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../create/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dynamic-batching/">Dynamic Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../health-check/">Health Check</a></li>
@@ -271,6 +270,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../file-structure/">File Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../containerize/">Containerize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../executor-in-flow/">Executors in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -326,6 +327,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../hub/push-executor/">Publish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../hub/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -426,18 +429,18 @@
                 <article role="main">
                     <section id="hot-reload">
 <span id="reload-executor"></span><h1>Hot Reload<a class="headerlink" href="#hot-reload" title="Permalink to this heading">#</a></h1>
-<p>While developing your Executor, it can be useful to have the Executor be refreshed from the source code while you are working on it, without needing to restart the Flow server.</p>
+<p>While developing your Executor, it can be useful to have the Executor be refreshed from the source code while you are working on it.</p>
 <p>For this you can use the Executor’s <code class="docutils literal notranslate"><span class="pre">reload</span></code> argument to watch changes in the source code and the Executor YAML configuration and ensure changes are applied to the served Executor.</p>
-<p>The Executor will keep track of changes inside the Executor source and YAML files, every file passed in <code class="docutils literal notranslate"><span class="pre">py_modules</span></code> argument from <code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code> and all the Python files in the Executor’s folder and sub-folders).</p>
+<p>The Executor will keep track of changes inside the Executor source and YAML files and all Python files in the Executor’s folder and sub-folders).</p>
 <div class="caution admonition">
 <p class="admonition-title">Caution</p>
-<p>This feature is thought to let the developer iterate faster while developing or improving the Executor, but is not intended to be used in production environment.</p>
+<p>This feature aims to let developers iterate faster while developing or improving the Executor, but is not intended to be used in production environment.</p>
 </div>
 <div class="note admonition">
 <p class="admonition-title">Note</p>
 <p>This feature requires watchfiles&gt;=0.18 package to be installed.</p>
 </div>
-<p>To see how this would work, let’s have an Executor defined in a file <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code></p>
+<p>To see how this would work, let’s define an Executor in <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
 
@@ -448,19 +451,19 @@
             <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;I am coming from the first version of MyExecutor&#39;</span>
 </pre></div>
 </div>
-<p>We build a Flow and expose it:</p>
+<p>Now we’ll deploy it</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
 
 <span class="kn">from</span> <span class="nn">my_executor</span> <span class="kn">import</span> <span class="n">MyExecutor</span>
 
 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;JINA_LOG_LEVEL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;DEBUG&#39;</span>
 
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">dep</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>We can see that the Executor is successfuly serving:</p>
@@ -471,10 +474,10 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>I am coming from the first version of MyExecutor
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>I come from the first version of MyExecutor
 </pre></div>
 </div>
-<p>We can edit the executor file and save the changes:</p>
+<p>We can edit the Executor file and save the changes:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
 
@@ -489,7 +492,7 @@
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO   executor0/rep-0@11606 detected changes in: [&#39;XXX/XXX/XXX/my_executor.py&#39;]. Refreshing the Executor                                                             
 </pre></div>
 </div>
-<p>And after this, Executor will start serving with the renewed code.</p>
+<p>And after this, the Executor will start serving with the renewed code.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
@@ -497,7 +500,7 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&#39;I am coming from a new version of MyExecutor&#39;
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&#39;I come from a new version of MyExecutor&#39;
 </pre></div>
 </div>
 <p>Reloading is also applied when the Executor’s YAML configuration file is changed. In this case, the Executor deployment restarts.</p>
@@ -505,9 +508,9 @@
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutorBeforeReload</span>
 </pre></div>
 </div>
-<p>Build a Flow with the Executor in it and expose it:</p>
+<p>Deploy the Executor:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;JINA_LOG_LEVEL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;DEBUG&#39;</span>
 
@@ -526,10 +529,10 @@
             <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;MyExecutorAfterReload&#39;</span>
 
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;executor.yml&#39;</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;executor.yml&#39;</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">dep</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>You can see that the Executor is running and serving:</p>
@@ -548,7 +551,7 @@
 </pre></div>
 </div>
 <p>In the Flow’s logs you should see:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO   Flow@1843 change in Executor configuration YAML /home/joan/jina/jina/exec.yml observed, restarting Executor deployment  
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO   Flow@1843 change in Executor configuration YAML /home/user/jina/jina/exec.yml observed, restarting Executor deployment  
 </pre></div>
 </div>
 <p>And after this, you can see the reloaded Executor being served:</p>
@@ -595,7 +598,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 20, 2023</div>
+                            Last updated on Feb 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

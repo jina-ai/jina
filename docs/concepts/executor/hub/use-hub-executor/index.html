@@ -6,10 +6,10 @@
 <meta property="og:title" content="Use" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/executor/hub/use-hub-executor/" />
-<meta property="og:site_name" content="Jina 3.13.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.14.0 Documentation" />
 <meta property="og:description" content="There are three ways to use Hub Executor s in your project. Each has its own use case and benefits. Use as-is: You can use a Hub Executor as-is via Executor.from_hub(): The Hub Executor will be pulled to your local machine and run as a native Python object. You can use a line-debugger to step in/..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.13.2 Documentation" />
+<meta property="og:image:alt" content="Jina 3.14.0 Documentation" />
 <meta name="description" content="There are three ways to use Hub Executor s in your project. Each has its own use case and benefits. Use as-is: You can use a Hub Executor as-is via Executor.from_hub(): The Hub Executor will be pulled to your local machine and run as a native Python object. You can use a line-debugger to step in/..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -29,11 +29,11 @@
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     
-<link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" /><link rel="next" title="Jina AI Cloud Hosting" href="../../../jcloud/" /><link rel="prev" title="Publish" href="../push-executor/" />
+<link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" /><link rel="next" title="Sandbox" href="../sandbox/" /><link rel="prev" title="Publish" href="../push-executor/" />
         <link rel="canonical" href="https://docs.jina.ai/concepts/executor/hub/use-hub-executor.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Use - Jina 3.13.2 documentation</title>
+        <title>Use - Jina 3.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.13.2 documentation</div>
+                <div class="brand">Jina 3.14.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -261,9 +261,8 @@
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../"><span class="fas fa-gears"></span> Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../basics/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../create/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../dynamic-batching/">Dynamic Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../health-check/">Health Check</a></li>
@@ -271,6 +270,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../file-structure/">File Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../containerize/">Containerize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor-in-flow/">Executors in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -326,6 +327,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../push-executor/">Publish</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -491,7 +494,7 @@ will connect PostgreSQL server which was started locally. Then you must use it w
 </div>
 <p>If <code class="docutils literal notranslate"><span class="pre">jinaai+docker://</span></code> Executors don’t load properly or have issues during initialization, ensure you have sufficient Docker resources allocated.</p>
 <section id="mount-local-volumes">
-<h3>Mount local volumes<a class="headerlink" href="#mount-local-volumes" title="Permalink to this heading">#</a></h3>
+<span id="id1"></span><h3>Mount local volumes<a class="headerlink" href="#mount-local-volumes" title="Permalink to this heading">#</a></h3>
 <p>You can mount volumes into your dockerized Executor by passing a list of volumes with the <code class="docutils literal notranslate"><span class="pre">volumes</span></code> argument:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
     <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;docker://my_containerized_executor&#39;</span><span class="p">,</span>
@@ -501,10 +504,10 @@ will connect PostgreSQL server which was started locally. Then you must use it w
 </div>
 <div class="hint admonition">
 <p class="admonition-title">Hint</p>
-<p>If you want your containerized Executor to operate inside one of these volumes, remember to set its <a class="reference internal" href="../../basics/#executor-workspace"><span class="std std-ref">workspace</span></a> accordingly!</p>
+<p>If you want your containerized Executor to operate inside one of these volumes, remember to set its <a class="reference internal" href="../../create/#executor-workspace"><span class="std std-ref">workspace</span></a> accordingly!</p>
 </div>
 <p>If you do not specify <code class="docutils literal notranslate"><span class="pre">volumes</span></code>, Jina automatically mounts a volume into the container.
-In this case, the volume source is your <a class="reference internal" href="../../basics/#executor-workspace"><span class="std std-ref">default Executor workspace</span></a>, and the volume destination
+In this case, the volume source is your <a class="reference internal" href="../../create/#executor-workspace"><span class="std std-ref">default Executor workspace</span></a>, and the volume destination
 is <code class="docutils literal notranslate"><span class="pre">/app</span></code>. Additionally, automatic volume setting tries to move the Executor’s workspace into the volume destination.
 Depending on the default Executor workspace on your system this may not always succeed, so explicitly mounting a volume and setting
 a workspace is recommended.</p>
@@ -547,6 +550,25 @@ pass <code class="docutils literal notranslate"><span class="pre">uses_with</spa
 </pre></div>
 </div>
 </section>
+<section id="platform-awareness-of-hub-images">
+<h3>Platform awareness of Hub images<a class="headerlink" href="#platform-awareness-of-hub-images" title="Permalink to this heading">#</a></h3>
+<div class="hint admonition">
+<p class="admonition-title">Hint</p>
+<p>As of January 10, 2023 <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span> <span class="pre">pull</span></code> is platform aware. It will automatically select Docker images based on your native CPU architecture (if available).</p>
+</div>
+<p>If you prefer a specific platform, for example, preferring <code class="docutils literal notranslate"><span class="pre">AMD64</span></code> on an <code class="docutils literal notranslate"><span class="pre">ARM64</span></code> machine, you can explicitly pull with <code class="docutils literal notranslate"><span class="pre">--prefer-platform</span></code>:</p>
+<div class="caution admonition">
+<p class="admonition-title">Caution</p>
+<p>When you specify <code class="docutils literal notranslate"><span class="pre">--prefer-platform</span></code> you probably want to also specify <code class="docutils literal notranslate"><span class="pre">--force</span></code> to overwrite the existing image in local cache.</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">Note</p>
+<p>If the image you specify doesn’t support your preferred platform, it will not respect your platform preference.</p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>hub<span class="w"> </span>pull<span class="w"> </span>--force<span class="w"> </span>--prefer-platform<span class="w"> </span>linux/amd64<span class="w"> </span>jinaai+docker://jina-ai/DummyExecutor:v1.0.0
+</pre></div>
+</div>
+</section>
 <section id="pull-the-source-code">
 <h3>Pull the source code<a class="headerlink" href="#pull-the-source-code" title="Permalink to this heading">#</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>hub<span class="w"> </span>pull<span class="w"> </span>jinaai://&lt;USERNAME&gt;/&lt;NAME&gt;<span class="o">[</span>:&lt;TAG&gt;<span class="o">]</span>
@@ -573,12 +595,12 @@ pass <code class="docutils literal notranslate"><span class="pre">uses_with</spa
             <footer>
                 
                 <div class="related-pages">
-                    <a class="next-page" href="../../../jcloud/">
+                    <a class="next-page" href="../sandbox/">
                         <div class="page-info">
                             <div class="context">
                                 <span>Next</span>
                             </div>
-                            <div class="title">Jina AI Cloud Hosting</div>
+                            <div class="title">Sandbox</div>
                         </div>
                         <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
                     </a>
@@ -599,7 +621,7 @@ pass <code class="docutils literal notranslate"><span class="pre">uses_with</spa
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 20, 2023</div>
+                            Last updated on Feb 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -641,6 +663,7 @@ pass <code class="docutils literal notranslate"><span class="pre">uses_with</spa
 <li><a class="reference internal" href="#set-override-default-parameters">Set/override default parameters</a></li>
 <li><a class="reference internal" href="#pull-only">Pull only</a><ul>
 <li><a class="reference internal" href="#pull-the-docker-image">Pull the Docker image</a></li>
+<li><a class="reference internal" href="#platform-awareness-of-hub-images">Platform awareness of Hub images</a></li>
 <li><a class="reference internal" href="#pull-the-source-code">Pull the source code</a></li>
 <li><a class="reference internal" href="#list-locations-of-local-executors">List locations of local Executors</a></li>
 </ul>

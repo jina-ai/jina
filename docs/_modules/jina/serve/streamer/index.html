@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/streamer.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>jina.serve.streamer - Jina 3.13.2 documentation</title>
+        <title>jina.serve.streamer - Jina 3.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.13.2 documentation</div>
+                <div class="brand">Jina 3.14.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -234,9 +234,8 @@
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../concepts/executor/"><span class="fas fa-gears"></span> Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/basics/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/create/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/dynamic-batching/">Dynamic Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/health-check/">Health Check</a></li>
@@ -244,6 +243,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/file-structure/">File Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/containerize/">Containerize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/executor-in-flow/">Executors in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -299,6 +300,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../concepts/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -402,16 +405,26 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TYPE_CHECKING</span><span class="p">,</span>
+    <span class="n">AsyncIterator</span><span class="p">,</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Sequence</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+<span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
-
+<span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">ExecutorError</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.graph.topology_graph</span> <span class="kn">import</span> <span class="n">TopologyGraph</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.request_handling</span> <span class="kn">import</span> <span class="n">GatewayRequestHandler</span>
 <span class="kn">from</span> <span class="nn">jina.serve.stream</span> <span class="kn">import</span> <span class="n">RequestStreamer</span>
+<span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GatewayStreamer&#39;</span><span class="p">]</span>
@@ -468,7 +481,7 @@
 <span class="sd">        :param aio_tracing_client_interceptors: Optional list of aio grpc tracing server interceptors.</span>
 <span class="sd">        :param tracing_client_interceptor: Optional gprc tracing server interceptor.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="ow">or</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="n">topology_graph</span> <span class="o">=</span> <span class="n">TopologyGraph</span><span class="p">(</span>
             <span class="n">graph_representation</span><span class="o">=</span><span class="n">graph_representation</span><span class="p">,</span>
             <span class="n">graph_conditions</span><span class="o">=</span><span class="n">graph_conditions</span><span class="p">,</span>
@@ -493,7 +506,9 @@
             <span class="n">aio_tracing_client_interceptors</span><span class="p">,</span>
             <span class="n">tracing_client_interceptor</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">request_handler</span> <span class="o">=</span> <span class="n">GatewayRequestHandler</span><span class="p">(</span><span class="n">metrics_registry</span><span class="p">,</span> <span class="n">meter</span><span class="p">,</span> <span class="n">runtime_name</span><span class="p">)</span>
+        <span class="n">request_handler</span> <span class="o">=</span> <span class="n">GatewayRequestHandler</span><span class="p">(</span>
+            <span class="n">metrics_registry</span><span class="p">,</span> <span class="n">meter</span><span class="p">,</span> <span class="n">runtime_name</span><span class="p">,</span> <span class="n">logger</span>
+        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_streamer</span> <span class="o">=</span> <span class="n">RequestStreamer</span><span class="p">(</span>
             <span class="n">request_handler</span><span class="o">=</span><span class="n">request_handler</span><span class="o">.</span><span class="n">handle_request</span><span class="p">(</span>
@@ -533,7 +548,7 @@
 
         <span class="k">return</span> <span class="n">connection_pool</span>
 
-<div class="viewcode-block" id="GatewayStreamer.stream"><a class="viewcode-back" href="../../../../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.stream">[docs]</a>    <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="GatewayStreamer.rpc_stream"><a class="viewcode-back" href="../../../../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.rpc_stream">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        stream requests from client iterator and stream responses back.</span>
 
@@ -542,6 +557,52 @@
 <span class="sd">        :return: An iterator over the responses from the Executors</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GatewayStreamer.stream"><a class="viewcode-back" href="../../../../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.stream">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span>
+        <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">return_results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">exec_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">,</span> <span class="s1">&#39;Request&#39;</span><span class="p">],</span> <span class="s1">&#39;ExecutorError&#39;</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        stream Documents and yield Documents or Responses and unpacked Executor error if any.</span>
+
+<span class="sd">        :param docs: The Documents to be sent to all the Executors</span>
+<span class="sd">        :param request_size: The amount of Documents to be put inside a single request.</span>
+<span class="sd">        :param return_results: If set to True, the generator will yield Responses and not `DocumentArrays`</span>
+<span class="sd">        :param exec_endpoint: The Executor endpoint to which to send the Documents</span>
+<span class="sd">        :param target_executor: A regex expression indicating the Executors that should receive the Request</span>
+<span class="sd">        :param parameters: Parameters to be attached to the Requests</span>
+<span class="sd">        :param results_in_order: return the results in the same order as the request_iterator</span>
+<span class="sd">        :yield: tuple of Documents or Responses and unpacked error from Executors if any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream_docs</span><span class="p">(</span>
+            <span class="n">docs</span><span class="o">=</span><span class="n">docs</span><span class="p">,</span>
+            <span class="n">request_size</span><span class="o">=</span><span class="n">request_size</span><span class="p">,</span>
+            <span class="n">return_results</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># force return Responses</span>
+            <span class="n">exec_endpoint</span><span class="o">=</span><span class="n">exec_endpoint</span><span class="p">,</span>
+            <span class="n">target_executor</span><span class="o">=</span><span class="n">target_executor</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+            <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">ERROR</span> <span class="o">==</span> <span class="n">result</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">code</span><span class="p">:</span>
+                <span class="n">exception</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">exception</span>
+                <span class="n">error</span> <span class="o">=</span> <span class="n">ExecutorError</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">exception</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">args</span><span class="o">=</span><span class="n">exception</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+                    <span class="n">stacks</span><span class="o">=</span><span class="n">exception</span><span class="o">.</span><span class="n">stacks</span><span class="p">,</span>
+                    <span class="n">executor</span><span class="o">=</span><span class="n">exception</span><span class="o">.</span><span class="n">executor</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">return_results</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">result</span><span class="p">,</span> <span class="n">error</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">document_array_cls</span> <span class="o">=</span> <span class="n">DocumentArray</span>
+                <span class="k">yield</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span><span class="p">,</span> <span class="n">error</span></div>
 
 <div class="viewcode-block" id="GatewayStreamer.stream_docs"><a class="viewcode-back" href="../../../../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.stream_docs">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream_docs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -559,7 +620,7 @@
 <span class="sd">        :param docs: The Documents to be sent to all the Executors</span>
 <span class="sd">        :param request_size: The amount of Documents to be put inside a single request.</span>
 <span class="sd">        :param return_results: If set to True, the generator will yield Responses and not `DocumentArrays`</span>
-<span class="sd">        :param exec_endpoint: The executor endpoint to which to send the Documents</span>
+<span class="sd">        :param exec_endpoint: The Executor endpoint to which to send the Documents</span>
 <span class="sd">        :param target_executor: A regex expression indicating the Executors that should receive the Request</span>
 <span class="sd">        :param parameters: Parameters to be attached to the Requests</span>
 <span class="sd">        :param results_in_order: return the results in the same order as the request_iterator</span>
@@ -579,7 +640,7 @@
                     <span class="n">req</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
                 <span class="k">yield</span> <span class="n">req</span>
 
-        <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rpc_stream</span><span class="p">(</span>
             <span class="n">request_iterator</span><span class="o">=</span><span class="n">_req_generator</span><span class="p">(),</span> <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span>
         <span class="p">):</span>
             <span class="k">if</span> <span class="n">return_results</span><span class="p">:</span>
@@ -594,7 +655,7 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_streamer</span><span class="o">.</span><span class="n">wait_floating_requests_end</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-    <span class="n">Call</span> <span class="o">=</span> <span class="n">stream</span>
+    <span class="n">Call</span> <span class="o">=</span> <span class="n">rpc_stream</span>
 
 <div class="viewcode-block" id="GatewayStreamer.process_single_data"><a class="viewcode-back" href="../../../../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.process_single_data">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_single_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span>
@@ -628,26 +689,32 @@
         <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;JINA_STREAMER_ARGS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="GatewayStreamer.warmup"><a class="viewcode-back" href="../../../../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.warmup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">warmup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stop_event</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Executes warmup task on each deployment. This forces the gateway to establish connection and open a</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Executes warmup task on each deployment. This forces the gateway to establish connection and open a</span>
 <span class="sd">        gRPC channel to each executor so that the first request doesn&#39;t need to experience the penalty of</span>
 <span class="sd">        eastablishing a brand new gRPC channel.</span>
 <span class="sd">        :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Running GatewayRuntime warmup&#39;</span><span class="p">)</span>
         <span class="n">deployments</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor_addresses</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">deployment_warmup_tasks</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="n">deployments</span><span class="p">:</span>
-                <span class="n">deployment_warmup_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="o">.</span><span class="n">warmup</span><span class="p">(</span>
-                            <span class="n">deployment</span><span class="o">=</span><span class="n">deployment</span><span class="p">,</span> <span class="n">stop_event</span><span class="o">=</span><span class="n">stop_event</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="n">deployments</span><span class="p">:</span>
+                    <span class="n">deployment_warmup_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="o">.</span><span class="n">warmup</span><span class="p">(</span>
+                                <span class="n">deployment</span><span class="o">=</span><span class="n">deployment</span><span class="p">,</span> <span class="n">stop_event</span><span class="o">=</span><span class="n">stop_event</span>
+                            <span class="p">)</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
-                <span class="p">)</span>
 
-            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">deployment_warmup_tasks</span><span class="p">,</span> <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">deployment_warmup_tasks</span><span class="p">,</span> <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">deployment_warmup_tasks</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">deployment_warmup_tasks</span><span class="p">:</span>
+                        <span class="n">task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+                <span class="k">raise</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error with GatewayRuntime warmup up task: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">return</span></div></div>
@@ -676,19 +743,18 @@
             <span class="n">reqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
 
         <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="o">.</span><span class="n">send_requests_once</span><span class="p">(</span>
-            <span class="n">requests</span><span class="o">=</span><span class="p">[</span><span class="n">req</span><span class="p">],</span>
-            <span class="n">deployment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">executor_name</span><span class="p">,</span>
-            <span class="n">head</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">endpoint</span><span class="o">=</span><span class="n">on</span>
-        <span class="p">)</span> <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">reqs</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="o">.</span><span class="n">send_requests_once</span><span class="p">(</span>
+                <span class="n">requests</span><span class="o">=</span><span class="p">[</span><span class="n">req</span><span class="p">],</span> <span class="n">deployment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">executor_name</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">on</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">reqs</span>
+        <span class="p">]</span>
 
         <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
-        
+
         <span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">resp</span><span class="p">,</span><span class="n">_</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">resp</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
             <span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">docs</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">docs</span>
 </pre></div>
                 </article>
@@ -704,7 +770,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 20, 2023</div>
+                            Last updated on Feb 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

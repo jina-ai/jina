@@ -224,6 +224,30 @@ class MyGateway(FastAPIBaseGateway):
         return app
 ```
 
+### Recovering Executor errors
+Exceptions raised by an `Executor` are captured in the server object which can be extracted by using the {meth}`jina.serve.streamer.stream()` method. The `stream` method
+returns an `AsyncGenerator` of a tuple of `DocumentArray` and an optional {class}`jina.excepts.ExecutorError` class that be used to check if the `Executor` has issues processing the input request.
+The error can be utilized for retries, handling partial responses or returning default responses.
+
+```{code-block} python
+---
+emphasize-lines: 5, 6, 7, 8, 9, 10, 11, 12
+---
+@app.get("/endpoint")
+async def get(text: str):
+    results = []
+    errors = []
+    async for docs, error in self.streamer.stream(
+        docs=DocumentArray([Document(text=text)]),
+        exec_endpoint='/',
+    ):
+        if error:
+            errors.append(error)
+        else:
+            results.append(docs[0].text)
+    return {'results': results, 'errors': [error.name for error in errors]}
+```
+
 (executor-streamer)=
 ## Calling an individual Executor
 An `executor` object is injected by Jina to your gateway class which allows you to call individual Executors from the Gateway.
@@ -414,11 +438,11 @@ This assumes that you've already implemented a custom Gateway class and have def
 In this case, dockerizing the gateway should be straighforward:
 * If you need dependencies other than Jina, make sure to add a `requirements.txt` file (for instance, you use a server library).
 * Create a `Dockerfile` which should have the following components:
-1. Use a [Jina based image](https://hub.docker.com/r/jinaai/jina) as the base image in your Dockerfile.
+1. Use a [Jina based image](https://hub.docker.com/r/jinaai/jina) with the `standard` tag, as the base image in your Dockerfile.
 This ensures that everything needed for Jina to run the Gateway is installed. Make sure the Jina Version used supports 
 custom Gateways:
 ```dockerfile
-FROM jinaai/jina:3.12.0-py37-perf
+FROM jinaai/jina:latest-py37-standard
 ```
 Alternatively, you can just install jina using `pip`:
 ```dockerfile

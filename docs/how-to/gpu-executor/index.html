@@ -6,11 +6,11 @@
 <meta property="og:title" content="Build a GPU Executor" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/how-to/gpu-executor/" />
-<meta property="og:site_name" content="Jina 3.13.2 Documentation" />
-<meta property="og:description" content="This document will show you how to use an Executor on a GPU, both locally and in a Docker container. You will also learn how to use GPU with pre-built Hub executors. Using a GPU significantly speeds up encoding for most deep learning models, reducing response latency by anything from 5 to 100 tim..." />
+<meta property="og:site_name" content="Jina 3.14.0 Documentation" />
+<meta property="og:description" content="This document shows you how to use an Executor on a GPU, both locally and in a Docker container. You will also learn how to use a GPU with pre-built Hub executors. Using a GPU significantly speeds up encoding for most deep learning models, reducing response latency by anything from 5 to 100 times..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.13.2 Documentation" />
-<meta name="description" content="This document will show you how to use an Executor on a GPU, both locally and in a Docker container. You will also learn how to use GPU with pre-built Hub executors. Using a GPU significantly speeds up encoding for most deep learning models, reducing response latency by anything from 5 to 100 tim..." />
+<meta property="og:image:alt" content="Jina 3.14.0 Documentation" />
+<meta name="description" content="This document shows you how to use an Executor on a GPU, both locally and in a Docker container. You will also learn how to use a GPU with pre-built Hub executors. Using a GPU significantly speeds up encoding for most deep learning models, reducing response latency by anything from 5 to 100 times..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/how-to/gpu-executor.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Build a GPU Executor - Jina 3.13.2 documentation</title>
+        <title>Build a GPU Executor - Jina 3.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.13.2 documentation</div>
+                <div class="brand">Jina 3.14.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -261,9 +261,8 @@
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../concepts/executor/"><span class="fas fa-gears"></span> Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/basics/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/create/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/dynamic-batching/">Dynamic Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/health-check/">Health Check</a></li>
@@ -271,6 +270,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/file-structure/">File Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/containerize/">Containerize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/executor-in-flow/">Executors in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -326,6 +327,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../concepts/executor/hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../concepts/executor/hub/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../concepts/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -426,13 +429,13 @@
                 <article role="main">
                     <section id="build-a-gpu-executor">
 <span id="gpu-executor"></span><h1>Build a GPU Executor<a class="headerlink" href="#build-a-gpu-executor" title="Permalink to this heading">#</a></h1>
-<p>This document will show you how to use an <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> on a GPU, both locally and in a
-Docker container. You will also learn how to use GPU with pre-built Hub executors.</p>
+<p>This document shows you how to use an <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> on a GPU, both locally and in a
+Docker container. You will also learn how to use a GPU with pre-built Hub executors.</p>
 <p>Using a GPU significantly speeds up encoding for most deep learning models,
 reducing response latency by anything from 5 to 100 times, depending on the model and inputs used.</p>
 <div class="caution admonition">
 <p class="admonition-title">Important</p>
-<p>This tutorial assumes familiarity with basic Jina concepts, such as Document, <a class="reference internal" href="../../concepts/executor/"><span class="doc std std-doc">Executor</span></a>, and <a class="reference internal" href="../../concepts/executor/"><span class="doc std std-doc">Flow</span></a>. Some knowledge of <a class="reference internal" href="../../concepts/executor/hub/"><span class="doc std std-doc">Executor Hub</span></a> is also needed for the last part of the tutorial.</p>
+<p>This tutorial assumes familiarity with basic Jina concepts, such as Document, <a class="reference internal" href="../../concepts/executor/"><span class="doc std std-doc">Executor</span></a>, and <span class="xref myst">Deployment</span>. Some knowledge of <a class="reference internal" href="../../concepts/executor/hub/"><span class="doc std std-doc">Executor Hub</span></a> is also needed for the last part of the tutorial.</p>
 </div>
 <section id="jina-and-gpus-in-a-nutshell">
 <h2>Jina and GPUs in a nutshell<a class="headerlink" href="#jina-and-gpus-in-a-nutshell" title="Permalink to this heading">#</a></h2>
@@ -440,7 +443,7 @@ reducing response latency by anything from 5 to 100 times, depending on the mode
 <p>If you already know how to use your GPU, just proceed like you usually would in your machine learning framework of choice.
 Jina lets you use GPUs like you would in a Python script or Docker
 container, without imposing additional requirements or configuration.</p>
-<p>Here’s a minimal working example, written in PyTorch.</p>
+<p>Here’s a minimal working example, written in PyTorch:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
 
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
@@ -463,19 +466,21 @@ container, without imposing additional requirements or configuration.</p>
 </pre></div>
 </div>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Use it with CPU </label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Use with CPU </label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyGPUExec</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;device&#39;</span><span class="p">:</span> <span class="s1">&#39;cpu&#39;</span><span class="p">})</span>
+<span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyGPUExec</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;device&#39;</span><span class="p">:</span> <span class="s1">&#39;cpu&#39;</span><span class="p">})</span>
 <span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">Document</span><span class="p">())</span>
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">docs</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/encode&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">docs</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/encode&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">docs</span><span class="p">)</span>
+
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Document embedding: </span><span class="si">{</span><span class="n">docs</span><span class="o">.</span><span class="n">embeddings</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">           </span>Flow@80<span class="o">[</span>I<span class="o">]</span>:🎉<span class="w"> </span>Flow<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>use!
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">           </span>Deployment@80<span class="o">[</span>I<span class="o">]</span>:🎉<span class="w"> </span>Deployment<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>use!
 <span class="w">	</span>🔗<span class="w"> </span>Protocol:<span class="w"> 		</span>GRPC
 <span class="w">	</span>🏠<span class="w"> </span>Local<span class="w"> </span>access:<span class="w">	</span><span class="m">0</span>.0.0.0:49618
 <span class="w">	</span>🔒<span class="w"> </span>Private<span class="w"> </span>network:<span class="w">	</span><span class="m">172</span>.28.0.2:49618
@@ -485,19 +490,21 @@ Document<span class="w"> </span>embedding:<span class="w"> </span>tensor<span cl
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Use it with GPU</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Use with GPU</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyGPUExec</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;device&#39;</span><span class="p">:</span> <span class="s1">&#39;cuda&#39;</span><span class="p">})</span>
+<span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyGPUExec</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;device&#39;</span><span class="p">:</span> <span class="s1">&#39;cuda&#39;</span><span class="p">})</span>
 <span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">Document</span><span class="p">())</span>
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">docs</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/encode&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">docs</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/encode&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">docs</span><span class="p">)</span>
+
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Document embedding: </span><span class="si">{</span><span class="n">docs</span><span class="o">.</span><span class="n">embeddings</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">           </span>Flow@80<span class="o">[</span>I<span class="o">]</span>:🎉<span class="w"> </span>Flow<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>use!
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">           </span>Deployment@80<span class="o">[</span>I<span class="o">]</span>:🎉<span class="w"> </span>Deployment<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>use!
 <span class="w">	</span>🔗<span class="w"> </span>Protocol:<span class="w"> 		</span>GRPC
 <span class="w">	</span>🏠<span class="w"> </span>Local<span class="w"> </span>access:<span class="w">	</span><span class="m">0</span>.0.0.0:56276
 <span class="w">	</span>🔒<span class="w"> </span>Private<span class="w"> </span>network:<span class="w">	</span><span class="m">172</span>.28.0.2:56276
@@ -508,20 +515,20 @@ Document<span class="w"> </span>embedding:<span class="w"> </span>tensor<span cl
 </div>
 </div>
 </div>
-<p>Just like that, your code runs on GPU, inside a Jina Flow.</p>
+<p>Just like that, your code runs on GPU, inside a Deployment.</p>
 <p>Next, we will go through a more fleshed out example in detail, where we use a language model to embed text in our
 Documents - all on GPU, and thus blazingly fast.</p>
 </section>
 <section id="prerequisites">
 <span id="gpu-prerequisites"></span><h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading">#</a></h2>
-<p>For this tutorial, you will need to work on a machine with an NVIDIA graphics card. If you
+<p>For this tutorial, you need to work on a machine with an NVIDIA graphics card. If you
 don’t have such a machine at home, you can use various free cloud platforms (like Google Colab or Kaggle kernels).</p>
 <p>Also ensure you have a recent version of <a class="reference external" href="https://www.nvidia.com/Download/index.aspx">NVIDIA drivers</a>
 installed. You don’t need to install CUDA for this tutorial, but note that depending on
 the deep learning framework that you use, that might be required (for local execution).</p>
 <p>For the Docker part of the tutorial you will also need to have <a class="reference external" href="https://docs.docker.com/get-docker/">Docker</a> and
 <a class="reference external" href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html">nvidia-docker</a> installed.</p>
-<p>To run Python scripts you will need a virtual environment (for example <a class="reference external" href="https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment">venv</a> or <a class="reference external" href="https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments">conda</a>), and to install Jina inside it using:</p>
+<p>To run Python scripts you need a virtual environment (for example <a class="reference external" href="https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment">venv</a> or <a class="reference external" href="https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments">conda</a>), and install Jina inside it using:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>jina
 </pre></div>
 </div>
@@ -530,8 +537,8 @@ the deep learning framework that you use, that might be required (for local exec
 <h2>Setting up the Executor<a class="headerlink" href="#setting-up-the-executor" title="Permalink to this heading">#</a></h2>
 <div class="hint admonition">
 <p class="admonition-title">Executor Hub</p>
-<p>Let’s create an Executor using <a class="reference external" href="https://cloud.jina.ai/">Executor Hub</a>. This still creates your Executor locally
-and privately, but makes it quick and easy to run your
+<p>Let’s create an Executor using <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span> <span class="pre">new</span></code>. This creates your Executor locally
+and privately, and makes it quick and easy to run your
 Executor inside a Docker container, or (if you so choose) to publish it to Executor Hub later.</p>
 </div>
 <p>We’ll create a simple sentence encoder, and start by creating the Executor
@@ -663,7 +670,7 @@ model to our device. These are also the exact same steps to use in a standalone 
 let’s create another file - <code class="docutils literal notranslate"><span class="pre">main.py</span></code>, to demonstrate the usage of this
 encoder by encoding 10,000 text documents.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
 
 <span class="kn">from</span> <span class="nn">executor</span> <span class="kn">import</span> <span class="n">SentenceEncoder</span>
 
@@ -675,9 +682,10 @@ encoder by encoding 10,000 text documents.</p>
         <span class="p">)</span>
 
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">SentenceEncoder</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;device&#39;</span><span class="p">:</span> <span class="s1">&#39;cpu&#39;</span><span class="p">})</span>
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/encode&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">generate_docs</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">SentenceEncoder</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;device&#39;</span><span class="p">:</span> <span class="s1">&#39;cpu&#39;</span><span class="p">})</span>
+
+<span class="k">with</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/encode&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">generate_docs</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -685,8 +693,8 @@ encoder by encoding 10,000 text documents.</p>
 <h2>Running on GPU and CPU locally<a class="headerlink" href="#running-on-gpu-and-cpu-locally" title="Permalink to this heading">#</a></h2>
 <p>We can observe the speed up by running the same code on both the CPU and GPU.</p>
 <p>To toggle between the two, set your device type to <code class="docutils literal notranslate"><span class="pre">'cuda'</span></code>, and your GPU will take over the work:</p>
-<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gi">+ f = Flow().add(uses=SentenceEncoder, uses_with={&#39;device&#39;: &#39;cuda&#39;})</span>
-<span class="gd">- f = Flow().add(uses=SentenceEncoder, uses_with={&#39;device&#39;: &#39;cpu&#39;})</span>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gi">+ dep = Deployment(uses=SentenceEncoder, uses_with={&#39;device&#39;: &#39;cuda&#39;})</span>
+<span class="gd">- dep = Deployment(uses=SentenceEncoder, uses_with={&#39;device&#39;: &#39;cpu&#39;})</span>
 </pre></div>
 </div>
 <p>Then, run the script:</p>
@@ -698,7 +706,7 @@ encoder by encoding 10,000 text documents.</p>
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">CPU</label><div class="tab-content docutils">
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">      </span>executor0@26554<span class="o">[</span>L<span class="o">]</span>:ready<span class="w"> </span>and<span class="w"> </span>listening
 <span class="w">        </span>gateway@26554<span class="o">[</span>L<span class="o">]</span>:ready<span class="w"> </span>and<span class="w"> </span>listening
-<span class="w">           </span>Flow@26554<span class="o">[</span>I<span class="o">]</span>:🎉<span class="w"> </span>Flow<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>use!
+<span class="w">           </span>Deployment@26554<span class="o">[</span>I<span class="o">]</span>:🎉<span class="w"> </span>Deployment<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>use!
 <span class="w">        </span>🔗<span class="w"> </span>Protocol:<span class="w">            </span>GRPC
 <span class="w">        </span>🏠<span class="w"> </span>Local<span class="w"> </span>access:<span class="w">        </span><span class="m">0</span>.0.0.0:56969
 <span class="w">        </span>🔒<span class="w"> </span>Private<span class="w"> </span>network:<span class="w">     </span><span class="m">172</span>.31.39.70:56969
@@ -710,7 +718,7 @@ Working...<span class="w"> </span>━━━━━━━━━━━━━━━�
 <input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">GPU</label><div class="tab-content docutils">
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">      </span>executor0@21032<span class="o">[</span>L<span class="o">]</span>:ready<span class="w"> </span>and<span class="w"> </span>listening
 <span class="w">        </span>gateway@21032<span class="o">[</span>L<span class="o">]</span>:ready<span class="w"> </span>and<span class="w"> </span>listening
-<span class="w">           </span>Flow@21032<span class="o">[</span>I<span class="o">]</span>:🎉<span class="w"> </span>Flow<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>use!
+<span class="w">           </span>Deployment@21032<span class="o">[</span>I<span class="o">]</span>:🎉<span class="w"> </span>Deployment<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>use!
 <span class="w">        </span>🔗<span class="w"> </span>Protocol:<span class="w">            </span>GRPC
 <span class="w">        </span>🏠<span class="w"> </span>Local<span class="w"> </span>access:<span class="w">        </span><span class="m">0</span>.0.0.0:54255
 <span class="w">        </span>🔒<span class="w"> </span>Private<span class="w"> </span>network:<span class="w">     </span><span class="m">172</span>.31.39.70:54255
@@ -725,7 +733,7 @@ time decreases from 20s to 3s by running on GPU.
 That’s more than a <strong>6x speedup!</strong> And that’s not even the best we can do - if we increase the batch size to max out the GPU’s memory we would get even larger speedups. But such optimizations are beyond the scope of this tutorial.</p>
 <div class="hint admonition">
 <p class="admonition-title">Note</p>
-<p>You’ve probably noticed that there was a delay (about 3 seconds) when creating the Flow.
+<p>You’ve probably noticed that there was a delay (about 3 seconds) when creating the Deployment.
 This is because the weights of our model had to be transfered from CPU to GPU when we
 initialized the Executor. However, this action only occurs once in the lifetime of the Executor,
 so for most use cases we don’t need to worry about it.</p>
@@ -754,7 +762,8 @@ so for most use cases we don’t need to worry about it.</p>
 </div>
 <p>Let’s use the Docker version of our encoder with the GPU. If you’ve dealt with GPUs in containers before, you may remember that to use a GPU inside the container you need to pass <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">all</span></code> option to the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> command. Jina lets you do just that.</p>
 <p>We need to modify our <code class="docutils literal notranslate"><span class="pre">main.py</span></code> script to use a GPU-base containerized Executor:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Depoyment</span>
 
 <span class="kn">from</span> <span class="nn">executor</span> <span class="kn">import</span> <span class="n">SentenceEncoder</span>
 
@@ -764,17 +773,16 @@ so for most use cases we don’t need to worry about it.</p>
             <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Using a GPU enables you to significantly speed up encoding&#39;</span>
         <span class="p">)</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-<span class="hll">    <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;docker://sentence-encoder&#39;</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;device&#39;</span><span class="p">:</span> <span class="s1">&#39;cuda&#39;</span><span class="p">},</span> <span class="n">gpus</span><span class="o">=</span><span class="s1">&#39;all&#39;</span>
-</span><span class="p">)</span>
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/encode&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">generate_docs</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;docker://sentence-encoder&#39;</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;device&#39;</span><span class="p">:</span> <span class="s1">&#39;cuda&#39;</span><span class="p">},</span> <span class="n">gpus</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+<span class="hll">
+</span><span class="k">with</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/encode&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">generate_docs</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If we run this with <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span></code>, we’ll get the same output as before, except that now we’ll also get the output from the Docker container.</p>
 <p>Every time we start the Executor, the Transformer model gets downloaded again. To speed this up, we want the encoder to load the model from a file which we have pre-downloaded to our disk.</p>
 <p>We can do this with Docker volumes - Jina simply passes the argument to the Docker container. Here’s how we modify <code class="docutils literal notranslate"><span class="pre">main.py</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span>
     <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;docker://sentence-encoder&#39;</span><span class="p">,</span>
     <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;device&#39;</span><span class="p">:</span> <span class="s1">&#39;cuda&#39;</span><span class="p">},</span>
     <span class="n">gpus</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span>
@@ -790,7 +798,7 @@ so for most use cases we don’t need to worry about it.</p>
 <h2>Using GPU with Hub Executors<a class="headerlink" href="#using-gpu-with-hub-executors" title="Permalink to this heading">#</a></h2>
 <p>We now saw how to use GPU with our Executor locally, and when using it in a Docker container. What about when we use Executors from Executor Hub - is there any difference?</p>
 <p>Nope! Not only that, many Executors on Executor Hub already come with a GPU-enabled version pre-built, usually under the <code class="docutils literal notranslate"><span class="pre">gpu</span></code> tag (see <a class="reference internal" href="../../concepts/executor/hub/push-executor/#hub-tags"><span class="std std-ref">Executor Hub tags</span></a>). Let’s modify our example to use the pre-built <code class="docutils literal notranslate"><span class="pre">TransformerTorchEncoder</span></code> from Executor Hub:</p>
-<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w">f = Flow().add(</span>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w">dep = Deployment(</span>
 <span class="gd">-   uses=&#39;docker://sentence-encoder&#39;,</span>
 <span class="gi">+   uses=&#39;jinaai+docker://jina-ai/TransformerTorchEncoder:latest-gpu&#39;,</span>
 <span class="w"> </span>   uses_with={&#39;device&#39;: &#39;cuda&#39;},
@@ -832,7 +840,7 @@ so for most use cases we don’t need to worry about it.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 20, 2023</div>
+                            Last updated on Feb 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

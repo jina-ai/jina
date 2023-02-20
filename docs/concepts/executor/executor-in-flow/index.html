@@ -3,14 +3,14 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<meta property="og:title" content="Basics" />
+<meta property="og:title" content="Executors in Flows" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://docs.jina.ai/concepts/executor/basics/" />
-<meta property="og:site_name" content="Jina 3.13.2 Documentation" />
-<meta property="og:description" content="Executor is a self-contained component and performs a group of tasks on a DocumentArray. It encapsulates functions that process DocumentArray s. Inside the Executor, these functions are decorated with@requests. To create an Executor, you need to follow three principles: An Executor should subclas..." />
+<meta property="og:url" content="https://docs.jina.ai/concepts/executor/executor-in-flow/" />
+<meta property="og:site_name" content="Jina 3.14.0 Documentation" />
+<meta property="og:description" content="You can chain Executors together into a Flow, which orchestrates Executors into a processing pipeline to accomplish a task. Documents “flow” through the pipeline and are processed by each Executor in turn. When developing an Executor to put into a Flow, there are several practices you should foll..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.13.2 Documentation" />
-<meta name="description" content="Executor is a self-contained component and performs a group of tasks on a DocumentArray. It encapsulates functions that process DocumentArray s. Inside the Executor, these functions are decorated with@requests. To create an Executor, you need to follow three principles: An Executor should subclas..." />
+<meta property="og:image:alt" content="Jina 3.14.0 Documentation" />
+<meta name="description" content="You can chain Executors together into a Flow, which orchestrates Executors into a processing pipeline to accomplish a task. Documents “flow” through the pipeline and are processed by each Executor in turn. When developing an Executor to put into a Flow, there are several practices you should foll..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -29,11 +29,11 @@
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     
-<link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Add Endpoints" href="../add-endpoints/" /><link rel="prev" title="Executor" href="../" />
-        <link rel="canonical" href="https://docs.jina.ai/concepts/executor/basics.html" />
+<link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="(Beta) DocArray v2" href="../docarray-v2/" /><link rel="prev" title="Instrumentation" href="../instrumentation/" />
+        <link rel="canonical" href="https://docs.jina.ai/concepts/executor/executor-in-flow.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Basics - Jina 3.13.2 documentation</title>
+        <title>Executors in Flows - Jina 3.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.13.2 documentation</div>
+                <div class="brand">Jina 3.14.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -261,9 +261,8 @@
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../"><span class="fas fa-gears"></span> Executor</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../create/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dynamic-batching/">Dynamic Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../health-check/">Health Check</a></li>
@@ -271,6 +270,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../file-structure/">File Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../containerize/">Containerize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Executors in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -326,6 +327,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../hub/push-executor/">Publish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../hub/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -424,164 +427,121 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section id="basics">
-<span id="executor"></span><h1>Basics<a class="headerlink" href="#basics" title="Permalink to this heading">#</a></h1>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>Executor uses <code class="docutils literal notranslate"><span class="pre">docarray.DocumentArray</span></code> as input and output data structure. Please <a class="reference external" href="https://docarray.jina.ai">read DocArray’s docs</a> to get an impression how it works.</p>
-</div>
-<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> is a self-contained component and performs a group of tasks on a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>.
-It encapsulates functions that process <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>s. Inside the Executor, these functions are decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code>. To create an Executor, you need to follow three principles:</p>
-<ol class="arabic simple">
-<li><p>An Executor should subclass directly from the <code class="docutils literal notranslate"><span class="pre">jina.Executor</span></code> class. An Executor can also be a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code></p></li>
-<li><p>An Executor class is a bag of functions with shared state or configuration (via <code class="docutils literal notranslate"><span class="pre">self</span></code>); it can contain an arbitrary number of
-functions with arbitrary names.</p></li>
-<li><p>Functions decorated by <code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code> are invoked according to their <code class="docutils literal notranslate"><span class="pre">on=</span></code> endpoint. These functions can be coroutines (<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code>) or regular functions.</p></li>
-</ol>
-<section id="constructor">
-<h2>Constructor<a class="headerlink" href="#constructor" title="Permalink to this heading">#</a></h2>
-<section id="subclass">
-<h3>Subclass<a class="headerlink" href="#subclass" title="Permalink to this heading">#</a></h3>
-<p>Every new Executor should be a subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>.</p>
-<p>You can name your Executor class freely.</p>
-</section>
-<section id="init">
-<h3><code class="docutils literal notranslate"><span class="pre">__init__</span></code><a class="headerlink" href="#init" title="Permalink to this heading">#</a></h3>
-<p>You don’t need to implement <code class="docutils literal notranslate"><span class="pre">__init__</span></code> if your Executor doesn’t contain initial states or if it’s a <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html">dataclass</a></p>
-<p>If your Executor has <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, it needs to carry <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in the signature and call <code class="docutils literal notranslate"><span class="pre">super().__init__(**kwargs)</span></code>
-in the body:</p>
-<div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Executor</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
+                    <section id="executors-in-flows">
+<span id="executor-in-flow"></span><h1>Executors in Flows<a class="headerlink" href="#executors-in-flows" title="Permalink to this heading">#</a></h1>
+<p>You can chain Executors together into a <a class="reference internal" href="../../flow/#flow-cookbook"><span class="std std-ref">Flow</span></a>, which orchestrates Executors into a processing pipeline to accomplish a task. Documents “flow” through the pipeline and are processed by each Executor in turn.</p>
+<p>When developing an Executor to put into a Flow, there are several practices you should follow:</p>
+<section id="merging-upstream-documentarrays">
+<span id="merge-upstream-documentarrays"></span><h2>Merging upstream DocumentArrays<a class="headerlink" href="#merging-upstream-documentarrays" title="Permalink to this heading">#</a></h2>
+<p>Often when you’re building a Flow, you want an Executor to receive DocumentArrays from multiple upstream Executors.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../../_images/flow-merge-executor.svg"><img alt="../../../_images/flow-merge-executor.svg" src="../../../_images/flow-merge-executor.svg" width="70%" /></a>
+</figure>
+<p>For this you can use the <code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code> or <code class="docutils literal notranslate"><span class="pre">docs_map</span></code> parameters (part of Executor endpoints signature). These Flow-specific arguments that can be used alongside an Executor’s <a class="reference internal" href="../add-endpoints/#endpoint-arguments"><span class="std std-ref">default arguments</span></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 
-<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">foo</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bar</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bar</span> <span class="o">=</span> <span class="n">bar</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="n">foo</span>
+<span class="k">class</span> <span class="nc">MergeExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+<span class="hll">        <span class="n">docs_matrix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">]],</span>
+</span><span class="hll">        <span class="n">docs_map</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">]],</span>
+</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">pass</span>
 </pre></div>
 </div>
-</div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Executor as dataclass</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
-
-
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="n">bar</span><span class="p">:</span> <span class="nb">int</span>
-    <span class="n">foo</span><span class="p">:</span> <span class="nb">str</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="hint admonition">
-<p class="admonition-title">What is inside kwargs? </p>
-<p>Here, <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are reserved for Jina to inject <code class="docutils literal notranslate"><span class="pre">metas</span></code> and <code class="docutils literal notranslate"><span class="pre">requests</span></code> (representing the request-to-function mapping) values when the Executor is used inside a Flow. Also when <code class="docutils literal notranslate"><span class="pre">Executor</span></code> is a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> these parameters are injected by Jina as in the regular case when calling <code class="docutils literal notranslate"><span class="pre">super().__init__</span></code></p>
-<p>You can access the values of these arguments in the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> body via <code class="docutils literal notranslate"><span class="pre">self.metas</span></code>/<code class="docutils literal notranslate"><span class="pre">self.requests</span></code>/<code class="docutils literal notranslate"><span class="pre">self.runtime_args</span></code>,
-or modify their values before passing them to <code class="docutils literal notranslate"><span class="pre">super().__init__()</span></code>.</p>
-</div>
-</section>
-</section>
-<section id="destructor">
-<h2>Destructor<a class="headerlink" href="#destructor" title="Permalink to this heading">#</a></h2>
-<p>You might need to execute some logic when your Executor’s destructor is called.</p>
-<p>For example, if you want to persist data to disk (e.g. in-memory indexed data, fine-tuned model,…) you can overwrite the <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.close" title="jina.serve.executors.BaseExecutor.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method and add your logic.</p>
-<p>Jina ensures the <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.close" title="jina.serve.executors.BaseExecutor.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method is executed when the Executor is terminated inside a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> or when deployed in any cloud-native environment.</p>
-<p>You can think of this as Jina using the Executor as a context manager, making sure that the <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.close" title="jina.serve.executors.BaseExecutor.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method is always executed.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
-
-
-<span class="k">class</span> <span class="nc">MyExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;closing...&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="attributes">
-<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading">#</a></h2>
-<p>When implementing an Executor, if your Executor overrides <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, it needs to carry <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in the signature and call <code class="docutils literal notranslate"><span class="pre">super().__init__(**kwargs)</span></code></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
-
-
-<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">foo</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bar</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bar</span> <span class="o">=</span> <span class="n">bar</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="n">foo</span>
-</pre></div>
-</div>
-<p>This is important because when an Executor is instantiated in the context of a Flow, Jina adds extra arguments.
-Some of these arguments can be used when developing the internal logic of the Executor.</p>
-<p>These <code class="docutils literal notranslate"><span class="pre">special</span></code> arguments are <code class="docutils literal notranslate"><span class="pre">workspace</span></code>, <code class="docutils literal notranslate"><span class="pre">requests</span></code>, <code class="docutils literal notranslate"><span class="pre">metas</span></code>, <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code>.</p>
-<p>Another alternative is to declare your <code class="docutils literal notranslate"><span class="pre">Executor</span></code> as a <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html">dataclass</a>. In this case, you don’t provide a specific constructor.
-Then, Jina injects all these <code class="docutils literal notranslate"><span class="pre">special</span></code> arguments without you needing to call any specific method.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
-
-
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="n">bar</span><span class="p">:</span> <span class="nb">int</span>
-    <span class="n">foo</span><span class="p">:</span> <span class="nb">str</span>
-</pre></div>
-</div>
-<section id="workspace">
-<span id="executor-workspace"></span><h3><code class="docutils literal notranslate"><span class="pre">workspace</span></code><a class="headerlink" href="#workspace" title="Permalink to this heading">#</a></h3>
-<p>Each Executor has a special <em>workspace</em> that is reserved for that specific Executor instance.
-The <code class="docutils literal notranslate"><span class="pre">.workspace</span></code> property contains the path to this workspace.</p>
-<p>This <code class="docutils literal notranslate"><span class="pre">workspace</span></code> is based on the workspace passed when adding the Executor: <code class="docutils literal notranslate"><span class="pre">flow.add(...,</span> <span class="pre">workspace='path/to/workspace/')</span></code>.
-The final <code class="docutils literal notranslate"><span class="pre">workspace</span></code> is generated by appending <code class="docutils literal notranslate"><span class="pre">'/&lt;executor_name&gt;/&lt;shard_id&gt;/'</span></code>.</p>
-<p>This can be provided to the Executor via the Python or <a class="reference internal" href="../yaml-spec/#executor-yaml-spec"><span class="std std-ref">YAML API</span></a>.</p>
-<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
-<summary class="sd-summary-title sd-card-header">
-Default workspace<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
-<p class="sd-card-text">If you haven’t provided a workspace, the Executor uses a default workspace, defined in <code class="docutils literal notranslate"><span class="pre">~/.cache/jina/</span></code>.</p>
-</div>
-</details></section>
-<section id="requests">
-<span id="executor-requests"></span><h3><code class="docutils literal notranslate"><span class="pre">requests</span></code><a class="headerlink" href="#requests" title="Permalink to this heading">#</a></h3>
-<p>By default, an Executor object contains <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.requests" title="jina.serve.executors.BaseExecutor.requests"><code class="xref py py-attr docutils literal notranslate"><span class="pre">requests</span></code></a> as an attribute when loaded from the Flow. This attribute is a <code class="docutils literal notranslate"><span class="pre">Dict</span></code> describing the mapping between Executor methods and network endpoints: It holds endpoint strings as keys, and pointers to functions as values.</p>
-<p>These can be provided to the Executor via the Python or <a class="reference internal" href="../yaml-spec/#executor-yaml-spec"><span class="std std-ref">YAML API</span></a>.</p>
-</section>
-<section id="metas">
-<span id="executor-metas"></span><h3><code class="docutils literal notranslate"><span class="pre">metas</span></code><a class="headerlink" href="#metas" title="Permalink to this heading">#</a></h3>
-<p>An Executor object contains <code class="docutils literal notranslate"><span class="pre">metas</span></code> as an attribute when loaded from the Flow. It is of <a class="reference external" href="https://docs.python.org/3/library/types.html#types.SimpleNamespace"><code class="docutils literal notranslate"><span class="pre">SimpleNamespace</span></code></a> type and contains some key-value information.</p>
-<p>The list of the <code class="docutils literal notranslate"><span class="pre">metas</span></code> are:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name given to the Executor;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">description</span></code>: Description of the Executor (optional, reserved for future-use in auto-docs);</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code> to receive a List of all incoming DocumentArrays from upstream Executors:</p></li>
 </ul>
-<p>These can be provided to the Executor via the Python or <a class="reference internal" href="../yaml-spec/#executor-yaml-spec"><span class="std std-ref">YAML API</span></a>.</p>
-</section>
-<section id="runtime-args">
-<h3><code class="docutils literal notranslate"><span class="pre">runtime_args</span></code><a class="headerlink" href="#runtime-args" title="Permalink to this heading">#</a></h3>
-<p>By default, an Executor object contains <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code> as an attribute when loaded from the Flow. It is of <a class="reference external" href="https://docs.python.org/3/library/types.html#types.SimpleNamespace"><code class="docutils literal notranslate"><span class="pre">SimpleNamespace</span></code></a> type and contains information in key-value format.
-As the name suggests, <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code> are dynamically determined during runtime, meaning that you don’t know the value before running the Executor. These values are often related to the system/network environment around the Executor, and less about the Executor itself, like <code class="docutils literal notranslate"><span class="pre">shard_id</span></code> and <code class="docutils literal notranslate"><span class="pre">replicas</span></code>. They are usually set with the <a class="reference internal" href="../../../api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.add" title="jina.orchestrate.flow.base.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a> method.</p>
-<p>The list of the <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code> is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+    <span class="n">DocumentArray</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>  <span class="c1"># from Executor1</span>
+    <span class="n">DocumentArray</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>  <span class="c1"># from Executor2</span>
+    <span class="n">DocumentArray</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>  <span class="c1"># from Executor3</span>
+<span class="p">]</span>
+</pre></div>
+</div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name given to the Executor. This is dynamically adapted from the <code class="docutils literal notranslate"><span class="pre">name</span></code> in <code class="docutils literal notranslate"><span class="pre">metas</span></code> and depends on some additional arguments like <code class="docutils literal notranslate"><span class="pre">shard_id</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">replicas</span></code>: Number of <a class="reference internal" href="../../flow/scale-out/#replicate-executors"><span class="std std-ref">replicas</span></a> of the same Executor deployed with the Flow.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">shards</span></code>: Number of <a class="reference internal" href="../../flow/scale-out/#partition-data-by-using-shards"><span class="std std-ref">shards</span></a> of the same Executor deployed with the Flow.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">shard_id</span></code>: Identifier of the <code class="docutils literal notranslate"><span class="pre">shard</span></code> corresponding to the given Executor instance.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code>: Path to be used by the Executor. Note that the actual workspace directory used by the Executor is obtained by appending <code class="docutils literal notranslate"><span class="pre">'/&lt;executor_name&gt;/&lt;shard_id&gt;/'</span></code> to this value.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">py_modules</span></code>: Python package path e.g. <code class="docutils literal notranslate"><span class="pre">foo.bar.package.module</span></code> or file path to the modules needed to import the Executor. This is another way to pass <code class="docutils literal notranslate"><span class="pre">py-modules</span></code> to the Executor from the Flow</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">docs_map</span></code> to receive a Dict, where each item’s key is the name of an upstream Executor and the value is the DocumentArray coming from that Executor:</p></li>
 </ul>
-<p>You <strong>cannot</strong> provide these through any API. They are generated by the Flow orchestration.</p>
-</section>
-</section>
-<section id="see-further">
-<h2>See further<a class="headerlink" href="#see-further" title="Permalink to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;Executor1&#39;</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
+    <span class="s1">&#39;Executor2&#39;</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
+    <span class="s1">&#39;Executor3&#39;</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<section id="reducing-multiple-documentarrays-to-one-documentarray">
+<span id="no-reduce"></span><h3>Reducing multiple DocumentArrays to one DocumentArray<a class="headerlink" href="#reducing-multiple-documentarrays-to-one-documentarray" title="Permalink to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">no_reduce</span></code> argument determines whether DocumentArrays are reduced into one when being received:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../hub/debug-executor/#debug-executor"><span class="std std-ref">Debugging an Executor</span></a></p></li>
-<li><p><a class="reference internal" href="../../../how-to/gpu-executor/#gpu-executor"><span class="std std-ref">Using an Executor on a GPU</span></a></p></li>
-<li><p><a class="reference internal" href="../../flow/add-executors/#external-executors"><span class="std std-ref">How to use external Executors</span></a></p></li>
+<li><p>To reduce all incoming DocumentArrays into <strong>one single DocumentArray</strong>, do not set <code class="docutils literal notranslate"><span class="pre">no_reduce</span></code> or set it to <code class="docutils literal notranslate"><span class="pre">False</span></code>. The <code class="docutils literal notranslate"><span class="pre">docs_map</span></code> and <code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code> will be <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p>To receive <strong>a list all incoming DocumentArrays</strong> set <code class="docutils literal notranslate"><span class="pre">no_reduce</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code>. The Executor will receive the DocumentArrays independently under <code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code> and <code class="docutils literal notranslate"><span class="pre">docs_map</span></code>.</p></li>
 </ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+
+<span class="k">class</span> <span class="nc">Exec1</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Exec1&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">Exec2</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Exec2&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">MergeExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs_matrix</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">documents_to_return</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">doc1</span><span class="p">,</span> <span class="n">doc2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">docs_matrix</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;MergeExec processing pairs of Documents &quot;</span><span class="si">{</span><span class="n">doc1</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1">&quot; and &quot;</span><span class="si">{</span><span class="n">doc2</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+            <span class="p">)</span>
+            <span class="n">documents_to_return</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Document merging from &quot;</span><span class="si">{</span><span class="n">doc1</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1">&quot; and &quot;</span><span class="si">{</span><span class="n">doc2</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">documents_to_return</span>
+
+
+<span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Flow</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">Exec1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;exec1&#39;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">Exec2</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;exec2&#39;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MergeExec</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;exec1&#39;</span><span class="p">,</span> <span class="s1">&#39;exec2&#39;</span><span class="p">],</span> <span class="n">no_reduce</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">returned_docs</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">())</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Resulting documents </span><span class="si">{</span><span class="n">returned_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>──────────────────────────<span class="w"> </span>🎉<span class="w"> </span>Flow<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>serve!<span class="w"> </span>──────────────────────────
+╭──────────────<span class="w"> </span>🔗<span class="w"> </span>Endpoint<span class="w"> </span>───────────────╮
+│<span class="w">  </span>⛓<span class="w">     </span>Protocol<span class="w">                    </span>GRPC<span class="w"> </span>│
+│<span class="w">  </span>🏠<span class="w">       </span>Local<span class="w">           </span><span class="m">0</span>.0.0.0:55761<span class="w">  </span>│
+│<span class="w">  </span>🔒<span class="w">     </span>Private<span class="w">     </span><span class="m">192</span>.168.1.187:55761<span class="w">  </span>│
+│<span class="w">  </span>🌍<span class="w">      </span>Public<span class="w">    </span><span class="m">212</span>.231.186.65:55761<span class="w">  </span>│
+╰──────────────────────────────────────────╯
+
+MergeExec<span class="w"> </span>processing<span class="w"> </span>pairs<span class="w"> </span>of<span class="w"> </span>Documents<span class="w"> </span><span class="s2">&quot;Exec1&quot;</span><span class="w"> </span>and<span class="w"> </span><span class="s2">&quot;Exec2&quot;</span>
+Resulting<span class="w"> </span>documents<span class="w"> </span>Document<span class="w"> </span>merging<span class="w"> </span>from<span class="w"> </span><span class="s2">&quot;Exec1&quot;</span><span class="w"> </span>and<span class="w"> </span><span class="s2">&quot;Exec2&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="serve">
+<h2>Serve<a class="headerlink" href="#serve" title="Permalink to this heading">#</a></h2>
+<p>Both served and shared Executors can be used as part of a Flow, by adding them as an <a class="reference internal" href="../../flow/add-executors/#external-executors"><span class="std std-ref">external Executor</span></a>. If the Executor is only used inside other Flows, you should define a shared Executor to save the costs of running the Gateway in Kubernetes.</p>
 </section>
 </section>
 
@@ -590,23 +550,23 @@ As the name suggests, <code class="docutils literal notranslate"><span class="pr
             <footer>
                 
                 <div class="related-pages">
-                    <a class="next-page" href="../add-endpoints/">
+                    <a class="next-page" href="../docarray-v2/">
                         <div class="page-info">
                             <div class="context">
                                 <span>Next</span>
                             </div>
-                            <div class="title">Add Endpoints</div>
+                            <div class="title">(Beta) DocArray v2</div>
                         </div>
                         <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
                     </a>
-                    <a class="prev-page" href="../">
+                    <a class="prev-page" href="../instrumentation/">
                         <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
                         <div class="page-info">
                             <div class="context">
                                 <span>Previous</span>
                             </div>
                             
-                            <div class="title"><span class="fas fa-gears"></span> Executor</div>
+                            <div class="title">Instrumentation</div>
                             
                         </div>
                     </a>
@@ -616,7 +576,7 @@ As the name suggests, <code class="docutils literal notranslate"><span class="pr
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 20, 2023</div>
+                            Last updated on Feb 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -648,21 +608,12 @@ As the name suggests, <code class="docutils literal notranslate"><span class="pr
                 <div class="toc-tree-container">
                     <div class="toc-tree">
                         <ul>
-<li><a class="reference internal" href="#">Basics</a><ul>
-<li><a class="reference internal" href="#constructor">Constructor</a><ul>
-<li><a class="reference internal" href="#subclass">Subclass</a></li>
-<li><a class="reference internal" href="#init"><code class="docutils literal notranslate"><span class="pre">__init__</span></code></a></li>
+<li><a class="reference internal" href="#">Executors in Flows</a><ul>
+<li><a class="reference internal" href="#merging-upstream-documentarrays">Merging upstream DocumentArrays</a><ul>
+<li><a class="reference internal" href="#reducing-multiple-documentarrays-to-one-documentarray">Reducing multiple DocumentArrays to one DocumentArray</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#destructor">Destructor</a></li>
-<li><a class="reference internal" href="#attributes">Attributes</a><ul>
-<li><a class="reference internal" href="#workspace"><code class="docutils literal notranslate"><span class="pre">workspace</span></code></a></li>
-<li><a class="reference internal" href="#requests"><code class="docutils literal notranslate"><span class="pre">requests</span></code></a></li>
-<li><a class="reference internal" href="#metas"><code class="docutils literal notranslate"><span class="pre">metas</span></code></a></li>
-<li><a class="reference internal" href="#runtime-args"><code class="docutils literal notranslate"><span class="pre">runtime_args</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#see-further">See further</a></li>
+<li><a class="reference internal" href="#serve">Serve</a></li>
 </ul>
 </li>
 </ul>

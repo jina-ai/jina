@@ -7,6 +7,18 @@ This section includes the API documentation from the `jina` codebase, as extract
 For further details, please refer to the full :ref:`user guide <executor-cookbook>`.
 
 
+:mod:`jina.orchestrate.deployments` - Deployment
+--------------------
+
+.. currentmodule:: jina.orchestrate.deployments
+
+.. autosummary::
+   :nosignatures:
+   :template: class.rst
+
+   __init__.Deployment
+
+
 :mod:`jina.orchestrate.flow` - Flow
 --------------------
 

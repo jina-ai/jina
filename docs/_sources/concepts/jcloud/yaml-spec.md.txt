@@ -17,7 +17,7 @@ executors:
       resources:
         cpu: 2
         memory: 8G
-        gpu: 2
+        gpu: 1
   - name: indexer
     uses: jinaai+docker://<username>/Indexer
     jcloud:
@@ -105,7 +105,7 @@ executors:
     uses: jinaai+docker://<username>/Executor1
     jcloud:
       resources:
-        gpu: 2
+        gpu: 1
 ```
 
 ### Spot vs on-demand instance
@@ -173,7 +173,7 @@ JCloud also supports retaining the data a Flow was using while active. You can s
 
 ```{code-block} yaml
 ---
-emphasize-lines: 5-10,12,15
+emphasize-lines: 7-10,15-16
 ---
 jtype: Flow
 executors:
@@ -182,7 +182,7 @@ executors:
     jcloud:
       resources:
         storage:
-          type: ebs
+          kind: ebs
           size: 10G
           retain: true
   - name: executor2
@@ -190,7 +190,7 @@ executors:
     jcloud:
       resources:
         storage:
-          type: efs
+          kind: efs
 ```
 
 ## Scale out Executors
@@ -198,7 +198,7 @@ executors:
 On JCloud, demand-based autoscaling functionality is naturally offered thanks to the underlying Kubernetes architecture. This means that you can maintain [serverless](https://en.wikipedia.org/wiki/Serverless_computing) deployments in a cost-effective way with no headache of setting the [right number of replicas](https://docs.jina.ai/how-to/scale-out/#scale-out-your-executor) anymore!
 
 
-### Autoscaling with `jinahub+serveless://` 
+### Autoscaling with `jinaai+serverless://` 
 
 The easiest way to scale out your Executor is to use a Serverless Executor. This can be enabled by using `jinaai+serverless://` instead of `jinaai+docker://` in Executor's `uses`, such as:
 
@@ -248,10 +248,47 @@ Below are the defaults and requirements for the configurations:
 | metric | concurrency | `concurrency`  /   `rps` | Metric for scaling                                |
 | target | 100         | int                      | Target number after which replicas autoscale      |
 
-After JCloud deployment using the autoscaling configuration, the Flow serving part is just the same; the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you should only worry about the code!
+After JCloud deployment using the autoscaling configuration, the Flow serving part is just the same: the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you can deal with the code!
+
+## Configure availability tolerance
+
+If service issues cause disruption of Executors, JCloud lets you specify a tolerance level for number of replicas that stay up or go down.
+
+The JCloud parameters `minAvailable` and `maxUnavailable` ensure that Executors will stay up even if a certain number of replicas go down.
+
+| Name             | Default |                                          Allowed                                          | Description                                              |
+|:-----------------|:-------:|:-----------------------------------------------------------------------------------------:|:---------------------------------------------------------|
+ | `minAvailable`   |   N/A   | Lower than number of [replicas](https://docs.jina.ai/concepts/flow/scale-out/#scale-out)  | Minimum number of replicas available during disruption   |
+| `maxUnavailable` |   N/A   | Lower than numbers of [replicas](https://docs.jina.ai/concepts/flow/scale-out/#scale-out) | Maximum number of replicas unavailable during disruption |
+
+```{code-block} yaml
+---
+emphasize-lines: 5-6
+---
+jtype: Flow
+executors:
+  - uses: jinaai+docker://<username>/Executor1
+    replicas: 5
+    jcloud:
+      minAvailable: 2
+```
+> In case of disruption, ensure at least two replicas will still be available, while three may be down.
+
+```{code-block} yaml
+---
+emphasize-lines: 5-6
+---
+jtype: Flow
+executors:
+  - uses: jinaai+docker://<username>/Executor1
+    replicas: 5
+    jcloud:
+      maxUnavailable: 2
+```
+> In case of disruption, ensure that if a maximum of two replicas are down, at least three replicas will still be available.
 
 
-## Configure gateway
+## Configure Gateway
 
 JCloud provides support Ingress gateways to expose your Flows to the public internet with TLS.
 
@@ -385,4 +422,55 @@ Keys in `labels` have the following restrictions:
   - The following keys are skipped if passed in the Flow YAML.
     - `user`
     - `jina`-version
+```
+
+### Monitoring
+
+To enable [tracing support](https://docs.jina.ai/cloud-nativeness/opentelemetry/) in Flows, you can pass `enable: true` argument in the Flow YAML. (Tracing support is not enabled by default in JCloud)
+
+```{code-block} yaml
+---
+emphasize-lines: 2-5
+---
+jtype: Flow
+jcloud:
+  monitor:
+    traces:
+      enable: true
+executors:
+  - name: executor1
+    uses: jinaai+docker://<username>/Executor1
+```
+
+You can pass the `enable: true` argument to `gateway`, so as to only enable the tracing support in gateway:
+
+```{code-block} yaml
+---
+emphasize-lines: 2-5
+---
+jtype: Flow
+gateway:
+  jcloud:
+      monitor:
+        traces:
+          enable: true
+executors:
+  - name: executor1
+    uses: jinaai+docker://<username>/Executor1
+```
+
+You can also only enable tracing support in `executor1`.
+
+```{code-block} yaml
+---
+emphasize-lines: 5-8
+---
+jtype: Flow
+executors:
+  - name: executor1
+    uses: jinaai+docker://<username>/Executor1
+    jcloud:
+      monitor:
+        traces:
+          enable: true
 ```

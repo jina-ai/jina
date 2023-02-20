@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/clients/mixin.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>jina.clients.mixin - Jina 3.13.2 documentation</title>
+        <title>jina.clients.mixin - Jina 3.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.13.2 documentation</div>
+                <div class="brand">Jina 3.14.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -234,9 +234,8 @@
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../concepts/executor/"><span class="fas fa-gears"></span> Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/basics/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/create/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/dynamic-batching/">Dynamic Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/health-check/">Health Check</a></li>
@@ -244,6 +243,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/file-structure/">File Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/containerize/">Containerize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/executor-in-flow/">Executors in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -299,6 +300,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../concepts/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -401,16 +404,17 @@
 <span></span><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partialmethod</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">deprecate_by</span><span class="p">,</span> <span class="n">get_or_reuse_loop</span><span class="p">,</span> <span class="n">run_async</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-    <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
     <span class="kn">from</span> <span class="nn">jina.clients.base</span> <span class="kn">import</span> <span class="n">CallbackFnType</span><span class="p">,</span> <span class="n">InputType</span>
     <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">Response</span>
+
+<span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
 
 <span class="k">def</span> <span class="nf">_include_results_field_in_param</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Dict&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Dict&#39;</span><span class="p">:</span>
@@ -626,6 +630,7 @@
         <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">stream</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">]</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;Response&#39;</span><span class="p">]]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Post a general data request to the Flow.</span>
@@ -648,6 +653,7 @@
 <span class="sd">        :param results_in_order: return the results in the same order as the inputs</span>
 <span class="sd">        :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.</span>
 <span class="sd">        :param prefetch: How many Requests are processed from the Client at the same time. If not provided then Gateway prefetch value will be used.</span>
+<span class="sd">        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.</span>
 <span class="sd">        :param kwargs: additional parameters</span>
 <span class="sd">        :return: None or DocumentArray containing all response Documents</span>
 
@@ -661,17 +667,16 @@
 
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">_include_results_field_in_param</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
-
         <span class="n">return_results</span> <span class="o">=</span> <span class="p">(</span><span class="n">on_always</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">on_done</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_results</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">return_responses</span> <span class="k">else</span> <span class="n">DocumentArray</span><span class="p">()</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">return_responses</span> <span class="k">else</span> <span class="n">return_type</span><span class="p">([])</span>
             <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">_get_results</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">return_results</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">return_responses</span><span class="p">:</span>
                         <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
+                        <span class="n">resp</span><span class="o">.</span><span class="n">document_array_cls</span> <span class="o">=</span> <span class="n">return_type</span>
                         <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">return_results</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">result</span>
@@ -726,6 +731,7 @@
         <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">stream</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">]</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="s1">&#39;Response&#39;</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Async Post a general data request to the Flow.</span>
@@ -748,6 +754,7 @@
 <span class="sd">        :param results_in_order: return the results in the same order as the inputs</span>
 <span class="sd">        :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.</span>
 <span class="sd">        :param prefetch: How many Requests are processed from the Client at the same time. If not provided then Gateway prefetch value will be used.</span>
+<span class="sd">        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.</span>
 <span class="sd">        :param kwargs: additional parameters, can be used to pass metadata or authentication information in the server call</span>
 <span class="sd">        :yield: Response object</span>
 
@@ -776,9 +783,11 @@
             <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span><span class="p">,</span>
             <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span>
             <span class="n">prefetch</span><span class="o">=</span><span class="n">prefetch</span><span class="p">,</span>
+            <span class="n">return_type</span><span class="o">=</span><span class="n">return_type</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">return_responses</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">document_array_cls</span> <span class="o">=</span> <span class="n">return_type</span>
                 <span class="k">yield</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">result</span></div>
@@ -802,7 +811,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 20, 2023</div>
+                            Last updated on Feb 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

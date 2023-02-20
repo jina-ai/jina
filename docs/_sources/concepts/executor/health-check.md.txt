@@ -17,8 +17,9 @@ When performing these checks, you can expect one of the following `ServingStatus
 To learn more about these status codes, and how health checks are performed with gRPC, see [here](https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
 ````
 
-```python
-MyExec.serve(port=12346)
+Let's check the health of an Executor. First start a dummy executor from the terminal:
+```shell
+jina executor --port 12346
 ```
 
 In another terminal, you can use [grpcurl](https://github.com/fullstorydev/grpcurl) to send gRPC requests to your services.

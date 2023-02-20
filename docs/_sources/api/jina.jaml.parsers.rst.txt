@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   jina.jaml.parsers.deployment
    jina.jaml.parsers.executor
    jina.jaml.parsers.flow
    jina.jaml.parsers.gateway

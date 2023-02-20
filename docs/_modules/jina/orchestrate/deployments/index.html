@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/orchestrate/deployments.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>jina.orchestrate.deployments - Jina 3.13.2 documentation</title>
+        <title>jina.orchestrate.deployments - Jina 3.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.13.2 documentation</div>
+                <div class="brand">Jina 3.14.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -234,9 +234,8 @@
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../concepts/executor/"><span class="fas fa-gears"></span> Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/basics/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/create/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/dynamic-batching/">Dynamic Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/health-check/">Health Check</a></li>
@@ -244,6 +243,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/file-structure/">File Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/containerize/">Containerize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/executor-in-flow/">Executors in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -299,6 +300,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../concepts/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -408,6 +411,7 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">ExitStack</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">cycle</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
 
@@ -423,10 +427,17 @@
     <span class="n">__default_host__</span><span class="p">,</span>
     <span class="n">__docker_host__</span><span class="p">,</span>
     <span class="n">__windows__</span><span class="p">,</span>
+    <span class="n">__default_grpc_gateway__</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">DeploymentRoleType</span><span class="p">,</span> <span class="n">GatewayProtocolType</span><span class="p">,</span> <span class="n">PodRoleType</span><span class="p">,</span> <span class="n">PollingType</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">ArgNamespace</span><span class="p">,</span> <span class="n">parse_host_scheme</span><span class="p">,</span> <span class="n">random_port</span>
+<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">DeploymentRoleType</span><span class="p">,</span> <span class="n">PodRoleType</span><span class="p">,</span> <span class="n">PollingType</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ArgNamespace</span><span class="p">,</span>
+    <span class="n">parse_host_scheme</span><span class="p">,</span>
+    <span class="n">random_port</span><span class="p">,</span>
+    <span class="n">send_telemetry_event</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">jina.jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.install_requirements_helper</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_get_package_path_from_uses</span><span class="p">,</span>
@@ -436,7 +447,8 @@
 <span class="kn">from</span> <span class="nn">jina.orchestrate.pods.factory</span> <span class="kn">import</span> <span class="n">PodFactory</span>
 <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">set_deployment_parser</span><span class="p">,</span> <span class="n">set_gateway_parser</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">_update_gateway_args</span>
-<span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">host_is_local</span><span class="p">,</span> <span class="n">in_docker</span>
+<span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
+<span class="kn">from</span> <span class="nn">jina.serve.networking.utils</span> <span class="kn">import</span> <span class="n">host_is_local</span><span class="p">,</span> <span class="n">in_docker</span>
 
 <span class="n">WRAPPED_SLICE_BASE</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;\[[-\d:]+\]&#39;</span>
 
@@ -447,7 +459,13 @@
     <span class="kn">from</span> <span class="nn">jina.serve.executors</span> <span class="kn">import</span> <span class="n">BaseExecutor</span>
 
 
-<div class="viewcode-block" id="Deployment"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment">[docs]</a><span class="k">class</span> <span class="nc">Deployment</span><span class="p">(</span><span class="n">PostMixin</span><span class="p">,</span> <span class="n">BaseOrchestrator</span><span class="p">):</span>
+<div class="viewcode-block" id="DeploymentType"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.DeploymentType">[docs]</a><span class="k">class</span> <span class="nc">DeploymentType</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ExitStack</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Type of Deployment, metaclass of :class:`Deployment`&quot;&quot;&quot;</span>
+
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Deployment"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment">[docs]</a><span class="k">class</span> <span class="nc">Deployment</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">PostMixin</span><span class="p">,</span> <span class="n">BaseOrchestrator</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">DeploymentType</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.</span>
 <span class="sd">    Internally, the pods can run with the process/thread backend. They can be also run in their own containers</span>
 <span class="sd">    :param args: arguments parsed from the CLI</span>
@@ -493,8 +511,7 @@
 
         <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">,</span> <span class="s1">&#39;noblock_on_start&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-                    <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">())</span>
             <span class="k">return</span> <span class="bp">self</span>
 
@@ -535,7 +552,7 @@
         <span class="n">metrics_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">metrics_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;executor&#39;</span><span class="p">,</span>
         <span class="n">native</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">no_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">output_array_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -600,7 +617,7 @@
 <span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
 <span class="sd">        :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param install_requirements: If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.</span>
-<span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
+<span class="sd">        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
 <span class="sd">        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</span>
 <span class="sd">        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</span>
 <span class="sd">        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.</span>
@@ -704,7 +721,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
 
             <span class="c1"># arguments common to both gateway and the Executor</span>
-            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">,</span> <span class="s1">&#39;log_config&#39;</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">field</span><span class="p">]</span>
 
@@ -712,6 +729,9 @@
         <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="n">log_config</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;log_config&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">log_config</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">log_config</span> <span class="o">=</span> <span class="n">log_config</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">polling</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">args</span><span class="o">.</span><span class="n">polling</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;polling&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span>
         <span class="p">)</span>
@@ -771,6 +791,15 @@
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_gateway</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stop_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">send_telemetry_event</span><span class="p">(</span>
+                <span class="n">event</span><span class="o">=</span><span class="s1">&#39;stop&#39;</span><span class="p">,</span>
+                <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">entity_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_entity_id</span><span class="p">,</span>
+                <span class="n">duration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_stop_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span><span class="p">,</span>
+                <span class="n">exc_type</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">exc_type</span><span class="p">),</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_parse_addresses_into_host_and_port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1166,7 +1195,7 @@
             <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_before&#39;</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_before&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="p">[])</span>
             <span class="o">+</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_after&#39;</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_after&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="p">[])</span>
             <span class="o">+</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="p">[])</span>
-            <span class="o">+</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="p">[])</span>
+            <span class="o">+</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_gateway</span> <span class="k">else</span> <span class="p">[])</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">]:</span>
             <span class="n">all_args</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">][</span><span class="n">shard_id</span><span class="p">]</span>
@@ -1216,6 +1245,33 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">worker_host</span></div>
 
+    <span class="k">def</span> <span class="nf">_wait_until_all_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">wait_for_ready_coro</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">_f</span><span class="p">():</span>
+            <span class="k">pass</span>
+
+        <span class="n">running_in_event_loop</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">_f</span><span class="p">())</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">running_in_event_loop</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">running_in_event_loop</span><span class="p">:</span>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">wait_for_ready_coro</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">wait_ready_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+                <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">wait_ready_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">wait_ready_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
 <div class="viewcode-block" id="Deployment.start"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Deployment&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start to run all :class:`Pod` in this Deployment.</span>
@@ -1226,6 +1282,7 @@
 <span class="sd">            If one of the :class:`Pod` fails to start, make sure that all of them</span>
 <span class="sd">            are properly closed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sandbox</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sandbox_deployed</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_sandbox_args</span><span class="p">()</span>
 
@@ -1234,26 +1291,22 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_before&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_before&#39;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;noblock_on_start&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-                <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_after&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_after&#39;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;noblock_on_start&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-                <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;noblock_on_start&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-                <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_gateway</span><span class="p">:</span>
             <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;noblock_on_start&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-                <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">]:</span>
@@ -1264,13 +1317,17 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">])</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">noblock_on_start</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_wait_until_all_ready</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_gateway</span><span class="p">:</span>
             <span class="n">all_panels</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_get_summary_table</span><span class="p">(</span><span class="n">all_panels</span><span class="p">)</span>
 
             <span class="kn">from</span> <span class="nn">rich.rule</span> <span class="kn">import</span> <span class="n">Rule</span>
 
             <span class="nb">print</span><span class="p">(</span><span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;:tada: Deployment is ready to serve!&#39;</span><span class="p">),</span> <span class="o">*</span><span class="n">all_panels</span><span class="p">)</span>
+
+            <span class="n">send_telemetry_event</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_entity_id</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
@@ -1279,10 +1336,6 @@
 
 <span class="sd">        If not successful, it will raise an error hoping the outer function to catch it</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">noblock_on_start</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">wait_start_success</span><span class="si">!r}</span><span class="s1"> should only be called when `noblock_on_start` is set to True&#39;</span>
-            <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
@@ -1303,10 +1356,6 @@
 
 <span class="sd">        If not successful, it will raise an error hoping the outer function to catch it</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">noblock_on_start</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="si">!r}</span><span class="s1"> should only be called when `noblock_on_start` is set to True&#39;</span>
-            <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">coros</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1414,7 +1463,7 @@
         <span class="k">return</span> <span class="n">all_devices</span><span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">])]</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_roundrobin_cuda_device</span><span class="p">(</span><span class="n">device_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_roundrobin_cuda_device</span><span class="p">(</span><span class="n">device_str</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse cuda device string with RR prefix</span>
 
 <span class="sd">        :param device_str: `RRm:n`, where `RR` is the prefix, m:n is python slice format</span>
@@ -1453,9 +1502,14 @@
         <span class="n">sharding_enabled</span> <span class="o">=</span> <span class="n">shards</span> <span class="ow">and</span> <span class="n">shards</span> <span class="o">&gt;</span> <span class="mi">1</span>
 
         <span class="n">cuda_device_map</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">env</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CUDA_VISIBLE_DEVICES&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;RR&#39;</span><span class="p">):</span>
+            <span class="n">args_env</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">env</span> <span class="ow">or</span> <span class="p">{}</span>
+            <span class="n">cuda_visible_devices</span> <span class="o">=</span> <span class="n">args_env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s1">&#39;CUDA_VISIBLE_DEVICES&#39;</span>
+            <span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CUDA_VISIBLE_DEVICES&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
             <span class="n">cuda_device_map</span> <span class="o">=</span> <span class="n">Deployment</span><span class="o">.</span><span class="n">_roundrobin_cuda_device</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CUDA_VISIBLE_DEVICES&#39;</span><span class="p">),</span> <span class="n">replicas</span>
+                <span class="n">cuda_visible_devices</span><span class="p">,</span> <span class="n">replicas</span>
             <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shards</span><span class="p">):</span>
@@ -1474,6 +1528,7 @@
                     <span class="n">_args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span>
 
                 <span class="k">if</span> <span class="n">cuda_device_map</span><span class="p">:</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="n">_args</span><span class="o">.</span><span class="n">env</span> <span class="ow">or</span> <span class="p">{}</span>
                     <span class="n">_args</span><span class="o">.</span><span class="n">env</span><span class="p">[</span><span class="s1">&#39;CUDA_VISIBLE_DEVICES&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cuda_device_map</span><span class="p">[</span><span class="n">replica_id</span><span class="p">])</span>
 
                 <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
@@ -1797,7 +1852,186 @@
             <span class="p">)</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">all_panels</span></div>
+        <span class="k">return</span> <span class="n">all_panels</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_docker_compose_address</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.config.docker_compose</span> <span class="kn">import</span> <span class="n">port</span>
+        <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.config.helper</span> <span class="kn">import</span> <span class="n">to_compatible_name</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
+            <span class="n">docker_compose_address</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="p">:</span>
+            <span class="n">docker_compose_address</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">docker_compose_address</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">docker_compose_address</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">rep_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span><span class="p">):</span>
+                    <span class="n">node_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">/rep-</span><span class="si">{</span><span class="n">rep_id</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="n">docker_compose_address</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="n">node_name</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="p">)</span>
+        <span class="k">return</span> <span class="n">docker_compose_address</span>
+
+    <span class="k">def</span> <span class="nf">_to_docker_compose_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployments_addresses</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.config.docker_compose</span> <span class="kn">import</span> <span class="p">(</span>
+            <span class="n">DockerComposeConfig</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">docker_compose_deployment</span> <span class="o">=</span> <span class="n">DockerComposeConfig</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">deployments_addresses</span><span class="o">=</span><span class="n">deployments_addresses</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">docker_compose_deployment</span><span class="o">.</span><span class="n">to_docker_compose_config</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_inner_gateway_to_docker_compose_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.config.docker_compose</span> <span class="kn">import</span> <span class="p">(</span>
+            <span class="n">DockerComposeConfig</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">port</span> <span class="ow">or</span> <span class="p">[</span><span class="n">random_port</span><span class="p">()]</span>
+        <span class="n">cargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">])</span>
+        <span class="n">cargs</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">__default_grpc_gateway__</span>
+        <span class="n">cargs</span><span class="o">.</span><span class="n">graph_description</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="se">{{</span><span class="s1">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot;: [&quot;end-gateway&quot;], &quot;start-gateway&quot;: [&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot;]</span><span class="se">}}</span><span class="s1">&#39;</span>
+        <span class="p">)</span>
+
+        <span class="n">docker_compose_deployment</span> <span class="o">=</span> <span class="n">DockerComposeConfig</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">=</span><span class="n">cargs</span><span class="p">,</span>
+            <span class="n">deployments_addresses</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docker_compose_address</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">docker_compose_deployment</span><span class="o">.</span><span class="n">to_docker_compose_config</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Deployment.to_docker_compose_yaml"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.to_docker_compose_yaml">[docs]</a>    <span class="k">def</span> <span class="nf">to_docker_compose_yaml</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">output_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">network_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts a Jina Deployment into a Docker compose YAML file</span>
+
+<span class="sd">        If you don&#39;t want to rebuild image on Jina Hub,</span>
+<span class="sd">        you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.</span>
+
+<span class="sd">        :param output_path: The path where to dump the yaml file</span>
+<span class="sd">        :param network_name: The name of the network that will be used by the deployment</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">yaml</span>
+
+        <span class="n">output_path</span> <span class="o">=</span> <span class="n">output_path</span> <span class="ow">or</span> <span class="s1">&#39;docker-compose.yml&#39;</span>
+        <span class="n">network_name</span> <span class="o">=</span> <span class="n">network_name</span> <span class="ow">or</span> <span class="s1">&#39;jina-network&#39;</span>
+
+        <span class="n">docker_compose_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;3.3&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;networks&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">network_name</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;driver&#39;</span><span class="p">:</span> <span class="s1">&#39;bridge&#39;</span><span class="p">}},</span>
+        <span class="p">}</span>
+        <span class="n">services</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">service_configs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_docker_compose_config</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">service_name</span><span class="p">,</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">service_configs</span><span class="p">:</span>
+            <span class="n">service</span><span class="p">[</span><span class="s1">&#39;networks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">network_name</span><span class="p">]</span>
+            <span class="n">services</span><span class="p">[</span><span class="n">service_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">service</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_gateway</span><span class="p">:</span>
+            <span class="n">service_configs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner_gateway_to_docker_compose_config</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">service_name</span><span class="p">,</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">service_configs</span><span class="p">:</span>
+                <span class="n">service</span><span class="p">[</span><span class="s1">&#39;networks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">network_name</span><span class="p">]</span>
+                <span class="n">services</span><span class="p">[</span><span class="n">service_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">service</span>
+
+        <span class="n">docker_compose_dict</span><span class="p">[</span><span class="s1">&#39;services&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">services</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">docker_compose_dict</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">command</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;docker-compose up&#39;</span>
+            <span class="k">if</span> <span class="n">output_path</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;docker-compose -f </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s1"> up&#39;</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Docker compose file has been created under [b]</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s1">[/b]. You can use it by running [b]</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1">[/b]&#39;</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_to_kubernetes_yaml</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">output_base_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">k8s_namespace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">k8s_deployments_addresses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">k8s_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">yaml</span>
+
+        <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.config.k8s</span> <span class="kn">import</span> <span class="n">K8sDeploymentConfig</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s1">&#39;The Deployment is external, cannot create YAML deployment files&#39;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;gateway&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">default_port</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_MONITORING</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_MONITORING</span>
+                <span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">default_port</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">deployments_addresses</span> <span class="o">=</span> <span class="n">k8s_deployments_addresses</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_gateway</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span>
+
+        <span class="n">k8s_deployment</span> <span class="o">=</span> <span class="n">K8sDeploymentConfig</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">k8s_namespace</span><span class="o">=</span><span class="n">k8s_namespace</span><span class="p">,</span> <span class="n">k8s_port</span><span class="o">=</span><span class="n">k8s_port</span>
+        <span class="p">)</span>
+
+        <span class="n">configs</span> <span class="o">=</span> <span class="n">k8s_deployment</span><span class="o">.</span><span class="n">to_kubernetes_yaml</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">k8s_objects</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_base_path</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">.yml&#39;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_base_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k8s_object</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">k8s_objects</span><span class="p">):</span>
+                    <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">k8s_object</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">k8s_objects</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;---</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Deployment.to_kubernetes_yaml"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.to_kubernetes_yaml">[docs]</a>    <span class="k">def</span> <span class="nf">to_kubernetes_yaml</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">output_base_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">k8s_namespace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts a Jina Deployment into a set of yaml deployments to deploy in Kubernetes.</span>
+
+<span class="sd">        If you don&#39;t want to rebuild image on Jina Hub,</span>
+<span class="sd">        you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.</span>
+
+<span class="sd">        :param output_base_path: The base path where to dump all the yaml files</span>
+<span class="sd">        :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">k8s_namespace</span> <span class="o">=</span> <span class="n">k8s_namespace</span> <span class="ow">or</span> <span class="s1">&#39;default&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_to_kubernetes_yaml</span><span class="p">(</span>
+            <span class="n">output_base_path</span><span class="p">,</span>
+            <span class="n">k8s_namespace</span><span class="o">=</span><span class="n">k8s_namespace</span><span class="p">,</span>
+            <span class="n">k8s_port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="ow">or</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;K8s yaml files have been created under [b]</span><span class="si">{</span><span class="n">output_base_path</span><span class="si">}</span><span class="s1">[/]. You can use it by running [b]kubectl apply -R -f </span><span class="si">{</span><span class="n">output_base_path</span><span class="si">}</span><span class="s1">[/]&#39;</span>
+        <span class="p">)</span></div>
+
+    <span class="n">to_k8s_yaml</span> <span class="o">=</span> <span class="n">to_kubernetes_yaml</span></div>
 </pre></div>
                 </article>
             </div>
@@ -1812,7 +2046,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 20, 2023</div>
+                            Last updated on Feb 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

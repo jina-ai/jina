@@ -22,6 +22,7 @@ Submodules
    jina.parsers.export
    jina.parsers.flow
    jina.parsers.helper
+   jina.parsers.logging
    jina.parsers.ping
 
 Module contents

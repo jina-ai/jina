@@ -6,10 +6,10 @@
 <meta property="og:title" content="Customization" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/gateway/customization/" />
-<meta property="og:site_name" content="Jina 3.13.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.14.0 Documentation" />
 <meta property="og:description" content="Gateways are customizable in Jina. You can implement them in much the same way as an Executor. With customized Gateways, Jina gives power back to the users, by allowing them to implement any server, protocol and interface at the gateway level. This means you have more freedom to: Define and expos..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.13.2 Documentation" />
+<meta property="og:image:alt" content="Jina 3.14.0 Documentation" />
 <meta name="description" content="Gateways are customizable in Jina. You can implement them in much the same way as an Executor. With customized Gateways, Jina gives power back to the users, by allowing them to implement any server, protocol and interface at the gateway level. This means you have more freedom to: Define and expos..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/gateway/customization.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Customization - Jina 3.13.2 documentation</title>
+        <title>Customization - Jina 3.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.13.2 documentation</div>
+                <div class="brand">Jina 3.14.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -261,9 +261,8 @@
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/"><span class="fas fa-gears"></span> Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../executor/basics/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/create/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../executor/run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/dynamic-batching/">Dynamic Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/health-check/">Health Check</a></li>
@@ -271,6 +270,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../executor/file-structure/">File Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/containerize/">Containerize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-in-flow/">Executors in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -326,6 +327,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/hub/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -645,6 +648,27 @@ It returns an <code class="docutils literal notranslate"><span class="pre">Async
         <span class="k">return</span> <span class="n">app</span>
 </pre></div>
 </div>
+<section id="recovering-executor-errors">
+<h3>Recovering Executor errors<a class="headerlink" href="#recovering-executor-errors" title="Permalink to this heading">#</a></h3>
+<p>Exceptions raised by an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> are captured in the server object which can be extracted by using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">jina.serve.streamer.stream()</span></code> method. The <code class="docutils literal notranslate"><span class="pre">stream</span></code> method
+returns an <code class="docutils literal notranslate"><span class="pre">AsyncGenerator</span></code> of a tuple of <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> and an optional <a class="reference internal" href="../../../api/jina.excepts/#jina.excepts.ExecutorError" title="jina.excepts.ExecutorError"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.ExecutorError</span></code></a> class that be used to check if the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> has issues processing the input request.
+The error can be utilized for retries, handling partial responses or returning default responses.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/endpoint&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="hll">    <span class="k">async</span> <span class="k">for</span> <span class="n">docs</span><span class="p">,</span> <span class="n">error</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span>
+</span><span class="hll">        <span class="n">docs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span>
+</span><span class="hll">        <span class="n">exec_endpoint</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
+</span><span class="hll">    <span class="p">):</span>
+</span><span class="hll">        <span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+</span><span class="hll">            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+</span><span class="hll">        <span class="k">else</span><span class="p">:</span>
+</span><span class="hll">            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</span>    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;results&#39;</span><span class="p">:</span> <span class="n">results</span><span class="p">,</span> <span class="s1">&#39;errors&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">error</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">]}</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="calling-an-individual-executor">
 <span id="executor-streamer"></span><h2>Calling an individual Executor<a class="headerlink" href="#calling-an-individual-executor" title="Permalink to this heading">#</a></h2>
@@ -824,11 +848,11 @@ In this case, dockerizing the gateway should be straighforward:</p>
 <li><p>Create a <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> which should have the following components:</p></li>
 </ul>
 <ol class="arabic simple">
-<li><p>Use a <a class="reference external" href="https://hub.docker.com/r/jinaai/jina">Jina based image</a> as the base image in your Dockerfile.
+<li><p>Use a <a class="reference external" href="https://hub.docker.com/r/jinaai/jina">Jina based image</a> with the <code class="docutils literal notranslate"><span class="pre">standard</span></code> tag, as the base image in your Dockerfile.
 This ensures that everything needed for Jina to run the Gateway is installed. Make sure the Jina Version used supports
 custom Gateways:</p></li>
 </ol>
-<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">jinaai/jina:3.12.0-py37-perf</span>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">jinaai/jina:latest-py37-standard</span>
 </pre></div>
 </div>
 <p>Alternatively, you can just install jina using <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
@@ -985,7 +1009,7 @@ health checks will be sent, it is important to specify them when including the g
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 20, 2023</div>
+                            Last updated on Feb 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -1024,7 +1048,10 @@ health checks will be sent, it is important to specify them when including the g
 <li><a class="reference internal" href="#subclass-from-gateway">Subclass from <code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#calling-executors-with-gatewaystreamer">Calling Executors with <code class="xref py py-class docutils literal notranslate"><span class="pre">GatewayStreamer</span></code></a></li>
+<li><a class="reference internal" href="#calling-executors-with-gatewaystreamer">Calling Executors with <code class="xref py py-class docutils literal notranslate"><span class="pre">GatewayStreamer</span></code></a><ul>
+<li><a class="reference internal" href="#recovering-executor-errors">Recovering Executor errors</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#calling-an-individual-executor">Calling an individual Executor</a></li>
 <li><a class="reference internal" href="#gateway-arguments">Gateway arguments</a><ul>
 <li><a class="reference internal" href="#runtime-attributes">Runtime attributes</a></li>
