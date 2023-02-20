@@ -60,13 +60,17 @@ The following concepts are covered in the user guide:
 ```{glossary}
 
 **Document**
-    Document is the fundamental data structure in Jina for representing multimodal data. It is the essential element of IO in Jina. More information can be found in [DocArray's Docs](https://docarray.jina.ai/fundamentals/document/). 
+    Document is the fundamental data structure in Jina for representing multimodal data. It is the essential element of IO in Jina services. More information can be found in [DocArray's Docs](https://docs.docarray.org/fundamentals/document/). 
 
 **DocumentArray**
     DocumentArray is a list-like container of multiple Documents. More information can be found in [DocArray's Docs](https://docarray.jina.ai/fundamentals/documentarray/). 
-    
+
 **Executor**
-    {class}`~jina.Executor` is a Python class that has a group of functions using {term}`DocumentArray` as IO. Loosely speaking, each Executor is a microservice. 
+    {class}`~jina.Executor` is a Python class that can serve logic using {term}`Document`. Loosely speaking, each Executor is a gRPC microservice. 
+
+**Deployment**
+    Deployment is a layer that orchestrates {term}`Executor`. It can be used to serve an Executor as a standalone 
+    service or as part of a {term}`Flow`. It encapsulates and abstracts internal replication details.
 
 **Flow**
     {class}`~jina.Flow` ties multiple {class}`~jina.Executor`s together into a logic pipeline to achieve a task. If an Executor is a microservice, then a Flow is the end-to-end service. 
@@ -76,9 +80,6 @@ The following concepts are covered in the user guide:
     
 **Client**
     {class}`~jina.Client` connects to a {term}`Gateway` and sends/receives data from it.
-
-**Deployment**
-    Deployment is an abstraction around {class}`~jina.Executor` that lets the {term}`Gateway` communicate with an Executor. It encapsulates and abstracts internal replication details.
 
 **gRPC, WebSocket, HTTP**
     These are network protocols for transmitting data. gRPC is always used for communication between {term}`Gateway` and {term}`Deployment`.
