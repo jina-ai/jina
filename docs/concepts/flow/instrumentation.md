@@ -3,7 +3,7 @@
 
 A {class}`~jina.Flow` exposes configuration parameters for leveraging [OpenTelemetry](https://opentelemetry.io) Tracing and Metrics observability features. These tools let you instrument and collect various signals which help to analyze your application's real-time behavior.
 
-A {class}`~jina.Flow` is composed of several microservices, namely the {class}`~jina.serve.runtimes.gateway.GatewayRuntime`, {class}`~jina.Executor`s, and potentially a {class}`~jina.serve.runtimes.head.HeadRuntime` (see the {ref}`architecture overview <architecture-overview>`). Each microservice is its own microservice. These services expose their own metrics using the Python [OpenTelemetry API and SDK](https://opentelemetry-python.readthedocs.io/en/stable/api/trace.html). 
+A {class}`~jina.Flow` is composed of several microservices, namely the {class}`~jina.serve.runtimes.gateway.GatewayRuntime`, {class}`~jina.Executor`s, and potentially a {class}`~jina.serve.runtimes.head.HeadRuntime` (see the {ref}`architecture overview <architecture-overview>`). These services expose their own metrics using the Python [OpenTelemetry API and SDK](https://opentelemetry-python.readthedocs.io/en/stable/api/trace.html). 
 
 Tracing and Metrics can be enabled and configured independently to allow more flexibility in the data collection and visualization setup.
 
