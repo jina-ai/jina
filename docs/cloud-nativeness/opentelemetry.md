@@ -198,6 +198,3 @@ A list of available metrics is in the {ref}`Flow Instrumentation <instrumenting-
 To update your existing Prometheus and Grafana configurations, refer to the {ref}`OpenTelemetry migration guide <opentelemetry-migration>`.
 ```
 
-## JCloud Support
-
-JCloud doesn't currently support OpenTelemetry. We'll make these features available soon. Until then, you can use the deprecated Prometheus-based {ref}`monitoring setup <monitoring>`.
