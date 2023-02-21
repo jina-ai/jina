@@ -4,7 +4,7 @@ set -e
 # Do NOT use this directly, use jinaai/protogen image
 # use jinaai/protogen:v21 in order to use compiler version == 21 (creates pb/docarray_pb2.py)
 # and use jinaai/protogen:latest to use compiler version <= 20 (creates pb2/docarray_pb2.py)
-# make sure to use jinaai/protogen:v21 to avoid overriting the module
+# make sure to use jinaai/protogen:v21 to avoid overwriting the module
 #
 # current dir: jina root (the one with README.md)
 # run the following in bash:
@@ -22,7 +22,8 @@ SRC_NAME="${MODULE}.proto"
 
 COMP_PROTO_OUT_NAME="${MODULE}_pb2.py"
 COMP_GRPC_OUT_NAME="${MODULE}_pb2_grpc.py"
-OUT_FOLDER="${2:-pb2}/"
+PB_NAME="${2:-pb2}"
+OUT_FOLDER="${PB_NAME}/"
 
 VER_FILE=../__init__.py
 
@@ -48,7 +49,7 @@ printf "using linux sed syntax, if you are running this on mac, you may want to 
 # for mac
 # sed -i '' -e 's/import\ jina_pb2\ as\ jina__pb2/from\ \.\ import\ jina_pb2\ as\ jina__pb2/' ${SRC_DIR}jina_pb2_grpc.py
 # for linux
-sed -i 's/import\ docarray_pb2/import\ docarray.proto.docarray_pb2/' "${SRC_DIR}${OUT_FOLDER}jina_pb2.py"
+sed -i "s/import\ docarray_pb2/import\ docarray.proto.${PB_NAME}.docarray_pb2/" "${SRC_DIR}${OUT_FOLDER}jina_pb2.py"
 sed -i 's/import\ jina_pb2\ as\ jina__pb2/from\ \.\.\ import\ serializer\ as\ jina__pb2/' "${SRC_DIR}${OUT_FOLDER}jina_pb2_grpc.py"
 
 OLDVER=$(sed -n 's/^__proto_version__ = '\''\(.*\)'\''$/\1/p' $VER_FILE)
