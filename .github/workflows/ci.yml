@@ -393,6 +393,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [3.7]
+        protobuf-version: ['==3.19.6', '']
     steps:
       - uses: actions/checkout@v2.5.0
       - name: Set up Python ${{ matrix.python-version }}
@@ -405,8 +406,8 @@ jobs:
           pip install -U "git+https://github.com/docarray/docarray@feat-rewrite-v2#egg=docarray[common]"
           python -m pip install --upgrade pip
           python -m pip install wheel
-          pip install -U protobuf==3.20.3
           pip install ".[common,devel,test]" --no-cache-dir
+          pip install -U protobuf${{ matrix.protobuf-version }}
           jina
           export JINA_LOG_LEVEL="ERROR"
       - name: Test
