@@ -78,8 +78,6 @@ async def create_executor_deployment_and_wait_ready(
             api_response = app_client.read_namespaced_deployment(
                 name=deployment_name, namespace=namespace
             )
-            print('api_response.status:', api_response.status)
-            print('namespaced events:', core_client.list_namespaced_event(namespace))
 
             expected_num_replicas = deployment_replicas_expected[deployment_name]
             if (
@@ -170,8 +168,8 @@ async def test_deployment_serve_k8s(
                 '/debug', inputs=DocumentArray.empty(3), stream=False
             ):
                 for doc in docs:
-                    assert doc.tags['shards'] == 1
-                    assert doc.tags['parallel'] == 3
+                    assert doc.tags['shards'] == shards
+                    assert doc.tags['parallel'] == replicas
                     visited.update(doc.tags['traversed-executors'])
             assert len(visited) == shards * replicas
 
