@@ -418,13 +418,9 @@ executors:
 Executor level `labels`:
 ```{code-block} yaml
 ---
-emphasize-lines: 9-12
+emphasize-lines: 5-8
 ---
 jtype: Flow
-jcloud:
-  labels:
-    username: johndoe
-    app: fashion-search
 executors:
   - name: executor1
     uses: jinaai+docker://<username>/Executor1
