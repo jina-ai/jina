@@ -2,6 +2,8 @@ import argparse
 import asyncio
 import copy
 import multiprocessing
+import platform
+import subprocess
 import os
 import re
 import signal
@@ -143,6 +145,14 @@ def _docker_run(
     else:
         ports = {f'{args.port}/tcp': args.port} if not net_mode else None
 
+    if platform.system() == 'Darwin':
+        try:
+            host_processor_architecture = subprocess.check_output(['uname', '-p'])
+            image_architecture = client.images.get(uses_img).attrs["Architecture"]
+            if image_architecture.startswith('amd'):
+                pass
+        except:
+            pass
     docker_kwargs = args.docker_kwargs or {}
     container = client.containers.run(
         uses_img,
