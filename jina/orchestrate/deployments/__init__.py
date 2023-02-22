@@ -843,31 +843,34 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         return worker_host
 
     def _wait_until_all_ready(self):
-        wait_for_ready_coro = self.async_wait_start_success()
+        import warnings
 
-        try:
-            _ = asyncio.get_event_loop()
-        except:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
+        with warnings.catch_warnings():
+            wait_for_ready_coro = self.async_wait_start_success()
 
-        async def _f():
-            pass
+            try:
+                _ = asyncio.get_event_loop()
+            except:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
 
-        running_in_event_loop = False
-        try:
-            asyncio.get_event_loop().run_until_complete(_f())
-        except:
-            running_in_event_loop = True
+            async def _f():
+                pass
 
-        if not running_in_event_loop:
-            asyncio.get_event_loop().run_until_complete(wait_for_ready_coro)
-        else:
-            wait_ready_thread = threading.Thread(
-                target=self.wait_start_success, daemon=True
-            )
-            wait_ready_thread.start()
-            wait_ready_thread.join()
+            running_in_event_loop = False
+            try:
+                asyncio.get_event_loop().run_until_complete(_f())
+            except:
+                running_in_event_loop = True
+
+            if not running_in_event_loop:
+                asyncio.get_event_loop().run_until_complete(wait_for_ready_coro)
+            else:
+                wait_ready_thread = threading.Thread(
+                    target=self.wait_start_success, daemon=True
+                )
+                wait_ready_thread.start()
+                wait_ready_thread.join()
 
     def start(self) -> 'Deployment':
         """
