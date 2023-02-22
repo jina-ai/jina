@@ -81,7 +81,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             self.shard_id = args[0].shard_id
             self._pods = []
             self.head_pod = head_pod
-            print(f' args {self.args}')
 
         @property
         def is_ready(self):
