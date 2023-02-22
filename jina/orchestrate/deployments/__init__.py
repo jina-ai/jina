@@ -579,7 +579,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         _head_args = copy.deepcopy(args)
         _head_args.polling = args.polling
-        _head_args.port = args.port[0]
+        _head_args.port = args.port if isinstance(args.port, int) else args.port[0]
         _head_args.host = args.host[0]
         _head_args.uses = args.uses
         _head_args.pod_role = PodRoleType.HEAD
