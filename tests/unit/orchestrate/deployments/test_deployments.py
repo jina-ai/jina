@@ -186,24 +186,24 @@ def test_pod_context_grpc_metadata(metadata):
         assert bp.grpc_metadata == metadata
 
 
-class AppendNameExecutor(Executor):
+class SetNameExecutor(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = self.runtime_args.name
 
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text=str(self.name)))
-        return docs
+        for doc in docs:
+            doc.text = str(self.name)
 
 
 @pytest.mark.slow
-def test_pod_activates_shards_replicas():
+def test_pod_in_flow_activates_shards_replicas():
     shards = 2
     replicas = 3
     args_list = ['--replicas', str(replicas), '--shards', str(shards), '--no-reduce']
     args = set_deployment_parser().parse_args(args_list)
-    args.uses = 'AppendNameExecutor'
+    args.uses = 'SetNameExecutor'
     with Deployment(args, include_gateway=False) as pod:
         assert pod.num_pods == 7
         response_texts = set()
@@ -227,6 +227,40 @@ def test_pod_activates_shards_replicas():
         )
 
     Deployment(args, include_gateway=False).start().close()
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize('shards', [1, 2])
+@pytest.mark.parametrize('replicas', [1, 2, 3])
+@pytest.mark.parametrize('include_gateway', [True, False])
+def test_standalone_deployment_activates_shards_replicas(
+    shards, replicas, include_gateway
+):
+    with Deployment(
+        shards=shards,
+        replicas=replicas,
+        uses=SetNameExecutor,
+        include_gateway=include_gateway,
+    ) as dep:
+        head_exists = 0 if shards == 1 else 1
+        gateway_exists = 1 if include_gateway else 0
+        assert dep.num_pods == shards * replicas + gateway_exists + head_exists
+        response_texts = set()
+        # replicas and shards are used in a round robin fashion, so sending shards * replicas requests should hit each one time
+
+        docs = dep.post(on='/', inputs=DocumentArray.empty(20), request_size=1)
+
+        response_texts.update(docs.texts)
+        print(response_texts)
+        assert shards * replicas == len(response_texts)
+        assert all(
+            text in response_texts
+            for text in [
+                f'executor/shard-{s}/rep-{r}' if shards > 1 else f'executor/rep-{r}'
+                for s in range(shards)
+                for r in range(replicas)
+            ]
+        )
 
 
 class AppendParamExecutor(Executor):
