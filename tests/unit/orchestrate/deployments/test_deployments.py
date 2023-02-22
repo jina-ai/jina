@@ -215,11 +215,10 @@ def test_pod_in_flow_activates_shards_replicas():
             )
             response_texts.update(response.response.docs.texts)
         print(response_texts)
-        assert 7 == len(response_texts)
+        assert 6 == len(response_texts)
         assert all(
             text in response_texts
-            for text in ['client']
-            + [
+            for text in [
                 f'executor/shard-{s}/rep-{r}'
                 for s in range(shards)
                 for r in range(replicas)
@@ -232,19 +231,14 @@ def test_pod_in_flow_activates_shards_replicas():
 @pytest.mark.slow
 @pytest.mark.parametrize('shards', [1, 2])
 @pytest.mark.parametrize('replicas', [1, 2, 3])
-@pytest.mark.parametrize('include_gateway', [True, False])
-def test_standalone_deployment_activates_shards_replicas(
-    shards, replicas, include_gateway
-):
+def test_standalone_deployment_activates_shards_replicas(shards, replicas):
     with Deployment(
         shards=shards,
         replicas=replicas,
         uses=SetNameExecutor,
-        include_gateway=include_gateway,
     ) as dep:
         head_exists = 0 if shards == 1 else 1
-        gateway_exists = 1 if include_gateway else 0
-        assert dep.num_pods == shards * replicas + gateway_exists + head_exists
+        assert dep.num_pods == shards * replicas + 1 + head_exists
         response_texts = set()
         # replicas and shards are used in a round robin fashion, so sending shards * replicas requests should hit each one time
 

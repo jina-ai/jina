@@ -106,7 +106,11 @@ async def create_executor_deployment_and_wait_ready(
     [['test-executor']],
     indirect=True,
 )
-async def test_deployment_serve_k8s(logger, docker_images, tmpdir, k8s_cluster):
+@pytest.mark.parametrize('shards', [1, 2])
+@pytest.mark.parametrize('replicas', [1, 2])
+async def test_deployment_serve_k8s(
+    logger, docker_images, shards, replicas, tmpdir, k8s_cluster
+):
     from kubernetes import client
 
     namespace = 'test-deployment-serve-k8s'
@@ -120,7 +124,8 @@ async def test_deployment_serve_k8s(logger, docker_images, tmpdir, k8s_cluster):
         dep = Deployment(
             name='test-executor',
             uses=f'docker://{docker_images[0]}',
-            replicas=3,
+            shards=shards,
+            replicas=replicas,
             port=port,
         )
 
@@ -134,7 +139,7 @@ async def test_deployment_serve_k8s(logger, docker_images, tmpdir, k8s_cluster):
             app_client=app_client,
             core_client=core_client,
             deployment_replicas_expected={
-                'test-executor': 3,
+                'test-executor': replicas,
             },
             logger=logger,
         )
@@ -155,16 +160,20 @@ async def test_deployment_serve_k8s(logger, docker_images, tmpdir, k8s_cluster):
                 '/debug', inputs=DocumentArray.empty(3), stream=True
             ):
                 for doc in docs:
-                    assert doc.tags['shards'] == 1
-                    assert doc.tags['parallel'] == 3
+                    assert doc.tags['shards'] == shards
+                    assert doc.tags['parallel'] == replicas
 
             # test without streaming
+            # without streaming, replicas are properly supported
+            visited = {}
             async for docs in client.post(
                 '/debug', inputs=DocumentArray.empty(3), stream=False
             ):
                 for doc in docs:
                     assert doc.tags['shards'] == 1
                     assert doc.tags['parallel'] == 3
+                    visited.update(doc.tags['traversed-executors'])
+            assert len(visited) == shards * replicas
 
     except Exception as exc:
         logger.error(f' Exception raised {exc}')
