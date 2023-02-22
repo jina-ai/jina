@@ -1814,6 +1814,7 @@ class Flow(
 
     def _wait_until_all_ready(self):
         import warnings
+
         with warnings.catch_warnings():
 
             results = {}
@@ -1880,7 +1881,9 @@ class Flow(
 
                         pending_str = ' '.join(pendings)
 
-                        progress.update(task, completed=num_done, pending_str=pending_str)
+                        progress.update(
+                            task, completed=num_done, pending_str=pending_str
+                        )
 
                         if not pendings:
                             break
