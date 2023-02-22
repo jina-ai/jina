@@ -21,10 +21,10 @@ from jina.clients import Client
 from jina.clients.mixin import PostMixin
 from jina.constants import (
     __default_executor__,
+    __default_grpc_gateway__,
     __default_host__,
     __docker_host__,
     __windows__,
-    __default_grpc_gateway__,
 )
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
 from jina.helper import (
@@ -375,30 +375,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 self._gateway_kwargs, gateway_parser, True
             )
 
-            def _get_deployments_addresses() -> Dict[str, List[str]]:
-                graph_dict = {}
-                if self.head_args:
-                    # add head information
-                    graph_dict['executor'] = [
-                        f'{self.protocol}://{self.host}:{self.head_port}'
-                    ]
-                else:
-                    # there is no head, add the worker connection information instead
-                    ports = self.ports
-                    hosts = [
-                        __docker_host__
-                        if host_is_local(host) and in_docker() and self.dockerized_uses
-                        else host
-                        for host in self.hosts
-                    ]
-                    graph_dict['executor'] = [
-                        f'{self.protocol}://{host}:{port}'
-                        for host, port in zip(hosts, ports)
-                    ]
-
-                return graph_dict
-
-            args.deployments_addresses = json.dumps(_get_deployments_addresses())
+            args.deployments_addresses = json.dumps(
+                {'executor': self._get_connection_list()}
+            )
             args.graph_description = (
                 '{"start-gateway": ["executor"], "executor": ["end-gateway"]}'
             )
@@ -409,6 +388,23 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         self._sandbox_deployed = False
 
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
+
+    def _get_connection_list(self) -> List[str]:
+        if self.head_args:
+            # add head information
+            return [f'{self.protocol}://{self.host}:{self.head_port}']
+        else:
+            # there is no head, add the worker connection information instead
+            ports = self.ports
+            hosts = [
+                __docker_host__
+                if host_is_local(host) and in_docker() and self.dockerized_uses
+                else host
+                for host in self.hosts
+            ]
+            return [
+                f'{self.protocol}://{host}:{port}' for host, port in zip(hosts, ports)
+            ]
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)

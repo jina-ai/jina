@@ -684,26 +684,7 @@ class Flow(
         for node, deployment in self._deployment_nodes.items():
             if node == GATEWAY_NAME:
                 continue
-            if deployment.head_args:
-                # add head information
-                graph_dict[node] = [
-                    f'{deployment.protocol}://{deployment.host}:{deployment.head_port}'
-                ]
-            else:
-                # there is no head, add the worker connection information instead
-                ports = deployment.ports
-                hosts = [
-                    __docker_host__
-                    if host_is_local(host)
-                    and in_docker()
-                    and deployment.dockerized_uses
-                    else host
-                    for host in deployment.hosts
-                ]
-                graph_dict[node] = [
-                    f'{deployment.protocol}://{host}:{port}'
-                    for host, port in zip(hosts, ports)
-                ]
+            graph_dict[node] = deployment._get_connection_list()
 
         return graph_dict
 
