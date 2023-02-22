@@ -188,12 +188,12 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
     async def async_cancel(self):
         """Stop the GRPC server"""
         self.logger.debug('cancel HeadRuntime')
-        await self.cancel_warmup_task()
+        self.cancel_warmup_task()
         await self._grpc_server.stop(0)
 
     async def async_teardown(self):
         """Close the connection pool"""
-        await self.cancel_warmup_task()
+        self.cancel_warmup_task()
         await self._health_servicer.enter_graceful_shutdown()
         await self.async_cancel()
         await self.connection_pool.close()
