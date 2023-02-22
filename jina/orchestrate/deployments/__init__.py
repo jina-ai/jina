@@ -81,7 +81,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             self.shard_id = args[0].shard_id
             self._pods = []
             self.head_pod = head_pod
-            print(f' args {self.args}')
 
         @property
         def is_ready(self):
@@ -108,7 +107,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             )
 
         def __enter__(self):
-            print(f' len args {len(self.args)}')
             for _args in self.args:
                 _args.noblock_on_start = True
                 self._pods.append(PodFactory.build_pod(_args).start())
@@ -929,7 +927,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         if self._include_gateway:
             _args = self.pod_args['gateway']
             _args.noblock_on_start = True
-            print(f' args {_args}')
             self.gateway_pod = PodFactory.build_pod(_args)
             self.enter_context(self.gateway_pod)
         for shard_id in self.pod_args['pods']:
