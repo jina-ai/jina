@@ -2,11 +2,11 @@ import argparse
 import asyncio
 import copy
 import multiprocessing
-import platform
-import subprocess
 import os
+import platform
 import re
 import signal
+import subprocess
 import threading
 import time
 from typing import TYPE_CHECKING, Dict, Optional, Union
@@ -148,11 +148,16 @@ def _docker_run(
     if platform.system() == 'Darwin':
         try:
             host_processor_architecture = subprocess.check_output(['uname', '-p'])
-            image_architecture = client.images.get(uses_img).attrs["Architecture"]
-            if image_architecture.startswith('amd'):
-                pass
-        except:
-            pass
+        except subprocess.CalledProcessError:
+            # assume it's an amd processor
+            host_processor_architecture = 'amd'
+        image_architecture = client.images.get(uses_img).attrs.get('Architecture', '')
+        if not image_architecture.startswith(
+            'arm'
+        ) and host_processor_architecture.startswith('arm'):
+            logger.warning(
+                'Host machine uses an AMD processor but the container does not support this architecture'
+            )
     docker_kwargs = args.docker_kwargs or {}
     container = client.containers.run(
         uses_img,
