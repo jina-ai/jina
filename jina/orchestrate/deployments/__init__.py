@@ -71,16 +71,17 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
     class _ReplicaSet:
         def __init__(
-            self,
-            deployment_args: Namespace,
-            args: List[Namespace],
-            head_pod,
+                self,
+                deployment_args: Namespace,
+                args: List[Namespace],
+                head_pod,
         ):
             self.deployment_args = copy.copy(deployment_args)
             self.args = args
             self.shard_id = args[0].shard_id
             self._pods = []
             self.head_pod = head_pod
+            print(f' args {self.args}')
 
         @property
         def is_ready(self):
@@ -107,6 +108,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             )
 
         def __enter__(self):
+            print(f' len args {len(self.args)}')
             for _args in self.args:
                 _args.noblock_on_start = True
                 self._pods.append(PodFactory.build_pod(_args).start())
@@ -126,65 +128,65 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
     # overload_inject_start_deployment
     @overload
     def __init__(
-        self,
-        *,
-        compression: Optional[str] = None,
-        connection_list: Optional[str] = None,
-        disable_auto_volume: Optional[bool] = False,
-        docker_kwargs: Optional[dict] = None,
-        entrypoint: Optional[str] = None,
-        env: Optional[dict] = None,
-        env_from_secret: Optional[dict] = None,
-        exit_on_exceptions: Optional[List[str]] = [],
-        external: Optional[bool] = False,
-        floating: Optional[bool] = False,
-        force_update: Optional[bool] = False,
-        gpus: Optional[str] = None,
-        grpc_metadata: Optional[dict] = None,
-        grpc_server_options: Optional[dict] = None,
-        host: Optional[List[str]] = ['0.0.0.0'],
-        install_requirements: Optional[bool] = False,
-        log_config: Optional[str] = None,
-        metrics: Optional[bool] = False,
-        metrics_exporter_host: Optional[str] = None,
-        metrics_exporter_port: Optional[int] = None,
-        monitoring: Optional[bool] = False,
-        name: Optional[str] = 'executor',
-        native: Optional[bool] = False,
-        no_reduce: Optional[bool] = False,
-        output_array_type: Optional[str] = None,
-        polling: Optional[str] = 'ANY',
-        port: Optional[int] = None,
-        port_monitoring: Optional[int] = None,
-        prefer_platform: Optional[str] = None,
-        py_modules: Optional[List[str]] = None,
-        quiet: Optional[bool] = False,
-        quiet_error: Optional[bool] = False,
-        reload: Optional[bool] = False,
-        replicas: Optional[int] = 1,
-        retries: Optional[int] = -1,
-        runtime_cls: Optional[str] = 'WorkerRuntime',
-        shards: Optional[int] = 1,
-        timeout_ctrl: Optional[int] = 60,
-        timeout_ready: Optional[int] = 600000,
-        timeout_send: Optional[int] = None,
-        tls: Optional[bool] = False,
-        traces_exporter_host: Optional[str] = None,
-        traces_exporter_port: Optional[int] = None,
-        tracing: Optional[bool] = False,
-        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
-        uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
-        uses_after_address: Optional[str] = None,
-        uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
-        uses_before_address: Optional[str] = None,
-        uses_dynamic_batching: Optional[dict] = None,
-        uses_metas: Optional[dict] = None,
-        uses_requests: Optional[dict] = None,
-        uses_with: Optional[dict] = None,
-        volumes: Optional[List[str]] = None,
-        when: Optional[dict] = None,
-        workspace: Optional[str] = None,
-        **kwargs,
+            self,
+            *,
+            compression: Optional[str] = None,
+            connection_list: Optional[str] = None,
+            disable_auto_volume: Optional[bool] = False,
+            docker_kwargs: Optional[dict] = None,
+            entrypoint: Optional[str] = None,
+            env: Optional[dict] = None,
+            env_from_secret: Optional[dict] = None,
+            exit_on_exceptions: Optional[List[str]] = [],
+            external: Optional[bool] = False,
+            floating: Optional[bool] = False,
+            force_update: Optional[bool] = False,
+            gpus: Optional[str] = None,
+            grpc_metadata: Optional[dict] = None,
+            grpc_server_options: Optional[dict] = None,
+            host: Optional[List[str]] = ['0.0.0.0'],
+            install_requirements: Optional[bool] = False,
+            log_config: Optional[str] = None,
+            metrics: Optional[bool] = False,
+            metrics_exporter_host: Optional[str] = None,
+            metrics_exporter_port: Optional[int] = None,
+            monitoring: Optional[bool] = False,
+            name: Optional[str] = 'executor',
+            native: Optional[bool] = False,
+            no_reduce: Optional[bool] = False,
+            output_array_type: Optional[str] = None,
+            polling: Optional[str] = 'ANY',
+            port: Optional[int] = None,
+            port_monitoring: Optional[int] = None,
+            prefer_platform: Optional[str] = None,
+            py_modules: Optional[List[str]] = None,
+            quiet: Optional[bool] = False,
+            quiet_error: Optional[bool] = False,
+            reload: Optional[bool] = False,
+            replicas: Optional[int] = 1,
+            retries: Optional[int] = -1,
+            runtime_cls: Optional[str] = 'WorkerRuntime',
+            shards: Optional[int] = 1,
+            timeout_ctrl: Optional[int] = 60,
+            timeout_ready: Optional[int] = 600000,
+            timeout_send: Optional[int] = None,
+            tls: Optional[bool] = False,
+            traces_exporter_host: Optional[str] = None,
+            traces_exporter_port: Optional[int] = None,
+            tracing: Optional[bool] = False,
+            uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
+            uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+            uses_after_address: Optional[str] = None,
+            uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+            uses_before_address: Optional[str] = None,
+            uses_dynamic_batching: Optional[dict] = None,
+            uses_metas: Optional[dict] = None,
+            uses_requests: Optional[dict] = None,
+            uses_with: Optional[dict] = None,
+            volumes: Optional[List[str]] = None,
+            when: Optional[dict] = None,
+            workspace: Optional[str] = None,
+            **kwargs,
     ):
         """Create a Deployment to serve or deploy and Executor or Gateway
 
@@ -302,11 +304,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
     # overload_inject_end_deployment
 
     def __init__(
-        self,
-        args: Union['Namespace', Dict, None] = None,
-        needs: Optional[Set[str]] = None,
-        include_gateway: bool = True,
-        **kwargs,
+            self,
+            args: Union['Namespace', Dict, None] = None,
+            needs: Optional[Set[str]] = None,
+            include_gateway: bool = True,
+            **kwargs,
     ):
         super().__init__()
         self._gateway_kwargs = {}
@@ -336,7 +338,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         if getattr(args, 'shards', 1) == 1:
             self.args.polling = PollingType.ANY
         self.needs = (
-            needs or set()
+                needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
 
         # parse addresses for distributed replicas
@@ -351,7 +353,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             self._parse_addresses_into_host_and_port()
         if len(self.ext_repl_ports) > 1:
             if self.args.replicas != 1 and self.args.replicas != len(
-                self.ext_repl_ports
+                    self.ext_repl_ports
             ):
                 raise ValueError(
                     f'Number of hosts ({len(self.args.host)}) does not match the number of replicas ({self.args.replicas})'
@@ -373,7 +375,32 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 self._gateway_kwargs, gateway_parser, True
             )
 
-            args.deployments_addresses = f'{{"executor": ["0.0.0.0:{self.port}"]}}'
+            def _get_deployments_addresses() -> Dict[str, List[str]]:
+                graph_dict = {}
+                if self.head_args:
+                    # add head information
+                    graph_dict['executor'] = [
+                        f'{self.protocol}://{self.host}:{self.head_port}'
+                    ]
+                else:
+                    # there is no head, add the worker connection information instead
+                    ports = self.ports
+                    hosts = [
+                        __docker_host__
+                        if host_is_local(host)
+                           and in_docker()
+                           and self.dockerized_uses
+                        else host
+                        for host in self.hosts
+                    ]
+                    graph_dict['executor'] = [
+                        f'{self.protocol}://{host}:{port}'
+                        for host, port in zip(hosts, ports)
+                    ]
+
+                return graph_dict
+
+            args.deployments_addresses = json.dumps(_get_deployments_addresses())
             args.graph_description = (
                 '{"start-gateway": ["executor"], "executor": ["end-gateway"]}'
             )
@@ -412,7 +439,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         for i, repl_host in enumerate(self.ext_repl_hosts):
             _hostname, port, scheme, tls = parse_host_scheme(repl_host)
             if (
-                _hostname != self.ext_repl_hosts[i]
+                    _hostname != self.ext_repl_hosts[i]
             ):  # more than just hostname was passed to `host`
                 self.ext_repl_hosts[i] = _hostname
                 self.ext_repl_ports[i] = port
@@ -425,13 +452,13 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         ext_repl_hosts: List = self.args.host.copy()
         if len(ext_repl_hosts) < len(ext_repl_ports):
             if (
-                len(ext_repl_hosts) == 1
+                    len(ext_repl_hosts) == 1
             ):  # only one host given, assume replicas are on the same host
                 ext_repl_hosts = ext_repl_hosts * len(ext_repl_ports)
                 self.args.host = self.args.host * len(ext_repl_ports)
         elif len(ext_repl_hosts) > len(ext_repl_ports):
             if (
-                len(ext_repl_ports) == 1
+                    len(ext_repl_ports) == 1
             ):  # only one port given, assume replicas are on the same port
                 ext_repl_ports = ext_repl_ports * len(ext_repl_hosts)
                 self.args.port = self.args.port * len(ext_repl_hosts)
@@ -724,7 +751,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         )
 
     def _parse_args(
-        self, args: Namespace
+            self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
         return self._parse_base_deployment_args(args)
 
@@ -789,10 +816,10 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         .. # noqa: DAR201
         """
         all_args = (
-            ([self.pod_args['uses_before']] if self.pod_args['uses_before'] else [])
-            + ([self.pod_args['uses_after']] if self.pod_args['uses_after'] else [])
-            + ([self.pod_args['head']] if self.pod_args['head'] else [])
-            + ([self.pod_args['gateway']] if self._include_gateway else [])
+                ([self.pod_args['uses_before']] if self.pod_args['uses_before'] else [])
+                + ([self.pod_args['uses_after']] if self.pod_args['uses_after'] else [])
+                + ([self.pod_args['head']] if self.pod_args['head'] else [])
+                + ([self.pod_args['gateway']] if self._include_gateway else [])
         )
         for shard_id in self.pod_args['pods']:
             all_args += self.pod_args['pods'][shard_id]
@@ -837,7 +864,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         worker_host = (
             __docker_host__
             if (pod_is_container and (head_is_container or in_docker()))
-            and host_is_local(pod_args.host)
+               and host_is_local(pod_args.host)
             else pod_args.host
         )
         return worker_host
@@ -904,6 +931,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         if self._include_gateway:
             _args = self.pod_args['gateway']
             _args.noblock_on_start = True
+            print(f' args {_args}')
             self.gateway_pod = PodFactory.build_pod(_args)
             self.enter_context(self.gateway_pod)
         for shard_id in self.pod_args['pods']:
@@ -1068,10 +1096,10 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :return: a map from replica id to device id
         """
         if (
-            device_str
-            and isinstance(device_str, str)
-            and device_str.startswith('RR')
-            and replicas >= 1
+                device_str
+                and isinstance(device_str, str)
+                and device_str.startswith('RR')
+                and replicas >= 1
         ):
             try:
                 num_devices = str(subprocess.check_output(['nvidia-smi', '-L'])).count(
@@ -1157,12 +1185,12 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                         _args.port = random_port()
                     elif shards > 1:
                         port_monitoring_index = (
-                            replica_id + replicas * shard_id + 1
+                                replica_id + replicas * shard_id + 1
                         )  # the first index is for the head
                         _args.port_monitoring = (
                             random_port()
                             if port_monitoring_index
-                            >= len(self.args.all_port_monitoring)
+                               >= len(self.args.all_port_monitoring)
                             else self.args.all_port_monitoring[
                                 port_monitoring_index
                             ]  # we skip the head port here
@@ -1227,8 +1255,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         # also there a no heads created, if there are no shards
         if self.role != DeploymentRoleType.GATEWAY and getattr(args, 'shards', 1) > 1:
             if (
-                getattr(args, 'uses_before', None)
-                and args.uses_before != __default_executor__
+                    getattr(args, 'uses_before', None)
+                    and args.uses_before != __default_executor__
             ):
                 uses_before_args = self._set_uses_before_after_args(
                     args, entity_type='uses_before'
@@ -1238,8 +1266,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     f'{uses_before_args.host}:{uses_before_args.port}'
                 )
             if (
-                getattr(args, 'uses_after', None)
-                and args.uses_after != __default_executor__
+                    getattr(args, 'uses_after', None)
+                    and args.uses_after != __default_executor__
             ):
                 uses_after_args = self._set_uses_before_after_args(
                     args, entity_type='uses_after'
@@ -1353,8 +1381,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         return mermaid_graph
 
     def block(
-        self,
-        stop_event: Optional[Union['threading.Event', 'multiprocessing.Event']] = None,
+            self,
+            stop_event: Optional[Union['threading.Event', 'multiprocessing.Event']] = None,
     ):
         """Block the Deployment until `stop_event` is set or user hits KeyboardInterrupt
 
@@ -1379,8 +1407,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             if watch_changes and self._is_executor_from_yaml:
 
                 with ImportExtensions(
-                    required=True,
-                    help_text='''reload requires watchfiles dependency to be installed. You can do `pip install 
+                        required=True,
+                        help_text='''reload requires watchfiles dependency to be installed. You can do `pip install 
                     watchfiles''',
                 ):
                     from watchfiles import watch
@@ -1503,9 +1531,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         return docker_compose_deployment.to_docker_compose_config()
 
     def to_docker_compose_yaml(
-        self,
-        output_path: Optional[str] = None,
-        network_name: Optional[str] = None,
+            self,
+            output_path: Optional[str] = None,
+            network_name: Optional[str] = None,
     ):
         """
         Converts a Jina Deployment into a Docker compose YAML file
@@ -1555,11 +1583,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         )
 
     def _to_kubernetes_yaml(
-        self,
-        output_base_path: str,
-        k8s_namespace: Optional[str] = None,
-        k8s_deployments_addresses: Optional[Dict] = None,
-        k8s_port: Optional[int] = GrpcConnectionPool.K8S_PORT,
+            self,
+            output_base_path: str,
+            k8s_namespace: Optional[str] = None,
+            k8s_deployments_addresses: Optional[Dict] = None,
+            k8s_port: Optional[int] = GrpcConnectionPool.K8S_PORT,
     ):
         import yaml
 
@@ -1605,9 +1633,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                         fp.write('---\n')
 
     def to_kubernetes_yaml(
-        self,
-        output_base_path: str,
-        k8s_namespace: Optional[str] = None,
+            self,
+            output_base_path: str,
+            k8s_namespace: Optional[str] = None,
     ):
         """
         Converts a Jina Deployment into a set of yaml deployments to deploy in Kubernetes.
