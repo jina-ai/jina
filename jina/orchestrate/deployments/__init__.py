@@ -1638,7 +1638,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
         """
         k8s_namespace = k8s_namespace or 'default'
-        k8s_port = self.port if isinstance(self.port, int) else self.port[0]
+        k8s_port = self.port[0] if isinstance(self.port, list) else self.port
         self._to_kubernetes_yaml(
             output_base_path,
             k8s_namespace=k8s_namespace,
