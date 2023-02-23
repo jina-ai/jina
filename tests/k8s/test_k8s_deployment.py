@@ -1,5 +1,6 @@
 import asyncio
 import os
+import uuid
 
 import pytest
 from docarray import DocumentArray
@@ -127,7 +128,9 @@ async def test_deployment_serve_k8s(
             port=port,
         )
 
-        dump_path = os.path.join(str(tmpdir), 'test-deployment-serve-k8s')
+        dump_path = os.path.join(
+            str(tmpdir), f'test-deployment-serve-k8s-{shards}-{replicas}'
+        )
         dep.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
         await create_executor_deployment_and_wait_ready(
