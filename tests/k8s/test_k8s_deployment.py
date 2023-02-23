@@ -166,15 +166,14 @@ async def test_deployment_serve_k8s(
 
             # test without streaming
             # without streaming, replicas are properly supported
-            visited = {}
+            visited = set()
             async for docs in client.post(
                 '/debug', inputs=DocumentArray.empty(3), stream=False
             ):
                 for doc in docs:
                     assert doc.tags['shards'] == shards
                     assert doc.tags['parallel'] == replicas
-                    print('traversed executors', doc.tags['traversed-executors'])
-                    visited.update(doc.tags['traversed-executors'])
+                    visited.add(doc.tags['hostname'])
             assert len(visited) == shards * replicas
 
     except Exception as exc:
