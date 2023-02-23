@@ -77,7 +77,7 @@ Jina has three fundamental concepts:
 
 - A [**Document**](https://docarray.jina.ai/) (from [DocArray](https://github.com/docarray/docarray)) is the input/output format in Jina.
 - An [**Executor**](https://docs.jina.ai/concepts/executor/) is a Python class that transforms and processes Documents.
-- A [**Flow**](https://docs.jina.ai/concepts/flow/) and [**Deployment**](https://docs.jina.ai/concepts/executor/serve/#serve-directly) orchestrate Executors into standalone services or pipelines.
+- A [**Deployment**](https://docs.jina.ai/concepts/executor/serve/#serve-directly) serves a single Executor, while a [**Flow**](https://docs.jina.ai/concepts/flow/) serves Executors chained into a pipeline.
 
 [The full glossary is explained here](https://docs.jina.ai/concepts/preliminaries/#).
 
@@ -92,7 +92,10 @@ Jina has three fundamental concepts:
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jina/blob/master/.github/getting-started/notebook.ipynb)
 
-Let's build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an [Executor](https://docs.jina.ai/concepts/executor/). Our simple Executor will use Facebook's mBART-50 model to translate French to English. 
+Let's build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an **[Executor](https://docs.jina.ai/concepts/executor/)**. Our simple Executor will use Facebook's mBART-50 model to translate French to English. We'll then use a **Deployment** to serve it.
+
+> **Note**
+> A Deployment serves just one Executor. To combine multiple Executors into a pipeline and serve that, use a [Flow](#build-a-pipeline).
 
 > **Note**
 > Run the [code in Colab](https://colab.research.google.com/assets/colab-badge.svg) to install all dependencies.
@@ -216,6 +219,9 @@ an astronaut is walking in a park
 Sometimes you want to chain microservices together into a pipeline. That's where a [Flow](https://docs.jina.ai/concepts/flow/) comes in.
 
 A Flow is a [DAG](https://de.wikipedia.org/wiki/DAG) pipeline, composed of a set of steps, It orchestrates a set of [Executors](https://docs.jina.ai/concepts/executor/) and a [Gateway](https://docs.jina.ai/concepts/gateway/) to offer an end-to-end service.
+
+> **Note**
+> If you just want to serve a single Executor, you can use a [Deployment](#build-ai--ml-services).
 
 For instance, let's combine [our French translation service](#build-ai--ml-services) with a Stable Diffusion image generation service from Jina AI's [Executor Hub](https://cloud.jina.ai/executors). Chaining these services together into a [Flow](https://docs.jina.ai/concepts/flow/) will give us a multilingual image generation service.
 
