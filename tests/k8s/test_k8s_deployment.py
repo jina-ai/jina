@@ -155,9 +155,11 @@ async def test_deployment_serve_k8s(
         # start port forwarding
         from jina.clients import Client
 
+        service_name = 'svc/test-executor' if shards == 1 else 'svc/test-executor-head'
+
         with shell_portforward(
             k8s_cluster._cluster.kubectl_path,
-            'svc/test-executor',
+            service_name,
             port,
             port,
             namespace,
