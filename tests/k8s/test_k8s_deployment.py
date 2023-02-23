@@ -178,7 +178,7 @@ async def test_deployment_serve_k8s(
             # without streaming, replicas are properly supported
             visited = set()
             async for docs in client.post(
-                '/debug', inputs=DocumentArray.empty(3), stream=False
+                '/debug', inputs=DocumentArray.empty(20), stream=False, request_size=1
             ):
                 for doc in docs:
                     assert doc.tags['shards'] == shards
