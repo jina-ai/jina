@@ -65,6 +65,7 @@ async def create_executor_deployment_and_wait_ready(
             and len(namespaced_pods.items) == expected_deployments
         ):
             break
+        print('pods:', namespaced_pods.items)
         logger.info(
             f'Waiting for all {expected_deployments} Deployments to be created, only got {len(namespaced_pods.items) if namespaced_pods.items is not None else None}'
         )
