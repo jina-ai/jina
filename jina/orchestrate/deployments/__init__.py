@@ -1638,10 +1638,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
         """
         k8s_namespace = k8s_namespace or 'default'
+        k8s_port = self.port if isinstance(self.port, int) else self.port[0]
         self._to_kubernetes_yaml(
             output_base_path,
             k8s_namespace=k8s_namespace,
-            k8s_port=self.port or GrpcConnectionPool.K8S_PORT,
+            k8s_port=k8s_port or GrpcConnectionPool.K8S_PORT,
         )
         self.logger.info(
             f'K8s yaml files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'
