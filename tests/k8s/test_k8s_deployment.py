@@ -183,7 +183,11 @@ async def test_deployment_serve_k8s(
                     assert doc.tags['shards'] == shards
                     assert doc.tags['parallel'] == replicas
                     visited.add(doc.tags['hostname'])
-            assert len(visited) == shards * replicas
+
+            # port forwarding will always hit the same replica, therefore, with no head, there is no proper
+            # load balancing mechanism with just port forwarding
+            if not (shards == 1 and replicas == 2):
+                assert len(visited) == shards * replicas
 
     except Exception as exc:
         logger.error(f' Exception raised {exc}')
