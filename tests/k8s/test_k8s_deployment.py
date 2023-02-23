@@ -133,15 +133,22 @@ async def test_deployment_serve_k8s(
         )
         dep.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
+        deployment_replicas_expected = (
+            {'test-executor': replicas}
+            if shards == 1
+            else {
+                'test-executor-head': 1,
+                **{f'test-executor-{i}': replicas for i in range(shards)},
+            }
+        )
+
         await create_executor_deployment_and_wait_ready(
             dump_path,
             namespace=namespace,
             api_client=api_client,
             app_client=app_client,
             core_client=core_client,
-            deployment_replicas_expected={
-                'test-executor': replicas,
-            },
+            deployment_replicas_expected=deployment_replicas_expected,
             logger=logger,
         )
         # start port forwarding
