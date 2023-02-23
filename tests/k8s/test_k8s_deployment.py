@@ -103,7 +103,7 @@ async def create_executor_deployment_and_wait_ready(
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize(
     'docker_images',
-    [['test-executor']],
+    [['test-executor', 'jinaai/jina']],
     indirect=True,
 )
 @pytest.mark.parametrize('shards', [1, 2])
