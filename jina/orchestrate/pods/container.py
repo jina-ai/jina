@@ -3,8 +3,10 @@ import asyncio
 import copy
 import multiprocessing
 import os
+import platform
 import re
 import signal
+import subprocess
 import threading
 import time
 from typing import TYPE_CHECKING, Dict, Optional, Union
@@ -143,6 +145,13 @@ def _docker_run(
     else:
         ports = {f'{args.port}/tcp': args.port} if not net_mode else None
 
+    if platform.system() == 'Darwin':
+        image_architecture = client.images.get(uses_img).attrs.get('Architecture', '')
+        if not image_architecture.startswith('arm'):
+            logger.warning(
+                'The pulled image container does not support ARM architecture while the host machine relies on MacOS (Darwin).'
+                'The image may run with poor performance or fail if run via emulation.'
+            )
     docker_kwargs = args.docker_kwargs or {}
     container = client.containers.run(
         uses_img,
