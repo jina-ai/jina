@@ -192,7 +192,9 @@ Use [Jina Client](https://docs.jina.ai/concepts/client/) to make requests to the
 from docarray import Document
 from jina import Client
 
-french_text = Document(text='un astronaut est en train de faire une promenade dans un parc')
+french_text = Document(
+    text='un astronaut est en train de faire une promenade dans un parc'
+)
 
 client = Client(port=12345)  # use port from output above
 response = client.post(on='/', inputs=[french_text])
@@ -284,7 +286,9 @@ from jina import Client, Document
 
 client = Client(port=12345)  # use port from output above
 
-french_text = Document(text='un astronaut est en train de faire une promenade dans un parc')
+french_text = Document(
+    text='un astronaut est en train de faire une promenade dans un parc'
+)
 
 response = client.post(on='/', inputs=[french_text])
 
@@ -306,6 +310,8 @@ Then, use `jina cloud deploy` command to deploy to the cloud:
 wget https://raw.githubusercontent.com/jina-ai/jina/master/.github/getting-started/jcloud-flow.yml
 jina cloud deploy jcloud-flow.yml
 ```
+
+**Caution: Make sure to delete/clean up the Flow once you are done with this tutorial to save resources and credits.**
 
 Read more about [deploying Flows to JCloud](https://docs.jina.ai/concepts/jcloud/#deploy).
 
