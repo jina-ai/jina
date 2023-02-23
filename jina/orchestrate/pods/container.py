@@ -146,17 +146,11 @@ def _docker_run(
         ports = {f'{args.port}/tcp': args.port} if not net_mode else None
 
     if platform.system() == 'Darwin':
-        try:
-            host_processor_architecture = subprocess.check_output(['uname', '-p'])
-        except subprocess.CalledProcessError:
-            # assume it's an amd processor
-            host_processor_architecture = 'amd'
         image_architecture = client.images.get(uses_img).attrs.get('Architecture', '')
-        if not image_architecture.startswith(
-            'arm'
-        ) and host_processor_architecture.startswith('arm'):
+        if not image_architecture.startswith('arm'):
             logger.warning(
-                'Host machine uses an AMD processor but the container does not support this architecture'
+                'The pulled image container does not support ARM architecture while the host machine relies on MacOS (Darwin).'
+                'The image may run with poor performance or fail if run via emulation.'
             )
     docker_kwargs = args.docker_kwargs or {}
     container = client.containers.run(
