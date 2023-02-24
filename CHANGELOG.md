@@ -241,6 +241,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -15634,4 +15635,33 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```2877c26a```](https://github.com/jina-ai/jina/commit/2877c26af4260979ac5b0727aa98dffc5fb213a7)] __-__ add python 3.11 classifier to setup.py (#5595) (*AlaeddineAbdessalem*)
  - [[```31fc4238```](https://github.com/jina-ai/jina/commit/31fc423814fa8d3b102874d2b62669a7ad1e1c97)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```12ab9c66```](https://github.com/jina-ai/jina/commit/12ab9c663ce63a654382d1f7f93c78aa1c3a7993)] __-__ __version__: the next version will be 3.13.2 (*Jina Dev Bot*)
+
+<a name=release-note-3-14-1></a>
+## Release Note (`3.14.1`)
+
+> Release time: 2023-02-24 10:21:36
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Subba Reddy Veeramreddy,  Joan Fontanals,  Alex Cureton-Griffiths,  AlaeddineAbdessalem,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```e55ef900```](https://github.com/jina-ai/jina/commit/e55ef900eef45fd1bba0fc25c7ad23f3c8c155c3)] __-__ fix deployment replication and host respecting (#5705) (*Joan Fontanals*)
+ - [[```0dd772bd```](https://github.com/jina-ai/jina/commit/0dd772bdaa3868bfbd092d6980f4bd898cef4e1e)] __-__ hide known warnings in google colab (#5706) (*Joan Fontanals*)
+ - [[```f03727cb```](https://github.com/jina-ai/jina/commit/f03727cb47a104ec6ef27f0d5ae8f66255673acc)] __-__ docarray v2 support with protobuf 4 (#5702) (*AlaeddineAbdessalem*)
+
+### 📗 Documentation
+
+ - [[```62160196```](https://github.com/jina-ai/jina/commit/62160196efea22a8553522121f008f2b8366e953)] __-__ add jcloud executor level labels (#5704) (*Subba Reddy Veeramreddy*)
+ - [[```8fbaf8a6```](https://github.com/jina-ai/jina/commit/8fbaf8a612a24af67b9c2bfc1c2e6b85a9d1ed15)] __-__ __readme__: make flow and deployment difference clearer (#5709) (*Alex Cureton-Griffiths*)
+ - [[```f9a6ebcf```](https://github.com/jina-ai/jina/commit/f9a6ebcf241b492ce610582db609ca64454e57eb)] __-__ add warning about cleaning up the flow (#5708) (*AlaeddineAbdessalem*)
+
+### 🍹 Other Improvements
+
+ - [[```60cd32d6```](https://github.com/jina-ai/jina/commit/60cd32d68c8b16e316e3294e53221f91bed2791f)] __-__ add warning when architectures do not match (#5707) (*Joan Fontanals*)
+ - [[```0349ef09```](https://github.com/jina-ai/jina/commit/0349ef094ae1468c5f03775fae7f5cc0c3eb5303)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```7e03a4ae```](https://github.com/jina-ai/jina/commit/7e03a4ae24b843d81aa4697c02ab0b5f4fc2cec9)] __-__ __version__: the next version will be 3.14.1 (*Jina Dev Bot*)
 
