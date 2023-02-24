@@ -21,10 +21,10 @@ from jina.clients import Client
 from jina.clients.mixin import PostMixin
 from jina.constants import (
     __default_executor__,
+    __default_grpc_gateway__,
     __default_host__,
     __docker_host__,
     __windows__,
-    __default_grpc_gateway__,
 )
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
 from jina.helper import (
@@ -373,7 +373,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 self._gateway_kwargs, gateway_parser, True
             )
 
-            args.deployments_addresses = f'{{"executor": ["0.0.0.0:{self.port}"]}}'
+            args.deployments_addresses = json.dumps(
+                {'executor': self._get_connection_list()}
+            )
             args.graph_description = (
                 '{"start-gateway": ["executor"], "executor": ["end-gateway"]}'
             )
@@ -384,6 +386,23 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         self._sandbox_deployed = False
 
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
+
+    def _get_connection_list(self) -> List[str]:
+        if self.head_args:
+            # add head information
+            return [f'{self.protocol}://{self.host}:{self.head_port}']
+        else:
+            # there is no head, add the worker connection information instead
+            ports = self.ports
+            hosts = [
+                __docker_host__
+                if host_is_local(host) and in_docker() and self.dockerized_uses
+                else host
+                for host in self.hosts
+            ]
+            return [
+                f'{self.protocol}://{host}:{port}' for host, port in zip(hosts, ports)
+            ]
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
@@ -560,7 +579,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         _head_args = copy.deepcopy(args)
         _head_args.polling = args.polling
-        _head_args.port = args.port[0]
+        _head_args.port = args.port if isinstance(args.port, int) else args.port[0]
         _head_args.host = args.host[0]
         _head_args.uses = args.uses
         _head_args.pod_role = PodRoleType.HEAD
@@ -1622,10 +1641,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
         """
         k8s_namespace = k8s_namespace or 'default'
+        k8s_port = self.port[0] if isinstance(self.port, list) else self.port
         self._to_kubernetes_yaml(
             output_base_path,
             k8s_namespace=k8s_namespace,
-            k8s_port=self.port or GrpcConnectionPool.K8S_PORT,
+            k8s_port=k8s_port or GrpcConnectionPool.K8S_PORT,
         )
         self.logger.info(
             f'K8s yaml files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'
