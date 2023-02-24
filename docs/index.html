@@ -6,10 +6,10 @@
 <meta property="og:title" content="Welcome to Jina!" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/" />
-<meta property="og:site_name" content="Jina 3.14.0 Documentation" />
+<meta property="og:site_name" content="Jina 3.14.1 Documentation" />
 <meta property="og:description" content="Jina is an MLOps framework to build multimodal AI services and pipelines then serve, scale and deploy them to a production-ready environment like Kubernetes or Jina AI Cloud. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible ..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.14.0 Documentation" />
+<meta property="og:image:alt" content="Jina 3.14.1 Documentation" />
 <meta name="description" content="Jina is an MLOps framework to build multimodal AI services and pipelines then serve, scale and deploy them to a production-ready environment like Kubernetes or Jina AI Cloud. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible ..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/index.html" />
 
     <link rel="shortcut icon" href="_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Jina 3.14.0 documentation</title>
+        <title>Jina 3.14.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="#">
-                <div class="brand">Jina 3.14.0 documentation</div>
+                <div class="brand">Jina 3.14.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -484,7 +484,11 @@
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Build AI Services</label><div class="tab-content docutils">
 <p><a class="reference external" href="https://colab.research.google.com/github/jina-ai/jina/blob/master/.github/getting-started/notebook.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
-<p>Let’s build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an <a class="reference external" href="https://docs.jina.ai/concepts/executor/">Executor</a>. Our simple Executor will use Facebook’s mBART-50 model to translate French to English.</p>
+<p>Let’s build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an <strong><a class="reference external" href="https://docs.jina.ai/concepts/executor/">Executor</a></strong>. Our simple Executor will use Facebook’s mBART-50 model to translate French to English. We’ll then use a <strong>Deployment</strong> to serve it.</p>
+<blockquote>
+<div><p><strong>Note</strong>
+A Deployment serves just one Executor. To combine multiple Executors into a pipeline and serve that, use a <span class="xref myst">Flow</span>.</p>
+</div></blockquote>
 <blockquote>
 <div><p><strong>Note</strong>
 Run the <a class="reference external" href="https://colab.research.google.com/assets/colab-badge.svg">code in Colab</a> to install all dependencies.</p>
@@ -571,7 +575,9 @@ Run the <a class="reference external" href="https://colab.research.google.com/as
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
 
-<span class="n">french_text</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;un astronaut est en train de faire une promenade dans un parc&#39;</span><span class="p">)</span>
+<span class="n">french_text</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span>
+    <span class="n">text</span><span class="o">=</span><span class="s1">&#39;un astronaut est en train de faire une promenade dans un parc&#39;</span>
+<span class="p">)</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>  <span class="c1"># use port from output above</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">french_text</span><span class="p">])</span>
@@ -587,6 +593,10 @@ Run the <a class="reference external" href="https://colab.research.google.com/as
 <p><a class="reference external" href="https://colab.research.google.com/github/jina-ai/jina/blob/docs-readme-changes/.github/getting-started/notebook.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <p>Sometimes you want to chain microservices together into a pipeline. That’s where a <a class="reference external" href="https://docs.jina.ai/concepts/flow/">Flow</a> comes in.</p>
 <p>A Flow is a <a class="reference external" href="https://de.wikipedia.org/wiki/DAG">DAG</a> pipeline, composed of a set of steps, It orchestrates a set of <a class="reference external" href="https://docs.jina.ai/concepts/executor/">Executors</a> and a <a class="reference external" href="https://docs.jina.ai/concepts/gateway/">Gateway</a> to offer an end-to-end service.</p>
+<blockquote>
+<div><p><strong>Note</strong>
+If you just want to serve a single Executor, you can use a <span class="xref myst">Deployment</span>.</p>
+</div></blockquote>
 <p>For instance, let’s combine <span class="xref myst">our French translation service</span> with a Stable Diffusion image generation service from Jina AI’s <a class="reference external" href="https://cloud.jina.ai/executors">Executor Hub</a>. Chaining these services together into a <a class="reference external" href="https://docs.jina.ai/concepts/flow/">Flow</a> will give us a multilingual image generation service.</p>
 <p>Build the Flow with either Python or YAML:</p>
 <div class="table-wrapper">
@@ -645,7 +655,9 @@ Run the <a class="reference external" href="https://colab.research.google.com/as
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>  <span class="c1"># use port from output above</span>
 
-<span class="n">french_text</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;un astronaut est en train de faire une promenade dans un parc&#39;</span><span class="p">)</span>
+<span class="n">french_text</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span>
+    <span class="n">text</span><span class="o">=</span><span class="s1">&#39;un astronaut est en train de faire une promenade dans un parc&#39;</span>
+<span class="p">)</span>
 
 <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">french_text</span><span class="p">])</span>
 
@@ -660,6 +672,7 @@ Run the <a class="reference external" href="https://colab.research.google.com/as
 jina<span class="w"> </span>cloud<span class="w"> </span>deploy<span class="w"> </span>jcloud-flow.yml
 </pre></div>
 </div>
+<p>⚠️ <strong>Caution: Make sure to delete/clean up the Flow once you are done with this tutorial to save resources and credits.</strong></p>
 <p>Read more about <a class="reference external" href="https://docs.jina.ai/concepts/jcloud/#deploy">deploying Flows to JCloud</a>.</p>
 </div>
 </div>
@@ -770,7 +783,7 @@ and <a class="reference external" href="https://youtube.com/c/jina-ai">live stre
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Feb 20, 2023</div>
+                            Last updated on Feb 24, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

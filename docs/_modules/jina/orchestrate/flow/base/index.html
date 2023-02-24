@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/orchestrate/flow/base.html" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>jina.orchestrate.flow.base - Jina 3.14.0 documentation</title>
+        <title>jina.orchestrate.flow.base - Jina 3.14.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.14.0 documentation</div>
+                <div class="brand">Jina 3.14.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -1087,26 +1087,7 @@
         <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="n">GATEWAY_NAME</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="n">deployment</span><span class="o">.</span><span class="n">head_args</span><span class="p">:</span>
-                <span class="c1"># add head information</span>
-                <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">deployment</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="n">deployment</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">deployment</span><span class="o">.</span><span class="n">head_port</span><span class="si">}</span><span class="s1">&#39;</span>
-                <span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># there is no head, add the worker connection information instead</span>
-                <span class="n">ports</span> <span class="o">=</span> <span class="n">deployment</span><span class="o">.</span><span class="n">ports</span>
-                <span class="n">hosts</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">__docker_host__</span>
-                    <span class="k">if</span> <span class="n">host_is_local</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
-                    <span class="ow">and</span> <span class="n">in_docker</span><span class="p">()</span>
-                    <span class="ow">and</span> <span class="n">deployment</span><span class="o">.</span><span class="n">dockerized_uses</span>
-                    <span class="k">else</span> <span class="n">host</span>
-                    <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">deployment</span><span class="o">.</span><span class="n">hosts</span>
-                <span class="p">]</span>
-                <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">deployment</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
-                    <span class="k">for</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">hosts</span><span class="p">,</span> <span class="n">ports</span><span class="p">)</span>
-                <span class="p">]</span>
+            <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">deployment</span><span class="o">.</span><span class="n">_get_connection_list</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">graph_dict</span>
 
@@ -2216,147 +2197,153 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="k">def</span> <span class="nf">_wait_until_all_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">results_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="kn">import</span> <span class="nn">warnings</span>
 
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">_async_wait_ready</span><span class="p">(</span><span class="n">_deployment_name</span><span class="p">,</span> <span class="n">_deployment</span><span class="p">):</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">_deployment</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
-                    <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
-                        <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pending&#39;</span>
-                    <span class="k">await</span> <span class="n">_deployment</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">()</span>
-                    <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
-                        <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;done&#39;</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
 
-        <span class="k">def</span> <span class="nf">_wait_ready</span><span class="p">(</span><span class="n">_deployment_name</span><span class="p">,</span> <span class="n">_deployment</span><span class="p">):</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">_deployment</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
-                    <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
-                        <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pending&#39;</span>
-                    <span class="n">_deployment</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
-                    <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
-                        <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;done&#39;</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">results_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">_async_wait_ready</span><span class="p">(</span><span class="n">_deployment_name</span><span class="p">,</span> <span class="n">_deployment</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">_deployment</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
+                        <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
+                            <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pending&#39;</span>
+                        <span class="k">await</span> <span class="n">_deployment</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">()</span>
+                        <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
+                            <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;done&#39;</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                     <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">_polling_status</span><span class="p">(</span><span class="n">num_tasks_to_wait</span><span class="p">):</span>
-            <span class="n">progress</span> <span class="o">=</span> <span class="n">Progress</span><span class="p">(</span>
-                <span class="n">SpinnerColumn</span><span class="p">(),</span>
-                <span class="n">TextColumn</span><span class="p">(</span>
-                    <span class="s1">&#39;Waiting [b]</span><span class="si">{task.fields[pending_str]}</span><span class="s1">[/]...&#39;</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s1">&#39;right&#39;</span>
-                <span class="p">),</span>
-                <span class="n">BarColumn</span><span class="p">(),</span>
-                <span class="n">MofNCompleteColumn</span><span class="p">(),</span>
-                <span class="n">TimeElapsedColumn</span><span class="p">(),</span>
-                <span class="n">transient</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="k">with</span> <span class="n">progress</span><span class="p">:</span>
-                <span class="n">task</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span>
-                    <span class="s1">&#39;wait&#39;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">num_tasks_to_wait</span><span class="p">,</span> <span class="n">pending_str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">False</span>
-                <span class="p">)</span>
-                <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
-                    <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
-                <span class="n">progress</span><span class="o">.</span><span class="n">start_task</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
-
-                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-                    <span class="n">num_done</span> <span class="o">=</span> <span class="mi">0</span>
-                    <span class="n">pendings</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">def</span> <span class="nf">_wait_ready</span><span class="p">(</span><span class="n">_deployment_name</span><span class="p">,</span> <span class="n">_deployment</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">_deployment</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
+                        <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
+                            <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pending&#39;</span>
+                        <span class="n">_deployment</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
+                        <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
+                            <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;done&#39;</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                     <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
-                        <span class="k">for</span> <span class="n">_k</span><span class="p">,</span> <span class="n">_v</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-                            <span class="k">if</span> <span class="n">_v</span> <span class="o">==</span> <span class="s1">&#39;pending&#39;</span><span class="p">:</span>
-                                <span class="n">pendings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_k</span><span class="p">)</span>
-                            <span class="k">elif</span> <span class="n">_v</span> <span class="o">==</span> <span class="s1">&#39;done&#39;</span><span class="p">:</span>
-                                <span class="n">num_done</span> <span class="o">+=</span> <span class="mi">1</span>
-                            <span class="k">else</span><span class="p">:</span>
-                                <span class="k">if</span> <span class="s1">&#39;JINA_EARLY_STOP&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
-                                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                                        <span class="sa">f</span><span class="s1">&#39;Flow is aborted due to </span><span class="si">{</span><span class="n">_k</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">_v</span><span class="si">}</span><span class="s1">.&#39;</span>
-                                    <span class="p">)</span>
-                                    <span class="n">os</span><span class="o">.</span><span class="n">_exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                        <span class="n">results</span><span class="p">[</span><span class="n">_deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
 
-                    <span class="n">pending_str</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pendings</span><span class="p">)</span>
-
-                    <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">completed</span><span class="o">=</span><span class="n">num_done</span><span class="p">,</span> <span class="n">pending_str</span><span class="o">=</span><span class="n">pending_str</span><span class="p">)</span>
-
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">pendings</span><span class="p">:</span>
-                        <span class="k">break</span>
-                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
-
-        <span class="n">wait_for_ready_coros</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="n">wait_for_ready_coros</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_async_wait_ready</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
-
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">_async_wait_all</span><span class="p">():</span>
-            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">wait_for_ready_coros</span><span class="p">)</span>
-
-        <span class="c1"># kick off spinner thread</span>
-        <span class="n">polling_status_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
-            <span class="n">target</span><span class="o">=</span><span class="n">_polling_status</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wait_for_ready_coros</span><span class="p">),),</span>
-            <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="n">polling_status_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-
-        <span class="c1"># kick off all deployments wait-ready tasks</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">_</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
-            <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
-
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">_f</span><span class="p">():</span>
-            <span class="k">pass</span>
-
-        <span class="n">running_in_event_loop</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">_f</span><span class="p">())</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="n">running_in_event_loop</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="n">wait_ready_threads</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">running_in_event_loop</span><span class="p">:</span>
-            <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">_async_wait_all</span><span class="p">())</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-                <span class="n">wait_ready_threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_wait_ready</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">def</span> <span class="nf">_polling_status</span><span class="p">(</span><span class="n">num_tasks_to_wait</span><span class="p">):</span>
+                <span class="n">progress</span> <span class="o">=</span> <span class="n">Progress</span><span class="p">(</span>
+                    <span class="n">SpinnerColumn</span><span class="p">(),</span>
+                    <span class="n">TextColumn</span><span class="p">(</span>
+                        <span class="s1">&#39;Waiting [b]</span><span class="si">{task.fields[pending_str]}</span><span class="s1">[/]...&#39;</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s1">&#39;right&#39;</span>
+                    <span class="p">),</span>
+                    <span class="n">BarColumn</span><span class="p">(),</span>
+                    <span class="n">MofNCompleteColumn</span><span class="p">(),</span>
+                    <span class="n">TimeElapsedColumn</span><span class="p">(),</span>
+                    <span class="n">transient</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
-            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">wait_ready_threads</span><span class="p">:</span>
-                <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                <span class="k">with</span> <span class="n">progress</span><span class="p">:</span>
+                    <span class="n">task</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span>
+                        <span class="s1">&#39;wait&#39;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">num_tasks_to_wait</span><span class="p">,</span> <span class="n">pending_str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">False</span>
+                    <span class="p">)</span>
+                    <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
+                        <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
+                    <span class="n">progress</span><span class="o">.</span><span class="n">start_task</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
 
-        <span class="n">polling_status_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">wait_ready_threads</span><span class="p">:</span>
-            <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+                    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                        <span class="n">num_done</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="n">pendings</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="k">with</span> <span class="n">results_lock</span><span class="p">:</span>
+                            <span class="k">for</span> <span class="n">_k</span><span class="p">,</span> <span class="n">_v</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+                                <span class="k">if</span> <span class="n">_v</span> <span class="o">==</span> <span class="s1">&#39;pending&#39;</span><span class="p">:</span>
+                                    <span class="n">pendings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_k</span><span class="p">)</span>
+                                <span class="k">elif</span> <span class="n">_v</span> <span class="o">==</span> <span class="s1">&#39;done&#39;</span><span class="p">:</span>
+                                    <span class="n">num_done</span> <span class="o">+=</span> <span class="mi">1</span>
+                                <span class="k">else</span><span class="p">:</span>
+                                    <span class="k">if</span> <span class="s1">&#39;JINA_EARLY_STOP&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                                            <span class="sa">f</span><span class="s1">&#39;Flow is aborted due to </span><span class="si">{</span><span class="n">_k</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">_v</span><span class="si">}</span><span class="s1">.&#39;</span>
+                                        <span class="p">)</span>
+                                        <span class="n">os</span><span class="o">.</span><span class="n">_exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-        <span class="n">error_deployments</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="s1">&#39;done&#39;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">error_deployments</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;Flow is aborted due to </span><span class="si">{</span><span class="n">error_deployments</span><span class="si">}</span><span class="s1"> can not be started.&#39;</span>
+                        <span class="n">pending_str</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pendings</span><span class="p">)</span>
+
+                        <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                            <span class="n">task</span><span class="p">,</span> <span class="n">completed</span><span class="o">=</span><span class="n">num_done</span><span class="p">,</span> <span class="n">pending_str</span><span class="o">=</span><span class="n">pending_str</span>
+                        <span class="p">)</span>
+
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">pendings</span><span class="p">:</span>
+                            <span class="k">break</span>
+                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+            <span class="n">wait_for_ready_coros</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="n">wait_for_ready_coros</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_async_wait_ready</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">_async_wait_all</span><span class="p">():</span>
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">wait_for_ready_coros</span><span class="p">)</span>
+
+            <span class="c1"># kick off spinner thread</span>
+            <span class="n">polling_status_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+                <span class="n">target</span><span class="o">=</span><span class="n">_polling_status</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wait_for_ready_coros</span><span class="p">),),</span>
+                <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="k">raise</span> <span class="n">RuntimeFailToStart</span>
-        <span class="kn">from</span> <span class="nn">rich.rule</span> <span class="kn">import</span> <span class="n">Rule</span>
 
-        <span class="n">all_panels</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_get_summary_table</span><span class="p">(</span><span class="n">all_panels</span><span class="p">)</span>
+            <span class="n">polling_status_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;:tada: Flow is ready to serve!&#39;</span><span class="p">),</span> <span class="o">*</span><span class="n">all_panels</span>
-        <span class="p">)</span>  <span class="c1"># can&#39;t use logger here see : https://github.com/Textualize/rich/discussions/2024</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_deployments</span><span class="si">}</span><span class="s1"> Deployments (i.e. </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_pods</span><span class="si">}</span><span class="s1"> Pods) are running in this Flow&#39;</span>
-        <span class="p">)</span>
+            <span class="c1"># kick off all deployments wait-ready tasks</span>
 
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="s1">&#39;Do you love Open Source? Help us get better and be heard in just 1 minute and 30 seconds :sparkling_heart:&#39;</span>
-            <span class="s1">&#39;Your feedback will help us build better features for [link=https://github.com/jina-ai/jina]Jina[/link], your loved open-source project :tada: https://10sw1tcpld4.typeform.com/jinasurveyfeb23?utm_source=jina Take the Jina user survey!&#39;</span>
-        <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
+                <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
+
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">_f</span><span class="p">():</span>
+                <span class="k">pass</span>
+
+            <span class="n">running_in_event_loop</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">_f</span><span class="p">())</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">running_in_event_loop</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="n">wait_ready_threads</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">running_in_event_loop</span><span class="p">:</span>
+                <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">_async_wait_all</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                    <span class="n">wait_ready_threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_wait_ready</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">wait_ready_threads</span><span class="p">:</span>
+                    <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+            <span class="n">polling_status_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">wait_ready_threads</span><span class="p">:</span>
+                <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+            <span class="n">error_deployments</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="s1">&#39;done&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">error_deployments</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Flow is aborted due to </span><span class="si">{</span><span class="n">error_deployments</span><span class="si">}</span><span class="s1"> can not be started.&#39;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">raise</span> <span class="n">RuntimeFailToStart</span>
+            <span class="kn">from</span> <span class="nn">rich.rule</span> <span class="kn">import</span> <span class="n">Rule</span>
+
+            <span class="n">all_panels</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_summary_table</span><span class="p">(</span><span class="n">all_panels</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;:tada: Flow is ready to serve!&#39;</span><span class="p">),</span> <span class="o">*</span><span class="n">all_panels</span>
+            <span class="p">)</span>  <span class="c1"># can&#39;t use logger here see : https://github.com/Textualize/rich/discussions/2024</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_deployments</span><span class="si">}</span><span class="s1"> Deployments (i.e. </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_pods</span><span class="si">}</span><span class="s1"> Pods) are running in this Flow&#39;</span>
+            <span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s1">&#39;Do you love Open Source? Help us get better and be heard in just 1 minute and 30 seconds :sparkling_heart:&#39;</span>
+                <span class="s1">&#39;Your feedback will help us build better features for [link=https://github.com/jina-ai/jina]Jina[/link], your loved open-source project :tada: https://10sw1tcpld4.typeform.com/jinasurveyfeb23?utm_source=jina Take the Jina user survey!&#39;</span>
+            <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">num_deployments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -3248,7 +3235,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Feb 20, 2023</div>
+                            Last updated on Feb 24, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

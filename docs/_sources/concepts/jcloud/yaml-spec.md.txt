@@ -398,8 +398,9 @@ executors:
 
 ### Add Labels
 
-You can use `labels` (as key-value pairs) to attach metadata to your Flows:
+You can use `labels` (as key-value pairs) to attach metadata to your Flows and Executors:
 
+Flow level `labels`:
 ```{code-block} yaml
 ---
 emphasize-lines: 2-5
@@ -413,6 +414,22 @@ executors:
   - name: executor1
     uses: jinaai+docker://<username>/Executor1
 ```
+
+Executor level `labels`:
+```{code-block} yaml
+---
+emphasize-lines: 5-8
+---
+jtype: Flow
+executors:
+  - name: executor1
+    uses: jinaai+docker://<username>/Executor1
+    jcloud:
+      labels:
+        index: partial
+        group: backend
+```
+
 
 ```{hint}
 
