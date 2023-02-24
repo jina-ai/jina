@@ -541,7 +541,8 @@ class Flow(
             )
         self.args = args
         # common args should be the ones that can not be parsed by _flow_parser
-        known_keys = vars(args)
+        known_keys = list(vars(args).keys())
+        known_keys.append('replicas') # replicas argument does not need to go to every Deployment, only to gateway
         self._common_kwargs = {k: v for k, v in kwargs.items() if k not in known_keys}
 
         # gateway args inherit from flow args
@@ -550,6 +551,7 @@ class Flow(
             for k, v in self._common_kwargs.items()
             if k not in GATEWAY_ARGS_BLACKLIST
         }
+        self._gateway_kwargs['replicas'] = kwargs.get('replicas')
 
         self._kwargs = ArgNamespace.get_non_defaults_args(
             args, _flow_parser

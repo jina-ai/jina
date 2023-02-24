@@ -286,7 +286,8 @@ def assert_config_map_config(
     ],
 )
 @pytest.mark.parametrize('custom_gateway', ['jinaai/jina:custom-gateway', None])
-def test_k8s_yaml_gateway(deployments_addresses, custom_gateway, port, protocol):
+@pytest.mark.parametrize('replicas', [1, 2])
+def test_k8s_yaml_gateway(deployments_addresses, custom_gateway, port, protocol, replicas):
     if custom_gateway:
         os.environ['JINA_GATEWAY_IMAGE'] = custom_gateway
     elif 'JINA_GATEWAY_IMAGE' in os.environ:
@@ -298,6 +299,8 @@ def test_k8s_yaml_gateway(deployments_addresses, custom_gateway, port, protocol)
         *port,
         '--deployments-addresses',
         json.dumps(deployments_addresses),
+        '--replicas',
+        replicas
     ]
     if protocol:
         args_list.extend(['--protocol', *protocol])
@@ -352,7 +355,7 @@ def test_k8s_yaml_gateway(deployments_addresses, custom_gateway, port, protocol)
         'namespace': 'default-namespace',
     }
     spec_deployment = deployment['spec']
-    assert spec_deployment['replicas'] == 1  # no gateway replication for now
+    assert spec_deployment['replicas'] == replicas  # no gateway replication for now
     assert spec_deployment['strategy'] == {
         'type': 'RollingUpdate',
         'rollingUpdate': {'maxSurge': 1, 'maxUnavailable': 0},

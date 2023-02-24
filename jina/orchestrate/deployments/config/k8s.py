@@ -89,7 +89,7 @@ class K8sDeploymentConfig:
                 image_name=image_name,
                 container_cmd='["jina"]',
                 container_args=f'{container_args}',
-                replicas=1,
+                replicas=self.num_replicas,
                 pull_policy='IfNotPresent',
                 jina_deployment_name='gateway',
                 pod_type=self.pod_type,
