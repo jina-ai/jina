@@ -1119,7 +1119,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         result = {}
         shards = getattr(self.args, 'shards', 1)
         replicas = getattr(self.args, 'replicas', 1)
-        if self.name == 'gateway':
+        if self.args.deployment_role == DeploymentRoleType.GATEWAY:
             replicas = 1
         sharding_enabled = shards and shards > 1
 
@@ -1138,6 +1138,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             replica_args = []
             for replica_id in range(replicas):
                 _args = copy.deepcopy(self.args)
+                if self.args.deployment_role == DeploymentRoleType.GATEWAY:
+                    _args.replicas = replicas
                 _args.shard_id = shard_id
                 # for gateway pods, the pod role shouldn't be changed
                 if _args.pod_role != PodRoleType.GATEWAY:

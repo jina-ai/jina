@@ -297,11 +297,11 @@ def test_k8s_yaml_gateway(deployments_addresses, custom_gateway, port, protocol,
         'ENV_VAR:ENV_VALUE',
         '--port',
         *port,
-        '--deployments-addresses',
-        json.dumps(deployments_addresses),
         '--replicas',
-        replicas
+        str(replicas)
     ]
+    if deployments_addresses:
+        args_list.extend(['--deployments-addresses', json.dumps(deployments_addresses)])
     if protocol:
         args_list.extend(['--protocol', *protocol])
     args = set_gateway_parser().parse_args(args_list)  # envs are
