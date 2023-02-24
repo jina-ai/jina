@@ -355,7 +355,7 @@ def test_k8s_yaml_gateway(deployments_addresses, custom_gateway, port, protocol,
         'namespace': 'default-namespace',
     }
     spec_deployment = deployment['spec']
-    assert spec_deployment['replicas'] == replicas  # no gateway replication for now
+    assert spec_deployment['replicas'] == replicas  # gateway replication is only enabled for k8s
     assert spec_deployment['strategy'] == {
         'type': 'RollingUpdate',
         'rollingUpdate': {'maxSurge': 1, 'maxUnavailable': 0},
