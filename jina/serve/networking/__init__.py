@@ -538,6 +538,7 @@ class GrpcConnectionPool:
                     raise
 
         except Exception as ex:
+            print(f' exception {ex}')
             self._logger.error(f'error with warmup up task: {ex}')
             return
 

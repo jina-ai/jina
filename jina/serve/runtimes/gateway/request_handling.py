@@ -41,6 +41,7 @@ class GatewayRequestHandler(MonitoringRequestMixin):
         super().__init__(metrics_registry, meter, runtime_name)
         self._executor_endpoint_mapping = None
         self._gathering_endpoints = False
+        self._gather_endpoints_task = None
         self.logger = logger or JinaLogger(self.__class__.__name__)
 
     def handle_request(
@@ -147,7 +148,7 @@ class GatewayRequestHandler(MonitoringRequestMixin):
                         and not self._gathering_endpoints
                     ):
                         self._gathering_endpoints = True
-                        asyncio.create_task(gather_endpoints(request_graph))
+                        self._gather_endpoints_task = asyncio.create_task(gather_endpoints(request_graph))
 
                     partial_responses = await asyncio.gather(*tasks)
                 except Exception:
