@@ -212,7 +212,7 @@ an astronaut is walking in a park
 <!-- end build-ai-services -->
 
 > **Note**
-> In a notebook, one cannot use deployment.block() and then make requests to the client. Thus, while this example code can run in a local computer with 2 python processes, the same cannot be done for a Jupyter Notebook. 
+> In a notebook, one cannot use `deployment.block()` and then make requests to the client. Please refer to the colab link above for reproducible Jupyter Notebook code snippets.
 
 
 ### Build a pipeline
