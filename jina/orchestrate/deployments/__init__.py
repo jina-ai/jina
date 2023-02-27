@@ -396,7 +396,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             ports = self.ports
             hosts = [
                 __docker_host__
-                if host_is_local(host) and in_docker() and self.dockerized_uses
+                if host_is_local(host) and in_docker() and self._is_docker
                 else host
                 for host in self.hosts
             ]
@@ -731,16 +731,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             return [self.head_host]
         else:
             return [replica.host for replica in self.pod_args['pods'][0]]
-
-    @property
-    def dockerized_uses(self) -> bool:
-        """Check if this Deployment uses a dockerized Executor
-
-        .. # noqa: DAR201
-        """
-        return self.args.uses.startswith('docker://') or self.args.uses.startswith(
-            'jinaai+docker://'
-        )
 
     def _parse_args(
         self, args: Namespace
