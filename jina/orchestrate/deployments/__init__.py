@@ -21,10 +21,10 @@ from jina.clients import Client
 from jina.clients.mixin import PostMixin
 from jina.constants import (
     __default_executor__,
+    __default_grpc_gateway__,
     __default_host__,
     __docker_host__,
     __windows__,
-    __default_grpc_gateway__,
 )
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
 from jina.helper import (
@@ -89,6 +89,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             for pod in self._pods[1:]:
                 voter_address = f'{pod.args.host}:{pod.args.port}'
                 success = False
+                # TODO: we should improve this logic
                 for _ in range(10):
                     try:
                         jraft.add_voter(
@@ -142,6 +143,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         def wait_start_success(self):
             for pod in self._pods:
+                # the ready event might be set by the Executor but the raft node/cluster might not be ready
+                # do extra check when self._pods[0].args.stateful is true to check the raft node.
                 pod.wait_start_success()
             if self._pods[0].args.stateful and self._pods[0].args.raft_bootstrap:
                 self._add_voter_to_leader()
@@ -970,6 +973,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             self.enter_context(self.shards[shard_id])
 
         if not self.args.noblock_on_start:
+            # TODO:
             self._wait_until_all_ready()
         if self._include_gateway:
             all_panels = []
