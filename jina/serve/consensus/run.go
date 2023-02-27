@@ -20,7 +20,7 @@ import (
     "path/filepath"
     "time"
 
-    "github.com/Jille/raft-grpc-leader-rpc/leaderhealth"
+    // "github.com/Jille/raft-grpc-leader-rpc/leaderhealth"
     transport "github.com/Jille/raft-grpc-transport"
     "github.com/Jille/raftadmin"
     "github.com/hashicorp/raft"
@@ -30,6 +30,7 @@ import (
     "google.golang.org/grpc"
     "google.golang.org/grpc/credentials/insecure"
     "google.golang.org/grpc/reflection"
+    healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 func NewRaft(ctx context.Context,
@@ -138,6 +139,7 @@ func Run(myAddr string,
     if err != nil {
         log.Fatalf("failed to parse local address (%q): %v", myAddr, err)
     }
+    log.Printf("starting to listen on port %s", port)
     sock, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
     if err != nil {
         log.Fatalf("failed to listen: %v", err)
@@ -179,7 +181,14 @@ func Run(myAddr string,
         Raft:     r,
     })
     tm.Register(grpcServer)
-    leaderhealth.Setup(r, grpcServer, []string{"Health"})
+    //leaderhealth.Setup(r, grpcServer, []string{"Health"})
+
+    //healthpb.RegisterHealthServer(grpcServer, health.NewServer())
+    healthpb.RegisterHealthServer(grpcServer, &jinaraft.RpcInterface{
+        Executor: executorFSM,
+        Raft:     r,
+    })
+
 
     raftadmin.Register(grpcServer, r)
     reflection.Register(grpcServer)
