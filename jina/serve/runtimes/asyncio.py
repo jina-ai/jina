@@ -32,12 +32,12 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
     """
 
     def __init__(
-        self,
-        args: 'argparse.Namespace',
-        cancel_event: Optional[
-            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
-        ] = None,
-        **kwargs,
+            self,
+            args: 'argparse.Namespace',
+            cancel_event: Optional[
+                Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
+            ] = None,
+            **kwargs,
     ):
         super().__init__(args, **kwargs)
         self._loop = asyncio.new_event_loop()
@@ -164,7 +164,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         """The async method to run until it is stopped."""
         ...
 
-    def cancel_warmup_task(self):
+    async def cancel_warmup_task(self):
         """Cancel warmup task if exists and is not completed. Cancellation is required if the Flow is being terminated before the
         task is successful or hasn't reached the max timeout.
         """
@@ -172,7 +172,8 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
             try:
                 if not self.warmup_task.done():
                     self.logger.debug(f'Cancelling warmup task.')
-                    self.warmup_stop_event.set() # this event is useless if simply cancel
+                    self.warmup_stop_event.set()  # this event is useless if simply cancel
+                    await self.warmup_task
             except Exception as ex:
                 self.logger.debug(f'exception during warmup task cancellation: {ex}')
                 pass
@@ -195,18 +196,18 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
 
             response = send_health_check_sync(ctrl_address, timeout=timeout)
             return (
-                response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
+                    response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
             )
         except RpcError:
             return False
 
     @classmethod
     def wait_for_ready_or_shutdown(
-        cls,
-        timeout: Optional[float],
-        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
-        ctrl_address: str,
-        **kwargs,
+            cls,
+            timeout: Optional[float],
+            ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+            ctrl_address: str,
+            **kwargs,
     ):
         """
         Check if the runtime has successfully started
