@@ -33,7 +33,7 @@ def _get_resource_attributes(service_name: str):
 
 
 class InstrumentationMixin:
-    '''Instrumentation mixin for OpenTelemetery Tracing and Metrics handling'''
+    """Instrumentation mixin for OpenTelemetery Tracing and Metrics handling"""
 
     def _setup_instrumentation(
         self,
