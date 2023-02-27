@@ -1,7 +1,7 @@
 (jina-env-vars)=
 # {octicon}`list-unordered` Environment Variables
 
-Jina uses a number of environment variables to determine different behaviours. To see all supported environment variables and their current values, run
+Jina uses environment variables to determine different behaviours. To see all supported environment variables and their current values, run:
 
 ```bash
 jina -vf
@@ -10,7 +10,7 @@ jina -vf
 If you use containerized Executors (including {ref}`Kubernetes <kubernetes>` and {ref}`Docker Compose <docker-compose>`), you can pass separate environment variables to each Executor in the following way:
 
 
-`````{tab} Include env vars in YAML
+`````{tab} YAML
 
 ```yaml
 jtype: Flow
@@ -29,7 +29,7 @@ executors:
     CUDA_VISIBLE_DEVICES: 1
 ```
 `````
-````{tab} Include env vars in Python
+````{tab} Python API
 
 ```python
 from jina import Flow
@@ -71,7 +71,7 @@ The following environment variables are used internally in Jina:
 | `JINA_RANDOM_PORT_MIN`        | The min port number used when selecting random ports to apply for Executors or gateway                                                                                                          |
 | `JINA_LOCKS_ROOT`             | The root folder where file locks for concurrent Executor initialization                                                                                                                         |
 | `JINA_OPTOUT_TELEMETRY`       | If set, disables telemetry                                                                                                                                                                      |
-| `JINA_K8S_ACCESS_MODES`       | Configures the access modes for the PersistentVolumeClaim attached to the StatefulSet, when creating a StatefulSet in Kubernetes for an Executor using volumes. Defaults to '["ReadWriteOnce"]' |
-| `JINA_K8S_STORAGE_CLASS_NAME` | Configures the storage class for the PersistentVolumeClaim attached to the StatefulSet, when creating a StatefulSet in Kubernetes for an Executor using volumes. Defaults to 'standard'         |
-| `JINA_K8S_STORAGE_CAPACITY`   | Configures the capacity for the PersistentVolumeClaim attached to the StatefulSet, when creating a StatefulSet in Kubernetes for an Executor using volumes. Defaults to '10G'                   |
-| `JINA_STREAMER_ARGS`          | Jina uses this variable to inject GatewayStreamer arguments into the host environment running a Gateway                                                                                         |
+| `JINA_K8S_ACCESS_MODES`       | Configures access modes for `PersistentVolumeClaim` attached to the `StatefulSet`, when creating a `StatefulSet` in Kubernetes for an Executor using volumes. Defaults to '["ReadWriteOnce"]' |
+| `JINA_K8S_STORAGE_CLASS_NAME` | Configures the storage class for the `PersistentVolumeClaim` attached to the `StatefulSet`, when creating a `StatefulSet` in Kubernetes for an Executor using volumes. Defaults to 'standard'         |
+| `JINA_K8S_STORAGE_CAPACITY`   | Configures the capacity for the `PersistentVolumeClaim` attached to the `StatefulSet`, when creating a `StatefulSet` in Kubernetes for an Executor using volumes. Defaults to '10G'                   |
+| `JINA_STREAMER_ARGS`          | Jina uses this variable to inject `GatewayStreamer` arguments into the host environment running a Gateway                                                                                         |
