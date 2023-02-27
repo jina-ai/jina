@@ -198,6 +198,7 @@ class Flow(
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         reload: Optional[bool] = False,
+        replicas: Optional[int] = 1,
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'GatewayRuntime',
         ssl_certfile: Optional[str] = None,
@@ -270,6 +271,7 @@ class Flow(
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Gateway will restart while serving if YAML configuration source is changed.
+        :param replicas: The number of replicas of the Gateway. This replicas will only be applied when converted into Kubernetes YAML
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -457,6 +459,7 @@ class Flow(
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Gateway will restart while serving if YAML configuration source is changed.
+        :param replicas: The number of replicas of the Gateway. This replicas will only be applied when converted into Kubernetes YAML
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -541,7 +544,7 @@ class Flow(
             )
         self.args = args
         # common args should be the ones that can not be parsed by _flow_parser
-        known_keys = vars(args)
+        known_keys = list(vars(args).keys())
         self._common_kwargs = {k: v for k, v in kwargs.items() if k not in known_keys}
 
         # gateway args inherit from flow args
@@ -1275,6 +1278,7 @@ class Flow(
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         reload: Optional[bool] = False,
+        replicas: Optional[int] = 1,
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'GatewayRuntime',
         ssl_certfile: Optional[str] = None,
@@ -1347,6 +1351,7 @@ class Flow(
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Gateway will restart while serving if YAML configuration source is changed.
+        :param replicas: The number of replicas of the Gateway. This replicas will only be applied when converted into Kubernetes YAML
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -1444,6 +1449,7 @@ class Flow(
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Gateway will restart while serving if YAML configuration source is changed.
+        :param replicas: The number of replicas of the Gateway. This replicas will only be applied when converted into Kubernetes YAML
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
