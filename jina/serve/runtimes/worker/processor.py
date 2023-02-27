@@ -19,7 +19,8 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class ExecutorProcessor:
-    """ExecutorProcessor"""
+    """ExecutorProcessor class holds all the data and methods used to run the Executor logic without any tie to an
+    API """
 
     def __init__(self,
                  args: argparse.Namespace,
@@ -30,6 +31,7 @@ class ExecutorProcessor:
                  meter_provider=None,
                  tracer_provider=None,
                  tracer=None,
+                 **kwargs
                  ):
         self.logger = logger or JinaLogger(self.__class__.__name__)
         self.args = args

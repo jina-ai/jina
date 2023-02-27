@@ -10,6 +10,7 @@ from jina.parsers import set_gateway_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
+from jina.serve.runtimes.worker.processor import ExecutorProcessor
 from tests.helper import _generate_pod_args
 
 from .test_runtimes import _create_gateway_runtime, _create_head_runtime
@@ -182,43 +183,36 @@ async def test_runtimes_headless_topology(
 
 @pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
 @pytest.mark.asyncio
-async def test_runtimes_resource_not_found(port_generator, protocol):
-    def _create_patched_worker_runtime(port, name='', executor=None):
-        args = _generate_pod_args()
-        args.port = port
-        args.uses = 'DummyExec'
-        args.name = name
-        if executor:
-            args.uses = executor
+async def test_runtimes_resource_not_found(port_generator, protocol, monkeypatch):
 
-        class PatchedWorkerRuntime(WorkerRuntime):
-            async def endpoint_discovery(self, empty, context):
-                import grpc
+    async def patched_endpoint_discovery(self, empty, context):
+        import grpc
 
-                context.set_code(grpc.StatusCode.NOT_FOUND)
+        context.set_code(grpc.StatusCode.NOT_FOUND)
 
-            async def process_data(self, requests_, context):
-                import grpc
+    async def patched_process_data(self, requests, context):
+        import grpc
 
-                context.set_code(grpc.StatusCode.NOT_FOUND)
+        context.set_code(grpc.StatusCode.NOT_FOUND)
 
-        with PatchedWorkerRuntime(args) as runtime:
-            runtime.run_forever()
+    monkeypatch.setattr(
+        ExecutorProcessor,
+        'endpoint_discovery',
+        patched_endpoint_discovery,
+    )
 
-    def _create_patched_worker(port):
-        """creates a worker that is monkey patched to return a NOT_FOUND (code 5) grpc error"""
-        # create a single worker runtime
-        p = multiprocessing.Process(target=_create_patched_worker_runtime, args=(port,))
-        p.start()
-        time.sleep(0.1)
-        return p
+    monkeypatch.setattr(
+        ExecutorProcessor,
+        'process_data',
+        patched_process_data,
+    )
 
     gateway_port = port_generator()
     worker_port = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
 
-    worker_process = _create_patched_worker(worker_port)
+    worker_process = _create_worker(worker_port)
     gateway_process = _create_gateway(
         gateway_port, graph_description, pod_addresses, protocol
     )

@@ -98,9 +98,9 @@ class InstrumentationMixin:
     def aio_tracing_server_interceptors(
         self,
     ) -> Optional[Sequence['ServerInterceptor']]:
-        '''Create a gRPC aio server interceptor.
+        """Create a gRPC aio server interceptor.
         :returns: A service-side aio interceptor object.
-        '''
+        """
         if self.tracing:
             from opentelemetry.instrumentation.grpc._aio_server import (
                 OpenTelemetryAioServerInterceptor,
@@ -113,9 +113,9 @@ class InstrumentationMixin:
     def aio_tracing_client_interceptors(
         self,
     ) -> Optional[Sequence['ClientInterceptor']]:
-        '''Create a gRPC client aio channel interceptor.
+        """Create a gRPC client aio channel interceptor.
         :returns: An invocation-side list of aio interceptor objects.
-        '''
+        """
 
         if self.tracing:
             from opentelemetry.instrumentation.grpc._aio_client import (
@@ -135,9 +135,9 @@ class InstrumentationMixin:
             return None
 
     def tracing_client_interceptor(self) -> Optional['OpenTelemetryClientInterceptor']:
-        '''
+        """
         :returns: a gRPC client interceptor with the global tracing provider.
-        '''
+        """
         if self.tracing:
             from opentelemetry.instrumentation.grpc import (
                 client_interceptor as grpc_client_interceptor,
@@ -149,9 +149,9 @@ class InstrumentationMixin:
 
 
 class MetricsTimer:
-    '''Helper dataclass that accepts optional Summary or Histogram recorders which are used to record the time take to execute
+    """Helper dataclass that accepts optional Summary or Histogram recorders which are used to record the time take to execute
     the decorated or context managed function
-    '''
+    """
 
     def __init__(
         self,
@@ -182,10 +182,10 @@ class MetricsTimer:
             self._histogram.record(duration, attributes=self._histogram_metric_labels)
 
     def __call__(self, f):
-        '''function that gets called when this class is used as a decortor
+        """function that gets called when this class is used as a decortor
         :param f: function that is decorated
         :return: wrapped function
-        '''
+        """
 
         @functools.wraps(f)
         def wrapped(*args, **kwargs):

@@ -26,6 +26,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param kwargs: keyword args
         """
         self._hot_reload_task = None
+        self._processor = None
         self._health_servicer = health.aio.HealthServicer()
         super().__init__(args, **kwargs)
 
