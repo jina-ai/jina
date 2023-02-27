@@ -45,11 +45,6 @@ f.save_config("envflow.yml")
 ```
 ````
 
-```{admonition} See Also
-:class: seealso
-For more information about the environment variable syntax used in Jina YAML configurations, see {ref}`here <migration-env-var>`.
-```
-
 The following environment variables are used internally in Jina:
 
 | Environment variable          | Description                                                                                                                                                                                     |
