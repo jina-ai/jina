@@ -189,7 +189,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         """Create a Deployment to serve or deploy and Executor or Gateway
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
-        :param connection_list: Dictionary JSON with a list of connections to configure
+        :param connection_list: dictionary JSON with a list of connections to configure
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -202,23 +202,23 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
-        :param gpus: This argument allows dockerized Jina Executors to discover local GPU devices.
+        :param gpus: This argument allows dockerized Jina Executors to discover local gpu devices.
 
               Note,
-              - To access all GPUs, use `--gpus all`.
-              - To access multiple GPUs, e.g. make use of 2 gpus, use `--gpus 2`.
-              - To access specified GPUs based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
-              - To access specified GPUs based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
+              - To access all gpus, use `--gpus all`.
+              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.
+              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
+              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param grpc_metadata: The metadata to be passed to the gRPC request.
-        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the gRPC server as options when starting the server, example : {'grpc.max_send_message_length': -1}
+        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
-        :param install_requirements: If set, try to install `requirements.txt` from the local Executor if it exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.
-        :param log_config: The config name or absolute path to the YAML config file of the logger used in this object.
-        :param metrics: If set, the SDK implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param install_requirements: If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
+        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
-        :param monitoring: If set, spawn an HTTP server with a Prometheus endpoint to expose metrics
+        :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
 
               This will be used in the following places:
@@ -227,16 +227,16 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
               - log message header
               - ...
 
-              When not given, the default naming strategy will apply.
-        :param native: If set, only native Executors are allowed, and the Executor is always run inside WorkerRuntime.
+              When not given, then the default naming strategy will apply.
+        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
         :param no_reduce: Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a `docs_matrix` or `docs_map`
-        :param output_array_type: The type of array that `tensor` and `embedding` will be serialized to.
+        :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
 
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
           `here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.
           Defaults to retaining whatever type is returned by the Executor.
-        :param polling: The polling strategy of the Deployment and its endpoints (when `shards > 1`).
-              Can be defined for all endpoints of a Deployment or by individual endpoint.
+        :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
+              Can be defined for all endpoints of a Deployment or by endpoint.
               Define per Deployment:
               - ANY: only one (whoever is idle) Pod polls the message
               - ALL: all Pods poll the message (like a broadcast)
@@ -244,54 +244,54 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.
-        :param port_monitoring: The port on which the Prometheus server is exposed, default is a random port between [49152, 65535]
+        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
-        :param py_modules: The customized Python modules that need to be imported before loading the Executor
+        :param py_modules: The customized python modules need to be imported before loading the executor
 
-          Note that the recommended way is to only import a single module - a simple Python file, if your
-          Executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
-          which should be structured as a Python package. For more details, see the
-          `Executor docs <https://docs.jina.ai/concepts/executor/create/#create-an-executor>`__
+          Note that the recommended way is to only import a single module - a simple python file, if your
+          executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
+          which should be structured as a python package. For more details, please see the
+          `Executor cookbook <https://docs.jina.ai/concepts/executor/executor-files/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Executor will restart while serving if YAML configuration source or Executor modules are changed. If YAML configuration is changed, the whole deployment is reloaded and new processes will be restarted. If only Python modules of the Executor have changed, they will be reloaded to the interpreter without restarting process.
         :param replicas: The number of replicas in the deployment
-        :param retries: Number of retries per gRPC call. If < 0 it defaults to max (3, num_replicas)
+        :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
-        :param shards: The number of shards in the Deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
+        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
-        :param tls: If set, connect to deployment using TLS encryption
+        :param tls: If set, connect to deployment using tls encryption
         :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
         :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
-        :param tracing: If set, the SDK implementation of the OpenTelemetry tracer will be available and enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
-        :param uses: The config of the Executor, it could be one of the following:
+        :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
+        :param uses: The config of the executor, it could be one of the followings:
                   * the string literal of an Executor class name
                   * an Executor YAML file (.yml, .yaml, .jaml)
-                  * an Executor Hub Executor (must start with `jinaai://` or `jinaai+docker://`)
-                  * a Docker image (must start with `docker://`)
+                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
+                  * a docker image (must start with `docker://`)
                   * the string literal of a YAML config (must start with `!` or `jtype: `)
                   * the string literal of a JSON config
 
-                  When using it under Python, you can also use the following values:
+                  When use it under Python, one can use the following values additionally:
                   - a Python dict that represents the config
-                  - a text file stream that has a `.read()` interface
-        :param uses_after: The Executor attached after the Pods described by --uses, typically used for receiving from all shards, accepted type follows `--uses`. This argument only applies for sharded Deployments (shards > 1).
+                  - a text file stream has `.read()` interface
+        :param uses_after: The executor attached after the Pods described by --uses, typically used for receiving from all shards, accepted type follows `--uses`. This argument only applies for sharded Deployments (shards > 1).
         :param uses_after_address: The address of the uses-before runtime
-        :param uses_before: The Executor attached before the Pods described by --uses, typically before sending to all shards, accepted type follows `--uses`. This argument only applies for sharded Deployments (shards > 1).
+        :param uses_before: The executor attached before the Pods described by --uses, typically before sending to all shards, accepted type follows `--uses`. This argument only applies for sharded Deployments (shards > 1).
         :param uses_before_address: The address of the uses-before runtime
         :param uses_dynamic_batching: Dictionary of keyword arguments that will override the `dynamic_batching` configuration in `uses`
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
-        :param volumes: The path on the host to be mounted inside the container
+        :param volumes: The path on the host to be mounted inside the container.
 
           Note,
-          - If separated by `:`, then the first part will be considered as the local host path and the second part as the path in the container system.
-          - If no split is provided, then the basename of that directory will be mounted into the container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
+          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.
+          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
           - All volumes are mounted with read-write mode.
-        :param when: The condition that the Documents need to fulfill before reaching the Executor.The condition can be defined in the form of a `DocArray query condition <https://docs.docarray.org/fundamentals/documentarray/find/#query-by-conditions>`
+        :param when: The condition that the documents need to fulfill before reaching the Executor.The condition can be defined in the form of a `DocArray query condition <https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions>`
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
         .. # noqa: DAR202
