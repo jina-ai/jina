@@ -119,8 +119,33 @@ If you want to learn more about this limitation, see [this](https://kubernetes.i
 ## Scaling the Gateway
 The {ref}`Gateway <gateway>` is responsible for providing the API of the {ref}`Flow <flow>`.
 If you have a large Flow with many Clients and many replicated Executors, the Gateway can become the bottleneck.
-In this case you can also scale up the Gateway deployment to be backed by multiple Kubernetes Pods.
-This is done by the regular means of Kubernetes: Either increase the number of replicas in the  {ref}`generated yaml configuration files <kubernetes-export>` or [add replicas while running](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#scaling-a-deployment).
+In this case you can also scale up the Gateway deployment to be backed by multiple Kubernetes Pods. For this reason, you can add `replicas` parameter to your Gateway before converting the Flow to Kubernetes.
+This can be done in a Pythonic way or in YAML:
+
+````{tab} Using Python
+
+You can use {meth}`~jina.Flow.config_gateway` to add `replicas` parameter
+```python
+from jina import Flow
+
+f = Flow().config_gateway(replicas=3).add()
+
+f.to_kubernetes_yaml('./k8s_yaml_path')
+```
+````
+
+````{tab} Using YAML
+You can add `replicas` in the `gateway` section of your Flow YAML
+```yaml
+jtype: Flow
+gateway:
+    replicas: 3
+executors:
+  - name: encoder
+```
+````
+
+Alternatively, this can be done by the regular means of Kubernetes: Either increase the number of replicas in the {ref}`generated yaml configuration files <kubernetes-export>` or [add replicas while running](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#scaling-a-deployment).
 To expose your Gateway replicas outside Kubernetes, you can add a load balancer as described {ref}`here <kubernetes-expose>`.
 
 ````{admonition} Hint

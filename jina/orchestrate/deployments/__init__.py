@@ -891,6 +891,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             If one of the :class:`Pod` fails to start, make sure that all of them
             are properly closed.
         """
+
         self._start_time = time.time()
         if self.is_sandbox and not self._sandbox_deployed:
             self.update_sandbox_args()
@@ -1108,6 +1109,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         result = {}
         shards = getattr(self.args, 'shards', 1)
         replicas = getattr(self.args, 'replicas', 1)
+        if self.args.deployment_role == DeploymentRoleType.GATEWAY:
+            replicas = 1
         sharding_enabled = shards and shards > 1
 
         cuda_device_map = None
@@ -1125,6 +1128,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             replica_args = []
             for replica_id in range(replicas):
                 _args = copy.deepcopy(self.args)
+                if self.args.deployment_role == DeploymentRoleType.GATEWAY:
+                    _args.replicas = replicas
                 _args.shard_id = shard_id
                 # for gateway pods, the pod role shouldn't be changed
                 if _args.pod_role != PodRoleType.GATEWAY:
@@ -1475,7 +1480,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 f'{to_compatible_name(self.head_args.name)}:{port}'
             ]
         else:
-            if self.args.replicas == 1:
+            if self.args.replicas == 1 or self.name == 'gateway':
                 docker_compose_address = [f'{to_compatible_name(self.name)}:{port}']
             else:
                 docker_compose_address = []
@@ -1600,7 +1605,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             self.args.deployments_addresses = k8s_deployments_addresses
         elif self._include_gateway and self.port:
             self.args.port = self._gateway_kwargs['port']
-
         k8s_deployment = K8sDeploymentConfig(
             args=self.args, k8s_namespace=k8s_namespace, k8s_port=k8s_port
         )

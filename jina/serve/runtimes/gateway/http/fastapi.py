@@ -47,7 +47,7 @@ class FastAPIBaseGateway(BaseGateway):
     @property
     @abstractmethod
     def app(self):
-        '''Get a FastAPI app'''
+        """Get a FastAPI app"""
         ...
 
     async def setup_server(self):

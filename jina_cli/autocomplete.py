@@ -142,6 +142,7 @@ ac_table = {
             '--uses',
             '--uses-with',
             '--py-modules',
+            '--replicas',
             '--grpc-server-options',
             '--graph-description',
             '--graph-conditions',
