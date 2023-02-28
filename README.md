@@ -211,6 +211,10 @@ an astronaut is walking in a park
 
 <!-- end build-ai-services -->
 
+> **Note**
+> In a notebook, one cannot use `deployment.block()` and then make requests to the client. Please refer to the colab link above for reproducible Jupyter Notebook code snippets.
+
+
 ### Build a pipeline
 
 <!-- start build-pipelines -->
