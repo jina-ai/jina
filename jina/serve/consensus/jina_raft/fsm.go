@@ -13,6 +13,7 @@ import (
 
     "google.golang.org/protobuf/proto"
     "google.golang.org/protobuf/types/known/emptypb"
+    healthpb "google.golang.org/grpc/health/grpc_health_v1"
     empty "github.com/golang/protobuf/ptypes/empty"
 
     "github.com/hashicorp/raft"
@@ -261,5 +262,16 @@ func (fsm *executorFSM) XStatus(ctx context.Context, empty *empty.Empty) (*pb.Ji
     }
 
     return response, err
+}
+
+
+func (fsm *executorFSM) Check(ctx context.Context, req *healthpb.HealthCheckRequest) (*healthpb.HealthCheckResponse, error) {
+    log.Printf("executorFSM call Check")
+    conn, err := fsm.executor.newConnection()
+    if err != nil {
+        return nil, err
+    }
+    defer conn.Close()
+    return healthpb.NewHealthClient(conn).Check(ctx, req)
 }
 

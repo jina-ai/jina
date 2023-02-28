@@ -94,9 +94,8 @@ func (rpc *RpcInterface) XStatus(ctx context.Context, empty *empty.Empty) (*pb.J
 }
 
 func (rpc *RpcInterface) Check(ctx context.Context, req *healthpb.HealthCheckRequest) (*healthpb.HealthCheckResponse, error) {
-    healthCheckStatus := &healthpb.HealthCheckResponse{}
-    healthCheckStatus.Status = 1
-    return healthCheckStatus, nil
+    log.Printf("Check")
+    return rpc.Executor.Check(ctx, req)
 }
 
 func (rpc *RpcInterface) Watch(req *healthpb.HealthCheckRequest, stream healthpb.Health_WatchServer) error {
