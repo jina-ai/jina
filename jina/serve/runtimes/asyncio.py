@@ -11,7 +11,7 @@ from grpc import RpcError
 from jina.constants import __windows__
 from jina.helper import send_telemetry_event
 from jina.serve.instrumentation import InstrumentationMixin
-from jina.serve.networking.utils import send_health_check_sync
+from jina.serve.networking.utils import send_health_check_async, send_health_check_sync
 from jina.serve.runtimes.base import BaseRuntime
 from jina.serve.runtimes.monitoring import MonitoringMixin
 from jina.types.request.data import DataRequest
@@ -172,7 +172,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
             try:
                 if not self.warmup_task.done():
                     self.logger.debug(f'Cancelling warmup task.')
-                    self.warmup_stop_event.set() # this event is useless if simply cancel
+                    self.warmup_stop_event.set()  # this event is useless if simply cancel
                     self.warmup_task.cancel()
             except Exception as ex:
                 self.logger.debug(f'exception during warmup task cancellation: {ex}')
@@ -201,12 +201,32 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         except RpcError:
             return False
 
+    @staticmethod
+    async def async_is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
+        """
+        Async Check if status is ready.
+        :param ctrl_address: the address where the control request needs to be sent
+        :param timeout: timeout of the health check in seconds
+        :param kwargs: extra keyword arguments
+        :return: True if status is ready else False.
+        """
+        try:
+            from grpc_health.v1 import health_pb2, health_pb2_grpc
+
+            response = await send_health_check_async(ctrl_address, timeout=timeout)
+            return (
+                response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
+            )
+        except RpcError:
+            return False
+
     @classmethod
     def wait_for_ready_or_shutdown(
         cls,
         timeout: Optional[float],
         ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
         ctrl_address: str,
+        health_check: bool = False,
         **kwargs,
     ):
         """
@@ -215,13 +235,16 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         :param timeout: The time to wait before readiness or failure is determined
         :param ctrl_address: the address where the control message needs to be sent
         :param ready_or_shutdown_event: the multiprocessing event to detect if the process failed or is ready
+        :param health_check: if true, a grpc health check will be used instead of relying on the event
         :param kwargs: extra keyword arguments
         :return: True if is ready or it needs to be shutdown
         """
         timeout_ns = 1000000000 * timeout if timeout else None
         now = time.time_ns()
+        if health_check:
+            return cls.is_ready(ctrl_address, timeout)
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
-            if ready_or_shutdown_event.is_set() or cls.is_ready(ctrl_address, **kwargs):
+            if ready_or_shutdown_event.is_set():
                 return True
             time.sleep(0.1)
         return False

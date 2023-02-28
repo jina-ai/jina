@@ -3,7 +3,7 @@ import multiprocessing
 import os
 import time
 from abc import ABC, abstractmethod
-from typing import Dict, Optional, Type, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, Optional, Type, Union
 
 from jina.constants import __ready_msg__, __stop_msg__, __windows__
 from jina.enums import PodRoleType
@@ -23,14 +23,14 @@ __all__ = ['BasePod', 'Pod']
 
 
 def run(
-        args: 'argparse.Namespace',
-        name: str,
-        runtime_cls: Type[AsyncNewLoopRuntime],
-        envs: Dict[str, str],
-        is_started: Union['multiprocessing.Event', 'threading.Event'],
-        is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
-        is_ready: Union['multiprocessing.Event', 'threading.Event'],
-        jaml_classes: Optional[Dict] = None,
+    args: 'argparse.Namespace',
+    name: str,
+    runtime_cls: Type[AsyncNewLoopRuntime],
+    envs: Dict[str, str],
+    is_started: Union['multiprocessing.Event', 'threading.Event'],
+    is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
+    is_ready: Union['multiprocessing.Event', 'threading.Event'],
+    jaml_classes: Optional[Dict] = None,
 ):
     """Method representing the :class:`BaseRuntime` activity.
 
@@ -154,7 +154,7 @@ class BasePod(ABC):
                 self.logger.debug(f'terminate')
                 self._terminate()
                 if not self.is_shutdown.wait(
-                        timeout=self._timeout_ctrl if not __windows__ else 1.0
+                    timeout=self._timeout_ctrl if not __windows__ else 1.0
                 ):
                     if not __windows__:
                         raise Exception(
@@ -271,7 +271,14 @@ class BasePod(ABC):
         now = time.time_ns()
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
 
-            if self.ready_or_shutdown.event.is_set():
+            if self.ready_or_shutdown.event.is_set() and (
+                not self.args.pod_role == PodRoleType.WORKER
+                or (
+                    await AsyncNewLoopRuntime.async_is_ready(
+                        self.runtime_ctrl_address, timeout=_timeout
+                    )
+                )
+            ):
                 self._check_failed_to_start()
                 self.logger.debug(__ready_msg__)
                 return
