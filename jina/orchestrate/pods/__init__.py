@@ -413,7 +413,6 @@ class Pod(BasePod):
         self.worker.start()
         if self.args.stateful and self.args.pod_role == PodRoleType.WORKER:
             self.raft_worker.start()
-            print('######## raft node pid:', self.raft_worker.pid)
         self.is_forked = multiprocessing.get_start_method().lower() == 'fork'
         if not self.args.noblock_on_start:
             self.wait_start_success()
