@@ -2,6 +2,7 @@
 
 from jina.parsers.helper import KVAppendAction, add_arg_group
 from jina.parsers.orchestrate.runtimes.runtime import mixin_base_runtime_parser
+from jina.parsers.orchestrate.runtimes.remote import mixin_http_parser, mixin_protocol_parser
 
 
 def mixin_worker_runtime_parser(parser):
@@ -111,3 +112,5 @@ Defaults to retaining whatever type is returned by the Executor.
     )
 
     mixin_base_runtime_parser(gp)
+    mixin_protocol_parser(gp, pod_type='worker')
+    mixin_http_parser(gp)

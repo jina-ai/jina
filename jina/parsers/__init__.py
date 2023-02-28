@@ -74,7 +74,7 @@ def set_gateway_parser(parser=None):
     from jina.parsers.orchestrate.pod import mixin_pod_parser
     from jina.parsers.orchestrate.runtimes.remote import (
         mixin_gateway_parser,
-        mixin_gateway_protocol_parser,
+        mixin_protocol_parser,
         mixin_graphql_parser,
         mixin_http_gateway_parser,
         mixin_prefetch_parser,
@@ -85,7 +85,7 @@ def set_gateway_parser(parser=None):
     mixin_prefetch_parser(parser)
     mixin_http_gateway_parser(parser)
     mixin_graphql_parser(parser)
-    mixin_gateway_protocol_parser(parser)
+    mixin_protocol_parser(parser)
     mixin_gateway_parser(parser)
     mixin_pod_parser(parser, pod_type='gateway')
 
@@ -114,12 +114,12 @@ def set_gateway_runtime_args_parser(parser=None):
     from jina.parsers.orchestrate.pod import mixin_pod_runtime_args_parser
     from jina.parsers.orchestrate.runtimes.remote import (
         _add_host,
-        mixin_gateway_protocol_parser,
+        mixin_protocol_parser,
         mixin_gateway_streamer_parser,
         mixin_prefetch_parser,
     )
 
-    mixin_gateway_protocol_parser(parser)
+    mixin_protocol_parser(parser, pod_type='gateway')
     mixin_gateway_streamer_parser(parser)
     mixin_pod_runtime_args_parser(parser, pod_type='gateway')
     mixin_prefetch_parser(parser)
