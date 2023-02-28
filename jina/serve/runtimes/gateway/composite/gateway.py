@@ -1,6 +1,6 @@
 import asyncio
 import copy
-from typing import Any, List, Optional
+from typing import Any, List
 
 from jina.serve.gateway import BaseGateway
 

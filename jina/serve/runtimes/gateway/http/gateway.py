@@ -1,8 +1,5 @@
-import logging
-import os
 from typing import Optional
 
-from jina.importer import ImportExtensions
 from jina.serve.runtimes.gateway.http.app import get_fastapi_app
 from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
 

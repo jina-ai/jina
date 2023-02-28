@@ -11,7 +11,6 @@ from typing import (
     Union,
 )
 
-from jina._docarray import Document
 from jina.clients.request.helper import _new_data_request, _new_data_request_from_batch
 from jina.enums import DataInputType
 from jina.helper import batch_iterator

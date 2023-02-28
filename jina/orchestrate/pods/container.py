@@ -6,7 +6,6 @@ import os
 import platform
 import re
 import signal
-import subprocess
 import threading
 import time
 from typing import TYPE_CHECKING, Dict, Optional, Union
