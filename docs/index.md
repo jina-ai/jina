@@ -144,6 +144,7 @@ yaml-spec
 envs/index
 telemetry
 proto/docs
+concepts/preliminaries/clean-code
 ```
 
 ```{toctree}

@@ -92,5 +92,4 @@ The following concepts are covered in the user guide:
 :hidden:
 
 coding-in-python-yaml
-clean-code
 ```
