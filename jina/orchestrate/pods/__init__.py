@@ -257,6 +257,7 @@ class BasePod(ABC):
                 ready_or_shutdown_event=self.ready_or_shutdown.event,
                 ctrl_address=self.runtime_ctrl_address,
                 timeout_ctrl=self._timeout_ctrl,
+                health_check=self.args.stateful,
             )
 
     def _fail_start_timeout(self, timeout):
@@ -319,7 +320,14 @@ class BasePod(ABC):
         now = time.time_ns()
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
 
-            if self.ready_or_shutdown.event.is_set():
+            if self.ready_or_shutdown.event.is_set() and (
+                not self.args.stateful
+                or (
+                    await AsyncNewLoopRuntime.async_is_ready(
+                        self.runtime_ctrl_address, timeout=_timeout
+                    )
+                )
+            ):
                 self._check_failed_to_start()
                 self.logger.debug(__ready_msg__)
                 return
@@ -405,6 +413,7 @@ class Pod(BasePod):
         self.worker.start()
         if self.args.stateful and self.args.pod_role == PodRoleType.WORKER:
             self.raft_worker.start()
+            print('######## raft node pid:', self.raft_worker.pid)
         self.is_forked = multiprocessing.get_start_method().lower() == 'fork'
         if not self.args.noblock_on_start:
             self.wait_start_success()

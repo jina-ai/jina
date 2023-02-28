@@ -973,7 +973,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             self.enter_context(self.shards[shard_id])
 
         if not self.args.noblock_on_start:
-            # TODO:
             self._wait_until_all_ready()
         if self._include_gateway:
             all_panels = []
