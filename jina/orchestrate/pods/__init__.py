@@ -271,11 +271,15 @@ class BasePod(ABC):
         now = time.time_ns()
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
 
-            if self.ready_or_shutdown.event.is_set() and (
-                not self.args.pod_role == PodRoleType.WORKER
-                or (
-                    await AsyncNewLoopRuntime.async_is_ready(
-                        self.runtime_ctrl_address, timeout=_timeout
+            if (
+                self.ready_or_shutdown.event.is_set()
+                and (  # submit the health check to the pod, if it is
+                    self.is_shutdown.is_set()  # a worker and not shutdown
+                    or not self.args.pod_role == PodRoleType.WORKER
+                    or (
+                        await AsyncNewLoopRuntime.async_is_ready(
+                            self.runtime_ctrl_address, timeout=_timeout
+                        )
                     )
                 )
             ):
