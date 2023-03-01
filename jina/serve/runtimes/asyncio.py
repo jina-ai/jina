@@ -245,7 +245,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         if health_check:
             return cls.is_ready(ctrl_address, timeout)
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
-            if ready_or_shutdown_event.is_set():
+            if ready_or_shutdown_event.is_set() or cls.is_ready(ctrl_address, **kwargs):
                 return True
             time.sleep(0.1)
         return False

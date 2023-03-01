@@ -143,8 +143,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         def wait_start_success(self):
             for pod in self._pods:
-                # the ready event might be set by the Executor but the raft node/cluster might not be ready
-                # do extra check when self._pods[0].args.stateful is true to check the raft node.
                 pod.wait_start_success()
             if self._pods[0].args.stateful and self._pods[0].args.raft_bootstrap:
                 self._add_voter_to_leader()
