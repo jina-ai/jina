@@ -321,7 +321,8 @@ class BasePod(ABC):
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
 
             if self.ready_or_shutdown.event.is_set() and (
-                not self.args.stateful
+                self.is_shutdown.is_set()
+                or not self.args.stateful
                 or (
                     await AsyncNewLoopRuntime.async_is_ready(
                         self.runtime_ctrl_address, timeout=_timeout
