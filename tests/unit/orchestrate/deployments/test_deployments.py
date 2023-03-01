@@ -82,7 +82,9 @@ def test_host(hostname, runtime_cls):
         assert pod.head_host is None
 
 
-@pytest.mark.parametrize('runtime_cls', ['WorkerRuntime'])
+@pytest.mark.parametrize(
+    'runtime_cls', ['GatewayRuntime', 'WorkerRuntime', 'HeadRuntime']
+)
 def test_wrong_hostname(runtime_cls):
     with pytest.raises(RuntimeFailToStart):
         with Deployment(
