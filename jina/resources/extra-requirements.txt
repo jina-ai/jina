@@ -81,7 +81,7 @@ strawberry-graphql>=0.96.0: cicd,devel
 sgqlc:                      cicd,devel
 bs4:                        cicd
 jsonschema:                 cicd
-portforward>=0.2.4:         cicd
+portforward>=0.2.4,<0.4.3:         cicd
 tensorflow>=2.0:            cicd
 opentelemetry-test-utils>=0.33b0:  test
 prometheus-api-client>=0.5.1:  test
