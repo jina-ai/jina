@@ -25,7 +25,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry.propagate import Context
 
     from jina.types.request import Request
-    import argparse
 
     from opentelemetry import metrics, trace
     from opentelemetry.context.context import Context
@@ -752,6 +751,11 @@ class WorkerRequestHandler:
             return context
 
         return None
+
+    def _log_data_request(self, request: DataRequest):
+        self.logger.debug(
+            f'recv DataRequest at {request.header.exec_endpoint} with id: {request.header.request_id}'
+        )
 
     async def process_data(self, requests: List[DataRequest], context) -> DataRequest:
         """
