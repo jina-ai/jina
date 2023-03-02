@@ -199,6 +199,7 @@ class Flow(
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         reload: Optional[bool] = False,
+        replicas: Optional[int] = 1,
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'GatewayRuntime',
         ssl_certfile: Optional[str] = None,
@@ -273,6 +274,7 @@ class Flow(
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Gateway will restart while serving if YAML configuration source is changed.
+        :param replicas: The number of replicas of the Gateway. This replicas will only be applied when converted into Kubernetes YAML
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -462,6 +464,7 @@ class Flow(
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Gateway will restart while serving if YAML configuration source is changed.
+        :param replicas: The number of replicas of the Gateway. This replicas will only be applied when converted into Kubernetes YAML
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -547,7 +550,7 @@ class Flow(
             )
         self.args = args
         # common args should be the ones that can not be parsed by _flow_parser
-        known_keys = vars(args)
+        known_keys = list(vars(args).keys())
         self._common_kwargs = {k: v for k, v in kwargs.items() if k not in known_keys}
 
         # gateway args inherit from flow args
@@ -690,26 +693,7 @@ class Flow(
         for node, deployment in self._deployment_nodes.items():
             if node == GATEWAY_NAME:
                 continue
-            if deployment.head_args:
-                # add head information
-                graph_dict[node] = [
-                    f'{deployment.protocol}://{deployment.host}:{deployment.head_port}'
-                ]
-            else:
-                # there is no head, add the worker connection information instead
-                ports = deployment.ports
-                hosts = [
-                    __docker_host__
-                    if host_is_local(host)
-                    and in_docker()
-                    and deployment.dockerized_uses
-                    else host
-                    for host in deployment.hosts
-                ]
-                graph_dict[node] = [
-                    f'{deployment.protocol}://{host}:{port}'
-                    for host, port in zip(hosts, ports)
-                ]
+            graph_dict[node] = deployment._get_connection_list()
 
         return graph_dict
 
@@ -1313,6 +1297,7 @@ class Flow(
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         reload: Optional[bool] = False,
+        replicas: Optional[int] = 1,
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'GatewayRuntime',
         ssl_certfile: Optional[str] = None,
@@ -1387,6 +1372,7 @@ class Flow(
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Gateway will restart while serving if YAML configuration source is changed.
+        :param replicas: The number of replicas of the Gateway. This replicas will only be applied when converted into Kubernetes YAML
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -1486,6 +1472,7 @@ class Flow(
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Gateway will restart while serving if YAML configuration source is changed.
+        :param replicas: The number of replicas of the Gateway. This replicas will only be applied when converted into Kubernetes YAML
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -1837,148 +1824,153 @@ class Flow(
         return self
 
     def _wait_until_all_ready(self):
-        results = {}
-        threads = []
-        results_lock = threading.Lock()
+        import warnings
 
-        async def _async_wait_ready(_deployment_name, _deployment):
-            try:
-                if not _deployment.external:
-                    with results_lock:
-                        results[_deployment_name] = 'pending'
-                    await _deployment.async_wait_start_success()
-                    with results_lock:
-                        results[_deployment_name] = 'done'
-            except Exception as ex:
-                results[_deployment_name] = repr(ex)
+        with warnings.catch_warnings():
 
-        def _wait_ready(_deployment_name, _deployment):
-            try:
-                if not _deployment.external:
-                    with results_lock:
-                        results[_deployment_name] = 'pending'
-                    _deployment.wait_start_success()
-                    with results_lock:
-                        results[_deployment_name] = 'done'
-            except Exception as ex:
-                with results_lock:
+            results = {}
+            results_lock = threading.Lock()
+
+            async def _async_wait_ready(_deployment_name, _deployment):
+                try:
+                    if not _deployment.external:
+                        with results_lock:
+                            results[_deployment_name] = 'pending'
+                        await _deployment.async_wait_start_success()
+                        with results_lock:
+                            results[_deployment_name] = 'done'
+                except Exception as ex:
                     results[_deployment_name] = repr(ex)
 
-        def _polling_status(num_tasks_to_wait):
-            progress = Progress(
-                SpinnerColumn(),
-                TextColumn(
-                    'Waiting [b]{task.fields[pending_str]}[/]...', justify='right'
-                ),
-                BarColumn(),
-                MofNCompleteColumn(),
-                TimeElapsedColumn(),
-                transient=True,
-            )
-            with progress:
-                task = progress.add_task(
-                    'wait', total=num_tasks_to_wait, pending_str='', start=False
-                )
-                with results_lock:
-                    progress.update(task, total=len(results))
-                progress.start_task(task)
-
-                while True:
-                    num_done = 0
-                    pendings = []
+            def _wait_ready(_deployment_name, _deployment):
+                try:
+                    if not _deployment.external:
+                        with results_lock:
+                            results[_deployment_name] = 'pending'
+                        _deployment.wait_start_success()
+                        with results_lock:
+                            results[_deployment_name] = 'done'
+                except Exception as ex:
                     with results_lock:
-                        for _k, _v in results.items():
-                            sys.stdout.flush()
-                            if _v == 'pending':
-                                pendings.append(_k)
-                            elif _v == 'done':
-                                num_done += 1
-                            else:
-                                if 'JINA_EARLY_STOP' in os.environ:
-                                    self.logger.error(
-                                        f'Flow is aborted due to {_k} {_v}.'
-                                    )
-                                    os._exit(1)
+                        results[_deployment_name] = repr(ex)
 
-                    pending_str = ' '.join(pendings)
-
-                    progress.update(task, completed=num_done, pending_str=pending_str)
-
-                    if not pendings:
-                        break
-                    time.sleep(0.1)
-
-        wait_for_ready_coros = []
-        for k, v in self:
-            wait_for_ready_coros.append(_async_wait_ready(k, v))
-
-        async def _async_wait_all():
-            await asyncio.gather(*wait_for_ready_coros)
-
-        # kick off spinner thread
-        polling_status_thread = threading.Thread(
-            target=_polling_status,
-            args=(len(wait_for_ready_coros),),
-            daemon=True,
-        )
-
-        polling_status_thread.start()
-
-        # kick off all deployments wait-ready tasks
-        try:
-            _ = asyncio.get_event_loop()
-        except:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-
-        async def _f():
-            pass
-
-        running_in_event_loop = False
-        try:
-            asyncio.get_event_loop().run_until_complete(_f())
-        except:
-            running_in_event_loop = True
-
-        wait_ready_threads = []
-        if not running_in_event_loop:
-            asyncio.get_event_loop().run_until_complete(_async_wait_all())
-        else:
-            for k, v in self:
-                wait_ready_threads.append(
-                    threading.Thread(target=_wait_ready, args=(k, v), daemon=True)
+            def _polling_status(num_tasks_to_wait):
+                progress = Progress(
+                    SpinnerColumn(),
+                    TextColumn(
+                        'Waiting [b]{task.fields[pending_str]}[/]...', justify='right'
+                    ),
+                    BarColumn(),
+                    MofNCompleteColumn(),
+                    TimeElapsedColumn(),
+                    transient=True,
                 )
-            for t in wait_ready_threads:
-                t.start()
+                with progress:
+                    task = progress.add_task(
+                        'wait', total=num_tasks_to_wait, pending_str='', start=False
+                    )
+                    with results_lock:
+                        progress.update(task, total=len(results))
+                    progress.start_task(task)
 
-        polling_status_thread.join()
-        for t in wait_ready_threads:
-            t.join()
+                    while True:
+                        num_done = 0
+                        pendings = []
+                        with results_lock:
+                            for _k, _v in results.items():
+                                sys.stdout.flush()
+                                if _v == 'pending':
+                                    pendings.append(_k)
+                                elif _v == 'done':
+                                    num_done += 1
+                                else:
+                                    if 'JINA_EARLY_STOP' in os.environ:
+                                        self.logger.error(
+                                            f'Flow is aborted due to {_k} {_v}.'
+                                        )
+                                        os._exit(1)
 
-        error_deployments = [k for k, v in results.items() if v != 'done']
-        if error_deployments:
-            self.logger.error(
-                f'Flow is aborted due to {error_deployments} can not be started.'
+                        pending_str = ' '.join(pendings)
+
+                        progress.update(
+                            task, completed=num_done, pending_str=pending_str
+                        )
+
+                        if not pendings:
+                            break
+                        time.sleep(0.1)
+
+            wait_for_ready_coros = []
+            for k, v in self:
+                wait_for_ready_coros.append(_async_wait_ready(k, v))
+
+            async def _async_wait_all():
+                await asyncio.gather(*wait_for_ready_coros)
+
+            # kick off spinner thread
+            polling_status_thread = threading.Thread(
+                target=_polling_status,
+                args=(len(wait_for_ready_coros),),
+                daemon=True,
             )
-            self.close()
-            raise RuntimeFailToStart
-        from rich.rule import Rule
 
-        all_panels = []
-        self._get_summary_table(all_panels)
+            polling_status_thread.start()
 
-        print(
-            Rule(':tada: Flow is ready to serve!'), *all_panels
-        )  # can't use logger here see : https://github.com/Textualize/rich/discussions/2024
-        self.logger.debug(
-            f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
-        )
+            # kick off all deployments wait-ready tasks
 
-        print(
-            'Do you love Open Source? Help us get better and be heard in just 1 minute and 30 seconds :sparkling_heart: '
-            ' '
-            'Your feedback will help us build better features for [link=https://github.com/jina-ai/jina]Jina[/link], your loved open-source project :tada: [link=https://10sw1tcpld4.typeform.com/to/EGAEReM7?utm_source=doc&utm_medium=github&utm_campaign=user%20experience&utm_term=feb2023&utm_content=survey]Take the Jina user survey![/link]'
-        )
+            try:
+                _ = asyncio.get_event_loop()
+            except:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+
+            async def _f():
+                pass
+
+            running_in_event_loop = False
+            try:
+                asyncio.get_event_loop().run_until_complete(_f())
+            except:
+                running_in_event_loop = True
+
+            wait_ready_threads = []
+            if not running_in_event_loop:
+                asyncio.get_event_loop().run_until_complete(_async_wait_all())
+            else:
+                for k, v in self:
+                    wait_ready_threads.append(
+                        threading.Thread(target=_wait_ready, args=(k, v), daemon=True)
+                    )
+                for t in wait_ready_threads:
+                    t.start()
+
+            polling_status_thread.join()
+            for t in wait_ready_threads:
+                t.join()
+
+            error_deployments = [k for k, v in results.items() if v != 'done']
+            if error_deployments:
+                self.logger.error(
+                    f'Flow is aborted due to {error_deployments} can not be started.'
+                )
+                self.close()
+                raise RuntimeFailToStart
+            from rich.rule import Rule
+
+            all_panels = []
+            self._get_summary_table(all_panels)
+
+            print(
+                Rule(':tada: Flow is ready to serve!'), *all_panels
+            )  # can't use logger here see : https://github.com/Textualize/rich/discussions/2024
+            self.logger.debug(
+                f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
+            )
+
+            print(
+                'Do you love Open Source? Help us get better and be heard in just 1 minute and 30 seconds :sparkling_heart:'
+                'Your feedback will help us build better features for [link=https://github.com/jina-ai/jina]Jina[/link], your loved open-source project :tada: https://10sw1tcpld4.typeform.com/jinasurveyfeb23?utm_source=jina Take the Jina user survey!'
+            )
 
     @property
     def num_deployments(self) -> int:

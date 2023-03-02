@@ -429,7 +429,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 self._gateway_kwargs, gateway_parser, True
             )
 
-            args.deployments_addresses = f'{{"executor": ["0.0.0.0:{self.port}"]}}'
+            args.deployments_addresses = json.dumps(
+                {'executor': self._get_connection_list()}
+            )
             args.graph_description = (
                 '{"start-gateway": ["executor"], "executor": ["end-gateway"]}'
             )
@@ -440,6 +442,23 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         self._sandbox_deployed = False
 
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
+
+    def _get_connection_list(self) -> List[str]:
+        if self.head_args:
+            # add head information
+            return [f'{self.protocol}://{self.host}:{self.head_port}']
+        else:
+            # there is no head, add the worker connection information instead
+            ports = self.ports
+            hosts = [
+                __docker_host__
+                if host_is_local(host) and in_docker() and self.dockerized_uses
+                else host
+                for host in self.hosts
+            ]
+            return [
+                f'{self.protocol}://{host}:{port}' for host, port in zip(hosts, ports)
+            ]
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
@@ -616,7 +635,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         _head_args = copy.deepcopy(args)
         _head_args.polling = args.polling
-        _head_args.port = args.port[0]
+        _head_args.port = args.port if isinstance(args.port, int) else args.port[0]
         _head_args.host = args.host[0]
         _head_args.uses = args.uses
         _head_args.pod_role = PodRoleType.HEAD
@@ -899,31 +918,34 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         return worker_host
 
     def _wait_until_all_ready(self):
-        wait_for_ready_coro = self.async_wait_start_success()
+        import warnings
 
-        try:
-            _ = asyncio.get_event_loop()
-        except:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
+        with warnings.catch_warnings():
+            wait_for_ready_coro = self.async_wait_start_success()
 
-        async def _f():
-            pass
+            try:
+                _ = asyncio.get_event_loop()
+            except:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
 
-        running_in_event_loop = False
-        try:
-            asyncio.get_event_loop().run_until_complete(_f())
-        except:
-            running_in_event_loop = True
+            async def _f():
+                pass
 
-        if not running_in_event_loop:
-            asyncio.get_event_loop().run_until_complete(wait_for_ready_coro)
-        else:
-            wait_ready_thread = threading.Thread(
-                target=self.wait_start_success, daemon=True
-            )
-            wait_ready_thread.start()
-            wait_ready_thread.join()
+            running_in_event_loop = False
+            try:
+                asyncio.get_event_loop().run_until_complete(_f())
+            except:
+                running_in_event_loop = True
+
+            if not running_in_event_loop:
+                asyncio.get_event_loop().run_until_complete(wait_for_ready_coro)
+            else:
+                wait_ready_thread = threading.Thread(
+                    target=self.wait_start_success, daemon=True
+                )
+                wait_ready_thread.start()
+                wait_ready_thread.join()
 
     def start(self) -> 'Deployment':
         """
@@ -935,6 +957,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             If one of the :class:`Pod` fails to start, make sure that all of them
             are properly closed.
         """
+
         self._start_time = time.time()
         if self.is_sandbox and not self._sandbox_deployed:
             self.update_sandbox_args()
@@ -1152,6 +1175,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         result = {}
         shards = getattr(self.args, 'shards', 1)
         replicas = getattr(self.args, 'replicas', 1)
+        if self.args.deployment_role == DeploymentRoleType.GATEWAY:
+            replicas = 1
         sharding_enabled = shards and shards > 1
 
         cuda_device_map = None
@@ -1178,6 +1203,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
             for replica_id, pod_port in zip(range(replicas), pod_ports):
                 _args = copy.deepcopy(self.args)
+                if self.args.deployment_role == DeploymentRoleType.GATEWAY:
+                    _args.replicas = replicas
                 _args.shard_id = shard_id
                 _args.replica_id = replica_id
                 # for gateway pods, the pod role shouldn't be changed
@@ -1529,7 +1556,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 f'{to_compatible_name(self.head_args.name)}:{port}'
             ]
         else:
-            if self.args.replicas == 1:
+            if self.args.replicas == 1 or self.name == 'gateway':
                 docker_compose_address = [f'{to_compatible_name(self.name)}:{port}']
             else:
                 docker_compose_address = []
@@ -1654,7 +1681,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             self.args.deployments_addresses = k8s_deployments_addresses
         elif self._include_gateway and self.port:
             self.args.port = self._gateway_kwargs['port']
-
         k8s_deployment = K8sDeploymentConfig(
             args=self.args, k8s_namespace=k8s_namespace, k8s_port=k8s_port
         )
@@ -1685,10 +1711,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
         """
         k8s_namespace = k8s_namespace or 'default'
+        k8s_port = self.port[0] if isinstance(self.port, list) else self.port
         self._to_kubernetes_yaml(
             output_base_path,
             k8s_namespace=k8s_namespace,
-            k8s_port=self.port or GrpcConnectionPool.K8S_PORT,
+            k8s_port=k8s_port or GrpcConnectionPool.K8S_PORT,
         )
         self.logger.info(
             f'K8s yaml files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'

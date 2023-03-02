@@ -42,7 +42,9 @@ def test_send_custom_doc():
             docs[0].text = 'hello world'
 
     with Flow().add(uses=MyExec) as f:
-        doc = f.post(on='/foo', inputs=MyDoc(text='hello'))
+        doc = f.post(
+            on='/foo', inputs=MyDoc(text='hello'), return_type=DocumentArray[MyDoc]
+        )
         assert doc[0].text == 'hello world'
 
 

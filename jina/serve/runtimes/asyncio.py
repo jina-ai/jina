@@ -22,6 +22,7 @@ if TYPE_CHECKING:  # pragma: no cover
 HANDLED_SIGNALS = (
     signal.SIGINT,  # Unix signal 2. Sent by Ctrl+C.
     signal.SIGTERM,  # Unix signal 15. Sent by `kill <pid>`.
+    signal.SIGSEGV,
 )
 
 
@@ -204,7 +205,6 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
     async def async_is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
         """
         Async Check if status is ready.
-
         :param ctrl_address: the address where the control request needs to be sent
         :param timeout: timeout of the health check in seconds
         :param kwargs: extra keyword arguments

@@ -1,0 +1,7 @@
+jtype: Deployment
+with:
+  port: 12345
+  uses: Translator
+  py_modules:
+    - Translator/executor.py # name of the module containing Translator
+  timeout_ready: -1

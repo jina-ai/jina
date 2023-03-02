@@ -159,6 +159,13 @@ which should be structured as a python package.
 ''',
     )
 
+    gp.add_argument(
+        '--replicas',
+        type=int,
+        default=1,
+        help='The number of replicas of the Gateway. This replicas will only be applied when converted into Kubernetes YAML',
+    )
+
     mixin_base_runtime_parser(gp)
     mixin_gateway_streamer_parser(gp)
 

@@ -477,3 +477,25 @@ def test_deployment_client_dynamic_batching(enable_dynamic_batching):
         docs = depl.post(on='/bar', inputs=DocumentArray.empty(5))
 
     assert docs.texts == ['bar' for _ in docs]
+
+
+@pytest.mark.parametrize('shards', [1, 2])
+@pytest.mark.parametrize('replicas', [1, 2, 3])
+def test_deployment_shards_replicas(shards, replicas):
+
+    class PIDExecutor(Executor):
+
+        @requests
+        def foo(self, docs, **kwargs):
+            import os
+            for doc in docs:
+                doc.tags['pid'] = os.getpid()
+
+
+    dep = Deployment(uses=PIDExecutor, shards=shards, replicas=replicas)
+
+    with dep:
+        docs = dep.post(on='/', inputs=DocumentArray.empty(20), request_size=1)
+
+    returned_pids = set([doc.tags['pid'] for doc in docs])
+    assert len(returned_pids) == shards * replicas
