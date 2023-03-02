@@ -11,7 +11,7 @@ from jina.logging.logger import JinaLogger
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry import trace
 
-    from jina.serve.streamer import GatewayStreamer
+    from jina.serve.runtimes.gateway.streamer import GatewayStreamer
 
 
 def get_fastapi_app(

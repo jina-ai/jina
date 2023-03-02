@@ -12,7 +12,7 @@ from jina.types.request.status import StatusMessage
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry import trace
 
-    from jina.serve.streamer import GatewayStreamer
+    from jina.serve.runtimes.gateway.streamer import GatewayStreamer
 
 
 def _fits_ws_close_msg(msg: str):

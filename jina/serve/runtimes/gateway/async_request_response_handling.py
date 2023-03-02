@@ -23,7 +23,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from jina.types.request import Request
 
 
-class GatewayRequestHandler(MonitoringRequestMixin):
+class AsyncRequestResponseHandler(MonitoringRequestMixin):
     """
     Class that handles the requests arriving to the gateway and the result extracted from the requests future.
 
