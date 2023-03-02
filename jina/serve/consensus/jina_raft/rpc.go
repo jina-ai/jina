@@ -13,6 +13,7 @@ import (
 
     "github.com/hashicorp/raft"
     pb "jraft/jina-go-proto"
+    healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 type RpcInterface struct {
@@ -90,4 +91,19 @@ func (rpc *RpcInterface) EndpointDiscovery(ctx context.Context, empty *empty.Emp
 func (rpc *RpcInterface) XStatus(ctx context.Context, empty *empty.Empty) (*pb.JinaInfoProto, error) {
     log.Printf("XStatus")
    return rpc.Executor.XStatus(ctx, empty)
+}
+
+func (rpc *RpcInterface) Check(ctx context.Context, req *healthpb.HealthCheckRequest) (*healthpb.HealthCheckResponse, error) {
+    log.Printf("Check")
+    return rpc.Executor.Check(ctx, req)
+}
+
+func (rpc *RpcInterface) Watch(req *healthpb.HealthCheckRequest, stream healthpb.Health_WatchServer) error {
+    healthCheckStatus := &healthpb.HealthCheckResponse{}
+    healthCheckStatus.Status = 1
+    err := stream.Send(healthCheckStatus)
+    if err != nil {
+        return err
+    }
+    return nil
 }

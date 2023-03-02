@@ -21,10 +21,10 @@ from jina.clients import Client
 from jina.clients.mixin import PostMixin
 from jina.constants import (
     __default_executor__,
+    __default_grpc_gateway__,
     __default_host__,
     __docker_host__,
     __windows__,
-    __default_grpc_gateway__,
 )
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
 from jina.helper import (
@@ -89,6 +89,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             for pod in self._pods[1:]:
                 voter_address = f'{pod.args.host}:{pod.args.port}'
                 success = False
+                # TODO: we should improve this logic
                 for _ in range(10):
                     try:
                         jraft.add_voter(

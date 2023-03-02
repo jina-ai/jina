@@ -1,10 +1,10 @@
 import argparse
+import copy
 import multiprocessing
 import os
 import time
-import copy
 from abc import ABC, abstractmethod
-from typing import Dict, Optional, Type, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, Optional, Type, Union
 
 from jina.constants import __ready_msg__, __stop_msg__, __windows__
 from jina.enums import PodRoleType
@@ -14,9 +14,9 @@ from jina.jaml import JAML
 from jina.logging.logger import JinaLogger
 from jina.orchestrate.pods.helper import ConditionalEvent, _get_event
 from jina.parsers.helper import _update_gateway_args
+from jina.serve.helper import _get_workspace_from_name_and_shards
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
-from jina.serve.helper import _get_workspace_from_name_and_shards
 
 if TYPE_CHECKING:
     import threading
@@ -25,14 +25,14 @@ __all__ = ['BasePod', 'Pod']
 
 
 def run(
-        args: 'argparse.Namespace',
-        name: str,
-        runtime_cls: Type[AsyncNewLoopRuntime],
-        envs: Dict[str, str],
-        is_started: Union['multiprocessing.Event', 'threading.Event'],
-        is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
-        is_ready: Union['multiprocessing.Event', 'threading.Event'],
-        jaml_classes: Optional[Dict] = None,
+    args: 'argparse.Namespace',
+    name: str,
+    runtime_cls: Type[AsyncNewLoopRuntime],
+    envs: Dict[str, str],
+    is_started: Union['multiprocessing.Event', 'threading.Event'],
+    is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
+    is_ready: Union['multiprocessing.Event', 'threading.Event'],
+    jaml_classes: Optional[Dict] = None,
 ):
     """Method representing the :class:`BaseRuntime` activity.
 
@@ -94,6 +94,7 @@ def run(
         if not is_shutdown.is_set():
             is_started.set()
             with runtime:
+                # here the ready event is being set
                 is_ready.set()
                 runtime.run_forever()
     finally:
@@ -103,8 +104,8 @@ def run(
 
 
 def run_raft(
-        args: 'argparse.Namespace',
-        is_ready: Union['multiprocessing.Event', 'threading.Event'],
+    args: 'argparse.Namespace',
+    is_ready: Union['multiprocessing.Event', 'threading.Event'],
 ):
     """Method to run the RAFT
 
@@ -129,12 +130,21 @@ def run_raft(
     address = f'{args.host}:{args.port}'
     raft_id = str(args.replica_id)
     shard_id = args.shard_id if args.shards > 1 else -1
-    raft_dir = _get_workspace_from_name_and_shards(workspace=args.workspace, name='raft', shard_id=shard_id)
+    raft_dir = _get_workspace_from_name_and_shards(
+        workspace=args.workspace, name='raft', shard_id=shard_id
+    )
     raft_bootstrap = args.raft_bootstrap
     executor_target = f'{args.host}:{args.port + 1}'
     raft_configuration = pascal_case_dict(args.raft_configuration or {})
     is_ready.wait()
-    jraft.run(address, raft_id, raft_dir, raft_bootstrap, executor_target, **raft_configuration)
+    jraft.run(
+        address,
+        raft_id,
+        raft_dir,
+        raft_bootstrap,
+        executor_target,
+        **raft_configuration,
+    )
 
 
 class BasePod(ABC):
@@ -192,7 +202,7 @@ class BasePod(ABC):
                 self.logger.debug(f'terminate')
                 self._terminate()
                 if not self.is_shutdown.wait(
-                        timeout=self._timeout_ctrl if not __windows__ else 1.0
+                    timeout=self._timeout_ctrl if not __windows__ else 1.0
                 ):
                     if not __windows__:
                         raise Exception(
@@ -247,6 +257,7 @@ class BasePod(ABC):
                 ready_or_shutdown_event=self.ready_or_shutdown.event,
                 ctrl_address=self.runtime_ctrl_address,
                 timeout_ctrl=self._timeout_ctrl,
+                health_check=self.args.stateful,
             )
 
     def _fail_start_timeout(self, timeout):
@@ -309,7 +320,15 @@ class BasePod(ABC):
         now = time.time_ns()
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
 
-            if self.ready_or_shutdown.event.is_set():
+            if self.ready_or_shutdown.event.is_set() and (
+                self.is_shutdown.is_set()
+                or not self.args.stateful
+                or (
+                    await AsyncNewLoopRuntime.async_is_ready(
+                        self.runtime_ctrl_address, timeout=_timeout
+                    )
+                )
+            ):
                 self._check_failed_to_start()
                 self.logger.debug(__ready_msg__)
                 return
@@ -359,13 +378,15 @@ class Pod(BasePod):
         cargs = None
         if self.args.stateful and self.args.pod_role == PodRoleType.WORKER:
             cargs_stateful = copy.deepcopy(args)
-            self.raft_worker = multiprocessing.Process(target=run_raft,
-                                                       kwargs={
-                                                           'args': cargs_stateful,
-                                                           'is_ready': self.is_ready,
-                                                       },
-                                                       name=self.name,
-                                                       daemon=True)
+            self.raft_worker = multiprocessing.Process(
+                target=run_raft,
+                kwargs={
+                    'args': cargs_stateful,
+                    'is_ready': self.is_ready,
+                },
+                name=self.name,
+                daemon=True,
+            )
             cargs = copy.deepcopy(cargs_stateful)
             cargs.port += 1
         # if stateful, have a raft_worker
