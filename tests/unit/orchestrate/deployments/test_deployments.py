@@ -89,6 +89,7 @@ def test_wrong_hostname(runtime_cls):
     with pytest.raises(RuntimeFailToStart):
         with Deployment(
             get_deployment_args_with_host('inexisting.hostname.local', runtime_cls),
+            include_gateway=False,
         ) as pod:
             pass
 
