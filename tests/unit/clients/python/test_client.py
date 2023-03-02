@@ -7,6 +7,7 @@ import requests
 from jina import Deployment, Executor, Flow, helper
 from jina import requests as req
 from jina.clients import Client
+from jina.excepts import BadServerFlow
 from jina.orchestrate.pods.factory import PodFactory
 from jina.parsers import set_gateway_parser
 from tests import random_docs
@@ -110,20 +111,17 @@ def test_client_websocket(mocker, flow_with_websocket, use_stream):
 # Timeout is necessary to fail in case of hanging client requests
 @pytest.mark.timeout(60)
 @pytest.mark.parametrize('use_stream', [True, False])
-@pytest.mark.parametrize('flow_or_deployment', ['deployment', 'deployment'])
+@pytest.mark.parametrize('flow_or_deployment', ['flow', 'deployment'])
 def test_client_max_attempts(mocker, use_stream, flow_or_deployment):
     cntx = Flow() if flow_or_deployment == 'flow' else Deployment(include_gateway=False)
     with cntx:
         time.sleep(0.5)
-        client = Client(
-            host='localhost',
-            port=cntx.port,
-        )
         # Test that a regular index request triggers the correct callbacks
         on_always_mock = mocker.Mock()
         on_error_mock = mocker.Mock()
         on_done_mock = mocker.Mock()
-        client.post(
+
+        cntx.post(
             '/',
             random_docs(1),
             request_size=1,
@@ -134,9 +132,10 @@ def test_client_max_attempts(mocker, use_stream, flow_or_deployment):
             return_responses=True,
             stream=use_stream,
         )
-        on_always_mock.assert_called_once()
-        on_done_mock.assert_called_once()
-        on_error_mock.assert_not_called()
+
+    on_always_mock.assert_called_once()
+    on_done_mock.assert_called_once()
+    on_error_mock.assert_not_called()
 
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
@@ -216,3 +215,41 @@ def test_deployment_sync_client(mocker, use_stream):
     m2.assert_called()
     m3.assert_called_once()
     m4.assert_called()
+
+
+@pytest.mark.timeout(60)
+@pytest.mark.parametrize('protocol', ['grpc'])  # 'http', 'ws])
+def test_all_clients_max_attempts_raises_error(mocker, protocol, port_generator):
+    random_port = port_generator()
+    on_always_mock = mocker.Mock()
+    on_error_mock = mocker.Mock()
+    on_done_mock = mocker.Mock()
+    client = Client(host=f'{protocol}://localhost:{random_port}')
+    stream_opts = [True]
+
+    if protocol == 'grpc':
+        stream_opts = [True, False]
+
+    def _request(stream_param):
+        client.post(
+            '/',
+            random_docs(1),
+            request_size=1,
+            max_attempts=5,
+            on_always=on_always_mock,
+            on_error=on_error_mock,
+            on_done=on_done_mock,
+            return_responses=True,
+            timeout=0.5,
+            stream=stream_param,
+        )
+
+    for stream_param in stream_opts:
+        if stream_param:
+            with pytest.raises(BadServerFlow) as excinfo:
+                _request(stream_param)
+            assert '\'jina-client-attempts\', \'5\'' in str(excinfo.value)
+        else:
+            with pytest.raises(ConnectionError) as excinfo:
+                _request(stream_param)
+            assert '\'jina-client-attempts\', \'5\'' in str(excinfo.value)
