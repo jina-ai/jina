@@ -57,6 +57,8 @@ class WorkerRequestHandler:
         :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor of from the data request handler
         :param tracer_provider: Optional tracer_provider that will be provided to the executor for tracing
         :param meter_provider: Optional meter_provider that will be provided to the executor for metrics
+        :param meter: meter object from runtime
+        :param tracer: tracer object from runtime
         :param deployment_name: name of the deployment to use as Executor name to set in requests
         :param kwargs: extra keyword arguments
         """
