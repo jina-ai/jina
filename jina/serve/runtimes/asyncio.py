@@ -1,20 +1,29 @@
-import argparse
-import asyncio
 import signal
 import threading
 import time
-from abc import ABC, abstractmethod
+import argparse
+import asyncio
+
+from jina.logging.logger import JinaLogger
+from jina.constants import __windows__
+from jina.serve.instrumentation import InstrumentationMixin
+from jina.serve.runtimes.monitoring import MonitoringMixin
+from jina.excepts import RuntimeTerminated
+
 from typing import TYPE_CHECKING, Optional, Union
 
-from grpc import RpcError
+from jina.excepts import PortAlreadyUsed
+from jina.helper import ArgNamespace, is_port_free, send_telemetry_event
+from jina.parsers import set_gateway_parser
+from jina.parsers.helper import _update_gateway_args
+from jina.serve.gateway import BaseGateway
 
-from jina.constants import __windows__
-from jina.helper import send_telemetry_event
-from jina.serve.instrumentation import InstrumentationMixin
-from jina.serve.networking.utils import send_health_check_async, send_health_check_sync
-from jina.serve.runtimes.base import BaseRuntime
-from jina.serve.runtimes.monitoring import MonitoringMixin
-from jina.types.request.data import DataRequest
+# Keep these imports even if not used, since YAML parser needs to find them in imported modules
+from jina.serve.runtimes.gateway.composite import CompositeGateway
+from jina.serve.runtimes.gateway.grpc import GRPCGateway
+from jina.serve.runtimes.gateway.http import HTTPGateway
+from jina.serve.runtimes.gateway.websocket import WebSocketGateway
+
 
 if TYPE_CHECKING:  # pragma: no cover
     import multiprocessing
@@ -26,20 +35,31 @@ HANDLED_SIGNALS = (
 )
 
 
-class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, ABC):
+class AsyncNewLoopRuntime(MonitoringMixin, InstrumentationMixin):
     """
-    The async runtime to start a new event loop.
+    Runtime to make sure that a server can asynchronously run inside a new asynchronous loop. It will make sure that the server is run forever while handling the TERMINATE signals
+    to be received by the orchestrator to shutdown the server and its resources.
     """
 
     def __init__(
-        self,
-        args: 'argparse.Namespace',
-        cancel_event: Optional[
-            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
-        ] = None,
-        **kwargs,
+            self,
+            args: 'argparse.Namespace',
+            cancel_event: Optional[
+                Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
+            ] = None,
+            req_handler_class_name: str = 'GatewayRequestHandler',
+            **kwargs,
     ):
-        super().__init__(args, **kwargs)
+        self.timeout_send = args.timeout_send
+        if self.timeout_send:
+            self.timeout_send /= 1e3  # convert ms to seconds
+        _update_gateway_args(args)
+        self.args = args
+        if args.name:
+            self.name = f'{args.name}/{self.__class__.__name__}'
+        else:
+            self.name = self.__class__.__name__
+        self.logger = JinaLogger(self.name, **vars(self.args))
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
         self.is_cancel = cancel_event or asyncio.Event()
@@ -77,8 +97,6 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         self._start_time = time.time()
         self._loop.run_until_complete(self.async_setup())
         self._send_telemetry_event()
-        self.warmup_task = None
-        self.warmup_stop_event = threading.Event()
 
     def _send_telemetry_event(self):
         send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
@@ -112,7 +130,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         self._loop.run_until_complete(self.async_teardown())
         self._loop.stop()
         self._loop.close()
-        super().teardown()
+        self.logger.close()
         self._stop_time = time.time()
         send_telemetry_event(
             event='stop',
@@ -146,108 +164,98 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         self.is_cancel.set()
 
     async def async_setup(self):
-        """The async method to setup."""
-        pass
+        """
+        The async method setup the runtime.
+
+        Setup the uvicorn server.
+        """
+        if not (is_port_free(self.args.host, self.args.port)):
+            raise PortAlreadyUsed(f'port:{self.args.port}')
+
+        # consturct server type based on protocol (and potentially req handler class to keep backwards compatibility
+        uses_with = self.args.uses_with or {}
+        non_defaults = ArgNamespace.get_non_defaults_args(
+            self.args, set_gateway_parser()
+        )
+        self.server = BaseGateway.load_config(
+            self.args.uses,
+            uses_with=dict(
+                **non_defaults,
+                **uses_with,
+            ),
+            uses_metas={},
+            runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
+                'name': self.args.name,
+                'port': self.args.port,
+                'protocol': self.args.protocol,
+                'host': self.args.host,
+                'tracing': self.tracing,
+                'tracer_provider': self.tracer_provider,
+                'grpc_tracing_server_interceptors': self.aio_tracing_server_interceptors(),
+                'graph_description': self.args.graph_description,
+                'graph_conditions': self.args.graph_conditions,
+                'deployments_addresses': self.args.deployments_addresses,
+                'deployments_metadata': self.args.deployments_metadata,
+                'deployments_no_reduce': self.args.deployments_no_reduce,
+                'timeout_send': self.timeout_send,
+                'retries': self.args.retries,
+                'compression': self.args.compression,
+                'runtime_name': self.args.name,
+                'prefetch': self.args.prefetch,
+                'metrics_registry': self.metrics_registry,
+                'meter': self.meter,
+                'aio_tracing_client_interceptors': self.aio_tracing_client_interceptors(),
+                'tracing_client_interceptor': self.tracing_client_interceptor(),
+                'log_config': self.args.log_config,
+                'default_port': getattr(self.args, 'default_port', False),
+            },
+            py_modules=self.args.py_modules,
+            extra_search_paths=self.args.extra_search_paths,
+        )
+
+        await self.server.setup_server()
+
+    def _send_telemetry_event(self):
+        is_custom_gateway = self.server.__class__ not in [
+            CompositeGateway,
+            GRPCGateway,
+            HTTPGateway,
+            WebSocketGateway,
+        ]
+        send_telemetry_event(
+            event='start',
+            obj=self,
+            entity_id=self._entity_id,
+            is_custom_gateway=is_custom_gateway,
+            protocol=self.args.protocol,
+        )
+
+    async def _wait_for_cancel(self):
+        """Do NOT override this method when inheriting from :class:`GatewayPod`"""
+        # handle terminate signals
+        while not self.is_cancel.is_set() and not getattr(
+                self.server, '_should_exit', False
+        ):
+            await asyncio.sleep(0.1)
+
+        await self.async_cancel()
 
     async def async_teardown(self):
-        """The async method to clean up resources during teardown. This method should free all resources allocated
-        during async_setup"""
-        pass
+        """Shutdown the server."""
+        await self.server.shutdown()
+        await self.async_cancel()
 
-    @abstractmethod
     async def async_cancel(self):
-        """An async method to cancel async_run_forever."""
-        ...
+        """Stop the server."""
+        await self.server.shutdown()
 
-    @abstractmethod
     async def async_run_forever(self):
-        """The async method to run until it is stopped."""
-        ...
-
-    def cancel_warmup_task(self):
-        """Cancel warmup task if exists and is not completed. Cancellation is required if the Flow is being terminated before the
-        task is successful or hasn't reached the max timeout.
-        """
-        if self.warmup_task:
-            try:
-                if not self.warmup_task.done():
-                    self.logger.debug(f'Cancelling warmup task.')
-                    self.warmup_stop_event.set()  # this event is useless if simply cancel
-                    self.warmup_task.cancel()
-            except Exception as ex:
-                self.logger.debug(f'exception during warmup task cancellation: {ex}')
-                pass
-
-    # Static methods used by the Pod to communicate with the `Runtime` in the separate process
-
-    @staticmethod
-    def is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
-        """
-        Check if status is ready.
-
-        :param ctrl_address: the address where the control request needs to be sent
-        :param timeout: timeout of the health check in seconds
-        :param kwargs: extra keyword arguments
-
-        :return: True if status is ready else False.
-        """
-        try:
-            from grpc_health.v1 import health_pb2, health_pb2_grpc
-
-            response = send_health_check_sync(ctrl_address, timeout=timeout)
-            return (
-                response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
-            )
-        except RpcError:
-            return False
-
-    @staticmethod
-    async def async_is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
-        """
-        Async Check if status is ready.
-        :param ctrl_address: the address where the control request needs to be sent
-        :param timeout: timeout of the health check in seconds
-        :param kwargs: extra keyword arguments
-        :return: True if status is ready else False.
-        """
-        try:
-            from grpc_health.v1 import health_pb2, health_pb2_grpc
-
-            response = await send_health_check_async(ctrl_address, timeout=timeout)
-            return (
-                response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
-            )
-        except RpcError:
-            return False
-
-    @classmethod
-    def wait_for_ready_or_shutdown(
-        cls,
-        timeout: Optional[float],
-        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
-        ctrl_address: str,
-        health_check: bool = False,
-        **kwargs,
-    ):
-        """
-        Check if the runtime has successfully started
-
-        :param timeout: The time to wait before readiness or failure is determined
-        :param ctrl_address: the address where the control message needs to be sent
-        :param ready_or_shutdown_event: the multiprocessing event to detect if the process failed or is ready
-        :param health_check: if true, a grpc health check will be used instead of relying on the event
-        :param kwargs: extra keyword arguments
-        :return: True if is ready or it needs to be shutdown
-        """
-        timeout_ns = 1000000000 * timeout if timeout else None
-        now = time.time_ns()
-        if health_check:
-            return cls.is_ready(ctrl_address, timeout)
-        while timeout_ns is None or time.time_ns() - now < timeout_ns:
-            if ready_or_shutdown_event.is_set() or cls.is_ready(ctrl_address, **kwargs):
-                return True
-            time.sleep(0.1)
-        return False
+        """Running method of the server."""
+        self.warmup_task = asyncio.create_task(
+            self.gateway.streamer.warmup(self.warmup_stop_event)
+        )
+        await self.server.run_server()
+        self.is_cancel.set()
 
     @property
     def _entity_id(self):
@@ -257,3 +265,42 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
             return self._entity_id_
         self._entity_id_ = uuid.uuid1().hex
         return self._entity_id_
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type == RuntimeTerminated:
+            self.logger.debug(f'{self!r} is ended')
+        elif exc_type == KeyboardInterrupt:
+            self.logger.debug(f'{self!r} is interrupted by user')
+        elif exc_type and issubclass(exc_type, Exception):
+            self.logger.error(
+                f'{exc_val!r} during {self.run_forever!r}'
+                + f'\n add "--quiet-error" to suppress the exception details'
+                if not self.args.quiet_error
+                else '',
+                exc_info=not self.args.quiet_error,
+            )
+        try:
+            self.teardown()
+        except OSError:
+            # OSError(Stream is closed) already
+            pass
+        except Exception as ex:
+            self.logger.error(
+                f'{ex!r} during {self.teardown!r}'
+                + f'\n add "--quiet-error" to suppress the exception details'
+                if not self.args.quiet_error
+                else '',
+                exc_info=not self.args.quiet_error,
+            )
+
+        # https://stackoverflow.com/a/28158006
+        # return True will silent all exception stack trace here, silence is desired here as otherwise it is too
+        # noisy
+        #
+        # doc: If an exception is supplied, and the method wishes to suppress the exception (i.e., prevent it
+        # from being propagated), it should return a true value. Otherwise, the exception will be processed normally
+        # upon exit from this method.
+        return True

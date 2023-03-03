@@ -1,9 +1,8 @@
-import abc
 from types import SimpleNamespace
 from typing import Dict, Optional
 
 from jina.jaml import JAMLCompatible
-from jina.logging.logger import JinaLogger
+from jina.serve.runtimes.servers import BaseServer
 from jina.serve.helper import store_init_kwargs, wrap_func
 from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 
@@ -47,7 +46,7 @@ class GatewayType(type(JAMLCompatible), type):
         return cls
 
 
-class BaseGateway(JAMLCompatible, metaclass=GatewayType):
+class BaseGateway(BaseServer, JAMLCompatible, metaclass=GatewayType):
     """
     The base class of all custom Gateways, can be used to build a custom interface to a Jina Flow that supports
     gateway logic
@@ -55,26 +54,19 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
     :class:`jina.Gateway` as an alias for this class.
     """
 
-    def __init__(
-            self,
-            name: Optional[str] = 'gateway',
-            runtime_args: Optional[Dict] = None,
-            **kwargs,
-    ):
+    def __init__(self, name: Optional[str] = 'gateway', runtime_args: Optional[Dict] = None, **kwargs):
         """
         :param name: Gateway pod name
         :param runtime_args: a dict of arguments injected from :class:`Runtime` during runtime
         :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected
         """
-        self._add_runtime_args(runtime_args)
-        self.name = name
-        self.logger = JinaLogger(self.name, **vars(self.runtime_args))
+        super().__init__(name, runtime_args, **kwargs)
+        self._add_gateway_args()
         self.tracing = self.runtime_args.tracing
         self.tracer_provider = self.runtime_args.tracer_provider
         self.grpc_tracing_server_interceptors = (
             self.runtime_args.grpc_tracing_server_interceptors
         )
-        self.logger = JinaLogger(self.name, **vars(self.runtime_args))
         self._request_handler = GatewayRequestHandler(
             args=self.runtime_args,
             logger=self.logger,
@@ -82,13 +74,13 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         self.streamer = self._request_handler.streamer  # backward compatibility
         self.executor = self._request_handler.executor  # backward compatibility
 
-    def _add_runtime_args(self, _runtime_args: Optional[Dict]):
+    def _add_gateway_args(self):
         from jina.parsers import set_gateway_runtime_args_parser
 
         parser = set_gateway_runtime_args_parser()
         default_args = parser.parse_args([])
         default_args_dict = dict(vars(default_args))
-        _runtime_args = _runtime_args or {}
+        _runtime_args = self.runtime_args or {}
         runtime_set_args = {
             'tracer_provider': None,
             'grpc_tracing_server_interceptors': None,
@@ -100,52 +92,3 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         }
         runtime_args_dict = {**runtime_set_args, **default_args_dict, **_runtime_args}
         self.runtime_args = SimpleNamespace(**runtime_args_dict)
-
-    @property
-    def port(self):
-        """Gets the first port of the port list argument. To be used in the regular case where a Gateway exposes a single port
-        :return: The first port to be exposed
-        """
-        return self.runtime_args.port[0]
-
-    @property
-    def ports(self):
-        """Gets all the list of ports from the runtime_args as a list.
-        :return: The lists of ports to be exposed
-        """
-        return self.runtime_args.port
-
-    @property
-    def protocols(self):
-        """Gets all the list of protocols from the runtime_args as a list.
-        :return: The lists of protocols to be exposed
-        """
-        return self.runtime_args.protocol
-
-    @property
-    def host(self):
-        """Gets the host from the runtime_args
-        :return: The host where to bind the gateway
-        """
-        return self.runtime_args.host
-
-    @abc.abstractmethod
-    async def setup_server(self):
-        """Setup server"""
-        ...
-
-    @abc.abstractmethod
-    async def run_server(self):
-        """Run server forever"""
-        ...
-
-    @abc.abstractmethod
-    async def shutdown(self):
-        """Shutdown the server and free other allocated resources, e.g, streamer object, health check service, ..."""
-        ...
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
