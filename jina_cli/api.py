@@ -59,8 +59,8 @@ def executor_native(args: 'Namespace'):
 
     with runtime_cls(args) as rt:
         name = (
-            rt._worker_request_handler._executor.metas.name
-            if hasattr(rt, '_worker_request_handler')
+            rt._request_handler._executor.metas.name
+            if hasattr(rt, '_request_handler') and hasattr(rt._request_handler, '_executor')
             else rt.name
         )
         rt.logger.info(f'Executor {name} started')
