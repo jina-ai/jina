@@ -1,7 +1,7 @@
 import functools
 import inspect
-import typing
 import os
+import typing
 from typing import Optional, Union
 
 import grpc
@@ -16,7 +16,7 @@ from contextlib import nullcontext
 
 
 def _get_summary_time_context_or_null(
-        summary_metric: Optional['Summary'],
+    summary_metric: Optional['Summary'],
 ) -> Union[nullcontext, 'Timer']:
     """
     helper function to either get a time context or a nullcontext if the summary metric is None
@@ -36,13 +36,13 @@ def wrap_func(cls, func_lst, wrapper, **kwargs):
     """
     for f_name in func_lst:
         if hasattr(cls, f_name) and all(
-                getattr(cls, f_name) != getattr(i, f_name, None) for i in cls.mro()[1:]
+            getattr(cls, f_name) != getattr(i, f_name, None) for i in cls.mro()[1:]
         ):
             setattr(cls, f_name, wrapper(getattr(cls, f_name), **kwargs))
 
 
 def store_init_kwargs(
-        func: typing.Callable, taboo: Optional[typing.Set] = None
+    func: typing.Callable, taboo: Optional[typing.Set] = None
 ) -> typing.Callable:
     """Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML
     :param func: the function to decorate
@@ -109,5 +109,5 @@ def _get_workspace_from_name_and_shards(workspace, name, shard_id):
         if shard_id is not None and shard_id != -1:
             complete_workspace = os.path.join(complete_workspace, str(shard_id))
         if not os.path.exists(complete_workspace):
-            os.makedirs(complete_workspace)
+            os.makedirs(complete_workspace, exist_ok=True)
         return os.path.abspath(complete_workspace)

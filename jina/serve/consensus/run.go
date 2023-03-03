@@ -68,6 +68,10 @@ func NewRaft(ctx context.Context,
     config.NoSnapshotRestoreOnStart = NoSnapshotRestoreOnStart
 
     baseDir := filepath.Join(raftDir, myID)
+    err := os.MkdirAll(baseDir, os.ModePerm)
+    if err != nil {
+        fmt.Printf("Error creating baseDir (%v) folder: %v\n", baseDir, err)
+    }
 
     logs_db, err := boltdb.NewBoltStore(filepath.Join(baseDir, "logs.dat"))
     if err != nil {
