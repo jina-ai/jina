@@ -4,6 +4,7 @@ package main
 // #include <stdbool.h>
 // int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, bool *raftBootstrap, char **executorTarget, int *HeartbeatTimeout, int *ElectionTimeout, int *CommitTimeout, int *MaxAppendEntries, bool *BatchApplyCh, bool *ShutdownOnRemove, uint64_t *TrailingLogs, int *snapshotInterval, uint64_t *SnapshotThreshold, int *LeaderLeaseTimeout, char **LogLevel, bool *NoSnapshotRestoreOnStart);
 // int PyArg_ParseTuple_add_voter(PyObject * args, char **a, char **b, char **c);
+// int PyArg_ParseTuple_get_configuration(PyObject * args, char **a, char **b);
 // void raise_exception(char *msg);
 import "C"
 
@@ -19,6 +20,7 @@ import (
     "syscall"
     "path/filepath"
     "time"
+    "unsafe"
 
     // "github.com/Jille/raft-grpc-leader-rpc/leaderhealth"
     transport "github.com/Jille/raft-grpc-transport"
@@ -214,6 +216,15 @@ func Run(myAddr string,
     }
 }
 
+func findServerByID(servers []raft.Server, id raft.ServerID) *raft.Server {
+	for _, server := range servers {
+		if server.ID == id {
+			return &server
+		}
+	}
+	return nil
+}
+
 func main() {
     raftDefaultConfig := raft.DefaultConfig()
 
@@ -345,4 +356,60 @@ func add_voter(self *C.PyObject, args *C.PyObject) *C.PyObject {
     }
     C.Py_IncRef(C.Py_None);
     return C.Py_None;
+}
+
+//export get_configuration
+func get_configuration(self *C.PyObject, args *C.PyObject) *C.PyObject {
+
+    var raftId *C.char
+    var raftDir *C.char
+
+    if C.PyArg_ParseTuple_get_configuration(args, &raftId, &raftDir) != 0 {
+        config := raft.DefaultConfig()
+        config.LocalID = raft.ServerID(C.GoString(raftId))
+
+        baseDir := filepath.Join(C.GoString(raftDir), C.GoString(raftId))
+
+        logs_db, err := boltdb.NewBoltStore(filepath.Join(baseDir, "logs.dat"))
+        if err != nil {
+            C.Py_IncRef(C.Py_None);
+            return C.Py_None;
+        }
+
+        stable_db, err := boltdb.NewBoltStore(filepath.Join(baseDir, "stable.dat"))
+        if err != nil {
+            C.Py_IncRef(C.Py_None);
+            return C.Py_None;
+        }
+
+        file_snapshot, err := raft.NewFileSnapshotStore(baseDir, 3, os.Stderr)
+        if err != nil {
+            C.Py_IncRef(C.Py_None);
+            return C.Py_None;
+        }
+
+        // dummy transport
+        tm := transport.New(raft.ServerAddress("0.0.0.0:54321"), []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())})
+
+        // this will create a raft object, this is not really needed and we should find a work around so
+        // we can get the configuration wihtout initializing anything else
+        conf, err := raft.GetConfiguration(config, nil, logs_db, stable_db, file_snapshot, tm.Transport())
+        if err != nil {
+            C.Py_IncRef(C.Py_None);
+            return C.Py_None;
+        } else {
+            fmt.Printf("configuration: %v\n", conf.Servers)
+        }
+
+
+        server := findServerByID(conf.Servers, raft.ServerID(C.GoString(raftId)))
+        cstr := C.CString(string(server.Address))
+        defer C.free(unsafe.Pointer(cstr))
+        pyStr := C.PyUnicode_FromString(cstr)
+        return pyStr
+
+    }
+//     C.Py_IncRef(C.Py_None);
+    C.raise_exception(C.CString("Error from get_configuration, wrong parameters passed"))
+    return nil
 }
