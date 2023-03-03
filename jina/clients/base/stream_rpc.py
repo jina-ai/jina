@@ -1,10 +1,4 @@
-import asyncio
-
-import grpc
-
-from jina.clients.base import retry
 from jina.clients.helper import callback_exec
-from jina.excepts import InternalNetworkError
 from jina.proto import jina_pb2_grpc
 
 
@@ -53,28 +47,6 @@ class StreamRpc:
         """Wraps the stream rpc logic with retry loop based on the retry params.
         :yields: Responses received from the target.
         """
-        for attempt in range(1, self.max_attempts + 1):
-            try:
-                async for resp in self._stream_rpc():
-                    yield resp
-            except (
-                grpc.aio.AioRpcError,
-                InternalNetworkError,
-                # grpc.aio module will raise asyncio.CancelledError if the gRPC status code
-                # was StatusCode.CANCELLED when using server side streaming.
-                # Refer to grpc/aio/_call.py.
-                asyncio.CancelledError,
-            ) as err:
-                await retry.wait_or_raise_err(
-                    attempt=attempt,
-                    err=err,
-                    max_attempts=self.max_attempts,
-                    backoff_multiplier=self.backoff_multiplier,
-                    initial_backoff=self.initial_backoff,
-                    max_backoff=self.max_backoff,
-                )
-
-    async def _stream_rpc(self):
         stub = jina_pb2_grpc.JinaRPCStub(self.channel)
         async for resp in stub.Call(
             self.req_iter,

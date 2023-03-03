@@ -1,13 +1,17 @@
+import multiprocessing
 import os
 import time
 
+import aiohttp
 import pytest
 import requests
 
 from jina import Deployment, Executor, Flow, helper
 from jina import requests as req
 from jina.clients import Client
+from jina.clients.base.retry import wait_or_raise_err
 from jina.excepts import BadServerFlow
+from jina.helper import run_async
 from jina.orchestrate.pods.factory import PodFactory
 from jina.parsers import set_gateway_parser
 from tests import random_docs
@@ -108,34 +112,103 @@ def test_client_websocket(mocker, flow_with_websocket, use_stream):
         on_error_mock.assert_not_called()
 
 
-# Timeout is necessary to fail in case of hanging client requests
-@pytest.mark.timeout(60)
-@pytest.mark.parametrize('use_stream', [True, False])
-@pytest.mark.parametrize('flow_or_deployment', ['flow', 'deployment'])
-def test_client_max_attempts(mocker, use_stream, flow_or_deployment):
-    cntx = Flow() if flow_or_deployment == 'flow' else Deployment(include_gateway=False)
-    with cntx:
-        time.sleep(0.5)
-        # Test that a regular index request triggers the correct callbacks
-        on_always_mock = mocker.Mock()
-        on_error_mock = mocker.Mock()
-        on_done_mock = mocker.Mock()
+def _random_post_request(client, on_error_mock, use_stream):
+    return client.post(
+        '/',
+        random_docs(1),
+        request_size=1,
+        max_attempts=10,
+        initial_backoff=0.5,
+        max_backoff=6,
+        on_error=on_error_mock,
+        stream=use_stream,
+    )
 
-        cntx.post(
+
+async def _async_random_post_request(client, on_error_mock, use_stream):
+    return [
+        response
+        async for response in client.post(
             '/',
             random_docs(1),
             request_size=1,
-            max_attempts=5,
-            on_always=on_always_mock,
+            max_attempts=10,
+            initial_backoff=0.8,
+            max_backoff=5,
             on_error=on_error_mock,
-            on_done=on_done_mock,
             return_responses=True,
             stream=use_stream,
         )
+    ]
 
-    on_always_mock.assert_called_once()
-    on_done_mock.assert_called_once()
-    on_error_mock.assert_not_called()
+
+def _start_runtime(cntx, stop_event):
+    time.sleep(0.005)
+    with cntx:
+        cntx.block(stop_event)
+
+
+@pytest.mark.timeout(300)
+@pytest.mark.parametrize('flow_or_deployment', ['flow', 'deployment'])
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+def test_sync_clients_max_attempts_transient_error(
+    mocker, flow_or_deployment, protocol, port_generator
+):
+    random_port = port_generator()
+    cntx = (
+        Flow(protocol=protocol, port=random_port)
+        if flow_or_deployment == 'flow'
+        else Deployment(include_gateway=True, protocol=protocol, port=random_port)
+    )
+
+    client = Client(host=f'{cntx.protocol}://{cntx.host}:{random_port}')
+    stop_event = multiprocessing.Event()
+    t = multiprocessing.Process(target=_start_runtime, args=(cntx, stop_event))
+    t.start()
+
+    try:
+        # Test that a regular index request triggers the correct callbacks
+        on_error_mock = mocker.Mock()
+        response = _random_post_request(client, on_error_mock, use_stream=False)
+        assert len(response) == 1
+
+        on_error_mock.assert_not_called()
+    finally:
+        stop_event.set()
+        t.join()
+        t.terminate()
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(300)
+@pytest.mark.parametrize('flow_or_deployment', ['flow', 'deployment'])
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+async def test_async_clients_max_attempts_transient_error(
+    mocker, flow_or_deployment, protocol, port_generator
+):
+    random_port = port_generator()
+    cntx = (
+        Flow(asyncio=True, protocol=protocol, port=random_port)
+        if flow_or_deployment == 'flow'
+        else Deployment(
+            include_gateway=True, asyncio=True, port=random_port, protocol=protocol
+        )
+    )
+    client = Client(host=f'{cntx.protocol}://{cntx.host}:{random_port}', asyncio=True)
+    stop_event = multiprocessing.Event()
+    t = multiprocessing.Process(target=_start_runtime, args=(cntx, stop_event))
+    t.start()
+
+    try:
+        # Test that a regular index request triggers the correct callbacks
+        on_error_mock = mocker.Mock()
+        await _async_random_post_request(client, on_error_mock, use_stream=False)
+
+        on_error_mock.assert_not_called()
+    finally:
+        stop_event.set()
+        t.join()
+        t.terminate()
 
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
@@ -218,17 +291,13 @@ def test_deployment_sync_client(mocker, use_stream):
 
 
 @pytest.mark.timeout(60)
-@pytest.mark.parametrize('protocol', ['grpc'])  # 'http', 'ws])
-def test_all_clients_max_attempts_raises_error(mocker, protocol, port_generator):
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+def test_sync_clients_max_attempts_raises_error(mocker, protocol, port_generator):
     random_port = port_generator()
     on_always_mock = mocker.Mock()
     on_error_mock = mocker.Mock()
     on_done_mock = mocker.Mock()
     client = Client(host=f'{protocol}://localhost:{random_port}')
-    stream_opts = [True]
-
-    if protocol == 'grpc':
-        stream_opts = [True, False]
 
     def _request(stream_param):
         client.post(
@@ -244,12 +313,169 @@ def test_all_clients_max_attempts_raises_error(mocker, protocol, port_generator)
             stream=stream_param,
         )
 
-    for stream_param in stream_opts:
-        if stream_param:
-            with pytest.raises(BadServerFlow) as excinfo:
-                _request(stream_param)
-            assert '\'jina-client-attempts\', \'5\'' in str(excinfo.value)
-        else:
-            with pytest.raises(ConnectionError) as excinfo:
-                _request(stream_param)
-            assert '\'jina-client-attempts\', \'5\'' in str(excinfo.value)
+    if protocol == 'grpc':
+        stream_opts = [True, False]
+        for stream_param in stream_opts:
+            if stream_param:
+                with pytest.raises(BadServerFlow) as excinfo:
+                    _request(stream_param)
+                assert '\'jina-client-attempts\', \'5\'' in str(excinfo.value)
+            else:
+                with pytest.raises(ConnectionError) as excinfo:
+                    _request(stream_param)
+                assert '\'jina-client-attempts\', \'5\'' in str(excinfo.value)
+    else:
+        with pytest.raises(aiohttp.ClientConnectorError):
+            _request(stream_param=True)
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(60)
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+async def test_async_clients_max_attempts_raises_error(
+    mocker, protocol, port_generator
+):
+    random_port = port_generator()
+    on_always_mock = mocker.Mock()
+    on_error_mock = mocker.Mock()
+    on_done_mock = mocker.Mock()
+    client = Client(host=f'{protocol}://localhost:{random_port}', asyncio=True)
+
+    async def _request(stream_param):
+        return [
+            response
+            async for response in client.post(
+                '/',
+                random_docs(1),
+                request_size=1,
+                max_attempts=5,
+                on_always=on_always_mock,
+                on_error=on_error_mock,
+                on_done=on_done_mock,
+                return_responses=True,
+                timeout=0.5,
+                stream=stream_param,
+            )
+        ]
+
+    if protocol == 'grpc':
+        stream_opts = [True, False]
+        for stream_param in stream_opts:
+            if stream_param:
+                with pytest.raises(BadServerFlow) as excinfo:
+                    await _request(stream_param)
+                assert '\'jina-client-attempts\', \'5\'' in str(excinfo.value)
+            else:
+                with pytest.raises(ConnectionError) as excinfo:
+                    await _request(stream_param)
+                assert '\'jina-client-attempts\', \'5\'' in str(excinfo.value)
+    else:
+        with pytest.raises(aiohttp.ClientConnectorError):
+            await _request(stream_param=True)
+
+
+@pytest.mark.timeout(90)
+@pytest.mark.parametrize('flow_or_deployment', ['deployment', 'flow'])
+def test_grpc_stream_transient_error(flow_or_deployment, port_generator, mocker):
+    random_port = port_generator()
+    cntx = (
+        Flow(port=random_port).add(uses=MyExec)
+        if flow_or_deployment == 'flow'
+        else Deployment(include_gateway=True, uses=MyExec, port=random_port)
+    )
+
+    client = Client(host=f'{cntx.protocol}://{cntx.host}:{random_port}')
+    stop_event = multiprocessing.Event()
+    t = multiprocessing.Process(target=_start_runtime, args=(cntx, stop_event))
+    t.start()
+
+    max_attempts = 5
+    initial_backoff = 0.8
+    backoff_multiplier = 1.5
+    max_backoff = 5
+    try:
+        for attempt in range(1, max_attempts + 1):
+            try:
+                on_error_mock = mocker.Mock()
+                response = client.post(
+                    '/',
+                    random_docs(1),
+                    request_size=1,
+                    on_error=on_error_mock,
+                    return_responses=True,
+                    timeout=0.5,
+                )
+                assert len(response) == 1
+
+                on_error_mock.assert_not_called()
+            except ConnectionError as err:
+                run_async(
+                    wait_or_raise_err,
+                    attempt=attempt,
+                    err=err,
+                    max_attempts=max_attempts,
+                    backoff_multiplier=backoff_multiplier,
+                    initial_backoff=initial_backoff,
+                    max_backoff=max_backoff,
+                )
+    finally:
+        stop_event.set()
+        t.join()
+        t.terminate()
+
+
+@pytest.mark.timeout(90)
+@pytest.mark.asyncio
+@pytest.mark.parametrize('flow_or_deployment', ['deployment', 'flow'])
+async def test_async_grpc_stream_transient_error(
+    flow_or_deployment, port_generator, mocker
+):
+    random_port = port_generator()
+    cntx = (
+        Flow(port=random_port, asyncio=True).add(uses=MyExec)
+        if flow_or_deployment == 'flow'
+        else Deployment(
+            include_gateway=True, uses=MyExec, asyncio=True, port=random_port
+        )
+    )
+
+    client = Client(host=f'{cntx.protocol}://{cntx.host}:{random_port}', asyncio=True)
+    stop_event = multiprocessing.Event()
+    t = multiprocessing.Process(target=_start_runtime, args=(cntx, stop_event))
+    t.start()
+
+    max_attempts = 5
+    initial_backoff = 0.8
+    backoff_multiplier = 1.5
+    max_backoff = 5
+    try:
+        for attempt in range(1, max_attempts + 1):
+            try:
+                on_error_mock = mocker.Mock()
+                response = [
+                    response
+                    async for response in client.post(
+                        '/',
+                        random_docs(1),
+                        request_size=1,
+                        on_error=on_error_mock,
+                        return_responses=True,
+                        timeout=0.5,
+                    )
+                ]
+                assert len(response) == 1
+
+                on_error_mock.assert_not_called()
+            except ConnectionError as err:
+                await wait_or_raise_err(
+                    attempt=attempt,
+                    err=err,
+                    max_attempts=max_attempts,
+                    backoff_multiplier=backoff_multiplier,
+                    initial_backoff=initial_backoff,
+                    max_backoff=max_backoff,
+                )
+    finally:
+        stop_event.set()
+        t.join()
+        t.terminate()

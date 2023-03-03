@@ -1,10 +1,10 @@
 import asyncio
-import random
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional
 
 from aiohttp import WSMsgType
 
+from jina.clients.base import retry
 from jina.enums import WebsocketSubProtocols
 from jina.importer import ImportExtensions
 from jina.types.request import Request
@@ -133,22 +133,22 @@ class HTTPClientlet(AioHttpClientlet):
         req_dict['exec_endpoint'] = req_dict['header']['exec_endpoint']
         if 'target_executor' in req_dict['header']:
             req_dict['target_executor'] = req_dict['header']['target_executor']
-        for retry in range(1, self.max_attempts + 1):
+        for attempt in range(1, self.max_attempts + 1):
             try:
-                return await self.session.post(url=self.url, json=req_dict).__aenter__()
-            except:
-                if retry == self.max_attempts:
-                    raise
-                else:
-                    wait_time = random.uniform(
-                        0,
-                        min(
-                            self.initial_backoff
-                            * self.backoff_multiplier ** (retry - 1),
-                            self.max_backoff,
-                        ),
-                    )
-                    await asyncio.sleep(wait_time)
+                response = await self.session.post(
+                    url=self.url, json=req_dict
+                ).__aenter__()
+                response.raise_for_status()
+                return response
+            except Exception as err:
+                await retry.wait_or_raise_err(
+                    attempt=attempt,
+                    err=err,
+                    max_attempts=self.max_attempts,
+                    backoff_multiplier=self.backoff_multiplier,
+                    initial_backoff=self.initial_backoff,
+                    max_backoff=self.max_backoff,
+                )
 
     async def send_dry_run(self, **kwargs):
         """Query the dry_run endpoint from Gateway
@@ -209,24 +209,10 @@ class WebsocketClientlet(AioHttpClientlet):
         :param request: request object
         :return: send request as bytes awaitable
         """
-        # we have to send here `retries` information
-        for retry in range(1, self.max_attempts + 1):
-            try:
-                return await self.websocket.send_bytes(request.SerializeToString())
-            except ConnectionResetError:
-                if retry == self.max_attempts:
-                    self.logger.critical(f'server connection closed already!')
-                    raise
-                else:
-                    wait_time = random.uniform(
-                        0,
-                        min(
-                            self.initial_backoff
-                            * self.backoff_multiplier ** (retry - 1),
-                            self.max_backoff,
-                        ),
-                    )
-                    await asyncio.sleep(wait_time)
+        try:
+            return await self.websocket.send_bytes(request.SerializeToString())
+        except ConnectionResetError:
+            raise
 
     async def send_dry_run(self, **kwargs):
         """Query the dry_run endpoint from Gateway

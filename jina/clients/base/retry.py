@@ -43,8 +43,11 @@ async def wait_or_raise_err(
 
 
 async def _backoff_wait(attempt, backoff_multiplier, initial_backoff, max_backoff):
-    wait_time = random.uniform(
-        0,
-        min(initial_backoff * backoff_multiplier ** (attempt - 1), max_backoff),
-    )
+    if attempt == 1:
+        wait_time = initial_backoff
+    else:
+        wait_time = random.uniform(
+            0,
+            min(initial_backoff * backoff_multiplier ** (attempt - 1), max_backoff),
+        )
     await asyncio.sleep(wait_time)

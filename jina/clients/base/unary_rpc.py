@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional, Tuple
 
 import grpc
 
-from jina.clients.base import retry
+from jina.clients.base.retry import wait_or_raise_err
 from jina.clients.helper import callback_exec
 from jina.excepts import InternalNetworkError
 from jina.proto import jina_pb2_grpc
@@ -83,7 +83,7 @@ class UnaryRpc:
                         grpc.aio.AioRpcError,
                         InternalNetworkError,
                     ) as err:
-                        await retry.wait_or_raise_err(
+                        await wait_or_raise_err(
                             attempt=attempt,
                             err=err,
                             max_attempts=self.max_attempts,
