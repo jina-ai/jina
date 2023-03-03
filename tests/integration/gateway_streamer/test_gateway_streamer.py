@@ -8,7 +8,7 @@ from jina import Document, DocumentArray, Executor, requests
 from jina.excepts import ExecutorError
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
-from jina.serve.streamer import GatewayStreamer
+from jina.serve.runtimes.gateway.streamer import GatewayStreamer
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
 from tests.helper import _generate_pod_args

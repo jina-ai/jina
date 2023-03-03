@@ -308,7 +308,7 @@ def _create_runtime(args):
         if not hasattr(runtime_args, 'name') or not runtime_args.name:
             runtime_args.name = 'testHead'
         with HeadRuntime(runtime_args, cancel_event=cancel_event) as runtime:
-            runtime.connection_pool._send_requests = _send_requests_mock
+            runtime._request_handler.connection_pool._send_requests = _send_requests_mock
             runtime.run_forever()
 
     runtime_thread = Process(

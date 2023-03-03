@@ -5,6 +5,7 @@ from typing import Dict, Optional
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
 from jina.serve.helper import store_init_kwargs, wrap_func
+from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 
 __all__ = ['BaseGateway']
 
@@ -55,10 +56,10 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
     """
 
     def __init__(
-        self,
-        name: Optional[str] = 'gateway',
-        runtime_args: Optional[Dict] = None,
-        **kwargs,
+            self,
+            name: Optional[str] = 'gateway',
+            runtime_args: Optional[Dict] = None,
+            **kwargs,
     ):
         """
         :param name: Gateway pod name
@@ -73,53 +74,13 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         self.grpc_tracing_server_interceptors = (
             self.runtime_args.grpc_tracing_server_interceptors
         )
-
-        import json
-
-        from jina.serve.streamer import GatewayStreamer, _ExecutorStreamer
-
-        graph_description = json.loads(self.runtime_args.graph_description)
-        graph_conditions = json.loads(self.runtime_args.graph_conditions)
-        deployments_addresses = json.loads(self.runtime_args.deployments_addresses)
-        deployments_metadata = json.loads(self.runtime_args.deployments_metadata)
-        deployments_no_reduce = json.loads(self.runtime_args.deployments_no_reduce)
-
-        self.streamer = GatewayStreamer(
-            graph_representation=graph_description,
-            executor_addresses=deployments_addresses,
-            graph_conditions=graph_conditions,
-            deployments_metadata=deployments_metadata,
-            deployments_no_reduce=deployments_no_reduce,
-            timeout_send=self.runtime_args.timeout_send,
-            retries=self.runtime_args.retries,
-            compression=self.runtime_args.compression,
-            runtime_name=self.runtime_args.runtime_name,
-            prefetch=self.runtime_args.prefetch,
+        self.logger = JinaLogger(self.name, **vars(self.runtime_args))
+        self._request_handler = GatewayRequestHandler(
+            args=self.runtime_args,
             logger=self.logger,
-            metrics_registry=self.runtime_args.metrics_registry,
-            meter=self.runtime_args.meter,
-            aio_tracing_client_interceptors=self.runtime_args.aio_tracing_client_interceptors,
-            tracing_client_interceptor=self.runtime_args.tracing_client_interceptor,
         )
-        GatewayStreamer._set_env_streamer_args(
-            graph_representation=graph_description,
-            executor_addresses=deployments_addresses,
-            graph_conditions=graph_conditions,
-            deployments_metadata=deployments_metadata,
-            deployments_no_reduce=deployments_no_reduce,
-            timeout_send=self.runtime_args.timeout_send,
-            retries=self.runtime_args.retries,
-            compression=self.runtime_args.compression,
-            runtime_name=self.runtime_args.runtime_name,
-            prefetch=self.runtime_args.prefetch,
-        )
-
-        self.executor = {
-            executor_name: _ExecutorStreamer(
-                self.streamer._connection_pool, executor_name=executor_name
-            )
-            for executor_name in deployments_addresses.keys()
-        }
+        self.streamer = self._request_handler.streamer  # backward compatibility
+        self.executor = self._request_handler.executor  # backward compatibility
 
     def _add_runtime_args(self, _runtime_args: Optional[Dict]):
         from jina.parsers import set_gateway_runtime_args_parser
