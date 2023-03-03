@@ -1,4 +1,5 @@
 import asyncio
+import json
 import threading
 from typing import TYPE_CHECKING, Optional
 
@@ -72,7 +73,7 @@ class GRPCBaseClient(BaseClient):
         compression: Optional[str] = None,
         max_attempts: int = 1,
         initial_backoff: float = 0.5,
-        max_backoff: float = 0.1,
+        max_backoff: float = 2,
         backoff_multiplier: float = 1.5,
         results_in_order: bool = False,
         stream: bool = True,
@@ -91,6 +92,31 @@ class GRPCBaseClient(BaseClient):
             continue_on_error = self.continue_on_error
             # while loop with retries, check in which state the `iterator` remains after failure
             options = get_default_grpc_options()
+            if max_attempts > 1:
+                service_config_json = json.dumps(
+                    {
+                        "methodConfig": [
+                            {
+                                # To apply retry to all methods, put [{}] in the "name" field
+                                "name": [{}],
+                                "retryPolicy": {
+                                    "maxAttempts": max_attempts,
+                                    "initialBackoff": f"{initial_backoff}s",
+                                    "maxBackoff": f"{max_backoff}s",
+                                    "backoffMultiplier": backoff_multiplier,
+                                    "retryableStatusCodes": [
+                                        "UNAVAILABLE",
+                                        "DEADLINE_EXCEEDED",
+                                        "INTERNAL",
+                                    ],
+                                },
+                            }
+                        ]
+                    }
+                )
+                # NOTE: the retry feature will be enabled by default >=v1.40.0
+                options.append(("grpc.enable_retries", 1))
+                options.append(("grpc.service_config", service_config_json))
 
             metadata = kwargs.pop('metadata', ())
             if results_in_order:
