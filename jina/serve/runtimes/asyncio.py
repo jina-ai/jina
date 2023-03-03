@@ -249,14 +249,6 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
             time.sleep(0.1)
         return False
 
-    def _log_info_msg(self, request: DataRequest):
-        self._log_data_request(request)
-
-    def _log_data_request(self, request: DataRequest):
-        self.logger.debug(
-            f'recv DataRequest at {request.header.exec_endpoint} with id: {request.header.request_id}'
-        )
-
     @property
     def _entity_id(self):
         import uuid

@@ -404,8 +404,8 @@ def test_external_flow_with_grpc_metadata():
                 self.streamer._streamer, self.server
             )
 
-            jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self, self.server)
-            jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self.server)
+            jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self._request_handler, self.server)
+            jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self._request_handler, self.server)
 
             service_names = (
                 jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,

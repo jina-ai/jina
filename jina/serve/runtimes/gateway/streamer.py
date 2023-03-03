@@ -19,7 +19,7 @@ from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
-from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+from jina.serve.runtimes.gateway.async_request_response_handling import AsyncRequestResponseHandler
 from jina.serve.stream import RequestStreamer
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
@@ -103,7 +103,7 @@ class GatewayStreamer:
             aio_tracing_client_interceptors,
             tracing_client_interceptor,
         )
-        request_handler = GatewayRequestHandler(
+        request_handler = AsyncRequestResponseHandler(
             metrics_registry, meter, runtime_name, logger
         )
 
