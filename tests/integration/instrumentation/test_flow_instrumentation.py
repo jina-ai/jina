@@ -94,15 +94,27 @@ def test_multiprotocol_gateway_instrumentation(
     with f:
         from docarray import DocumentArray
 
-        Client(protocol='grpc', port=grpc_port).post(
-            f'/search', DocumentArray.empty(), continue_on_error=True
-        )
-        Client(protocol='http', port=http_port).post(
-            f'/search', DocumentArray.empty(), continue_on_error=True
-        )
-        Client(protocol='websocket', port=websocket_port).post(
-            f'/search', DocumentArray.empty(), continue_on_error=True
-        )
+        Client(
+            protocol='grpc',
+            port=grpc_port,
+            tracing=True,
+            traces_exporter_host='http://localhost',
+            traces_exporter_port=otlp_receiver_port,
+        ).post(f'/search', DocumentArray.empty(), continue_on_error=True)
+        Client(
+            protocol='http',
+            port=http_port,
+            tracing=True,
+            traces_exporter_host='http://localhost',
+            traces_exporter_port=otlp_receiver_port,
+        ).post(f'/search', DocumentArray.empty(), continue_on_error=True)
+        Client(
+            protocol='websocket',
+            port=websocket_port,
+            tracing=True,
+            traces_exporter_host='http://localhost',
+            traces_exporter_port=otlp_receiver_port,
+        ).post(f'/search', DocumentArray.empty(), continue_on_error=True)
 
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
@@ -119,11 +131,12 @@ def test_multiprotocol_gateway_instrumentation(
     assert len(services) == 5
     assert set(services).issubset(expected_services)
 
-    for client_type in ['GRPCClient', 'HTTPClient', 'WebSocketClient']:
-        client_traces = get_traces(jaeger_port, client_type)
-        (server_spans, client_spans, _) = partition_spans_by_kind(client_traces)
-        assert len(server_spans) == 5
-        assert len(client_spans) == 5
+    gateway_traces = get_traces(jaeger_port, 'gateway/rep-0')
+    (server_spans, client_spans, executor_spans) = partition_spans_by_kind(
+        gateway_traces
+    )
+    assert len(client_spans) == 8
+    assert len(server_spans) == 8
 
 
 def test_executor_instrumentation(jaeger_port, otlp_collector, otlp_receiver_port):
