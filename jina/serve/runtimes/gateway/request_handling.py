@@ -38,27 +38,24 @@ class GatewayRequestHandler:
         deployments_metadata = json.loads(self.runtime_args.deployments_metadata)
         deployments_no_reduce = json.loads(self.runtime_args.deployments_no_reduce)
 
-        print('init streamer')
-        if streamer:
-            self.streamer = streamer
-        else:
-            self.streamer = GatewayStreamer(
-                graph_representation=graph_description,
-                executor_addresses=deployments_addresses,
-                graph_conditions=graph_conditions,
-                deployments_metadata=deployments_metadata,
-                deployments_no_reduce=deployments_no_reduce,
-                timeout_send=self.runtime_args.timeout_send,
-                retries=self.runtime_args.retries,
-                compression=self.runtime_args.compression,
-                runtime_name=self.runtime_args.runtime_name,
-                prefetch=self.runtime_args.prefetch,
-                logger=self.logger,
-                metrics_registry=self.runtime_args.metrics_registry,
-                meter=self.runtime_args.meter,
-                aio_tracing_client_interceptors=self.runtime_args.aio_tracing_client_interceptors,
-                tracing_client_interceptor=self.runtime_args.tracing_client_interceptor,
-            )
+        self.streamer = streamer or GatewayStreamer(
+            graph_representation=graph_description,
+            executor_addresses=deployments_addresses,
+            graph_conditions=graph_conditions,
+            deployments_metadata=deployments_metadata,
+            deployments_no_reduce=deployments_no_reduce,
+            timeout_send=self.runtime_args.timeout_send,
+            retries=self.runtime_args.retries,
+            compression=self.runtime_args.compression,
+            runtime_name=self.runtime_args.runtime_name,
+            prefetch=self.runtime_args.prefetch,
+            logger=self.logger,
+            metrics_registry=self.runtime_args.metrics_registry,
+            meter=self.runtime_args.meter,
+            aio_tracing_client_interceptors=self.runtime_args.aio_tracing_client_interceptors,
+            tracing_client_interceptor=self.runtime_args.tracing_client_interceptor,
+        )
+
         GatewayStreamer._set_env_streamer_args(
             graph_representation=graph_description,
             executor_addresses=deployments_addresses,
