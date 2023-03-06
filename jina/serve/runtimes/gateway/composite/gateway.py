@@ -23,7 +23,6 @@ class CompositeGateway(BaseGateway):
         for port, protocol in zip(self.ports, self.protocols):
             gateway_cls = _get_gateway_class(protocol)
             # ignore monitoring and tracing args since they are not copyable
-            print(self.runtime_args)
             runtime_args = self._deepcopy_with_ignore_attrs(
                 self.runtime_args,
                 [
