@@ -124,7 +124,18 @@ def test_flow_multiprotocol_with_monitoring():
     ports = [random_port(), random_port(), random_port()]
     protocols = PROTOCOLS
     flow = Flow().config_gateway(port=ports, protocol=protocols, monitoring=True)
-    
+
+    with flow:
+        for port, protocol in zip(ports, protocols):
+            client = Client(port=port, protocol=protocol)
+            client.post('/', inputs=[Document()])
+
+
+def test_flow_multiprotocol_with_tracing():
+    ports = [random_port(), random_port(), random_port()]
+    protocols = PROTOCOLS
+    flow = Flow().config_gateway(port=ports, protocol=protocols, tracing=True)
+
     with flow:
         for port, protocol in zip(ports, protocols):
             client = Client(port=port, protocol=protocol)
