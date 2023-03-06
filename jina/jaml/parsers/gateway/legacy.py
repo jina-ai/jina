@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional, Type
 
 from jina.jaml.parsers.base import BaseLegacyParser
-from jina.serve.gateway import BaseGateway
+from jina.serve.runtimes.gateway.gateway import BaseGateway
 
 
 class GatewayLegacyParser(BaseLegacyParser):

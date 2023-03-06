@@ -14,7 +14,6 @@ from jina.logging.logger import JinaLogger
 from jina.orchestrate.pods.helper import ConditionalEvent, _get_event
 from jina.parsers.helper import _update_gateway_args
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.gateway import GatewayRuntime
 
 if TYPE_CHECKING:
     import threading
@@ -62,7 +61,19 @@ def run(
     :param is_ready: concurrency event to communicate runtime is ready to receive messages
     :param jaml_classes: all the `JAMLCompatible` classes imported in main process
     """
+    req_handler_cls = None
+    if runtime_cls == 'GatewayRuntime':
+        from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+        req_handler_cls = GatewayRequestHandler
+    elif runtime_cls == 'WorkerRuntime':
+        from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
+        req_handler_cls = WorkerRequestHandler
+    elif runtime_cls == 'HeadRuntime':
+        from jina.serve.runtimes.head.request_handling import HeaderRequestHandler
+        req_handler_cls = HeaderRequestHandler
+
     logger = JinaLogger(name, **vars(args))
+
 
     def _unset_envs():
         if envs:
@@ -76,8 +87,9 @@ def run(
     try:
         _set_envs()
 
-        runtime = runtime_cls(
+        runtime = AsyncNewLoopRuntime(
             args=args,
+            req_handler_cls=req_handler_cls
         )
     except Exception as ex:
         logger.error(
@@ -376,9 +388,8 @@ class Pod(BasePod):
         self.worker.terminate()
         self.logger.debug(f'runtime process properly terminated')
 
-    def _get_runtime_cls(self) -> AsyncNewLoopRuntime:
+    def _get_runtime_cls(self):
         from jina.orchestrate.pods.helper import update_runtime_cls
-        from jina.serve.runtimes import get_runtime
 
         update_runtime_cls(self.args)
-        return get_runtime(self.args.runtime_cls)
+        return self.args.runtime_cls

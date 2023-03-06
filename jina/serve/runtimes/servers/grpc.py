@@ -47,7 +47,8 @@ class GRPCServer(BaseServer):
 
         jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(self._request_handler, self.server)
 
-        jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self._request_handler, self.server)
+        if hasattr(self._request_handler, 'dry_run'):
+            jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self._request_handler, self.server)
         jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self._request_handler, self.server)
 
         service_names = (

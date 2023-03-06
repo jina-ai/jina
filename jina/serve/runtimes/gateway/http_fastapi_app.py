@@ -48,7 +48,7 @@ def get_fastapi_app(
     with ImportExtensions(required=True):
         from fastapi import FastAPI, Response, status
         from fastapi.middleware.cors import CORSMiddleware
-        from jina.serve.runtimes.gateway.http.models import (
+        from jina.serve.runtimes.gateway.models import (
             JinaEndpointRequestModel,
             JinaRequestModel,
             JinaResponseModel,

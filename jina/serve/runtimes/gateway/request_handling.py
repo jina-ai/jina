@@ -13,6 +13,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class GatewayRequestHandler:
     """Object to encapsulate the code related to handle the data requests in the Gateway"""
+
     def __init__(
             self,
             args: 'SimpleNamespace',
@@ -66,6 +67,48 @@ class GatewayRequestHandler:
             )
             for executor_name in deployments_addresses.keys()
         }
+
+    def _http_fastapi_default_app(self,
+                                  title,
+                                  description,
+                                  no_debug_endpoints,
+                                  no_crud_endpoints,
+                                  expose_endpoints,
+                                  expose_graphql_endpoint,
+                                  cors,
+                                  tracing,
+                                  tracer_provider):
+        from jina.helper import extend_rest_interface
+        from jina.serve.runtimes.gateway.http_fastapi_app import get_fastapi_app
+
+        return extend_rest_interface(
+            get_fastapi_app(
+                streamer=self.streamer,
+                title=title,
+                description=description,
+                no_debug_endpoints=no_debug_endpoints,
+                no_crud_endpoints=no_crud_endpoints,
+                expose_endpoints=expose_endpoints,
+                expose_graphql_endpoint=expose_graphql_endpoint,
+                cors=cors,
+                logger=self.logger,
+                tracing=tracing,
+                tracer_provider=tracer_provider,
+            )
+        )
+
+    def _websocket_fastapi_default_app(self, tracing, tracer_provider):
+        from jina.helper import extend_rest_interface
+        from jina.serve.runtimes.gateway.websocket_fastapi_app import get_fastapi_app
+
+        return extend_rest_interface(
+            get_fastapi_app(
+                streamer=self.streamer,
+                logger=self.logger,
+                tracing=tracing,
+                tracer_provider=tracer_provider,
+            )
+        )
 
     async def dry_run(self, empty, context) -> jina_pb2.StatusProto:
         """

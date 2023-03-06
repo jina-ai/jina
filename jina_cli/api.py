@@ -43,21 +43,19 @@ def executor_native(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-
+    from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
     if args.runtime_cls == 'WorkerRuntime':
-        from jina.serve.runtimes.worker import WorkerRuntime
-
-        runtime_cls = WorkerRuntime
+        from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
+        req_handler_cls = WorkerRequestHandler
     elif args.runtime_cls == 'HeadRuntime':
-        from jina.serve.runtimes.head import HeadRuntime
-
-        runtime_cls = HeadRuntime
+        from jina.serve.runtimes.head.request_handling import HeaderRequestHandler
+        req_handler_cls = HeaderRequestHandler
     else:
         raise RuntimeError(
             f' runtime_cls {args.runtime_cls} is not supported with `--native` argument. `WorkerRuntime` is supported'
         )
 
-    with runtime_cls(args) as rt:
+    with AsyncNewLoopRuntime(args, req_handler_cls=req_handler_cls) as rt:
         name = (
             rt._request_handler._executor.metas.name
             if hasattr(rt, '_request_handler') and hasattr(rt._request_handler, '_executor')
@@ -85,35 +83,19 @@ def executor(args: 'Namespace'):
         return pod(args)
 
 
-def worker_runtime(args: 'Namespace'):
-    """
-    Starts a WorkerRuntime
-
-    :param args: arguments coming from the CLI.
-    """
-    from jina.serve.runtimes.worker import WorkerRuntime
-
-    with WorkerRuntime(args) as runtime:
-        runtime.logger.info(
-            f'Executor {runtime._worker_request_handler._executor.metas.name} started'
-        )
-        runtime.run_forever()
-
-
 def gateway(args: 'Namespace'):
     """
     Start a Gateway Deployment
 
     :param args: arguments coming from the CLI.
     """
-    from jina.serve.runtimes import get_runtime
+    from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+    from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 
     args.port_monitoring = args.port_monitoring[0]
     _update_gateway_args(args)
 
-    runtime_cls = get_runtime('GatewayRuntime')
-
-    with runtime_cls(args) as runtime:
+    with AsyncNewLoopRuntime(args, req_handler_cls=GatewayRequestHandler) as runtime:
         runtime.logger.info(f'Gateway started')
         runtime.run_forever()
 

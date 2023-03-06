@@ -15,15 +15,15 @@ from typing import TYPE_CHECKING, Optional, Union
 from jina.excepts import PortAlreadyUsed
 from jina.helper import ArgNamespace, is_port_free, send_telemetry_event
 from jina.parsers import set_gateway_parser
-from jina.parsers.helper import _update_gateway_args
-from jina.serve.gateway import BaseGateway
+from jina.parsers.helper import _set_gateway_uses
+from jina.serve.runtimes.gateway.gateway import BaseGateway
 
 # Keep these imports even if not used, since YAML parser needs to find them in imported modules
 from jina.serve.runtimes.gateway.composite import CompositeGateway
 from jina.serve.runtimes.gateway.grpc import GRPCGateway
 from jina.serve.runtimes.gateway.http import HTTPGateway
 from jina.serve.runtimes.gateway.websocket import WebSocketGateway
-
+from jina.helper import random_ports
 
 if TYPE_CHECKING:  # pragma: no cover
     import multiprocessing
@@ -47,13 +47,10 @@ class AsyncNewLoopRuntime(MonitoringMixin, InstrumentationMixin):
             cancel_event: Optional[
                 Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
             ] = None,
-            req_handler_class_name: str = 'GatewayRequestHandler',
+            req_handler_cls=None,
             **kwargs,
     ):
-        self.timeout_send = args.timeout_send
-        if self.timeout_send:
-            self.timeout_send /= 1e3  # convert ms to seconds
-        _update_gateway_args(args)
+        self.req_handler_cls = req_handler_cls
         self.args = args
         if args.name:
             self.name = f'{args.name}/{self.__class__.__name__}'
@@ -148,7 +145,7 @@ class AsyncNewLoopRuntime(MonitoringMixin, InstrumentationMixin):
             while not self.is_cancel.is_set():
                 await asyncio.sleep(0.1)
 
-        await self.async_cancel()
+        await self.async_teardown()
 
     async def _loop_body(self):
         """Do NOT override this method when inheriting from :class:`GatewayPod`"""
@@ -163,57 +160,63 @@ class AsyncNewLoopRuntime(MonitoringMixin, InstrumentationMixin):
         """
         self.is_cancel.set()
 
-    async def async_setup(self):
-        """
-        The async method setup the runtime.
+    def _get_server(self):
+        # construct server type based on protocol (and potentially req handler class to keep backwards compatibility)
+        if self.req_handler_cls.__name__ == 'GatewayRequestHandler':
+            self.timeout_send = self.args.timeout_send
+            if self.timeout_send:
+                self.timeout_send /= 1e3  # convert ms to seconds
+            if not self.args.port:
+                self.args.port = random_ports(len(self.args.protocol))
+            _set_gateway_uses(self.args)
+            uses_with = self.args.uses_with or {}
+            non_defaults = ArgNamespace.get_non_defaults_args(
+                self.args, set_gateway_parser()
+            )
+            return BaseGateway.load_config(
+                self.args.uses,
+                uses_with=dict(
+                    **non_defaults,
+                    **uses_with,
+                ),
+                uses_metas={},
+                runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
+                    'name': self.args.name,
+                    'port': self.args.port,
+                    'protocol': self.args.protocol,
+                    'host': self.args.host,
+                    'tracing': self.tracing,
+                    'tracer_provider': self.tracer_provider,
+                    'grpc_tracing_server_interceptors': self.aio_tracing_server_interceptors(),
+                    'graph_description': self.args.graph_description,
+                    'graph_conditions': self.args.graph_conditions,
+                    'deployments_addresses': self.args.deployments_addresses,
+                    'deployments_metadata': self.args.deployments_metadata,
+                    'deployments_no_reduce': self.args.deployments_no_reduce,
+                    'timeout_send': self.timeout_send,
+                    'retries': self.args.retries,
+                    'compression': self.args.compression,
+                    'runtime_name': self.args.name,
+                    'prefetch': self.args.prefetch,
+                    'metrics_registry': self.metrics_registry,
+                    'meter': self.meter,
+                    'aio_tracing_client_interceptors': self.aio_tracing_client_interceptors(),
+                    'tracing_client_interceptor': self.tracing_client_interceptor(),
+                    'log_config': self.args.log_config,
+                    'default_port': getattr(self.args, 'default_port', False),
+                },
+                py_modules=self.args.py_modules,
+                extra_search_paths=self.args.extra_search_paths,
+            )
 
-        Setup the uvicorn server.
-        """
-        if not (is_port_free(self.args.host, self.args.port)):
-            raise PortAlreadyUsed(f'port:{self.args.port}')
-
-        # consturct server type based on protocol (and potentially req handler class to keep backwards compatibility
-        uses_with = self.args.uses_with or {}
-        non_defaults = ArgNamespace.get_non_defaults_args(
-            self.args, set_gateway_parser()
-        )
-        self.server = BaseGateway.load_config(
-            self.args.uses,
-            uses_with=dict(
-                **non_defaults,
-                **uses_with,
-            ),
-            uses_metas={},
-            runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
-                'name': self.args.name,
-                'port': self.args.port,
-                'protocol': self.args.protocol,
-                'host': self.args.host,
-                'tracing': self.tracing,
-                'tracer_provider': self.tracer_provider,
-                'grpc_tracing_server_interceptors': self.aio_tracing_server_interceptors(),
-                'graph_description': self.args.graph_description,
-                'graph_conditions': self.args.graph_conditions,
-                'deployments_addresses': self.args.deployments_addresses,
-                'deployments_metadata': self.args.deployments_metadata,
-                'deployments_no_reduce': self.args.deployments_no_reduce,
-                'timeout_send': self.timeout_send,
-                'retries': self.args.retries,
-                'compression': self.args.compression,
-                'runtime_name': self.args.name,
-                'prefetch': self.args.prefetch,
-                'metrics_registry': self.metrics_registry,
-                'meter': self.meter,
-                'aio_tracing_client_interceptors': self.aio_tracing_client_interceptors(),
-                'tracing_client_interceptor': self.tracing_client_interceptor(),
-                'log_config': self.args.log_config,
-                'default_port': getattr(self.args, 'default_port', False),
-            },
-            py_modules=self.args.py_modules,
-            extra_search_paths=self.args.extra_search_paths,
-        )
-
-        await self.server.setup_server()
+        elif not hasattr(self.args, 'protocol') or (len(self.args.protocol) == 1 and self.args.protocol[0] == 'GRPC'):
+            from jina.serve.runtimes.servers.grpc import GRPCServer
+            return GRPCServer(name=self.args.name,
+                                     runtime_args=self.args,
+                                     req_handler_cls=self.req_handler_cls,
+                                     grpc_server_options=self.args.grpc_server_options,
+                                     ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
+                                     ssl_certfile=getattr(self.args, 'ssl_certfile', None))
 
     def _send_telemetry_event(self):
         is_custom_gateway = self.server.__class__ not in [
@@ -230,30 +233,25 @@ class AsyncNewLoopRuntime(MonitoringMixin, InstrumentationMixin):
             protocol=self.args.protocol,
         )
 
-    async def _wait_for_cancel(self):
-        """Do NOT override this method when inheriting from :class:`GatewayPod`"""
-        # handle terminate signals
-        while not self.is_cancel.is_set() and not getattr(
-                self.server, '_should_exit', False
-        ):
-            await asyncio.sleep(0.1)
+    async def async_setup(self):
+        """
+        The async method setup the runtime.
 
-        await self.async_cancel()
+        Setup the uvicorn server.
+        """
+        if not (is_port_free(self.args.host, self.args.port)):
+            raise PortAlreadyUsed(f'port:{self.args.port}')
+
+        self.server = self._get_server()
+
+        await self.server.setup_server()
 
     async def async_teardown(self):
         """Shutdown the server."""
         await self.server.shutdown()
-        await self.async_cancel()
-
-    async def async_cancel(self):
-        """Stop the server."""
-        await self.server.shutdown()
 
     async def async_run_forever(self):
         """Running method of the server."""
-        self.warmup_task = asyncio.create_task(
-            self.gateway.streamer.warmup(self.warmup_stop_event)
-        )
         await self.server.run_server()
         self.is_cancel.set()
 
