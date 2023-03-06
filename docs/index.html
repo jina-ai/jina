@@ -6,10 +6,10 @@
 <meta property="og:title" content="Welcome to Jina!" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/" />
-<meta property="og:site_name" content="Jina 3.14.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.14.2 Documentation" />
 <meta property="og:description" content="Jina is an MLOps framework to build multimodal AI services and pipelines then serve, scale and deploy them to a production-ready environment like Kubernetes or Jina AI Cloud. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible ..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.14.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.14.2 Documentation" />
 <meta name="description" content="Jina is an MLOps framework to build multimodal AI services and pipelines then serve, scale and deploy them to a production-ready environment like Kubernetes or Jina AI Cloud. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible ..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/index.html" />
 
     <link rel="shortcut icon" href="_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Jina 3.14.1 documentation</title>
+        <title>Jina 3.14.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="#">
-                <div class="brand">Jina 3.14.1 documentation</div>
+                <div class="brand">Jina 3.14.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -254,7 +254,6 @@
 <li class="toctree-l1"><a class="reference internal" href="get-started/create-app/"><span class="fas fa-folder-plus"></span> Create First Project</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="concepts/preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="concepts/preliminaries/coding-in-python-yaml/">Coding in Python/YAML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/preliminaries/clean-code/">Clean &amp; Efficient Code</a></li>
 </ul>
 </li>
 </ul>
@@ -346,6 +345,7 @@
 <li class="toctree-l1"><a class="reference internal" href="envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -431,11 +431,11 @@
 <h1>Welcome to Jina!<a class="headerlink" href="#welcome-to-jina" title="Permalink to this heading">#</a></h1>
 <div class="tip admonition">
 <p class="admonition-title">Survey</p>
-<p>Take our <strong><a class="reference external" href="https://10sw1tcpld4.typeform.com/to/EGAEReM7?utm_source=doc&amp;utm_medium=github&amp;utm_campaign=user%20experience&amp;utm_term=feb2023&amp;utm_content=survey">user experience survey</a></strong> to let us know your thoughts and help shape the future of Jina!</p>
+<p>Take our <strong><a class="reference external" href="https://10sw1tcpld4.typeform.com/to/EGAEReM7?utm_source=doc&amp;amp;utm_medium=github&amp;amp;utm_campaign=user%20experience&amp;amp;utm_term=feb2023&amp;amp;utm_content=survey">user experience survey</a></strong> to let us know your thoughts and help shape the future of Jina!</p>
 </div>
 <p>Jina is an MLOps framework to build multimodal AI <strong>services</strong> and <strong>pipelines</strong> then <strong>serve</strong>, <strong>scale</strong> and <strong>deploy</strong> them to a production-ready environment like Kubernetes or Jina AI Cloud. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer.</p>
 <p align="center">
-<strong><a href="#build-ai--ml-services">Build and deploy a gRPC microservice</a> • <a href="#build-a-pipeline">Build and deploy a pipeline</a></strong>
+<strong><a href="#build-ai-services">Build and deploy a gRPC microservice</a> • <a href="#build-a-pipeline">Build and deploy a pipeline</a></strong>
 </p>
 <p>Applications built with Jina enjoy the following features out of the box:</p>
 <p>🌌 <strong>Universal</strong></p>
@@ -479,7 +479,7 @@
 </div>
 </section>
 <section id="getting-started">
-<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading">#</a></h2>
+<span id="build-a-pipeline"></span><span id="build-ai-services"></span><h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading">#</a></h2>
 <p>Jina supports developers in building AI services and pipelines:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Build AI Services</label><div class="tab-content docutils">
@@ -487,7 +487,7 @@
 <p>Let’s build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an <strong><a class="reference external" href="https://docs.jina.ai/concepts/executor/">Executor</a></strong>. Our simple Executor will use Facebook’s mBART-50 model to translate French to English. We’ll then use a <strong>Deployment</strong> to serve it.</p>
 <blockquote>
 <div><p><strong>Note</strong>
-A Deployment serves just one Executor. To combine multiple Executors into a pipeline and serve that, use a <span class="xref myst">Flow</span>.</p>
+A Deployment serves just one Executor. To combine multiple Executors into a pipeline and serve that, use a <a class="reference internal" href="#build-a-pipeline">Flow</a>.</p>
 </div></blockquote>
 <blockquote>
 <div><p><strong>Note</strong>
@@ -595,9 +595,9 @@ Run the <a class="reference external" href="https://colab.research.google.com/as
 <p>A Flow is a <a class="reference external" href="https://de.wikipedia.org/wiki/DAG">DAG</a> pipeline, composed of a set of steps, It orchestrates a set of <a class="reference external" href="https://docs.jina.ai/concepts/executor/">Executors</a> and a <a class="reference external" href="https://docs.jina.ai/concepts/gateway/">Gateway</a> to offer an end-to-end service.</p>
 <blockquote>
 <div><p><strong>Note</strong>
-If you just want to serve a single Executor, you can use a <span class="xref myst">Deployment</span>.</p>
+If you just want to serve a single Executor, you can use a <a class="reference internal" href="#build-ai--ml-services"><span class="xref myst">Deployment</span></a>.</p>
 </div></blockquote>
-<p>For instance, let’s combine <span class="xref myst">our French translation service</span> with a Stable Diffusion image generation service from Jina AI’s <a class="reference external" href="https://cloud.jina.ai/executors">Executor Hub</a>. Chaining these services together into a <a class="reference external" href="https://docs.jina.ai/concepts/flow/">Flow</a> will give us a multilingual image generation service.</p>
+<p>For instance, let’s combine <a class="reference internal" href="#build-ai--ml-services"><span class="xref myst">our French translation service</span></a> with a Stable Diffusion image generation service from Jina AI’s <a class="reference external" href="https://cloud.jina.ai/executors">Executor Hub</a>. Chaining these services together into a <a class="reference external" href="https://docs.jina.ai/concepts/flow/">Flow</a> will give us a multilingual image generation service.</p>
 <p>Build the Flow with either Python or YAML:</p>
 <div class="table-wrapper">
 <table>
@@ -737,7 +737,7 @@ jina<span class="w"> </span>cloud<span class="w"> </span>deploy<span class="w"> 
 <ul>
 <li><p><strong>When?</strong> The second Tuesday of every month</p></li>
 <li><p><strong>Where?</strong>
-Zoom (<a class="reference external" href="https://calendar.google.com/calendar/embed?src=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&amp;ctz=Europe%2FBerlin">see our public events calendar</a>/<a class="reference external" href="https://calendar.google.com/calendar/ical/c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com/public/basic.ics">.ical</a>)
+Zoom (<a class="reference external" href="https://calendar.google.com/calendar/embed?src=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&amp;amp;ctz=Europe%2FBerlin">see our public events calendar</a>/<a class="reference external" href="https://calendar.google.com/calendar/ical/c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com/public/basic.ics">.ical</a>)
 and <a class="reference external" href="https://youtube.com/c/jina-ai">live stream on YouTube</a></p></li>
 </ul>
 </li>
@@ -746,7 +746,7 @@ and <a class="reference external" href="https://youtube.com/c/jina-ai">live stre
 </section>
 <section id="join-us">
 <h2>Join Us<a class="headerlink" href="#join-us" title="Permalink to this heading">#</a></h2>
-<p>Jina is backed by <a class="reference external" href="https://jina.ai">Jina AI</a> and licensed under <span class="xref myst">Apache-2.0</span>.</p>
+<p>Jina is backed by <a class="reference external" href="https://jina.ai">Jina AI</a> and licensed under <a class="reference internal" href="#./LICENSE"><span class="xref myst">Apache-2.0</span></a>.</p>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
@@ -783,7 +783,7 @@ and <a class="reference external" href="https://youtube.com/c/jina-ai">live stre
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Feb 24, 2023</div>
+                            Last updated on Mar 06, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

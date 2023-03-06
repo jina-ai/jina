@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/head.html" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>jina.serve.runtimes.head - Jina 3.14.1 documentation</title>
+        <title>jina.serve.runtimes.head - Jina 3.14.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.14.1 documentation</div>
+                <div class="brand">Jina 3.14.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -227,7 +227,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../../get-started/create-app/"><span class="fas fa-folder-plus"></span> Create First Project</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../concepts/preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/preliminaries/coding-in-python-yaml/">Coding in Python/YAML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/preliminaries/clean-code/">Clean &amp; Efficient Code</a></li>
 </ul>
 </li>
 </ul>
@@ -319,6 +318,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -402,29 +402,16 @@
                 <article role="main">
                     <h1>Source code for jina.serve.runtimes.head</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">grpc</span>
 <span class="kn">from</span> <span class="nn">grpc_health.v1</span> <span class="kn">import</span> <span class="n">health</span><span class="p">,</span> <span class="n">health_pb2</span><span class="p">,</span> <span class="n">health_pb2_grpc</span>
 <span class="kn">from</span> <span class="nn">grpc_reflection.v1alpha</span> <span class="kn">import</span> <span class="n">reflection</span>
 
-<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PollingType</span>
-<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">InternalNetworkError</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_full_version</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span><span class="p">,</span> <span class="n">jina_pb2_grpc</span>
-<span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.asyncio</span> <span class="kn">import</span> <span class="n">AsyncNewLoopRuntime</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.head.request_handling</span> <span class="kn">import</span> <span class="n">HeaderRequestHandler</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.helper</span> <span class="kn">import</span> <span class="n">_get_grpc_server_options</span>
-<span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">Response</span>
-
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-    <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 
 
 <div class="viewcode-block" id="HeadRuntime"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime">[docs]</a><span class="k">class</span> <span class="nc">HeadRuntime</span><span class="p">(</span><span class="n">AsyncNewLoopRuntime</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
@@ -432,124 +419,56 @@
 <span class="sd">    Runtime is used in head pods. It responds to Gateway requests and sends to uses_before/uses_after and its workers</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">DEFAULT_POLLING</span> <span class="o">=</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize grpc server for the head runtime.</span>
 <span class="sd">        :param args: args from CLI</span>
 <span class="sd">        :param kwargs: keyword args</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span> <span class="o">=</span> <span class="n">health</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">HealthServicer</span><span class="p">()</span>
-
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;JINA_DEPLOYMENT_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;worker&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="p">(</span>
-            <span class="n">runtime_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-            <span class="n">compression</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span>
-            <span class="n">metrics_registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">,</span>
-            <span class="n">meter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span>
-            <span class="n">aio_tracing_client_interceptors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">aio_tracing_client_interceptors</span><span class="p">(),</span>
-            <span class="n">tracing_client_interceptor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tracing_client_interceptor</span><span class="p">(),</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_retries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">retries</span>
-
-        <span class="n">polling</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;polling&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_POLLING</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># try loading the polling args as json</span>
-            <span class="n">endpoint_polling</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">polling</span><span class="p">)</span>
-            <span class="c1"># &#39;*&#39; is used a wildcard and will match all endpoints, except /index, /search and explicitly defined endpoins</span>
-            <span class="n">default_polling</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">PollingType</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">endpoint_polling</span><span class="p">[</span><span class="s1">&#39;*&#39;</span><span class="p">])</span>
-                <span class="k">if</span> <span class="s1">&#39;*&#39;</span> <span class="ow">in</span> <span class="n">endpoint_polling</span>
-                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_POLLING</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_polling</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_polling_dict</span><span class="p">(</span><span class="n">default_polling</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">endpoint</span> <span class="ow">in</span> <span class="n">endpoint_polling</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_polling</span><span class="p">[</span><span class="n">endpoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">PollingType</span><span class="p">(</span>
-                    <span class="n">endpoint_polling</span><span class="p">[</span><span class="n">endpoint</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">endpoint_polling</span><span class="p">[</span><span class="n">endpoint</span><span class="p">])</span> <span class="o">==</span> <span class="nb">int</span>
-                    <span class="k">else</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">endpoint_polling</span><span class="p">[</span><span class="n">endpoint</span><span class="p">])</span>
-                <span class="p">)</span>
-        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
-            <span class="c1"># polling args is not a valid json, try interpreting as a polling enum type</span>
-            <span class="n">default_polling</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">polling</span>
-                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">polling</span><span class="p">)</span> <span class="o">==</span> <span class="n">PollingType</span>
-                <span class="k">else</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">polling</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_polling</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_polling_dict</span><span class="p">(</span><span class="n">default_polling</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;connection_list&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">connection_list</span><span class="p">:</span>
-            <span class="n">connection_list</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">connection_list</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="n">connection_list</span><span class="p">:</span>
-                <span class="n">shard_connections</span> <span class="o">=</span> <span class="n">connection_list</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shard_connections</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span>
-                        <span class="n">deployment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployment_name</span><span class="p">,</span>
-                        <span class="n">address</span><span class="o">=</span><span class="n">shard_connections</span><span class="p">,</span>
-                        <span class="n">shard_id</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">shard_id</span><span class="p">),</span>
-                    <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">shard_connections</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span>
-                            <span class="n">deployment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployment_name</span><span class="p">,</span>
-                            <span class="n">address</span><span class="o">=</span><span class="n">connection</span><span class="p">,</span>
-                            <span class="n">shard_id</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">shard_id</span><span class="p">),</span>
-                        <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_address</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">uses_before_address</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">timeout_send</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span> <span class="o">/=</span> <span class="mf">1e3</span>  <span class="c1"># convert ms to seconds</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_address</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span>
-                <span class="n">deployment</span><span class="o">=</span><span class="s1">&#39;uses_before&#39;</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uses_before_address</span>
-            <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_address</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">uses_after_address</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_address</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span>
-                <span class="n">deployment</span><span class="o">=</span><span class="s1">&#39;uses_after&#39;</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uses_after_address</span>
-            <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_reduce</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_reduce</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">request_handler</span> <span class="o">=</span> <span class="n">HeaderRequestHandler</span><span class="p">(</span>
-            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-            <span class="n">metrics_registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">,</span>
-            <span class="n">meter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span>
-            <span class="n">runtime_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_default_polling_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_polling</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">defaultdict</span><span class="p">(</span>
-            <span class="k">lambda</span><span class="p">:</span> <span class="n">default_polling</span><span class="p">,</span>
-            <span class="p">{</span><span class="s1">&#39;/search&#39;</span><span class="p">:</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ALL</span><span class="p">,</span> <span class="s1">&#39;/index&#39;</span><span class="p">:</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span><span class="p">},</span>
-        <span class="p">)</span>
 
 <div class="viewcode-block" id="HeadRuntime.async_setup"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.async_setup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait for the GRPC server to start&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span> <span class="o">=</span> <span class="n">HeaderRequestHandler</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+            <span class="n">metrics_registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">,</span>
+            <span class="n">tracer_provider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tracer_provider</span><span class="p">,</span>
+            <span class="n">meter_provider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">meter_provider</span><span class="p">,</span>
+            <span class="n">deployment_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">meter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span>
+            <span class="n">tracer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="p">,</span>
+            <span class="n">runtime_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">aio_tracing_client_interceptors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">aio_tracing_client_interceptors</span><span class="p">(),</span>
+            <span class="n">tracing_client_interceptor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tracing_client_interceptor</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_setup_grpc_server</span><span class="p">()</span></div>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_async_setup_grpc_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start the WorkerRequestHandler and wait for the GRPC server to start</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">server</span><span class="p">(</span>
             <span class="n">options</span><span class="o">=</span><span class="n">_get_grpc_server_options</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">grpc_server_options</span><span class="p">),</span>
             <span class="n">interceptors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">aio_tracing_server_interceptors</span><span class="p">(),</span>
         <span class="p">)</span>
 
-        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="p">)</span>
+        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="p">)</span>
 
         <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaSingleDataRequestRPCServicer_to_server</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span>
         <span class="p">)</span>
-        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaDataRequestRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="p">)</span>
+        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaDataRequestRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="p">)</span>
+
         <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaDiscoverEndpointsRPCServicer_to_server</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span>
         <span class="p">)</span>
-        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaInfoRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="p">)</span>
+        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaInfoRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="p">)</span>
         <span class="n">service_names</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
             <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaSingleDataRequestRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
@@ -563,187 +482,30 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span>
         <span class="p">)</span>
 
+        <span class="n">reflection</span><span class="o">.</span><span class="n">enable_server_reflection</span><span class="p">(</span><span class="n">service_names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="p">)</span>
+        <span class="n">bind_addr</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;start listening on </span><span class="si">{</span><span class="n">bind_addr</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="o">.</span><span class="n">add_insecure_port</span><span class="p">(</span><span class="n">bind_addr</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">service_names</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
                 <span class="n">service</span><span class="p">,</span> <span class="n">health_pb2</span><span class="o">.</span><span class="n">HealthCheckResponse</span><span class="o">.</span><span class="n">SERVING</span>
             <span class="p">)</span>
-        <span class="n">reflection</span><span class="o">.</span><span class="n">enable_server_reflection</span><span class="p">(</span><span class="n">service_names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="p">)</span>
-
-        <span class="n">bind_addr</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="o">.</span><span class="n">add_insecure_port</span><span class="p">(</span><span class="n">bind_addr</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;start listening on </span><span class="si">{</span><span class="n">bind_addr</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
-
-    <span class="k">def</span> <span class="nf">_warmup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">warmup_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">request_handler</span><span class="o">.</span><span class="n">warmup</span><span class="p">(</span>
-                <span class="n">connection_pool</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="p">,</span>
-                <span class="n">stop_event</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">warmup_stop_event</span><span class="p">,</span>
-                <span class="n">deployment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployment_name</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
 
 <div class="viewcode-block" id="HeadRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Block until the GRPC server is terminated&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_warmup</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="o">.</span><span class="n">wait_for_termination</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="HeadRuntime.async_cancel"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.async_cancel">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop the GRPC server&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;cancel HeadRuntime&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cancel_warmup_task</span><span class="p">()</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span><span class="o">.</span><span class="n">enter_graceful_shutdown</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="HeadRuntime.async_teardown"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.async_teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the connection pool&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cancel_warmup_task</span><span class="p">()</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span><span class="o">.</span><span class="n">enter_graceful_shutdown</span><span class="p">()</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="HeadRuntime.process_single_data"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.process_single_data">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_single_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataRequest</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Process the received requests and return the result as a new request</span>
-
-<span class="sd">        :param request: the data request to process</span>
-<span class="sd">        :param context: grpc context</span>
-<span class="sd">        :returns: the response request</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_data</span><span class="p">([</span><span class="n">request</span><span class="p">],</span> <span class="n">context</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">_handle_internalnetworkerror</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
-        <span class="n">err_code</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">err_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
-            <span class="n">context</span><span class="o">.</span><span class="n">set_details</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;|Head: Failed to connect to worker (Executor) pod at address </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1">. It may be down.&#39;</span>
-            <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">err_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">DEADLINE_EXCEEDED</span><span class="p">:</span>
-            <span class="n">context</span><span class="o">.</span><span class="n">set_details</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;|Head: Connection to worker (Executor) pod at address </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1"> could be established, but timed out.&#39;</span>
-            <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">err_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">NOT_FOUND</span><span class="p">:</span>
-            <span class="n">context</span><span class="o">.</span><span class="n">set_details</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;|Head: Connection to worker (Executor) pod at address </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1"> could be established, but resource was not found.&#39;</span>
-            <span class="p">)</span>
-        <span class="n">context</span><span class="o">.</span><span class="n">set_code</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Error while getting responses from Pods: </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">request_id</span><span class="p">:</span>
-            <span class="n">response</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">request_id</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">request_id</span>
-        <span class="k">return</span> <span class="n">response</span>
-
-<div class="viewcode-block" id="HeadRuntime.process_data"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.process_data">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataRequest</span><span class="p">],</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataRequest</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Process the received data request and return the result as a new request</span>
-
-<span class="sd">        :param requests: the data requests to process</span>
-<span class="sd">        :param context: grpc context</span>
-<span class="sd">        :returns: the response request</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">endpoint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">invocation_metadata</span><span class="p">())</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;endpoint&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;recv </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span><span class="si">}</span><span class="s1"> DataRequest(s)&#39;</span><span class="p">)</span>
-            <span class="n">response</span><span class="p">,</span> <span class="n">metadata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_handler</span><span class="o">.</span><span class="n">_handle_data_request</span><span class="p">(</span>
-                <span class="n">requests</span><span class="o">=</span><span class="n">requests</span><span class="p">,</span>
-                <span class="n">connection_pool</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="p">,</span>
-                <span class="n">uses_before_address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uses_before_address</span><span class="p">,</span>
-                <span class="n">uses_after_address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uses_after_address</span><span class="p">,</span>
-                <span class="n">retries</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_retries</span><span class="p">,</span>
-                <span class="n">reduce</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_reduce</span><span class="p">,</span>
-                <span class="n">timeout_send</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span><span class="p">,</span>
-                <span class="n">polling_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_polling</span><span class="p">[</span><span class="n">endpoint</span><span class="p">],</span>
-                <span class="n">deployment_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployment_name</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">context</span><span class="o">.</span><span class="n">set_trailing_metadata</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
-            <span class="k">return</span> <span class="n">response</span>
-        <span class="k">except</span> <span class="n">InternalNetworkError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>  <span class="c1"># can&#39;t connect, Flow broken, interrupt the streaming through gRPC error mechanism</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_internalnetworkerror</span><span class="p">(</span>
-                <span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">Response</span><span class="p">()</span>
-            <span class="p">)</span>
-        <span class="k">except</span> <span class="p">(</span>
-            <span class="ne">RuntimeError</span><span class="p">,</span>
-            <span class="ne">Exception</span><span class="p">,</span>
-        <span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>  <span class="c1"># some other error, keep streaming going just add error info</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> add &quot;--quiet-error&quot; to suppress the exception details&#39;</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span>
-                <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_exception</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="n">executor</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-            <span class="n">context</span><span class="o">.</span><span class="n">set_trailing_metadata</span><span class="p">(((</span><span class="s1">&#39;is-error&#39;</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">),))</span>
-            <span class="k">return</span> <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
-
-<div class="viewcode-block" id="HeadRuntime.endpoint_discovery"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.endpoint_discovery">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">endpoint_discovery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">EndpointsProto</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Uses the connection pool to send a discover endpoint call to the workers</span>
-
-<span class="sd">        :param empty: The service expects an empty protobuf message</span>
-<span class="sd">        :param context: grpc context</span>
-<span class="sd">        :returns: the response request</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">EndpointsProto</span><span class="p">()</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_address</span><span class="p">:</span>
-                <span class="p">(</span>
-                    <span class="n">uses_before_response</span><span class="p">,</span>
-                    <span class="n">_</span><span class="p">,</span>
-                <span class="p">)</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">send_discover_endpoint</span><span class="p">(</span>
-                    <span class="n">deployment</span><span class="o">=</span><span class="s1">&#39;uses_before&#39;</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="kc">False</span>
-                <span class="p">)</span>
-                <span class="n">response</span><span class="o">.</span><span class="n">endpoints</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">uses_before_response</span><span class="o">.</span><span class="n">endpoints</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_address</span><span class="p">:</span>
-                <span class="p">(</span>
-                    <span class="n">uses_after_response</span><span class="p">,</span>
-                    <span class="n">_</span><span class="p">,</span>
-                <span class="p">)</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">send_discover_endpoint</span><span class="p">(</span>
-                    <span class="n">deployment</span><span class="o">=</span><span class="s1">&#39;uses_after&#39;</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="kc">False</span>
-                <span class="p">)</span>
-                <span class="n">response</span><span class="o">.</span><span class="n">endpoints</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">uses_after_response</span><span class="o">.</span><span class="n">endpoints</span><span class="p">)</span>
-
-            <span class="n">worker_response</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">send_discover_endpoint</span><span class="p">(</span>
-                <span class="n">deployment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployment_name</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="kc">False</span>
-            <span class="p">)</span>
-            <span class="n">response</span><span class="o">.</span><span class="n">endpoints</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">worker_response</span><span class="o">.</span><span class="n">endpoints</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">InternalNetworkError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>  <span class="c1"># can&#39;t connect, Flow broken, interrupt the streaming through gRPC error mechanism</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_internalnetworkerror</span><span class="p">(</span>
-                <span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span>
-            <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">response</span></div>
-
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">JinaInfoProto</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Process the the call requested and return the JinaInfo of the Runtime</span>
-
-<span class="sd">        :param empty: The service expects an empty protobuf message</span>
-<span class="sd">        :param context: grpc context</span>
-<span class="sd">        :returns: the response request</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;recv _status request&#39;</span><span class="p">)</span>
-        <span class="n">infoProto</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">JinaInfoProto</span><span class="p">()</span>
-        <span class="n">version</span><span class="p">,</span> <span class="n">env_info</span> <span class="o">=</span> <span class="n">get_full_version</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">version</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">infoProto</span><span class="o">.</span><span class="n">jina</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">env_info</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">infoProto</span><span class="o">.</span><span class="n">envs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">infoProto</span>
-
-<div class="viewcode-block" id="HeadRuntime.stream"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.stream">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">request_iterator</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        stream requests from client iterator and stream responses back.</span>
-
-<span class="sd">        :param request_iterator: iterator of requests</span>
-<span class="sd">        :param context: context of the grpc call</span>
-<span class="sd">        :param args: positional arguments</span>
-<span class="sd">        :param kwargs: keyword arguments</span>
-<span class="sd">        :yield: responses to the request</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">async</span> <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="n">request_iterator</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_data</span><span class="p">([</span><span class="n">request</span><span class="p">],</span> <span class="n">context</span><span class="p">)</span></div>
-
-    <span class="n">Call</span> <span class="o">=</span> <span class="n">stream</span></div>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span></div></div>
 </pre></div>
                 </article>
             </div>
@@ -758,7 +520,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Feb 24, 2023</div>
+                            Last updated on Mar 06, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

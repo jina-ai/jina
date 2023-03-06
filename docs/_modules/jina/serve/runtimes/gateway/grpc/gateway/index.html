@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/gateway/grpc/gateway.html" />
 
     <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>jina.serve.runtimes.gateway.grpc.gateway - Jina 3.14.1 documentation</title>
+        <title>jina.serve.runtimes.gateway.grpc.gateway - Jina 3.14.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../../">
-                <div class="brand">Jina 3.14.1 documentation</div>
+                <div class="brand">Jina 3.14.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -227,7 +227,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../../get-started/create-app/"><span class="fas fa-folder-plus"></span> Create First Project</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../concepts/preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../concepts/preliminaries/coding-in-python-yaml/">Coding in Python/YAML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../../../concepts/preliminaries/clean-code/">Clean &amp; Efficient Code</a></li>
 </ul>
 </li>
 </ul>
@@ -319,6 +318,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -401,21 +401,15 @@
                 </div>
                 <article role="main">
                     <h1>Source code for jina.serve.runtimes.gateway.grpc.gateway</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">grpc</span>
 <span class="kn">from</span> <span class="nn">grpc_health.v1</span> <span class="kn">import</span> <span class="n">health</span><span class="p">,</span> <span class="n">health_pb2</span><span class="p">,</span> <span class="n">health_pb2_grpc</span>
 <span class="kn">from</span> <span class="nn">grpc_reflection.v1alpha</span> <span class="kn">import</span> <span class="n">reflection</span>
 
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_full_version</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span><span class="p">,</span> <span class="n">jina_pb2_grpc</span>
 <span class="kn">from</span> <span class="nn">jina.serve.gateway</span> <span class="kn">import</span> <span class="n">BaseGateway</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.helper</span> <span class="kn">import</span> <span class="n">_get_grpc_server_options</span>
-<span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
-<span class="kn">from</span> <span class="nn">jina.types.request.status</span> <span class="kn">import</span> <span class="n">StatusMessage</span>
-
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-    <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 
 
 <div class="viewcode-block" id="GRPCGateway"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.grpc.gateway/#jina.serve.runtimes.gateway.grpc.GRPCGateway">[docs]</a><span class="k">class</span> <span class="nc">GRPCGateway</span><span class="p">(</span><span class="n">BaseGateway</span><span class="p">):</span>
@@ -449,12 +443,12 @@
             <span class="n">interceptors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">grpc_tracing_server_interceptors</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
+        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
 
-        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaSingleDataRequestRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
+        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaSingleDataRequestRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
 
-        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaGatewayDryRunRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
-        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaInfoRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
+        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaGatewayDryRunRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
+        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaInfoRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
 
         <span class="n">service_names</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
@@ -507,77 +501,7 @@
 
 <div class="viewcode-block" id="GRPCGateway.run_server"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.grpc.gateway/#jina.serve.runtimes.gateway.grpc.GRPCGateway.run_server">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Run GRPC server forever&quot;&quot;&quot;</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">wait_for_termination</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="GRPCGateway.dry_run"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.grpc.gateway/#jina.serve.runtimes.gateway.grpc.GRPCGateway.dry_run">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Process the call requested by having a dry run call to every Executor in the graph</span>
-
-<span class="sd">        :param empty: The service expects an empty protobuf message</span>
-<span class="sd">        :param context: grpc context</span>
-<span class="sd">        :returns: the response request</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
-        <span class="kn">from</span> <span class="nn">jina.serve.executors</span> <span class="kn">import</span> <span class="n">__dry_run_endpoint__</span>
-
-        <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">()])</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">async</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">stream_docs</span><span class="p">(</span>
-                <span class="n">docs</span><span class="o">=</span><span class="n">da</span><span class="p">,</span> <span class="n">exec_endpoint</span><span class="o">=</span><span class="n">__dry_run_endpoint__</span><span class="p">,</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">1</span>
-            <span class="p">):</span>
-                <span class="k">pass</span>
-            <span class="n">status_message</span> <span class="o">=</span> <span class="n">StatusMessage</span><span class="p">()</span>
-            <span class="n">status_message</span><span class="o">.</span><span class="n">set_code</span><span class="p">(</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">status_message</span><span class="o">.</span><span class="n">proto</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="n">status_message</span> <span class="o">=</span> <span class="n">StatusMessage</span><span class="p">()</span>
-            <span class="n">status_message</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">status_message</span><span class="o">.</span><span class="n">proto</span></div>
-
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">JinaInfoProto</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Process the the call requested and return the JinaInfo of the Runtime</span>
-
-<span class="sd">        :param empty: The service expects an empty protobuf message</span>
-<span class="sd">        :param context: grpc context</span>
-<span class="sd">        :returns: the response request</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">info_proto</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">JinaInfoProto</span><span class="p">()</span>
-        <span class="n">version</span><span class="p">,</span> <span class="n">env_info</span> <span class="o">=</span> <span class="n">get_full_version</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">version</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">info_proto</span><span class="o">.</span><span class="n">jina</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">env_info</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">info_proto</span><span class="o">.</span><span class="n">envs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">info_proto</span>
-
-<div class="viewcode-block" id="GRPCGateway.stream"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.grpc.gateway/#jina.serve.runtimes.gateway.grpc.GRPCGateway.stream">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">request_iterator</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        stream requests from client iterator and stream responses back.</span>
-
-<span class="sd">        :param request_iterator: iterator of requests</span>
-<span class="sd">        :param context: context of the grpc call</span>
-<span class="sd">        :param args: positional arguments</span>
-<span class="sd">        :param kwargs: keyword arguments</span>
-<span class="sd">        :yield: responses to the request after streaming to Executors in Flow</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">rpc_stream</span><span class="p">(</span>
-            <span class="n">request_iterator</span><span class="o">=</span><span class="n">request_iterator</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-        <span class="p">):</span>
-            <span class="k">yield</span> <span class="n">resp</span></div>
-
-<div class="viewcode-block" id="GRPCGateway.process_single_data"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.grpc.gateway/#jina.serve.runtimes.gateway.grpc.GRPCGateway.process_single_data">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_single_data</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataRequest</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implements request and response handling of a single DataRequest</span>
-<span class="sd">        :param request: DataRequest from Client</span>
-<span class="sd">        :param context: grpc context</span>
-<span class="sd">        :return: response DataRequest</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">process_single_data</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div>
-
-    <span class="n">Call</span> <span class="o">=</span> <span class="n">stream</span></div>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">wait_for_termination</span><span class="p">()</span></div></div>
 </pre></div>
                 </article>
             </div>
@@ -592,7 +516,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Feb 24, 2023</div>
+                            Last updated on Mar 06, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

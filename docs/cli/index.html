@@ -6,10 +6,10 @@
 <meta property="og:title" content=" Command-Line Interface" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/cli/" />
-<meta property="og:site_name" content="Jina 3.14.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.14.2 Documentation" />
 <meta property="og:description" content="Command-Line Interface: Positional Arguments: cli,, Possible choices: executor, flow, ping, export, new, gateway, auth, hub, cloud, help, pod, deployment, client,. Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. Sub-commands:: ex..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.14.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.14.2 Documentation" />
 <meta name="description" content="Command-Line Interface: Positional Arguments: cli,, Possible choices: executor, flow, ping, export, new, gateway, auth, hub, cloud, help, pod, deployment, client,. Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. Sub-commands:: ex..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/cli/index.html" />
 
     <link rel="shortcut icon" href="../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Command-Line Interface - Jina 3.14.1 documentation</title>
+        <title>Command-Line Interface - Jina 3.14.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../">
-                <div class="brand">Jina 3.14.1 documentation</div>
+                <div class="brand">Jina 3.14.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -254,7 +254,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../get-started/create-app/"><span class="fas fa-folder-plus"></span> Create First Project</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../concepts/preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/preliminaries/coding-in-python-yaml/">Coding in Python/YAML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../concepts/preliminaries/clean-code/">Clean &amp; Efficient Code</a></li>
 </ul>
 </li>
 </ul>
@@ -346,6 +345,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -686,7 +686,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [51327]</p>
+<p>Default: [56952]</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -694,7 +694,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [64895]</p>
+<p>Default: [49831]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1018,7 +1018,7 @@ Use -1 for waiting forever</p>
              <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}</span> <span class="p">[{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">graph</span><span class="o">-</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">graph</span><span class="o">-</span><span class="n">conditions</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">addresses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">metadata</span><span class="p">]</span>
@@ -1200,6 +1200,10 @@ container.</p>
 gateway can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,
 which should be structured as a python package.</p>
 </dd>
+<dt><kbd>--replicas</kbd></dt>
+<dd><p>The number of replicas of the Gateway. This replicas will only be applied when converted into Kubernetes YAML</p>
+<p>Default: 1</p>
+</dd>
 <dt><kbd>--grpc-server-options</kbd></dt>
 <dd><p>Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {‘grpc.max_send_message_length’: -1}</p>
 </dd>
@@ -1266,7 +1270,7 @@ which should be structured as a python package.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [56048]</p>
+<p>Default: [59215]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1353,7 +1357,7 @@ which should be structured as a python package.</p>
 <section id="create">
 <h6 aria-level="7">create<a class="headerlink" href="#create" title="Permalink to this heading">#</a></h6>
 <p>Create a Personal Access Token</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">token</span> <span class="n">create</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span><span class="p">]</span> <span class="n">name</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">token</span> <span class="n">create</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">format</span><span class="p">]</span> <span class="n">name</span>
 </pre></div>
 </div>
 <section id="Positional Arguments_repeat8">
@@ -1370,6 +1374,10 @@ which should be structured as a python package.</p>
 <dt><kbd>-e, --expire</kbd></dt>
 <dd><p>Validity period (days)</p>
 <p>Default: 7</p>
+</dd>
+<dt><kbd>--format</kbd></dt>
+<dd><p>Display format of the token, one of [table, raw]</p>
+<p>Default: “table”</p>
 </dd>
 </dl>
 </section>
@@ -1689,7 +1697,7 @@ which should be structured as a python package.</p>
 </section>
 <section id="list_repeat2">
 <h5>list<a class="headerlink" href="#list_repeat2" title="Permalink to this heading">#</a></h5>
-<p>List all Flows.</p>
+<p>List all Flows that are in <cite>Serving</cite> or <cite>Failed</cite> phase if no phase is passed.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="nb">list</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">phase</span> <span class="p">{,</span> <span class="n">Pending</span><span class="p">,</span> <span class="n">Starting</span><span class="p">,</span> <span class="n">Serving</span> <span class="o">...</span> <span class="mi">5</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span>
@@ -1734,8 +1742,10 @@ which should be structured as a python package.</p>
 </section>
 <section id="remove">
 <h5>remove<a class="headerlink" href="#remove" title="Permalink to this heading">#</a></h5>
-<p>Remove Flow(s).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="n">remove</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">flows</span> <span class="p">[</span><span class="n">flows</span> <span class="o">...</span><span class="p">]]</span>
+<p>Remove Flow(s). If <cite>all</cite> is passed it removes Flows in <cite>Serving</cite> or <cite>Failed</cite> phase.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="n">remove</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+                  <span class="p">[</span><span class="o">--</span><span class="n">phase</span> <span class="p">{</span><span class="n">Pending</span><span class="p">,</span> <span class="n">Starting</span><span class="p">,</span> <span class="n">Updating</span><span class="p">,</span> <span class="n">Serving</span> <span class="o">...</span> <span class="mi">2</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
+                  <span class="p">[</span><span class="n">flows</span> <span class="p">[</span><span class="n">flows</span> <span class="o">...</span><span class="p">]]</span>
 </pre></div>
 </div>
 <section id="Positional Arguments_repeat15">
@@ -1743,6 +1753,15 @@ which should be structured as a python package.</p>
 <dl class="option-list">
 <dt><kbd>flows</kbd></dt>
 <dd><p>The string ID of a flow for single removal, or a list of space seperated string IDs for multiple removal, or string ‘all’ for deleting ALL SERVING flows.</p>
+</dd>
+</dl>
+</section>
+<section id="Named Arguments_repeat16">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat16" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>--phase</kbd></dt>
+<dd><p>Possible choices: Pending, Starting, Updating, Serving, Paused, Failed</p>
+<p>The phase to filter flows on for removal</p>
 </dd>
 </dl>
 </section>
@@ -1795,8 +1814,8 @@ which should be structured as a python package.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat16">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat16" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat17">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat17" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--gateway</kbd></dt>
 <dd><p>to restart only gateway</p>
@@ -1852,8 +1871,8 @@ which should be structured as a python package.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat17">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat17" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat18">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat18" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--executor</kbd></dt>
 <dd><p>The name of the executor to scale</p>
@@ -2118,7 +2137,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [49779]</p>
+<p>Default: [55962]</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -2126,7 +2145,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [59071]</p>
+<p>Default: [64330]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2424,7 +2443,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [51384]</p>
+<p>Default: [56676]</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -2432,7 +2451,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [52018]</p>
+<p>Default: [61337]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2529,8 +2548,8 @@ container.</p>
             <span class="p">[</span><span class="o">--</span><span class="n">suppress</span><span class="o">-</span><span class="n">root</span><span class="o">-</span><span class="n">logging</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat18">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat18" title="Permalink to this heading">#</a></h4>
+<section id="Named Arguments_repeat19">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat19" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--asyncio</kbd></dt>
 <dd><p>If set, then the input and output of this Client work in an asynchronous manner.</p>
@@ -2638,7 +2657,7 @@ container.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Feb 24, 2023</div>
+                            Last updated on Mar 06, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -2821,6 +2840,7 @@ container.</p>
 </li>
 <li><a class="reference internal" href="#remove">remove</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat15">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat16">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#new_repeat2">new</a><ul>
@@ -2833,7 +2853,7 @@ container.</p>
 </li>
 <li><a class="reference internal" href="#restart">restart</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat18">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat16">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat17">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#pause">pause</a><ul>
@@ -2846,7 +2866,7 @@ container.</p>
 </li>
 <li><a class="reference internal" href="#scale">scale</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat21">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat17">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat18">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#survey">survey</a></li>
@@ -2882,7 +2902,7 @@ container.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#client">client</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat18">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat19">Named Arguments</a></li>
 <li><a class="reference internal" href="#ClientGateway arguments">ClientGateway arguments</a></li>
 <li><a class="reference internal" href="#Prefetch arguments_repeat1">Prefetch arguments</a></li>
 </ul>

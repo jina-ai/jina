@@ -19,7 +19,9 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   jina.serve.runtimes.gateway.async_request_response_handling
    jina.serve.runtimes.gateway.request_handling
+   jina.serve.runtimes.gateway.streamer
 
 Module contents
 ---------------

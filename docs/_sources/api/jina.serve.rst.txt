@@ -22,7 +22,6 @@ Submodules
    jina.serve.gateway
    jina.serve.helper
    jina.serve.monitoring
-   jina.serve.streamer
 
 Module contents
 ---------------

@@ -3,12 +3,14 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<meta property="og:title" content="jina.serve.streamer module" />
+<meta property="og:title" content=" Clean & Efficient Code" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://docs.jina.ai/api/jina.serve.streamer/" />
-<meta property="og:site_name" content="Jina 3.14.1 Documentation" />
+<meta property="og:url" content="https://docs.jina.ai/developer-reference/clean-code/" />
+<meta property="og:site_name" content="Jina 3.14.2 Documentation" />
+<meta property="og:description" content="Jina is designed as a lean and efficient framework. Solutions built on top of Jina also mean to be so. Here are some tips to help you write beautiful and efficient code. Clean import: Often all you need is: Copy-paste it as your first line of code. Generator as Flow input: Use a Python generator ..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.14.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.14.2 Documentation" />
+<meta name="description" content="Jina is designed as a lean and efficient framework. Solutions built on top of Jina also mean to be so. Here are some tips to help you write beautiful and efficient code. Clean import: Often all you need is: Copy-paste it as your first line of code. Generator as Flow input: Use a Python generator ..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -27,11 +29,11 @@
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     
-<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
-        <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.streamer.html" />
+<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Migrate Jina 2 to Jina 3" href="../../get-started/migrate/" /><link rel="prev" title="Protocol Documentation" href="../../proto/docs/" />
+        <link rel="canonical" href="https://docs.jina.ai/developer-reference/clean-code.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>jina.serve.streamer module - Jina 3.14.1 documentation</title>
+        <title>Clean &amp; Efficient Code - Jina 3.14.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -165,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.14.1 documentation</div>
+                <div class="brand">Jina 3.14.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -252,7 +254,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/create-app/"><span class="fas fa-folder-plus"></span> Create First Project</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../concepts/preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/preliminaries/coding-in-python-yaml/">Coding in Python/YAML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../concepts/preliminaries/clean-code/">Clean &amp; Efficient Code</a></li>
 </ul>
 </li>
 </ul>
@@ -337,13 +338,14 @@
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML Specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -425,162 +427,310 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section id="module-jina.serve.streamer">
-<span id="jina-serve-streamer-module"></span><h1>jina.serve.streamer module<a class="headerlink" href="#module-jina.serve.streamer" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.streamer.GatewayStreamer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.streamer.</span></span><span class="sig-name descname"><span class="pre">GatewayStreamer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph_representation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executor_addresses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployments_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployments_no_reduce</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_send</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'custom</span> <span class="pre">gateway'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics_registry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aio_tracing_client_interceptors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracing_client_interceptor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/streamer/#GatewayStreamer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.streamer.GatewayStreamer" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Wrapper object to be used in a Custom Gateway. Naming to be defined</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>graph_representation</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name <cite>start-gateway</cite> and <cite>end-gateway</cite> to
-determine the nodes that receive the very first request and the ones whose response needs to be sent back to the client. All the nodes with no outgoing nodes
-will be considered to be floating, and they will be “flagged” so that the user can ignore their tasks and not await them.</p></li>
-<li><p><strong>executor_addresses</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]]) – dictionary JSON with the input addresses of each Deployment. Each Executor can have one single address or a list of addrresses for each Executor</p></li>
-<li><p><strong>graph_conditions</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.</p></li>
-<li><p><strong>deployments_metadata</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – Dictionary with the metadata of each Deployment. Each executor deployment can have a list of key-value pairs to
-provide information associated with the request to the deployment.</p></li>
-<li><p><strong>deployments_no_reduce</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – list of Executor disabling the built-in merging mechanism.</p></li>
-<li><p><strong>timeout_send</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Timeout to be considered when sending requests to Executors</p></li>
-<li><p><strong>retries</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of retries to try to make successfull sendings to Executors</p></li>
-<li><p><strong>compression</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">https://grpc.github.io/grpc/python/grpc.html#compression</a>.</p></li>
-<li><p><strong>runtime_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Name to be used for monitoring.</p></li>
-<li><p><strong>prefetch</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – How many Requests are processed from the Client at the same time.</p></li>
-<li><p><strong>logger</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaLogger</span></code></a>]) – Optional logger that can be used for logging</p></li>
-<li><p><strong>metrics_registry</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">CollectorRegistry</span></code>]) – optional metrics registry for prometheus used if we need to expose metrics</p></li>
-<li><p><strong>meter</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Meter</span></code>]) – optional OpenTelemetry meter that can provide instruments for collecting metrics</p></li>
-<li><p><strong>aio_tracing_client_interceptors</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ClientInterceptor</span></code>]]) – Optional list of aio grpc tracing server interceptors.</p></li>
-<li><p><strong>tracing_client_interceptor</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">OpenTelemetryClientInterceptor</span></code>]) – Optional gprc tracing server interceptor.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.streamer.GatewayStreamer.rpc_stream">
-<span class="sig-name descname"><span class="pre">rpc_stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/streamer/#GatewayStreamer.rpc_stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.streamer.GatewayStreamer.rpc_stream" title="Permalink to this definition">#</a></dt>
-<dd><p>stream requests from client iterator and stream responses back.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>args</strong> – positional arguments to be passed to inner RequestStreamer</p></li>
-<li><p><strong>kwargs</strong> – keyword arguments to be passed to inner RequestStreamer</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An iterator over the responses from the Executors</p>
-</dd>
-</dl>
-</dd></dl>
+                    <section id="clean-efficient-code">
+<h1><span class="fas fa-broom"></span> Clean &amp; Efficient Code<a class="headerlink" href="#clean-efficient-code" title="Permalink to this heading">#</a></h1>
+<p>Jina is designed as a lean and efficient framework. Solutions built on top of Jina also mean to be so. Here are some
+tips to help you write beautiful and efficient code.</p>
+<section id="clean-import">
+<h2>Clean import<a class="headerlink" href="#clean-import" title="Permalink to this heading">#</a></h2>
+<p>Often all you need is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
+</pre></div>
+</div>
+<p>Copy-paste it as your first line of code.</p>
+</section>
+<section id="generator-as-flow-input">
+<h2>Generator as Flow input<a class="headerlink" href="#generator-as-flow-input" title="Permalink to this heading">#</a></h2>
+<p>Use a <a class="reference external" href="https://docs.python.org/3/glossary.html#term-generator">Python generator</a> as the input to the Flow. A generator lazily builds <code class="docutils literal notranslate"><span class="pre">Document</span></code>s one at a time, instead of building them all at once. This greatly accelerates overall performance and reduces memory footprint.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">✅ Do</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.streamer.GatewayStreamer.stream">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exec_endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/streamer/#GatewayStreamer.stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.streamer.GatewayStreamer.stream" title="Permalink to this definition">#</a></dt>
-<dd><p>stream Documents and yield Documents or Responses and unpacked Executor error if any.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>docs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code>) – The Documents to be sent to all the Executors</p></li>
-<li><p><strong>request_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – The amount of Documents to be put inside a single request.</p></li>
-<li><p><strong>return_results</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set to True, the generator will yield Responses and not <cite>DocumentArrays</cite></p></li>
-<li><p><strong>exec_endpoint</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The Executor endpoint to which to send the Documents</p></li>
-<li><p><strong>target_executor</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – A regex expression indicating the Executors that should receive the Request</p></li>
-<li><p><strong>parameters</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – Parameters to be attached to the Requests</p></li>
-<li><p><strong>results_in_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – return the results in the same order as the request_iterator</p></li>
-</ul>
-</dd>
-<dt class="field-even">Yield<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple of Documents or Responses and unpacked error from Executors if any</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncIterator</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code>, <a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a>], <a class="reference internal" href="../jina.excepts/#jina.excepts.ExecutorError" title="jina.excepts.ExecutorError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecutorError</span></code></a>]]</p>
-</dd>
-</dl>
-</dd></dl>
+<span class="hll"><span class="k">def</span> <span class="nf">my_input</span><span class="p">():</span>
+</span><span class="hll">   <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+</span><span class="hll">      <span class="k">yield</span> <span class="n">Document</span><span class="p">()</span>
+</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+   <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">my_input</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">😔 Don’t</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.streamer.GatewayStreamer.stream_docs">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stream_docs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exec_endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/streamer/#GatewayStreamer.stream_docs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.streamer.GatewayStreamer.stream_docs" title="Permalink to this definition">#</a></dt>
-<dd><p>stream documents and stream responses back.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>docs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code>) – The Documents to be sent to all the Executors</p></li>
-<li><p><strong>request_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – The amount of Documents to be put inside a single request.</p></li>
-<li><p><strong>return_results</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set to True, the generator will yield Responses and not <cite>DocumentArrays</cite></p></li>
-<li><p><strong>exec_endpoint</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The Executor endpoint to which to send the Documents</p></li>
-<li><p><strong>target_executor</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – A regex expression indicating the Executors that should receive the Request</p></li>
-<li><p><strong>parameters</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – Parameters to be attached to the Requests</p></li>
-<li><p><strong>results_in_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – return the results in the same order as the request_iterator</p></li>
-</ul>
-</dd>
-<dt class="field-even">Yield<span class="colon">:</span></dt>
-<dd class="field-even"><p>Yields DocumentArrays or Responses from the Executors</p>
-</dd>
-</dl>
-</dd></dl>
+<span class="n">my_input</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">)])</span>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.streamer.GatewayStreamer.close">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/streamer/#GatewayStreamer.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.streamer.GatewayStreamer.close" title="Permalink to this definition">#</a></dt>
-<dd><p>Gratefully closes the object making sure all the floating requests are taken care and the connections are closed gracefully</p>
-</dd></dl>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">my_input</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="set-request-size">
+<h2>Set <code class="docutils literal notranslate"><span class="pre">request_size</span></code><a class="headerlink" href="#set-request-size" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">request_size</span></code> defines how many Documents to send in each request. When combined with a Generator, <code class="docutils literal notranslate"><span class="pre">request_size</span></code> determines how long it will take before sending the first request. You can change <code class="docutils literal notranslate"><span class="pre">request_size</span></code> to overlap the time of request generation and Flow computation.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">✅ Do</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.streamer.GatewayStreamer.Call">
-<span class="sig-name descname"><span class="pre">Call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.streamer.GatewayStreamer.Call" title="Permalink to this definition">#</a></dt>
-<dd><p>stream requests from client iterator and stream responses back.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>args</strong> – positional arguments to be passed to inner RequestStreamer</p></li>
-<li><p><strong>kwargs</strong> – keyword arguments to be passed to inner RequestStreamer</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An iterator over the responses from the Executors</p>
-</dd>
-</dl>
-</dd></dl>
+<span class="k">def</span> <span class="nf">my_input</span><span class="p">():</span>
+   <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+      <span class="c1"># big document</span>
+      <span class="k">yield</span> <span class="n">Document</span><span class="p">()</span>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.streamer.GatewayStreamer.process_single_data">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_single_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/streamer/#GatewayStreamer.process_single_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.streamer.GatewayStreamer.process_single_data" title="Permalink to this definition">#</a></dt>
-<dd><p>Implements request and response handling of a single DataRequest
-:type request: <a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a>
-:param request: DataRequest from Client
-:param context: grpc context
-:rtype: <a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a>
-:return: response DataRequest</p>
-</dd></dl>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=...</span><span class="p">)</span>  <span class="c1"># heavy computation</span>
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+<span class="hll">   <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">my_input</span><span class="p">,</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">😔 Don’t</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.streamer.GatewayStreamer.get_streamer">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_streamer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/streamer/#GatewayStreamer.get_streamer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.streamer.GatewayStreamer.get_streamer" title="Permalink to this definition">#</a></dt>
-<dd><p>Return a streamer object based on the current environment context.
-The streamer object is contructed using runtime arguments stored in the <cite>JINA_STREAMER_ARGS</cite> environment variable.
-If this method is used outside a Jina context (process not controlled/orchestrated by jina), this method will
-raise an error.
-The streamer object does not have tracing/instrumentation capabilities.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Returns an instance of <cite>GatewayStreamer</cite></p>
-</dd>
-</dl>
-</dd></dl>
+<span class="k">def</span> <span class="nf">my_input</span><span class="p">():</span>
+   <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+      <span class="c1"># big document</span>
+      <span class="k">yield</span> <span class="n">Document</span><span class="p">()</span>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.streamer.GatewayStreamer.warmup">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">warmup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stop_event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/streamer/#GatewayStreamer.warmup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.streamer.GatewayStreamer.warmup" title="Permalink to this definition">#</a></dt>
-<dd><p>Executes warmup task on each deployment. This forces the gateway to establish connection and open a
-gRPC channel to each executor so that the first request doesn’t need to experience the penalty of
-eastablishing a brand new gRPC channel.
-:type stop_event: <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>
-:param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.</p>
-</dd></dl>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=...</span><span class="p">)</span>  <span class="c1"># heavy computation</span>
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+<span class="hll">   <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">my_input</span><span class="p">,</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="skip-unnecessary-init">
+<h2>Skip unnecessary <code class="docutils literal notranslate"><span class="pre">__init__</span></code><a class="headerlink" href="#skip-unnecessary-init" title="Permalink to this heading">#</a></h2>
+<p>There’s no need to implement <code class="docutils literal notranslate"><span class="pre">__init__</span></code> if your <code class="docutils literal notranslate"><span class="pre">Executor</span></code> doesn’t contain initial states.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--1">✅ Do</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
 
-</dd></dl>
 
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--2">😔 Don’t</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+<span class="hll">   <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span class="hll">      <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span>
+   <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+      <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="skip-unnecessary-requests-on">
+<h2>Skip unnecessary <code class="docutils literal notranslate"><span class="pre">&#64;requests(on=...)</span></code><a class="headerlink" href="#skip-unnecessary-requests-on" title="Permalink to this heading">#</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> without specifying <code class="docutils literal notranslate"><span class="pre">on=</span></code> if your function should work on all requests. You can use it for catching all requests that are not for this Executor.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--1">✅ Do</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">_skip_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;default do sth&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--2">😔 Don’t</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+<span class="hll">   <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/index&#39;</span><span class="p">)</span>
+</span>   <span class="k">def</span> <span class="nf">_skip_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+      <span class="k">pass</span>
+   
+<span class="hll">   <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/search&#39;</span><span class="p">)</span>
+</span>   <span class="k">def</span> <span class="nf">_skip_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+      <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="skip-unnecessary-kwargs">
+<h2>Skip unnecessary <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code><a class="headerlink" href="#skip-unnecessary-kwargs" title="Permalink to this heading">#</a></h2>
+<p>Fold unnecessary arguments into <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>, only get what you need.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--4-input--1" name="tab-set--4" type="radio"><label class="tab-label" for="tab-set--4-input--1">✅ Do</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+
+   <span class="nd">@requests</span>
+<span class="hll">   <span class="k">def</span> <span class="nf">foo_need_pars_only</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span>      <span class="nb">print</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--4-input--2" name="tab-set--4" type="radio"><label class="tab-label" for="tab-set--4-input--2">😔 Don’t</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+
+   <span class="nd">@requests</span>
+<span class="hll">   <span class="k">def</span> <span class="nf">foo_need_pars_only</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">docs_matrix</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span>      <span class="nb">print</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="send-parameters-only-request">
+<h2>Send <code class="docutils literal notranslate"><span class="pre">parameters</span></code>-only request<a class="headerlink" href="#send-parameters-only-request" title="Permalink to this heading">#</a></h2>
+<p>Send a <code class="docutils literal notranslate"><span class="pre">parameters</span></code>-only request to a Flow if you don’t need <code class="docutils literal notranslate"><span class="pre">docs</span></code>.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--5-input--1" name="tab-set--5" type="radio"><label class="tab-label" for="tab-set--5-input--1">✅ Do</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span>
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo_need_pars_only</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+<span class="hll">    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;hello&#39;</span><span class="p">:</span> <span class="s1">&#39;world&#39;</span><span class="p">})</span>
+</span></pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--5-input--2" name="tab-set--5" type="radio"><label class="tab-label" for="tab-set--5-input--2">😔 Don’t</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span>
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo_need_pars_only</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+<span class="hll">    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;hello&#39;</span><span class="p">:</span> <span class="s1">&#39;world&#39;</span><span class="p">})</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="heavy-lifting-in-the-flow-not-in-the-client">
+<h2>Heavy lifting in the Flow, not in the Client<a class="headerlink" href="#heavy-lifting-in-the-flow-not-in-the-client" title="Permalink to this heading">#</a></h2>
+<p>Heavy-lifting jobs should be put into an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> if possible.
+For instance, sending high-resolution images to the Flow
+can be time-consuming. Putting it into an Executor can leverage the Flow to scale it.
+It also reduces network overhead.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--6-input--1" name="tab-set--6" type="radio"><label class="tab-label" for="tab-set--6-input--1">✅ Do</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">glob</span>
+
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span>
+
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">to_blob_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">load_uri_to_image_tensor</span><span class="p">()</span>  <span class="c1"># conversion happens inside Flow</span>
+
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">my_input</span><span class="p">():</span>
+    <span class="n">image_uris</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;/.workspace/*.png&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">image_uri</span> <span class="ow">in</span> <span class="n">image_uris</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">image_uri</span><span class="p">)</span>
+
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">my_input</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--6-input--2" name="tab-set--6" type="radio"><label class="tab-label" for="tab-set--6-input--2">😔 Don’t</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">glob</span>
+
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Document</span>
+
+
+<span class="k">def</span> <span class="nf">my_input</span><span class="p">():</span>
+    <span class="n">image_uris</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;/.workspace/*.png&#39;</span><span class="p">)</span>  <span class="c1"># load high resolution images.</span>
+    <span class="k">for</span> <span class="n">image_uri</span> <span class="ow">in</span> <span class="n">image_uris</span><span class="p">:</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">image_uri</span><span class="p">)</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">load_uri_to_image_tensor</span><span class="p">()</span>  <span class="c1"># time consuming-job on client side</span>
+        <span class="k">yield</span> <span class="n">doc</span>
+
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">my_input</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="keep-only-necessary-fields">
+<h2>Keep only necessary fields<a class="headerlink" href="#keep-only-necessary-fields" title="Permalink to this heading">#</a></h2>
+<p>Sometimes you don’t want to pass the full Document to subsequent Executors for reasons of efficiency.
+You can simply use the <code class="docutils literal notranslate"><span class="pre">.pop</span></code> method to remove unwanted fields.</p>
+<p>When using Jina with an HTTP frontend, the frontend doesn’t often need <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> or binary content. Hence,
+fields such as <code class="docutils literal notranslate"><span class="pre">blob</span></code>, <code class="docutils literal notranslate"><span class="pre">embedding</span></code>, and <code class="docutils literal notranslate"><span class="pre">buffer</span></code> can be removed at the last Executor before returning the final results to the frontend.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--7-input--1" name="tab-set--7" type="radio"><label class="tab-label" for="tab-set--7-input--1">✅ Do</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+
+<span class="k">class</span> <span class="nc">FirstExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># some process on docs</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+<span class="hll">            <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;embedding&#39;</span><span class="p">,</span> <span class="s1">&#39;blob&#39;</span><span class="p">)</span>
+</span>
+<span class="k">class</span> <span class="nc">SecondExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># do follow up processing, but now `.embedding` and `.blob` is empty</span>
+        <span class="c1"># but that&#39;s fine because this Executor does not need those fields </span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--7-input--2" name="tab-set--7" type="radio"><label class="tab-label" for="tab-set--7-input--2">😔 Don’t</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+
+
+<span class="k">class</span> <span class="nc">FirstExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span>  <span class="c1"># some process on docs</span>
+
+
+<span class="k">class</span> <span class="nc">SecondExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span>  <span class="c1"># do follow up processing, even though `.embedding` and `.blob` are never used</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 </section>
 
                 </article>
@@ -588,15 +738,33 @@ eastablishing a brand new gRPC channel.
             <footer>
                 
                 <div class="related-pages">
-                    
-                    
+                    <a class="next-page" href="../../get-started/migrate/">
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Next</span>
+                            </div>
+                            <div class="title">Migrate Jina 2 to Jina 3</div>
+                        </div>
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+                    </a>
+                    <a class="prev-page" href="../../proto/docs/">
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Previous</span>
+                            </div>
+                            
+                            <div class="title">Protocol Documentation</div>
+                            
+                        </div>
+                    </a>
                 </div>
                 <div class="bottom-of-page">
                     <div class="left-details">
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Feb 24, 2023</div>
+                            Last updated on Mar 06, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -628,18 +796,16 @@ eastablishing a brand new gRPC channel.
                 <div class="toc-tree-container">
                     <div class="toc-tree">
                         <ul>
-<li><a class="reference internal" href="#">jina.serve.streamer module</a><ul>
-<li><a class="reference internal" href="#jina.serve.streamer.GatewayStreamer"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.streamer.GatewayStreamer.rpc_stream"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer.rpc_stream()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.streamer.GatewayStreamer.stream"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer.stream()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.streamer.GatewayStreamer.stream_docs"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer.stream_docs()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.streamer.GatewayStreamer.close"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer.close()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.streamer.GatewayStreamer.Call"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer.Call()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.streamer.GatewayStreamer.process_single_data"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer.process_single_data()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.streamer.GatewayStreamer.get_streamer"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer.get_streamer()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.streamer.GatewayStreamer.warmup"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer.warmup()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a><ul>
+<li><a class="reference internal" href="#clean-import">Clean import</a></li>
+<li><a class="reference internal" href="#generator-as-flow-input">Generator as Flow input</a></li>
+<li><a class="reference internal" href="#set-request-size">Set <code class="docutils literal notranslate"><span class="pre">request_size</span></code></a></li>
+<li><a class="reference internal" href="#skip-unnecessary-init">Skip unnecessary <code class="docutils literal notranslate"><span class="pre">__init__</span></code></a></li>
+<li><a class="reference internal" href="#skip-unnecessary-requests-on">Skip unnecessary <code class="docutils literal notranslate"><span class="pre">&#64;requests(on=...)</span></code></a></li>
+<li><a class="reference internal" href="#skip-unnecessary-kwargs">Skip unnecessary <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code></a></li>
+<li><a class="reference internal" href="#send-parameters-only-request">Send <code class="docutils literal notranslate"><span class="pre">parameters</span></code>-only request</a></li>
+<li><a class="reference internal" href="#heavy-lifting-in-the-flow-not-in-the-client">Heavy lifting in the Flow, not in the Client</a></li>
+<li><a class="reference internal" href="#keep-only-necessary-fields">Keep only necessary fields</a></li>
 </ul>
 </li>
 </ul>

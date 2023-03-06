@@ -6,10 +6,10 @@
 <meta property="og:title" content="Health Check" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/flow/health-check/" />
-<meta property="og:site_name" content="Jina 3.14.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.14.2 Documentation" />
 <meta property="og:description" content="Once a Flow is running, you can use jina ping CLI to run a health check of the complete Flow or of individual Executors or Gateway. Start a Flow in Python: Check the readiness of the Flow: You can also check the readiness of an Executor: …or the readiness of the Gateway service: When these comman..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.14.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.14.2 Documentation" />
 <meta name="description" content="Once a Flow is running, you can use jina ping CLI to run a health check of the complete Flow or of individual Executors or Gateway. Start a Flow in Python: Check the readiness of the Flow: You can also check the readiness of an Executor: …or the readiness of the Gateway service: When these comman..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/flow/health-check.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Health Check - Jina 3.14.1 documentation</title>
+        <title>Health Check - Jina 3.14.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.14.1 documentation</div>
+                <div class="brand">Jina 3.14.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -254,7 +254,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/create-app/"><span class="fas fa-folder-plus"></span> Create First Project</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../preliminaries/coding-in-python-yaml/">Coding in Python/YAML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../preliminaries/clean-code/">Clean &amp; Efficient Code</a></li>
 </ul>
 </li>
 </ul>
@@ -346,6 +345,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -429,7 +429,7 @@
                 <article role="main">
                     <section id="health-check">
 <h1>Health Check<a class="headerlink" href="#health-check" title="Permalink to this heading">#</a></h1>
-<p>Once a Flow is running, you can use <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">ping</span></code> <a class="reference internal" href="../../../api/jina_cli/"><span class="doc std std-doc">CLI</span></a> to run a health check of the complete Flow or of individual Executors or Gateway.</p>
+<p>Once a Flow is running, you can use <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">ping</span></code> <a class="reference internal" href="../../../api/jina_cli/"><span class="std std-doc">CLI</span></a> to run a health check of the complete Flow or of individual Executors or Gateway.</p>
 <p>Start a Flow in Python:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -491,7 +491,7 @@ deployed in Kubernetes.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Feb 24, 2023</div>
+                            Last updated on Mar 06, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

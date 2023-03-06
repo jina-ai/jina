@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="#" /><link rel="search" title="Search" href="../search/" />
         <link rel="canonical" href="https://docs.jina.ai/genindex.html" />
 
-    <link rel="shortcut icon" href="../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 --><title>Index - Jina 3.14.1 documentation</title>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 --><title>Index - Jina 3.14.2 documentation</title>
 <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../">
-                <div class="brand">Jina 3.14.1 documentation</div>
+                <div class="brand">Jina 3.14.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -226,7 +226,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../get-started/create-app/"><span class="fas fa-folder-plus"></span> Create First Project</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../concepts/preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/preliminaries/coding-in-python-yaml/">Coding in Python/YAML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../concepts/preliminaries/clean-code/">Clean &amp; Efficient Code</a></li>
 </ul>
 </li>
 </ul>
@@ -318,6 +317,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -614,10 +614,10 @@
           <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config.alias_generator">(jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.PollingType.ALL">ALL (jina.enums.PollingType attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.all_args">all_args (jina.orchestrate.deployments.Deployment property)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.PollingType.ALL_ASYNC">ALL_ASYNC (jina.enums.PollingType attribute)</a>
@@ -730,6 +730,16 @@
           <li><a href="../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.async_cancel">(jina.serve.runtimes.worker.WorkerRuntime method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_is_ready">async_is_ready() (jina.serve.runtimes.asyncio.AsyncNewLoopRuntime static method)</a>
+
+        <ul>
+          <li><a href="../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.async_is_ready">(jina.serve.runtimes.gateway.GatewayRuntime static method)</a>
+</li>
+          <li><a href="../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.async_is_ready">(jina.serve.runtimes.head.HeadRuntime static method)</a>
+</li>
+          <li><a href="../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.async_is_ready">(jina.serve.runtimes.worker.WorkerRuntime static method)</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_run_forever">async_run_forever() (jina.serve.runtimes.asyncio.AsyncNewLoopRuntime method)</a>
 
         <ul>
@@ -785,6 +795,8 @@
         <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin">AsyncPostMixin (class in jina.clients.mixin)</a>
 </li>
         <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.AsyncProfileMixin">AsyncProfileMixin (class in jina.clients.mixin)</a>
+</li>
+        <li><a href="../api/jina.serve.runtimes.gateway.async_request_response_handling/#jina.serve.runtimes.gateway.async_request_response_handling.AsyncRequestResponseHandler">AsyncRequestResponseHandler (class in jina.serve.runtimes.gateway.async_request_response_handling)</a>
 </li>
         <li><a href="../api/jina.serve.stream.helper/#jina.serve.stream.helper.AsyncRequestsIterator">AsyncRequestsIterator (class in jina.serve.stream.helper)</a>
 </li>
@@ -903,15 +915,13 @@
 </li>
           <li><a href="../api/jina.proto.pb2.jina_pb2_grpc/#jina.proto.pb2.jina_pb2_grpc.JinaRPCServicer.Call">(jina.proto.pb2.jina_pb2_grpc.JinaRPCServicer method)</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.gateway.grpc.gateway/#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.Call">(jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway method)</a>
+          <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.Call">(jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler method)</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGateway.Call">(jina.serve.runtimes.gateway.grpc.GRPCGateway method)</a>
+          <li><a href="../api/jina.serve.runtimes.gateway.streamer/#jina.serve.runtimes.gateway.streamer.GatewayStreamer.Call">(jina.serve.runtimes.gateway.streamer.GatewayStreamer method)</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.Call">(jina.serve.runtimes.head.HeadRuntime method)</a>
+          <li><a href="../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.Call">(jina.serve.runtimes.head.request_handling.HeaderRequestHandler method)</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.Call">(jina.serve.runtimes.worker.WorkerRuntime method)</a>
-</li>
-          <li><a href="../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.Call">(jina.serve.streamer.GatewayStreamer method)</a>
+          <li><a href="../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.Call">(jina.serve.runtimes.worker.request_handling.WorkerRequestHandler method)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.callback">callback() (jina.orchestrate.deployments.Deployment method)</a>
@@ -932,6 +942,8 @@
           <li><a href="../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.cancel_warmup_task">(jina.serve.runtimes.gateway.GatewayRuntime method)</a>
 </li>
           <li><a href="../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.cancel_warmup_task">(jina.serve.runtimes.head.HeadRuntime method)</a>
+</li>
+          <li><a href="../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.cancel_warmup_task">(jina.serve.runtimes.head.request_handling.HeaderRequestHandler method)</a>
 </li>
           <li><a href="../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.cancel_warmup_task">(jina.serve.runtimes.worker.WorkerRuntime method)</a>
 </li>
@@ -1085,11 +1097,13 @@
 </li>
           <li><a href="../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.close">(jina.serve.networking.GrpcConnectionPool method)</a>
 </li>
+          <li><a href="../api/jina.serve.runtimes.gateway.streamer/#jina.serve.runtimes.gateway.streamer.GatewayStreamer.close">(jina.serve.runtimes.gateway.streamer.GatewayStreamer method)</a>
+</li>
+          <li><a href="../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.close">(jina.serve.runtimes.head.request_handling.HeaderRequestHandler method)</a>
+</li>
           <li><a href="../api/jina.serve.runtimes.worker.batch_queue/#jina.serve.runtimes.worker.batch_queue.BatchQueue.close">(jina.serve.runtimes.worker.batch_queue.BatchQueue method)</a>
 </li>
           <li><a href="../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.close">(jina.serve.runtimes.worker.request_handling.WorkerRequestHandler method)</a>
-</li>
-          <li><a href="../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.close">(jina.serve.streamer.GatewayStreamer method)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.close_code">close_code (jina.clients.base.helper.WebsocketClientlet property)</a>
@@ -1112,10 +1126,10 @@
 </li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.compose_document">compose_document() (jina.jaml.helper.JinaLoader method)</a>
 </li>
-        <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.compose_mapping_node">compose_mapping_node() (jina.jaml.helper.JinaLoader method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.compose_mapping_node">compose_mapping_node() (jina.jaml.helper.JinaLoader method)</a>
+</li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.compose_node">compose_node() (jina.jaml.helper.JinaLoader method)</a>
 </li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.compose_scalar_node">compose_scalar_node() (jina.jaml.helper.JinaLoader method)</a>
@@ -1442,7 +1456,7 @@
           <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.ProfileFormatter.default_msec_format">(jina.logging.formatter.ProfileFormatter attribute)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.DEFAULT_POLLING">DEFAULT_POLLING (jina.serve.runtimes.head.HeadRuntime attribute)</a>
+        <li><a href="../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.DEFAULT_POLLING">DEFAULT_POLLING (jina.serve.runtimes.head.request_handling.HeaderRequestHandler attribute)</a>
 </li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.DEFAULT_SCALAR_TAG">DEFAULT_SCALAR_TAG (jina.jaml.helper.JinaLoader attribute)</a>
 
@@ -1605,9 +1619,7 @@
 </li>
           <li><a href="../api/jina.proto.pb2.jina_pb2_grpc/#jina.proto.pb2.jina_pb2_grpc.JinaGatewayDryRunRPCServicer.dry_run">(jina.proto.pb2.jina_pb2_grpc.JinaGatewayDryRunRPCServicer method)</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.gateway.grpc.gateway/#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.dry_run">(jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway method)</a>
-</li>
-          <li><a href="../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGateway.dry_run">(jina.serve.runtimes.gateway.grpc.GRPCGateway method)</a>
+          <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.dry_run">(jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler method)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina_cli.api/#jina_cli.api.dryrun">dryrun() (in module jina_cli.api)</a>
@@ -1657,9 +1669,9 @@
 </li>
           <li><a href="../api/jina.proto.pb2.jina_pb2_grpc/#jina.proto.pb2.jina_pb2_grpc.JinaDiscoverEndpointsRPCServicer.endpoint_discovery">(jina.proto.pb2.jina_pb2_grpc.JinaDiscoverEndpointsRPCServicer method)</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.endpoint_discovery">(jina.serve.runtimes.head.HeadRuntime method)</a>
+          <li><a href="../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.endpoint_discovery">(jina.serve.runtimes.head.request_handling.HeaderRequestHandler method)</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.endpoint_discovery">(jina.serve.runtimes.worker.WorkerRuntime method)</a>
+          <li><a href="../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.endpoint_discovery">(jina.serve.runtimes.worker.request_handling.WorkerRequestHandler method)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.EndpointsProto">EndpointsProto (class in jina.proto.serializer)</a>
@@ -1995,7 +2007,7 @@
 </li>
         <li><a href="../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime">GatewayRuntime (class in jina.serve.runtimes.gateway)</a>
 </li>
-        <li><a href="../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer">GatewayStreamer (class in jina.serve.streamer)</a>
+        <li><a href="../api/jina.serve.runtimes.gateway.streamer/#jina.serve.runtimes.gateway.streamer.GatewayStreamer">GatewayStreamer (class in jina.serve.runtimes.gateway.streamer)</a>
 </li>
         <li><a href="../api/jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.gather_inspect">gather_inspect() (jina.orchestrate.flow.asyncio.AsyncFlow method)</a>
 
@@ -2117,7 +2129,7 @@
           <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.get_state_keys_blacklist_regexp">(jina.jaml.helper.JinaLoader method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.get_streamer">get_streamer() (jina.serve.streamer.GatewayStreamer static method)</a>
+        <li><a href="../api/jina.serve.runtimes.gateway.streamer/#jina.serve.runtimes.gateway.streamer.GatewayStreamer.get_streamer">get_streamer() (jina.serve.runtimes.gateway.streamer.GatewayStreamer static method)</a>
 </li>
         <li><a href="../api/jina.jaml.parsers/#jina.jaml.parsers.get_supported_versions">get_supported_versions() (in module jina.jaml.parsers)</a>
 </li>
@@ -2167,9 +2179,9 @@
           <li><a href="../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.handle">(jina.serve.runtimes.worker.request_handling.WorkerRequestHandler method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.handle_request">handle_request() (jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler method)</a>
+        <li><a href="../api/jina.serve.runtimes.gateway.async_request_response_handling/#jina.serve.runtimes.gateway.async_request_response_handling.AsyncRequestResponseHandler.handle_request">handle_request() (jina.serve.runtimes.gateway.async_request_response_handling.AsyncRequestResponseHandler method)</a>
 </li>
-        <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.handle_result">handle_result() (jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler method)</a>
+        <li><a href="../api/jina.serve.runtimes.gateway.async_request_response_handling/#jina.serve.runtimes.gateway.async_request_response_handling.AsyncRequestResponseHandler.handle_result">handle_result() (jina.serve.runtimes.gateway.async_request_response_handling.AsyncRequestResponseHandler method)</a>
 </li>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.RichHandler.handleError">handleError() (jina.logging.logger.RichHandler method)</a>
 
@@ -3263,6 +3275,13 @@
 </li>
         </ul></li>
         <li>
+    jina.serve.runtimes.gateway.async_request_response_handling
+
+        <ul>
+          <li><a href="../api/jina.serve.runtimes.gateway.async_request_response_handling/#module-jina.serve.runtimes.gateway.async_request_response_handling">module</a>
+</li>
+        </ul></li>
+        <li>
     jina.serve.runtimes.gateway.composite
 
         <ul>
@@ -3347,6 +3366,13 @@
 </li>
         </ul></li>
         <li>
+    jina.serve.runtimes.gateway.streamer
+
+        <ul>
+          <li><a href="../api/jina.serve.runtimes.gateway.streamer/#module-jina.serve.runtimes.gateway.streamer">module</a>
+</li>
+        </ul></li>
+        <li>
     jina.serve.runtimes.gateway.websocket
 
         <ul>
@@ -3428,13 +3454,6 @@
 
         <ul>
           <li><a href="../api/jina.serve.stream.helper/#module-jina.serve.stream.helper">module</a>
-</li>
-        </ul></li>
-        <li>
-    jina.serve.streamer
-
-        <ul>
-          <li><a href="../api/jina.serve.streamer/#module-jina.serve.streamer">module</a>
 </li>
         </ul></li>
         <li>
@@ -4172,6 +4191,8 @@
 </li>
           <li><a href="../api/jina.serve.runtimes.gateway/#module-jina.serve.runtimes.gateway">jina.serve.runtimes.gateway</a>
 </li>
+          <li><a href="../api/jina.serve.runtimes.gateway.async_request_response_handling/#module-jina.serve.runtimes.gateway.async_request_response_handling">jina.serve.runtimes.gateway.async_request_response_handling</a>
+</li>
           <li><a href="../api/jina.serve.runtimes.gateway.composite/#module-jina.serve.runtimes.gateway.composite">jina.serve.runtimes.gateway.composite</a>
 </li>
           <li><a href="../api/jina.serve.runtimes.gateway.composite.gateway/#module-jina.serve.runtimes.gateway.composite.gateway">jina.serve.runtimes.gateway.composite.gateway</a>
@@ -4196,6 +4217,8 @@
 </li>
           <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#module-jina.serve.runtimes.gateway.request_handling">jina.serve.runtimes.gateway.request_handling</a>
 </li>
+          <li><a href="../api/jina.serve.runtimes.gateway.streamer/#module-jina.serve.runtimes.gateway.streamer">jina.serve.runtimes.gateway.streamer</a>
+</li>
           <li><a href="../api/jina.serve.runtimes.gateway.websocket/#module-jina.serve.runtimes.gateway.websocket">jina.serve.runtimes.gateway.websocket</a>
 </li>
           <li><a href="../api/jina.serve.runtimes.gateway.websocket.app/#module-jina.serve.runtimes.gateway.websocket.app">jina.serve.runtimes.gateway.websocket.app</a>
@@ -4219,8 +4242,6 @@
           <li><a href="../api/jina.serve.stream/#module-jina.serve.stream">jina.serve.stream</a>
 </li>
           <li><a href="../api/jina.serve.stream.helper/#module-jina.serve.stream.helper">jina.serve.stream.helper</a>
-</li>
-          <li><a href="../api/jina.serve.streamer/#module-jina.serve.streamer">jina.serve.streamer</a>
 </li>
           <li><a href="../api/jina.types/#module-jina.types">jina.types</a>
 </li>
@@ -4662,9 +4683,9 @@
 </li>
           <li><a href="../api/jina.proto.pb2.jina_pb2_grpc/#jina.proto.pb2.jina_pb2_grpc.JinaDataRequestRPCServicer.process_data">(jina.proto.pb2.jina_pb2_grpc.JinaDataRequestRPCServicer method)</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.process_data">(jina.serve.runtimes.head.HeadRuntime method)</a>
+          <li><a href="../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.process_data">(jina.serve.runtimes.head.request_handling.HeaderRequestHandler method)</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.process_data">(jina.serve.runtimes.worker.WorkerRuntime method)</a>
+          <li><a href="../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.process_data">(jina.serve.runtimes.worker.request_handling.WorkerRequestHandler method)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.process_directives">process_directives() (jina.jaml.helper.JinaLoader method)</a>
@@ -4680,17 +4701,15 @@
 </li>
           <li><a href="../api/jina.proto.pb2.jina_pb2_grpc/#jina.proto.pb2.jina_pb2_grpc.JinaSingleDataRequestRPCServicer.process_single_data">(jina.proto.pb2.jina_pb2_grpc.JinaSingleDataRequestRPCServicer method)</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.gateway.grpc.gateway/#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.process_single_data">(jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway method)</a>
+          <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.process_single_data">(jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler method)</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGateway.process_single_data">(jina.serve.runtimes.gateway.grpc.GRPCGateway method)</a>
+          <li><a href="../api/jina.serve.runtimes.gateway.streamer/#jina.serve.runtimes.gateway.streamer.GatewayStreamer.process_single_data">(jina.serve.runtimes.gateway.streamer.GatewayStreamer method)</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.process_single_data">(jina.serve.runtimes.head.HeadRuntime method)</a>
+          <li><a href="../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.process_single_data">(jina.serve.runtimes.head.request_handling.HeaderRequestHandler method)</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.process_single_data">(jina.serve.runtimes.worker.WorkerRuntime method)</a>
+          <li><a href="../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.process_single_data">(jina.serve.runtimes.worker.request_handling.WorkerRequestHandler method)</a>
 </li>
           <li><a href="../api/jina.serve.stream/#jina.serve.stream.RequestStreamer.process_single_data">(jina.serve.stream.RequestStreamer method)</a>
-</li>
-          <li><a href="../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.process_single_data">(jina.serve.streamer.GatewayStreamer method)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.ProfileFormatter">ProfileFormatter (class in jina.logging.formatter)</a>
@@ -4935,7 +4954,7 @@
           <li><a href="../api/jina.types.request.data/#jina.types.request.data.Response.routes">(jina.types.request.data.Response property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.rpc_stream">rpc_stream() (jina.serve.streamer.GatewayStreamer method)</a>
+        <li><a href="../api/jina.serve.runtimes.gateway.streamer/#jina.serve.runtimes.gateway.streamer.GatewayStreamer.rpc_stream">rpc_stream() (jina.serve.runtimes.gateway.streamer.GatewayStreamer method)</a>
 </li>
         <li><a href="../api/jina.orchestrate.pods.container/#jina.orchestrate.pods.container.run">run() (in module jina.orchestrate.pods.container)</a>
 </li>
@@ -5141,6 +5160,8 @@
         </ul></li>
         <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.send_eoi">send_eoi() (jina.clients.base.helper.WebsocketClientlet method)</a>
 </li>
+        <li><a href="../api/jina.serve.networking.utils/#jina.serve.networking.utils.send_health_check_async">send_health_check_async() (in module jina.serve.networking.utils)</a>
+</li>
         <li><a href="../api/jina.serve.networking.utils/#jina.serve.networking.utils.send_health_check_sync">send_health_check_sync() (in module jina.serve.networking.utils)</a>
 </li>
         <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.send_message">send_message() (jina.clients.base.helper.AioHttpClientlet method)</a>
@@ -5327,21 +5348,19 @@
 </li>
         <li><a href="../api/jina.serve.helper/#jina.serve.helper.store_init_kwargs">store_init_kwargs() (in module jina.serve.helper)</a>
 </li>
-        <li><a href="../api/jina.serve.runtimes.gateway.grpc.gateway/#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.stream">stream() (jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway method)</a>
+        <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.stream">stream() (jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler method)</a>
 
         <ul>
-          <li><a href="../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGateway.stream">(jina.serve.runtimes.gateway.grpc.GRPCGateway method)</a>
+          <li><a href="../api/jina.serve.runtimes.gateway.streamer/#jina.serve.runtimes.gateway.streamer.GatewayStreamer.stream">(jina.serve.runtimes.gateway.streamer.GatewayStreamer method)</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.stream">(jina.serve.runtimes.head.HeadRuntime method)</a>
+          <li><a href="../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.stream">(jina.serve.runtimes.head.request_handling.HeaderRequestHandler method)</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.stream">(jina.serve.runtimes.worker.WorkerRuntime method)</a>
+          <li><a href="../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.stream">(jina.serve.runtimes.worker.request_handling.WorkerRequestHandler method)</a>
 </li>
           <li><a href="../api/jina.serve.stream/#jina.serve.stream.RequestStreamer.stream">(jina.serve.stream.RequestStreamer method)</a>
 </li>
-          <li><a href="../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.stream">(jina.serve.streamer.GatewayStreamer method)</a>
-</li>
         </ul></li>
-        <li><a href="../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.stream_docs">stream_docs() (jina.serve.streamer.GatewayStreamer method)</a>
+        <li><a href="../api/jina.serve.runtimes.gateway.streamer/#jina.serve.runtimes.gateway.streamer.GatewayStreamer.stream_docs">stream_docs() (jina.serve.runtimes.gateway.streamer.GatewayStreamer method)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.BadConfigSource.strerror">strerror (jina.excepts.BadConfigSource attribute)</a>
 </li>
@@ -5702,9 +5721,9 @@
         <li><a href="../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.warmup">warmup() (jina.serve.networking.GrpcConnectionPool method)</a>
 
         <ul>
-          <li><a href="../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.warmup">(jina.serve.runtimes.head.request_handling.HeaderRequestHandler method)</a>
+          <li><a href="../api/jina.serve.runtimes.gateway.streamer/#jina.serve.runtimes.gateway.streamer.GatewayStreamer.warmup">(jina.serve.runtimes.gateway.streamer.GatewayStreamer method)</a>
 </li>
-          <li><a href="../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.warmup">(jina.serve.streamer.GatewayStreamer method)</a>
+          <li><a href="../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.warmup">(jina.serve.runtimes.head.request_handling.HeaderRequestHandler method)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.LogVerbosity.WARNING">WARNING (jina.enums.LogVerbosity attribute)</a>
@@ -5859,7 +5878,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Feb 24, 2023</div>
+                            Last updated on Mar 06, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
