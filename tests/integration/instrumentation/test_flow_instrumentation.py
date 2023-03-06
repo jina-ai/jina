@@ -76,7 +76,6 @@ def test_multiprotocol_gateway_instrumentation(
     jaeger_port,
     otlp_collector,
     otlp_receiver_port,
-    client_type,
 ):
     grpc_port, http_port, websocket_port = random_port(), random_port(), random_port()
     f = Flow(
