@@ -110,6 +110,7 @@ func NewRaft(ctx context.Context,
         }
         f := r.BootstrapCluster(cfg)
         if err := f.Error(); err != nil {
+            log.Printf("raft.Raft.BootstrapCluster: %v, raft cluster already bootstrapped", err)
             return nil, nil, fmt.Errorf("raft.Raft.BootstrapCluster: %v", err)
         }
     }
@@ -135,7 +136,7 @@ func Run(myAddr string,
          LogLevel string,
          NoSnapshotRestoreOnStart bool) {
 
-    log.Printf("Calling Run %s, %s, %s, %p, %s", myAddr, raftId, raftDir, raftBootstrap, executorTarget)
+    log.Printf("Calling Run %s, %s, %s, %p, %s (HeartbeatTimeout: %s)", myAddr, raftId, raftDir, raftBootstrap, executorTarget, HeartbeatTimeout)
     if raftId == "" {
         log.Fatalf("flag --raft_id is required")
     }
@@ -231,7 +232,7 @@ func main() {
     myAddr                   := flag.String("address", "localhost:50051", "TCP host+port for this node")
     raftId                   := flag.String("raft_id", "", "Node id used by Raft")
     raftDir                  := flag.String("raft_data_dir", "data/", "Raft data dir")
-    raftBootstrap            := flag.Bool("raft_bootstrap", false, "Whether to bootstrap the Raft cluster")
+    raftBootstrap            := flag.Bool("raft_bootstrap", true, "Whether to bootstrap the Raft cluster")
     executorTarget           := flag.String("executor_target", "localhost:54321", "underlying executor host+port")
     HeartbeatTimeout         := flag.Int("heartbeat_timeout", int(raftDefaultConfig.HeartbeatTimeout / time.Millisecond), "HeartbeatTimeout for the RAFT node")
     ElectionTimeout          := flag.Int("election_timeout", int(raftDefaultConfig.ElectionTimeout / time.Millisecond), "ElectionTimeout for the RAFT node")
@@ -399,6 +400,11 @@ func get_configuration(self *C.PyObject, args *C.PyObject) *C.PyObject {
             return C.Py_None;
         } else {
             fmt.Printf("configuration: %v\n", conf.Servers)
+        }
+
+        if len(conf.Servers) == 0 {
+            C.Py_IncRef(C.Py_None);
+            return C.Py_None;
         }
 
 
