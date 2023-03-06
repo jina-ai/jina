@@ -25,7 +25,7 @@ pip install -U jina
 conda install jina -c conda-forge
 ```
 ````
-(build-ai--ml-services)=
+(build-ai-services)=
 (build-a-pipeline)=
 ## Getting Started
 Jina supports developers in building AI services and pipelines:
