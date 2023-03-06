@@ -22,9 +22,17 @@ class CompositeGateway(BaseGateway):
         self.gateways: List[BaseGateway] = []
         for port, protocol in zip(self.ports, self.protocols):
             gateway_cls = _get_gateway_class(protocol)
-            # ignore metrics_registry since it is not copyable
+            # ignore monitoring and tracing args since they are not copyable
+            print(self.runtime_args)
             runtime_args = self._deepcopy_with_ignore_attrs(
-                self.runtime_args, ['metrics_registry']
+                self.runtime_args,
+                [
+                    'metrics_registry',
+                    'tracer_provider',
+                    'grpc_tracing_server_interceptors',
+                    'aio_tracing_client_interceptors',
+                    'tracing_client_interceptor',
+                ],
             )
             runtime_args.port = [port]
             runtime_args.protocol = [protocol]
