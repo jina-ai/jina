@@ -120,10 +120,11 @@ def test_multiprotocol_gateway_instrumentation(
     assert len(services) == 5
     assert set(services).issubset(expected_services)
 
-    client_traces = get_traces(jaeger_port, client_type)
-    (server_spans, client_spans, _) = partition_spans_by_kind(client_traces)
-    assert len(server_spans) == 15
-    assert len(client_spans) == 5
+    for client_type in ['GRPCClient', 'HTTPClient', 'WebSocketClient']:
+        client_traces = get_traces(jaeger_port, client_type)
+        (server_spans, client_spans, _) = partition_spans_by_kind(client_traces)
+        assert len(server_spans) == 5
+        assert len(client_spans) == 5
 
 
 def test_executor_instrumentation(jaeger_port, otlp_collector, otlp_receiver_port):
