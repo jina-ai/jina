@@ -455,13 +455,13 @@ change.</p>
 design is inspired by <a class="reference external" href="https://fastapi.tiangolo.com/">FastAPI</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">BaseDocument</span><span class="p">,</span> <span class="n">DocumentArray</span>
-<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">ImageDoc</span>
 <span class="kn">from</span> <span class="nn">docarray.typing</span> <span class="kn">import</span> <span class="n">AnyTensor</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="k">class</span> <span class="nc">InputDoc</span><span class="p">(</span><span class="n">BaseDocument</span><span class="p">):</span>
-    <span class="n">img</span><span class="p">:</span> <span class="n">Image</span>
+    <span class="n">img</span><span class="p">:</span> <span class="n">ImageDoc</span>
 
 <span class="k">class</span> <span class="nc">OutputDoc</span><span class="p">(</span><span class="n">BaseDocument</span><span class="p">):</span>
     <span class="n">embedding</span><span class="p">:</span> <span class="n">AnyTensor</span>
@@ -493,7 +493,7 @@ schema of the endpoint.</p>
 <span class="hll">        <span class="n">request_schema</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">[</span><span class="n">InputDoc</span><span class="p">],</span>
 </span><span class="hll">        <span class="n">response_schema</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">[</span><span class="n">OutputDoc</span><span class="p">],</span>
 </span>    <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> 
+    <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">docs_return</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">[</span><span class="n">OutputDoc</span><span class="p">](</span>
             <span class="p">[</span><span class="n">OutputDoc</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">))]</span>
         <span class="p">)</span>
@@ -511,7 +511,7 @@ and <code class="docutils literal notranslate"><span class="pre">response_schema
 <span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExec</span><span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
     <span class="n">docs</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
         <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/bar&#39;</span><span class="p">,</span>
-        <span class="n">inputs</span><span class="o">=</span><span class="n">InputDoc</span><span class="p">(</span><span class="n">img</span><span class="o">=</span><span class="n">Image</span><span class="p">(</span><span class="n">tensor</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)))),</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="n">InputDoc</span><span class="p">(</span><span class="n">img</span><span class="o">=</span><span class="n">ImageDoc</span><span class="p">(</span><span class="n">tensor</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)))),</span>
 <span class="hll">        <span class="n">return_type</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">[</span><span class="n">OutputDoc</span><span class="p">],</span>
 </span>    <span class="p">)</span>
     <span class="k">assert</span> <span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -560,7 +560,7 @@ and <code class="docutils literal notranslate"><span class="pre">response_schema
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 06, 2023</div>
+                            Last updated on Mar 07, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -607,19 +607,6 @@ and <code class="docutils literal notranslate"><span class="pre">response_schema
             
         </aside>
     </div>
-    <qa-bot
-            title="Jina Bot"
-            description="Build multimodal AI services via cloud native technologies"
-    >
-        <template>
-            <dl>
-                <dt>You can ask questions about our docs. Try:</dt>
-                <dd>Does Jina support Kubernetes?</dd>
-                <dd>What are the basic concepts in Jina?</dd>
-                <dd>How to share my Executor?</dd>
-            </dl>
-        </template>
-    </qa-bot>
 </div>
 <img referrerpolicy="no-referrer-when-downgrade"
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
@@ -633,11 +620,5 @@ and <code class="docutils literal notranslate"><span class="pre">response_schema
     <script src="../../../_static/copybutton.js"></script>
     <script src="../../../_static/tabs.js"></script>
     <script src="../../../_static/design-tabs.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() { 
-            document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
-        });
-        </script>
-    <script src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
     </body>
 </html>
