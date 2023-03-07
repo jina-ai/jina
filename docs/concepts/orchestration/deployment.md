@@ -44,7 +44,7 @@ class MyExecutor(Executor):
         print(docs)
 
 
-f = Deployment(name='myexec1', uses=MyExecutor)
+dep = Deployment(name='myexec1', uses=MyExecutor)
 
 with dep:
     dep.post(on='/bar', inputs=Document(), on_done=print)
