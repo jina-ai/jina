@@ -92,7 +92,7 @@ def test_input_response_schema_annotation():
 
 def test_different_output_input():
     class InputDoc(BaseDocument):
-        img: Image
+        img: ImageDoc
 
     class OutputDoc(BaseDocument):
         embedding: AnyTensor
@@ -119,7 +119,7 @@ def test_different_output_input():
 
 def test_deployments():
     class InputDoc(BaseDocument):
-        img: Image
+        img: ImageDoc
 
     class OutputDoc(BaseDocument):
         embedding: AnyTensor
