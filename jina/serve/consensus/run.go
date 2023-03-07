@@ -109,9 +109,10 @@ func NewRaft(ctx context.Context,
             },
         }
         f := r.BootstrapCluster(cfg)
+        // raft bootstrap error can be ignored safely https://github.com/hashicorp/raft/blob/44124c28758b8cfb675e90c75a204a08a84f8d4f/api.go#L220
         if err := f.Error(); err != nil {
             log.Printf("raft.Raft.BootstrapCluster: %v, raft cluster already bootstrapped", err)
-            return nil, nil, fmt.Errorf("raft.Raft.BootstrapCluster: %v", err)
+            return r, tm, nil
         }
     }
 
@@ -136,7 +137,7 @@ func Run(myAddr string,
          LogLevel string,
          NoSnapshotRestoreOnStart bool) {
 
-    log.Printf("Calling Run %s, %s, %s, %p, %s (HeartbeatTimeout: %s)", myAddr, raftId, raftDir, raftBootstrap, executorTarget, HeartbeatTimeout)
+    log.Printf("Calling Run %s, %s, %s, %p, %s", myAddr, raftId, raftDir, raftBootstrap, executorTarget)
     if raftId == "" {
         log.Fatalf("flag --raft_id is required")
     }
@@ -325,7 +326,8 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
             C.GoString(raftDir),
             raftBootstrap != false,
             C.GoString(executorTarget),
-            int(HeartbeatTimeout),
+            // TODO: currently, get_configuration messes the value of the parsed HeartbeatTimeout, hardcoding for now.
+            1000,
             int(ElectionTimeout),
             int(CommitTimeout),
             int(MaxAppendEntries),
@@ -406,6 +408,8 @@ func get_configuration(self *C.PyObject, args *C.PyObject) *C.PyObject {
             C.Py_IncRef(C.Py_None);
             return C.Py_None;
         }
+        logs_db.Close()
+        stable_db.Close()
 
 
         server := findServerByID(conf.Servers, raft.ServerID(C.GoString(raftId)))
