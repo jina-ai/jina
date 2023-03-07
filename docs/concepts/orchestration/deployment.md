@@ -86,7 +86,7 @@ c.post(on='/bar', inputs=Document(), on_done=print)
 
 ````{tab} Load from YAML
 
-`my.yml`:
+`deployment.yml`:
 ```yaml
 jtype: Deployment
 name: myexec1
@@ -108,7 +108,7 @@ class FooExecutor(Executor):
 ```python
 from jina import Deployment, Document
 
-dep = Deployment.load_config('my.yml')
+dep = Deployment.load_config('deployment.yml')
 
 with dep:
     try:
