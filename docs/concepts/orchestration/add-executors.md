@@ -117,7 +117,7 @@ with f:
 To set/override an Executor's `with` configuration, use `uses_with`. The `with` configuration refers to user-defined 
 constructor kwargs.
 
-````tab {Deployment}
+````{tab} Deployment
 ```python
 from jina import Executor, requests, Deployment
 
@@ -154,7 +154,7 @@ param2: 2
 param3: 30
 ```
 ````
-````tab {Flow}
+````{tab} Flow
 ```python
 from jina import Executor, requests, Flow
 
@@ -202,7 +202,7 @@ In the following code:
 
 Note the `all_req()` function is bound to **all** endpoints except those explicitly bound to other functions, i.e. `/non_foo`, `/alias_foo` and `/bar`.
 
-```{tab} Deployment
+````{tab} Deployment
 ```python
 from jina import Executor, requests, Deployment
 
@@ -250,7 +250,7 @@ all req all_req()
 foo foo()
 ```
 ````
-```{tab} Flow
+````{tab} Flow
 ```python
 from jina import Executor, requests, Flow
 
@@ -492,120 +492,4 @@ Flow().add(
 
 ```{hint}
 The `grpc_metadata` parameter here follows the `metadata` concept in gRPC. See [gRPC documentation](https://grpc.io/docs/what-is-grpc/core-concepts/#metadata) for details.
-```
-
-
-(floating-executors)=
-## Floating Executors
-<!-- HELP - are these for Flows only? -->
-
-Some Executors can be used for asynchronous background tasks that take time and don't generate a required output. For instance,
-logging specific information in external services, storing partial results, etc.
-
-You can unblock your Orchestration from such tasks by using *floating Executors*.
-
-Normally, all Executors handle and transform a given request until it is finally returned to the Client.
-
-However, floating Executors do not feed their outputs back into the pipeline. Therefore, the Executor's output does not affect the response for the Client, and the response can be returned without waiting for the floating Executor to complete its task.
- 
-Those Executors are marked with the `floating` keyword when added to a `Flow`:
-
-```python
-import time
-from jina import Flow, Executor, requests, DocumentArray
-
-
-class FastChangingExecutor(Executor):
-    @requests()
-    def foo(self, docs, **kwargs):
-        for doc in docs:
-            doc.text = 'Hello World'
-
-
-class SlowChangingExecutor(Executor):
-    @requests()
-    def foo(self, docs, **kwargs):
-        time.sleep(2)
-        print(f' Received {docs.texts}')
-        for doc in docs:
-            doc.text = 'Change the document but will not affect response'
-
-
-f = (
-    Flow()
-    .add(name='executor0', uses=FastChangingExecutor)
-    .add(
-        name='floating_executor',
-        uses=SlowChangingExecutor,
-        needs=['gateway'],
-        floating=True,
-    )
-)
-with f:
-    f.post(on='/endpoint', inputs=DocumentArray.empty(1))  # we need to send a first
-    start_time = time.time()
-    response = f.post(on='/endpoint', inputs=DocumentArray.empty(2))
-    end_time = time.time()
-    print(f' Response time took {end_time - start_time}s')
-    print(f' {response.texts}')
-```
-
-```text
- Response time took 0.011997222900390625s
- ['Hello World', 'Hello World']
- Received ['Hello World', 'Hello World']
-```
-
-In this example the response is returned without waiting for the floating Executor to complete. However, the Flow is not closed until
-the floating Executor has handled the request.
-
-You can plot the Flow and see the Executor is floating disconnected from the **Gateway**.
-
-```{figure} flow_floating.svg
-:width: 70%
-
-```
-A floating Executor can *never* come before a non-floating Executor in your Flow's {ref}`topology <flow-complex-topologies>`.
-
-This leads to the following behaviors:
-
-- **Implicit reordering**: When you add a non-floating Executor after a floating Executor without specifying its `needs` parameter, the non-floating Executor is chained after the previous non-floating one.
-```python
-from jina import Flow
-
-f = Flow().add().add(name='middle', floating=True).add()
-f.plot()
-```
-
-```{figure} flow_middle_1.svg
-:width: 70%
-
-```
-
-- **Chaining floating Executors**: To chain more than one floating Executor, you need to add all of them with the `floating` flag, and explicitly specify the `needs` argument.
-
-```python
-from jina import Flow
-
-f = Flow().add().add(name='middle', floating=True).add(needs=['middle'], floating=True)
-f.plot()
-```
-
-```{figure} flow_chain_floating.svg
-:width: 70%
-
-```
-
-- **Overriding the `floating` flag**: If you add a floating Executor as part of `needs` parameter of a non-floating Executor, then the floating Executor is no longer considered floating.
-
-```python
-from jina import Flow
-
-f = Flow().add().add(name='middle', floating=True).add(needs=['middle'])
-f.plot()
-```
-
-```{figure} flow_cancel_floating.svg
-:width: 70%
-
 ```
