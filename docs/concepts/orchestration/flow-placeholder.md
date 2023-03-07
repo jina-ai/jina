@@ -149,7 +149,7 @@ f = Flow().add()
 
 This adds an "empty" Executor called {class}`~jina.serve.executors.BaseExecutor` to the Flow. This Executor (without any parameters) performs no actions.
 
-```{figure} no-op-flow.svg
+```{figure} images/no-op-flow.svg
 :scale: 70%
 ```
 
@@ -162,7 +162,7 @@ f = Flow().add(name='myVeryFirstExecutor').add(name='secondIsBest')
 ```
 
 
-```{figure} named-flow.svg
+```{figure} images/named-flow.svg
 :scale: 70%
 ```
 
@@ -222,7 +222,7 @@ f = (
 )
 ```
 
-```{figure} needs-flow.svg
+```{figure} images/needs-flow.svg
 :width: 70%
 :align: center
 Complex Flow where one Executor requires two Executors to process Documents beforehand
@@ -367,7 +367,7 @@ the floating Executor has handled the request.
 
 You can plot the Flow and see the Executor is floating disconnected from the **Gateway**.
 
-```{figure} flow_floating.svg
+```{figure} images/flow_floating.svg
 :width: 70%
 
 ```
@@ -383,7 +383,7 @@ f = Flow().add().add(name='middle', floating=True).add()
 f.plot()
 ```
 
-```{figure} flow_middle_1.svg
+```{figure} images/flow_middle_1.svg
 :width: 70%
 
 ```
@@ -397,7 +397,7 @@ f = Flow().add().add(name='middle', floating=True).add(needs=['middle'], floatin
 f.plot()
 ```
 
-```{figure} flow_chain_floating.svg
+```{figure} images/flow_chain_floating.svg
 :width: 70%
 
 ```
@@ -411,7 +411,7 @@ f = Flow().add().add(name='middle', floating=True).add(needs=['middle'])
 f.plot()
 ```
 
-```{figure} flow_cancel_floating.svg
+```{figure} images/flow_cancel_floating.svg
 :width: 70%
 
 ```
