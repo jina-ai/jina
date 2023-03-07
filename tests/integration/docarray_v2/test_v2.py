@@ -2,7 +2,7 @@ from typing import Optional
 
 import numpy as np
 from docarray import BaseDocument, DocumentArray
-from docarray.documents import Image
+from docarray.documents import ImageDoc
 from docarray.typing import AnyTensor, ImageUrl
 
 from jina import Deployment, Executor, Flow, requests
