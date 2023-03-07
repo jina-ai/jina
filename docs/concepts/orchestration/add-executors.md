@@ -399,7 +399,7 @@ PyTorch, TensorFlow, or any other popular ML framework.
 
 
 (external-executors)=
-## Add external Executors
+## Use external Executors
 
 Usually an Orchestration starts and stops its own Executor(s). External Executors are owned by *other* Orchestrations, meaning they can reside on any machine and their lifetime are controlled by others.
 
