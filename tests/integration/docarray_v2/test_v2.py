@@ -110,7 +110,7 @@ def test_different_output_input():
     with Flow().add(uses=MyExec) as f:
         docs = f.post(
             on='/bar',
-            inputs=InputDoc(img=Image(tensor=np.zeros((3, 224, 224)))),
+            inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
             return_type=DocumentArray[OutputDoc],
         )
         assert docs[0].embedding.shape == (100, 1)
@@ -137,7 +137,7 @@ def test_deployments():
     with Deployment(uses=MyExec) as dep:
         docs = dep.post(
             on='/bar',
-            inputs=InputDoc(img=Image(tensor=np.zeros((3, 224, 224)))),
+            inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
             return_type=DocumentArray[OutputDoc],
         )
         assert docs[0].embedding.shape == (100, 1)
