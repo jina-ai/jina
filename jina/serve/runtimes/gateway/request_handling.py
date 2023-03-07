@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, AsyncIterator
+from typing import TYPE_CHECKING, AsyncIterator, Optional
 
 from jina.helper import get_full_version
 from jina.proto import jina_pb2
@@ -7,22 +7,29 @@ from jina.types.request.status import StatusMessage
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import SimpleNamespace
-    from jina.types.request import Request
+
     from jina.logging.logger import JinaLogger
+    from jina.serve.runtimes.gateway.streamer import GatewayStreamer
+    from jina.types.request import Request
 
 
 class GatewayRequestHandler:
     """Object to encapsulate the code related to handle the data requests in the Gateway"""
 
     def __init__(
-            self,
-            args: 'SimpleNamespace',
-            logger: 'JinaLogger',
-            **kwargs,
+        self,
+        args: 'SimpleNamespace',
+        logger: 'JinaLogger',
+        streamer: Optional['GatewayStreamer'] = None,
+        **kwargs,
     ):
         import json
 
-        from jina.serve.runtimes.gateway.streamer import GatewayStreamer, _ExecutorStreamer
+        from jina.serve.runtimes.gateway.streamer import (
+            GatewayStreamer,
+            _ExecutorStreamer,
+        )
+
         self.runtime_args = args
         self.logger = logger
         graph_description = json.loads(self.runtime_args.graph_description)
@@ -31,7 +38,7 @@ class GatewayRequestHandler:
         deployments_metadata = json.loads(self.runtime_args.deployments_metadata)
         deployments_no_reduce = json.loads(self.runtime_args.deployments_no_reduce)
 
-        self.streamer = GatewayStreamer(
+        self.streamer = streamer or GatewayStreamer(
             graph_representation=graph_description,
             executor_addresses=deployments_addresses,
             graph_conditions=graph_conditions,
@@ -48,6 +55,7 @@ class GatewayRequestHandler:
             aio_tracing_client_interceptors=self.runtime_args.aio_tracing_client_interceptors,
             tracing_client_interceptor=self.runtime_args.tracing_client_interceptor,
         )
+
         GatewayStreamer._set_env_streamer_args(
             graph_representation=graph_description,
             executor_addresses=deployments_addresses,
@@ -124,7 +132,7 @@ class GatewayRequestHandler:
         da = DocumentArray([Document()])
         try:
             async for _ in self.streamer.stream_docs(
-                    docs=da, exec_endpoint=__dry_run_endpoint__, request_size=1
+                docs=da, exec_endpoint=__dry_run_endpoint__, request_size=1
             ):
                 pass
             status_message = StatusMessage()
@@ -152,7 +160,7 @@ class GatewayRequestHandler:
         return info_proto
 
     async def stream(
-            self, request_iterator, context=None, *args, **kwargs
+        self, request_iterator, context=None, *args, **kwargs
     ) -> AsyncIterator['Request']:
         """
         stream requests from client iterator and stream responses back.
@@ -164,12 +172,12 @@ class GatewayRequestHandler:
         :yield: responses to the request after streaming to Executors in Flow
         """
         async for resp in self.streamer.rpc_stream(
-                request_iterator=request_iterator, context=context, *args, **kwargs
+            request_iterator=request_iterator, context=context, *args, **kwargs
         ):
             yield resp
 
     async def process_single_data(
-            self, request: DataRequest, context=None
+        self, request: DataRequest, context=None
     ) -> DataRequest:
         """Implements request and response handling of a single DataRequest
         :param request: DataRequest from Client

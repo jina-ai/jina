@@ -14,6 +14,7 @@ class BaseServer:
             name: Optional[str] = 'gateway',
             runtime_args: Optional[Dict] = None,
             req_handler_cls=None,
+            req_handler=None,
             **kwargs,
     ):
         self.name = name
@@ -28,7 +29,7 @@ class BaseServer:
         self.grpc_tracing_server_interceptors = (
             self.runtime_args.grpc_tracing_server_interceptors
         )
-        self._request_handler = self._get_request_handler()
+        self._request_handler = req_handler or self._get_request_handler()
         if hasattr(self._request_handler, 'streamer'):
             self.streamer = self._request_handler.streamer  # backward compatibility
             self.executor = self._request_handler.executor  # backward compatibility
