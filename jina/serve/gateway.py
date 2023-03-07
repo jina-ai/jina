@@ -1,11 +1,14 @@
 import abc
 from types import SimpleNamespace
-from typing import Dict, Optional
+from typing import TYPE_CHECKING, Dict, Optional
 
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
 from jina.serve.helper import store_init_kwargs, wrap_func
 from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+
+if TYPE_CHECKING:
+    from jina.serve.runtimes.gateway.streamer import GatewayStreamer
 
 __all__ = ['BaseGateway']
 
@@ -56,14 +59,16 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
     """
 
     def __init__(
-            self,
-            name: Optional[str] = 'gateway',
-            runtime_args: Optional[Dict] = None,
-            **kwargs,
+        self,
+        name: Optional[str] = 'gateway',
+        streamer: Optional['GatewayStreamer'] = None,
+        runtime_args: Optional[Dict] = None,
+        **kwargs,
     ):
         """
         :param name: Gateway pod name
         :param runtime_args: a dict of arguments injected from :class:`Runtime` during runtime
+        :param streamer: GatewayStreamer object to be set if not None
         :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected
         """
         self._add_runtime_args(runtime_args)
@@ -76,8 +81,7 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         )
         self.logger = JinaLogger(self.name, **vars(self.runtime_args))
         self._request_handler = GatewayRequestHandler(
-            args=self.runtime_args,
-            logger=self.logger,
+            args=self.runtime_args, logger=self.logger, streamer=streamer
         )
         self.streamer = self._request_handler.streamer  # backward compatibility
         self.executor = self._request_handler.executor  # backward compatibility
