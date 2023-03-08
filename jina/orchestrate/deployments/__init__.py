@@ -1288,7 +1288,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             for shard_id in parsed_args['pods']:
                 for pod_idx, pod_args in enumerate(parsed_args['pods'][shard_id]):
                     worker_host = self.get_worker_host(pod_args, self._is_docker, False)
-                    connection_list[shard_id].append(f'{worker_host}:{pod_args.port[0]}')
+                    connection_list[shard_id].append(
+                        f'{worker_host}:{pod_args.port[0]}'
+                    )
             parsed_args['head'].connection_list = json.dumps(connection_list)
 
         return parsed_args
