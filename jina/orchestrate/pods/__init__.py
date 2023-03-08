@@ -207,21 +207,14 @@ class BasePod(ABC):
         :param timeout: The time to wait before readiness or failure is determined
             .. # noqa: DAR201
         """
-        if self.args.pod_role == PodRoleType.GATEWAY:
-            return GatewayRuntime.wait_for_ready_or_shutdown(
-                timeout=timeout,
-                ready_or_shutdown_event=self.ready_or_shutdown.event,
-                ctrl_address=self.runtime_ctrl_address,
-                timeout_ctrl=self._timeout_ctrl,
-                protocol=self.args.protocol[0],
-            )
-        else:
-            return AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
-                timeout=timeout,
-                ready_or_shutdown_event=self.ready_or_shutdown.event,
-                ctrl_address=self.runtime_ctrl_address,
-                timeout_ctrl=self._timeout_ctrl,
-            )
+        from jina.serve.runtimes.servers import BaseServer
+        return BaseServer.wait_for_ready_or_shutdown(
+            timeout=timeout,
+            ready_or_shutdown_event=self.ready_or_shutdown.event,
+            ctrl_address=self.runtime_ctrl_address,
+            timeout_ctrl=self._timeout_ctrl,
+            protocol=self.args.protocol[0],
+        )
 
     def _fail_start_timeout(self, timeout):
         """
@@ -272,6 +265,7 @@ class BasePod(ABC):
         Wait for the `Pod` to start successfully in a non-blocking manner
         """
         import asyncio
+        from jina.serve.runtimes.servers import BaseServer
 
         _timeout = self.args.timeout_ready
         if _timeout <= 0:
@@ -289,8 +283,8 @@ class BasePod(ABC):
                     self.is_shutdown.is_set()  # a worker and not shutdown
                     or not self.args.pod_role == PodRoleType.WORKER
                     or (
-                        await AsyncNewLoopRuntime.async_is_ready(
-                            self.runtime_ctrl_address, timeout=_timeout
+                        await BaseServer.async_is_ready(
+                            self.runtime_ctrl_address, protocol=self.args.protocol[0], timeout=_timeout
                         )
                     )
                 )

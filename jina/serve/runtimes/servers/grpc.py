@@ -1,12 +1,14 @@
 from typing import Optional
 
 import grpc
+from grpc import RpcError
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
 
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.runtimes.servers import BaseServer
 from jina.serve.runtimes.helper import _get_grpc_server_options
+from jina.serve.networking.utils import send_health_check_async, send_health_check_sync
 
 
 class GRPCServer(BaseServer):
@@ -104,3 +106,41 @@ class GRPCServer(BaseServer):
     async def run_server(self):
         """Run GRPC server forever"""
         await self.server.wait_for_termination()
+
+    @staticmethod
+    def is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
+        """
+        Check if status is ready.
+        :param ctrl_address: the address where the control request needs to be sent
+        :param timeout: timeout of the health check in seconds
+        :param kwargs: extra keyword arguments
+        :return: True if status is ready else False.
+        """
+        try:
+            from grpc_health.v1 import health_pb2, health_pb2_grpc
+
+            response = send_health_check_sync(ctrl_address, timeout=timeout)
+            return (
+                    response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
+            )
+        except RpcError:
+            return False
+
+    @staticmethod
+    async def async_is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
+        """
+        Async Check if status is ready.
+        :param ctrl_address: the address where the control request needs to be sent
+        :param timeout: timeout of the health check in seconds
+        :param kwargs: extra keyword arguments
+        :return: True if status is ready else False.
+        """
+        try:
+            from grpc_health.v1 import health_pb2, health_pb2_grpc
+
+            response = await send_health_check_async(ctrl_address, timeout=timeout)
+            return (
+                    response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
+            )
+        except RpcError:
+            return False

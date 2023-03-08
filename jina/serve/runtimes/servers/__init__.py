@@ -1,10 +1,16 @@
 import abc
-from typing import Dict, Optional
+from typing import Dict, Optional, Union, TYPE_CHECKING
+
+import time
 
 from jina.logging.logger import JinaLogger
 from types import SimpleNamespace
 
 __all__ = ['BaseServer']
+
+if TYPE_CHECKING:
+    import multiprocessing
+    import threading
 
 
 class BaseServer:
@@ -108,3 +114,90 @@ class BaseServer:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
+
+    @staticmethod
+    def is_ready(
+            ctrl_address: str,
+            protocol: Optional[str] = 'grpc',
+            timeout: float = 1.0,
+            **kwargs,
+    ) -> bool:
+        """
+        Check if status is ready.
+        :param ctrl_address: the address where the control request needs to be sent
+        :param protocol: protocol of the gateway runtime
+        :param timeout: timeout of grpc call in seconds
+        :param kwargs: extra keyword arguments
+        :return: True if status is ready else False.
+        """
+        from jina.serve.runtimes.servers.grpc import GRPCServer
+        from jina.serve.runtimes.servers.http import FastAPIBaseServer
+        from jina.enums import GatewayProtocolType
+
+        if (
+                protocol is None
+                or protocol == GatewayProtocolType.GRPC
+                or protocol == 'grpc'
+        ):
+            res = GRPCServer.is_ready(ctrl_address)
+        else:
+            res = FastAPIBaseServer.is_ready(ctrl_address)
+        return res
+
+    @staticmethod
+    async def async_is_ready(
+            ctrl_address: str,
+            protocol: Optional[str] = 'grpc',
+            timeout: float = 1.0,
+            **kwargs,
+    ) -> bool:
+        """
+        Check if status is ready.
+        :param ctrl_address: the address where the control request needs to be sent
+        :param protocol: protocol of the gateway runtime
+        :param timeout: timeout of grpc call in seconds
+        :param kwargs: extra keyword arguments
+        :return: True if status is ready else False.
+        """
+        from jina.serve.runtimes.servers.grpc import GRPCServer
+        from jina.serve.runtimes.servers.http import FastAPIBaseServer
+        from jina.enums import GatewayProtocolType
+
+        if (
+                protocol is None
+                or protocol == GatewayProtocolType.GRPC
+                or protocol == 'grpc'
+        ):
+            res = await GRPCServer.async_is_ready(ctrl_address)
+        else:
+            res = await FastAPIBaseServer.async_is_ready(ctrl_address)
+        return res
+
+    @classmethod
+    def wait_for_ready_or_shutdown(
+            cls,
+            timeout: Optional[float],
+            ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+            ctrl_address: str,
+            health_check: bool = False,
+            **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+        :param timeout: The time to wait before readiness or failure is determined
+        :param ctrl_address: the address where the control message needs to be sent
+        :param ready_or_shutdown_event: the multiprocessing event to detect if the process failed or is ready
+        :param health_check: if true, a grpc health check will be used instead of relying on the event
+        :param kwargs: extra keyword arguments
+        :return: True if is ready or it needs to be shutdown
+        """
+        timeout_ns = 1000000000 * timeout if timeout else None
+        now = time.time_ns()
+        if health_check:
+            return cls.is_ready(ctrl_address, timeout)
+        while timeout_ns is None or time.time_ns() - now < timeout_ns:
+            if ready_or_shutdown_event.is_set() or cls.is_ready(ctrl_address, **kwargs):
+                return True
+            time.sleep(0.1)
+        return False
+

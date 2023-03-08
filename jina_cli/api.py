@@ -74,7 +74,6 @@ def executor(args: 'Namespace'):
     :returns: return the same as `pod` or `worker_runtime`
     """
     args.host = args.host[0]
-    args.port = args.port[0]
     args.port_monitoring = args.port_monitoring[0]
 
     if args.native:

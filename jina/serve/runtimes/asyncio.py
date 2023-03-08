@@ -219,19 +219,20 @@ class AsyncNewLoopRuntime(MonitoringMixin, InstrumentationMixin):
                                      ssl_certfile=getattr(self.args, 'ssl_certfile', None))
 
     def _send_telemetry_event(self):
-        is_custom_gateway = self.server.__class__ not in [
-            CompositeGateway,
-            GRPCGateway,
-            HTTPGateway,
-            WebSocketGateway,
-        ]
-        send_telemetry_event(
-            event='start',
-            obj=self,
-            entity_id=self._entity_id,
-            is_custom_gateway=is_custom_gateway,
-            protocol=self.args.protocol,
-        )
+        pass
+        # is_custom_gateway = self.server.__class__ not in [
+        #     CompositeGateway,
+        #     GRPCGateway,
+        #     HTTPGateway,
+        #     WebSocketGateway,
+        # ]
+        # send_telemetry_event(
+        #     event='start',
+        #     obj=self,
+        #     entity_id=self._entity_id,
+        #     is_custom_gateway=is_custom_gateway,
+        #     protocol=self.args.protocol,
+        # )
 
     async def async_setup(self):
         """

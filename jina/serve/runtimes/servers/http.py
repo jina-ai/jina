@@ -83,7 +83,6 @@ class FastAPIBaseServer(BaseServer):
                 await self.main_loop()
 
         if 'CICD_JINA_DISABLE_HEALTHCHECK_LOGS' in os.environ:
-
             class _EndpointFilter(logging.Filter):
                 def filter(self, record: logging.LogRecord) -> bool:
                     # NOTE: space is important after `GET /`, else all logs will be disabled.
@@ -117,6 +116,36 @@ class FastAPIBaseServer(BaseServer):
     async def run_server(self):
         """Run HTTP server forever"""
         await self.server.serve()
+
+    @staticmethod
+    def is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
+        """
+        Check if status is ready.
+        :param ctrl_address: the address where the control request needs to be sent
+        :param timeout: timeout of the health check in seconds
+        :param kwargs: extra keyword arguments
+        :return: True if status is ready else False.
+        """
+        import urllib
+        from http import HTTPStatus
+        try:
+            conn = urllib.request.urlopen(
+                url=f'http://{ctrl_address}', timeout=timeout
+            )
+            return conn.code == HTTPStatus.OK
+        except:
+            return False
+
+    @staticmethod
+    async def async_is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
+        """
+        Async Check if status is ready.
+        :param ctrl_address: the address where the control request needs to be sent
+        :param timeout: timeout of the health check in seconds
+        :param kwargs: extra keyword arguments
+        :return: True if status is ready else False.
+        """
+        return FastAPIBaseServer.is_ready(ctrl_address, timeout)
 
 
 def _install_health_check(app: 'FastAPI', logger):
