@@ -25,7 +25,10 @@ class BaseServer:
     ):
         self.name = name
         self.runtime_args = runtime_args
-        self.logger = JinaLogger(self.name, **vars(self.runtime_args))
+        if isinstance(self.runtime_args, dict):
+            self.logger = JinaLogger(self.name, **self.runtime_args)
+        else:
+            self.logger = JinaLogger(self.name, **vars(self.runtime_args))
         self.req_handler_cls = req_handler_cls
         self._request_handler = None
         self.server = None
@@ -41,19 +44,26 @@ class BaseServer:
             self.executor = self._request_handler.executor  # backward compatibility
 
     def _get_request_handler(self):
+        # TODO: pass all the arguments
         return self.req_handler_cls(
             args=self.runtime_args,
             logger=self.logger,
+            metrics_registry=None,
+            meter=None,
+            runtime_name=self.name,
+            aio_tracing_client_interceptors=None,
+            tracing_client_interceptor=None,
         )
 
     def _add_gateway_args(self):
+        # TODO: rename and change
         from jina.parsers import set_gateway_runtime_args_parser
         from jina.parsers import set_pod_parser
 
         parser = set_gateway_runtime_args_parser()
         default_args = parser.parse_args([])
         default_args_dict = dict(vars(default_args))
-        _runtime_args = vars(self.runtime_args or {})
+        _runtime_args = self.runtime_args if isinstance(self.runtime_args, dict) else vars(self.runtime_args or {})
         runtime_set_args = {
             'tracer_provider': None,
             'grpc_tracing_server_interceptors': None,
@@ -200,4 +210,3 @@ class BaseServer:
                 return True
             time.sleep(0.1)
         return False
-

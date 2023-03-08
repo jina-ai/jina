@@ -20,7 +20,6 @@ class GatewayRequestHandler:
         self,
         args: 'SimpleNamespace',
         logger: 'JinaLogger',
-        streamer: Optional['GatewayStreamer'] = None,
         **kwargs,
     ):
         import json
@@ -38,7 +37,7 @@ class GatewayRequestHandler:
         deployments_metadata = json.loads(self.runtime_args.deployments_metadata)
         deployments_no_reduce = json.loads(self.runtime_args.deployments_no_reduce)
 
-        self.streamer = streamer or GatewayStreamer(
+        self.streamer = GatewayStreamer(
             graph_representation=graph_description,
             executor_addresses=deployments_addresses,
             graph_conditions=graph_conditions,
@@ -75,6 +74,12 @@ class GatewayRequestHandler:
             )
             for executor_name in deployments_addresses.keys()
         }
+
+    async def close(self):
+        """
+        Gratefully closes the object making sure all the floating requests are taken care and the connections are closed gracefully
+        """
+        await self.streamer.close()
 
     def _http_fastapi_default_app(self,
                                   title,

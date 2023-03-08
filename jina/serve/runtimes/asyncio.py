@@ -173,6 +173,7 @@ class AsyncNewLoopRuntime(MonitoringMixin, InstrumentationMixin):
             non_defaults = ArgNamespace.get_non_defaults_args(
                 self.args, set_gateway_parser()
             )
+            uses_with['req_handler_cls'] = self.req_handler_cls
             return BaseGateway.load_config(
                 self.args.uses,
                 uses_with=dict(
