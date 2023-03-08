@@ -38,7 +38,7 @@ def get_fastapi_app(
     :return: fastapi app
     """
 
-    from jina.serve.runtimes.gateway.http.models import JinaEndpointRequestModel
+    from jina.serve.runtimes.gateway.models import JinaEndpointRequestModel
 
     with ImportExtensions(required=True):
         from fastapi import FastAPI, Response, WebSocket, WebSocketDisconnect, status
@@ -221,7 +221,7 @@ def get_fastapi_app(
     from jina._docarray import DocumentArray
     from jina.proto import jina_pb2
     from jina.serve.executors import __dry_run_endpoint__
-    from jina.serve.runtimes.gateway.http.models import PROTO_TO_PYDANTIC_MODELS
+    from jina.serve.runtimes.gateway.models import PROTO_TO_PYDANTIC_MODELS
 
     @app.get(
         path='/dry_run',

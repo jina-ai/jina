@@ -4,7 +4,6 @@ from typing import Optional
 
 from jina.importer import ImportExtensions
 from jina.serve.runtimes.servers import BaseServer
-from jina.serve.runtimes.gateway.websocket_fastapi_app import get_fastapi_app
 
 
 class WebSocketServer(BaseServer):
@@ -39,16 +38,7 @@ class WebSocketServer(BaseServer):
         """
         Setup WebSocket Server
         """
-        from jina.helper import extend_rest_interface
-
-        self.app = extend_rest_interface(
-            get_fastapi_app(
-                streamer=self.streamer,
-                logger=self.logger,
-                tracing=self.tracing,
-                tracer_provider=self.tracer_provider,
-            )
-        )
+        self.app = self._request_handler._websocket_fastapi_default_app(tracing=self.tracing, tracer_provider=self.tracer_provider)
 
         with ImportExtensions(required=True):
             from uvicorn import Config, Server
@@ -111,6 +101,7 @@ class WebSocketServer(BaseServer):
 
     async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
+        await super().shutdown()
         self.server.should_exit = True
         await self.server.shutdown()
 

@@ -53,6 +53,7 @@ class CompositeServer(BaseServer):
 
     async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
+        await super().shutdown()
         shutdown_tasks = []
         for server in self.servers:
             shutdown_tasks.append(asyncio.create_task(server.shutdown()))

@@ -99,6 +99,7 @@ class GRPCServer(BaseServer):
 
     async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
+        await super().shutdown()
         await self.health_servicer.enter_graceful_shutdown()
         await self._request_handler.close()  # allow pending requests to be processed
         await self.server.stop(1.0)

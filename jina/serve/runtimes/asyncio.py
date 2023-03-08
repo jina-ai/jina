@@ -6,8 +6,6 @@ import asyncio
 
 from jina.logging.logger import JinaLogger
 from jina.constants import __windows__
-from jina.serve.instrumentation import InstrumentationMixin
-from jina.serve.runtimes.monitoring import MonitoringMixin
 from jina.excepts import RuntimeTerminated
 
 from typing import TYPE_CHECKING, Optional, Union
@@ -35,7 +33,7 @@ HANDLED_SIGNALS = (
 )
 
 
-class AsyncNewLoopRuntime(MonitoringMixin, InstrumentationMixin):
+class AsyncNewLoopRuntime:
     """
     Runtime to make sure that a server can asynchronously run inside a new asynchronous loop. It will make sure that the server is run forever while handling the TERMINATE signals
     to be received by the orchestrator to shutdown the server and its resources.
@@ -81,16 +79,6 @@ class AsyncNewLoopRuntime(MonitoringMixin, InstrumentationMixin):
             for sig in HANDLED_SIGNALS:
                 signal.signal(sig, _cancel)
 
-        self._setup_monitoring()
-        self._setup_instrumentation(
-            name=self.args.name,
-            tracing=self.args.tracing,
-            traces_exporter_host=self.args.traces_exporter_host,
-            traces_exporter_port=self.args.traces_exporter_port,
-            metrics=self.args.metrics,
-            metrics_exporter_host=self.args.metrics_exporter_host,
-            metrics_exporter_port=self.args.metrics_exporter_port,
-        )
         self._start_time = time.time()
         self._loop.run_until_complete(self.async_setup())
         self._send_telemetry_event()
@@ -106,24 +94,8 @@ class AsyncNewLoopRuntime(MonitoringMixin, InstrumentationMixin):
         """
         self._loop.run_until_complete(self._loop_body())
 
-    def _teardown_instrumentation(self):
-        try:
-            if self.tracing and self.tracer_provider:
-                if hasattr(self.tracer_provider, 'force_flush'):
-                    self.tracer_provider.force_flush()
-                if hasattr(self.tracer_provider, 'shutdown'):
-                    self.tracer_provider.shutdown()
-            if self.metrics and self.meter_provider:
-                if hasattr(self.meter_provider, 'force_flush'):
-                    self.meter_provider.force_flush()
-                if hasattr(self.meter_provider, 'shutdown'):
-                    self.meter_provider.shutdown()
-        except Exception as ex:
-            self.logger.warning(f'Exception during instrumentation teardown, {str(ex)}')
-
     def teardown(self):
         """Call async_teardown() and stop and close the event loop."""
-        self._teardown_instrumentation()
         self._loop.run_until_complete(self.async_teardown())
         self._loop.stop()
         self._loop.close()
@@ -174,6 +146,20 @@ class AsyncNewLoopRuntime(MonitoringMixin, InstrumentationMixin):
                 self.args, set_gateway_parser()
             )
             uses_with['req_handler_cls'] = self.req_handler_cls
+            if 'title' not in non_defaults:
+                uses_with['title'] = self.args.title
+            if 'description' not in non_defaults:
+                uses_with['description'] = self.args.description
+            if 'no_debug_endpoints' not in non_defaults:
+                uses_with['no_debug_endpoints'] = self.args.no_debug_endpoints
+            if 'no_crud_endpoints' not in non_defaults:
+                uses_with['no_crud_endpoints'] = self.args.no_crud_endpoints
+            if 'expose_endpoints' not in non_defaults:
+                uses_with['expose_endpoints'] = self.args.expose_endpoints
+            if 'expose_graphql_endpoint' not in non_defaults:
+                uses_with['expose_graphql_endpoint'] = self.args.expose_graphql_endpoint
+            if 'cors' not in non_defaults:
+                uses_with['cors'] = self.args.cors
             return BaseGateway.load_config(
                 self.args.uses,
                 uses_with=dict(
@@ -186,9 +172,6 @@ class AsyncNewLoopRuntime(MonitoringMixin, InstrumentationMixin):
                     'port': self.args.port,
                     'protocol': self.args.protocol,
                     'host': self.args.host,
-                    'tracing': self.tracing,
-                    'tracer_provider': self.tracer_provider,
-                    'grpc_tracing_server_interceptors': self.aio_tracing_server_interceptors(),
                     'graph_description': self.args.graph_description,
                     'graph_conditions': self.args.graph_conditions,
                     'deployments_addresses': self.args.deployments_addresses,
@@ -199,10 +182,6 @@ class AsyncNewLoopRuntime(MonitoringMixin, InstrumentationMixin):
                     'compression': self.args.compression,
                     'runtime_name': self.args.name,
                     'prefetch': self.args.prefetch,
-                    'metrics_registry': self.metrics_registry,
-                    'meter': self.meter,
-                    'aio_tracing_client_interceptors': self.aio_tracing_client_interceptors(),
-                    'tracing_client_interceptor': self.tracing_client_interceptor(),
                     'log_config': self.args.log_config,
                     'default_port': getattr(self.args, 'default_port', False),
                 },
@@ -213,11 +192,11 @@ class AsyncNewLoopRuntime(MonitoringMixin, InstrumentationMixin):
         elif not hasattr(self.args, 'protocol') or (len(self.args.protocol) == 1 and self.args.protocol[0] == 'GRPC'):
             from jina.serve.runtimes.servers.grpc import GRPCServer
             return GRPCServer(name=self.args.name,
-                                     runtime_args=self.args,
-                                     req_handler_cls=self.req_handler_cls,
-                                     grpc_server_options=self.args.grpc_server_options,
-                                     ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
-                                     ssl_certfile=getattr(self.args, 'ssl_certfile', None))
+                              runtime_args=self.args,
+                              req_handler_cls=self.req_handler_cls,
+                              grpc_server_options=self.args.grpc_server_options,
+                              ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
+                              ssl_certfile=getattr(self.args, 'ssl_certfile', None))
 
     def _send_telemetry_event(self):
         pass

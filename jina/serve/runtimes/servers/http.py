@@ -21,6 +21,13 @@ class FastAPIBaseServer(BaseServer):
             ssl_certfile: Optional[str] = None,
             uvicorn_kwargs: Optional[dict] = None,
             proxy: bool = False,
+            title: Optional[str] = None,
+            description: Optional[str] = None,
+            no_debug_endpoints: Optional[bool] = False,
+            no_crud_endpoints: Optional[bool] = False,
+            expose_endpoints: Optional[str] = None,
+            expose_graphql_endpoint: Optional[bool] = False,
+            cors: Optional[bool] = False,
             **kwargs
     ):
         """Initialize the FastAPIBaseGateway
@@ -29,9 +36,24 @@ class FastAPIBaseServer(BaseServer):
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
         :param proxy: If set, respect the http_proxy and https_proxy environment variables, otherwise, it will unset
             these proxy variables before start. gRPC seems to prefer no proxy
+        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+        :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
+                  Any executor that has `@requests(on=...)` bound with those values will receive data requests.
+        :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
+        :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
+        :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
+        self.title = title
+        self.description = description
+        self.no_debug_endpoints = no_debug_endpoints
+        self.no_crud_endpoints = no_crud_endpoints
+        self.expose_endpoints = expose_endpoints
+        self.expose_graphql_endpoint = expose_graphql_endpoint
+        self.cors = cors
         self.uvicorn_kwargs = uvicorn_kwargs or {}
 
         if ssl_keyfile and 'ssl_keyfile' not in self.uvicorn_kwargs.keys():
@@ -110,6 +132,7 @@ class FastAPIBaseServer(BaseServer):
         """
         Free resources allocated when setting up HTTP server
         """
+        await super().shutdown()
         self.server.should_exit = True
         await self.server.shutdown()
 
@@ -160,7 +183,7 @@ def _install_health_check(app: 'FastAPI', logger):
             )
 
     if not health_check_exists:
-        from jina.serve.runtimes.gateway.http.models import JinaHealthModel
+        from jina.serve.runtimes.gateway.models import JinaHealthModel
 
         @app.get(
             path='/',

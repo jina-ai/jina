@@ -5,6 +5,8 @@ import time
 
 from jina.logging.logger import JinaLogger
 from types import SimpleNamespace
+from jina.serve.instrumentation import InstrumentationMixin
+from jina.serve.runtimes.monitoring import MonitoringMixin
 
 __all__ = ['BaseServer']
 
@@ -13,7 +15,7 @@ if TYPE_CHECKING:
     import threading
 
 
-class BaseServer:
+class BaseServer(MonitoringMixin, InstrumentationMixin):
 
     def __init__(
             self,
@@ -43,16 +45,44 @@ class BaseServer:
             self.streamer = self._request_handler.streamer  # backward compatibility
             self.executor = self._request_handler.executor  # backward compatibility
 
+    def _teardown_instrumentation(self):
+        try:
+            if self.tracing and self.tracer_provider:
+                if hasattr(self.tracer_provider, 'force_flush'):
+                    self.tracer_provider.force_flush()
+                if hasattr(self.tracer_provider, 'shutdown'):
+                    self.tracer_provider.shutdown()
+            if self.metrics and self.meter_provider:
+                if hasattr(self.meter_provider, 'force_flush'):
+                    self.meter_provider.force_flush()
+                if hasattr(self.meter_provider, 'shutdown'):
+                    self.meter_provider.shutdown()
+        except Exception as ex:
+            self.logger.warning(f'Exception during instrumentation teardown, {str(ex)}')
+
     def _get_request_handler(self):
         # TODO: pass all the arguments
+        self._setup_monitoring(monitoring=self.runtime_args.monitoring, port_monitoring=self.runtime_args.port_monitoring)
+        self._setup_instrumentation(
+            name=self.runtime_args.name,
+            tracing=self.runtime_args.tracing,
+            traces_exporter_host=self.runtime_args.traces_exporter_host,
+            traces_exporter_port=self.runtime_args.traces_exporter_port,
+            metrics=self.runtime_args.metrics,
+            metrics_exporter_host=self.runtime_args.metrics_exporter_host,
+            metrics_exporter_port=self.runtime_args.metrics_exporter_port,
+        )
         return self.req_handler_cls(
             args=self.runtime_args,
             logger=self.logger,
-            metrics_registry=None,
-            meter=None,
+            metrics_registry=self.metrics_registry,
+            meter_provider=self.meter_provider,
+            tracer_provider=self.tracer_provider,
+            tracer=self.tracer,
+            meter=self.meter,
             runtime_name=self.name,
-            aio_tracing_client_interceptors=None,
-            tracing_client_interceptor=None,
+            aio_tracing_client_interceptors=self.aio_tracing_client_interceptors,
+            tracing_client_interceptor=self.tracing_client_interceptor,
         )
 
     def _add_gateway_args(self):
@@ -117,7 +147,7 @@ class BaseServer:
     @abc.abstractmethod
     async def shutdown(self):
         """Shutdown the server and free other allocated resources, e.g, streamer object, health check service, ..."""
-        ...
+        self._teardown_instrumentation()
 
     def __enter__(self):
         return self

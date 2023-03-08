@@ -6,7 +6,6 @@ import os
 import platform
 import re
 import signal
-import subprocess
 import threading
 import time
 from typing import TYPE_CHECKING, Dict, Optional, Union
@@ -24,7 +23,6 @@ from jina.orchestrate.pods.container_helper import (
     get_gpu_device_requests,
 )
 from jina.parsers import set_gateway_parser
-from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 
 if TYPE_CHECKING:  # pragma: no cover
     from docker.client import DockerClient
@@ -247,12 +245,10 @@ def run(
         client.close()
 
         def _is_ready():
-            if args.pod_role == PodRoleType.GATEWAY:
-                return GatewayRuntime.is_ready(
-                    runtime_ctrl_address, protocol=args.protocol[0]
-                )
-            else:
-                return AsyncNewLoopRuntime.is_ready(runtime_ctrl_address)
+            from jina.serve.runtimes.servers import BaseServer
+            return BaseServer.is_ready(
+                ctrl_address=runtime_ctrl_address, protocol=getattr(args, 'protocol', ["grpc"])[0]
+            )
 
         def _is_container_alive(container) -> bool:
             import docker.errors
