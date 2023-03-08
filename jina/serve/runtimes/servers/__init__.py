@@ -37,9 +37,7 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         self._add_gateway_args()
         self.tracing = self.runtime_args.tracing
         self.tracer_provider = self.runtime_args.tracer_provider
-        self.grpc_tracing_server_interceptors = (
-            self.runtime_args.grpc_tracing_server_interceptors
-        )
+        self.grpc_tracing_server_interceptors = self.runtime_args.grpc_tracing_server_interceptors
         self._request_handler = req_handler or self._get_request_handler()
         if hasattr(self._request_handler, 'streamer'):
             self.streamer = self._request_handler.streamer  # backward compatibility
@@ -81,14 +79,13 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
             tracer=self.tracer,
             meter=self.meter,
             runtime_name=self.name,
-            aio_tracing_client_interceptors=self.aio_tracing_client_interceptors,
-            tracing_client_interceptor=self.tracing_client_interceptor,
+            aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
+            tracing_client_interceptor=self.tracing_client_interceptor(),
         )
 
     def _add_gateway_args(self):
         # TODO: rename and change
         from jina.parsers import set_gateway_runtime_args_parser
-        from jina.parsers import set_pod_parser
 
         parser = set_gateway_runtime_args_parser()
         default_args = parser.parse_args([])

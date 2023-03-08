@@ -28,7 +28,6 @@ class GatewayRequestHandler:
             GatewayStreamer,
             _ExecutorStreamer,
         )
-
         self.runtime_args = args
         self.logger = logger
         graph_description = json.loads(self.runtime_args.graph_description)

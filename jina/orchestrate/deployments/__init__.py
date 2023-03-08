@@ -546,7 +546,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         """Get the port of the HeadPod of this deployment
         .. # noqa: DAR201
         """
-        return self.head_args.port if self.head_args else None
+        return self.head_args.port[0] if self.head_args else None
 
     @property
     def head_port_monitoring(self):
@@ -580,7 +580,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         _head_args = copy.deepcopy(args)
         _head_args.polling = args.polling
-        _head_args.port = args.port if isinstance(args.port, int) else args.port[0]
+        _head_args.port = args.port
         _head_args.host = args.host[0]
         _head_args.uses = args.uses
         _head_args.pod_role = PodRoleType.HEAD
@@ -1288,7 +1288,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             for shard_id in parsed_args['pods']:
                 for pod_idx, pod_args in enumerate(parsed_args['pods'][shard_id]):
                     worker_host = self.get_worker_host(pod_args, self._is_docker, False)
-                    connection_list[shard_id].append(f'{worker_host}:{pod_args.port}')
+                    connection_list[shard_id].append(f'{worker_host}:{pod_args.port[0]}')
             parsed_args['head'].connection_list = json.dumps(connection_list)
 
         return parsed_args
