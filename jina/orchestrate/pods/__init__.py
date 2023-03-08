@@ -149,9 +149,7 @@ class BasePod(ABC):
         self._timeout_ctrl = self.args.timeout_ctrl
 
     def _get_control_address(self):
-        if self.args.pod_role == PodRoleType.GATEWAY:
-            return f'{self.args.host}:{self.args.port[0]}'
-        return f'{self.args.host}:{self.args.port}'
+        return f'{self.args.host}:{self.args.port[0]}'
 
     def close(self) -> None:
         """Close the Pod
@@ -275,7 +273,6 @@ class BasePod(ABC):
         timeout_ns = 1e9 * _timeout if _timeout else None
         now = time.time_ns()
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
-
             if (
                     self.ready_or_shutdown.event.is_set()
                     and (  # submit the health check to the pod, if it is
