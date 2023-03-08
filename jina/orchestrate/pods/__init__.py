@@ -22,14 +22,14 @@ __all__ = ['BasePod', 'Pod']
 
 
 def run(
-    args: 'argparse.Namespace',
-    name: str,
-    runtime_cls: Type[AsyncNewLoopRuntime],
-    envs: Dict[str, str],
-    is_started: Union['multiprocessing.Event', 'threading.Event'],
-    is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
-    is_ready: Union['multiprocessing.Event', 'threading.Event'],
-    jaml_classes: Optional[Dict] = None,
+        args: 'argparse.Namespace',
+        name: str,
+        runtime_cls: Type[AsyncNewLoopRuntime],
+        envs: Dict[str, str],
+        is_started: Union['multiprocessing.Event', 'threading.Event'],
+        is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
+        is_ready: Union['multiprocessing.Event', 'threading.Event'],
+        jaml_classes: Optional[Dict] = None,
 ):
     """Method representing the :class:`BaseRuntime` activity.
 
@@ -73,7 +73,6 @@ def run(
         req_handler_cls = HeaderRequestHandler
 
     logger = JinaLogger(name, **vars(args))
-
 
     def _unset_envs():
         if envs:
@@ -123,7 +122,6 @@ class BasePod(ABC):
 
     def __init__(self, args: 'argparse.Namespace'):
         self.args = args
-
         if self.args.pod_role == PodRoleType.GATEWAY:
             _update_gateway_args(self.args)
         self.args.parallel = getattr(self.args, 'shards', 1)
@@ -166,7 +164,7 @@ class BasePod(ABC):
                 self.logger.debug(f'terminate')
                 self._terminate()
                 if not self.is_shutdown.wait(
-                    timeout=self._timeout_ctrl if not __windows__ else 1.0
+                        timeout=self._timeout_ctrl if not __windows__ else 1.0
                 ):
                     if not __windows__:
                         raise Exception(
@@ -213,7 +211,8 @@ class BasePod(ABC):
             ready_or_shutdown_event=self.ready_or_shutdown.event,
             ctrl_address=self.runtime_ctrl_address,
             timeout_ctrl=self._timeout_ctrl,
-            protocol=self.args.protocol[0],
+            protocol=getattr(self.args, 'protocol', ["grpc"])[0],
+            # for now protocol is not yet there part of Executor
         )
 
     def _fail_start_timeout(self, timeout):
@@ -278,16 +277,19 @@ class BasePod(ABC):
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
 
             if (
-                self.ready_or_shutdown.event.is_set()
-                and (  # submit the health check to the pod, if it is
+                    self.ready_or_shutdown.event.is_set()
+                    and (  # submit the health check to the pod, if it is
                     self.is_shutdown.is_set()  # a worker and not shutdown
                     or not self.args.pod_role == PodRoleType.WORKER
                     or (
-                        await BaseServer.async_is_ready(
-                            self.runtime_ctrl_address, protocol=self.args.protocol[0], timeout=_timeout
-                        )
+                            await BaseServer.async_is_ready(
+                                ctrl_address=self.runtime_ctrl_address,
+                                timeout=_timeout,
+                                protocol=getattr(self.args, 'protocol', ["grpc"])[0]
+                                # Executor does not have protocol yet
+                            )
                     )
-                )
+            )
             ):
                 self._check_failed_to_start()
                 self.logger.debug(__ready_msg__)

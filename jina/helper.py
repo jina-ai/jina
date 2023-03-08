@@ -805,7 +805,7 @@ class ArgNamespace:
         """
         args = []
         from jina.serve.executors import BaseExecutor
-        from jina.serve.gateway import BaseGateway
+        from jina.serve.runtimes.gateway.gateway import BaseGateway
 
         for k, v in kwargs.items():
             k = k.replace('_', '-')
