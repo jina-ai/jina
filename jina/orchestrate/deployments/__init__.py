@@ -1220,7 +1220,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         _args = copy.deepcopy(args)
         _args.pod_role = PodRoleType.WORKER
         _args.host = _args.host[0] or __default_host__
-        _args.port = random_port()
+        _args.port = [random_port()]
 
         if _args.name:
             _args.name += f'/{entity_type}-0'
@@ -1264,7 +1264,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 )
                 parsed_args['uses_before'] = uses_before_args
                 args.uses_before_address = (
-                    f'{uses_before_args.host}:{uses_before_args.port}'
+                    f'{uses_before_args.host}:{uses_before_args.port[0]}'
                 )
             if (
                 getattr(args, 'uses_after', None)
@@ -1275,7 +1275,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 )
                 parsed_args['uses_after'] = uses_after_args
                 args.uses_after_address = (
-                    f'{uses_after_args.host}:{uses_after_args.port}'
+                    f'{uses_after_args.host}:{uses_after_args.port[0]}'
                 )
 
             parsed_args['head'] = Deployment._copy_to_head_args(args)
