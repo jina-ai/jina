@@ -135,12 +135,9 @@ class HTTPClientlet(AioHttpClientlet):
             req_dict['target_executor'] = req_dict['header']['target_executor']
         for attempt in range(1, self.max_attempts + 1):
             try:
-                response = await self.session.post(
-                    url=self.url, json=req_dict
-                ).__aenter__()
-                response.raise_for_status()
-                return response
+                return await self.session.post(url=self.url, json=req_dict).__aenter__()
             except Exception as err:
+                print(f'--->http client error: {err}')
                 await retry.wait_or_raise_err(
                     attempt=attempt,
                     err=err,
