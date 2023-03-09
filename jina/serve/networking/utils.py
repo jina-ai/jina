@@ -217,8 +217,8 @@ def get_default_grpc_options():
     """
 
     return [
-        ('grpc.max_send_message_length', -2),
-        ('grpc.max_receive_message_length', -2),
+        ('grpc.max_send_message_length', -1),
+        ('grpc.max_receive_message_length', -1),
         # for the following see this blog post for the choice of default value https://cs.mcgill.ca/~mxia2/2019/02/23/Using-gRPC-in-Production/
         ('grpc.keepalive_time_ms', 9999),
         # send keepalive ping every 9 second, default is 2 hours.
