@@ -188,8 +188,11 @@ def get_fastapi_app(
             async for msg in streamer.rpc_stream(request_iterator=req_iter()):
                 if not docarray_v2:
                     for i in range(len(msg.data._content.docs.docs)):
-                        msg.data._content.docs.docs[i].embedding.cls_name = 'numpy'
-                        msg.data._content.docs.docs[i].tensor.cls_name = 'numpy'
+                        if msg.data._content.docs.docs[i].HasField('embedding'):
+                            msg.data._content.docs.docs[i].embedding.cls_name = 'numpy'
+
+                        if msg.data._content.docs.docs[i].HasField('tensor'):
+                            msg.data._content.docs.docs[i].tensor.cls_name = 'numpy'
                 await manager.send(websocket, msg)
         except InternalNetworkError as err:
             import grpc
