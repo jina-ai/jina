@@ -183,6 +183,40 @@ jina flow --uses flow.yml
 
 More Flow YAML specifications can be found in {ref}`Flow YAML Specification<flow-yaml-spec>`.
 
+## Visualize
+
+A {class}`~jina.Flow` has a built-in `.plot()` function which can be used to visualize the `Flow`:
+```python
+from jina import Flow
+
+f = Flow().add().add()
+f.plot('flow.svg')
+```
+
+```{figure} flow.svg
+:width: 70%
+
+```
+
+```python
+from jina import Flow
+
+f = Flow().add(name='e1').add(needs='e1').add(needs='e1')
+f.plot('flow-2.svg')
+```
+
+```{figure} flow-2.svg
+:width: 70%
+```
+
+You can also do it in the terminal:
+
+```bash
+jina export flowchart flow.yml flow.svg 
+```
+
+You can also visualize a remote Flow by passing the URL to `jina export flowchart`.
+
 ## Define topologies over Executors
 
 {class}`~jina.Flow`s are not restricted to sequential execution. Internally they are modeled as graphs, so they can represent any complex, non-cyclic topology.

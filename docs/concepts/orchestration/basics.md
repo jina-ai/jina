@@ -248,40 +248,6 @@ Hosing services on Google Colab is not recommended if your server aims to be lon
 ```
 
 
-## Visualize
-
-A {class}`~jina.Flow` has a built-in `.plot()` function which can be used to visualize the `Flow`:
-```python
-from jina import Flow
-
-f = Flow().add().add()
-f.plot('flow.svg')
-```
-
-```{figure} flow.svg
-:width: 70%
-
-```
-
-```python
-from jina import Flow
-
-f = Flow().add(name='e1').add(needs='e1').add(needs='e1')
-f.plot('flow-2.svg')
-```
-
-```{figure} flow-2.svg
-:width: 70%
-```
-
-You can also do it in the terminal:
-
-```bash
-jina export flowchart flow.yml flow.svg 
-```
-
-You can also visualize a remote Flow by passing the URL to `jina export flowchart`.
-
 ## Export
 
 A {class}`~jina.Flow` YAML can be exported as a Docker Compose YAML or a Kubernetes YAML bundle. 
