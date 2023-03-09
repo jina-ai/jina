@@ -59,10 +59,9 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
             self.logger.warning(f'Exception during instrumentation teardown, {str(ex)}')
 
     def _get_request_handler(self):
-        # TODO: pass all the arguments
         self._setup_monitoring(monitoring=self.runtime_args.monitoring, port_monitoring=self.runtime_args.port_monitoring)
         self._setup_instrumentation(
-            name=self.runtime_args.name,
+            name=self.name,
             tracing=self.runtime_args.tracing,
             traces_exporter_host=self.runtime_args.traces_exporter_host,
             traces_exporter_port=self.runtime_args.traces_exporter_port,

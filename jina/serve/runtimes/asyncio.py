@@ -147,7 +147,6 @@ class AsyncNewLoopRuntime:
             non_defaults = ArgNamespace.get_non_defaults_args(
                 self.args, set_gateway_parser()
             )
-            uses_with['req_handler_cls'] = self.req_handler_cls
             if 'title' not in non_defaults:
                 uses_with['title'] = self.args.title
             if 'description' not in non_defaults:
