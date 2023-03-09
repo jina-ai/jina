@@ -227,29 +227,6 @@ def k8s_flow_gpu(docker_images):
 
 
 @pytest.fixture
-def k8s_flow_with_reload_executor(docker_images):
-    flow = Flow(name='test-flow-with-reload', port=9090, protocol='http').add(
-        name='test_executor',
-        replicas=2,
-        uses_with={'argument': 'value1'},
-        uses=f'docker://{docker_images[0]}',
-    )
-    return flow
-
-
-@pytest.fixture
-def k8s_flow_scale(docker_images, shards):
-    DEFAULT_REPLICAS = 2
-
-    flow = Flow(name='test-flow-scale', port=9090, protocol='http').add(
-        name='test_executor',
-        shards=shards,
-        replicas=DEFAULT_REPLICAS,
-    )
-    return flow
-
-
-@pytest.fixture
 def k8s_flow_with_needs(docker_images):
     flow = (
         Flow(
@@ -758,7 +735,7 @@ async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir, logger):
     [['test-executor', 'jinaai/jina']],
     indirect=True,
 )
-async def test_flow_with_workspace(logger, docker_images, tmpdir):
+async def test_flow_with_workspace_and_tensors(logger, docker_images, tmpdir):
     from kubernetes import client
 
     namespace = f'test-flow-with-workspace'.lower()
@@ -797,6 +774,8 @@ async def test_flow_with_workspace(logger, docker_images, tmpdir):
         assert len(docs) == 10
         for doc in docs:
             assert doc.tags['workspace'] == '/shared/TestExecutor/0'
+            assert doc.embedding.shape == (1000,)
+            assert doc.tensor.shape == (1000,)
         core_client.delete_namespace(namespace)
     except Exception as exc:
         logger.error(f' Exception raised {exc}')
