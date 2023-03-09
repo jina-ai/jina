@@ -8,7 +8,7 @@ from jina.constants import __default_executor__, __default_host__
 from jina.helper import expand_dict, expand_env_var
 from jina.jaml import JAML
 from jina.serve.executors import BaseExecutor
-from jina.serve.runtimes.gateway import HTTPGateway
+from jina.serve.runtimes.gateway.http import HTTPGateway
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

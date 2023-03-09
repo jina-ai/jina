@@ -81,6 +81,7 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
             runtime_name=self.name,
             aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
             tracing_client_interceptor=self.tracing_client_interceptor(),
+            deployment_name=self.name.split('/')[0]
         )
 
     def _add_gateway_args(self):

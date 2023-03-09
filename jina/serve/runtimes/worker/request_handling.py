@@ -458,7 +458,6 @@ class WorkerRequestHandler:
     def _set_result(self, requests, return_data, docs):
         # assigning result back to request
         if return_data is not None:
-            print(f' return_data {return_data}')
             if isinstance(return_data, DocumentArray):
                 docs = return_data
             elif isinstance(return_data, dict):
@@ -535,7 +534,6 @@ class WorkerRequestHandler:
             await task
         else:
             docs = WorkerRequestHandler.get_docs_from_request(requests)
-
             docs_matrix, docs_map = WorkerRequestHandler._get_docs_matrix_from_request(
                 requests
             )
