@@ -1,7 +1,7 @@
 # TODO use fixed jina version for deterministic execution
 FROM jinaai/jina:test-pip
 
-pip install torch
+RUN pip install torch
 
 # setup the workspace
 COPY . /workspace
