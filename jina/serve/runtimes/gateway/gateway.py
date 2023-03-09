@@ -1,5 +1,6 @@
 from jina.jaml import JAMLCompatible
 from jina.serve.helper import store_init_kwargs, wrap_func
+from jina.serve.runtimes.servers import BaseServer
 
 __all__ = ['BaseGateway']
 
@@ -45,6 +46,11 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
     """
     The base class of all custom Gateways, can be used to build a custom interface to a Jina Flow that supports
     gateway logic
-
-    :class:`jina.Gateway` as an alias for this class.
     """
+
+
+class Gateway(BaseServer, BaseGateway):
+    """
+    The class for where to inherit when you want to customize your Gateway. Important to provide backwards compatibility
+    """
+    pass

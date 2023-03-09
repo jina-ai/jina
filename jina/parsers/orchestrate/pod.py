@@ -139,7 +139,7 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
     :param arg_group: the parser instance or args group to which we add arguments
     :param pod_type: the pod_type configured by the parser. Can be either 'worker' for WorkerRuntime or 'gateway' for GatewayRuntime
     """
-
+    alias = ['--port', '--ports']
     if pod_type != 'gateway':
         port_description = (
             'The port for input data to bind to, default is a random port between [49152, 65535]. '
@@ -152,11 +152,9 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
             'The port argument can be either 1 single value in case only 1 protocol is used or multiple values when '
             'many protocols are used.'
         )
+        alias.extend(['--port-expose','--port-in'])
     arg_group.add_argument(
-        '--port',
-        '--port-expose',
-        '--port-in',
-        '--ports',
+        *alias,
         action=CastToIntAction,
         type=str,
         nargs='+',

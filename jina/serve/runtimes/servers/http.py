@@ -140,6 +140,10 @@ class FastAPIBaseServer(BaseServer):
         """Run HTTP server forever"""
         await self.server.serve()
 
+    @property
+    def _should_exit(self):
+        return self.server.should_exit
+
     @staticmethod
     def is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
         """

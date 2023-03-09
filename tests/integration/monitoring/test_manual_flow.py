@@ -8,14 +8,15 @@ from docarray import Document, DocumentArray
 from jina import Executor, Flow, requests
 from jina.parsers import set_gateway_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.gateway import GatewayRuntime
-from jina.serve.runtimes.worker import WorkerRuntime
+from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
+from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+
 from tests.helper import _generate_pod_args
 
 
 def _create_worker_runtime(port, name='', executor=None, port_monitoring=None):
     args = _generate_pod_args()
-    args.port = port
+    args.port = [port]
     args.name = name
 
     if port_monitoring:
@@ -25,7 +26,7 @@ def _create_worker_runtime(port, name='', executor=None, port_monitoring=None):
     if executor:
         args.uses = executor
 
-    with WorkerRuntime(args) as runtime:
+    with AsyncNewLoopRuntime(args, req_handler_cls=WorkerRequestHandler) as runtime:
         runtime.run_forever()
 
 
@@ -50,7 +51,7 @@ def _create_gateway_runtime(
         ]
     )
     args.port_monitoring = port_monitoring
-    with GatewayRuntime(args) as runtime:
+    with AsyncNewLoopRuntime(args, req_handler_cls=GatewayRequestHandler) as runtime:
         runtime.run_forever()
 
 

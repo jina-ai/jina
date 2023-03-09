@@ -111,10 +111,12 @@ class AsyncNewLoopRuntime:
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPod`"""
         # threads are not using asyncio.Event, but threading.Event
-        if isinstance(self.is_cancel, asyncio.Event):
+        if isinstance(self.is_cancel, asyncio.Event) and not hasattr(self.server, '_should_exit'):
             await self.is_cancel.wait()
         else:
-            while not self.is_cancel.is_set():
+            while not self.is_cancel.is_set() and not getattr(
+                    self.server, '_should_exit', False
+            ):
                 await asyncio.sleep(0.1)
 
         await self.async_teardown()
