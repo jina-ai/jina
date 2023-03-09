@@ -381,7 +381,7 @@ def get_fastapi_app(
         from jina._docarray import DocumentArray, docarray_v2
 
         async for result in streamer.rpc_stream(request_iterator=request_iterator):
-            if docarray_v2:
+            if not docarray_v2:
                 for i in range(len(result.data._content.docs.docs)):
                     result.data._content.docs.docs[i].embedding.cls_name = 'numpy'
                     result.data._content.docs.docs[i].tensor.cls_name = 'numpy'
