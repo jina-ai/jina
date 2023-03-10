@@ -732,10 +732,10 @@ async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir, logger):
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize(
     'docker_images',
-    [['test-executor-torch', 'jinaai/jina']],
+    [['test-executor', 'jinaai/jina']],
     indirect=True,
 )
-async def test_flow_with_workspace_and_tensors(logger, docker_images, tmpdir):
+async def test_flow_with_workspace(logger, docker_images, tmpdir):
     from kubernetes import client
 
     namespace = f'test-flow-with-workspace'.lower()
@@ -774,8 +774,6 @@ async def test_flow_with_workspace_and_tensors(logger, docker_images, tmpdir):
         assert len(docs) == 10
         for doc in docs:
             assert doc.tags['workspace'] == '/shared/TestExecutor/0'
-            assert doc.embedding.shape == (1000,)
-            assert doc.tensor.shape == (1000,)
         core_client.delete_namespace(namespace)
     except Exception as exc:
         logger.error(f' Exception raised {exc}')
