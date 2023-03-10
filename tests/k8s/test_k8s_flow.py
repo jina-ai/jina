@@ -732,7 +732,7 @@ async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir, logger):
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize(
     'docker_images',
-    [['test-executor', 'jinaai/jina']],
+    [['test-executor-torch', 'jinaai/jina']],
     indirect=True,
 )
 async def test_flow_with_workspace_and_tensors(logger, docker_images, tmpdir):
