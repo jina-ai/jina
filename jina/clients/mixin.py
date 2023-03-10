@@ -3,6 +3,11 @@ import warnings
 from functools import partialmethod
 from typing import TYPE_CHECKING, AsyncGenerator, Dict, List, Optional, Type, Union
 
+import grpc.aio
+
+from jina.clients.base.grpc import GRPCBaseClient
+from jina.clients.base.retry import wait_or_raise_err
+from jina.excepts import InternalNetworkError
 from jina.helper import deprecate_by, get_or_reuse_loop, run_async
 from jina.importer import ImportExtensions
 
@@ -11,7 +16,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
     from jina.types.request.data import Response
 
-from jina._docarray import DocumentArray
+from jina._docarray import Document, DocumentArray
 
 
 def _include_results_field_in_param(parameters: Optional['Dict']) -> 'Dict':
@@ -207,6 +212,130 @@ class AsyncProfileMixin:
 class PostMixin:
     """The Post Mixin class for Client and Flow"""
 
+    def _with_retry(
+        self,
+        func,
+        inputs,
+        on_done,
+        on_error,
+        on_always,
+        exec_endpoint,
+        target_executor,
+        parameters,
+        request_size,
+        max_attempts,
+        initial_backoff,
+        max_backoff,
+        backoff_multiplier,
+        results_in_order,
+        stream,
+        prefetch,
+        **kwargs,
+    ):
+        is_document_or_documentarray = isinstance(inputs, Document) or isinstance(
+            inputs, DocumentArray
+        )
+        if (
+            is_document_or_documentarray
+            and isinstance(self.client, GRPCBaseClient)
+            and max_attempts > 1
+        ):
+            for attempt in range(1, max_attempts + 1):
+                try:
+                    return PostMixin._run_async(
+                        backoff_multiplier,
+                        exec_endpoint,
+                        func,
+                        initial_backoff,
+                        inputs,
+                        kwargs,
+                        max_attempts,
+                        max_backoff,
+                        on_always,
+                        on_done,
+                        on_error,
+                        parameters,
+                        prefetch,
+                        request_size,
+                        results_in_order,
+                        stream,
+                        target_executor,
+                    )
+                except (
+                    grpc.aio.AioRpcError,
+                    InternalNetworkError,
+                    ConnectionError,
+                ) as err:
+                    run_async(
+                        wait_or_raise_err,
+                        attempt=attempt,
+                        err=err,
+                        max_attempts=max_attempts,
+                        backoff_multiplier=backoff_multiplier,
+                        initial_backoff=initial_backoff,
+                        max_backoff=max_backoff,
+                    )
+        else:
+            return PostMixin._run_async(
+                backoff_multiplier,
+                exec_endpoint,
+                func,
+                initial_backoff,
+                inputs,
+                kwargs,
+                max_attempts,
+                max_backoff,
+                on_always,
+                on_done,
+                on_error,
+                parameters,
+                prefetch,
+                request_size,
+                results_in_order,
+                stream,
+                target_executor,
+            )
+
+    @staticmethod
+    def _run_async(
+        backoff_multiplier,
+        exec_endpoint,
+        func,
+        initial_backoff,
+        inputs,
+        kwargs,
+        max_attempts,
+        max_backoff,
+        on_always,
+        on_done,
+        on_error,
+        parameters,
+        prefetch,
+        request_size,
+        results_in_order,
+        stream,
+        target_executor,
+    ):
+        return run_async(
+            func,
+            inputs=inputs,
+            on_done=on_done,
+            on_error=on_error,
+            on_always=on_always,
+            exec_endpoint=exec_endpoint,
+            target_executor=target_executor,
+            parameters=parameters,
+            request_size=request_size,
+            max_attempts=max_attempts,
+            initial_backoff=initial_backoff,
+            max_backoff=max_backoff,
+            backoff_multiplier=backoff_multiplier,
+            results_in_order=results_in_order,
+            stream=stream,
+            prefetch=prefetch,
+            **kwargs,
+        )
+
     def post(
         self,
         on: str,
@@ -278,8 +407,8 @@ class PostMixin:
             if return_results:
                 return result
 
-        return run_async(
-            _get_results,
+        return self._with_retry(
+            func=_get_results,
             inputs=inputs,
             on_done=on_done,
             on_error=on_error,

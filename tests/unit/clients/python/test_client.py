@@ -6,7 +6,7 @@ import aiohttp
 import pytest
 import requests
 
-from jina import Deployment, Executor, Flow, helper
+from jina import Deployment, DocumentArray, Executor, Flow, helper
 from jina import requests as req
 from jina.clients import Client
 from jina.clients.base.retry import wait_or_raise_err
@@ -361,7 +361,9 @@ async def test_async_clients_max_attempts_raises_error(
 
 @pytest.mark.timeout(90)
 @pytest.mark.parametrize('flow_or_deployment', ['deployment', 'flow'])
-def test_grpc_stream_transient_error(flow_or_deployment, port_generator, mocker):
+def test_grpc_stream_transient_error_iterable_input(
+    flow_or_deployment, port_generator, mocker
+):
     random_port = port_generator()
     cntx = (
         Flow(port=random_port).add(uses=MyExec)
@@ -403,6 +405,47 @@ def test_grpc_stream_transient_error(flow_or_deployment, port_generator, mocker)
                     initial_backoff=initial_backoff,
                     max_backoff=max_backoff,
                 )
+    finally:
+        stop_event.set()
+        t.join()
+        t.terminate()
+
+
+@pytest.mark.timeout(90)
+@pytest.mark.parametrize('flow_or_deployment', ['deployment', 'flow'])
+def test_grpc_stream_transient_error_docarray_input(
+    flow_or_deployment, port_generator, mocker
+):
+    random_port = port_generator()
+    cntx = (
+        Flow(port=random_port).add(uses=MyExec)
+        if flow_or_deployment == 'flow'
+        else Deployment(include_gateway=True, uses=MyExec, port=random_port)
+    )
+
+    client = Client(host=f'{cntx.protocol}://{cntx.host}:{random_port}')
+    stop_event = multiprocessing.Event()
+    t = multiprocessing.Process(target=_start_runtime, args=(cntx, stop_event))
+    t.start()
+
+    num_docs = 10
+    try:
+        on_error_mock = mocker.Mock()
+        response = client.post(
+            '/',
+            DocumentArray.empty(num_docs),
+            request_size=1,
+            on_error=on_error_mock,
+            return_responses=True,
+            timeout=0.5,
+            max_attempts=5,
+            initial_backoff=0.8,
+            backoff_multiplier=1.5,
+            max_backoff=5,
+        )
+        assert len(response) == num_docs
+
+        on_error_mock.assert_not_called()
     finally:
         stop_event.set()
         t.join()

@@ -9,7 +9,6 @@ dependencies like a database. The errors can be:
 - retried up to a certain limit which assumes that the recovery logic kicks in to repair transient errors.
 - accept that the operation cannot be successfully completed.
 
-
 ## Transient fault handling with retries
 
 The {meth}`~jina.clients.mixin.PostMixin.post` method accepts `max_attempts`, `initial_backoff`, `max_backoff`
@@ -34,12 +33,13 @@ be invoked. Some important implication of
 using retries with **gRPC** are:
 
 - The built-in **gRPC** retries are limited in scope and are implemented to work under certain circumstances. More
-   details are specified in the [design document](https://github.com/grpc/proposal/blob/master/A6-client-retries.md).
-- If `stream` parameter is set to True (defaults to True), the retry must
-   be handled as below because the result must be consumed to check for errors in the stream of responses.
+  details are specified in the [design document](https://github.com/grpc/proposal/blob/master/A6-client-retries.md).
+- If `stream` parameter is set to True (defaults to True) and if the `inputs` parameters is a `GeneratorType` or
+  an `Iterable`, the retry must be handled as below because the result must be consumed to check for errors in the
+  stream of responses.
 
    ```python
-   from jina import Client, DocumentArray
+   from jina import Client, Document
    from jina.clients.base.retry import wait_or_raise_err
    from jina.helper import run_async
 
@@ -50,12 +50,18 @@ using retries with **gRPC** are:
    backoff_multiplier = 1.5
    max_backoff = 5
 
+
+   def input_generator():
+       for _ in range(10):
+           yield Document()
+
+
    for attempt in range(1, max_attempts + 1):
        try:
            response = client.post(
                '/',
-               inputs=DocumentArray.empty(2),
-               request_size=1,
+               inputs=input_generator(),
+               request_size=2,
                timeout=0.5,
            )
            assert len(response) == 1
@@ -71,10 +77,12 @@ using retries with **gRPC** are:
            )
    ```
 
+- If the `stream` parameter is set to True and the `inputs` parameter is a `Document` or a `DocumentArray`, the retry is
+  handled internally on the `max_attempts`, `initial_backoff`, `backoff_multiplier` and `max_backoff`
+  parameters.
 - If the `stream` parameter is set to False, the {meth}`~jina.clients.mixin.PostMixin.post` method invokes the unary
-   RPC method and the
-   retry is handled internally based on the `max_attempts`, `initial_backoff`, `backoff_multiplier` and `max_backoff`
-   parameters.
+  RPC method and the
+  retry is handled internally.
 
 ```{hint}
 The retry parameters `max_attempts`, `initial_backoff`, `backoff_multiplier` and `max_backoff` of the {meth}`~jina.clients.mixin.PostMixin.post` method will be used to set the **gRPC** retry service options. This improves the chances of success if the gRPC retry conditions are met.
