@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Dict, Optional, Tuple
 
 from starlette import status
 
-from jina.clients.base import BaseClient, retry
+from jina.clients.base import BaseClient
 from jina.clients.base.helper import WebsocketClientlet
 from jina.clients.helper import callback_exec
 from jina.helper import get_or_reuse_loop
@@ -118,129 +118,116 @@ class WebSocketBaseClient(BaseClient):
 
             proto = 'wss' if self.args.tls else 'ws'
             url = f'{proto}://{self.args.host}:{self.args.port}/'
-            for attempt in range(1, max_attempts + 1):
+            iolet = await stack.enter_async_context(
+                WebsocketClientlet(
+                    url=url,
+                    logger=self.logger,
+                    tracer_provider=self.tracer_provider,
+                    max_attempts=max_attempts,
+                    initial_backoff=initial_backoff,
+                    max_backoff=max_backoff,
+                    backoff_multiplier=backoff_multiplier,
+                    **kwargs,
+                )
+            )
+
+            request_buffer: Dict[
+                str, asyncio.Future
+            ] = dict()  # maps request_ids to futures (tasks)
+
+            def _result_handler(result):
+                return result
+
+            async def _receive():
+                def _response_handler(response):
+                    if response.header.request_id in request_buffer:
+                        future = request_buffer.pop(response.header.request_id)
+                        future.set_result(response)
+                    else:
+                        self.logger.warning(
+                            f'discarding unexpected response with request id {response.header.request_id}'
+                        )
+
+                """Await messages from WebsocketGateway and process them in the request buffer"""
                 try:
-                    iolet = await stack.enter_async_context(
-                        WebsocketClientlet(
-                            url=url,
-                            logger=self.logger,
-                            tracer_provider=self.tracer_provider,
-                            max_attempts=max_attempts,
-                            initial_backoff=initial_backoff,
-                            max_backoff=max_backoff,
-                            backoff_multiplier=backoff_multiplier,
-                            **kwargs,
+                    async for response in iolet.recv_message():
+                        _response_handler(response)
+                finally:
+                    if request_buffer:
+                        self.logger.warning(
+                            f'{self.__class__.__name__} closed, cancelling all outstanding requests'
                         )
-                    )
+                        for future in request_buffer.values():
+                            future.cancel()
+                        request_buffer.clear()
 
-                    request_buffer: Dict[
-                        str, asyncio.Future
-                    ] = dict()  # maps request_ids to futures (tasks)
+            def _handle_end_of_iter():
+                """Send End of iteration signal to the Gateway"""
+                asyncio.create_task(iolet.send_eoi())
 
-                    def _result_handler(result):
-                        return result
+            def _request_handler(
+                request: 'Request',
+            ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
+                """
+                For each request in the iterator, we send the `Message` using `iolet.send_message()`.
+                For websocket requests from client, for each request in the iterator, we send the request in `bytes`
+                using `iolet.send_message()`.
+                Then add {<request-id>: <an-empty-future>} to the request buffer.
+                This empty future is used to track the `result` of this request during `receive`.
+                :param request: current request in the iterator
+                :return: asyncio Future for sending message
+                """
+                future = get_or_reuse_loop().create_future()
+                request_buffer[request.header.request_id] = future
+                asyncio.create_task(iolet.send_message(request))
+                return future, None
 
-                    async def _receive():
-                        def _response_handler(response):
-                            if response.header.request_id in request_buffer:
-                                future = request_buffer.pop(response.header.request_id)
-                                future.set_result(response)
-                            else:
-                                self.logger.warning(
-                                    f'discarding unexpected response with request id {response.header.request_id}'
-                                )
+            streamer_args = vars(self.args)
+            if prefetch:
+                streamer_args['prefetch'] = prefetch
+            streamer = RequestStreamer(
+                request_handler=_request_handler,
+                result_handler=_result_handler,
+                end_of_iter_handler=_handle_end_of_iter,
+                logger=self.logger,
+                **streamer_args,
+            )
 
-                        """Await messages from WebsocketGateway and process them in the request buffer"""
-                        try:
-                            async for response in iolet.recv_message():
-                                _response_handler(response)
-                        finally:
-                            if request_buffer:
-                                self.logger.warning(
-                                    f'{self.__class__.__name__} closed, cancelling all outstanding requests'
-                                )
-                                for future in request_buffer.values():
-                                    future.cancel()
-                                request_buffer.clear()
+            receive_task = asyncio.create_task(_receive())
 
-                    def _handle_end_of_iter():
-                        """Send End of iteration signal to the Gateway"""
-                        asyncio.create_task(iolet.send_eoi())
+            exception_raised = None
 
-                    def _request_handler(
-                        request: 'Request',
-                    ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
-                        """
-                        For each request in the iterator, we send the `Message` using `iolet.send_message()`.
-                        For websocket requests from client, for each request in the iterator, we send the request in `bytes`
-                        using `iolet.send_message()`.
-                        Then add {<request-id>: <an-empty-future>} to the request buffer.
-                        This empty future is used to track the `result` of this request during `receive`.
-                        :param request: current request in the iterator
-                        :return: asyncio Future for sending message
-                        """
-                        future = get_or_reuse_loop().create_future()
-                        request_buffer[request.header.request_id] = future
-                        asyncio.create_task(iolet.send_message(request))
-                        return future, None
-
-                    streamer_args = vars(self.args)
-                    if prefetch:
-                        streamer_args['prefetch'] = prefetch
-                    streamer = RequestStreamer(
-                        request_handler=_request_handler,
-                        result_handler=_result_handler,
-                        end_of_iter_handler=_handle_end_of_iter,
+            if receive_task.done():
+                raise RuntimeError('receive task not running, can not send messages')
+            try:
+                async for response in streamer.stream(
+                    request_iterator=request_iterator,
+                    results_in_order=results_in_order,
+                ):
+                    callback_exec(
+                        response=response,
+                        on_error=on_error,
+                        on_done=on_done,
+                        on_always=on_always,
+                        continue_on_error=self.continue_on_error,
                         logger=self.logger,
-                        **streamer_args,
                     )
-
-                    receive_task = asyncio.create_task(_receive())
-
-                    exception_raised = None
-
-                    if receive_task.done():
-                        raise RuntimeError(
-                            'receive task not running, can not send messages'
-                        )
-                    try:
-                        async for response in streamer.stream(
-                            request_iterator=request_iterator,
-                            results_in_order=results_in_order,
-                        ):
-                            callback_exec(
-                                response=response,
-                                on_error=on_error,
-                                on_done=on_done,
-                                on_always=on_always,
-                                continue_on_error=self.continue_on_error,
-                                logger=self.logger,
-                            )
-                            if self.show_progress:
-                                p_bar.update()
-                            yield response
-                    except Exception as ex:
-                        exception_raised = ex
-                        try:
-                            receive_task.cancel()
-                        except:
-                            raise ex
-                    finally:
-                        if iolet.close_code == status.WS_1011_INTERNAL_ERROR:
-                            raise ConnectionError(iolet.close_message)
-                        try:
-                            await receive_task
-                        except asyncio.CancelledError:
-                            if exception_raised is not None:
-                                raise exception_raised
-                            else:
-                                raise
-                except Exception as err:
-                    await retry.wait_or_raise_err(
-                        attempt=attempt,
-                        err=err,
-                        max_attempts=max_attempts,
-                        backoff_multiplier=backoff_multiplier,
-                        initial_backoff=initial_backoff,
-                        max_backoff=max_backoff,
-                    )
+                    if self.show_progress:
+                        p_bar.update()
+                    yield response
+            except Exception as ex:
+                exception_raised = ex
+                try:
+                    receive_task.cancel()
+                except:
+                    raise ex
+            finally:
+                if iolet.close_code == status.WS_1011_INTERNAL_ERROR:
+                    raise ConnectionError(iolet.close_message)
+                try:
+                    await receive_task
+                except asyncio.CancelledError:
+                    if exception_raised is not None:
+                        raise exception_raised
+                    else:
+                        raise

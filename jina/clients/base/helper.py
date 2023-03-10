@@ -2,6 +2,7 @@ import asyncio
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional
 
+import aiohttp
 from aiohttp import WSMsgType
 
 from jina.clients.base import retry
@@ -26,7 +27,7 @@ class AioHttpClientlet(ABC):
         logger: 'JinaLogger',
         max_attempts: int = 1,
         initial_backoff: float = 0.5,
-        max_backoff: float = 0.1,
+        max_backoff: float = 2,
         backoff_multiplier: float = 1.5,
         tracer_provider: Optional['trace.TraceProvider'] = None,
         **kwargs,
@@ -135,9 +136,10 @@ class HTTPClientlet(AioHttpClientlet):
             req_dict['target_executor'] = req_dict['header']['target_executor']
         for attempt in range(1, self.max_attempts + 1):
             try:
-                return await self.session.post(url=self.url, json=req_dict).__aenter__()
-            except Exception as err:
-                print(f'--->http client error: {err}')
+                return await self.session.post(
+                    url=self.url, json=req_dict, raise_for_status=True
+                ).__aenter__()
+            except aiohttp.ClientError as err:
                 await retry.wait_or_raise_err(
                     attempt=attempt,
                     err=err,
@@ -206,10 +208,18 @@ class WebsocketClientlet(AioHttpClientlet):
         :param request: request object
         :return: send request as bytes awaitable
         """
-        try:
-            return await self.websocket.send_bytes(request.SerializeToString())
-        except ConnectionResetError:
-            raise
+        for attempt in range(1, self.max_attempts + 1):
+            try:
+                return await self.websocket.send_bytes(request.SerializeToString())
+            except aiohttp.ClientError as err:
+                await retry.wait_or_raise_err(
+                    attempt=attempt,
+                    err=err,
+                    max_attempts=self.max_attempts,
+                    backoff_multiplier=self.backoff_multiplier,
+                    initial_backoff=self.initial_backoff,
+                    max_backoff=self.max_backoff,
+                )
 
     async def send_dry_run(self, **kwargs):
         """Query the dry_run endpoint from Gateway
@@ -259,14 +269,25 @@ class WebsocketClientlet(AioHttpClientlet):
             yield StatusMessage(response.data)
 
     async def __aenter__(self):
-        await super().__aenter__()
-        self.websocket = await self.session.ws_connect(
-            url=self.url,
-            protocols=(WebsocketSubProtocols.BYTES.value,),
-            **self._session_kwargs,
-        ).__aenter__()
-        self.response_iter = WsResponseIter(self.websocket)
-        return self
+        for attempt in range(1, self.max_attempts + 1):
+            try:
+                await super().__aenter__()
+                self.websocket = await self.session.ws_connect(
+                    url=self.url,
+                    protocols=(WebsocketSubProtocols.BYTES.value,),
+                    **self._session_kwargs,
+                ).__aenter__()
+                self.response_iter = WsResponseIter(self.websocket)
+                return self
+            except aiohttp.ClientError as err:
+                await retry.wait_or_raise_err(
+                    attempt=attempt,
+                    err=err,
+                    max_attempts=self.max_attempts,
+                    backoff_multiplier=self.backoff_multiplier,
+                    initial_backoff=self.initial_backoff,
+                    max_backoff=self.max_backoff,
+                )
 
     @property
     def close_message(self):

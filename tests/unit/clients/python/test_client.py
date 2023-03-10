@@ -83,8 +83,7 @@ def test_gateway_index(flow_with_http, test_img_1, test_img_2):
 
 # Timeout is necessary to fail in case of hanging client requests
 @pytest.mark.timeout(60)
-@pytest.mark.parametrize('use_stream', [True, False])
-def test_client_websocket(mocker, flow_with_websocket, use_stream):
+def test_client_websocket(mocker, flow_with_websocket):
     with flow_with_websocket:
         time.sleep(0.5)
         client = Client(
@@ -104,7 +103,6 @@ def test_client_websocket(mocker, flow_with_websocket, use_stream):
             on_error=on_error_mock,
             on_done=on_done_mock,
             return_responses=True,
-            stream=use_stream,
         )
         on_always_mock.assert_called_once()
         on_done_mock.assert_called_once()

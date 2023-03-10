@@ -5,7 +5,12 @@ import grpc
 
 
 async def wait_or_raise_err(
-    attempt, err, max_attempts, backoff_multiplier, initial_backoff, max_backoff
+    attempt: int,
+    err: Exception,
+    max_attempts: float,
+    backoff_multiplier: float,
+    initial_backoff: float,
+    max_backoff: float,
 ):
     """
     Accepts retry parameters and the underlying. The error is raised if the max_attempts has been reached otherwise the
