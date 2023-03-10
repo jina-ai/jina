@@ -7,8 +7,10 @@ import pytest
 
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
-from jina.serve.runtimes.gateway import GatewayRuntime
-from jina.serve.runtimes.worker import WorkerRuntime
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.servers import BaseServer
+from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
+from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 from tests.helper import (
     _generate_pod_args,
     _validate_custom_gateway_process,
@@ -28,23 +30,23 @@ def _create_gateway_runtime(port, uses, uses_with, worker_port):
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
     deployments_metadata = '{"pod0": {"key1": "value1", "key2": "value2"}}'
-    with GatewayRuntime(
-        set_gateway_parser().parse_args(
-            [
-                '--port',
-                str(port),
-                '--uses',
-                uses,
-                '--uses-with',
-                json.dumps(uses_with),
-                '--graph-description',
-                graph_description,
-                '--deployments-addresses',
-                pod_addresses,
-                '--deployments-metadata',
-                deployments_metadata,
-            ]
-        )
+    with AsyncNewLoopRuntime(
+            set_gateway_parser().parse_args(
+                [
+                    '--port',
+                    str(port),
+                    '--uses',
+                    uses,
+                    '--uses-with',
+                    json.dumps(uses_with),
+                    '--graph-description',
+                    graph_description,
+                    '--deployments-addresses',
+                    pod_addresses,
+                    '--deployments-metadata',
+                    deployments_metadata,
+                ]
+            ), req_handler_cls=GatewayRequestHandler
     ) as runtime:
         runtime.run_forever()
 
@@ -65,7 +67,7 @@ def _start_gateway_runtime(uses, uses_with, worker_port):
 def _create_worker_runtime(port, uses):
     args = _generate_pod_args(['--uses', uses, '--port', str(port)])
 
-    with WorkerRuntime(args) as runtime:
+    with AsyncNewLoopRuntime(args, req_handler_cls=WorkerRequestHandler) as runtime:
         runtime.run_forever()
 
 
@@ -87,59 +89,59 @@ def _start_worker_runtime(uses):
     [
         ('DummyGateway', {}, {'arg1': None, 'arg2': None, 'arg3': 'default-arg3'}),
         (
-            'DummyGatewayGetStreamer',
-            {},
-            {'arg1': None, 'arg2': None, 'arg3': 'default-arg3'},
+                'DummyGatewayGetStreamer',
+                {},
+                {'arg1': None, 'arg2': None, 'arg3': 'default-arg3'},
         ),
         (
-            _dummy_gateway_yaml_path,
-            {},
-            {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'},
+                _dummy_gateway_yaml_path,
+                {},
+                {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'},
         ),
         (
-            _dummy_fastapi_gateway_yaml_path,
-            {},
-            {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'},
+                _dummy_fastapi_gateway_yaml_path,
+                {},
+                {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'},
         ),
         (
-            'DummyGateway',
-            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
-            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+                'DummyGateway',
+                {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+                {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
         ),
         (
-            'DummyGatewayGetStreamer',
-            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
-            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+                'DummyGatewayGetStreamer',
+                {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+                {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
         ),
         (
-            _dummy_gateway_yaml_path,
-            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
-            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+                _dummy_gateway_yaml_path,
+                {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+                {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
         ),
         (
-            _dummy_fastapi_gateway_yaml_path,
-            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
-            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+                _dummy_fastapi_gateway_yaml_path,
+                {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+                {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
         ),
         (
-            'DummyGateway',
-            {'arg1': 'arg1'},
-            {'arg1': 'arg1', 'arg2': None, 'arg3': 'default-arg3'},
+                'DummyGateway',
+                {'arg1': 'arg1'},
+                {'arg1': 'arg1', 'arg2': None, 'arg3': 'default-arg3'},
         ),
         (
-            'DummyGatewayGetStreamer',
-            {'arg1': 'arg1'},
-            {'arg1': 'arg1', 'arg2': None, 'arg3': 'default-arg3'},
+                'DummyGatewayGetStreamer',
+                {'arg1': 'arg1'},
+                {'arg1': 'arg1', 'arg2': None, 'arg3': 'default-arg3'},
         ),
         (
-            _dummy_gateway_yaml_path,
-            {'arg1': 'arg1'},
-            {'arg1': 'arg1', 'arg2': 'world', 'arg3': 'default-arg3'},
+                _dummy_gateway_yaml_path,
+                {'arg1': 'arg1'},
+                {'arg1': 'arg1', 'arg2': 'world', 'arg3': 'default-arg3'},
         ),
         (
-            _dummy_fastapi_gateway_yaml_path,
-            {'arg1': 'arg1'},
-            {'arg1': 'arg1', 'arg2': 'world', 'arg3': 'default-arg3'},
+                _dummy_fastapi_gateway_yaml_path,
+                {'arg1': 'arg1'},
+                {'arg1': 'arg1', 'arg2': 'world', 'arg3': 'default-arg3'},
         ),
     ],
 )
@@ -162,9 +164,8 @@ def test_custom_gateway_no_executors(uses, uses_with, expected):
 def test_stream_individual_executor_simple():
     from docarray import DocumentArray, Document
 
-    from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
+    from jina.serve.runtimes.gateway.http import FastAPIBaseGateway
     from jina import Flow, Executor, requests
-
 
     PARAMETERS = {'dog': 'woof'}
 
@@ -177,7 +178,8 @@ def test_stream_individual_executor_simple():
 
             @app.get('/endpoint')
             async def get(text: str):
-                docs = await self.executor['executor1'].post(on='/', inputs=DocumentArray([Document(text=text), Document(text=text.upper())]), parameters=PARAMETERS)
+                docs = await self.executor['executor1'].post(on='/', inputs=DocumentArray(
+                    [Document(text=text), Document(text=text.upper())]), parameters=PARAMETERS)
                 return {'result': docs.texts}
 
             return app
@@ -187,16 +189,19 @@ def test_stream_individual_executor_simple():
         def func(self, docs, **kwargs):
             for doc in docs:
                 doc.text += ' THIS SHOULD NOT HAVE HAPPENED!'
+
     class SecondExec(Executor):
         @requests
         def func(self, docs, parameters, **kwargs):
             for doc in docs:
                 doc.text += f' Second(parameters={str(parameters)})'
 
-    with Flow().config_gateway(uses=MyGateway, protocol='http').add(uses=FirstExec, name='executor0').add(uses=SecondExec, name='executor1') as flow:
+    with Flow().config_gateway(uses=MyGateway, protocol='http').add(uses=FirstExec, name='executor0').add(
+            uses=SecondExec, name='executor1') as flow:
         import requests
         r = requests.get(f'http://localhost:{flow.port}/endpoint?text=meow')
-        assert r.json()['result'] == [f'meow Second(parameters={str(PARAMETERS)})', f'MEOW Second(parameters={str(PARAMETERS)})']
+        assert r.json()['result'] == [f'meow Second(parameters={str(PARAMETERS)})',
+                                      f'MEOW Second(parameters={str(PARAMETERS)})']
 
 
 @pytest.mark.parametrize(
@@ -213,10 +218,9 @@ def test_stream_individual_executor_multirequest(n_replicas: int, n_shards: int)
 
     from docarray import DocumentArray, Document
 
-    from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
+    from jina.serve.runtimes.gateway.http import FastAPIBaseGateway
     from jina import Flow, Executor, requests
     import os
-
 
     PARAMETERS = {'dog': 'woof'}
 
@@ -229,7 +233,9 @@ def test_stream_individual_executor_multirequest(n_replicas: int, n_shards: int)
 
             @app.get('/endpoint')
             async def get(text: str):
-                docs = await self.executor['executor1'].post(on='/', inputs=DocumentArray([Document(text=f'{text} {i}') for i in range(N_DOCS)]), parameters=PARAMETERS, request_size=BATCH_SIZE)
+                docs = await self.executor['executor1'].post(on='/', inputs=DocumentArray(
+                    [Document(text=f'{text} {i}') for i in range(N_DOCS)]), parameters=PARAMETERS,
+                                                             request_size=BATCH_SIZE)
                 pids = set([doc.tags['pid'] for doc in docs])
                 return {'result': docs.texts, 'pids': pids}
 
@@ -240,6 +246,7 @@ def test_stream_individual_executor_multirequest(n_replicas: int, n_shards: int)
         def func(self, docs, **kwargs):
             for doc in docs:
                 doc.text += ' THIS SHOULD NOT HAVE HAPPENED!'
+
     class SecondExec(Executor):
         @requests
         def func(self, docs, parameters, **kwargs):
@@ -248,7 +255,7 @@ def test_stream_individual_executor_multirequest(n_replicas: int, n_shards: int)
                 doc.tags['pid'] = os.getpid()
 
     with Flow().config_gateway(uses=MyGateway, protocol='http').add(uses=FirstExec, name='executor0').add(
-        uses=SecondExec, name='executor1', replicas=n_replicas, shards=n_shards
+            uses=SecondExec, name='executor1', replicas=n_replicas, shards=n_shards
     ) as flow:
         import requests
         r = requests.get(f'http://localhost:{flow.port}/endpoint?text=meow')

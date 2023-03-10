@@ -19,7 +19,8 @@ from jina.serve.networking.utils import (
     send_requests_sync,
 )
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.head import HeadRuntime
+from jina.serve.runtimes.servers import BaseServer
+from jina.serve.runtimes.head.request_handling import HeaderRequestHandler
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
 from tests.helper import _generate_pod_args
@@ -231,7 +232,7 @@ async def test_head_runtime_reflection():
     args = _generate_pod_args()
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
-    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert BaseServer.wait_for_ready_or_shutdown(
         timeout=3.0,
         ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=multiprocessing.Event(),
@@ -307,8 +308,8 @@ def _create_runtime(args):
 
         if not hasattr(runtime_args, 'name') or not runtime_args.name:
             runtime_args.name = 'testHead'
-        with HeadRuntime(runtime_args, cancel_event=cancel_event) as runtime:
-            runtime._request_handler.connection_pool._send_requests = _send_requests_mock
+        with AsyncNewLoopRuntime(runtime_args, cancel_event=cancel_event, req_handler_cls=HeaderRequestHandler) as runtime:
+            runtime.server._request_handler.connection_pool._send_requests = _send_requests_mock
             runtime.run_forever()
 
     runtime_thread = Process(
@@ -317,7 +318,7 @@ def _create_runtime(args):
         daemon=True,
     )
     runtime_thread.start()
-    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=multiprocessing.Event(),
@@ -328,7 +329,7 @@ def _create_runtime(args):
 def _destroy_runtime(args, cancel_event, runtime_thread):
     cancel_event.set()
     runtime_thread.join()
-    assert not HeadRuntime.is_ready(f'{args.host}:{args.port}')
+    assert not BaseServer.is_ready(f'{args.host}:{args.port}')
 
 
 def _queue_length(queue: 'multiprocessing.Queue'):

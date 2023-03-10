@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, AsyncIterator, Optional
+from typing import TYPE_CHECKING, AsyncIterator
+import threading
+import asyncio
 
 from jina.helper import get_full_version
 from jina.proto import jina_pb2
@@ -73,11 +75,35 @@ class GatewayRequestHandler:
             )
             for executor_name in deployments_addresses.keys()
         }
+        self.warmup_stop_event = threading.Event()
+        self.warmup_task = None
+        try:
+            self.warmup_task = asyncio.create_task(
+                self.streamer.warmup(self.warmup_stop_event)
+            )
+        except RuntimeError:
+            # when Gateway is started locally, it may not have loop
+            pass
+
+    def cancel_warmup_task(self):
+        """Cancel warmup task if exists and is not completed. Cancellation is required if the Flow is being terminated before the
+        task is successful or hasn't reached the max timeout.
+        """
+        if self.warmup_task:
+            try:
+                if not self.warmup_task.done():
+                    self.logger.debug(f'Cancelling warmup task.')
+                    self.warmup_stop_event.set() # this event is useless if simply cancel
+                    self.warmup_task.cancel()
+            except Exception as ex:
+                self.logger.debug(f'exception during warmup task cancellation: {ex}')
+                pass
 
     async def close(self):
         """
         Gratefully closes the object making sure all the floating requests are taken care and the connections are closed gracefully
         """
+        self.cancel_warmup_task()
         await self.streamer.close()
 
     def _http_fastapi_default_app(self,

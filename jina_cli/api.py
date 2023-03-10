@@ -59,7 +59,7 @@ def executor_native(args: 'Namespace'):
         name = (
             rt._request_handler._executor.metas.name
             if hasattr(rt, '_request_handler') and hasattr(rt._request_handler, '_executor')
-            else rt.name
+            else args.runtime_cls
         )
         rt.logger.info(f'Executor {name} started')
         rt.run_forever()

@@ -1373,7 +1373,7 @@ async def test_flow_multiple_protocols_custom_gateway(
                 grpc_client = Client(protocol='grpc', port=grpc_port, asyncio=True)
                 async for _ in grpc_client.post('/', inputs=DocumentArray.empty(5)):
                     pass
-                assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')
+                assert BaseServer.is_ready(f'localhost:{grpc_port}')
     except Exception as exc:
         logger.error(f' Exception raised {exc}')
         raise exc
@@ -1448,7 +1448,7 @@ async def test_flow_multiple_protocols_built_in(
                 grpc_client = Client(protocol='grpc', port=grpc_port, asyncio=True)
                 async for _ in grpc_client.post('/', inputs=DocumentArray.empty(5)):
                     pass
-                assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')
+                assert BaseServer.is_ready(f'localhost:{grpc_port}')
     except Exception as exc:
         logger.error(f' Exception raised {exc}')
         raise exc
@@ -1687,7 +1687,7 @@ async def test_flow_slow_load_executor(logger, docker_images, tmpdir, k8s_cluste
         with shell_portforward(
             k8s_cluster._cluster.kubectl_path, executor_pod_name, port, port, namespace
         ):
-            assert AsyncNewLoopRuntime.is_ready(f'localhost:{port}')
+            assert BaseServer.is_ready(f'localhost:{port}')
 
     except Exception as exc:
         logger.error(f' Exception raised {exc}')

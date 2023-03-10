@@ -1201,7 +1201,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                         _args.port_monitoring = random_port()
 
                 else:
-                    _args.port = self.ext_repl_ports[replica_id]
+                    _args.port = [self.ext_repl_ports[replica_id]]
                     _args.host = self.ext_repl_hosts[replica_id]
                     _args.scheme = self.ext_repl_schemes[replica_id]
                     _args.tls = self.ext_repl_tls[replica_id]

@@ -1,4 +1,3 @@
-import threading
 import time
 
 import pytest
@@ -22,8 +21,8 @@ async def test_gateway_warmup_fast_executor(protocol, capfd):
     with flow:
         time.sleep(1)
         out, _ = capfd.readouterr()
-        assert 'recv _status' in out
-        assert out.count('recv _status') == 1
+    assert 'recv _status' in out
+    assert out.count('recv _status') == 1
 
 
 @pytest.mark.asyncio
@@ -38,11 +37,11 @@ async def test_gateway_warmup_with_replicas_and_shards(protocol, capfd):
     with flow:
         time.sleep(1)
         out, _ = capfd.readouterr()
-        assert 'recv _status' in out
-        # 2 calls from gateway runtime to deployments
-        # 2 calls from head to shards
-        # 1 call from the gateway to the head runtime warmup adds an additional call to any shard
-        assert out.count('recv _status') == 5
+    assert 'recv _status' in out
+    # 2 calls from gateway runtime to deployments
+    # 2 calls from head to shards
+    # 1 call from the gateway to the head runtime warmup adds an additional call to any shard
+    assert out.count('recv _status') == 5
 
 
 @pytest.mark.asyncio
@@ -54,8 +53,8 @@ async def test_gateway_warmup_slow_executor(protocol, capfd):
         # requires high sleep time to account for Flow readiness and properly capture the output logs
         time.sleep(SLOW_EXECUTOR_SLEEP_TIME * 3)
         out, _ = capfd.readouterr()
-        assert 'recv _status' in out
-        assert out.count('recv _status') == 1
+    assert 'recv _status' in out
+    assert out.count('recv _status') == 1
 
 
 @pytest.mark.asyncio
@@ -75,8 +74,8 @@ async def test_multi_protocol_gateway_warmup_fast_executor(port_generator, capfd
     with flow:
         time.sleep(1)
         out, _ = capfd.readouterr()
-        assert 'recv _status' in out
-        assert out.count('recv _status') == 1
+    assert 'recv _status' in out
+    assert out.count('recv _status') == 1
 
 
 @pytest.mark.asyncio
@@ -97,5 +96,5 @@ async def test_multi_protocol_gateway_warmup_slow_executor(port_generator, capfd
         # requires high sleep time to account for Flow readiness and properly capture the output logs
         time.sleep(SLOW_EXECUTOR_SLEEP_TIME * 3)
         out, _ = capfd.readouterr()
-        assert 'recv _status' in out
-        assert out.count('recv _status') == 1
+    assert 'recv _status' in out
+    assert out.count('recv _status') == 1

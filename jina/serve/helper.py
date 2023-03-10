@@ -64,7 +64,6 @@ def store_init_kwargs(
         for k, v in kwargs.items():
             if k in tmp:
                 tmp[k] = v
-
         if hasattr(self, '_init_kwargs_dict'):
             self._init_kwargs_dict.update(tmp)
         else:

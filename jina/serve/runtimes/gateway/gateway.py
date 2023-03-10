@@ -26,7 +26,6 @@ class GatewayType(type(JAMLCompatible), type):
         :param cls: The class.
         :return: The class, after being registered.
         """
-
         reg_cls_set = getattr(cls, '_registered_class', set())
 
         cls_id = f'{cls.__module__}.{cls.__name__}'
@@ -53,4 +52,5 @@ class Gateway(BaseServer, BaseGateway):
     """
     The class for where to inherit when you want to customize your Gateway. Important to provide backwards compatibility
     """
-    pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

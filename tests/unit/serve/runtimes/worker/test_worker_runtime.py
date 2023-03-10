@@ -18,10 +18,13 @@ from jina.serve.networking.utils import (
     send_request_async,
 )
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.worker import WorkerRuntime
+from jina.serve.runtimes.servers import BaseServer
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from tests.helper import _generate_pod_args
 
+def start_runtime(args, cancel_event):
+    with AsyncNewLoopRuntime(args, cancel_event=cancel_event, req_handler_cls=WorkerRequestHandler) as runtime:
+        runtime.run_forever()
 
 def _gen_test_data_message():
     for _ in range(3):
@@ -37,10 +40,6 @@ async def test_worker_runtime(stream):
 
     cancel_event = multiprocessing.Event()
 
-    def start_runtime(args, cancel_event):
-        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
-            runtime.run_forever()
-
     runtime_thread = Process(
         target=start_runtime,
         args=(args, cancel_event),
@@ -48,7 +47,7 @@ async def test_worker_runtime(stream):
     )
     runtime_thread.start()
 
-    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=Event(),
@@ -73,7 +72,7 @@ async def test_worker_runtime(stream):
     cancel_event.set()
     runtime_thread.join()
 
-    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
+    assert not BaseServer.is_ready(f'{args.host}:{args.port}')
 
 
 class AsyncSlowNewDocsExecutor(Executor):
@@ -113,10 +112,6 @@ async def test_worker_runtime_slow_async_exec(uses):
 
     cancel_event = multiprocessing.Event()
 
-    def start_runtime(args, cancel_event):
-        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
-            runtime.run_forever()
-
     runtime_thread = Process(
         target=start_runtime,
         args=(args, cancel_event),
@@ -124,7 +119,7 @@ async def test_worker_runtime_slow_async_exec(uses):
     )
     runtime_thread.start()
 
-    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=Event(),
@@ -156,7 +151,7 @@ async def test_worker_runtime_slow_async_exec(uses):
     else:
         assert results == ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 
-    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
+    assert not BaseServer.is_ready(f'{args.host}:{args.port}')
 
 
 @pytest.mark.slow
@@ -171,10 +166,6 @@ def test_error_in_worker_runtime(monkeypatch):
 
     monkeypatch.setattr(WorkerRequestHandler, 'handle', fail)
 
-    def start_runtime(args, cancel_event):
-        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
-            runtime.run_forever()
-
     runtime_thread = Process(
         target=start_runtime,
         args=(args, cancel_event),
@@ -182,7 +173,7 @@ def test_error_in_worker_runtime(monkeypatch):
     )
     runtime_thread.start()
 
-    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=Event(),
@@ -203,7 +194,7 @@ def test_error_in_worker_runtime(monkeypatch):
 
     assert response
 
-    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
+    assert not BaseServer.is_ready(f'{args.host}:{args.port}')
 
 
 class SlowInitExecutor(Executor):
@@ -223,10 +214,6 @@ async def test_worker_runtime_slow_init_exec():
     args = _generate_pod_args(['--uses', 'SlowInitExecutor'])
 
     cancel_event = multiprocessing.Event()
-
-    def start_runtime(args, cancel_event):
-        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
-            runtime.run_forever()
 
     runtime_thread = Process(
         target=start_runtime,
@@ -253,7 +240,7 @@ async def test_worker_runtime_slow_init_exec():
     # Executor sleeps 5 seconds, so at least 5 seconds need to have elapsed here
     assert time.time() - runtime_started > 5.0
 
-    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert BaseServer.wait_for_ready_or_shutdown(
         timeout=3.0,
         ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=Event(),
@@ -268,7 +255,7 @@ async def test_worker_runtime_slow_init_exec():
     cancel_event.set()
     runtime_thread.join()
 
-    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
+    assert not BaseServer.is_ready(f'{args.host}:{args.port}')
 
 
 @pytest.mark.asyncio
@@ -277,10 +264,6 @@ async def test_worker_runtime_reflection():
 
     cancel_event = multiprocessing.Event()
 
-    def start_runtime(args, cancel_event):
-        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
-            runtime.run_forever()
-
     runtime_thread = Process(
         target=start_runtime,
         args=(args, cancel_event),
@@ -288,7 +271,7 @@ async def test_worker_runtime_reflection():
     )
     runtime_thread.start()
 
-    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert BaseServer.wait_for_ready_or_shutdown(
         timeout=3.0,
         ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=Event(),
@@ -308,7 +291,7 @@ async def test_worker_runtime_reflection():
     cancel_event.set()
     runtime_thread.join()
 
-    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
+    assert not BaseServer.is_ready(f'{args.host}:{args.port}')
 
 
 def _create_test_data_message(counter=0):
@@ -343,10 +326,6 @@ async def test_decorator_monitoring(port_generator):
 
     cancel_event = multiprocessing.Event()
 
-    def start_runtime(args, cancel_event):
-        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
-            runtime.run_forever()
-
     runtime_thread = Process(
         target=start_runtime,
         args=(args, cancel_event),
@@ -354,13 +333,13 @@ async def test_decorator_monitoring(port_generator):
     )
     runtime_thread.start()
 
-    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=Event(),
     )
 
-    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=Event(),
@@ -376,7 +355,7 @@ async def test_decorator_monitoring(port_generator):
     cancel_event.set()
     runtime_thread.join()
 
-    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
+    assert not BaseServer.is_ready(f'{args.host}:{args.port}')
 
 
 @pytest.mark.asyncio
@@ -411,10 +390,6 @@ async def test_decorator_monitoring(port_generator):
 
     cancel_event = multiprocessing.Event()
 
-    def start_runtime(args, cancel_event):
-        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
-            runtime.run_forever()
-
     runtime_thread = Process(
         target=start_runtime,
         args=(args, cancel_event),
@@ -422,13 +397,13 @@ async def test_decorator_monitoring(port_generator):
     )
     runtime_thread.start()
 
-    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=Event(),
     )
 
-    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=Event(),
@@ -444,7 +419,7 @@ async def test_decorator_monitoring(port_generator):
     cancel_event.set()
     runtime_thread.join()
 
-    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
+    assert not BaseServer.is_ready(f'{args.host}:{args.port}')
 
 
 @pytest.mark.slow
@@ -459,10 +434,6 @@ async def test_error_in_worker_runtime_with_exit_on_exceptions(monkeypatch):
 
     monkeypatch.setattr(WorkerRequestHandler, 'handle', fail)
 
-    def start_runtime(args, cancel_event):
-        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
-            runtime.run_forever()
-
     runtime_thread = Process(
         target=start_runtime,
         args=(args, cancel_event),
@@ -470,7 +441,7 @@ async def test_error_in_worker_runtime_with_exit_on_exceptions(monkeypatch):
     )
     runtime_thread.start()
 
-    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=Event(),
@@ -483,4 +454,4 @@ async def test_error_in_worker_runtime_with_exit_on_exceptions(monkeypatch):
     cancel_event.set()
     runtime_thread.join()
 
-    assert not AsyncNewLoopRuntime.is_ready(target)
+    assert not BaseServer.is_ready(target)

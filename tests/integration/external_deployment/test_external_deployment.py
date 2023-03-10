@@ -357,7 +357,7 @@ def test_external_flow_with_grpc_metadata():
 
     from jina.constants import __default_host__
     from jina.proto import jina_pb2, jina_pb2_grpc
-    from jina.serve.runtimes.gateway import GRPCGateway
+    from jina.serve.runtimes.gateway.grpc import GRPCGateway
     from jina.serve.runtimes.helper import _get_grpc_server_options
 
     class DummyInterceptor(grpc.aio.ServerInterceptor):

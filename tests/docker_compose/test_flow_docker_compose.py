@@ -340,4 +340,4 @@ def test_flow_with_multiprotocol_gateway(logger, docker_images, tmpdir, stream):
         grpc_client.post('/', inputs=Document(), stream=stream)
         resp = requests.get(f'http://localhost:{http_port}').json()
         assert resp['protocol'] == 'http'
-        assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')
+        assert BaseServer.is_ready(f'localhost:{grpc_port}')

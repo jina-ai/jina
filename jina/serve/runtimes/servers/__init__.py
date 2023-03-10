@@ -16,7 +16,9 @@ if TYPE_CHECKING:
 
 
 class BaseServer(MonitoringMixin, InstrumentationMixin):
-
+    """
+    BaseServer class that is handled by AsyncNewLoopRuntime. It makes sure that the Request Handler is exposed via a server.
+    """
     def __init__(
             self,
             name: Optional[str] = 'gateway',
@@ -25,7 +27,7 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
             req_handler=None,
             **kwargs,
     ):
-        self.name = name
+        self.name = name or ''
         self.runtime_args = runtime_args
         if isinstance(self.runtime_args, dict):
             self.logger = JinaLogger(self.name, **self.runtime_args)

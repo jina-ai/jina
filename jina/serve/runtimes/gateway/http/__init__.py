@@ -1,22 +1,16 @@
-from jina.serve.runtimes.gateway.gateway import BaseGateway
-from jina.serve.runtimes.servers.http import FastAPIBaseServer
+from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
 
-__all__ = ['HTTPGateway', 'FastAPIBaseGateway']
-
-
-class FastAPIBaseGateway(FastAPIBaseServer, BaseGateway):
-    """
-    :class:`FastAPIBaseGateway` is a FastAPIBaseServer that can be loaded from YAML as any other Gateway
-    """
-    pass
+__all__ = ['HTTPGateway']
 
 
 class HTTPGateway(FastAPIBaseGateway):
     """
     :class:`HTTPGateway` is a FastAPIBaseGateway that uses the default FastAPI app
     """
+
     @property
     def app(self):
+        """Get the default base API app for HTTPGateway"""
         return self._request_handler._http_fastapi_default_app(title=self.title,
                                                                description=self.description,
                                                                no_crud_endpoints=self.no_crud_endpoints,

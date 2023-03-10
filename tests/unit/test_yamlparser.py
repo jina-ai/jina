@@ -4,7 +4,7 @@ import pytest
 import yaml
 
 from jina import Deployment
-from jina.constants import __default_executor__, __default_host__
+from jina.constants import __default_executor__
 from jina.helper import expand_dict, expand_env_var
 from jina.jaml import JAML
 from jina.serve.executors import BaseExecutor
@@ -192,7 +192,6 @@ def test_load_gateway_external_success(yaml_file, gateway_name):
         assert gateway.runtime_args.retries == 10
         assert gateway.runtime_args.compression == 'Deflate'
         assert gateway.runtime_args.prefetch == 100
-
 
 def test_load_http_gateway_success():
     gateway: HTTPGateway = HTTPGateway.load_config(

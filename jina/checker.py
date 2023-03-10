@@ -29,7 +29,6 @@ class NetworkChecker:
                 with TimeContext(
                     f'ping {args.target} on {args.host} at {j} round', default_logger
                 ) as tc:
-
                     if args.target == 'flow':
                         r = Client(host=args.host).is_flow_ready(timeout=timeout)
                     else:

@@ -94,7 +94,7 @@ class GRPCServer(BaseServer):
             )
         else:
             self.server.add_insecure_port(bind_addr)
-        self.logger.debug(f'start server bound to {bind_addr}')
+        self.logger.info(f'start server bound to {bind_addr}')
         await self.server.start()
         for service in service_names:
             await self.health_servicer.set(
