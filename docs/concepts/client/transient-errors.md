@@ -5,12 +5,10 @@
 Most transient errors can be attributed to network issues between the client and target server or between a server's
 dependencies like a database. The errors can be:
 
-1. ignored if an operation produced by a generator or sequence of operations isn't relevant to the overall success.
-2. retried up to a certain limit which assumes that the recovery logic kicks in to repair transient errors.
-3. accept that the operation cannot be successfully completed.
+- ignored if an operation produced by a generator or sequence of operations isn't relevant to the overall success.
+- retried up to a certain limit which assumes that the recovery logic kicks in to repair transient errors.
+- accept that the operation cannot be successfully completed.
 
-The following sections describe the various features that can be used to handle one or more of the above listed
-scenarios.
 
 ## Transient fault handling with retries
 
@@ -35,9 +33,9 @@ the **gRPC** server side streaming RPC method will be invoked. If set to `False`
 be invoked. Some important implication of
 using retries with **gRPC** are:
 
-1. The built-in **gRPC** retries are limited in scope and are implemented to work under certain circumstances. More
+- The built-in **gRPC** retries are limited in scope and are implemented to work under certain circumstances. More
    details are specified in the [design document](https://github.com/grpc/proposal/blob/master/A6-client-retries.md).
-2. If `stream` parameter is set to True (defaults to True), the retry must
+- If `stream` parameter is set to True (defaults to True), the retry must
    be handled as below because the result must be consumed to check for errors in the stream of responses.
 
    ```python
@@ -73,7 +71,7 @@ using retries with **gRPC** are:
            )
    ```
 
-3. If the `stream` parameter is set to False, the {meth}`~jina.clients.mixin.PostMixin.post` method invokes the unary
+- If the `stream` parameter is set to False, the {meth}`~jina.clients.mixin.PostMixin.post` method invokes the unary
    RPC method and the
    retry is handled internally based on the `max_attempts`, `initial_backoff`, `backoff_multiplier` and `max_backoff`
    parameters.
