@@ -150,6 +150,212 @@ The statement `with f:` starts the Flow, and exiting the indented with block sto
 Exceptions raised inside the `with f:` block will close the Flow context manager. If you don't want this, use a `try...except` block to surround the statements that could potentially raise an exception.
 ```
 
+## Start and stop
+
+When a {class}`~jina.Flow` starts, all included Executors (single for a Deployment, multiple for a Flow) will start as well, making it possible to {ref}`reach the service through its API <third-party-client>`.
+
+There are three ways to start an Flow: In Python, from a YAML file, or from the terminal.
+
+- Generally in Python: use Deployment or Flow as a context manager in Python.
+- As an entrypoint from terminal: use `Jina CLI <cli>` and a Deployment or Flow YAML file.
+- As an entrypoint from Python code: use Flow as a context manager inside `if __name__ == '__main__'`
+- No context manager: manually call {meth}`~jina.Flow.start` and {meth}`~jina.Flow.close`.
+
+````{tab} General in Python
+```python
+from jina import Flow
+
+f = Flow()
+
+with f:
+    pass
+```
+````
+
+````{tab} Jina CLI entrypoint
+```bash
+jina flow --uses flow.yml
+```
+````
+
+````{tab} Python entrypoint
+```python
+from jina import Flow
+
+f = Flow()
+
+if __name__ == '__main__':
+    with f:
+        pass
+```
+````
+
+````{tab} Python no context manager
+```python
+from jina import Flow
+
+f = Flow()
+
+f.start()
+
+f.close()
+```
+````
+
+The statement `with f:` starts the Flow, and exiting the indented `with` block stops the Flow, including all its Executors.
+
+A successful start of a Flow looks like this:
+
+```{figure} images/success-flow.png
+:scale: 70%
+```
+
+Your addresses and entrypoints can be found in the output. When you enable more features such as monitoring, HTTP gateway, TLS encryption, this display expands to contain more information.
+
+```{admonition} Multiprocessing spawn
+:class: warning
+
+Some corner cases require forcing a `spawn` start method for multiprocessing, for example if you encounter "Cannot re-initialize CUDA in forked subprocess". Read {ref}`more in the docs <multiprocessing-spawn>`
+```
+
+## Serve
+
+### Serve forever
+
+In most scenarios, a Flow should remain reachable for prolonged periods of time. This can be achieved from Python or the terminal:
+
+````{tab} Python
+```python
+from jina import Flow
+
+f = Flow()
+
+with f:
+    f.block()
+```
+The `.block()` method blocks the execution of the current thread or process, enabling external clients to access the Flow.
+````
+````{tab} Terminal
+```shell
+jina flow --uses flow.yml
+```
+````
+
+In this case, the Flow can be stopped by interrupting the thread or process. 
+
+### Serve until an event
+
+Alternatively, a `multiprocessing` or `threading` `Event` object can be passed to `.block()`, which stops the Flow once set.
+
+```python
+from jina import Flow
+import threading
+
+
+def start_flow(stop_event):
+    """start a blocking Flow."""
+    f = Flow()
+
+    with f:
+        f.block(stop_event=stop_event)
+
+
+e = threading.Event()  # create new Event
+
+t = threading.Thread(name='Blocked-Flow', target=start_flow, args=(e,))
+t.start()  # start Flow in new Thread
+
+# do some stuff
+
+e.set()  # set event and stop (unblock) the Flow
+```
+
+### Serve on Google Colab
+
+[Google Colab](https://colab.research.google.com/) provides an easy-to-use Jupyter notebook environment with GPU/TPU support. Flows are fully compatible with Google Colab and you can use it in the following ways:
+
+```{figure} images/jina-on-colab.svg
+:align: center
+:width: 70%
+```
+
+```{button-link} https://colab.research.google.com/github/jina-ai/jina/blob/master/docs/Using_Jina_on_Colab.ipynb
+:color: primary
+:align: center
+
+{octicon}`link-external` Open the notebook on Google Colab 
+```
+
+Please follow the walkthrough and enjoy the free GPU/TPU!
+
+
+```{tip}
+Hosing services on Google Colab is not recommended if your server aims to be long-lived or permanent. It is often used for quick experiments, demonstrations or leveraging its free GPU/TPU. For stable, secure and free hosting of your Flow, check out [JCloud](https://docs.jina.ai/concepts/jcloud/).
+```
+
+## Export
+
+A Flow YAML can be exported as a Docker Compose YAML or Kubernetes YAML bundle. 
+
+(docker-compose-export)=
+### Docker Compose
+
+````{tab} Python
+```python
+from jina import Flow
+
+f = Flow().add()
+f.to_docker_compose_yaml()
+```
+````
+````{tab} Terminal
+```shell
+jina export docker-compose flow.yml docker-compose.yml 
+```
+````
+
+This will generate a single `docker-compose.yml` file.
+
+For advanced utilization of Docker Compose with Jina, refer to {ref}`How to <docker-compose>` 
+
+(kubernetes-export)=
+### Kubernetes
+
+````{tab} Python
+```python
+from jina import Flow
+
+f = Flow().add()
+f.to_kubernetes_yaml('flow_k8s_configuration')
+```
+````
+````{tab} Terminal
+```shell
+jina export kubernetes flow.yml ./my-k8s 
+```
+````
+
+The generated folder can be used directly with `kubectl` to deploy the Flow to an existing Kubernetes cluster.
+
+For advanced utilisation of Kubernetes with Jina please refer to {ref}`How to <kubernetes>` 
+
+```{tip}
+Based on your local Jina version, Executor Hub may rebuild the Docker image during the YAML generation process.
+If you do not wish to rebuild the image, set the environment variable `JINA_HUB_NO_IMAGE_REBUILD`.
+```
+
+```{tip}
+If an Executor requires volumes to be mapped to persist data, Jina will create a StatefulSet for that Executor instead of a Deployment.
+You can control the access mode, storage class name and capacity of the attached Persistent Volume Claim by using {ref}`Jina environment variables <jina-env-vars>`  
+`JINA_K8S_ACCESS_MODES`, `JINA_K8S_STORAGE_CLASS_NAME` and `JINA_K8S_STORAGE_CAPACITY`. Only the first volume will be considered to be mounted.
+```
+
+```{admonition} See also
+:class: seealso
+For more in-depth guides on Flow deployment, check our how-tos for {ref}`Docker compose <docker-compose>` and {ref}`Kubernetes <kubernetes>`.
+```
+
+
 ## Add Executors
 
 ```{important}
@@ -445,8 +651,7 @@ You can set conditioning for every {class}`~jina.Executor` in the Flow. Document
 
 #### Define conditions
 
-To add a condition to an Executor, pass it to the `when` parameter of {meth}`~jina.Flow.add` method of the Flow.
-This then defines *when* a document is processed by the Executor:
+To add a condition to an Executor, pass it to the `when` parameter of {meth}`~jina.Flow.add` method of the Flow. This then defines *when* a Document is processed by the Executor:
 
 You can use the [DocArray query language](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions) to specify a filter condition for each Executor.
 
@@ -458,14 +663,12 @@ f = Flow().add(when={'tags__key': {'$eq': 5}})
 
 Then only Documents that satisfy the `when` condition will reach the associated Executor. Any Documents that don't satisfy that condition won't reach the Executor.
 
-If you are trying to separate Documents according to the data modality they hold, you need to choose
-a condition accordingly.
+If you are trying to separate Documents according to the data modality they hold, you need to choose a condition accordingly.
 
 ````{admonition} See Also
 :class: seealso
 
-In addition to `$exists` you can use a number of other operators to define your filter: `$eq`, `$gte`, `$lte`, `$size`,
-`$and`, `$or` and many more. For details, consult this [DocArray documentation page](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions).
+In addition to `$exists` you can use a number of other operators to define your filter: `$eq`, `$gte`, `$lte`, `$size`, `$and`, `$or` and many more. For details, consult this [DocArray documentation page](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions).
 ````
 
 ```python
@@ -538,7 +741,7 @@ print(
 ```
 ````
 
-Note that if a Document does not satisfy the `when` condition of a filter, the filter removes the Document *for the entire branch of the Flow*.
+Note that if a Document does not satisfy the `when` condition of a filter, the filter removes the Document *for that entire branch of the Flow*.
 This means that every Executor located behind a filter is affected by this, not just the specific Executor that defines the condition.
 As with a real-life filter, once something fails to pass through it, it no longer continues down the pipeline.
 
@@ -563,7 +766,7 @@ f = (
 )
 ```
 
-```{figure} conditional-flow.svg
+```{figure} images/conditional-flow.svg
 :width: 70%
 :align: center
 ```
@@ -600,7 +803,7 @@ f = (
 )
 ```
 
-```{figure} sequential-flow.svg
+```{figure} images/sequential-flow.svg
 :width: 70%
 
 ```
@@ -661,8 +864,125 @@ That's exactly what you want for your filter!
 For a hands-on example of leveraging filter conditions, see {ref}`this how-to <flow-filter>`.
 ````
 
-To define a filter condition, use [DocArrays rich query language](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions).
+To define a filter condition, use [DocArray's rich query language](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions).
 
+### Merging upstream DocumentArrays
+
+Often when you're building a Flow, you want an Executor to receive DocumentArrays from multiple upstream Executors. 
+
+```{figure} images/flow-merge-executor.svg
+:width: 70%
+:align: center
+```
+
+For this you can use the `docs_matrix` or `docs_map` parameters (part of Executor endpoints signature). These Flow-specific arguments that can be used alongside an Executor's {ref}`default arguments <endpoint-arguments>`:
+
+```{code-block} python
+---
+emphasize-lines: 11, 12
+---
+from typing import Dict, Union, List, Optional
+from jina import Executor, requests, DocumentArray
+
+
+class MergeExec(Executor):
+    @requests
+    async def foo(
+        self,
+        docs: DocumentArray,
+        parameters: Dict,
+        docs_matrix: Optional[List[DocumentArray]],
+        docs_map: Optional[Dict[str, DocumentArray]],
+    ) -> Union[DocumentArray, Dict, None]:
+        pass
+```
+
+- Use `docs_matrix` to receive a List of all incoming DocumentArrays from upstream Executors:
+
+```python
+[
+    DocumentArray(...),  # from Executor1
+    DocumentArray(...),  # from Executor2
+    DocumentArray(...),  # from Executor3
+]
+```
+
+- Use `docs_map` to receive a Dict, where each item's key is the name of an upstream Executor and the value is the DocumentArray coming from that Executor:
+
+```python
+{
+    'Executor1': DocumentArray(...),
+    'Executor2': DocumentArray(...),
+    'Executor3': DocumentArray(...),
+}
+```
+
+(no-reduce)=
+#### Reducing multiple DocumentArrays to one DocumentArray
+
+The `no_reduce` argument determines whether DocumentArrays are reduced into one when being received:
+
+- To reduce all incoming DocumentArrays into **one single DocumentArray**, do not set `no_reduce` or set it to `False`. The `docs_map` and `docs_matrix` will be `None`.
+- To receive **a list all incoming DocumentArrays** set `no_reduce` to `True`. The Executor will receive the DocumentArrays independently under `docs_matrix` and `docs_map`.
+
+```python
+from jina import Flow, Executor, requests, Document, DocumentArray
+
+
+class Exec1(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+            doc.text = 'Exec1'
+
+
+class Exec2(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+            doc.text = 'Exec2'
+
+
+class MergeExec(Executor):
+    @requests
+    def foo(self, docs_matrix, **kwargs):
+        documents_to_return = DocumentArray()
+        for doc1, doc2 in zip(*docs_matrix):
+            print(
+                f'MergeExec processing pairs of Documents "{doc1.text}" and "{doc2.text}"'
+            )
+            documents_to_return.append(
+                Document(text=f'Document merging from "{doc1.text}" and "{doc2.text}"')
+            )
+        return documents_to_return
+
+
+f = (
+    Flow()
+    .add(uses=Exec1, name='exec1')
+    .add(uses=Exec2, name='exec2')
+    .add(uses=MergeExec, needs=['exec1', 'exec2'], no_reduce=True)
+)
+
+with f:
+    returned_docs = f.post(on='/', inputs=Document())
+
+print(f'Resulting documents {returned_docs[0].text}')
+```
+
+
+```shell
+────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC │
+│  🏠       Local           0.0.0.0:55761  │
+│  🔒     Private     192.168.1.187:55761  │
+│  🌍      Public    212.231.186.65:55761  │
+╰──────────────────────────────────────────╯
+
+MergeExec processing pairs of Documents "Exec1" and "Exec2"
+Resulting documents Document merging from "Exec1" and "Exec2"
+```
 
 ## Visualize
 
@@ -698,8 +1018,42 @@ jina export flowchart flow.yml flow.svg
 
 You can also visualize a remote Flow by passing the URL to `jina export flowchart`.
 
+(logging-configuration)=
+## Logging
+
+The default {class}`jina.logging.logger.JinaLogger` uses rich console logging that writes to the system console. The `log_config` argument can be used to pass in a string of the pre-configured logging configuration names in Jina or the absolute YAML file path of the custom logging configuration. For most cases, the default logging configuration sufficiently covers local, Docker and Kubernetes environments.
+
+Custom logging handlers can be configured by following the Python official [Logging Cookbook](https://docs.python.org/3/howto/logging-cookbook.html#logging-cookbook) examples. An example custom logging configuration file defined in a YAML file `logging.json.yml` is:
+
+```yaml
+handlers:
+  - StreamHandler
+level: INFO
+configs:
+  StreamHandler:
+    format: '%(asctime)s:{name:>15}@%(process)2d[%(levelname).1s]:%(message)s'
+    formatter: JsonFormatter
+```
+
+The logging configuration can be used as follows:
+
+````{tab} Python
+```python
+from jina import Flow
+
+f = Flow(log_config='./logging.json.yml')
+```
+````
+````{tab} YAML
+```yaml
+jtype: Flow
+with:
+    log_config: './logging.json.yml'
+```
+````
+
 (logging-override)=
-## Override logging configuration
+### Custom logging configuration
 
 The default {ref}`logging <logging-configuration>` or custom logging configuration at the Flow level will be propagated to the `Gateway` and `Executor` entities. If that is not desired, every `Gateway` or `Executor` entity can be provided with its own custom logging configuration. 
 
