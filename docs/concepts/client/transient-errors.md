@@ -2,8 +2,8 @@
 
 # Transient Errors
 
-Most of the transient errors can be attributed to network issues between the client and the target server or between the
-dependencies of the server like a database. The errors can either be:
+Most transient errors can be attributed to network issues between the client and target server or between a server's
+dependencies like a database. The errors can be:
 
 1. ignored if an operation produced by a generator or sequence of operations isn't relevant to the overall success.
 2. retried up to a certain limit which assumes that the recovery logic kicks in to repair transient errors.
@@ -15,10 +15,10 @@ scenarios.
 ## Transient fault handling with retries
 
 The {meth}`~jina.clients.mixin.PostMixin.post` method accepts `max_attempts`, `initial_backoff`, `max_backoff`
-and `backoff_multiplier` parameters to control the capacity to retry requests, when a transient connectivity error
+and `backoff_multiplier` parameters to control the capacity to retry requests when a transient connectivity error
 occurs, using an exponential backoff strategy.
 This can help to overcome transient network connectivity issues which are broadly captured by the
-{class}`~grpc.aio.AioRpcError`, {class}`~asyncio.CancelledError` and the {class}`~jina.excepts.InternalNetworkError`
+{class}`~grpc.aio.AioRpcError`, {class}`~asyncio.CancelledError` and {class}`~jina.excepts.InternalNetworkError`
 exception types.
 
 The `max_attempts` parameter determines the number of sending attempts, including the original request.
@@ -33,7 +33,7 @@ at `random(0, min(initial_backoff*backoff_multiplier**(n-1), max_backoff))`.
 The {meth}`~jina.clients.mixin.PostMixin.post` method supports the `stream` boolean parameter. If set to `True`,
 the **gRPC** server side streaming RPC method will be invoked. If set to `False`, the server side unary RPC method will
 be invoked. Some important implication of
-using retires with **gRPC** are as follows:
+using retries with **gRPC** are:
 
 1. The built-in **gRPC** retries are limited in scope and are implemented to work under certain circumstances. More
    details are specified in the [design document](https://github.com/grpc/proposal/blob/master/A6-client-retries.md).
@@ -95,7 +95,7 @@ the {class}`~jina.Client`
 which performs the retry internally with the request from the `inputs` iterator or generator. The `request_size`
 parameter must also be set to perform smaller operations which can be retried without much overhead on the server.
 
-The **HTTP** and **Websocket**
+The **HTTP** and **WebSocket**
 
 ```{hint}
 Refer to {ref}`Callbacks <callback-functions>` section for dealing with success and failures after retries.
