@@ -14,7 +14,7 @@ scenarios.
 
 ## Transient fault handling with retries
 
-The {meth}`~jina.clients.mixin.PostMixin.post` accepts `max_attempts`, `initial_backoff`, `max_backoff`
+The {meth}`~jina.clients.mixin.PostMixin.post` method accepts `max_attempts`, `initial_backoff`, `max_backoff`
 and `backoff_multiplier` parameters to control the capacity to retry requests, when a transient connectivity error
 occurs, using an exponential backoff strategy.
 This can help to overcome transient network connectivity issues which are broadly captured by the
@@ -37,9 +37,8 @@ using retires with **gRPC** are as follows:
 
 1. The built-in **gRPC** retries are limited in scope and are implemented to work under certain circumstances. More
    details are specified in the [design document](https://github.com/grpc/proposal/blob/master/A6-client-retries.md).
-2. If `stream` parameter is set to True (defaults to True) and if the `inputs` parameters is an iterator, the retry must
-   be handled as below because the `inputs`
-   iterator or generator is consumed by the **gRPC** streaming RPC method and cannot be
+2. If `stream` parameter is set to True (defaults to True), the retry must
+   be handled as below because the `inputs` is consumed by the **gRPC** streaming RPC method and cannot be
    retrieved without copying or reconstructing the `inputs` from the original source.
 
    ```python
