@@ -1,39 +1,44 @@
-(flow-complex-topologies)=
+(scale-out)=
 # Scale Out
 
-By default, all Executors in a {class}`~jina.Deployment` or {class}`~jina.Flow` run with a single instance. If an Executor is particularly slow, then it will reduce the overall throughput. To solve this, you can specify the number of `replicas` to scale out an Executor.
+By default, all Executors in an Orchestration run with a single instance. If an Executor is particularly slow, then it will reduce the overall throughput. To solve this, you can specify the number of `replicas` to scale out an Executor.
 
 (replicate-executors)=
 ## Replicate Executors
 
-Replication creates multiple copies of the same {class}`~jina.Executor`. Each request in the {class}`~jina.Orchestration` is then passed to only one replica (instance) of that Executor. **All replicas compete for a request. The idle replica gets the request first.**
+Replication creates multiple copies of the same {class}`~jina.Executor`. Each request in the Orchestration is then passed to only one replica (instance) of that Executor. **All replicas compete for a request. The idle replica gets the request first.**
 
 This is useful for improving performance and availability:
 * If you have slow Executors (e.g. embedding) you can scale up the number of instances to process multiple requests in parallel.
 * Executors might need to be taken offline occasionally (for updates, failures, etc.), but you may want your Orchestration to still process requests without any downtime. Adding replicas allows any replica to be taken down as long as there is at least one still running. This ensures the high availability of your Orchestration.
 
-````{tab} Deployment (Python)
+### Replicate Executors in a Deployment
+
+````{tab} Python
 ```python
 from jina import Deployment
 
 dep = Deployment(name='slow_encoder', replicas=3)
 ```
 ````
-````{tab} Deployment (YAML)
+````{tab} YAML
 ```python
 from jina import Deployment
 
 dep = Deployment(name='slow_encoder', replicas=3)
 ```
 ````
-````{tab} Flow (Python)
+
+### Replicate Executors in a Flow
+
+````{tab} Python
 ```python
 from jina import Flow
 
 f = Flow().add(name='slow_encoder', replicas=3).add(name='fast_indexer')
 ```
 ````
-````{tab} Flow (YAML)
+````{tab} YAML
 ```python
 from jina import Flow
 
@@ -62,7 +67,9 @@ In Kubernetes or with Docker Compose you should allocate GPU resources to each r
 
 For example, if you have three GPUs and one of your Executor has five replicas then:
 
-````{tab} Deployment (Python)
+### Multiple GPUs in a Deployment
+
+````{tab} Python
 ```python
 from jina import Deployment
 
@@ -77,7 +84,7 @@ CUDA_VISIBLE_DEVICES=RR python deployment.py
 ```
 ````
 
-````{tab} Deployment (YAML)
+````{tab} YAML
 ```yaml
 jtype: Deployment
 with:
@@ -90,7 +97,10 @@ with:
 CUDA_VISIBLE_DEVICES=RR jina deployment --uses deployment.yaml
 ```
 ````
-````{tab} Flow (Python)
+
+### Multiple GPUs in a Flow
+
+````{tab} Python
 ```python
 f = Flow().add(
     uses='jinaai://jina-ai/CLIPEncoder', replicas=5, install_requirements=True
@@ -105,7 +115,7 @@ CUDA_VISIBLE_DEVICES=RR python flow.py
 ```
 ````
 
-````{tab} Flow (YAML)
+````{tab} YAML
 ```yaml
 jtype: Flow
 executors:
