@@ -105,8 +105,6 @@ class JinaLogger:
 
     :param context: The context identifier of the class, module or method.
     :param log_config: The configuration file for the logger.
-    :param suppress_root_logging: Deprecated flag that determines whether to suppress root logging. Root logging is enabled by default.
-    configuration to group logs by deployment.
     :return:: an executor object.
     """
 
