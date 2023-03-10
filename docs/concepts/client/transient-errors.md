@@ -38,8 +38,7 @@ using retires with **gRPC** are as follows:
 1. The built-in **gRPC** retries are limited in scope and are implemented to work under certain circumstances. More
    details are specified in the [design document](https://github.com/grpc/proposal/blob/master/A6-client-retries.md).
 2. If `stream` parameter is set to True (defaults to True), the retry must
-   be handled as below because the `inputs` is consumed by the **gRPC** streaming RPC method and cannot be
-   retrieved without copying or reconstructing the `inputs` from the original source.
+   be handled as below because the result must be consumed to check for errors in the stream of responses.
 
    ```python
    from jina import Client, DocumentArray
