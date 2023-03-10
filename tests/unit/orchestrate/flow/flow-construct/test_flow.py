@@ -645,7 +645,7 @@ def _validate_flow(f):
         if name != 'gateway':
             assert (
                 addresses[name][0]
-                == f'{pod.protocol}://{pod.host}:{pod.head_port if pod.head_port else pod.port}'
+                == f'{pod.protocol}://{pod.host}:{pod.head_port if pod.head_port else pod.port[0]}'
             )
             for n in pod.needs:
                 assert name in graph_dict[n if n != 'gateway' else 'start-gateway']
@@ -657,7 +657,7 @@ def _validate_flow(f):
 def test_set_port_deployment(port_generator):
     port = port_generator()
     with Flow().add(uses=Executor, port=port) as f:
-        assert int(f._deployment_nodes['executor0'].pod_args['pods'][0][0].port) == port
+        assert int(f._deployment_nodes['executor0'].pod_args['pods'][0][0].port[0]) == port
         f.index(inputs=[])
 
 

@@ -5,7 +5,7 @@ import requests as req
 
 from jina import Client, Document, Flow
 from jina.helper import random_port
-from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.servers import BaseServer
 from tests.docker_compose.conftest import DockerComposeServices
 from tests.helper import (
     _validate_custom_gateway_process,

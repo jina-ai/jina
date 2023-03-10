@@ -595,7 +595,7 @@ def _test_gql_error(gateway_port, error_port):
 
 
 def _create_gqlgateway_runtime(graph_description, pod_addresses, port):
-    with GatewayRuntime(
+    with AsyncNewLoopRuntime(
         set_gateway_parser().parse_args(
             [
                 '--graph-description',
@@ -608,7 +608,7 @@ def _create_gqlgateway_runtime(graph_description, pod_addresses, port):
                 '--protocol',
                 'http',
             ]
-        )
+        ), req_handler_cls=GatewayRequestHandler
     ) as runtime:
         runtime.run_forever()
 

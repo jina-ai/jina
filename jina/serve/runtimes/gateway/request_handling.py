@@ -19,10 +19,14 @@ class GatewayRequestHandler:
     """Object to encapsulate the code related to handle the data requests in the Gateway"""
 
     def __init__(
-        self,
-        args: 'SimpleNamespace',
-        logger: 'JinaLogger',
-        **kwargs,
+            self,
+            args: 'SimpleNamespace',
+            logger: 'JinaLogger',
+            metrics_registry=None,
+            meter=None,
+            aio_tracing_client_interceptors=None,
+            tracing_client_interceptor=None,
+            **kwargs,
     ):
         import json
 
@@ -50,10 +54,10 @@ class GatewayRequestHandler:
             runtime_name=self.runtime_args.runtime_name,
             prefetch=self.runtime_args.prefetch,
             logger=self.logger,
-            metrics_registry=self.runtime_args.metrics_registry,
-            meter=self.runtime_args.meter,
-            aio_tracing_client_interceptors=self.runtime_args.aio_tracing_client_interceptors,
-            tracing_client_interceptor=self.runtime_args.tracing_client_interceptor,
+            metrics_registry=metrics_registry,
+            meter=meter,
+            aio_tracing_client_interceptors=aio_tracing_client_interceptors,
+            tracing_client_interceptor=tracing_client_interceptor,
         )
 
         GatewayStreamer._set_env_streamer_args(
@@ -93,7 +97,7 @@ class GatewayRequestHandler:
             try:
                 if not self.warmup_task.done():
                     self.logger.debug(f'Cancelling warmup task.')
-                    self.warmup_stop_event.set() # this event is useless if simply cancel
+                    self.warmup_stop_event.set()  # this event is useless if simply cancel
                     self.warmup_task.cancel()
             except Exception as ex:
                 self.logger.debug(f'exception during warmup task cancellation: {ex}')
@@ -162,7 +166,7 @@ class GatewayRequestHandler:
         da = DocumentArray([Document()])
         try:
             async for _ in self.streamer.stream_docs(
-                docs=da, exec_endpoint=__dry_run_endpoint__, request_size=1
+                    docs=da, exec_endpoint=__dry_run_endpoint__, request_size=1
             ):
                 pass
             status_message = StatusMessage()
@@ -190,7 +194,7 @@ class GatewayRequestHandler:
         return info_proto
 
     async def stream(
-        self, request_iterator, context=None, *args, **kwargs
+            self, request_iterator, context=None, *args, **kwargs
     ) -> AsyncIterator['Request']:
         """
         stream requests from client iterator and stream responses back.
@@ -202,12 +206,12 @@ class GatewayRequestHandler:
         :yield: responses to the request after streaming to Executors in Flow
         """
         async for resp in self.streamer.rpc_stream(
-            request_iterator=request_iterator, context=context, *args, **kwargs
+                request_iterator=request_iterator, context=context, *args, **kwargs
         ):
             yield resp
 
     async def process_single_data(
-        self, request: DataRequest, context=None
+            self, request: DataRequest, context=None
     ) -> DataRequest:
         """Implements request and response handling of a single DataRequest
         :param request: DataRequest from Client
