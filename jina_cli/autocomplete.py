@@ -109,7 +109,7 @@ ac_table = {
         'export docker-compose': ['--help', '--network_name'],
         'export schema': ['--help', '--yaml-path', '--json-path', '--schema-path'],
         'export': ['--help', 'flowchart', 'kubernetes', 'docker-compose', 'schema'],
-        'new': ['--help'],
+        'new': ['name', '--type', '--help'],
         'gateway': [
             '--help',
             '--name',
