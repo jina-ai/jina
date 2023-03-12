@@ -165,6 +165,7 @@ def image_name_tag_map() -> Dict[str, str]:
     return {
         'reload-executor': '0.13.1',
         'test-executor': '0.13.1',
+        'test-executor-torch': '0.13.1',
         'slow-process-executor': '0.14.1',
         'executor-merger': '0.1.1',
         'set-text-executor': '0.1.1',

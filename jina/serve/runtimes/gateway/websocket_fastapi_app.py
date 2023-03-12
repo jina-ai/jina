@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional, Union
 
+from jina._docarray import docarray_v2
 from jina.clients.request import request_generator
 from jina.enums import DataInputType, WebsocketSubProtocols
 from jina.excepts import InternalNetworkError
@@ -185,6 +186,13 @@ def get_fastapi_app(
 
         try:
             async for msg in streamer.rpc_stream(request_iterator=req_iter()):
+                if not docarray_v2:
+                    for i in range(len(msg.data._content.docs.docs)):
+                        if msg.data._content.docs.docs[i].HasField('embedding'):
+                            msg.data._content.docs.docs[i].embedding.cls_name = 'numpy'
+
+                        if msg.data._content.docs.docs[i].HasField('tensor'):
+                            msg.data._content.docs.docs[i].tensor.cls_name = 'numpy'
                 await manager.send(websocket, msg)
         except InternalNetworkError as err:
             import grpc
