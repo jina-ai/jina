@@ -39,6 +39,16 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         self._add_gateway_args()
         self.tracing = self.runtime_args.tracing
         self.tracer_provider = self.runtime_args.tracer_provider
+        self._setup_monitoring(monitoring=self.runtime_args.monitoring, port_monitoring=self.runtime_args.port_monitoring)
+        self._setup_instrumentation(
+            name=self.name,
+            tracing=self.runtime_args.tracing,
+            traces_exporter_host=self.runtime_args.traces_exporter_host,
+            traces_exporter_port=self.runtime_args.traces_exporter_port,
+            metrics=self.runtime_args.metrics,
+            metrics_exporter_host=self.runtime_args.metrics_exporter_host,
+            metrics_exporter_port=self.runtime_args.metrics_exporter_port,
+        )
         self._request_handler = req_handler or self._get_request_handler()
         if hasattr(self._request_handler, 'streamer'):
             self.streamer = self._request_handler.streamer  # backward compatibility
@@ -60,16 +70,6 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
             self.logger.warning(f'Exception during instrumentation teardown, {str(ex)}')
 
     def _get_request_handler(self):
-        self._setup_monitoring(monitoring=self.runtime_args.monitoring, port_monitoring=self.runtime_args.port_monitoring)
-        self._setup_instrumentation(
-            name=self.name,
-            tracing=self.runtime_args.tracing,
-            traces_exporter_host=self.runtime_args.traces_exporter_host,
-            traces_exporter_port=self.runtime_args.traces_exporter_port,
-            metrics=self.runtime_args.metrics,
-            metrics_exporter_host=self.runtime_args.metrics_exporter_host,
-            metrics_exporter_port=self.runtime_args.metrics_exporter_port,
-        )
         return self.req_handler_cls(
             args=self.runtime_args,
             logger=self.logger,
