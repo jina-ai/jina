@@ -4,9 +4,11 @@ from typing import TYPE_CHECKING, Optional
 
 import aiohttp
 from aiohttp import WSMsgType
+from starlette import status
 
 from jina.clients.base import retry
 from jina.enums import WebsocketSubProtocols
+from jina.excepts import BadClient
 from jina.importer import ImportExtensions
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
@@ -136,10 +138,13 @@ class HTTPClientlet(AioHttpClientlet):
             req_dict['target_executor'] = req_dict['header']['target_executor']
         for attempt in range(1, self.max_attempts + 1):
             try:
-                return await self.session.post(
-                    url=self.url, json=req_dict, raise_for_status=True
+                response = await self.session.post(
+                    url=self.url, json=req_dict
                 ).__aenter__()
-            except aiohttp.ClientError as err:
+                r_str = await response.json()
+                handle_response_status(response.status, r_str, self.url)
+                return response
+            except (ValueError, ConnectionError, BadClient) as err:
                 await retry.wait_or_raise_err(
                     attempt=attempt,
                     err=err,
@@ -298,3 +303,33 @@ class WebsocketClientlet(AioHttpClientlet):
     def close_code(self):
         """:return: the close code of the ws closing response"""
         return self.websocket.close_code if self.websocket else None
+
+
+def handle_response_status(http_status: int, response_string: str, url: str):
+    """
+    Raise BadClient exception for HTTP 404 status.
+    Raise ConnectionError for HTTP status codes 504, 504 if header information is available.
+    Raise ValueError for everything other non 200 status code.
+    :param http_status: http status code
+    :param response_string: response string
+    :param url: request url string
+    """
+    if http_status == status.HTTP_404_NOT_FOUND:
+        raise BadClient(f'no such endpoint {url}')
+    elif (
+        http_status == status.HTTP_503_SERVICE_UNAVAILABLE
+        or http_status == status.HTTP_504_GATEWAY_TIMEOUT
+    ):
+        if (
+            'header' in response_string
+            and 'status' in response_string['header']
+            and 'description' in response_string['header']['status']
+        ):
+            raise ConnectionError(response_string['header']['status']['description'])
+        else:
+            raise ValueError(response_string)
+    elif (
+        http_status < status.HTTP_200_OK
+        or http_status > status.HTTP_300_MULTIPLE_CHOICES
+    ):  # failure codes
+        raise ValueError(response_string)

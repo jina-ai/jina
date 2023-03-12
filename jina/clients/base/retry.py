@@ -1,6 +1,7 @@
 import asyncio
 import random
 
+import aiohttp
 import grpc
 
 
@@ -41,6 +42,8 @@ async def wait_or_raise_err(
                 trailing_metadata=trailing_metadata,
                 debug_error_string=err.debug_error_string(),
             )
+        elif isinstance(err, aiohttp.ClientError):
+            raise ConnectionError(str(err))
         else:
             raise err
     else:
