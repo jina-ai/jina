@@ -699,7 +699,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         """
         :return: the port of this deployment
         """
-        return self.first_pod_args.port
+        return self.first_pod_args.port[0]
 
     @property
     def ports(self) -> List[int]:
@@ -1617,8 +1617,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 self.args.default_port = False
 
             self.args.deployments_addresses = k8s_deployments_addresses
-        elif self._include_gateway and self.port:
-            self.args.port = self._gateway_kwargs['port']
         k8s_deployment = K8sDeploymentConfig(
             args=self.args, k8s_namespace=k8s_namespace, k8s_port=k8s_port
         )
