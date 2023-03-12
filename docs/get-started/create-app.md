@@ -1,13 +1,20 @@
 # {fas}`folder-plus` Create First Project
 
-Let's build a toy application with Jina. To start, use Jina CLI to make a new project:
+Let's build a toy application with Jina. To start, use Jina CLI to make a new project, we can either make a new project as a deployment or a flow: 
 
+To create a flow project with Jina CLI
 ```bash
-jina new hello-jina
+jina new hello-jina --type=flow
+```
+
+To create a deployment project with Jina CLI
+```bash
+jina new hello-jina --type=deployment
 ```
 
 This creates a new project folder called `hello-jina` with the following file structure:
 
+For a flow project: 
 ```text
 hello-jina/
     |- client.py
@@ -17,7 +24,18 @@ hello-jina/
             |- executor.py
 ```
 
-- `flow.yml` is the configuration file for the {class}`~jina.Flow`.
+For a deployment project:
+```text
+hello-jina/
+    |- client.py
+    |- flow.yml
+    |- executor1/
+            |- config.yml
+            |- executor.py
+```
+
+
+- `flow.yml/deployment.yml` is the configuration file for the {class}`~jina.Flow` or `~jina.Deployment` based on what type of project you create.
 - `executor1/` is where you write your {class}`~jina.Executor` code.
 - `config.yml` is the configuration file for the {class}`~jina.Executor`. It stores metadata for your Executor, as well as dependencies.
 - `client.py` is the entrypoint of your Jina project. You can run it via `python app.py`.
@@ -29,8 +47,14 @@ Now run it and observe the output of the server and client:
 
 
 ````{tab} Run server
+
+For flow project:
 ```shell
 jina flow --uses flow.yml
+```
+For deployment project:
+```shell
+jina flow --uses deployment.yml
 ```
 
 ```shell
@@ -84,7 +108,7 @@ class MyExecutor(Executor):
             doc.tensor = torch.tensor(np.random.random([10, 2]))
 ```
 
-Kill the last server with `Ctrl-C` and restart the server with `jina flow --uses flow.yml`.
+Kill the last server with `Ctrl-C` and restart the server with `jina flow --uses flow.yml` or  `jina flow --uses deployment.yml` based on the type of project you are creating.
 
 ## Call `/crunch-number` endpoint
 
@@ -131,7 +155,7 @@ tensor([[[0.9594, 0.9373],
 
 ## Deploy to JCloud
 
-JCloud offers free CPU and GPU instances to host Jina project. Let's deploy your first project to JCloud:
+JCloud offers free CPU and GPU instances to host Jina project. Let's deploy your first project to JCloud (Note that JCloud is only available for flow projects):
 
 ```bash
 jina auth login
