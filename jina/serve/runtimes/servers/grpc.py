@@ -30,7 +30,7 @@ class GRPCServer(BaseServer):
         super().__init__(**kwargs)
         self.grpc_server_options = grpc_server_options
         self.grpc_tracing_server_interceptors = (
-            self.runtime_args.grpc_tracing_server_interceptors
+            self.aio_tracing_server_interceptors()
         )
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile

@@ -39,7 +39,6 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         self._add_gateway_args()
         self.tracing = self.runtime_args.tracing
         self.tracer_provider = self.runtime_args.tracer_provider
-        self.grpc_tracing_server_interceptors = self.runtime_args.grpc_tracing_server_interceptors
         self._request_handler = req_handler or self._get_request_handler()
         if hasattr(self._request_handler, 'streamer'):
             self.streamer = self._request_handler.streamer  # backward compatibility
