@@ -1432,7 +1432,7 @@ class Flow(
               When not given, then the default naming strategy will apply.
         :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
 
-        Any executor that has `@requests(on=...)` bound with those values will receive data requests.
+                  Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
         :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
