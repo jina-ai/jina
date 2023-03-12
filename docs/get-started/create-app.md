@@ -28,7 +28,7 @@ For a deployment project:
 ```text
 hello-jina/
     |- client.py
-    |- flow.yml
+    |- deployment.yml
     |- executor1/
             |- config.yml
             |- executor.py
