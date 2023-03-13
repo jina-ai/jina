@@ -317,8 +317,4 @@ JCloud scales according to your needs. You can demand different resources (GPU/R
 ```{admonition} Restrictions
   
 - Deployments are only supported in the `us-east` region.
-- Each Executor is allocated a maximum of 4GB RAM, 2 CPU cores & 10GB of block storage.
-- Three Flows can be deployed at a time, out of which one Flow can use a GPU.
-- A maximum of two GPUs are allocated per Flow.
-- Flows with Executors using GPU are removed after 12 hours, whereas other Flows are removed after 72 hours.
 ```

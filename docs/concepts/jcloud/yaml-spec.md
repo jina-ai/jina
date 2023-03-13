@@ -3,7 +3,7 @@
 
 JCloud extends Jina's {ref}`Flow YAML specification<flow-yaml-spec>` by introducing the special field `jcloud`. This lets you define resources and scaling policies for each Executor and gateway.
 
-Here's a Flow with two Executors that have specific resource needs. `indexer` demands 10G `ebs` disk, whereas `encoder` demands two cores, 8G RAM and two dedicated GPUs. 
+Here's a Flow with two Executors that have specific resource needs. `indexer` demands 10G `ebs` disk, whereas `encoder` demands G5 instance, which implies 4 cores and 8G RAM are used. See below sections for further information about Instance Type.
 
 ```{code-block} yaml
 ---
@@ -15,9 +15,7 @@ executors:
     uses: jinaai+docker://<username>/Encoder
     jcloud:
       resources:
-        cpu: 2
-        memory: 8G
-        gpu: 1
+        instance: G2
   - name: indexer
     uses: jinaai+docker://<username>/Indexer
     jcloud:
@@ -34,32 +32,49 @@ Since each Executor has its own business logic, it may require different cloud r
 In JCloud, you can pass highly customizable, finely-grained resource requests for each Executor using the `jcloud.resources` argument in your Flow YAML.
 
 
-### CPU
+### Instance
 
-By default, `0.1 (1/10 of a core)` CPU is allocated to each Executor. You can use the `cpu` argument under `resources` to change it.
+JCloud uses the concept of "Instance" to respresent the hardware specifications. 
+In above example, C2 Instance Type stands for 4 cores and 8G RAM based on the CPU Tiers Instance defination table below.
 
-JCloud offers the general Intel Xeon processor (Skylake 8175M or Cascade Lake 8259CL) by default. 
-
-```{hint}
-Maximum of 16 cores is allowed per Executor.
-```
+Note that if you are still using the legacy resource specification interface, as such:
 
 ```{code-block} yaml
 ---
-emphasize-lines: 5-7
+emphasize-lines: 5-9,12-16
 ---
-jtype: Flow
-executors:
-  - name: executor1
-    uses: jinaai+docker://<username>/Executor1
-    jcloud:
-      resources:
-        cpu: 0.5
+jcloud:
+  resources:
+    cpu: 8
+    memory: 8G
 ```
 
+We would translate the raw numbers from input to Instance tier that fits most. 
+There are circumstances the Instance tier does not exactly fufill the CPU cores and Memory you need, like in above exmaple. 
+But we would "ceil" the requests to the lowest tier that would satisfy all the specifications. 
+In this case, `C6` would be consisdered, as `C5`'s `Cores` is lower than what's being requested (4 vs 8). 
+
+There are also two types of Instance Tiers, one for CPU instances, one for GPU.
+
+#### CPU Tiers
+
+| Instance | Cores | Memory | Credit Per Hour |
+|----------|-------|--------|-----------------|
+| C1       | 0.1   | 0.2G   | 1               |
+| C2       | 0.5   | 1G     | 5               |
+| C3       | 1     | 2G     | 10              |
+| C4       | 2     | 4G     | 20              |
+| C5       | 4     | 8G     | 40              |
+| C6       | 8     | 16G    | 80              |
+| C7       | 16    | 32G    | 160             |
+| C8       | 32    | 64G    | 320             |
 
 
-### GPU
+By default, C1 is allocated to each Executor and Gateway.
+
+JCloud offers the general Intel Xeon processor (Skylake 8175M or Cascade Lake 8259CL) for the CPU instances. 
+
+#### GPU Tiers
 
 JCloud supports GPU workloads with two different usages: `shared` or `dedicated`. 
 
@@ -69,83 +84,29 @@ If GPU is enabled, JCloud will provide NVIDIA A10G Tensor Core GPUs with 24G mem
 When using GPU resources, it may take a few extra minutes before all Executors are ready to serve traffic.
 ```
 
-#### Shared GPU
+| Instance | GPU    | Memory | Credit Per Hour |
+|----------|--------|--------|-----------------|
+| G1       | shared | 14G    | 100             |
+| G2       | 1      | 14G    | 125             |
+| G3       | 2      | 24G    | 250             |
+| G4       | 4      | 56G    | 500             |
+```
+
+##### Shared GPU
 
 An Executor using a `shared` GPU shares this GPU with up to four other Executors.
 This enables time-slicing, which allows workloads that land on oversubscribed GPUs to interleave with one another.
 
-```{code-block} yaml
----
-emphasize-lines: 5-7
----
-jtype: Flow
-executors:
-  - name: executor1
-    uses: jinaai+docker://<username>/Executor1
-    jcloud:
-      resources:
-        gpu: shared
-```
-
-```{caution}
 The tradeoffs with a `shared` GPU are increased latency, jitter, and potential out-of-memory (OOM) conditions when many different applications are time-slicing on the GPU. If your application is memory consuming, we suggest using a dedicated GPU.
+
+To use `shared` GPU, `G1` needs to be specificied as Instance Type.
 ```
 
 #### Dedicated GPU
 
-Using a dedicated GPU is the default way to provision GPU for an Executor. This automatically creates nodes or assigns the Executor to land on a GPU node. In this case, the Executor owns the whole GPU. You can assign between 1 and 4 GPUs.
+Using a dedicated GPU is the default way to provision GPU for an Executor. This automatically creates nodes or assigns the Executor to land on a GPU node. In this case, the Executor owns the whole GPU. 
 
-```{code-block} yaml
----
-emphasize-lines: 5-7
----
-jtype: Flow
-executors:
-  - name: executor1
-    uses: jinaai+docker://<username>/Executor1
-    jcloud:
-      resources:
-        gpu: 1
-```
-
-### Spot vs on-demand instance
-
-For cost optimization, JCloud tries to deploy all Executors on `spot` capacity. This is ideal for stateless Executors, which can withstand interruptions and restarts. It is recommended to use `on-demand` capacity for stateful Executors (e.g. indexers) however.
-
-```{code-block} yaml
----
-emphasize-lines: 5-7
----
-jtype: Flow
-executors:
-  - name: executor1
-    uses: jinaai+docker://<username>/Executor1
-    jcloud:
-      resources:
-        capacity: on-demand
-```
-
-### Memory
-
-By default, `100M` of RAM is allocated to each Executor. You can use the `memory` argument under `resources` to change it.
-
-```{hint}
-Maximum of 16G RAM is allowed per Executor.
-```
-
-```{code-block} yaml
----
-emphasize-lines: 5-7
----
-jtype: Flow
-executors:
-  - name: executor1
-    uses: jinaai+docker://<username>/Executor1
-    jcloud:
-      resources:
-        memory: 8G
-```
-
+To use `dedicated` GPU, `G2`/ `G3` / `G4` needs to be specificied as Instance Type.
 
 ### Storage
 
@@ -161,14 +122,22 @@ If your Executor needs to share data with other Executors and retain data persis
 
 - IO performance is slower compared to `ebs` or `ephemeral`
 - The disk can be shared with other Executors or Flows.
-- Default storage size is `5G`, maximum storage size parameter is `10G`.
+- Default storage size is `5G`.
 
 If your Executor needs high IO, you can use `ebs` instead. Note that:
 
 - The disk cannot be shared with other Executors or Flows.
-- You must pass a storage size parameter (default: `1G`, max `10G`).
-
+- Default storage size is `5G`.
 ````
+
+Here are the numbers in terms of Credits Per Month used for three kinds of storage described above.
+
+| Instance  | Credit Per Month |
+|-----------|------------------|
+| Ephemeral | 0                |
+| EBS       | 30               |
+| EFS       | 75               |
+
 JCloud also supports retaining the data a Flow was using while active. You can set the `retain` argument to `true` to enable this feature.
 
 ```{code-block} yaml
@@ -317,7 +286,7 @@ executors:
 
 ### Control gateway resources
 
-To customize the gateway's CPU or memory, specify the `memory` and/or `cpu` arguments under `gateway.jcloud.resources`:
+To customize the gateway's CPU or memory, specify the Instance Type under `gateway.jcloud.resources`:
 
 ```{code-block} yaml
 ---
@@ -327,8 +296,7 @@ jtype: Flow
 gateway:
   jcloud:
     resources:
-      memory: 800M
-      cpu: 0.4
+      instance: C3
 executors:
   - name: encoder
     uses: jinaai+docker://<username>/Encoder
