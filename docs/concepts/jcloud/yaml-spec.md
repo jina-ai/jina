@@ -53,6 +53,23 @@ In this case, `C6` would be consisdered, as `C5`'s `Cores` is lower than what's 
 
 There are also two types of Instance Tiers, one for CPU instances, one for GPU.
 
+#### Pricing
+Each Instance has a fixed `Credits Per Hour` number, it's an indictor on how many credits will JCloud charge
+if certain Instance is used. For example, if an exectuor uses `C3`, it implies that `10` credits will be spent
+under the operating user account. Other important facts to note:
+
+   - If the Flow is powering other App(s) you create, you would be charged by the App(s), not the underlying Flow.
+   - `Credits Per Hour` are per Executor/Gateway basis, the total `Credits Per Hour` of a Flow is the sum of all the credits
+     each components cost.
+   - If shards/replicas are used in Executor/Gateway, same Instance type would be used so `Credits Per Hour` would be multipled.
+     For example, if an exectuor uses `C3` and it has two replicas, the `Credits Per Hour` for the Executor would be doubled to `20`.
+     The only exception here is when sharding is used, `C1` would be used for the shards head, regardless of what Instance type has been
+     entered for the shared Executor.
+
+```{hint}
+Please visit [Jina AI Cloud Pricing](https://cloud.jina.ai/pricing/) for more information.
+```
+
 #### CPU Tiers
 
 | Instance | Cores | Memory | Credits Per Hour |
