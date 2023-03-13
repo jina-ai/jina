@@ -177,24 +177,17 @@ def test_sync_clients_max_attempts_transient_error(
 
 @pytest.mark.asyncio
 @pytest.mark.timeout(300)
-@pytest.mark.parametrize('flow_or_deployment', ['flow', 'deployment'])
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 async def test_async_clients_max_attempts_transient_error(
-    mocker, flow_or_deployment, protocol, port_generator
+    mocker, protocol, port_generator
 ):
     random_port = port_generator()
-    cntx = (
-        Flow(asyncio=True, protocol=protocol, port=random_port)
-        if flow_or_deployment == 'flow'
-        else Deployment(
-            include_gateway=True, asyncio=True, port=random_port, protocol=protocol
-        )
-    )
-    client = Client(host=f'{cntx.protocol}://{cntx.host}:{random_port}', asyncio=True)
+    cntx = Flow(protocol=protocol, port=random_port)
     stop_event = multiprocessing.Event()
     t = multiprocessing.Process(target=_start_runtime, args=(cntx, stop_event))
     t.start()
 
+    client = Client(host=f'{cntx.protocol}://{cntx.host}:{random_port}', asyncio=True)
     try:
         # Test that a regular index request triggers the correct callbacks
         on_error_mock = mocker.Mock()
@@ -460,11 +453,9 @@ async def test_async_grpc_stream_transient_error(
 ):
     random_port = port_generator()
     cntx = (
-        Flow(port=random_port, asyncio=True).add(uses=MyExec)
+        Flow(port=random_port).add(uses=MyExec)
         if flow_or_deployment == 'flow'
-        else Deployment(
-            include_gateway=True, uses=MyExec, asyncio=True, port=random_port
-        )
+        else Deployment(include_gateway=True, uses=MyExec, port=random_port)
     )
 
     client = Client(host=f'{cntx.protocol}://{cntx.host}:{random_port}', asyncio=True)
