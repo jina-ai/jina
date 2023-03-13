@@ -1,4 +1,4 @@
-(transient-erros)=
+(transient-errors)=
 
 # Transient Errors
 
@@ -15,7 +15,8 @@ The {meth}`~jina.clients.mixin.PostMixin.post` method accepts `max_attempts`, `i
 and `backoff_multiplier` parameters to control the capacity to retry requests when a transient connectivity error
 occurs, using an exponential backoff strategy.
 This can help to overcome transient network connectivity issues which are broadly captured by the
-{class}`~grpc.aio.AioRpcError`, {class}`~asyncio.CancelledError` and {class}`~jina.excepts.InternalNetworkError`
+{class}`~grpc.aio.AioRpcError`, {class}`~aiohttp.ClientError`, {class}`~asyncio.CancelledError` and
+{class}`~jina.excepts.InternalNetworkError`
 exception types.
 
 The `max_attempts` parameter determines the number of sending attempts, including the original request.
@@ -27,14 +28,15 @@ at `random(0, min(initial_backoff*backoff_multiplier**(n-1), max_backoff))`.
 
 ### Handling gRPC retries for streaming and unary RPC methods
 
-The {meth}`~jina.clients.mixin.PostMixin.post` method supports the `stream` boolean parameter. If set to `True`,
+The {meth}`~jina.clients.mixin.PostMixin.post` method supports the `stream` boolean parameter (defaults to `True`). If
+set to `True`,
 the **gRPC** server side streaming RPC method will be invoked. If set to `False`, the server side unary RPC method will
 be invoked. Some important implication of
 using retries with **gRPC** are:
 
 - The built-in **gRPC** retries are limited in scope and are implemented to work under certain circumstances. More
   details are specified in the [design document](https://github.com/grpc/proposal/blob/master/A6-client-retries.md).
-- If `stream` parameter is set to True (defaults to True) and if the `inputs` parameters is a `GeneratorType` or
+- If the `stream` parameter is set to True and if the `inputs` parameters is a `GeneratorType` or
   an `Iterable`, the retry must be handled as below because the result must be consumed to check for errors in the
   stream of responses.
 
@@ -93,6 +95,19 @@ The retry parameters `max_attempts`, `initial_backoff`, `backoff_multiplier` and
 The {meth}`~jina.clients.mixin.PostMixin.post` accepts a `continue_on_error` parameter. When set to `True`, the Client
 will keep trying to send the remaining requests. The `continue_on_error` parameter will only apply
 to Exceptions caused by an Executor, but in case of network connectivity issues, an Exception will be raised.
+
+The `continue_on_error` parameter handles the errors that are returned by the Executor as part of its response. The
+errors can be logical errors that might be raised
+during the execution of the operation. This doesn't include transient errors represented by
+{class}`~grpc.aio.AioRpcError`, {class}`~aiohttp.ClientError`, {class}`~asyncio.CancelledError` and
+{class}`~jina.excepts.InternalNetworkError` triggered during the Gateway and Executor communication.
+
+The `retries` parameter of the Gateway control the number of retries for the transient errors that arise between the
+Gateway and Executor communication.
+
+```{hint}
+Refer to {ref}`Network Errors <flow-error-handling>` section for more information.
+```
 
 ## Retries with a large inputs or long-running operations
 
