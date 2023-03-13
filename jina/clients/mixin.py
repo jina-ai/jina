@@ -239,6 +239,7 @@ class PostMixin:
             is_document_or_documentarray
             and isinstance(self.client, GRPCBaseClient)
             and max_attempts > 1
+            and stream
         ):
             for attempt in range(1, max_attempts + 1):
                 try:
