@@ -1,5 +1,6 @@
 # kind version has to be bumped to v0.11.1 since pytest-kind is just using v0.10.0 which does not work on ubuntu in ci
 import os
+
 import pytest
 import requests as req
 
@@ -238,10 +239,10 @@ async def test_flow_with_configmap(flow_configmap, docker_images, tmpdir):
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize(
     'docker_images',
-    [['test-executor', 'jinaai/jina']],
+    [['test-executor-torch', 'jinaai/jina']],
     indirect=True,
 )
-async def test_flow_with_workspace(logger, docker_images, tmpdir):
+async def test_flow_with_workspace_and_tensors(logger, docker_images, tmpdir):
     flow = Flow(
         name='docker-compose-flow-with_workspace', port=9090, protocol='http'
     ).add(
@@ -263,6 +264,8 @@ async def test_flow_with_workspace(logger, docker_images, tmpdir):
     assert len(docs) == 10
     for doc in docs:
         assert doc.tags['workspace'] == '/shared/TestExecutor/0'
+        assert doc.embedding.shape == (1000,)
+        assert doc.tensor.shape == (1000,)
 
 
 @pytest.mark.asyncio
