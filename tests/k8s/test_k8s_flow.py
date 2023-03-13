@@ -227,29 +227,6 @@ def k8s_flow_gpu(docker_images):
 
 
 @pytest.fixture
-def k8s_flow_with_reload_executor(docker_images):
-    flow = Flow(name='test-flow-with-reload', port=9090, protocol='http').add(
-        name='test_executor',
-        replicas=2,
-        uses_with={'argument': 'value1'},
-        uses=f'docker://{docker_images[0]}',
-    )
-    return flow
-
-
-@pytest.fixture
-def k8s_flow_scale(docker_images, shards):
-    DEFAULT_REPLICAS = 2
-
-    flow = Flow(name='test-flow-scale', port=9090, protocol='http').add(
-        name='test_executor',
-        shards=shards,
-        replicas=DEFAULT_REPLICAS,
-    )
-    return flow
-
-
-@pytest.fixture
 def k8s_flow_with_needs(docker_images):
     flow = (
         Flow(
