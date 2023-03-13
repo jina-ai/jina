@@ -1647,7 +1647,7 @@ def is_port_free(host: Union[str, List[str]], port: Union[int, List[int]]) -> bo
 def send_telemetry_event(event: str, obj_cls_name: Any, **kwargs) -> None:
     """Sends in a thread a request with telemetry for a given event
     :param event: Event leading to the telemetry entry
-    :param obj: Object to be tracked
+    :param obj_cls_name: Class name of the object to be tracked
     :param kwargs: Extra kwargs to be passed to the data sent
     """
 
