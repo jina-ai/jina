@@ -425,15 +425,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">gateways</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BaseGateway</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">port</span><span class="p">,</span> <span class="n">protocol</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ports</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocols</span><span class="p">):</span>
             <span class="n">gateway_cls</span> <span class="o">=</span> <span class="n">_get_gateway_class</span><span class="p">(</span><span class="n">protocol</span><span class="p">)</span>
-            <span class="c1"># ignore metrics_registry since it is not copyable</span>
+
+            <span class="c1"># ignore monitoring and tracing args since they are not copyable</span>
+            <span class="n">ignored_attrs</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s1">&#39;metrics_registry&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;tracer_provider&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;grpc_tracing_server_interceptors&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;aio_tracing_client_interceptors&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;tracing_client_interceptor&#39;</span><span class="p">,</span>
+            <span class="p">]</span>
             <span class="n">runtime_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deepcopy_with_ignore_attrs</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;metrics_registry&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="p">,</span> <span class="n">ignored_attrs</span>
             <span class="p">)</span>
             <span class="n">runtime_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="p">[</span><span class="n">port</span><span class="p">]</span>
             <span class="n">runtime_args</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="p">[</span><span class="n">protocol</span><span class="p">]</span>
             <span class="n">gateway_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;runtime_args&#39;</span><span class="p">}</span>
             <span class="n">gateway_kwargs</span><span class="p">[</span><span class="s1">&#39;runtime_args&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="n">runtime_args</span><span class="p">))</span>
-            <span class="n">gateway</span> <span class="o">=</span> <span class="n">gateway_cls</span><span class="p">(</span><span class="o">**</span><span class="n">gateway_kwargs</span><span class="p">)</span>
+            <span class="n">gateway</span> <span class="o">=</span> <span class="n">gateway_cls</span><span class="p">(</span><span class="n">streamer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="p">,</span> <span class="o">**</span><span class="n">gateway_kwargs</span><span class="p">)</span>
             <span class="n">gateway</span><span class="o">.</span><span class="n">streamer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gateways</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gateway</span><span class="p">)</span>
 
@@ -499,7 +507,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 07, 2023</div>
+                            Last updated on Mar 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

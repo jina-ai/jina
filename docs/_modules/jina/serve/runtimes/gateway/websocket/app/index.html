@@ -403,6 +403,7 @@
                     <h1>Source code for jina.serve.runtimes.gateway.websocket.app</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">docarray_v2</span>
 <span class="kn">from</span> <span class="nn">jina.clients.request</span> <span class="kn">import</span> <span class="n">request_generator</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">DataInputType</span><span class="p">,</span> <span class="n">WebsocketSubProtocols</span>
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">InternalNetworkError</span>
@@ -588,6 +589,13 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">async</span> <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">streamer</span><span class="o">.</span><span class="n">rpc_stream</span><span class="p">(</span><span class="n">request_iterator</span><span class="o">=</span><span class="n">req_iter</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">docarray_v2</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_content</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">docs</span><span class="p">)):</span>
+                        <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_content</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">docs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s1">&#39;embedding&#39;</span><span class="p">):</span>
+                            <span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_content</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">docs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">cls_name</span> <span class="o">=</span> <span class="s1">&#39;numpy&#39;</span>
+
+                        <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_content</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">docs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s1">&#39;tensor&#39;</span><span class="p">):</span>
+                            <span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_content</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">docs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">cls_name</span> <span class="o">=</span> <span class="s1">&#39;numpy&#39;</span>
                 <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">websocket</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">InternalNetworkError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">grpc</span>
@@ -711,7 +719,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 07, 2023</div>
+                            Last updated on Mar 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

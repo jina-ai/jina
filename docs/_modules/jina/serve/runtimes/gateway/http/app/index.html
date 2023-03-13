@@ -781,7 +781,15 @@
 <span class="sd">        :param request_iterator: request iterator, with length of 1</span>
 <span class="sd">        :return: the first result from the request iterator</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">docarray_v2</span>
+
         <span class="k">async</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">streamer</span><span class="o">.</span><span class="n">rpc_stream</span><span class="p">(</span><span class="n">request_iterator</span><span class="o">=</span><span class="n">request_iterator</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">docarray_v2</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_content</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">docs</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_content</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">docs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s1">&#39;embedding&#39;</span><span class="p">):</span>
+                        <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_content</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">docs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">cls_name</span> <span class="o">=</span> <span class="s1">&#39;numpy&#39;</span>
+                    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_content</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">docs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s1">&#39;tensor&#39;</span><span class="p">):</span>
+                        <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_content</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">docs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">cls_name</span> <span class="o">=</span> <span class="s1">&#39;numpy&#39;</span>
             <span class="n">result_dict</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">result_dict</span>
 
@@ -800,7 +808,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 07, 2023</div>
+                            Last updated on Mar 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

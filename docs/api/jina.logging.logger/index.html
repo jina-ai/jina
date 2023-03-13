@@ -959,7 +959,7 @@ specific issues (see SF #1524081).</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.logging.logger.JinaLogger">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.logging.logger.</span></span><span class="sig-name descname"><span class="pre">JinaLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress_root_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/logger/#JinaLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.logger.JinaLogger" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.logging.logger.</span></span><span class="sig-name descname"><span class="pre">JinaLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/logger/#JinaLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.logger.JinaLogger" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Build a logger for a context.</p>
 <dl class="field-list simple">
@@ -967,12 +967,12 @@ specific issues (see SF #1524081).</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>context</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The context identifier of the class, module or method.</p></li>
 <li><p><strong>log_config</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The configuration file for the logger.</p></li>
-<li><p><strong>suppress_root_logging</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – The flag determines whether to suppress root logging.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Return:<span class="colon">:</span></dt>
+<dd class="field-even"><p>an executor object.</p>
+</dd>
 </dl>
-<p>configuration to group logs by deployment.
-:return:: an executor object.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.logging.logger.JinaLogger.supported">
 <span class="sig-name descname"><span class="pre">supported</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'FileHandler',</span> <span class="pre">'RichHandler',</span> <span class="pre">'StreamHandler',</span> <span class="pre">'SysLogHandler'}</span></em><a class="headerlink" href="#jina.logging.logger.JinaLogger.supported" title="Permalink to this definition">#</a></dt>
@@ -1037,7 +1037,7 @@ specific issues (see SF #1524081).</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 07, 2023</div>
+                            Last updated on Mar 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
