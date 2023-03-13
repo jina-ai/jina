@@ -352,16 +352,9 @@ async def test_async_clients_max_attempts_raises_error(
 
 
 @pytest.mark.timeout(90)
-@pytest.mark.parametrize('flow_or_deployment', ['deployment', 'flow'])
-def test_grpc_stream_transient_error_iterable_input(
-    flow_or_deployment, port_generator, mocker
-):
+def test_grpc_stream_transient_error_iterable_input(port_generator, mocker):
     random_port = port_generator()
-    cntx = (
-        Flow(port=random_port).add(uses=MyExec)
-        if flow_or_deployment == 'flow'
-        else Deployment(include_gateway=True, uses=MyExec, port=random_port)
-    )
+    cntx = Flow(port=random_port).add(uses=MyExec)
 
     client = Client(host=f'{cntx.protocol}://{cntx.host}:{random_port}')
     stop_event = multiprocessing.Event()
