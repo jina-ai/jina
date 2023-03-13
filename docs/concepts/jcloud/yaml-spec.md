@@ -7,7 +7,7 @@ Here's a Flow with two Executors that have specific resource needs. `indexer` de
 
 ```{code-block} yaml
 ---
-emphasize-lines: 5-9,12-16
+emphasize-lines: 5-7,10-16
 ---
 jtype: Flow
 executors:
@@ -40,9 +40,6 @@ In above example, C2 Instance Type stands for 4 cores and 8G RAM based on the CP
 Note that if you are still using the legacy resource specification interface, as such:
 
 ```{code-block} yaml
----
-emphasize-lines: 5-9,12-16
----
 jcloud:
   resources:
     cpu: 8
@@ -58,16 +55,16 @@ There are also two types of Instance Tiers, one for CPU instances, one for GPU.
 
 #### CPU Tiers
 
-| Instance | Cores | Memory | Credit Per Hour |
-|----------|-------|--------|-----------------|
-| C1       | 0.1   | 0.2G   | 1               |
-| C2       | 0.5   | 1G     | 5               |
-| C3       | 1     | 2G     | 10              |
-| C4       | 2     | 4G     | 20              |
-| C5       | 4     | 8G     | 40              |
-| C6       | 8     | 16G    | 80              |
-| C7       | 16    | 32G    | 160             |
-| C8       | 32    | 64G    | 320             |
+| Instance | Cores | Memory | Credits Per Hour |
+|----------|-------|--------|------------------|
+| C1       | 0.1   | 0.2G   | 1                |
+| C2       | 0.5   | 1G     | 5                |
+| C3       | 1     | 2G     | 10               |
+| C4       | 2     | 4G     | 20               |
+| C5       | 4     | 8G     | 40               |
+| C6       | 8     | 16G    | 80               |
+| C7       | 16    | 32G    | 160              |
+| C8       | 32    | 64G    | 320              |
 
 
 By default, C1 is allocated to each Executor and Gateway.
@@ -90,7 +87,6 @@ When using GPU resources, it may take a few extra minutes before all Executors a
 | G2       | 1      | 14G    | 125             |
 | G3       | 2      | 24G    | 250             |
 | G4       | 4      | 56G    | 500             |
-```
 
 ##### Shared GPU
 
@@ -100,9 +96,8 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 The tradeoffs with a `shared` GPU are increased latency, jitter, and potential out-of-memory (OOM) conditions when many different applications are time-slicing on the GPU. If your application is memory consuming, we suggest using a dedicated GPU.
 
 To use `shared` GPU, `G1` needs to be specificied as Instance Type.
-```
 
-#### Dedicated GPU
+##### Dedicated GPU
 
 Using a dedicated GPU is the default way to provision GPU for an Executor. This automatically creates nodes or assigns the Executor to land on a GPU node. In this case, the Executor owns the whole GPU. 
 
@@ -132,17 +127,17 @@ If your Executor needs high IO, you can use `ebs` instead. Note that:
 
 Here are the numbers in terms of Credits Per Month used for three kinds of storage described above.
 
-| Instance  | Credit Per Month |
-|-----------|------------------|
-| Ephemeral | 0                |
-| EBS       | 30               |
-| EFS       | 75               |
+| Instance  | Credits Per Month |
+|-----------|-------------------|
+| Ephemeral | 0                 |
+| EBS       | 30                |
+| EFS       | 75                |
 
 JCloud also supports retaining the data a Flow was using while active. You can set the `retain` argument to `true` to enable this feature.
 
 ```{code-block} yaml
 ---
-emphasize-lines: 7-10,15-16
+emphasize-lines: 5-10,13-16
 ---
 jtype: Flow
 executors:
