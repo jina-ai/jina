@@ -885,10 +885,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             if not running_in_event_loop:
                 asyncio.get_event_loop().run_until_complete(wait_for_ready_coro)
             else:
-                try:
-                    self.wait_start_success()
-                except:
-                    pass
+                wait_ready_thread = threading.Thread(
+                    target=self.wait_start_success, daemon=True
+                )
+                wait_ready_thread.start()
+                wait_ready_thread.join()
 
     def start(self) -> 'Deployment':
         """
