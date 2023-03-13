@@ -42,7 +42,6 @@ hello-jina/
 
 There are some other files like `README.md` and `requirements.txt` to provide extra metadata about that {class}`~jina.Executor`. More information {ref}`can be found here<create-executor>`.
 
-
 Now run it and observe the output of the server and client:
 
 
