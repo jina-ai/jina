@@ -496,10 +496,10 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             host, port = HubIO.deploy_public_sandbox(self.args)
             self._sandbox_deployed = True
             self.first_pod_args.host = host
-            self.first_pod_args.port = port
+            self.first_pod_args.port = [port]
             if self.head_args:
                 self.pod_args['head'].host = host
-                self.pod_args['head'].port = port
+                self.pod_args['head'].port = [port]
 
     def update_worker_pod_args(self):
         """Update args of all its worker pods based on Deployment args. Does not touch head and tail"""
@@ -1610,8 +1610,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             if self.args.default_port:
                 from jina.serve.networking import GrpcConnectionPool
 
-                self.args.port = GrpcConnectionPool.K8S_PORT
-                self.first_pod_args.port = GrpcConnectionPool.K8S_PORT
+                self.args.port = [GrpcConnectionPool.K8S_PORT]
+                self.first_pod_args.port = [GrpcConnectionPool.K8S_PORT]
 
                 self.args.port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
                 self.first_pod_args.port_monitoring = (

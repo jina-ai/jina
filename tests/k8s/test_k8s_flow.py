@@ -16,6 +16,7 @@ from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
 from jina.parsers import set_deployment_parser
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.servers import BaseServer
 from tests.helper import _validate_dummy_custom_gateway_response
 from tests.k8s.conftest import shell_portforward
 
