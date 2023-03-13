@@ -645,7 +645,7 @@ def _validate_flow(f):
         if name != 'gateway':
             assert (
                 addresses[name][0]
-                == f'{pod.protocol}://{pod.host}:{pod.head_port if pod.head_port else pod.port[0]}'
+                == f'{pod.protocol}://{pod.host}:{pod.head_port if pod.head_port else pod.port}'
             )
             for n in pod.needs:
                 assert name in graph_dict[n if n != 'gateway' else 'start-gateway']

@@ -2178,7 +2178,7 @@ class Flow(
         .. # noqa: DAR201
         """
         if GATEWAY_NAME in self._deployment_nodes:
-            res = self._deployment_nodes[GATEWAY_NAME].port
+            res = self._deployment_nodes[GATEWAY_NAME].first_pod_args.port
         else:
             res = self._gateway_kwargs.get('port', None) or self._gateway_kwargs.get(
                 'ports', None

@@ -39,7 +39,6 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         self._add_gateway_args()
         self.tracing = self.runtime_args.tracing
         self.tracer_provider = self.runtime_args.tracer_provider
-        self._setup_monitoring(monitoring=self.runtime_args.monitoring, port_monitoring=self.runtime_args.port_monitoring)
         self._setup_instrumentation(
             name=self.name,
             tracing=self.runtime_args.tracing,
@@ -70,6 +69,7 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
             self.logger.warning(f'Exception during instrumentation teardown, {str(ex)}')
 
     def _get_request_handler(self):
+        self._setup_monitoring(monitoring=self.runtime_args.monitoring, port_monitoring=self.runtime_args.port_monitoring)
         return self.req_handler_cls(
             args=self.runtime_args,
             logger=self.logger,
