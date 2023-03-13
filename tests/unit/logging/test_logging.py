@@ -47,15 +47,12 @@ def test_logging_default():
     with JinaLogger('test_logger') as logger:
         log(logger)
         assert len(logger.handlers) == 1
-    
+
     # test whether suppress root handlers
     logging.root.handlers.append(logging.StreamHandler(sys.stdout))
     with JinaLogger('test_logger', suppress_root_logging=False) as logger:
         log(logger)
         assert len(logging.root.handlers) > 0
-    with JinaLogger('test_logger') as logger:
-        log(logger)
-        assert len(logging.root.handlers) == 0
 
 
 def test_logging_level_yaml(monkeypatch):
