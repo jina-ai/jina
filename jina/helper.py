@@ -1644,7 +1644,7 @@ def is_port_free(host: Union[str, List[str]], port: Union[int, List[int]]) -> bo
             return all([_single_port_free(_h, port) for _h in host])
 
 
-def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
+def send_telemetry_event(event: str, obj_cls_name: Any, **kwargs) -> None:
     """Sends in a thread a request with telemetry for a given event
     :param event: Event leading to the telemetry entry
     :param obj: Object to be tracked
@@ -1662,7 +1662,7 @@ def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
             metas, _ = get_full_version()
             data = base64.urlsafe_b64encode(
                 json.dumps(
-                    {**metas, 'event': f'{obj.__class__.__name__}.{event}', **kwargs}
+                    {**metas, 'event': f'{obj_cls_name}.{event}', **kwargs}
                 ).encode('utf-8')
             )
 

@@ -81,10 +81,7 @@ class AsyncNewLoopRuntime:
 
         self._start_time = time.time()
         self._loop.run_until_complete(self.async_setup())
-        self._send_telemetry_event()
-
-    def _send_telemetry_event(self):
-        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
+        self._send_telemetry_event(event='start')
 
     def run_forever(self):
         """
@@ -101,12 +98,9 @@ class AsyncNewLoopRuntime:
         self._loop.close()
         self.logger.close()
         self._stop_time = time.time()
-        send_telemetry_event(
+        self._send_telemetry_event(
             event='stop',
-            obj=self,
-            duration=self._stop_time - self._start_time,
-            entity_id=self._entity_id,
-        )
+            extra_kwargs={'duration': self._stop_time - self._start_time})
 
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPod`"""
@@ -207,21 +201,25 @@ class AsyncNewLoopRuntime:
                               ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
                               ssl_certfile=getattr(self.args, 'ssl_certfile', None))
 
-    def _send_telemetry_event(self):
-        pass
-        # is_custom_gateway = self.server.__class__ not in [
-        #     CompositeGateway,
-        #     GRPCGateway,
-        #     HTTPGateway,
-        #     WebSocketGateway,
-        # ]
-        # send_telemetry_event(
-        #     event='start',
-        #     obj=self,
-        #     entity_id=self._entity_id,
-        #     is_custom_gateway=is_custom_gateway,
-        #     protocol=self.args.protocol,
-        # )
+    def _send_telemetry_event(self, event, extra_kwargs=None):
+        gateway_kwargs = {}
+        if self.req_handler_cls.__name__ == 'WorkerRequestHandler':
+            runtime_cls_name = 'WorkerRuntime'
+        elif self.req_handler_cls.__name__ == 'HeaderRequestHandler':
+            runtime_cls_name = 'HeadRuntime'
+        else:
+            runtime_cls_name = self.server.__class__
+            gateway_kwargs['is_custom_gateway'] = self.server.__class__ not in [
+                CompositeGateway,
+                GRPCGateway,
+                HTTPGateway,
+                WebSocketGateway,
+            ]
+            gateway_kwargs['protocol'] = self.args.protocol
+
+        extra_kwargs = extra_kwargs or {}
+
+        send_telemetry_event(event=event, obj_cls_name=runtime_cls_name, entity_id=self._entity_id, **gateway_kwargs, **extra_kwargs)
 
     async def async_setup(self):
         """

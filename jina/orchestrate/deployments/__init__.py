@@ -412,7 +412,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             self._stop_time = time.time()
             send_telemetry_event(
                 event='stop',
-                obj=self,
+                obj_cls_name=self.__class__.__name__,
                 entity_id=self._entity_id,
                 duration=self._stop_time - self._start_time,
                 exc_type=str(exc_type),
@@ -948,7 +948,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
             print(Rule(':tada: Deployment is ready to serve!'), *all_panels)
 
-            send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
+            send_telemetry_event(event='start', obj_cls_name=self.__class__.__name__, entity_id=self._entity_id)
 
         return self
 
