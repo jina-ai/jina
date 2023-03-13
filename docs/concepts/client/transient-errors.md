@@ -38,7 +38,7 @@ using retries with **gRPC** are:
   details are specified in the [design document](https://github.com/grpc/proposal/blob/master/A6-client-retries.md).
 - If the `stream` parameter is set to True and if the `inputs` parameters is a `GeneratorType` or
   an `Iterable`, the retry must be handled as below because the result must be consumed to check for errors in the
-  stream of responses.
+  stream of responses. The **gRPC** service retry is still configured but cannot be guaranteed.
 
    ```python
    from jina import Client, Document
