@@ -3,7 +3,7 @@
 
 JCloud extends Jina's {ref}`Flow YAML specification<flow-yaml-spec>` by introducing the special field `jcloud`. This lets you define resources and scaling policies for each Executor and gateway.
 
-Here's a Flow with two Executors that have specific resource needs: `indexer` requires a 10 GB `ebs` disk, whereas `encoder` requires a G4 instance, which implies that two cores and 4 GB RAM are used. See the below sections for further information about Instance Types.
+Here's a Flow with two Executors that have specific resource needs: `indexer` requires a 10 GB `ebs` disk, whereas `encoder` requires a G4 instance, which implies that two cores and 4 GB RAM are used. See the below sections for further information about instance types.
 
 ```{code-block} yaml
 ---
@@ -34,7 +34,7 @@ In JCloud, you can pass highly customizable, finely-grained resource requests fo
 ### Instance
 
 JCloud uses the concept of an "Instance" to represent a specific set of hardware specifications.
-In above example, a C4 Instance Type represents two cores and 4 GB RAM based on the CPU Tiers Instance definition table below.
+In above example, a C4 instance type represents two cores and 4 GB RAM based on the CPU Tiers Instance definition table below.
 
 Note that if you are still using the legacy resource specification interface, as such:
 
@@ -61,9 +61,9 @@ from the operating user account. Other important facts to note:
    - If the Flow is powering other App(s) you create, you would be charged by the App(s), not the underlying Flow.
    - `Credits Per Hour` is on an Executor/Gateway basis, the total `Credits Per Hour` of a Flow is the sum of all the credits
      each components cost.
-   - If shards/replicas are used in Executor/Gateway, same Instance type would be used, so `Credits Per Hour` would be multiplied.
+   - If shards/replicas are used in Executor/Gateway, same instance type would be used, so `Credits Per Hour` would be multiplied.
      For example, if an Executor uses `C3` and it has two replicas, the `Credits Per Hour` for the Executor would double to `20`.
-     The only exception here is when sharding is used, `C1` would be used for the shards head, regardless of what Instance type has been
+     The only exception here is when sharding is used, `C1` would be used for the shards head, regardless of what instance type has been
      entered for the shared Executor.
 
 ```{hint}
@@ -112,13 +112,13 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 
 The tradeoffs with a `shared` GPU are increased latency, jitter, and potential out-of-memory (OOM) conditions when many different applications are time-slicing on the GPU. If your application is memory consuming, we suggest using a dedicated GPU.
 
-To use `shared` GPU, `G1` needs to be specified as Instance Type.
+To use `shared` GPU, `G1` needs to be specified as instance type.
 
 ##### Dedicated GPU
 
-Using a dedicated GPU is the default way to provision a GPU for an Executor. This automatically creates nodes or assigns the Executor to land on a GPU node. In this case, the Executor owns the whole GPU.
+Using a dedicated GPU is the default way to provision a GPU for an Executor. This automatically creates nodes or assigns the Executor to a GPU node. In this case, the Executor owns the whole GPU.
 
-To use `dedicated` GPU, `G2`/ `G3` / `G4` needs to be specified as Instance Type.
+To use `dedicated` GPU, `G2`/ `G3` / `G4` needs to be specified as instance type.
 ### Storage
 
 JCloud supports three kinds of storage: ephemeral (default), [efs](https://aws.amazon.com/efs/) (network file storage) and [ebs](https://aws.amazon.com/ebs/) (block device).
@@ -305,7 +305,7 @@ executors:
 
 ### Control gateway resources
 
-To customize the gateway's CPU or memory, specify the Instance Type under `gateway.jcloud.resources`:
+To customize the gateway's CPU or memory, specify the instance type under `gateway.jcloud.resources`:
 
 ```{code-block} yaml
 ---
