@@ -42,6 +42,8 @@ async def wait_or_raise_err(
                 trailing_metadata=trailing_metadata,
                 debug_error_string=err.debug_error_string(),
             )
+        elif isinstance(err, aiohttp.ClientConnectorCertificateError):
+            raise err
         elif isinstance(err, aiohttp.ClientError):
             raise ConnectionError(str(err))
         else:

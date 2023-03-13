@@ -2,7 +2,6 @@ import multiprocessing
 import os
 import time
 
-import aiohttp
 import pytest
 import requests
 
@@ -296,7 +295,7 @@ def test_sync_clients_max_attempts_raises_error(mocker, protocol, port_generator
     on_done_mock = mocker.Mock()
     client = Client(host=f'{protocol}://localhost:{random_port}')
 
-    def _request(stream_param):
+    def _request(stream_param=True):
         client.post(
             '/',
             random_docs(1),
@@ -316,8 +315,8 @@ def test_sync_clients_max_attempts_raises_error(mocker, protocol, port_generator
             with pytest.raises(ConnectionError):
                 _request(stream_param)
     else:
-        with pytest.raises(aiohttp.ClientConnectorError):
-            _request(stream_param=True)
+        with pytest.raises(ConnectionError):
+            _request()
 
 
 @pytest.mark.asyncio
@@ -332,7 +331,7 @@ async def test_async_clients_max_attempts_raises_error(
     on_done_mock = mocker.Mock()
     client = Client(host=f'{protocol}://localhost:{random_port}', asyncio=True)
 
-    async def _request(stream_param):
+    async def _request(stream_param=True):
         return [
             response
             async for response in client.post(
@@ -355,8 +354,8 @@ async def test_async_clients_max_attempts_raises_error(
             with pytest.raises(ConnectionError):
                 await _request(stream_param)
     else:
-        with pytest.raises(aiohttp.ClientConnectorError):
-            await _request(stream_param=True)
+        with pytest.raises(ConnectionError):
+            await _request()
 
 
 @pytest.mark.timeout(90)
