@@ -3,7 +3,7 @@
 
 JCloud extends Jina's {ref}`Flow YAML specification<flow-yaml-spec>` by introducing the special field `jcloud`. This lets you define resources and scaling policies for each Executor and gateway.
 
-Here's a Flow with two Executors that have specific resource needs. `indexer` demands 10G `ebs` disk, whereas `encoder` demands G5 instance, which implies 4 cores and 8G RAM are used. See below sections for further information about Instance Type.
+Here's a Flow with two Executors that have specific resource needs: `indexer` requires a 10 GB `ebs` disk, whereas `encoder` requires a G4 instance, which implies that two cores and 4 GB RAM are used. See the below sections for further information about Instance Types.
 
 ```{code-block} yaml
 ---
@@ -15,7 +15,7 @@ executors:
     uses: jinaai+docker://<username>/Encoder
     jcloud:
       resources:
-        instance: G2
+        instance: C4
   - name: indexer
     uses: jinaai+docker://<username>/Indexer
     jcloud:
@@ -31,11 +31,10 @@ Since each Executor has its own business logic, it may require different cloud r
 
 In JCloud, you can pass highly customizable, finely-grained resource requests for each Executor using the `jcloud.resources` argument in your Flow YAML.
 
-
 ### Instance
 
-JCloud uses the concept of "Instance" to respresent the hardware specifications. 
-In above example, C2 Instance Type stands for 4 cores and 8G RAM based on the CPU Tiers Instance defination table below.
+JCloud uses the concept of an "Instance" to represent a specific set of hardware specifications.
+In above example, a C4 Instance Type represents two cores and 4 GB RAM based on the CPU Tiers Instance definition table below.
 
 Note that if you are still using the legacy resource specification interface, as such:
 
@@ -47,22 +46,22 @@ jcloud:
 ```
 
 We would translate the raw numbers from input to Instance tier that fits most. 
-There are circumstances the Instance tier does not exactly fufill the CPU cores and Memory you need, like in above exmaple. 
+There are circumstances the Instance tier does not exactly fulfill the CPU cores and Memory you need, like in above example.
 But we would "ceil" the requests to the lowest tier that would satisfy all the specifications. 
-In this case, `C6` would be consisdered, as `C5`'s `Cores` is lower than what's being requested (4 vs 8). 
+In this case, `C6` would be considered, as `C5`'s `Cores` is lower than what's being requested (4 vs 8).
 
 There are also two types of Instance Tiers, one for CPU instances, one for GPU.
 
 #### Pricing
 Each Instance has a fixed `Credits Per Hour` number, it's an indictor on how many credits will JCloud charge
-if certain Instance is used. For example, if an exectuor uses `C3`, it implies that `10` credits will be spent
+if certain Instance is used. For example, if an Executor uses `C3`, it implies that `10` credits will be spent
 under the operating user account. Other important facts to note:
 
    - If the Flow is powering other App(s) you create, you would be charged by the App(s), not the underlying Flow.
    - `Credits Per Hour` are per Executor/Gateway basis, the total `Credits Per Hour` of a Flow is the sum of all the credits
      each components cost.
-   - If shards/replicas are used in Executor/Gateway, same Instance type would be used so `Credits Per Hour` would be multipled.
-     For example, if an exectuor uses `C3` and it has two replicas, the `Credits Per Hour` for the Executor would be doubled to `20`.
+   - If shards/replicas are used in Executor/Gateway, same Instance type would be used so `Credits Per Hour` would be multiplied.
+     For example, if an Executor uses `C3` and it has two replicas, the `Credits Per Hour` for the Executor would be doubled to `20`.
      The only exception here is when sharding is used, `C1` would be used for the shards head, regardless of what Instance type has been
      entered for the shared Executor.
 
@@ -72,16 +71,16 @@ Please visit [Jina AI Cloud Pricing](https://cloud.jina.ai/pricing/) for more in
 
 #### CPU Tiers
 
-| Instance | Cores | Memory | Credits Per Hour |
-|----------|-------|--------|------------------|
-| C1       | 0.1   | 0.2G   | 1                |
-| C2       | 0.5   | 1G     | 5                |
-| C3       | 1     | 2G     | 10               |
-| C4       | 2     | 4G     | 20               |
-| C5       | 4     | 8G     | 40               |
-| C6       | 8     | 16G    | 80               |
-| C7       | 16    | 32G    | 160              |
-| C8       | 32    | 64G    | 320              |
+| Instance | Cores | Memory   | Credits Per Hour |
+|----------|-------|----------|------------------|
+| C1       | 0.1   | 0.2 GB   | 1                |
+| C2       | 0.5   | 1 GB     | 5                |
+| C3       | 1     | 2 GB     | 10               |
+| C4       | 2     | 4 GB     | 20               |
+| C5       | 4     | 8 GB     | 40               |
+| C6       | 8     | 16 GB    | 80               |
+| C7       | 16    | 32 GB    | 160              |
+| C8       | 32    | 64 GB    | 320              |
 
 
 By default, C1 is allocated to each Executor and Gateway.
@@ -98,12 +97,12 @@ If GPU is enabled, JCloud will provide NVIDIA A10G Tensor Core GPUs with 24G mem
 When using GPU resources, it may take a few extra minutes before all Executors are ready to serve traffic.
 ```
 
-| Instance | GPU    | Memory | Credit Per Hour |
-|----------|--------|--------|-----------------|
-| G1       | shared | 14G    | 100             |
-| G2       | 1      | 14G    | 125             |
-| G3       | 2      | 24G    | 250             |
-| G4       | 4      | 56G    | 500             |
+| Instance | GPU    | Memory   | Credits Per Hour |
+|----------|--------|----------|------------------|
+| G1       | shared | 14 GB    | 100              |
+| G2       | 1      | 14 GB    | 125              |
+| G3       | 2      | 24 GB    | 250              |
+| G4       | 4      | 56 GB    | 500              |
 
 ##### Shared GPU
 
@@ -112,13 +111,13 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 
 The tradeoffs with a `shared` GPU are increased latency, jitter, and potential out-of-memory (OOM) conditions when many different applications are time-slicing on the GPU. If your application is memory consuming, we suggest using a dedicated GPU.
 
-To use `shared` GPU, `G1` needs to be specificied as Instance Type.
+To use `shared` GPU, `G1` needs to be specified as Instance Type.
 
 ##### Dedicated GPU
 
-Using a dedicated GPU is the default way to provision GPU for an Executor. This automatically creates nodes or assigns the Executor to land on a GPU node. In this case, the Executor owns the whole GPU. 
+Using a dedicated GPU is the default way to provision a GPU for an Executor. This automatically creates nodes or assigns the Executor to land on a GPU node. In this case, the Executor owns the whole GPU.
 
-To use `dedicated` GPU, `G2`/ `G3` / `G4` needs to be specificied as Instance Type.
+To use `dedicated` GPU, `G2`/ `G3` / `G4` needs to be specified as Instance Type.
 
 ### Storage
 
