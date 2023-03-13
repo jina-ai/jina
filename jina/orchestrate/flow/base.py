@@ -1795,7 +1795,11 @@ class Flow(
 
         self._build_level = FlowBuildLevel.RUNNING
 
-        send_telemetry_event(event='start', obj_cls_name=self.__class__.__name__, entity_id=self._entity_id)
+        send_telemetry_event(
+            event='start',
+            obj_cls_name=self.__class__.__name__,
+            entity_id=self._entity_id,
+        )
 
         return self
 
