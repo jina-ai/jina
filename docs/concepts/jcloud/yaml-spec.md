@@ -52,16 +52,17 @@ In this case, `C6` would be considered, as `C5`'s `Cores` is lower than what's b
 
 There are also two types of Instance Tiers, one for CPU instances, one for GPU.
 
+(jcloud-pricing)=
 #### Pricing
-Each Instance has a fixed `Credits Per Hour` number, it's an indictor on how many credits will JCloud charge
+Each Instance has a fixed `Credits Per Hour` number, it's an indicator on how many credits will JCloud charge
 if certain Instance is used. For example, if an Executor uses `C3`, it implies that `10` credits will be spent
-under the operating user account. Other important facts to note:
+from the operating user account. Other important facts to note:
 
    - If the Flow is powering other App(s) you create, you would be charged by the App(s), not the underlying Flow.
-   - `Credits Per Hour` are per Executor/Gateway basis, the total `Credits Per Hour` of a Flow is the sum of all the credits
+   - `Credits Per Hour` is on an Executor/Gateway basis, the total `Credits Per Hour` of a Flow is the sum of all the credits
      each components cost.
-   - If shards/replicas are used in Executor/Gateway, same Instance type would be used so `Credits Per Hour` would be multiplied.
-     For example, if an Executor uses `C3` and it has two replicas, the `Credits Per Hour` for the Executor would be doubled to `20`.
+   - If shards/replicas are used in Executor/Gateway, same Instance type would be used, so `Credits Per Hour` would be multiplied.
+     For example, if an Executor uses `C3` and it has two replicas, the `Credits Per Hour` for the Executor would double to `20`.
      The only exception here is when sharding is used, `C1` would be used for the shards head, regardless of what Instance type has been
      entered for the shared Executor.
 
@@ -118,7 +119,6 @@ To use `shared` GPU, `G1` needs to be specified as Instance Type.
 Using a dedicated GPU is the default way to provision a GPU for an Executor. This automatically creates nodes or assigns the Executor to land on a GPU node. In this case, the Executor owns the whole GPU.
 
 To use `dedicated` GPU, `G2`/ `G3` / `G4` needs to be specified as Instance Type.
-
 ### Storage
 
 JCloud supports three kinds of storage: ephemeral (default), [efs](https://aws.amazon.com/efs/) (network file storage) and [ebs](https://aws.amazon.com/ebs/) (block device).
@@ -229,6 +229,11 @@ Below are the defaults and requirements for the configurations:
 | target | 100         | int                      | Target number after which replicas autoscale      |
 
 After JCloud deployment using the autoscaling configuration, the Flow serving part is just the same: the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you can deal with the code!
+
+### Pricing
+At this moment, pricing for autoscaled Executor/Gateway follows the same {ref}`JCloud pricing rules <jcloud-pricing>` for the most part.
+We track the minimum number of replicas in Autoscale configurations and use it as multiplier for the replicas used when calculating the
+`Credits Per Hour`.
 
 ## Configure availability tolerance
 
