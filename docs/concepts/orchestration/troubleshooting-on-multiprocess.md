@@ -3,7 +3,7 @@
 
 When running an Orchestration locally, you may encounter errors caused by the `multiprocessing` package depending on your operating system and Python version. 
 
-```{admonition}
+```{admonition} Troubleshooting a Flow
 :class: information
 
 In this section we show an example showing a {ref}`Deployment <deployment>`. However, exactly the same methodology applies to troubleshooting a Flow.
@@ -11,7 +11,7 @@ In this section we show an example showing a {ref}`Deployment <deployment>`. How
 
 Here are some suggestions:
 
-- Define & start the Orchestration via an explicit function call inside `if __name__ == '__main__'`, **especially when using `spawn` multiprocessing start method**. For example
+- Define and start the Orchestration via an explicit function call inside `if __name__ == '__main__'`, **especially when using `spawn` multiprocessing start method**. For example
 
     ````{tab} ✅ Do
     ```{code-block} python
