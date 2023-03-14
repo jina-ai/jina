@@ -67,7 +67,7 @@ from the operating user account. Other important facts to note:
      entered for the shared Executor.
 
 ```{hint}
-Please visit [Jina AI Cloud Pricing](https://cloud.jina.ai/pricing/) for more information.
+Please visit [Jina AI Cloud Pricing](https://cloud.jina.ai/pricing/) for more information about billing and credits.
 ```
 
 #### CPU Tiers
@@ -110,9 +110,9 @@ When using GPU resources, it may take a few extra minutes before all Executors a
 An Executor using a `shared` GPU shares this GPU with up to four other Executors.
 This enables time-slicing, which allows workloads that land on oversubscribed GPUs to interleave with one another.
 
-The tradeoffs with a `shared` GPU are increased latency, jitter, and potential out-of-memory (OOM) conditions when many different applications are time-slicing on the GPU. If your application is memory consuming, we suggest using a dedicated GPU.
-
 To use `shared` GPU, `G1` needs to be specified as instance type.
+
+The tradeoffs with a `shared` GPU are increased latency, jitter, and potential out-of-memory (OOM) conditions when many different applications are time-slicing on the GPU. If your application is memory consuming, we suggest using a dedicated GPU.
 
 ##### Dedicated GPU
 
