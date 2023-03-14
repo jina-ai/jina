@@ -57,8 +57,8 @@ def executor_native(args: 'Namespace'):
 
     with AsyncNewLoopRuntime(args, req_handler_cls=req_handler_cls) as rt:
         name = (
-            rt._request_handler._executor.metas.name
-            if hasattr(rt, '_request_handler') and hasattr(rt._request_handler, '_executor')
+            rt.server._request_handler._executor.metas.name
+            if hasattr(rt.server, '_request_handler') and hasattr(rt.server._request_handler, '_executor')
             else args.runtime_cls
         )
         rt.logger.info(f'Executor {name} started')
