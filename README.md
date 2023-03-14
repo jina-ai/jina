@@ -98,7 +98,7 @@ Let's build a fast, reliable and scalable gRPC-based AI service. In Jina we call
 > A Deployment serves just one Executor. To combine multiple Executors into a pipeline and serve that, use a [Flow](#build-a-pipeline).
 
 > **Note**
-> Run the [code in Colab](https://colab.research.google.com/assets/colab-badge.svg) to install all dependencies.
+> Run the [code in Colab](https://colab.research.google.com/github/jina-ai/jina/blob/master/.github/getting-started/notebook.ipynb#scrollTo=0l-lkmz4H-jW) to install all dependencies.
 
 Let's implement the service's logic:
 
