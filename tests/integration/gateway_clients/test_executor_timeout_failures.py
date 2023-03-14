@@ -3,7 +3,7 @@ import time
 
 import pytest
 
-from jina import Client, Document, Executor, Flow, requests
+from jina import Executor, Flow, requests
 
 
 class SlowExecutor(Executor):

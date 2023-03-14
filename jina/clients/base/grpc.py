@@ -1,20 +1,19 @@
 import asyncio
 import json
 import threading
-from typing import TYPE_CHECKING, Optional, Tuple
+from typing import TYPE_CHECKING, Optional
 
 import grpc
 from grpc import RpcError
 
 from jina.clients.base import BaseClient
-from jina.clients.helper import callback_exec
+from jina.clients.base.stream_rpc import StreamRpc
+from jina.clients.base.unary_rpc import UnaryRpc
 from jina.excepts import BadClientInput, BadServerFlow, InternalNetworkError
 from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.helper import extract_trailing_metadata
 from jina.serve.networking.utils import get_default_grpc_options, get_grpc_channel
-from jina.serve.stream import RequestStreamer
-from jina.types.request.data import Request
 
 if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
@@ -65,98 +64,6 @@ class GRPCBaseClient(BaseClient):
 
         return False
 
-    async def _stream_rpc(
-        self,
-        channel,
-        req_iter,
-        metadata,
-        on_error,
-        on_done,
-        on_always,
-        continue_on_error,
-        p_bar,
-        **kwargs,
-    ):
-        stub = jina_pb2_grpc.JinaRPCStub(channel)
-        async for resp in stub.Call(
-            req_iter,
-            compression=self.compression,
-            metadata=metadata,
-            credentials=kwargs.get('credentials', None),
-            timeout=kwargs.get('timeout', None),
-        ):
-            callback_exec(
-                response=resp,
-                on_error=on_error,
-                on_done=on_done,
-                on_always=on_always,
-                continue_on_error=continue_on_error,
-                logger=self.logger,
-            )
-            if self.show_progress:
-                p_bar.update()
-            yield resp
-
-    async def _unary_rpc(
-        self,
-        channel,
-        req_iter,
-        metadata,
-        on_error,
-        on_done,
-        on_always,
-        continue_on_error,
-        p_bar,
-        results_in_order,
-        prefetch,
-        **kwargs,
-    ):
-        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
-
-        def _request_handler(
-            request: 'Request',
-        ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
-            return (
-                asyncio.ensure_future(
-                    stub.process_single_data(
-                        request,
-                        compression=self.compression,
-                        metadata=metadata,
-                        credentials=kwargs.get('credentials', None),
-                        timeout=kwargs.get('timeout', None),
-                    )
-                ),
-                None,
-            )
-
-        def _result_handler(resp):
-            callback_exec(
-                response=resp,
-                on_error=on_error,
-                on_done=on_done,
-                on_always=on_always,
-                continue_on_error=continue_on_error,
-                logger=self.logger,
-            )
-            return resp
-
-        streamer_args = vars(self.args)
-        if prefetch:
-            streamer_args['prefetch'] = prefetch
-        streamer = RequestStreamer(
-            request_handler=_request_handler,
-            result_handler=_result_handler,
-            iterate_sync_in_thread=False,
-            logger=self.logger,
-            **streamer_args,
-        )
-        async for response in streamer.stream(
-            request_iterator=req_iter, results_in_order=results_in_order
-        ):
-            if self.show_progress:
-                p_bar.update()
-            yield response
-
     async def _get_results(
         self,
         inputs: 'InputType',
@@ -166,7 +73,7 @@ class GRPCBaseClient(BaseClient):
         compression: Optional[str] = None,
         max_attempts: int = 1,
         initial_backoff: float = 0.5,
-        max_backoff: float = 0.1,
+        max_backoff: float = 2,
         backoff_multiplier: float = 1.5,
         results_in_order: bool = False,
         stream: bool = True,
@@ -233,77 +140,52 @@ class GRPCBaseClient(BaseClient):
                     ) as p_bar:
                         try:
                             if stream:
-                                async for resp in self._stream_rpc(
+                                stream_rpc = StreamRpc(
                                     channel=channel,
-                                    req_iter=req_iter,
-                                    metadata=metadata,
-                                    on_error=on_error,
-                                    on_done=on_done,
-                                    on_always=on_always,
                                     continue_on_error=continue_on_error,
+                                    metadata=metadata,
+                                    on_always=on_always,
+                                    on_done=on_done,
+                                    on_error=on_error,
                                     p_bar=p_bar,
+                                    req_iter=req_iter,
+                                    max_attempts=max_attempts,
+                                    backoff_multiplier=backoff_multiplier,
+                                    initial_backoff=initial_backoff,
+                                    max_backoff=max_backoff,
+                                    logger=self.logger,
+                                    show_progress=self.show_progress,
+                                    compression=self.compression,
                                     **kwargs,
-                                ):
-                                    yield resp
+                                )
+                                async for response in stream_rpc.stream_rpc_with_retry():
+                                    yield response
                             else:
-                                async for resp in self._unary_rpc(
+                                unary_rpc = UnaryRpc(
                                     channel=channel,
-                                    req_iter=req_iter,
-                                    metadata=metadata,
-                                    on_error=on_error,
-                                    on_done=on_done,
-                                    on_always=on_always,
                                     continue_on_error=continue_on_error,
+                                    metadata=metadata,
+                                    on_always=on_always,
+                                    on_done=on_done,
+                                    on_error=on_error,
                                     p_bar=p_bar,
-                                    results_in_order=results_in_order,
+                                    req_iter=req_iter,
+                                    max_attempts=max_attempts,
+                                    backoff_multiplier=backoff_multiplier,
+                                    initial_backoff=initial_backoff,
+                                    max_backoff=max_backoff,
+                                    logger=self.logger,
+                                    show_progress=self.show_progress,
+                                    compression=self.compression,
+                                    client_args=self.args,
                                     prefetch=prefetch,
+                                    results_in_order=results_in_order,
                                     **kwargs,
-                                ):
-                                    yield resp
-
-                        except (
-                            grpc.aio._call.AioRpcError,
-                            InternalNetworkError,
-                        ) as err:
-                            my_code = err.code()
-                            my_details = err.details()
-                            trailing_metadata = extract_trailing_metadata(err)
-                            msg = f'gRPC error: {my_code} {my_details}'
-                            if trailing_metadata:
-                                msg = f'gRPC error: {my_code} {my_details}\n{trailing_metadata}'
-
-                            if my_code == grpc.StatusCode.UNAVAILABLE:
-                                self.logger.error(
-                                    f'{msg}\nThe ongoing request is terminated as the server is not available or closed already.'
                                 )
-                                raise ConnectionError(my_details)
-                            if my_code == grpc.StatusCode.NOT_FOUND:
-                                self.logger.error(
-                                    f'{msg}\nThe ongoing request is terminated as a resource cannot be found.'
-                                )
-                                raise ConnectionError(my_details)
-                            elif my_code == grpc.StatusCode.DEADLINE_EXCEEDED:
-                                self.logger.error(
-                                    f'{msg}\nThe ongoing request is terminated due to a server-side timeout.'
-                                )
-                                raise ConnectionError(my_details)
-                            elif my_code == grpc.StatusCode.INTERNAL:
-                                self.logger.error(
-                                    f'{msg}\ninternal error on the server side'
-                                )
-                                raise err
-                            elif (
-                                my_code == grpc.StatusCode.UNKNOWN
-                                and 'asyncio.exceptions.TimeoutError' in my_details
-                            ):
-                                raise BadClientInput(
-                                    f'{msg}\n'
-                                    'often the case is that you define/send a bad input iterator to jina, '
-                                    'please double check your input iterator'
-                                ) from err
-                            else:
-                                raise BadServerFlow(msg) from err
-
+                                async for response in unary_rpc.unary_rpc_with_retry():
+                                    yield response
+                        except (grpc.aio.AioRpcError, InternalNetworkError) as err:
+                            await self._handle_error_and_metadata(err)
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
         except asyncio.CancelledError as ex:
@@ -312,3 +194,38 @@ class GRPCBaseClient(BaseClient):
         except:
             # Not sure why, adding this line helps in fixing a hanging test
             raise
+
+    async def _handle_error_and_metadata(self, err):
+        my_code = err.code()
+        my_details = err.details()
+        trailing_metadata = extract_trailing_metadata(err)
+        msg = f'gRPC error: {my_code} {my_details}\n{trailing_metadata}'
+        if my_code == grpc.StatusCode.UNAVAILABLE:
+            self.logger.error(
+                f'{msg}\nThe ongoing request is terminated as the server is not available or closed already.'
+            )
+            raise ConnectionError(msg)
+        if my_code == grpc.StatusCode.NOT_FOUND:
+            self.logger.error(
+                f'{msg}\nThe ongoing request is terminated as a resource cannot be found.'
+            )
+            raise ConnectionError(msg)
+        elif my_code == grpc.StatusCode.DEADLINE_EXCEEDED:
+            self.logger.error(
+                f'{msg}\nThe ongoing request is terminated due to a server-side timeout.'
+            )
+            raise ConnectionError(msg)
+        elif my_code == grpc.StatusCode.INTERNAL:
+            self.logger.error(f'{msg}\ninternal error on the server side')
+            raise err
+        elif (
+            my_code == grpc.StatusCode.UNKNOWN
+            and 'asyncio.exceptions.TimeoutError' in my_details
+        ):
+            raise BadClientInput(
+                f'{msg}\n'
+                'often the case is that you define/send a bad input iterator to jina, '
+                'please double check your input iterator'
+            ) from err
+        else:
+            raise BadServerFlow(msg) from err

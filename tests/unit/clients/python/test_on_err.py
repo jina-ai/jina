@@ -1,6 +1,3 @@
-from typing import Optional
-
-import aiohttp
 import numpy as np
 import pytest
 from docarray import DocumentArray
@@ -49,34 +46,18 @@ def test_client_on_error(protocol):
         assert t == 1
 
 
-@pytest.mark.parametrize(
-    'protocol,exception',
-    [
-        ('websocket', aiohttp.ClientError),
-        ('grpc', ConnectionError),
-        ('http', aiohttp.ClientError),
-    ],
-)
-def test_client_on_error_call(protocol, exception):
-
-    with pytest.raises(exception):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_client_on_error_call(protocol):
+    with pytest.raises(ConnectionError):
         Client(host='0.0.0.0', protocol=protocol, port=12345).post(
             '/blah',
             inputs=DocumentArray.empty(10),
         )
 
 
-@pytest.mark.parametrize(
-    'protocol,exception',
-    [
-        ('websocket', aiohttp.client_exceptions.ClientConnectorError),
-        ('grpc', ConnectionError),
-        ('http', aiohttp.client_exceptions.ClientConnectorError),
-    ],
-)
-def test_client_on_error_raise_exception(protocol, exception):
-
-    with pytest.raises(exception):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_client_on_error_raise_exception(protocol):
+    with pytest.raises(ConnectionError):
         Client(host='0.0.0.0', protocol=protocol, port=12345).post(
             '/blah',
             inputs=DocumentArray.empty(10),
