@@ -4,7 +4,7 @@ Let's build a toy application with Jina. To start, use Jina CLI to make a new De
 
 ````{tab} Deployment
 
-To create a deployment project with Jina CLI
+To create a Deployment project with Jina CLI
 ```bash
 jina new hello-jina --type=deployment
 ```
@@ -144,7 +144,7 @@ You've just finished your first toy Jina project, congratulations! You can now s
 
 ````{tab} Flow
 
-To create a flow project with Jina CLI:
+To create a Flow project with Jina CLI:
 ```bash
 jina new hello-jina --type=flow
 ```
@@ -271,7 +271,7 @@ tensor([[[0.9594, 0.9373],
 
 ## Deploy to JCloud
 
-JCloud offers free CPU and GPU instances to host Jina project. Let's deploy your first project to JCloud (Note that JCloud is only available for flow projects):
+JCloud offers free CPU and GPU instances to host Jina project. Let's deploy your first project to JCloud (Note that JCloud is only available for Flow projects):
 
 ```bash
 jina auth login
