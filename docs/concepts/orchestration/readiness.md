@@ -2,7 +2,7 @@
 
 An Orchestration is marked as "ready", when:
 - Its Executor is fully loaded and ready (in the case of a Deployment)
-- All its Executors and Gateway are fully loaded and ready
+- All its Executors and Gateway are fully loaded and ready (in the case of a Flow)
  
 After that, an Orchestration is able to process requests.
 
@@ -217,6 +217,38 @@ You can check the status of a Flow using any gRPC/HTTP/WebSockets client, not ju
 
 To see how this works, first instantiate the Flow with its corresponding protocol and block it for serving:
 
+````{tab} Deployment
+```python
+from jina import Deployment
+import os
+
+PROTOCOL = 'grpc'  # it could also be http or websocket
+
+os.environ[
+    'JINA_LOG_LEVEL'
+] = 'DEBUG'  # this way we can check what is the PID of the Executor
+
+dep = Deployment(protocol=PROTOCOL, port=12345)
+
+with dep:
+    dep.block()
+```
+
+```text
+⠋  Waiting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 0/0 -:--:--DEBUG  gateway/rep-0@19075 adding connection for deployment executor0/heads/0 to grpc://0.0.0.0:12346                                                                                           [05/31/22 18:10:16]
+DEBUG  executor0/rep-0@19074 start listening on 0.0.0.0:12346                                                                                                                                   [05/31/22 18:10:16]
+DEBUG  gateway/rep-0@19075 start server bound to 0.0.0.0:12345                                                                                                                                  [05/31/22 18:10:17]
+DEBUG  executor0/rep-0@19059 ready and listening                                                                                                                                                [05/31/22 18:10:17]
+DEBUG  gateway/rep-0@19059 ready and listening                                                                                                                                                  [05/31/22 18:10:17]
+╭─── 🎉 Deployment is ready to serve! ───╮
+│  🔗  Protocol                  GRPC    │
+│  🏠     Local         0.0.0.0:12345    │
+│  🔒   Private    192.168.1.13:12345    │
+╰────────────────────────────────────────╯
+DEBUG  Deployment@19059 2 Deployments (i.e. 2 Pods) are running in this Deployment 
+```
+````
+````{tab} Flow
 ```python
 from jina import Flow
 import os
@@ -227,7 +259,9 @@ os.environ[
     'JINA_LOG_LEVEL'
 ] = 'DEBUG'  # this way we can check what is the PID of the Executor
 
-with Flow(protocol=PROTOCOL, port=12345).add() as f:
+f = Flow(protocol=PROTOCOL, port=12345).add()
+
+with f:
     f.block()
 ```
 
@@ -244,16 +278,17 @@ DEBUG  gateway/rep-0@19059 ready and listening                                  
 ╰────────────────────────────────────────╯
 DEBUG  Flow@19059 2 Deployments (i.e. 2 Pods) are running in this Flow 
 ```
+````
 
 ### Using gRPC
 
-When using grpc, use [grpcurl](https://github.com/fullstorydev/grpcurl) to access the Gateway's gRPC service that is responsible for reporting the Flow status.
+When using grpc, use [grpcurl](https://github.com/fullstorydev/grpcurl) to access the Gateway's gRPC service that is responsible for reporting the Orchestration status.
 
 ```shell
 docker pull fullstorydev/grpcurl:latest
 docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12345 jina.JinaGatewayDryRunRPC/dry_run
 ```
-The error-free output below signifies a correctly running Flow:
+The error-free output below signifies a correctly running Orchestration:
 ```json
 {}
 ```
@@ -305,7 +340,6 @@ docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12345 jina
 }
 ```
 ````
-
 
 ### Using HTTP or WebSockets
 
