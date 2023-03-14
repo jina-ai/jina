@@ -3,7 +3,7 @@
 Once an Orchestration is running, you can use `jina ping` [CLI](../../api/jina_cli.rst) to run a health check of the complete Orchestration or (in the case of a Flow) individual Executors or Gateway.
 
 ````{tab} Deployment
-Start an Orchestration in Python:
+Start a Deployment in Python:
 
 ```python
 from jina import Deployment
@@ -14,48 +14,37 @@ with dep:
     dep.block()
 ```
 
-Check the readiness of the Orchestration:
+Check the readiness of the Deployment:
 
 ```bash
 jina ping deployment grpc://localhost:12345
 ```
-
-You can also check the readiness of an Executor:
-
-```{admonition}
-:class: note
-Since a Deployment contains only one Executor, this is equivalent to `jina ping deployment grpc://localhost:12346`.
-```
-
-```bash
-jina ping executor localhost:12346
-```
 ````
 ````{tab} Flow
-Start an Orchestration in Python:
+Start a Flow in Python:
 
 ```python
 from jina import Flow
 
-f =  Flow(protocol='grpc', port=12345).add(port=12346)
+f = Flow(protocol='grpc', port=12345).add(port=12346)
 
 with f:
     f.block()
 ```
 
-Check the readiness of the Orchestration:
+Check the readiness of the Flow:
 
 ```bash
 jina ping flow grpc://localhost:12345
 ```
 
-You can also check the readiness of an Executor:
+You can also check the readiness of an individual Executor:
 
 ```bash
 jina ping executor localhost:12346
 ```
 
-...or (only in the case of a Flow) the readiness of the Gateway service:
+...or the readiness of the Gateway service:
 
 ```bash
 jina ping gateway  grpc://localhost:12345
