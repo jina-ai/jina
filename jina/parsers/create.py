@@ -15,4 +15,8 @@ def set_new_project_parser(parser=None):
     parser.add_argument(
         'name', type=str, help='The name of the project', default='hello-jina'
     )
+    
+    parser.add_argument(
+        '--type', type=str, help='The type of project to be created (either flow or deployment)', default='flow'
+    )
     return parser
