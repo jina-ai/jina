@@ -9,28 +9,28 @@ The following outlines (more or less) common failure cases, and explains how Jin
 
 In general there are two places where an Executor level error can happen:
 
-- If an {class}`~jina.Executor`'s `__init__` method raises an Exception, the {class}`~jina.Flow` cannot start. In this case this Executor runtime raises the Exception, and the Flow throws a `RuntimeFailToStart` Exception.
+- If an {class}`~jina.Executor`'s `__init__` method raises an Exception, the Orchestration cannot start. In this case this Executor runtime raises the Exception, and the Orchestration throws a `RuntimeFailToStart` Exception.
 - If one of the Executor's `@requests` methods raises an Exception, the error message is added to the response and sent back to the client. If the gRPC or WebSockets protocols are used, the networking stream is not interrupted and can accept further requests.
 
 In both cases, the {ref}`Jina Client <client>` raises an Exception.
 
 ### Terminate an Executor on certain errors
 
-Some exceptions like network errors or request timeouts can be transient and can recover automatically. Sometimes fatal errors or user-defined errors put the Executor in an unusable state, in which case it can be restarted. Locally the Flow must be re-run manually to restore Executor availability. 
+Some exceptions like network errors or request timeouts can be transient and can recover automatically. Sometimes fatal errors or user-defined errors put the Executor in an unusable state, in which case it can be restarted. Locally the Orchestration must be re-run manually to restore Executor availability. 
 
-On Kubernetes deployments, this can be automated by terminating the Executor process, causing the Pod to terminate. The autoscaler restores availability by creating a new Pod to replace the terminated one. Termination can be enabled for one or more errors by using the `exit_on_exceptions` argument when adding the Executor to a Flow. When it matches the caught exception, the Executor terminates gracefully.
+On Kubernetes deployments, this can be automated by terminating the Executor process, causing the Pod to terminate. The autoscaler restores availability by creating a new Pod to replace the terminated one. Termination can be enabled for one or more errors by using the `exit_on_exceptions` argument when adding the Executor to an Orchestration When it matches the caught exception, the Executor terminates gracefully.
  
 A sample Orchestration can be `Deployment(uses=MyExecutor, exit_on_exceptions: ['Exception', 'RuntimeException'])`. The `exit_on_exceptions` argument accepts a list of Python or user-defined Exception or Error class names.
 
 ## Network errors
 
-When a {class}`~jina.Flow`'s gateway can't reach an {ref}`Executor or Head <architecture-overview>`, the Flow attempts to re-connect to the faulty deployment according to a retry policy. The same applies to calls to Executors that time out. The specifics of this policy depend on the Flow's environment, as outlined below.
+When an Orchestration Gateway can't reach an {ref}`Executor or Head <architecture-overview>`, the Orchestration attempts to re-connect to the faulty deployment according to a retry policy. The same applies to calls to Executors that time out. The specifics of this policy depend on the Orchestration's environment, as outlined below.
 
 ````{admonition} Hint: Prevent Executor timeouts
 :class: hint
-If you regularly experience Executor call timeouts, set the Flow's `timeout_send` attribute to a larger value 
-by setting `Flow(timeout_send=time_in_ms)` in Python
-or `timeout_send: time_in_ms` in your Flow YAML with-block.
+If you regularly experience Executor call timeouts, set the Orchestration's `timeout_send` attribute to a larger value 
+by setting `Deployment(timeout_send=time_in_ms)` or `Flow(timeout_send=time_in_ms)` in Python
+or `timeout_send: time_in_ms` in your Orchestration YAML with-block.
 
 Neural network forward passes on CPU (and other unusually expensive operations) commonly lead to timeouts with the default setting.
 ````
@@ -38,24 +38,22 @@ Neural network forward passes on CPU (and other unusually expensive operations) 
 ````{admonition} Hint: Custom retry policy
 :class: hint
 You can override the default retry policy and instead choose a number of retries performed for each Executor
-with `Flow(retries=n)` in Python, or `retries: n` in the Flow
+with `Orchestration(retries=n)` in Python, or `retries: n` in the Orchestration
 YAML `with` block.
 ````
 
-If, during the complete execution of this policy, no successful call to any Executor replica can be made, the request is aborted
-and the failure is {ref}`reported to the client <failure-reporting>`.
+If, during the complete execution of this policy, no successful call to any Executor replica can be made, the request is aborted and the failure is {ref}`reported to the client <failure-reporting>`.
 
 ### Request retries: Local deployment
 
-If a Flow is deployed locally (with or without {ref}`containerized Executors <dockerize-exec>`), the following policy
-for failed requests applies on a per-Executor basis:
+If an Orchestration is deployed locally (with or without {ref}`containerized Executors <dockerize-exec>`), the following policy for failed requests applies on a per-Executor basis:
 
 - If there are multiple replicas of the target Executor, try each replica at least once, or until the request succeeds.
 - Irrespective of the number of replicas, try the request at least three times, or until it succeeds. If there are fewer than three replicas, try them in a round-robin fashion.
 
 ### Request retries: Deployment with Kubernetes
 
-If a Flow is {ref}`deployed in Kubernetes <kubernetes>` without a service mesh, retries cannot be distributed to different replicas of the same Executor.
+If an Orchestration is {ref}`deployed in Kubernetes <kubernetes>` without a service mesh, retries cannot be distributed to different replicas of the same Executor.
 
 ````{admonition} See Also
 :class: seealso
@@ -84,16 +82,12 @@ If a service mesh is installed alongside Jina in the Kubernetes cluster, the fol
 - Try the request at least three times, or until it succeeds
 - Distribute the requests to the replicas according to the service mesh's configuration
 
-
 ````{admonition} Caution
 :class: caution
 
-Many service meshes have the ability to perform retries themselves.
-Be careful about setting up service mesh level retries in combination with Jina, as it may lead to unwanted behaviour in combination with
-Jina's own retry policy.
+Many service meshes have the ability to perform retries themselves. Be careful about setting up service mesh level retries in combination with Jina, as it may lead to unwanted behaviour in combination with Jina's own retry policy.
 
-Instead, you may want to disable Jina level retries by setting `Flow(retries=0)` in Python, or `retries: 0` in the Flow
-YAML `with` block.
+Instead, you may want to disable Jina level retries by setting `Orchestration(retries=0)` or `Deployment(retries=0)` in Python, or `retries: 0` in the Orchestration YAML `with` block.
 ````
 
 (failure-reporting)=
@@ -101,9 +95,7 @@ YAML `with` block.
 
 If the retry policy is exhausted for a given request, the error is reported back to the corresponding client.
 
-The resulting error message contains the *network address* of the failing Executor.
-If multiple replicas are present, all addresses are reported - unless the Flow is deployed using Kubernetes, in which
-case the replicas are managed by Kubernetes and only a single address is available.
+The resulting error message contains the *network address* of the failing Executor. If multiple replicas are present, all addresses are reported - unless the Orchestration is deployed using Kubernetes, in which case the replicas are managed by Kubernetes and only a single address is available.
 
 Depending on the client-to-gateway protocol, and the type of error, the error message is returned in one of the following ways:
 
@@ -123,15 +115,20 @@ For any of these scenarios, the {ref}`Jina Client <client>` raises a `Connection
 
 ## Debug via breakpoint
 
-Standard Python breakpoints don't work inside `Executor` methods when called inside a Flow context manager. Nevertheless, `import epdb; epdb.set_trace()` works just like a native Python breakpoint. Note that you need to `pip install epdb` to access this type of breakpoints.
+Standard Python breakpoints don't work inside `Executor` methods when called inside an Orchestration context manager. Nevertheless, `import epdb; epdb.set_trace()` works just like a native Python breakpoint. Note that you need to `pip install epdb` to access this type of breakpoints.
 
+```{admonition} Debugging in Flows
+:class: info
+
+The below code is for Deployments, but can easily be adapted for Flows.
+```
 
 ````{tab} ✅ Do
 ```{code-block} python
 ---
 emphasize-lines: 7
 ---
-from jina import Flow, Executor, requests
+from jina import Deployment, Executor, requests
  
 class CustomExecutor(Executor):
     @requests
@@ -141,9 +138,9 @@ class CustomExecutor(Executor):
         print(f'\n\na={a}\n\n')
  
 def main():
-    f = Flow().add(uses=CustomExecutor)
-    with f:
-        f.post(on='')
+    dep = Deployment(uses=CustomExecutor)
+    with dep:
+        dep.post(on='')
 
 if __name__ == '__main__':
     main()
@@ -156,7 +153,7 @@ if __name__ == '__main__':
 ---
 emphasize-lines: 7
 ---
-from jina import Flow, Executor, requests
+from jina import Deployment, Executor, requests
  
 class CustomExecutor(Executor):
     @requests
@@ -166,9 +163,9 @@ class CustomExecutor(Executor):
         print(f'\n\na={a}\n\n')
  
 def main():
-    f = Flow().add(uses=CustomExecutor)
-    with f:
-        f.post(on='')
+    dep = Deployment(uses=CustomExecutor)
+    with dep:
+        dep.post(on='')
  
 if __name__ == '__main__':
     main()
