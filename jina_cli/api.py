@@ -178,10 +178,15 @@ def new(args: 'Namespace'):
     import shutil
 
     from jina.constants import __resources_path__
-
-    shutil.copytree(
-        os.path.join(__resources_path__, 'project-template'), os.path.abspath(args.name)
-    )
+    
+    if args.type == 'deployment':
+        shutil.copytree(
+            os.path.join(__resources_path__, 'project-template', 'deployment'), os.path.abspath(args.name)
+        )
+    else:
+        shutil.copytree(
+            os.path.join(__resources_path__, 'project-template', 'flow'), os.path.abspath(args.name)
+        )
 
 
 def help(args: 'Namespace'):
