@@ -1,6 +1,6 @@
 # Health Check
 
-Once an Orchestration is running, you can use `jina ping` [CLI](../../api/jina_cli.rst) to run a health check of the complete Flow/Deployment or (in the case of a Flow) individual Executors or Gateway.
+Once an Orchestration is running, you can use `jina ping` [CLI](../../api/jina_cli.rst) to run a health check of the complete Orchestration or (in the case of a Flow) individual Executors or Gateway.
 
 ````{tab} Deployment
 Start an Orchestration in Python:
