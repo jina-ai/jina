@@ -1,8 +1,7 @@
 (flow-error-handling)=
 # Handle Exceptions
 
-When building a complex solution, things sometimes go wrong.
-Jina does its best to recover from failures, handle them gracefully, and report useful failure information to the user.
+When building a complex solution, things sometimes go wrong. Jina does its best to recover from failures, handle them gracefully, and report useful failure information to the user.
 
 The following outlines (more or less) common failure cases, and explains how Jina responds to each.
 
@@ -10,30 +9,22 @@ The following outlines (more or less) common failure cases, and explains how Jin
 
 In general there are two places where an Executor level error can happen:
 
-- If an {class}`~jina.Executor`'s `__init__` method raises an Exception, the {class}`~jina.Flow` cannot start.
-In this case this Executor runtime raises the Exception, and the Flow throws a `RuntimeFailToStart` Exception.
-- If one of the Executor's `@requests` methods raises an Exception, the error message is added to the response
-and sent back to the client. If the gRPC or WebSockets protocols are used, the networking stream is not interrupted and can accept further requests.
+- If an {class}`~jina.Executor`'s `__init__` method raises an Exception, the {class}`~jina.Flow` cannot start. In this case this Executor runtime raises the Exception, and the Flow throws a `RuntimeFailToStart` Exception.
+- If one of the Executor's `@requests` methods raises an Exception, the error message is added to the response and sent back to the client. If the gRPC or WebSockets protocols are used, the networking stream is not interrupted and can accept further requests.
 
 In both cases, the {ref}`Jina Client <client>` raises an Exception.
 
 ### Terminate an Executor on certain errors
 
-Some exceptions like network errors or request timeouts can be transient and can recover automatically. Sometimes 
-fatal errors or user-defined errors put the Executor in an unusable state, in which case it can be restarted. Locally the Flow must be re-run manually to restore Executor availability. 
+Some exceptions like network errors or request timeouts can be transient and can recover automatically. Sometimes fatal errors or user-defined errors put the Executor in an unusable state, in which case it can be restarted. Locally the Flow must be re-run manually to restore Executor availability. 
 
-On Kubernetes deployments, this can be automated by terminating the Executor process, causing the Pod to terminate. The autoscaler restores availability
- by creating a new Pod to replace the terminated one. Termination can be enabled for one or more errors by using the `exit_on_exceptions` argument when adding the Executor to a Flow. When it matches the caught exception, the Executor terminates gracefully.
+On Kubernetes deployments, this can be automated by terminating the Executor process, causing the Pod to terminate. The autoscaler restores availability by creating a new Pod to replace the terminated one. Termination can be enabled for one or more errors by using the `exit_on_exceptions` argument when adding the Executor to a Flow. When it matches the caught exception, the Executor terminates gracefully.
  
-A sample Flow can be `Flow().add(uses=MyExecutor, exit_on_exceptions: ['Exception', 'RuntimeException'])`. The `exit_on_exceptions` argument accepts a list of Python or user-defined Exception or Error class names.
+A sample Orchestration can be `Deployment(uses=MyExecutor, exit_on_exceptions: ['Exception', 'RuntimeException'])`. The `exit_on_exceptions` argument accepts a list of Python or user-defined Exception or Error class names.
 
 ## Network errors
 
-When a {class}`~jina.Flow`'s gateway can't reach an {ref}`Executor or Head <architecture-overview>`, the Flow attempts to re-connect
-to the faulty deployment according to a retry policy.
-The same applies to calls to Executors that time out.
-The specifics of this policy depend on the Flow's environment, as outlined below.
-
+When a {class}`~jina.Flow`'s gateway can't reach an {ref}`Executor or Head <architecture-overview>`, the Flow attempts to re-connect to the faulty deployment according to a retry policy. The same applies to calls to Executors that time out. The specifics of this policy depend on the Flow's environment, as outlined below.
 
 ````{admonition} Hint: Prevent Executor timeouts
 :class: hint

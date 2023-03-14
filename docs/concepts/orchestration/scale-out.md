@@ -22,10 +22,11 @@ dep = Deployment(name='slow_encoder', replicas=3)
 ```
 ````
 ````{tab} YAML
-```python
-from jina import Deployment
-
-dep = Deployment(name='slow_encoder', replicas=3)
+```yaml
+jtype: Deployment
+uses: jinaai://jina-ai/CLIPEncoder
+install_requirements: True
+replicas: 5 
 ```
 ````
 
@@ -39,10 +40,12 @@ f = Flow().add(name='slow_encoder', replicas=3).add(name='fast_indexer')
 ```
 ````
 ````{tab} YAML
-```python
-from jina import Flow
-
-f = Flow().add(name='slow_encoder', replicas=3).add(name='fast_indexer')
+```yaml
+jtype: Flow
+executors:
+- uses: jinaai://jina-ai/CLIPEncoder
+  install_requirements: True
+  replicas: 5 
 ```
 ````
 
@@ -55,7 +58,6 @@ Flow with three replicas of `slow_encoder` and one replica of `fast_indexer`
 ## Replicate on multiple GPUs
 
 To replicate your {class}`~jina.Executor`s so that each replica uses a different GPU on your machine, you can tell the Orchestration to use multiple GPUs by passing `CUDA_VISIBLE_DEVICES=RR` as an environment variable.
-The Orchestration then assigns each available GPU to replicas in a round-robin fashion.
 
 ```{caution} 
 You should only replicate on multiple GPUs with `CUDA_VISIBLE_DEVICES=RR` locally.  
@@ -64,70 +66,6 @@ You should only replicate on multiple GPUs with `CUDA_VISIBLE_DEVICES=RR` locall
 ```{tip}
 In Kubernetes or with Docker Compose you should allocate GPU resources to each replica directly in the configuration files.
 ```
-
-For example, if you have three GPUs and one of your Executor has five replicas then:
-
-### Multiple GPUs in a Deployment
-
-````{tab} Python
-```python
-from jina import Deployment
-
-dep = Deployment(uses='jinaai://jina-ai/CLIPEncoder', replicas=5, install_requirements=True)
-
-with dep
-    dep.block()
-```
-
-```shell
-CUDA_VISIBLE_DEVICES=RR python deployment.py
-```
-````
-
-````{tab} YAML
-```yaml
-jtype: Deployment
-with:
-  uses: jinaai://jina-ai/CLIPEncoder
-  install_requirements: True
-  replicas: 5  
-```
-
-```shell
-CUDA_VISIBLE_DEVICES=RR jina deployment --uses deployment.yaml
-```
-````
-
-### Multiple GPUs in a Flow
-
-````{tab} Python
-```python
-f = Flow().add(
-    uses='jinaai://jina-ai/CLIPEncoder', replicas=5, install_requirements=True
-) 
-
-with f:
-    f.block()
-```
-
-```shell
-CUDA_VISIBLE_DEVICES=RR python flow.py
-```
-````
-
-````{tab} YAML
-```yaml
-jtype: Flow
-executors:
-- uses: jinaai://jina-ai/CLIPEncoder
-  install_requirements: True
-  replicas: 5  
-```
-
-```shell
-CUDA_VISIBLE_DEVICES=RR jina flow --uses flow.yaml
-```
-````
 
 The Orchestration assigns GPU devices in the following round-robin fashion:
 
@@ -176,6 +114,71 @@ Check [CUDA Documentation](https://docs.nvidia.com/cuda/cuda-c-programming-guide
 | GPU-0ccccccc-74d2-7297-d557-12771b6a79d5          | 2          |
 | GPU-0ddddddd-74d2-7297-d557-12771b6a79d5          | 3          |
 | GPU-0aaaaaaa-74d2-7297-d557-12771b6a79d5          | 4          |
+
+
+For example, if you have three GPUs and one of your Executor has five replicas then:
+
+### GPU replicas in a Deployment
+
+````{tab} Python
+```python
+from jina import Deployment
+
+dep = Deployment(uses='jinaai://jina-ai/CLIPEncoder', replicas=5, install_requirements=True)
+
+with dep
+    dep.block()
+```
+
+```shell
+CUDA_VISIBLE_DEVICES=RR python deployment.py
+```
+````
+
+````{tab} YAML
+```yaml
+jtype: Deployment
+with:
+  uses: jinaai://jina-ai/CLIPEncoder
+  install_requirements: True
+  replicas: 5  
+```
+
+```shell
+CUDA_VISIBLE_DEVICES=RR jina deployment --uses deployment.yaml
+```
+````
+
+### GPU replicas in a Flow
+
+````{tab} Python
+```python
+f = Flow().add(
+    uses='jinaai://jina-ai/CLIPEncoder', replicas=5, install_requirements=True
+) 
+
+with f:
+    f.block()
+```
+
+```shell
+CUDA_VISIBLE_DEVICES=RR python flow.py
+```
+````
+
+````{tab} YAML
+```yaml
+jtype: Flow
+executors:
+- uses: jinaai://jina-ai/CLIPEncoder
+  install_requirements: True
+  replicas: 5  
+```
+
+```shell
+CUDA_VISIBLE_DEVICES=RR jina flow --uses flow.yaml
+```
+````
 
 ## Replicate external Executors
 

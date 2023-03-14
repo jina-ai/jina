@@ -1,4 +1,4 @@
-(flow-add-executors)=
+(add-executors)=
 # Add Executors
 
 ## Define Executor with `uses`
@@ -27,7 +27,7 @@ Note that some usages are not supported on JCloud due to security reasons and th
 | ✅         | ❌      | `ExecutorClass`                               | Use `ExecutorClass` from the inline context.                                                              |
 | ✅         | ❌      | `'my.py_modules.ExecutorClass'`               | Use `ExecutorClass` from `my.py_modules`.                                                                 |
 | ✅         | ✅      | `'executor-config.yml'`                       | Use an Executor from a YAML file defined by {ref}`Executor YAML interface <executor-yaml-spec>`.          |
-| ✅         | ❌      | `'jinaai://jina-ai/TransformerTorchEncoder/'`        | Use an Executor as Python source from Executor Hub.                                                           |
+| ✅         | ❌      | `'jinaai://jina-ai/TransformerTorchEncoder/'` | Use an Executor as Python source from Executor Hub.                                                       |
 | ✅         | ✅      | `'jinaai+docker://jina-ai/TransformerTorchEncoder'`  | Use an Executor as a Docker container from Executor Hub.                                                      |
 | ✅         | ✅      | `'jinaai+sandbox://jina-ai/TransformerTorchEncoder'` | Use a {ref}`Sandbox Executor <sandbox>` hosted on Executor Hub. The Executor runs remotely on Executor Hub.       |
 | ✅         | ❌      | `'docker://sentence-encoder'`                 | Use a pre-built Executor as a Docker container.                                                           |
@@ -368,14 +368,14 @@ Different {class}`~jina.Executor`s may depend on different `types` for array-lik
 often because they were written with different machine learning frameworks.
 As the builder of an Orchestration you don't always have control over this, for example when using Executors from Executor Hub.
 
-To ease the integration of different Executors, a Flow allows you to convert `tensor` and `embedding`:
+To ease the integration of different Executors, an Orchestration allows you to convert `tensor` and `embedding`:
 
 
 ````{tab} Deployment
 ```python
 from jina import Deployment
 
-dep = Deployment(uses=MyExecutor, output_array_type='numpy').add(uses=NeedsNumpyExecutor)
+dep = Deployment(uses=MyExecutor, output_array_type='numpy')
 ```
 ````
 ````{tab} Flow
@@ -396,7 +396,6 @@ PyTorch, TensorFlow, or any other popular ML framework.
 `output_array_type=` supports more types than `'numpy'`. For the full specification and further details, check the
 [protobuf serialization docs](https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf).
 ````
-
 
 (external-executors)=
 ## Use external Executors

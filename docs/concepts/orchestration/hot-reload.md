@@ -1,8 +1,8 @@
 # Hot Reload
 
-While developing your Flow, you may want it to reload automatically as you change the Flow YAML.
+While developing your Orchestration, you may want it to reload automatically as you change the Flow YAML.
 
-For this you can use the Flow's `reload` argument to reload it with the updated configuration every time you change the YAML configuration.
+For this you can use the Orchestration's `reload` argument to reload it with the updated configuration every time you change the YAML configuration.
 
 ````{admonition} Caution
 :class: caution
@@ -14,6 +14,17 @@ This feature aims to let developers iterate faster while developing, but is not 
 This feature requires watchfiles>=0.18 package to be installed.
 ````
 
+````{tab} Deployment
+To see how this works, let's define a Deployment in `deployment.yml` with a `reload` option:
+```yaml
+jtype: Deployment
+uses: ConcatenateTextExecutor
+with:
+  port: 12345
+  reload: True
+```
+````
+````{tab} Flow
 To see how this works, let's define a Flow in `flow.yml` with a `reload` option:
 ```yaml
 jtype: Flow
@@ -24,9 +35,33 @@ executors:
 - name: exec1
   uses: ConcatenateTextExecutor
 ```
+````
 
-Build a Flow and expose it:
+Load and expose the Orchestration:
 
+````{tab} Deployment
+```python
+import os
+from jina import Deployment, Executor, requests
+
+
+class ConcatenateTextExecutor(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+            doc.text += 'add text '
+
+
+os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
+
+
+dep = Deployment.load_config('flow.yml')
+
+with dep:
+    dep.block()
+```
+````
+````{tab} Flow
 ```python
 import os
 from jina import Flow, Executor, requests
@@ -47,6 +82,7 @@ f = Flow.load_config('flow.yml')
 with f:
     f.block()
 ```
+````
 
 You can see that the Flow is running and serving:
 
