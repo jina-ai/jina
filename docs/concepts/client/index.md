@@ -234,6 +234,7 @@ with f:
 send-receive-data
 send-parameters
 send-graphql-mutation
+transient-errors
 callbacks
 rate-limit
 instrumentation

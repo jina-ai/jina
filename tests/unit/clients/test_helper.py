@@ -1,4 +1,3 @@
-import aiohttp
 import pytest
 
 from jina import Executor, Flow, requests
@@ -58,7 +57,7 @@ async def test_http_clientlet_target():
 
 @pytest.mark.asyncio
 async def test_websocket_clientlet():
-    with pytest.raises(aiohttp.ClientError):
+    with pytest.raises(ConnectionError):
         async with WebsocketClientlet(url='ws://localhost:12345', logger=logger):
             pass
 
