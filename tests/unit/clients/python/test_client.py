@@ -440,7 +440,6 @@ def test_grpc_stream_transient_error_docarray_input(
 @pytest.mark.timeout(90)
 @pytest.mark.asyncio
 @pytest.mark.parametrize('flow_or_deployment', ['deployment', 'flow'])
-@pytest.mark.ignore
 async def test_async_grpc_stream_transient_error(
     flow_or_deployment, port_generator, mocker
 ):
