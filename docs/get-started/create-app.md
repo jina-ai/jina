@@ -4,7 +4,6 @@ Let's build a toy application with Jina. To start, use Jina CLI to make a new De
 
 ````{tab} Deployment
 
-To create a Deployment project with Jina CLI
 ```bash
 jina new hello-jina --type=deployment
 ```
@@ -144,7 +143,6 @@ You've just finished your first toy Jina project, congratulations! You can now s
 
 ````{tab} Flow
 
-To create a Flow project with Jina CLI:
 ```bash
 jina new hello-jina --type=flow
 ```
