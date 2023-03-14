@@ -269,7 +269,12 @@ tensor([[[0.9594, 0.9373],
 
 ## Deploy to JCloud
 
-JCloud offers free CPU and GPU instances to host Jina project. Let's deploy your first project to JCloud (Note that JCloud is only available for Flow projects):
+JCloud offers free CPU and GPU instances to host Jina project. Let's deploy your first project to JCloud:
+
+```admonition
+:class: important
+At present, JCloud is only available for Flows. We are currently working on supporting Deployments.
+```
 
 ```bash
 jina auth login
