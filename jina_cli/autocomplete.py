@@ -109,7 +109,7 @@ ac_table = {
         'export docker-compose': ['--help', '--network_name'],
         'export schema': ['--help', '--yaml-path', '--json-path', '--schema-path'],
         'export': ['--help', 'flowchart', 'kubernetes', 'docker-compose', 'schema'],
-        'new': ['name', '--type', '--help'],
+        'new': ['--help', '--type'],
         'gateway': [
             '--help',
             '--name',
@@ -232,6 +232,7 @@ ac_table = {
         'cloud pause': ['--help'],
         'cloud resume': ['--help'],
         'cloud scale': ['--help', '--executor', '--replicas'],
+        'cloud recreate': ['--help'],
         'cloud survey': ['--help'],
         'cloud': [
             '--help',
@@ -250,6 +251,7 @@ ac_table = {
             'pause',
             'resume',
             'scale',
+            'recreate',
             'survey',
         ],
         'help': ['--help'],
