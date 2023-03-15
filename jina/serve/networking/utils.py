@@ -1,6 +1,6 @@
 import ipaddress
 import os
-from typing import TYPE_CHECKING, List, Optional, Sequence
+from typing import TYPE_CHECKING, Any, List, Optional, Sequence, Tuple
 
 import grpc
 from grpc_health.v1 import health_pb2, health_pb2_grpc
@@ -209,7 +209,7 @@ def send_requests_sync(
                 raise
 
 
-def get_default_grpc_options():
+def get_default_grpc_options() -> List[Tuple[str, Any]]:
     """
     Returns a list of default options used for creating grpc channels.
     Documentation is here https://github.com/grpc/grpc/blob/master/include/grpc/impl/codegen/grpc_types.h
