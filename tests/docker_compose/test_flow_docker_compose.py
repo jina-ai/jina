@@ -6,7 +6,7 @@ import requests as req
 
 from jina import Client, Document, Flow
 from jina.helper import random_port
-from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.servers import BaseServer
 from tests.docker_compose.conftest import DockerComposeServices
 from tests.helper import (
     _validate_custom_gateway_process,
@@ -343,4 +343,4 @@ def test_flow_with_multiprotocol_gateway(logger, docker_images, tmpdir, stream):
         grpc_client.post('/', inputs=Document(), stream=stream)
         resp = requests.get(f'http://localhost:{http_port}').json()
         assert resp['protocol'] == 'http'
-        assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')
+        assert BaseServer.is_ready(f'localhost:{grpc_port}')

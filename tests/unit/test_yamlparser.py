@@ -3,12 +3,13 @@ import os
 import pytest
 import yaml
 
-from jina import Deployment, Gateway
-from jina.constants import __default_executor__, __default_host__
+from jina import Deployment
+from jina.constants import __default_executor__
 from jina.helper import expand_dict, expand_env_var
 from jina.jaml import JAML
 from jina.serve.executors import BaseExecutor
-from jina.serve.runtimes.gateway import HTTPGateway
+from jina.serve.runtimes.gateway.gateway import BaseGateway
+from jina.serve.runtimes.gateway.http import HTTPGateway
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -180,7 +181,7 @@ def test_load_from_dict():
     ],
 )
 def test_load_gateway_external_success(yaml_file, gateway_name):
-    with Gateway.load_config(
+    with BaseGateway.load_config(
         f'yaml/{yaml_file}', runtime_args={'port': [12345]}
     ) as gateway:
         assert gateway.__class__.__name__ == gateway_name
@@ -191,7 +192,6 @@ def test_load_gateway_external_success(yaml_file, gateway_name):
         assert gateway.runtime_args.retries == 10
         assert gateway.runtime_args.compression == 'Deflate'
         assert gateway.runtime_args.prefetch == 100
-
 
 def test_load_http_gateway_success():
     gateway: HTTPGateway = HTTPGateway.load_config(
@@ -212,7 +212,7 @@ def test_load_http_gateway_success():
     ],
 )
 def test_load_gateway_override_with(yaml_file, gateway_name):
-    with Gateway.load_config(
+    with BaseGateway.load_config(
         f'yaml/{yaml_file}',
         uses_with={'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
         runtime_args={'port': [12345]},

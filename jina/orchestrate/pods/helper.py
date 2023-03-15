@@ -68,14 +68,13 @@ class ConditionalEvent:
         e.clear = partial(self._custom_clear, e)
 
 
-def update_runtime_cls(args, copy=False) -> 'Namespace':
+def update_runtime_cls(args) -> 'Namespace':
     """Get runtime_cls as a string from args
 
     :param args: pod/deployment namespace args
-    :param copy: True if args shouldn't be modified in-place
     :return: runtime class as a string
     """
-    _args = deepcopy(args) if copy else args
+    _args = args
 
     if _args.runtime_cls == 'WorkerRuntime' and is_valid_huburi(_args.uses):
         _hub_args = deepcopy(_args)

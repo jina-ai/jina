@@ -151,6 +151,9 @@ class _ConnectionPoolMap:
             self._deployments[deployment][type][entity_id].add_connection(
                 address, deployment_name=deployment
             )
+            self._logger.debug(
+                f'connection for deployment {deployment}/{type}/{entity_id} to {address} added'
+            )
         else:
             self._logger.debug(
                 f'ignoring activation of pod for deployment {deployment}, {address} already known'

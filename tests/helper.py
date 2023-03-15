@@ -32,7 +32,6 @@ def _validate_custom_gateway_process(port, text, expected):
 def _generate_pod_args(cli_split: list = []):
     args = set_pod_parser().parse_args(cli_split)
     args.host = args.host[0]
-    args.port = args.port[0]
     args.port_monitoring = args.port_monitoring[0]
 
     return args

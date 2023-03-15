@@ -58,7 +58,7 @@ def test_executor_runtimes(signal, tmpdir):
     process.start()
     time.sleep(0.5)
 
-    send_request_sync(_create_test_data_message(), target=f'{args.host}:{args.port}')
+    send_request_sync(_create_test_data_message(), target=f'{args.host}:{args.port[0]}')
 
     time.sleep(0.1)
 

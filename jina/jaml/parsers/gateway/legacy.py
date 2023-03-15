@@ -1,7 +1,8 @@
 from typing import Any, Dict, Optional, Type
 
 from jina.jaml.parsers.base import BaseLegacyParser
-from jina.serve.gateway import BaseGateway
+from jina.serve.runtimes.gateway.gateway import BaseGateway
+from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 
 
 class GatewayLegacyParser(BaseLegacyParser):
@@ -58,9 +59,10 @@ class GatewayLegacyParser(BaseLegacyParser):
             metas=data.get('metas', {}),
             requests=data.get('requests', {}),
             runtime_args=runtime_args,
+            req_handler_cls=GatewayRequestHandler
         )
-        cls._init_from_yaml = False
 
+        cls._init_from_yaml = False
         obj.is_updated = False
         return obj
 

@@ -4,7 +4,7 @@ from docarray import Document, DocumentArray
 from pydantic import BaseModel
 
 from jina.clients.request import request_generator
-from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
+from jina.serve.runtimes.gateway.http import FastAPIBaseGateway
 
 
 class DummyResponseModel(BaseModel):
