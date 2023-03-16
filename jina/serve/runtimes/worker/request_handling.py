@@ -146,6 +146,14 @@ class WorkerRequestHandler:
         if self.args.reload:
             self._hot_reload_task = asyncio.create_task(self._hot_reload())
 
+    def _http_fastapi_default_app(self,
+                                  **kwargs):
+        from jina.serve.runtimes.worker.http_fastapi_app import get_fastapi_app  # For Gateway, it works as for head
+
+        get_fastapi_app(
+            **kwargs
+        )
+
     async def _hot_reload(self):
         import inspect
 

@@ -26,6 +26,7 @@ def get_fastapi_app(
     logger: 'JinaLogger',
     tracing: Optional[bool] = None,
     tracer_provider: Optional['trace.TracerProvider'] = None,
+    **kwargs
 ):
     """
     Get the app from FastAPI as the REST interface.
@@ -155,9 +156,7 @@ def get_fastapi_app(
 
         @app.post(
             path='/post',
-            summary='Post a data request to some endpoint',
             response_model=JinaResponseModel,
-            tags=['Debug']
             # do not add response_model here, this debug endpoint should not restricts the response model
         )
         async def post(

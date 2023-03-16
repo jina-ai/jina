@@ -139,6 +139,14 @@ class GatewayRequestHandler:
             )
         )
 
+    def _http_fastapi_executor_app(self,
+                                   **kwargs):
+        from jina.serve.runtimes.head.http_fastapi_app import get_fastapi_app # For Gateway, it works as for head
+
+        get_fastapi_app(
+            **kwargs
+        )
+
     def _websocket_fastapi_default_app(self, tracing, tracer_provider):
         from jina.helper import extend_rest_interface
         from jina.serve.runtimes.gateway.websocket_fastapi_app import get_fastapi_app

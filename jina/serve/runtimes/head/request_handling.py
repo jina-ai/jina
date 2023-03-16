@@ -140,6 +140,14 @@ class HeaderRequestHandler(MonitoringRequestMixin):
             )
         )
 
+    def _http_fastapi_default_app(self,
+                                  **kwargs):
+        from jina.serve.runtimes.head.http_fastapi_app import get_fastapi_app  # For Gateway, it works as for head
+
+        get_fastapi_app(
+            **kwargs
+        )
+
     def _default_polling_dict(self, default_polling):
         return defaultdict(
             lambda: default_polling,
@@ -320,7 +328,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
             try:
                 if not self.warmup_task.done():
                     self.logger.debug(f'Cancelling warmup task.')
-                    self.warmup_stop_event.set() # this event is useless if simply cancel
+                    self.warmup_stop_event.set()  # this event is useless if simply cancel
                     self.warmup_task.cancel()
             except Exception as ex:
                 self.logger.debug(f'exception during warmup task cancellation: {ex}')
