@@ -108,13 +108,13 @@ Jina AI Cloud is the MLOps platform for hosting Jina projects.
 
 get-started/install/index
 get-started/create-app
-concepts/preliminaries/index
 ```
 
 ```{toctree}
 :caption: Concepts
 :hidden:
 
+concepts/preliminaries/index
 concepts/serving/index
 concepts/orchestration/index
 concepts/client/index
