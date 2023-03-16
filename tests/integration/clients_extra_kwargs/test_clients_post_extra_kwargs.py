@@ -3,8 +3,8 @@ import pytest
 
 from jina import Flow
 from jina.clients import Client
+from jina.serve.helper import get_server_side_grpc_options
 from jina.serve.runtimes.gateway.grpc import GRPCGateway
-from jina.serve.runtimes.helper import get_server_side_grpc_options
 from tests import random_docs
 
 

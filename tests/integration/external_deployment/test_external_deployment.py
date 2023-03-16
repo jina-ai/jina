@@ -7,6 +7,7 @@ from jina import Document, DocumentArray, Executor, Flow, requests
 from jina.helper import random_port
 from jina.orchestrate.deployments import Deployment
 from jina.parsers import set_deployment_parser
+from jina.serve.helper import get_server_side_grpc_options
 
 
 def validate_response(docs, expected_docs=50):
@@ -357,7 +358,6 @@ def test_external_flow_with_grpc_metadata():
 
     from jina.proto import jina_pb2, jina_pb2_grpc
     from jina.serve.runtimes.gateway.grpc import GRPCGateway
-    from jina.serve.runtimes.helper import get_server_side_grpc_options
 
     class DummyInterceptor(grpc.aio.ServerInterceptor):
         def __init__(self):
