@@ -1,18 +1,19 @@
 import asyncio
+import json
 import threading
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 
 import grpc
 from grpc import RpcError
 
 from jina.clients.base import BaseClient
-from jina.clients.base.helper import client_grpc_options
+from jina.clients.base.helper import remove_grpc_service_config
 from jina.clients.base.stream_rpc import StreamRpc
 from jina.clients.base.unary_rpc import UnaryRpc
 from jina.excepts import BadClientInput, BadServerFlow, InternalNetworkError
 from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2, jina_pb2_grpc
-from jina.serve.helper import extract_trailing_metadata
+from jina.serve.helper import extract_trailing_metadata, get_default_grpc_options
 from jina.serve.networking.utils import get_grpc_channel
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -210,3 +211,55 @@ class GRPCBaseClient(BaseClient):
             ) from err
         else:
             raise BadServerFlow(msg) from err
+
+
+def client_grpc_options(
+    backoff_multiplier: float,
+    initial_backoff: float,
+    max_attempts: int,
+    max_backoff: float,
+    args_channel_options: Optional[Dict[str, Any]],
+) -> List[Tuple[str, Any]]:
+    """
+    Builds grpc options for the client by taking into account the retry parameters, default gRPC options and additional gRPC options.
+    :param max_attempts: Maximum number of attempts that are allowed.
+    :param backoff_multiplier: Factor that will be raised to the exponent of (attempt - 1) for calculating the backoff wait time.
+    :param initial_backoff: The backoff time on the first error. This will be multiplied by the backoff_multiplier exponent for subsequent wait time calculations.
+    :param max_backoff: The maximum backoff wait time.
+    :param args_channel_options: additional gRPC options that must be merged with the default options
+    :return: List of gRPC options
+    """
+    grpc_options = get_default_grpc_options()
+
+    if args_channel_options:
+        grpc_options.extend(list(args_channel_options))
+
+    if max_attempts > 1:
+        options_with_retry_config = remove_grpc_service_config(grpc_options)
+        service_config_json = json.dumps(
+            {
+                "methodConfig": [
+                    {
+                        # To apply retry to all methods, put [{}] in the "name" field
+                        "name": [{}],
+                        "retryPolicy": {
+                            "maxAttempts": max_attempts,
+                            "initialBackoff": f"{initial_backoff}s",
+                            "maxBackoff": f"{max_backoff}s",
+                            "backoffMultiplier": backoff_multiplier,
+                            "retryableStatusCodes": [
+                                "UNAVAILABLE",
+                                "DEADLINE_EXCEEDED",
+                                "INTERNAL",
+                            ],
+                        },
+                    }
+                ]
+            }
+        )
+        # NOTE: the retry feature will be enabled by default >=v1.40.0
+        options_with_retry_config.append(("grpc.enable_retries", 1))
+        options_with_retry_config.append(("grpc.service_config", service_config_json))
+        return options_with_retry_config
+
+    return grpc_options
