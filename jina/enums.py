@@ -175,7 +175,7 @@ class FlowBuildLevel(BetterEnum):
     RUNNING = 2  #: the graph is started and all deployment are running
 
 
-class GatewayProtocolType(BetterEnum):
+class ProtocolType(BetterEnum):
     """
     Gateway communication protocol
     """
@@ -185,7 +185,7 @@ class GatewayProtocolType(BetterEnum):
     WEBSOCKET = 2
 
     @classmethod
-    def from_string_list(cls, string_list: List[Union[str, 'GatewayProtocolType']]):
+    def from_string_list(cls, string_list: List[Union[str, 'ProtocolType']]):
         """
         Returns a list of Enums from a list of strings or enums
         :param string_list: list of strings or enums

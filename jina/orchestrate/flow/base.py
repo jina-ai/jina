@@ -43,7 +43,7 @@ from jina.enums import (
     DeploymentRoleType,
     FlowBuildLevel,
     FlowInspectType,
-    GatewayProtocolType,
+    ProtocolType,
 )
 from jina.excepts import (
     FlowMissingDeploymentError,
@@ -72,11 +72,10 @@ from jina.parsers import (
     set_gateway_parser,
 )
 from jina.parsers.flow import set_flow_parser
-from jina.serve.networking.utils import host_is_local, in_docker
 
 __all__ = ['Flow']
 GATEWAY_ARGS_BLACKLIST = ['uses', 'uses_with']
-EXECUTOR_ARGS_BLACKLIST = ['port', 'port_monitoring', 'uses', 'uses_with']
+EXECUTOR_ARGS_BLACKLIST = ['port', 'port_monitoring', 'uses', 'uses_with', 'protocol']
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
@@ -546,6 +545,7 @@ class Flow(
         # common args should be the ones that can not be parsed by _flow_parser
         known_keys = list(vars(args).keys())
         self._common_kwargs = {k: v for k, v in kwargs.items() if k not in known_keys}
+        print(self._common_kwargs)
 
         # gateway args inherit from flow args
         self._gateway_kwargs = {
@@ -553,6 +553,7 @@ class Flow(
             for k, v in self._common_kwargs.items()
             if k not in GATEWAY_ARGS_BLACKLIST
         }
+        print(f' gateway {self._gateway_kwargs}')
 
         self._kwargs = ArgNamespace.get_non_defaults_args(
             args, _flow_parser
@@ -2312,7 +2313,7 @@ class Flow(
             )
         )
 
-        if self.protocol == GatewayProtocolType.HTTP:
+        if self.protocol == ProtocolType.HTTP:
 
             http_ext_table = self._init_table()
 
@@ -2514,7 +2515,7 @@ class Flow(
             pass
 
     @property
-    def protocol(self) -> Union[GatewayProtocolType, List[GatewayProtocolType]]:
+    def protocol(self) -> Union[ProtocolType, List[ProtocolType]]:
         """Return the protocol of this Flow
 
         :return: the protocol of this Flow, if only 1 protocol is supported otherwise returns the list of protocols
@@ -2522,11 +2523,11 @@ class Flow(
         v = (
             self._gateway_kwargs.get('protocol', None)
             or self._gateway_kwargs.get('protocols', None)
-            or [GatewayProtocolType.GRPC]
+            or [ProtocolType.GRPC]
         )
         if not isinstance(v, list):
             v = [v]
-        v = GatewayProtocolType.from_string_list(v)
+        v = ProtocolType.from_string_list(v)
         if len(v) == 1:
             return v[0]
         else:
@@ -2535,7 +2536,7 @@ class Flow(
     @protocol.setter
     def protocol(
         self,
-        value: Union[str, GatewayProtocolType, List[str], List[GatewayProtocolType]],
+        value: Union[str, ProtocolType, List[str], List[ProtocolType]],
     ):
         """Set the protocol of this Flow, can only be set before the Flow has been started
 
@@ -2546,16 +2547,16 @@ class Flow(
             raise RuntimeError('Protocol can not be changed after the Flow has started')
 
         if isinstance(value, str):
-            self._gateway_kwargs['protocol'] = [GatewayProtocolType.from_string(value)]
-        elif isinstance(value, GatewayProtocolType):
+            self._gateway_kwargs['protocol'] = [ProtocolType.from_string(value)]
+        elif isinstance(value, ProtocolType):
             self._gateway_kwargs['protocol'] = [value]
         elif isinstance(value, list):
-            self._gateway_kwargs['protocol'] = GatewayProtocolType.from_string_list(
+            self._gateway_kwargs['protocol'] = ProtocolType.from_string_list(
                 value
             )
         else:
             raise TypeError(
-                f'{value} must be either `str` or `GatewayProtocolType` or list of protocols'
+                f'{value} must be either `str` or `ProtocolType` or list of protocols'
             )
 
         # Flow is build to graph already

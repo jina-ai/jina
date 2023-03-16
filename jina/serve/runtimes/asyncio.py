@@ -130,6 +130,7 @@ class AsyncNewLoopRuntime:
 
     def _get_server(self):
         # construct server type based on protocol (and potentially req handler class to keep backwards compatibility)
+        from jina.enums import ProtocolType
         if self.req_handler_cls.__name__ == 'GatewayRequestHandler':
             self.timeout_send = self.args.timeout_send
             if self.timeout_send:
@@ -192,7 +193,8 @@ class AsyncNewLoopRuntime:
                 extra_search_paths=self.args.extra_search_paths,
             )
 
-        elif not hasattr(self.args, 'protocol') or (len(self.args.protocol) == 1 and self.args.protocol[0] == 'GRPC'):
+        elif not hasattr(self.args, 'protocol') or (
+                len(self.args.protocol) == 1 and self.args.protocol[0] == ProtocolType.GRPC):
             from jina.serve.runtimes.servers.grpc import GRPCServer
             return GRPCServer(name=self.args.name,
                               runtime_args=self.args,
@@ -200,6 +202,27 @@ class AsyncNewLoopRuntime:
                               grpc_server_options=self.args.grpc_server_options,
                               ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
                               ssl_certfile=getattr(self.args, 'ssl_certfile', None))
+
+        elif len(self.args.protocol) == 1 and self.args.protocol[0] == ProtocolType.HTTP:
+            from jina.serve.runtimes.servers.http import FastAPIBaseServer  # we need a concrete implementation of this
+            return FastAPIBaseServer(name=self.args.name,
+                                     runtime_args=self.args,
+                                     req_handler_cls=self.req_handler_cls,
+                                     grpc_server_options=self.args.grpc_server_options,
+                                     ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
+                                     ssl_certfile=getattr(self.args, 'ssl_certfile', None))
+        elif len(self.args.protocol) == 1 and self.args.protocol[0] == ProtocolType.WEBSOCKET:
+            from jina.serve.runtimes.servers.websocket import \
+                WebSocketServer  # we need a concrete implementation of this
+            return WebSocketServer(name=self.args.name,
+                                   runtime_args=self.args,
+                                   req_handler_cls=self.req_handler_cls,
+                                   grpc_server_options=self.args.grpc_server_options,
+                                   ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
+                                   ssl_certfile=getattr(self.args, 'ssl_certfile', None))
+        elif len(self.args.protocol) > 1:
+            # TODO: Set CompositeServer
+            pass
 
     def _send_telemetry_event(self, event, extra_kwargs=None):
         gateway_kwargs = {}
@@ -219,7 +242,8 @@ class AsyncNewLoopRuntime:
 
         extra_kwargs = extra_kwargs or {}
 
-        send_telemetry_event(event=event, obj_cls_name=runtime_cls_name, entity_id=self._entity_id, **gateway_kwargs, **extra_kwargs)
+        send_telemetry_event(event=event, obj_cls_name=runtime_cls_name, entity_id=self._entity_id, **gateway_kwargs,
+                             **extra_kwargs)
 
     async def async_setup(self):
         """

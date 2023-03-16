@@ -170,11 +170,11 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         """
         from jina.serve.runtimes.servers.grpc import GRPCServer
         from jina.serve.runtimes.servers.http import FastAPIBaseServer
-        from jina.enums import GatewayProtocolType
+        from jina.enums import ProtocolType
 
         if (
                 protocol is None
-                or protocol == GatewayProtocolType.GRPC
+                or protocol == ProtocolType.GRPC
                 or protocol == 'grpc'
         ):
             res = GRPCServer.is_ready(ctrl_address)
@@ -199,11 +199,11 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         """
         from jina.serve.runtimes.servers.grpc import GRPCServer
         from jina.serve.runtimes.servers.http import FastAPIBaseServer
-        from jina.enums import GatewayProtocolType
+        from jina.enums import ProtocolType
 
         if (
                 protocol is None
-                or protocol == GatewayProtocolType.GRPC
+                or protocol == ProtocolType.GRPC
                 or protocol == 'grpc'
         ):
             res = await GRPCServer.async_is_ready(ctrl_address)

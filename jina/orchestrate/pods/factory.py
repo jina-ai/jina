@@ -27,6 +27,8 @@ class PodFactory:
         :return: the created Deployment
         """
         # copy to update but forward original
+
+        print(f' args {args}')
             
         cargs = deepcopy(args)
 

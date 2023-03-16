@@ -4,7 +4,7 @@ import argparse
 import os
 from typing import Tuple
 
-from jina.enums import GatewayProtocolType
+from jina.enums import ProtocolType
 from jina.logging.predefined import default_logger
 
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
@@ -268,9 +268,9 @@ def _get_gateway_class(protocol):
     from jina.serve.runtimes.gateway.websocket import WebSocketGateway
 
     gateway_dict = {
-        GatewayProtocolType.GRPC: GRPCGateway,
-        GatewayProtocolType.WEBSOCKET: WebSocketGateway,
-        GatewayProtocolType.HTTP: HTTPGateway,
+        ProtocolType.GRPC: GRPCGateway,
+        ProtocolType.WEBSOCKET: WebSocketGateway,
+        ProtocolType.HTTP: HTTPGateway,
     }
     return gateway_dict[protocol]
 

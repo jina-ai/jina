@@ -26,7 +26,7 @@ from jina.constants import (
     __docker_host__,
     __windows__,
 )
-from jina.enums import DeploymentRoleType, PodRoleType, PollingType
+from jina.enums import DeploymentRoleType, PodRoleType, PollingType, ProtocolType
 from jina.helper import (
     ArgNamespace,
     parse_host_scheme,
@@ -1143,6 +1143,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             replica_args = []
             for replica_id in range(replicas):
                 _args = copy.deepcopy(self.args)
+                if shards > 1:
+                    _args.protocol = [ProtocolType.GRPC] # If there are shards, protocol only matters for Head
                 if self.args.deployment_role == DeploymentRoleType.GATEWAY:
                     _args.replicas = replicas
                 _args.shard_id = shard_id

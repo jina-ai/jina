@@ -9,7 +9,7 @@ from docarray.document.generators import from_ndarray
 
 from jina import Document, DocumentArray, Executor, Flow, requests
 from jina.constants import __windows__
-from jina.enums import FlowBuildLevel, GatewayProtocolType
+from jina.enums import FlowBuildLevel, ProtocolType
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_identity
 from jina.orchestrate.deployments import Deployment
@@ -619,11 +619,11 @@ def test_load_flow_with_custom_gateway(tmpdir):
     f = Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml'))
 
     assert f.port == 12345
-    assert f.protocol == GatewayProtocolType.HTTP
+    assert f.protocol == ProtocolType.HTTP
 
     with Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml')) as f:
         assert f.port == 12345
-        assert f.protocol == GatewayProtocolType.HTTP
+        assert f.protocol == ProtocolType.HTTP
         _validate_flow(f)
 
 
@@ -632,9 +632,9 @@ def test_flow_multi_protocol_aliases():
     f = Flow(ports=[12345, 12345, 12345], protocols=['http', 'grpc', 'websocket'])
     assert f.port == [12345, 12345, 12345]
     assert f.protocol == [
-        GatewayProtocolType.HTTP,
-        GatewayProtocolType.GRPC,
-        GatewayProtocolType.WEBSOCKET,
+        ProtocolType.HTTP,
+        ProtocolType.GRPC,
+        ProtocolType.WEBSOCKET,
     ]
 
 
@@ -690,9 +690,9 @@ def test_set_deployment_grpc_metadata():
 @pytest.mark.parametrize(
     'protocol,expected_protocol',
     [
-        ('http', GatewayProtocolType.HTTP),
-        (['GRPC'], GatewayProtocolType.GRPC),
-        (['grpc', 'http'], [GatewayProtocolType.GRPC, GatewayProtocolType.HTTP]),
+        ('http', ProtocolType.HTTP),
+        (['GRPC'], ProtocolType.GRPC),
+        (['grpc', 'http'], [ProtocolType.GRPC, ProtocolType.HTTP]),
     ],
 )
 def test_flow_port_protocol_api(port, expected_port, protocol, expected_protocol):
@@ -712,9 +712,9 @@ def test_flow_port_protocol_api(port, expected_port, protocol, expected_protocol
 @pytest.mark.parametrize(
     'protocol,expected_protocol',
     [
-        ('http', GatewayProtocolType.HTTP),
-        (['GRPC'], GatewayProtocolType.GRPC),
-        (['grpc', 'http'], [GatewayProtocolType.GRPC, GatewayProtocolType.HTTP]),
+        ('http', ProtocolType.HTTP),
+        (['GRPC'], ProtocolType.GRPC),
+        (['grpc', 'http'], [ProtocolType.GRPC, ProtocolType.HTTP]),
     ],
 )
 def test_gateway_port_protocol_api(port, expected_port, protocol, expected_protocol):

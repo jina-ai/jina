@@ -18,8 +18,8 @@ def mixin_remote_runtime_parser(parser):
         default=[__default_host__],
         action=CastHostAction,
         help=f'The host of the Gateway, which the client should connect to, by default it is {__default_host__}.'
-        ' In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts. '
-        ' Then, every resulting address will be considered as one replica of the Executor.',
+             ' In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts. '
+             ' Then, every resulting address will be considered as one replica of the Executor.',
     )
 
 
@@ -97,7 +97,7 @@ def mixin_gateway_streamer_parser(arg_group):
         '--compression',
         choices=['NoCompression', 'Deflate', 'Gzip'],
         help='The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, '
-        'check https://grpc.github.io/grpc/python/grpc.html#compression.',
+             'check https://grpc.github.io/grpc/python/grpc.html#compression.',
     )
 
     arg_group.add_argument(
@@ -170,25 +170,6 @@ which should be structured as a python package.
     mixin_gateway_streamer_parser(gp)
 
 
-def mixin_gateway_protocol_parser(parser):
-    """Add the arguments for the protocol to the gateway parser
-
-    :param parser: the parser configure
-    """
-
-    from jina.enums import GatewayProtocolType
-
-    parser.add_argument(
-        '--protocol',
-        '--protocols',
-        nargs='+',
-        type=GatewayProtocolType.from_string,
-        choices=list(GatewayProtocolType),
-        default=[GatewayProtocolType.GRPC],
-        help=f'Communication protocol of the server exposed by the Gateway. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: {[protocol.to_string() for protocol in list(GatewayProtocolType)]}.',
-    )
-
-
 def _add_host(arg_group):
     arg_group.add_argument(
         '--host',
@@ -200,14 +181,13 @@ def _add_host(arg_group):
 
 
 def _add_proxy(arg_group):
-
     arg_group.add_argument(
         '--proxy',
         action='store_true',
         default=False,
         help='If set, respect the http_proxy and https_proxy environment variables. '
-        'otherwise, it will unset these proxy variables before start. '
-        'gRPC seems to prefer no proxy',
+             'otherwise, it will unset these proxy variables before start. '
+             'gRPC seems to prefer no proxy',
     )
 
 
