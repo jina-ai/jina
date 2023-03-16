@@ -115,9 +115,8 @@ concepts/preliminaries/index
 :caption: Concepts
 :hidden:
 
-concepts/executor/index
+concepts/serving/index
 concepts/orchestration/index
-concepts/gateway/index
 concepts/client/index
 ```
 
