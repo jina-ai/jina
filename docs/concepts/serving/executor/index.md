@@ -1,5 +1,5 @@
 (executor-cookbook)=
-# {fas}`gears` Executor
+# Executor
 
 An {class}`~jina.Executor` is a self-contained gRPC microservice that performs a task on a `DocumentArray`. 
 
