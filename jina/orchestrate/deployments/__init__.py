@@ -157,6 +157,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         port: Optional[int] = None,
         port_monitoring: Optional[int] = None,
         prefer_platform: Optional[str] = None,
+        protocol: Optional[Union[str, List[str]]] = ['GRPC'],
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
@@ -246,6 +247,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
+        :param protocol: Communication protocol of the server exposed by the Executor. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your
@@ -1144,7 +1146,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             for replica_id in range(replicas):
                 _args = copy.deepcopy(self.args)
                 if shards > 1:
-                    _args.protocol = [ProtocolType.GRPC] # If there are shards, protocol only matters for Head
+                    _args.protocol = [
+                        ProtocolType.GRPC
+                    ]  # If there are shards, protocol only matters for Head
                 if self.args.deployment_role == DeploymentRoleType.GATEWAY:
                     _args.replicas = replicas
                 _args.shard_id = shard_id

@@ -19,7 +19,6 @@
 | `ssl_certfile` | the path to the certificate file | `string` | `None` |
 | `ssl_keyfile` | the path to the key file | `string` | `None` |
 | `expose_graphql_endpoint` | If set, /graphql endpoint is added to HTTP interface. | `boolean` | `False` |
-| `protocol` | Communication protocol of the server exposed by the Gateway. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET']. | `array` | `[<GatewayProtocolType.GRPC: 0>]` |
 | `host` | The host address of the runtime, by default it is 0.0.0.0. | `string` | `0.0.0.0` |
 | `proxy` | If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy | `boolean` | `False` |
 | `uses` | The config of the gateway, it could be one of the followings:<br>        * the string literal of an Gateway class name<br>        * a Gateway YAML file (.yml, .yaml, .jaml)<br>        * a docker image (must start with `docker://`)<br>        * the string literal of a YAML config (must start with `!` or `jtype: `)<br>        * the string literal of a JSON config<br><br>        When use it under Python, one can use the following values additionally:<br>        - a Python dict that represents the config<br>        - a text file stream has `.read()` interface | `string` | `None` |
@@ -41,6 +40,7 @@
 | `floating` | If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one. | `boolean` | `False` |
 | `reload` | If set, the Gateway will restart while serving if YAML configuration source is changed. | `boolean` | `False` |
 | `port` | The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used. | `number` | `random in [49152, 65535]` |
+| `protocol` | Communication protocol of the server exposed by the Gateway. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET']. | `array` | `[<ProtocolType.GRPC: 0>]` |
 | `monitoring` | If set, spawn an http server with a prometheus endpoint to expose metrics | `boolean` | `False` |
 | `port_monitoring` | The port on which the prometheus server is exposed, default is a random port between [49152, 65535] | `number` | `random in [49152, 65535]` |
 | `retries` | Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas) | `number` | `-1` |

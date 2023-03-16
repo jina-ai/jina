@@ -545,7 +545,6 @@ class Flow(
         # common args should be the ones that can not be parsed by _flow_parser
         known_keys = list(vars(args).keys())
         self._common_kwargs = {k: v for k, v in kwargs.items() if k not in known_keys}
-        print(self._common_kwargs)
 
         # gateway args inherit from flow args
         self._gateway_kwargs = {
@@ -553,7 +552,6 @@ class Flow(
             for k, v in self._common_kwargs.items()
             if k not in GATEWAY_ARGS_BLACKLIST
         }
-        print(f' gateway {self._gateway_kwargs}')
 
         self._kwargs = ArgNamespace.get_non_defaults_args(
             args, _flow_parser
@@ -851,6 +849,7 @@ class Flow(
         port: Optional[int] = None,
         port_monitoring: Optional[int] = None,
         prefer_platform: Optional[str] = None,
+        protocol: Optional[Union[str, List[str]]] = ['GRPC'],
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
@@ -940,6 +939,7 @@ class Flow(
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
+        :param protocol: Communication protocol of the server exposed by the Executor. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your
@@ -1090,6 +1090,7 @@ class Flow(
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
+        :param protocol: Communication protocol of the server exposed by the Executor. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your
@@ -2551,9 +2552,7 @@ class Flow(
         elif isinstance(value, ProtocolType):
             self._gateway_kwargs['protocol'] = [value]
         elif isinstance(value, list):
-            self._gateway_kwargs['protocol'] = ProtocolType.from_string_list(
-                value
-            )
+            self._gateway_kwargs['protocol'] = ProtocolType.from_string_list(value)
         else:
             raise TypeError(
                 f'{value} must be either `str` or `ProtocolType` or list of protocols'

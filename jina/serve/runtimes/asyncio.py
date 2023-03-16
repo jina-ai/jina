@@ -208,21 +208,30 @@ class AsyncNewLoopRuntime:
             return FastAPIBaseServer(name=self.args.name,
                                      runtime_args=self.args,
                                      req_handler_cls=self.req_handler_cls,
-                                     grpc_server_options=self.args.grpc_server_options,
+                                     proxy=getattr(self.args, 'proxy', None),
+                                     uvicorn_kwargs=getattr(self.args, 'uvicorn_kwargs', None),
                                      ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
-                                     ssl_certfile=getattr(self.args, 'ssl_certfile', None))
+                                     ssl_certfile=getattr(self.args, 'ssl_certfile', None),
+                                     cors=getattr(self.args, 'cors', None),
+                                     )
         elif len(self.args.protocol) == 1 and self.args.protocol[0] == ProtocolType.WEBSOCKET:
             from jina.serve.runtimes.servers.websocket import \
                 WebSocketServer  # we need a concrete implementation of this
             return WebSocketServer(name=self.args.name,
                                    runtime_args=self.args,
                                    req_handler_cls=self.req_handler_cls,
-                                   grpc_server_options=self.args.grpc_server_options,
+                                   proxy=getattr(self.args, 'proxy', None),
+                                   uvicorn_kwargs=getattr(self.args, 'uvicorn_kwargs', None),
                                    ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
                                    ssl_certfile=getattr(self.args, 'ssl_certfile', None))
         elif len(self.args.protocol) > 1:
-            # TODO: Set CompositeServer
-            pass
+            from jina.serve.runtimes.servers.composite import \
+                CompositeServer  # we need a concrete implementation of this
+            return CompositeServer(name=self.args.name,
+                                   runtime_args=self.args,
+                                   req_handler_cls=self.req_handler_cls,
+                                   ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
+                                   ssl_certfile=getattr(self.args, 'ssl_certfile', None))
 
     def _send_telemetry_event(self, event, extra_kwargs=None):
         gateway_kwargs = {}

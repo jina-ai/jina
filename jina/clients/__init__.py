@@ -129,9 +129,7 @@ def Client(
     ):  # we need to parse the kwargs as soon as possible otherwise to get the gateway type
         args = parse_client(kwargs)
 
-    protocol = (
-        args.protocol if args else kwargs.get('protocol', ProtocolType.GRPC)
-    )
+    protocol = args.protocol if args else kwargs.get('protocol', ProtocolType.GRPC)
     if isinstance(protocol, str):
         protocol = ProtocolType.from_string(protocol)
 
