@@ -1,5 +1,4 @@
 import asyncio
-import json
 import threading
 from typing import TYPE_CHECKING, Optional
 
@@ -7,13 +6,14 @@ import grpc
 from grpc import RpcError
 
 from jina.clients.base import BaseClient
+from jina.clients.base.helper import client_grpc_options
 from jina.clients.base.stream_rpc import StreamRpc
 from jina.clients.base.unary_rpc import UnaryRpc
 from jina.excepts import BadClientInput, BadServerFlow, InternalNetworkError
 from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.helper import extract_trailing_metadata
-from jina.serve.networking.utils import get_default_grpc_options, get_grpc_channel
+from jina.serve.networking.utils import get_grpc_channel
 
 if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
@@ -91,32 +91,13 @@ class GRPCBaseClient(BaseClient):
             req_iter = self._get_requests(**kwargs)
             continue_on_error = self.continue_on_error
             # while loop with retries, check in which state the `iterator` remains after failure
-            options = get_default_grpc_options()
-            if max_attempts > 1:
-                service_config_json = json.dumps(
-                    {
-                        "methodConfig": [
-                            {
-                                # To apply retry to all methods, put [{}] in the "name" field
-                                "name": [{}],
-                                "retryPolicy": {
-                                    "maxAttempts": max_attempts,
-                                    "initialBackoff": f"{initial_backoff}s",
-                                    "maxBackoff": f"{max_backoff}s",
-                                    "backoffMultiplier": backoff_multiplier,
-                                    "retryableStatusCodes": [
-                                        "UNAVAILABLE",
-                                        "DEADLINE_EXCEEDED",
-                                        "INTERNAL",
-                                    ],
-                                },
-                            }
-                        ]
-                    }
-                )
-                # NOTE: the retry feature will be enabled by default >=v1.40.0
-                options.append(("grpc.enable_retries", 1))
-                options.append(("grpc.service_config", service_config_json))
+            options = client_grpc_options(
+                backoff_multiplier,
+                initial_backoff,
+                max_attempts,
+                max_backoff,
+                self.args.grpc_channel_options,
+            )
 
             metadata = kwargs.pop('metadata', ())
             if results_in_order:

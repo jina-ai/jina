@@ -1,7 +1,5 @@
 import copy
-from typing import Any, Dict, List, Tuple
-
-from jina.serve.networking.utils import get_default_grpc_options
+from typing import Dict, Tuple
 
 _SPECIFIC_EXECUTOR_SEPARATOR = '__'
 
@@ -77,20 +75,3 @@ def _parse_specific_params(parameters: Dict, executor_name: str):
         parsed_params.update(**specific_parameters)
 
     return parsed_params
-
-
-def _get_grpc_server_options(option_from_args: Dict) -> List[Tuple[str, Any]]:
-    """transform dict of args into grpc option, will merge the args wit the default args
-    :param option_from_args: a dict of argument
-    :return: grpc option i.e a list of tuple of key value
-    """
-
-    default_grpc_options = dict(get_default_grpc_options())
-
-    option_from_args = (
-        {**default_grpc_options, **option_from_args}
-        if option_from_args
-        else default_grpc_options
-    )  # merge new and default args
-
-    return list(option_from_args.items())

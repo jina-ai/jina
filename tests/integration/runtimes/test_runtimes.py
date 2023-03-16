@@ -13,13 +13,12 @@ from jina.clients.request import request_generator
 from jina.enums import PollingType
 from jina.parsers import set_gateway_parser
 from jina.proto import jina_pb2_grpc
-from jina.serve.networking.utils import get_default_grpc_options
+from jina.serve.helper import get_default_grpc_options
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+from jina.serve.runtimes.head.request_handling import HeaderRequestHandler
 from jina.serve.runtimes.servers import BaseServer
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
-from jina.serve.runtimes.head.request_handling import HeaderRequestHandler
-from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
-
 from tests.helper import _generate_pod_args
 
 
@@ -743,7 +742,8 @@ def _create_gateway_runtime(
                 '--log-config',
                 log_config,
             ]
-        ), req_handler_cls=GatewayRequestHandler
+        ),
+        req_handler_cls=GatewayRequestHandler,
     ) as runtime:
         runtime.run_forever()
 

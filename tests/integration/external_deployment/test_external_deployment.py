@@ -352,13 +352,12 @@ def test_external_flow_with_target_executor():
 
 def test_external_flow_with_grpc_metadata():
     import grpc
-    from grpc_health.v1 import health, health_pb2, health_pb2_grpc
+    from grpc_health.v1 import health_pb2, health_pb2_grpc
     from grpc_reflection.v1alpha import reflection
 
-    from jina.constants import __default_host__
     from jina.proto import jina_pb2, jina_pb2_grpc
     from jina.serve.runtimes.gateway.grpc import GRPCGateway
-    from jina.serve.runtimes.helper import _get_grpc_server_options
+    from jina.serve.runtimes.helper import get_server_side_grpc_options
 
     class DummyInterceptor(grpc.aio.ServerInterceptor):
         def __init__(self):
@@ -396,7 +395,7 @@ def test_external_flow_with_grpc_metadata():
                 server_interceptors.extend(extra_interceptors)
 
             self.server = grpc.aio.server(
-                options=_get_grpc_server_options(self.grpc_server_options),
+                options=get_server_side_grpc_options(self.grpc_server_options),
                 interceptors=server_interceptors,
             )
 
@@ -404,8 +403,12 @@ def test_external_flow_with_grpc_metadata():
                 self.streamer._streamer, self.server
             )
 
-            jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self._request_handler, self.server)
-            jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self._request_handler, self.server)
+            jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(
+                self._request_handler, self.server
+            )
+            jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(
+                self._request_handler, self.server
+            )
 
             service_names = (
                 jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,
