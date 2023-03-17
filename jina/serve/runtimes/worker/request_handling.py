@@ -149,10 +149,9 @@ class WorkerRequestHandler:
     def _http_fastapi_default_app(self,
                                   **kwargs):
         from jina.serve.runtimes.worker.http_fastapi_app import get_fastapi_app  # For Gateway, it works as for head
-        from google.protobuf import json_format
-        request_models_map = json_format.MessageToDict(self._executor._get_endpoint_models_dict())
+        request_models_map = self._executor._get_endpoint_models_dict()
 
-        get_fastapi_app(
+        return get_fastapi_app(
             request_models_map=request_models_map,
             **kwargs
         )
@@ -754,6 +753,14 @@ class WorkerRequestHandler:
         )
         endpoint_models = self._executor._get_endpoint_models_dict()
         json_format.ParseDict(endpoint_models, endpoints_proto.endpoints_models)
+        import pydantic
+        m = json_format.MessageToDict(endpoints_proto.endpoints_models)
+        try:
+            print(m['/default']['output'])
+            print(pydantic.create_model_from_typeddict(m['/default']['output']))
+        except Exception as ex:
+            print(f' Exception {ex}')
+            pass
 
         return endpoints_proto
 

@@ -204,16 +204,16 @@ class AsyncNewLoopRuntime:
                               ssl_certfile=getattr(self.args, 'ssl_certfile', None))
 
         elif len(self.args.protocol) == 1 and self.args.protocol[0] == ProtocolType.HTTP:
-            from jina.serve.runtimes.servers.http import FastAPIBaseServer  # we need a concrete implementation of this
-            return FastAPIBaseServer(name=self.args.name,
-                                     runtime_args=self.args,
-                                     req_handler_cls=self.req_handler_cls,
-                                     proxy=getattr(self.args, 'proxy', None),
-                                     uvicorn_kwargs=getattr(self.args, 'uvicorn_kwargs', None),
-                                     ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
-                                     ssl_certfile=getattr(self.args, 'ssl_certfile', None),
-                                     cors=getattr(self.args, 'cors', None),
-                                     )
+            from jina.serve.runtimes.servers.http import HTTPServer  # we need a concrete implementation of this
+            return HTTPServer(name=self.args.name,
+                              runtime_args=self.args,
+                              req_handler_cls=self.req_handler_cls,
+                              proxy=getattr(self.args, 'proxy', None),
+                              uvicorn_kwargs=getattr(self.args, 'uvicorn_kwargs', None),
+                              ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
+                              ssl_certfile=getattr(self.args, 'ssl_certfile', None),
+                              cors=getattr(self.args, 'cors', None),
+                              )
         elif len(self.args.protocol) == 1 and self.args.protocol[0] == ProtocolType.WEBSOCKET:
             from jina.serve.runtimes.servers.websocket import \
                 WebSocketServer  # we need a concrete implementation of this

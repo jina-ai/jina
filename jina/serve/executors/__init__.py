@@ -254,7 +254,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             from docarray.document.pydantic_model import PydanticDocument
 
         endpoint_models = {}
-        for endpoint, function_with_schema in self._executor.requests.items():
+        for endpoint, function_with_schema in self.requests.items():
             if docarray_v2:
                 request_schema = function_with_schema.request_schema
                 response_schema = function_with_schema.response_schema

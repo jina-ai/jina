@@ -142,7 +142,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
 
     def _http_fastapi_default_app(self,
                                   **kwargs):
-        from jina.serve.runtimes.head.http_fastapi_app import get_fastapi_app  # For Gateway, it works as for head
+        from jina.serve.runtimes.worker.http_fastapi_app import get_fastapi_app  # For Gateway, it works as for head
         import time
         worker_response = None
         request_models_map = {}
@@ -158,7 +158,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
             except:
                 time.sleep(0.1)
 
-        get_fastapi_app(
+        return get_fastapi_app(
             request_models_map=request_models_map,
             **kwargs
         )
