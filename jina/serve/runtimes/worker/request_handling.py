@@ -753,14 +753,6 @@ class WorkerRequestHandler:
         )
         endpoint_models = self._executor._get_endpoint_models_dict()
         json_format.ParseDict(endpoint_models, endpoints_proto.endpoints_models)
-        import pydantic
-        m = json_format.MessageToDict(endpoints_proto.endpoints_models)
-        try:
-            print(m['/default']['output'])
-            print(pydantic.create_model_from_typeddict(m['/default']['output']))
-        except Exception as ex:
-            print(f' Exception {ex}')
-            pass
 
         return endpoints_proto
 

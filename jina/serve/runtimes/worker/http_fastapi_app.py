@@ -9,10 +9,9 @@ def get_fastapi_app(
 ):
     with ImportExtensions(required=True):
         from fastapi import FastAPI, APIRouter, Response
+        import pydantic
 
-        from jina._docarray import docarray_v2, DocumentArray
-    if not docarray_v2:
-        from docarray.document.pydantic_model import PydanticDocumentArray
+        from jina._docarray import DocumentArray
 
     app = FastAPI()
 
@@ -27,11 +26,13 @@ def get_fastapi_app(
 
     for endpoint, input_output_map in request_models_map.items():
         if endpoint != '_jina_dry_run_':
-            input_model = input_output_map['input']
-            input_model = PydanticDocumentArray
-            output_model = input_output_map['output']
-            output_model = PydanticDocumentArray
-            router = create_router(endpoint, input_model=input_model, output_model=output_model)
+            input_model_name = input_output_map['input']['name']
+            input_model_schema = input_output_map['input']['schema']
+            request_model = pydantic.create_model(f'{endpoint}_request_{input_model_name}', **input_model_schema)
+            output_model_name = input_output_map['input']['name']
+            output_model_schema = input_output_map['input']['schema']
+            response_model = pydantic.create_model(f'{endpoint}_response_{output_model_name}', **output_model_schema)
+            router = create_router(endpoint, input_model=request_model, output_model=response_model)
             app.include_router(router)
 
     from jina.serve.runtimes.gateway.models import JinaHealthModel
