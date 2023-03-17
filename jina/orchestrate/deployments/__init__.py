@@ -6,6 +6,7 @@ import re
 import subprocess
 import threading
 import time
+import warnings
 from argparse import Namespace
 from collections import defaultdict
 from contextlib import ExitStack
@@ -100,7 +101,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     except ValueError:
                         time.sleep(0.5)
                 if not success:
-                    raise Exception(
+                    warnings.warn(
                         f'Failed to add {str(pod.args.replica_id)} as voter with address {voter_address} to leader at {leader_address}'
                     )
 
@@ -122,7 +123,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                         await asyncio.sleep(0.5)
 
                 if not success:
-                    raise Exception(
+                    warnings.warn(
                         f'Failed to add {str(pod.args.replica_id)} as voter with address {voter_address} to leader at {leader_address}'
                     )
 
