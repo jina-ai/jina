@@ -250,6 +250,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     def _get_endpoint_models_dict(self):
         self.logger.debug('got an endpoint discovery request')
         from jina._docarray import docarray_v2
+
         if not docarray_v2:
             from docarray.document.pydantic_model import PydanticDocument
 
@@ -261,7 +262,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             else:
                 request_schema = PydanticDocument
                 response_schema = PydanticDocument
-            endpoint_models[endpoint] = {'input': request_schema.schema(), 'output': response_schema.schema()}
+            endpoint_models[endpoint] = {
+                'input': request_schema.schema(),
+                'output': response_schema.schema(),
+            }
         return endpoint_models
 
     def _dry_run_func(self, *args, **kwargs):
