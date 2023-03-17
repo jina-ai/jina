@@ -1,6 +1,6 @@
 import asyncio
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, List, Optional, Tuple
+from typing import TYPE_CHECKING, Optional
 
 import aiohttp
 from aiohttp import WSMsgType
@@ -333,12 +333,3 @@ def handle_response_status(http_status: int, response_string: str, url: str):
         or http_status > status.HTTP_300_MULTIPLE_CHOICES
     ):  # failure codes
         raise ValueError(response_string)
-
-
-def remove_grpc_service_config(options: List[Tuple[str, Any]]) -> List[Tuple[str, Any]]:
-    """
-    Removes the 'grpc.service_config' configuration from the list of options.
-    :param options: List of gRPC options
-    :return: List of gRPC options
-    """
-    return [tup for tup in options if tup[0] != 'grpc.service_config']

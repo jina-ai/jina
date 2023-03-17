@@ -7,7 +7,6 @@ import grpc
 from grpc import RpcError
 
 from jina.clients.base import BaseClient
-from jina.clients.base.helper import remove_grpc_service_config
 from jina.clients.base.stream_rpc import StreamRpc
 from jina.clients.base.unary_rpc import UnaryRpc
 from jina.excepts import BadClientInput, BadServerFlow, InternalNetworkError
@@ -263,3 +262,12 @@ def client_grpc_options(
         return options_with_retry_config
 
     return grpc_options
+
+
+def remove_grpc_service_config(options: List[Tuple[str, Any]]) -> List[Tuple[str, Any]]:
+    """
+    Removes the 'grpc.service_config' configuration from the list of options.
+    :param options: List of gRPC options
+    :return: List of gRPC options
+    """
+    return [tup for tup in options if tup[0] != 'grpc.service_config']
