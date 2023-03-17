@@ -102,7 +102,7 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         runtime_set_args = {
             'tracer_provider': None,
             'grpc_tracing_server_interceptors': None,
-            'runtime_name': 'test',
+            'runtime_name': _runtime_args.get('name', 'test'),
             'metrics_registry': None,
             'meter': None,
             'aio_tracing_client_interceptors': None,

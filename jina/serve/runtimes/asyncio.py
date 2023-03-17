@@ -161,8 +161,9 @@ class AsyncNewLoopRuntime:
                 ),
                 uses_metas={},
                 runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
-                    'default_port': getattr(self.args, 'default_port', False),
                     **vars(self.args),
+                    'default_port': getattr(self.args, 'default_port', False),
+                    'timeout_send': self.timeout_send,
                 },
                 py_modules=self.args.py_modules,
                 extra_search_paths=self.args.extra_search_paths,

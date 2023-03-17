@@ -9,22 +9,23 @@ import grpc
 import pytest
 import requests as req
 
-from jina import Client, Document, DocumentArray, Executor, requests
+from jina import Document, DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.proto import jina_pb2, jina_pb2_grpc
-from jina.serve.networking.utils import (
-    get_available_services,
-    get_default_grpc_options,
-    send_request_async,
-)
+from jina.serve.helper import get_default_grpc_options
+from jina.serve.networking.utils import get_available_services, send_request_async
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.servers import BaseServer
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from tests.helper import _generate_pod_args
 
+
 def start_runtime(args, cancel_event):
-    with AsyncNewLoopRuntime(args, cancel_event=cancel_event, req_handler_cls=WorkerRequestHandler) as runtime:
+    with AsyncNewLoopRuntime(
+        args, cancel_event=cancel_event, req_handler_cls=WorkerRequestHandler
+    ) as runtime:
         runtime.run_forever()
+
 
 def _gen_test_data_message():
     for _ in range(3):
@@ -366,7 +367,6 @@ async def test_decorator_monitoring(port_generator):
     class DummyExecutor(Executor):
         @requests
         def foo(self, docs, **kwargs):
-
             with self.monitor(
                 name='process_seconds', documentation='process time in seconds '
             ):
