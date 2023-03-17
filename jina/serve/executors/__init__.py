@@ -263,8 +263,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 request_schema = PydanticDocument
                 response_schema = PydanticDocument
             endpoint_models[endpoint] = {
-                'input': {'name': request_schema.__name__, 'schema': request_schema.schema()},
-                'output': {'name': response_schema.__name__, 'schema': response_schema.schema()}
+                'input': {
+                    'name': request_schema.__name__,
+                    'schema': request_schema.schema(),
+                },
+                'output': {
+                    'name': response_schema.__name__,
+                    'schema': response_schema.schema(),
+                },
             }
         return endpoint_models
 
