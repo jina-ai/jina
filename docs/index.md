@@ -112,6 +112,15 @@ concepts/preliminaries/index
 ```
 
 ```{toctree}
+:caption: Tutorials
+:hidden:
+
+tutorials/before-you-start
+tutorials/deploy-model
+tutorials/deploy-pipeline
+```
+
+```{toctree}
 :caption: Concepts
 :hidden:
 
