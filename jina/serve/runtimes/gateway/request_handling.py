@@ -141,7 +141,26 @@ class GatewayRequestHandler:
 
     def _http_fastapi_executor_app(self,
                                    **kwargs):
-        from jina.serve.runtimes.head.http_fastapi_app import get_fastapi_app # For Gateway, it works as for head
+        from jina.serve.runtimes.worker.http_fastapi_app import get_fastapi_app  # For Gateway, it works as for head
+        import time
+        worker_response = None
+        request_models_map = {}
+        from google.protobuf import json_format
+
+        while worker_response is None:
+            # the endpoint discovery will only work when some Executor is ready to respond, it may take some time
+            try:
+                worker_response, _ = await self.streamer._connection_pool.send_discover_endpoint(
+                    deployment='executor', head=True
+                )
+                request_models_map = json_format.MessageToDict(worker_response.endpoints_models)
+            except:
+                time.sleep(0.1)
+
+        get_fastapi_app(
+            request_models_map=request_models_map,
+            **kwargs
+        )
 
         get_fastapi_app(
             **kwargs

@@ -52,6 +52,8 @@ message EndpointsProto {
 
     // list of endpoints exposed by an Executor
     repeated string endpoints = 1;
+    // map with structures {'/endpoint': {'input': PydanticInputModel, 'output': PydanticOutputModel}}
+    google.protobuf.Struct endpoints_models = 2;
 }
 
 /**

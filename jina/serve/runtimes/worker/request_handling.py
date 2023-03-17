@@ -149,8 +149,11 @@ class WorkerRequestHandler:
     def _http_fastapi_default_app(self,
                                   **kwargs):
         from jina.serve.runtimes.worker.http_fastapi_app import get_fastapi_app  # For Gateway, it works as for head
+        from google.protobuf import json_format
+        request_models_map = json_format.MessageToDict(self._executor._get_endpoint_models_dict())
 
         get_fastapi_app(
+            request_models_map=request_models_map,
             **kwargs
         )
 
@@ -743,10 +746,15 @@ class WorkerRequestHandler:
         :returns: the response request
         """
         self.logger.debug('got an endpoint discovery request')
+        from google.protobuf import json_format
+
         endpoints_proto = jina_pb2.EndpointsProto()
         endpoints_proto.endpoints.extend(
             list(self._executor.requests.keys())
         )
+        endpoint_models = self._executor._get_endpoint_models_dict()
+        json_format.ParseDict(endpoint_models, endpoints_proto.endpoints_models)
+
         return endpoints_proto
 
     def _extract_tracing_context(

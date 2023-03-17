@@ -247,6 +247,23 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         except RuntimeError:
             self._lock = contextlib.AsyncExitStack()
 
+    def _get_endpoint_models_dict(self):
+        self.logger.debug('got an endpoint discovery request')
+        from jina._docarray import docarray_v2
+        if not docarray_v2:
+            from docarray.document.pydantic_model import PydanticDocument
+
+        endpoint_models = {}
+        for endpoint, function_with_schema in self._executor.requests.items():
+            if docarray_v2:
+                request_schema = function_with_schema.request_schema
+                response_schema = function_with_schema.response_schema
+            else:
+                request_schema = PydanticDocument
+                response_schema = PydanticDocument
+            endpoint_models[endpoint] = {'input': request_schema.schema(), 'output': response_schema.schema()}
+        return endpoint_models
+
     def _dry_run_func(self, *args, **kwargs):
         pass
 
