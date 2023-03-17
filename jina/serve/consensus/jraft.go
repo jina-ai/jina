@@ -24,7 +24,7 @@ int PyArg_ParseTuple_get_configuration(PyObject * args, char **a, char **b) {
 PyObject * run(PyObject* , PyObject*, PyObject*);
 
 PyObject * add_voter(PyObject* , PyObject*);
-char * get_configuration(PyObject* , PyObject*);
+PyObject * get_configuration(PyObject* , PyObject*);
 
 static PyObject *AddVoterError = NULL;
 

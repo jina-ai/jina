@@ -20,7 +20,6 @@ import (
     "syscall"
     "path/filepath"
     "time"
-    "unsafe"
 
     // "github.com/Jille/raft-grpc-leader-rpc/leaderhealth"
     transport "github.com/Jille/raft-grpc-transport"
@@ -326,8 +325,7 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
             C.GoString(raftDir),
             raftBootstrap != false,
             C.GoString(executorTarget),
-            // TODO: currently, get_configuration messes the value of the parsed HeartbeatTimeout, hardcoding for now.
-            1000,
+            int(HeartbeatTimeout),
             int(ElectionTimeout),
             int(CommitTimeout),
             int(MaxAppendEntries),
@@ -374,12 +372,20 @@ func get_configuration(self *C.PyObject, args *C.PyObject) *C.PyObject {
         baseDir := filepath.Join(C.GoString(raftDir), C.GoString(raftId))
 
         logs_db, err := boltdb.NewBoltStore(filepath.Join(baseDir, "logs.dat"))
+        if logs_db != nil {
+            defer logs_db.Close()
+        }
+
         if err != nil {
             C.Py_IncRef(C.Py_None);
             return C.Py_None;
         }
 
         stable_db, err := boltdb.NewBoltStore(filepath.Join(baseDir, "stable.dat"))
+        if stable_db != nil {
+            defer stable_db.Close()
+        }
+
         if err != nil {
             C.Py_IncRef(C.Py_None);
             return C.Py_None;
@@ -408,8 +414,6 @@ func get_configuration(self *C.PyObject, args *C.PyObject) *C.PyObject {
             C.Py_IncRef(C.Py_None);
             return C.Py_None;
         }
-        logs_db.Close()
-        stable_db.Close()
 
 
         server := findServerByID(conf.Servers, raft.ServerID(C.GoString(raftId)))
