@@ -245,4 +245,4 @@ def test_load_deployment(
         assert dep.args.shards == expected_shards
         assert dep.args.uses == expected_uses
         assert dep.args.grpc_server_options == grpc_options
-        assert dep.args.grpc_server_options == grpc_options
+        assert dep.args.grpc_channel_options == grpc_options
