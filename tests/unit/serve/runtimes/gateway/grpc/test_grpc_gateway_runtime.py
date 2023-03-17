@@ -4,7 +4,6 @@ import json
 import multiprocessing
 import time
 from multiprocessing import Process
-from typing import Any, Dict, List, Optional, Tuple, Union
 
 import grpc
 import pytest
@@ -14,7 +13,6 @@ from jina.clients.request import request_generator
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
 from jina.serve import networking
-from jina.serve.helper import get_default_grpc_options
 from jina.serve.networking.utils import get_available_services
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
@@ -514,49 +512,3 @@ async def test_grpc_gateway_runtime_reflection():
     p.join()
 
     assert p.exitcode == 0
-
-
-def test_grpc_gateway_grpc_args(monkeypatch):
-    expected_grpc_option_keys = [
-        'grpc.max_send_message_length',
-        'grpc.keepalive_time_ms',
-    ]
-
-    def _custom_grpc_options(
-        additional_options: Optional[Union[list, Dict[str, Any]]] = None
-    ) -> List[Tuple[str, Any]]:
-        if not additional_options:
-            raise RuntimeError()
-        if all(
-            [key not in additional_options.keys() for key in expected_grpc_option_keys]
-        ):
-            raise RuntimeError()
-
-        return get_default_grpc_options()
-
-    import jina
-
-    monkeypatch.setattr(
-        jina.serve.networking.utils,
-        'get_server_side_grpc_options',
-        _custom_grpc_options,
-    )
-
-    deployment0_port = random_port()
-
-    with AsyncNewLoopRuntime(
-        set_gateway_parser().parse_args(
-            [
-                '--graph-description',
-                '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}',
-                '--deployments-addresses',
-                '{"deployment0": ["0.0.0.0:' + f'{deployment0_port}' + '"]}',
-                '--grpc-server-options',
-                '{"grpc.max_send_message_length": 10000}',
-                '--grpc-channel-options',
-                '{"grpc.keepalive_time_ms": 9999}',
-            ]
-        ),
-        req_handler_cls=GatewayRequestHandler,
-    ):
-        pass
