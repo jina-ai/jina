@@ -1,13 +1,17 @@
 (flow-add-executors)=
+
 # Add Executors
 
-A {class}`~jina.Flow` orchestrates its {class}`~jina.Executor`s as a graph and sends requests to all Executors in the order specified by {meth}`~jina.Flow.add` or listed in {ref}`a YAML file<flow-yaml-spec>`. 
+A {class}`~jina.Flow` orchestrates its {class}`~jina.Executor`s as a graph and sends requests to all Executors in the
+order specified by {meth}`~jina.Flow.add` or listed in {ref}`a YAML file<flow-yaml-spec>`.
 
-When you start a Flow, Executors always run in **separate processes**. Multiple Executors run in **different processes**. Multiprocessing is the lowest level of separation when you run a Flow locally. When running a Flow on Kubernetes, Docker Swarm, {ref}`jcloud`, different Executors run in different containers, pods or instances.   
+When you start a Flow, Executors always run in **separate processes**. Multiple Executors run in **different processes
+**. Multiprocessing is the lowest level of separation when you run a Flow locally. When running a Flow on Kubernetes,
+Docker Swarm, {ref}`jcloud`, different Executors run in different containers, pods or instances.
 
 ## Add Executors sequentially
 
-Executors can be added into a Flow with {meth}`~jina.Flow.add`.  
+Executors can be added into a Flow with {meth}`~jina.Flow.add`.
 
 ```python
 from jina import Flow
@@ -15,7 +19,8 @@ from jina import Flow
 f = Flow().add()
 ```
 
-This adds an "empty" Executor called {class}`~jina.serve.executors.BaseExecutor` to the Flow. This Executor (without any parameters) performs no actions.
+This adds an "empty" Executor called {class}`~jina.serve.executors.BaseExecutor` to the Flow. This Executor (without any
+parameters) performs no actions.
 
 ```{figure} no-op-flow.svg
 :scale: 70%
@@ -28,7 +33,6 @@ from jina import Flow
 
 f = Flow().add(name='myVeryFirstExecutor').add(name='secondIsBest')
 ```
-
 
 ```{figure} named-flow.svg
 :scale: 70%
@@ -43,7 +47,7 @@ executors:
   - name: secondIsBest
 ```
 
-Save it as `flow.yml` and run it: 
+Save it as `flow.yml` and run it:
 
 ```bash
 jina flow --uses flow.yml
@@ -53,11 +57,14 @@ More Flow YAML specifications can be found in {ref}`Flow YAML Specification<flow
 
 ## Define topologies over Executors
 
-{class}`~jina.Flow`s are not restricted to sequential execution. Internally they are modeled as graphs, so they can represent any complex, non-cyclic topology.
+{class}`~jina.Flow`s are not restricted to sequential execution. Internally they are modeled as graphs, so they can
+represent any complex, non-cyclic topology.
 
-A typical use case for such a Flow is a topology with a common pre-processing part, but different indexers separating embeddings and data.
+A typical use case for such a Flow is a topology with a common pre-processing part, but different indexers separating
+embeddings and data.
 
-To define a custom topology you can use the `needs` keyword when adding an {class}`~jina.Executor`. By default, a Flow assumes that every Executor needs the previously added Executor.
+To define a custom topology you can use the `needs` keyword when adding an {class}`~jina.Executor`. By default, a Flow
+assumes that every Executor needs the previously added Executor.
 
 ```python
 from jina import Executor, Flow, requests, Document, DocumentArray
@@ -109,12 +116,17 @@ This gives the output:
 ['foo was here and got 0 document', 'bar was here and got 1 document', 'baz was here and got 1 document']
 ```
 
-Both `BarExecutor` and `BazExecutor` only received a single `Document` from `FooExecutor` because they are run in parallel. The last Executor `executor3` receives both DocumentArrays and merges them automatically.
-This automated merging can be disabled with `no_reduce=True`. This is useful for providing custom merge logic in a separate Executor. In this case the last `.add()` call would look like `.add(needs=['barExecutor', 'bazExecutor'], uses=CustomMergeExecutor, no_reduce=True)`. This feature requires Jina >= 3.0.2.
+Both `BarExecutor` and `BazExecutor` only received a single `Document` from `FooExecutor` because they are run in
+parallel. The last Executor `executor3` receives both DocumentArrays and merges them automatically.
+This automated merging can be disabled with `no_reduce=True`. This is useful for providing custom merge logic in a
+separate Executor. In this case the last `.add()` call would look
+like `.add(needs=['barExecutor', 'bazExecutor'], uses=CustomMergeExecutor, no_reduce=True)`. This feature requires
+Jina >= 3.0.2.
 
 ## How Executors process DocumentArrays in a Flow
 
-Let's understand how Executors process DocumentArray's inside a Flow, and how changes are chained and applied, affecting downstream Executors in the Flow.
+Let's understand how Executors process DocumentArray's inside a Flow, and how changes are chained and applied, affecting
+downstream Executors in the Flow.
 
 ```python 
 from jina import Executor, requests, Flow, DocumentArray, Document
@@ -154,7 +166,6 @@ with f:
     )
 ```
 
-
 ```shell
 ────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
 ╭────────────── 🔗 Endpoint ───────────────╮
@@ -172,18 +183,18 @@ with f:
 
 ## Define Executor with `uses`
 
-An {class}`~jina.Executor`'s type is defined by the `uses` keyword. Note that some usages are not supported on JCloud due to security reasons and the nature of facilitating local debugging.
+An {class}`~jina.Executor`'s type is defined by the `uses` keyword. Note that some usages are not supported on JCloud
+due to security reasons and the nature of facilitating local debugging.
 
-| Local Dev | JCloud | `.add(uses=...)`                              | Description                                                                                               |
-|-----------|--------|-----------------------------------------------|-----------------------------------------------------------------------------------------------------------|
-| ✅         | ❌      | `ExecutorClass`                               | Use `ExecutorClass` from the inline context.                                                              |
-| ✅         | ❌      | `'my.py_modules.ExecutorClass'`               | Use `ExecutorClass` from `my.py_modules`.                                                                 |
-| ✅         | ✅      | `'executor-config.yml'`                       | Use an Executor from a YAML file defined by {ref}`Executor YAML interface <executor-yaml-spec>`.          |
-| ✅         | ❌      | `'jinaai://jina-ai/TransformerTorchEncoder/'`        | Use an Executor as Python source from Executor Hub.                                                           |
-| ✅         | ✅      | `'jinaai+docker://jina-ai/TransformerTorchEncoder'`  | Use an Executor as a Docker container from Executor Hub.                                                      |
-| ✅         | ✅      | `'jinaai+sandbox://jina-ai/TransformerTorchEncoder'` | Use a {ref}`Sandbox Executor <sandbox>` hosted on Executor Hub. The Executor runs remotely on Executor Hub.       |
-| ✅         | ❌      | `'docker://sentence-encoder'`                 | Use a pre-built Executor as a Docker container.                                                           |
-
+| Local Dev | JCloud | `.add(uses=...)`                                     | Description                                                                                                 |
+|-----------|--------|------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| ✅         | ❌      | `ExecutorClass`                                      | Use `ExecutorClass` from the inline context.                                                                |
+| ✅         | ❌      | `'my.py_modules.ExecutorClass'`                      | Use `ExecutorClass` from `my.py_modules`.                                                                   |
+| ✅         | ✅      | `'executor-config.yml'`                              | Use an Executor from a YAML file defined by {ref}`Executor YAML interface <executor-yaml-spec>`.            |
+| ✅         | ❌      | `'jinaai://jina-ai/TransformerTorchEncoder/'`        | Use an Executor as Python source from Executor Hub.                                                         |
+| ✅         | ✅      | `'jinaai+docker://jina-ai/TransformerTorchEncoder'`  | Use an Executor as a Docker container from Executor Hub.                                                    |
+| ✅         | ✅      | `'jinaai+sandbox://jina-ai/TransformerTorchEncoder'` | Use a {ref}`Sandbox Executor <sandbox>` hosted on Executor Hub. The Executor runs remotely on Executor Hub. |
+| ✅         | ❌      | `'docker://sentence-encoder'`                        | Use a pre-built Executor as a Docker container.                                                             |
 
 ````{admonition} Hint: Load multiple Executors from the same directory
 :class: hint
@@ -207,9 +218,10 @@ f = Flow(extra_search_paths=['../executor']).add(uses='config1.yml').add(uses='c
 
 ````
 
-
 (flow-configure-executors)=
+
 ## Configure Executors
+
 You can set and override {class}`~jina.Executor` configuration when adding them to a {class}`~jina.Flow`.
 
 This example shows how to start a Flow with an Executor using the Python API:
@@ -232,16 +244,18 @@ with Flow().add(
 ```
 
 - `uses_with` is a key-value map that defines the {ref}`arguments of the Executor'<executor-args>` `__init__` method.
-- `uses_requests` is a key-value map that defines the {ref}`mapping from endpoint to class method<executor-requests>`. This is useful to overwrite the default endpoint-to-method mapping defined in the Executor python implementation.
+- `uses_requests` is a key-value map that defines the {ref}`mapping from endpoint to class method<executor-requests>`.
+  This is useful to overwrite the default endpoint-to-method mapping defined in the Executor python implementation.
 - `workspace` is a string that defines the {ref}`workspace <executor-workspace>`.
 - `py_modules` is a list of strings that defines the Executor's Python dependencies;
-- `uses_metas` is a key-value map that defines some of the Executor's {ref}`internal attributes<executor-metas>`. It contains the following fields:
+- `uses_metas` is a key-value map that defines some of the Executor's {ref}`internal attributes<executor-metas>`. It
+  contains the following fields:
     - `name` is a string that defines the name of the Executor;
     - `description` is a string that defines the description of this Executor. It is used in the automatic docs UI;
 
 ### Set `with` via `uses_with`
 
-To set/override an Executor's `with` configuration, use `uses_with`. The `with` configuration refers to user-defined 
+To set/override an Executor's `with` configuration, use `uses_with`. The `with` configuration refers to user-defined
 constructor kwargs.
 
 ```python
@@ -266,6 +280,7 @@ flow = Flow().add(uses=MyExecutor, uses_with={'param1': 10, 'param3': 30})
 with flow as f:
     f.post('/')
 ```
+
 ```text
       executor0@219662[L]:ready and listening
         gateway@219662[L]:ready and listening
@@ -280,13 +295,15 @@ param3: 30
 ```
 
 ### Set `requests` via `uses_requests`
-You can set/override an Executor's `requests` configuration and bind methods to custom endpoints. 
+
+You can set/override an Executor's `requests` configuration and bind methods to custom endpoints.
 In the following code:
 
-- We replace the endpoint `/foo` bound to the `foo()` function with both `/non_foo` and `/alias_foo`. 
-- We add a new endpoint `/bar` for binding `bar()`. 
+- We replace the endpoint `/foo` bound to the `foo()` function with both `/non_foo` and `/alias_foo`.
+- We add a new endpoint `/bar` for binding `bar()`.
 
-Note the `all_req()` function is bound to **all** endpoints except those explicitly bound to other functions, i.e. `/non_foo`, `/alias_foo` and `/bar`.
+Note the `all_req()` function is bound to **all** endpoints except those explicitly bound to other functions,
+i.e. `/non_foo`, `/alias_foo` and `/bar`.
 
 ```python
 from jina import Executor, requests, Flow
@@ -366,10 +383,10 @@ with flow as f:
 different_name
 ```
 
-
 ### Unify output `ndarray` types
 
-Different {class}`~jina.Executor`s in a {class}`~jina.Flow` may depend on different `types` for array-like data such as `doc.tensor` and `doc.embedding`,
+Different {class}`~jina.Executor`s in a {class}`~jina.Flow` may depend on different `types` for array-like data such
+as `doc.tensor` and `doc.embedding`,
 often because they were written with different machine learning frameworks.
 As the builder of a Flow you don't always have control over this, for example when using Executors from Executor Hub.
 
@@ -382,7 +399,8 @@ from jina import Flow
 f = Flow().add(uses=MyExecutor, output_array_type='numpy').add(uses=NeedsNumpyExecutor)
 ```
 
-This converts the `.tensor` and `.embedding` fields of all output Documents of `MyExecutor` to `numpy.ndarray`, making the data
+This converts the `.tensor` and `.embedding` fields of all output Documents of `MyExecutor` to `numpy.ndarray`, making
+the data
 usable by `NeedsNumpyExecutor`. This works whether `MyExecutor` populates these fields with arrays/tensors from
 PyTorch, TensorFlow, or any other popular ML framework.
 
@@ -393,11 +411,48 @@ PyTorch, TensorFlow, or any other popular ML framework.
 [protobuf serialization docs](https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf).
 ````
 
+(executor-grpc-server-options)=
+## Configure Executor gRPC options
+
+The {class}`~jina.Executor` supports the `grpc_server_options` parameter which allows more customization of the **gRPC**
+server. The `grpc_server_options` parameter accepts a dictionary of **gRPC** configuration options which will be
+used to overwrite the default options. The **gRPC** channel used for server to server communication can also be
+customized using the `grpc_channel_options`.
+
+The default **gRPC** options are:
+
+```
+('grpc.max_send_message_length', -1),
+('grpc.max_receive_message_length', -1),
+('grpc.keepalive_time_ms', 9999),
+# send keepalive ping every 9 second, default is 2 hours.
+('grpc.keepalive_timeout_ms', 4999),
+# keepalive ping time out after 4 seconds, default is 20 seconds
+('grpc.keepalive_permit_without_calls', True),
+# allow keepalive pings when there's no gRPC calls
+('grpc.http1.max_pings_without_data', 0),
+# allow unlimited amount of keepalive pings without data
+('grpc.http1.min_time_between_pings_ms', 10000),
+# allow grpc pings from client every 9 seconds
+('grpc.http1.min_ping_interval_without_data_ms', 5000),
+# allow grpc pings from client without data every 4 seconds
+```
+
+Refer to the [channel_arguments](https://grpc.github.io/grpc/python/glossary.html#term-channel_arguments) section for
+the full list of available **gRPC** options.
+
+```{hint}
+:class: seealso
+Refer to the {ref}`Configure gRPC Client options <client-grpc-channel-options>` section for configuring the `Client` **gRPC** channel options.
+Refer to the {ref}`Configure Gateway gRPC options <gateway-grpc-channel-options>` section for configuring the `Gateway` **gRPC** options.
+```
 
 (external-executors)=
+
 ## Add external Executors
 
-Usually a Flow starts and stops all of its own Executors. External Executors are owned by *other* Flows, meaning they can reside on any machine and their lifetime are controlled by others.
+Usually a Flow starts and stops all of its own Executors. External Executors are owned by *other* Flows, meaning they
+can reside on any machine and their lifetime are controlled by others.
 
 Using external Executors is useful for sharing expensive Executors (like stateless, GPU-based encoders) between Flows.
 
@@ -415,9 +470,11 @@ Flow().add(host='123.45.67.89', port=12345, external=True)
 Flow().add(host='123.45.67.89:12345', external=True)
 ```
 
-The Flow doesn't start or stop this Executor and assumes that it is externally managed and available at `123.45.67.89:12345`.
+The Flow doesn't start or stop this Executor and assumes that it is externally managed and available
+at `123.45.67.89:12345`.
 
-Despite the lifetime control, the external Executor behaves just like a regular one. You can even add the same Executor to multiple
+Despite the lifetime control, the external Executor behaves just like a regular one. You can even add the same Executor
+to multiple
 Flows.
 
 ### Enable TLS
@@ -430,7 +487,8 @@ from jina import Flow
 Flow().add(host='123.45.67.89:443', external=True, tls=True)
 ```
 
-After that, the external Executor behaves just like an internal one. You can even add the same Executor to multiple Flows.
+After that, the external Executor behaves just like an internal one. You can even add the same Executor to multiple
+Flows.
 
 ```{hint} 
 Using `tls` to connect to the External Executor is especially needed to use an external Executor deployed with JCloud. See the JCloud {ref}`documentation <jcloud>` for further details
@@ -438,9 +496,10 @@ Using `tls` to connect to the External Executor is especially needed to use an e
 
 ### Pass arguments
 
-External Executor may require extra configs to run. 
+External Executor may require extra configs to run.
 Think about an Executor that requires authentication to run.
-You can pass the `grpc_metadata` parameter to the Executor. `grpc_metadata` is a dictionary of key-value pairs to be passed along with every gRPC request send to that Executor. 
+You can pass the `grpc_metadata` parameter to the Executor. `grpc_metadata` is a dictionary of key-value pairs to be
+passed along with every gRPC request send to that Executor.
 
 ```python
 from jina import Flow
@@ -457,19 +516,23 @@ Flow().add(
 The `grpc_metadata` parameter here follows the `metadata` concept in gRPC. See [gRPC documentation](https://grpc.io/docs/what-is-grpc/core-concepts/#metadata) for details.
 ```
 
-
 (floating-executors)=
+
 ## Add floating Executors
 
-Some Executors in your Flow can be used for asynchronous background tasks that take time and don't generate a required output. For instance,
+Some Executors in your Flow can be used for asynchronous background tasks that take time and don't generate a required
+output. For instance,
 logging specific information in external services, storing partial results, etc.
 
 You can unblock your Flow from such tasks by using *floating Executors*.
 
-Normally, all Executors form a pipeline that handles and transforms a given request until it is finally returned to the Client.
+Normally, all Executors form a pipeline that handles and transforms a given request until it is finally returned to the
+Client.
 
-However, floating Executors do not feed their outputs back into the pipeline. Therefore, the Executor's output does not affect the response for the Client, and the response can be returned without waiting for the floating Executor to complete its task.
- 
+However, floating Executors do not feed their outputs back into the pipeline. Therefore, the Executor's output does not
+affect the response for the Client, and the response can be returned without waiting for the floating Executor to
+complete its task.
+
 Those Executors are marked with the `floating` keyword when added to a `Flow`:
 
 ```python
@@ -518,7 +581,8 @@ with f:
  Received ['Hello World', 'Hello World']
 ```
 
-In this example the response is returned without waiting for the floating Executor to complete. However, the Flow is not closed until
+In this example the response is returned without waiting for the floating Executor to complete. However, the Flow is not
+closed until
 the floating Executor has handled the request.
 
 You can plot the Flow and see the Executor is floating disconnected from the **Gateway**.
@@ -527,11 +591,15 @@ You can plot the Flow and see the Executor is floating disconnected from the **G
 :width: 70%
 
 ```
-A floating Executor can *never* come before a non-floating Executor in your Flow's {ref}`topology <flow-complex-topologies>`.
+
+A floating Executor can *never* come before a non-floating Executor in your Flow's
+{ref}`topology <flow-complex-topologies>`.
 
 This leads to the following behaviors:
 
-- **Implicit reordering**: When you add a non-floating Executor after a floating Executor without specifying its `needs` parameter, the non-floating Executor is chained after the previous non-floating one.
+- **Implicit reordering**: When you add a non-floating Executor after a floating Executor without specifying its `needs`
+  parameter, the non-floating Executor is chained after the previous non-floating one.
+
 ```python
 from jina import Flow
 
@@ -544,7 +612,8 @@ f.plot()
 
 ```
 
-- **Chaining floating Executors**: To chain more than one floating Executor, you need to add all of them with the `floating` flag, and explicitly specify the `needs` argument.
+- **Chaining floating Executors**: To chain more than one floating Executor, you need to add all of them with
+  the `floating` flag, and explicitly specify the `needs` argument.
 
 ```python
 from jina import Flow
@@ -558,7 +627,8 @@ f.plot()
 
 ```
 
-- **Overriding the `floating` flag**: If you add a floating Executor as part of `needs` parameter of a non-floating Executor, then the floating Executor is no longer considered floating.
+- **Overriding the `floating` flag**: If you add a floating Executor as part of `needs` parameter of a non-floating
+  Executor, then the floating Executor is no longer considered floating.
 
 ```python
 from jina import Flow

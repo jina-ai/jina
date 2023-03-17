@@ -318,6 +318,42 @@ The error-free output below signifies a correctly running Gateway:
 You can also use it to check Executor status, as Executor's communication protocol is gRPC.
 ```
 
+(gateway-grpc-server-options)=
+### Configure Gateway gRPC options
+
+The {class}`~jina.Gateway` supports the `grpc_server_options` parameter which allows more customization of the **gRPC**
+server. The `grpc_server_options` parameter accepts a dictionary of **gRPC** configuration options which will be
+used to overwrite the default options. The **gRPC** channel used for server to server communication can also be
+customized using the `grpc_channel_options`.
+
+The default **gRPC** options are:
+
+```
+('grpc.max_send_message_length', -1),
+('grpc.max_receive_message_length', -1),
+('grpc.keepalive_time_ms', 9999),
+# send keepalive ping every 9 second, default is 2 hours.
+('grpc.keepalive_timeout_ms', 4999),
+# keepalive ping time out after 4 seconds, default is 20 seconds
+('grpc.keepalive_permit_without_calls', True),
+# allow keepalive pings when there's no gRPC calls
+('grpc.http1.max_pings_without_data', 0),
+# allow unlimited amount of keepalive pings without data
+('grpc.http1.min_time_between_pings_ms', 10000),
+# allow grpc pings from client every 9 seconds
+('grpc.http1.min_ping_interval_without_data_ms', 5000),
+# allow grpc pings from client without data every 4 seconds
+```
+
+Refer to the [channel_arguments](https://grpc.github.io/grpc/python/glossary.html#term-channel_arguments) section for
+the full list of available **gRPC** options.
+
+```{hint}
+:class: seealso
+Refer to the {ref}`Configure gRPC Client options <client-grpc-channel-options>` section for configuring the `Client` **gRPC** channel options.
+Refer to the {ref}`Configure Executor gRPC options <executor-grpc-channel-options>` section for configuring the `Executor` **gRPC** options.
+```
+
 ### Use HTTP/WebSocket
 
 When using HTTP or WebSocket as the Gateway protocol, you can use curl to target the `/status` endpoint and get the Jina
