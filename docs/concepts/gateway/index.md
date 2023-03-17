@@ -324,7 +324,7 @@ You can also use it to check Executor status, as Executor's communication protoc
 The {class}`~jina.Gateway` supports the `grpc_server_options` parameter which allows more customization of the **gRPC**
 server. The `grpc_server_options` parameter accepts a dictionary of **gRPC** configuration options which will be
 used to overwrite the default options. The **gRPC** channel used for server to server communication can also be
-customized using the `grpc_channel_options`.
+customized using the `grpc_channel_options` parameter.
 
 The default **gRPC** options are:
 
