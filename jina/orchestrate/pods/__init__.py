@@ -150,7 +150,6 @@ def run_raft(
         address,
         raft_id,
         raft_dir,
-        True,
         executor_target,
         **raft_configuration,
     )
