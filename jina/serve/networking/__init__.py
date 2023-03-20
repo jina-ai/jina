@@ -58,8 +58,10 @@ class GrpcConnectionPool:
         meter: Optional['Meter'] = None,
         aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
         tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
+        channel_options: Optional[list] = None,
     ):
         self._logger = logger or JinaLogger(self.__class__.__name__)
+        self.channel_options = channel_options
 
         self.compression = (
             getattr(grpc.Compression, compression)
@@ -133,12 +135,13 @@ class GrpcConnectionPool:
         self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
         self.tracing_client_interceptor = tracing_client_interceptor
         self._connections = _ConnectionPoolMap(
-            runtime_name,
-            self._logger,
-            self._metrics,
-            self._histograms,
-            self.aio_tracing_client_interceptors,
-            self.tracing_client_interceptor,
+            runtime_name=runtime_name,
+            logger=self._logger,
+            metrics=self._metrics,
+            histograms=self._histograms,
+            aio_tracing_client_interceptors=self.aio_tracing_client_interceptors,
+            tracing_client_interceptor=self.tracing_client_interceptor,
+            channel_options=self.channel_options,
         )
         self._deployment_address_map = {}
 
@@ -528,7 +531,9 @@ class GrpcConnectionPool:
 
                     now = time.time()
                     if now > timeout or all(list(replica_warmup_responses.values())):
-                        self._logger.debug(f'completed warmup task in {now - start_time}s.')
+                        self._logger.debug(
+                            f'completed warmup task in {now - start_time}s.'
+                        )
                         return
                     await asyncio.sleep(0.2)
                 except asyncio.CancelledError:

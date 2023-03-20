@@ -27,6 +27,7 @@
 | `py_modules` | The customized python modules need to be imported before loading the gateway<br><br>Note that the recommended way is to only import a single module - a simple python file, if your<br>gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,<br>which should be structured as a python package. | `array` | `None` |
 | `replicas` | The number of replicas of the Gateway. This replicas will only be applied when converted into Kubernetes YAML | `number` | `1` |
 | `grpc_server_options` | Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1} | `object` | `None` |
+| `grpc_channel_options` | Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable. | `object` | `None` |
 | `graph_description` | Routing graph for the gateway | `string` | `{}` |
 | `graph_conditions` | Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents. | `string` | `{}` |
 | `deployments_addresses` | JSON dictionary with the input addresses of each Deployment | `string` | `{}` |

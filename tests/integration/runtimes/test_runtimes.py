@@ -4,23 +4,26 @@ import multiprocessing
 import threading
 import time
 from collections import defaultdict
+from functools import partial
 
 import grpc
 import pytest
 
+import jina
 from jina import Client, Document, DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.enums import PollingType
+from jina.helper import random_port
 from jina.parsers import set_gateway_parser
 from jina.proto import jina_pb2_grpc
-from jina.serve.networking.utils import get_default_grpc_options
+from jina.serve.helper import get_default_grpc_options
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+from jina.serve.runtimes.head.request_handling import HeaderRequestHandler
 from jina.serve.runtimes.servers import BaseServer
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
-from jina.serve.runtimes.head.request_handling import HeaderRequestHandler
-from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
-
 from tests.helper import _generate_pod_args
+from tests.unit.serve.runtimes.test_helper import _custom_grpc_options
 
 
 @pytest.mark.asyncio
@@ -743,7 +746,8 @@ def _create_gateway_runtime(
                 '--log-config',
                 log_config,
             ]
-        ), req_handler_cls=GatewayRequestHandler
+        ),
+        req_handler_cls=GatewayRequestHandler,
     ) as runtime:
         runtime.run_forever()
 
@@ -865,3 +869,75 @@ def test_runtime_slow_processing_readiness(port_generator):
         send_message_process.join()
         assert worker_process.exitcode == 0
         assert send_message_process.exitcode == 0
+
+
+@pytest.mark.parametrize('runtime', ['gateway', 'head', 'worker'])
+def test_grpc_server_and_channel_args(monkeypatch, mocker, runtime):
+    call_recording_mock = mocker.Mock()
+
+    monkeypatch.setattr(
+        jina.serve.networking.utils,
+        'get_server_side_grpc_options',
+        partial(_custom_grpc_options, call_recording_mock),
+    )
+    monkeypatch.setattr(
+        jina.serve.runtimes.servers.grpc,
+        'get_server_side_grpc_options',
+        partial(_custom_grpc_options, call_recording_mock),
+    )
+
+    if runtime == 'gateway':
+        deployment0_port = random_port()
+        with AsyncNewLoopRuntime(
+            set_gateway_parser().parse_args(
+                [
+                    '--graph-description',
+                    '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}',
+                    '--deployments-addresses',
+                    '{"deployment0": ["0.0.0.0:' + f'{deployment0_port}' + '"]}',
+                    '--grpc-server-options',
+                    '{"grpc.max_send_message_length": 10000}',
+                    '--grpc-channel-options',
+                    '{"grpc.keepalive_time_ms": 9999}',
+                ]
+            ),
+            req_handler_cls=GatewayRequestHandler,
+        ):
+            pass
+
+        # there should be at least two calls:
+        # 1 when creating the grpc server
+        # 2 when creating the connection to the deployment0
+        assert call_recording_mock.call_count >= 2
+    elif runtime == 'head':
+        args = _generate_pod_args()
+        args.polling = PollingType.ANY
+        connection_list_dict = {0: [f'fake_ip:8080']}
+        args.connection_list = json.dumps(connection_list_dict)
+        args.grpc_server_options = {"grpc.max_send_message_length": 10000}
+        args.grpc_channel_options = {"grpc.keepalive_time_ms": 9999}
+
+        with AsyncNewLoopRuntime(
+            args,
+            req_handler_cls=HeaderRequestHandler,
+        ):
+            pass
+
+        # there should be at least two calls:
+        # 1 when creating the grpc server
+        # 2 when creating the connection to the fake deployment
+        assert call_recording_mock.call_count >= 2
+    else:
+        args = _generate_pod_args()
+        args.grpc_server_options = {"grpc.max_send_message_length": 10000}
+        args.grpc_channel_options = {"grpc.keepalive_time_ms": 9999}
+
+        with AsyncNewLoopRuntime(
+            args,
+            req_handler_cls=WorkerRequestHandler,
+        ):
+            pass
+
+        # there should be one call:
+        # 1 when creating the grpc server
+        assert call_recording_mock.call_count == 1

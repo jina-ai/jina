@@ -1,5 +1,9 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
+from unittest.mock import Mock
+
 import pytest
 
+from jina.serve.helper import get_default_grpc_options
 from jina.serve.runtimes.helper import (
     _get_name_from_replicas_name,
     _is_param_for_specific_executor,
@@ -61,3 +65,21 @@ def test_parse_specific_param(param, parsed_param, executor_name):
 )
 def test_get_name_from_replicas(name_w_replicas, name):
     assert _get_name_from_replicas_name(name_w_replicas) == name
+
+
+def _custom_grpc_options(
+    call_recording_mock: Mock,
+    additional_options: Optional[Union[list, Dict[str, Any]]] = None,
+) -> List[Tuple[str, Any]]:
+    call_recording_mock()
+    expected_grpc_option_keys = [
+        'grpc.max_send_message_length',
+        'grpc.keepalive_time_ms',
+    ]
+
+    if not additional_options:
+        raise RuntimeError()
+    if all([key not in additional_options.keys() for key in expected_grpc_option_keys]):
+        raise RuntimeError()
+
+    return get_default_grpc_options()

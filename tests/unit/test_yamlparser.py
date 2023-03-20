@@ -193,6 +193,7 @@ def test_load_gateway_external_success(yaml_file, gateway_name):
         assert gateway.runtime_args.compression == 'Deflate'
         assert gateway.runtime_args.prefetch == 100
 
+
 def test_load_http_gateway_success():
     gateway: HTTPGateway = HTTPGateway.load_config(
         f'yaml/test-http-gateway.yml', runtime_args={'port': [12345]}
@@ -224,14 +225,24 @@ def test_load_gateway_override_with(yaml_file, gateway_name):
 
 
 @pytest.mark.parametrize(
-    'yaml_file,expected_replicas,expected_shards,expected_uses',
+    'yaml_file,expected_replicas,expected_shards,expected_uses,grpc_options',
     [
-        ('test-deployment.yml', 2, 3, 'DummyExternalIndexer'),
-        ('test-deployment-exec-config.yml', 3, 2, 'dummy_ext_exec_success.yml'),
+        (
+            'test-deployment.yml',
+            2,
+            3,
+            'DummyExternalIndexer',
+            {'grpc.max_send_message_length': -1},
+        ),
+        ('test-deployment-exec-config.yml', 3, 2, 'dummy_ext_exec_success.yml', None),
     ],
 )
-def test_load_deployment(yaml_file, expected_replicas, expected_shards, expected_uses):
+def test_load_deployment(
+    yaml_file, expected_replicas, expected_shards, expected_uses, grpc_options
+):
     with Deployment.load_config(os.path.join(cur_dir, f'yaml/{yaml_file}')) as dep:
         assert dep.args.replicas == expected_replicas
         assert dep.args.shards == expected_shards
         assert dep.args.uses == expected_uses
+        assert dep.args.grpc_server_options == grpc_options
+        assert dep.args.grpc_channel_options == grpc_options

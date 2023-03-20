@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING, AsyncIterator
-import threading
 import asyncio
+import threading
+from typing import TYPE_CHECKING, AsyncIterator
 
 from jina.helper import get_full_version
 from jina.proto import jina_pb2
@@ -19,14 +19,14 @@ class GatewayRequestHandler:
     """Object to encapsulate the code related to handle the data requests in the Gateway"""
 
     def __init__(
-            self,
-            args: 'SimpleNamespace',
-            logger: 'JinaLogger',
-            metrics_registry=None,
-            meter=None,
-            aio_tracing_client_interceptors=None,
-            tracing_client_interceptor=None,
-            **kwargs,
+        self,
+        args: 'SimpleNamespace',
+        logger: 'JinaLogger',
+        metrics_registry=None,
+        meter=None,
+        aio_tracing_client_interceptors=None,
+        tracing_client_interceptor=None,
+        **kwargs,
     ):
         import json
 
@@ -34,6 +34,7 @@ class GatewayRequestHandler:
             GatewayStreamer,
             _ExecutorStreamer,
         )
+
         self.runtime_args = args
         self.logger = logger
         graph_description = json.loads(self.runtime_args.graph_description)
@@ -58,6 +59,9 @@ class GatewayRequestHandler:
             meter=meter,
             aio_tracing_client_interceptors=aio_tracing_client_interceptors,
             tracing_client_interceptor=tracing_client_interceptor,
+            grpc_channel_options=self.runtime_args.grpc_channel_options
+            if hasattr(self.runtime_args, 'grpc_channel_options')
+            else None,
         )
 
         GatewayStreamer._set_env_streamer_args(
@@ -110,16 +114,18 @@ class GatewayRequestHandler:
         self.cancel_warmup_task()
         await self.streamer.close()
 
-    def _http_fastapi_default_app(self,
-                                  title,
-                                  description,
-                                  no_debug_endpoints,
-                                  no_crud_endpoints,
-                                  expose_endpoints,
-                                  expose_graphql_endpoint,
-                                  cors,
-                                  tracing,
-                                  tracer_provider):
+    def _http_fastapi_default_app(
+        self,
+        title,
+        description,
+        no_debug_endpoints,
+        no_crud_endpoints,
+        expose_endpoints,
+        expose_graphql_endpoint,
+        cors,
+        tracing,
+        tracer_provider,
+    ):
         from jina.helper import extend_rest_interface
         from jina.serve.runtimes.gateway.http_fastapi_app import get_fastapi_app
 
@@ -166,7 +172,7 @@ class GatewayRequestHandler:
         da = DocumentArray([Document()])
         try:
             async for _ in self.streamer.stream_docs(
-                    docs=da, exec_endpoint=__dry_run_endpoint__, request_size=1
+                docs=da, exec_endpoint=__dry_run_endpoint__, request_size=1
             ):
                 pass
             status_message = StatusMessage()
@@ -194,7 +200,7 @@ class GatewayRequestHandler:
         return info_proto
 
     async def stream(
-            self, request_iterator, context=None, *args, **kwargs
+        self, request_iterator, context=None, *args, **kwargs
     ) -> AsyncIterator['Request']:
         """
         stream requests from client iterator and stream responses back.
@@ -206,12 +212,12 @@ class GatewayRequestHandler:
         :yield: responses to the request after streaming to Executors in Flow
         """
         async for resp in self.streamer.rpc_stream(
-                request_iterator=request_iterator, context=context, *args, **kwargs
+            request_iterator=request_iterator, context=context, *args, **kwargs
         ):
             yield resp
 
     async def process_single_data(
-            self, request: DataRequest, context=None
+        self, request: DataRequest, context=None
     ) -> DataRequest:
         """Implements request and response handling of a single DataRequest
         :param request: DataRequest from Client

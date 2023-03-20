@@ -20,7 +20,6 @@ class GatewayLegacyParser(BaseLegacyParser):
         :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config
         :return: the Gateway YAML parser given the syntax version number
         """
-        from jina.logging.predefined import default_logger
 
         data['metas'] = {}
 
