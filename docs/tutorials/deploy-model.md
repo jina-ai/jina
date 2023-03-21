@@ -6,16 +6,22 @@
 Please check our {ref}`"Before you start" guide<before-start>` to go over a few preliminary topics.
 ```
 
+```{admonition} This tutorial was written for Jina 3.14
+:class: warning
+
+It will *probably* still work for later versions. If you have trouble, please ask on [our Slack](https://jina.ai/slack).
+```
+
 ## Introduction
 
-In this tutorial we'll build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an {class}`~jina.Executor`. Our Executor will use Stable Diffusion to generate images from a given text prompt. We'll then use a {class}`~jina.Deployment` to serve it.
+In this tutorial we'll build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an {class}`~jina.Executor`. Our Executor will use [Stable Diffusion](https://stability.ai/blog/stable-diffusion-public-release) to generate images from a given text prompt. We'll then use a {class}`~jina.Deployment` to serve it.
 
 ![](images/deployment.png)
 
 ```{admonition} Note
 :class: note
 
-A Deployment serves just one Executor. To combine multiple Executors into a pipeline and serve that, read our {ref}`tutorial on building a pipeline<build-a-pipeline>`.
+A Deployment serves just one Executor. To use multiple Executors, read our {ref}`tutorial on building a pipeline<build-a-pipeline>`.
 ```
 
 ```{admonition} Run this tutorial in a notebook
@@ -26,9 +32,9 @@ You can also run this code interactively in [Colab](https://colab.research.googl
 
 ## Understand: Executors and Deployments
 
-- All data that goes in and out of Jina is in the form of a DocumentArray from the DocArray package.
-- An Executor is a self-contained gRPC microservice that performs a task on a DocumentArray. This could be very simple (like merely capitalizing the entire text of a Document) or a lot more complex (like generating vector embeddings for a given piece of content).
-- A Deployment lets you serve your Executor, scale it up with replicas, and allow users to send and receive requests.
+- All data that goes in and out of Jina is in the form of a [DocumentArray](https://docarray.jina.ai/fundamentals/documentarray/) from the [DocArray](https://docarray.org) package.
+- An {ref}`Executor <executor-cookbook>` is a self-contained gRPC microservice that performs a task on a DocumentArray. This could be very simple (like merely capitalizing the entire text of a Document) or a lot more complex (like generating vector embeddings for a given piece of content).
+- A [Deployment]() lets you serve your Executor, scale it up with replicas, and allow users to send and receive requests.
 
 When you build a model or service in Jina, it's always in the form of an Executor. An Executor is a Python class that transforms and processes Documents, and can go way beyond image generation, for example, encoding text/images into vectors, OCR, extracting tables from PDFs, or lots more.
 
@@ -36,7 +42,7 @@ When you build a model or service in Jina, it's always in the form of an Executo
 
 In this example we need to install:
 
-- The Jina framework itself
+- The [Jina framework](https://docs.jina.ai/) itself
 - The dependencies of the specific model we want to serve and deploy
 
 ```shell
@@ -78,7 +84,7 @@ class TextToImage(Executor):
 from docarray import DocumentArray
 ```
 
-Documents and DocumentArrays (from the DocArray package) are Jina's native IO format.
+[Documents](https://docs.docarray.org/fundamentals/document/) and [DocumentArrays](https://docarray.jina.ai/fundamentals/documentarray/) (from the DocArray package) are Jina's native IO format.
 
 ```python
 from jina import Executor, requests
@@ -90,7 +96,7 @@ Jina's Executor class and requests decorator - we'll jump into these in the next
 import numpy as np
 ```
 
-In our case, NumPy is specific to this Executor only. We won't really cover it in this article, since we want to keep this as a general overview. (And there’s plenty of information about NumPy out there already).
+In our case, [NumPy](https://numpy.org/) is specific to this Executor only. We won't really cover it in this article, since we want to keep this as a general overview. (And there’s plenty of information about NumPy out there already).
 
 ### Executor class
 
@@ -106,7 +112,7 @@ class TextToImage(Executor):
         ).to("cuda")
 ```
 
-All Executors are created from Jina's Executor class. User-definable parameters (like `self.pipe`) are arguments defined in the __init__() method.
+All Executors are created from Jina's Executor class. User-definable parameters (like `self.pipe`) are {ref}`arguments <executor-constructor> defined in the `__init__()` method.
 
 ### Requests decorator
 
@@ -120,7 +126,7 @@ def generate_image(self, docs: DocumentArray, **kwargs):
         doc.tensor = np.array(images[i])
 ```
 
-Any Executor methods decorated with `@requests` can be called via an endpoint when the Executor is run or deployed. Since we're using a bare `@requests` (rather than say `@requests(on='/foo')`), the `generate_image()` method will be called as the default fallback handler for any endpoint.
+Any Executor methods decorated with `@requests` can be called via an {ref}`endpoint <exec-endpoint>` when the Executor is run or deployed. Since we're using a bare `@requests` (rather than say `@requests(on='/foo')`), the `generate_image()` method will be called as the default fallback handler for any endpoint.
 
 ## Deployment: Deploy the Executor
 
@@ -201,14 +207,14 @@ In a different terminal to your Deployment, run `python client.py` to generate a
 ```{admonition} Python vs YAML
 :class: info
 
-For the rest of this tutorial we'll stick to using YAML. This separates our code from our Deployment logic.
+For the rest of this tutorial we'll stick to using {ref}`YAML <yaml-spec>`. This separates our code from our Deployment logic.
 ```
 
 Jina comes with scalability features out of the box like replicas, shards and dynamic batching. This lets you easily increase your application's throughput.
 
-Let's edit our Deployment and scale it with replicas and dynamic batching to:
+Let's edit our Deployment and scale it with {ref}`replicas <replicate-executors>` and {ref}`dynamic batching <executor-dynamic-batching>` to:
 
-- Create two replicas, with a GPU assigned for each.
+- Create two replicas, with a {ref}`GPU <gpu-executor>` assigned for each.
 - Enable dynamic batching to process incoming parallel requests to the same model.
 
 ![](images/replicas.png)
