@@ -239,6 +239,7 @@ ac_table = {
         'cloud pause': ['--help'],
         'cloud resume': ['--help'],
         'cloud scale': ['--help', '--executor', '--replicas'],
+        'cloud recreate': ['--help'],
         'cloud survey': ['--help'],
         'cloud': [
             '--help',
@@ -257,6 +258,7 @@ ac_table = {
             'pause',
             'resume',
             'scale',
+            'recreate',
             'survey',
         ],
         'help': ['--help'],
