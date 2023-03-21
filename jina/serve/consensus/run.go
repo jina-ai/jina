@@ -393,7 +393,9 @@ func get_configuration(self *C.PyObject, args *C.PyObject) *C.PyObject {
 
         // this will create a raft object, this is not really needed and we should find a work around so
         // we can get the configuration wihtout initializing anything else
-        conf, err := raft.GetConfiguration(config, nil, logs_db, stable_db, file_snapshot, tm.Transport())
+        executorFSM := jinaraft.DummyExecutorFSM()
+
+        conf, err := jinaraft.JinaGetConfiguration(config, executorFSM, logs_db, stable_db, file_snapshot, tm.Transport())
         if err != nil {
             C.Py_IncRef(C.Py_None);
             return C.Py_None;
