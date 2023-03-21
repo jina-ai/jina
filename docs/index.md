@@ -118,6 +118,7 @@ concepts/preliminaries/index
 tutorials/before-you-start
 tutorials/deploy-model
 tutorials/deploy-pipeline
+tutorials/gpu-executor
 ```
 
 ```{toctree}
