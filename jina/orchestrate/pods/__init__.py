@@ -127,21 +127,29 @@ def run_raft(
             new_d[new_key] = value
         return new_d
 
-    address = f'{args.host}:{args.port}'
     raft_id = str(args.replica_id)
     shard_id = args.shard_id if args.shards > 1 else -1
+
     raft_dir = _get_workspace_from_name_and_shards(
         workspace=args.workspace, name='raft', shard_id=shard_id
     )
-    raft_bootstrap = args.raft_bootstrap
+
+    address = f'{args.host}:{args.port}'
     executor_target = f'{args.host}:{args.port + 1}'
+
+    # if the Executor was already persisted, retrieve its port and host configuration
+    persisted_address = jraft.get_configuration(raft_id, raft_dir)
+    if persisted_address:
+        address = persisted_address
+        executor_host, port = persisted_address.split(':')
+        executor_target = f'{executor_host}:{int(port) + 1}'
+
     raft_configuration = pascal_case_dict(args.raft_configuration or {})
     is_ready.wait()
     jraft.run(
         address,
         raft_id,
         raft_dir,
-        raft_bootstrap,
         executor_target,
         **raft_configuration,
     )

@@ -46,6 +46,19 @@ func NewExecutorFSM(target string) *executorFSM {
     }
 }
 
+
+func DummyExecutorFSM() *executorFSM {
+    executor := &executor{
+                target:             "0.0.0.0:54321",
+                connection_options: defaultExecutorDialOptions(),
+            }
+
+    return &executorFSM{
+        executor: executor,
+        write_endpoints: []string{},
+    }
+}
+
 func (executor *executorFSM) isSnapshotInProgress() bool {
     if executor.snapshot != nil &&
         *executor.snapshot.status == pb.SnapshotStatusProto_RUNNING {

@@ -2,8 +2,9 @@ package main
 
 // #include <Python.h>
 // #include <stdbool.h>
-// int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, bool *raftBootstrap, char **executorTarget, int *HeartbeatTimeout, int *ElectionTimeout, int *CommitTimeout, int *MaxAppendEntries, bool *BatchApplyCh, bool *ShutdownOnRemove, uint64_t *TrailingLogs, int *snapshotInterval, uint64_t *SnapshotThreshold, int *LeaderLeaseTimeout, char **LogLevel, bool *NoSnapshotRestoreOnStart);
+// int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, char **executorTarget, int *HeartbeatTimeout, int *ElectionTimeout, int *CommitTimeout, int *MaxAppendEntries, bool *BatchApplyCh, bool *ShutdownOnRemove, uint64_t *TrailingLogs, int *snapshotInterval, uint64_t *SnapshotThreshold, int *LeaderLeaseTimeout, char **LogLevel, bool *NoSnapshotRestoreOnStart);
 // int PyArg_ParseTuple_add_voter(PyObject * args, char **a, char **b, char **c);
+// int PyArg_ParseTuple_get_configuration(PyObject * args, char **a, char **b);
 // void raise_exception(char *msg);
 import "C"
 
@@ -19,6 +20,7 @@ import (
     "syscall"
     "path/filepath"
     "time"
+    "unsafe"
 
     // "github.com/Jille/raft-grpc-leader-rpc/leaderhealth"
     transport "github.com/Jille/raft-grpc-transport"
@@ -37,7 +39,6 @@ func NewRaft(ctx context.Context,
             myID string,
             myAddress string,
             raftDir string,
-            raftBootstrap bool,
             HeartbeatTimeout int,
             ElectionTimeout int,
             CommitTimeout int,
@@ -68,6 +69,10 @@ func NewRaft(ctx context.Context,
     config.NoSnapshotRestoreOnStart = NoSnapshotRestoreOnStart
 
     baseDir := filepath.Join(raftDir, myID)
+    err := os.MkdirAll(baseDir, os.ModePerm)
+    if err != nil {
+        fmt.Printf("Error creating baseDir (%v) folder: %v\n", baseDir, err)
+    }
 
     logs_db, err := boltdb.NewBoltStore(filepath.Join(baseDir, "logs.dat"))
     if err != nil {
@@ -92,20 +97,20 @@ func NewRaft(ctx context.Context,
         return nil, nil, fmt.Errorf("raft.NewRaft: %v", err)
     }
 
-    if raftBootstrap {
-        cfg := raft.Configuration{
-            Servers: []raft.Server{
-                {
-                    Suffrage: raft.Voter,
-                    ID:       raft.ServerID(myID),
-                    Address:  raft.ServerAddress(myAddress),
-                },
+    cfg := raft.Configuration{
+        Servers: []raft.Server{
+            {
+                Suffrage: raft.Voter,
+                ID:       raft.ServerID(myID),
+                Address:  raft.ServerAddress(myAddress),
             },
-        }
-        f := r.BootstrapCluster(cfg)
-        if err := f.Error(); err != nil {
-            return nil, nil, fmt.Errorf("raft.Raft.BootstrapCluster: %v", err)
-        }
+        },
+    }
+    f := r.BootstrapCluster(cfg)
+    // raft bootstrap error can be ignored safely https://github.com/hashicorp/raft/blob/44124c28758b8cfb675e90c75a204a08a84f8d4f/api.go#L220
+    if err := f.Error(); err != nil {
+        log.Printf("raft.Raft.BootstrapCluster: %v, raft cluster already bootstrapped", err)
+        return r, tm, nil
     }
 
     return r, tm, nil
@@ -114,7 +119,6 @@ func NewRaft(ctx context.Context,
 func Run(myAddr string,
          raftId string,
          raftDir string,
-         raftBootstrap bool,
          executorTarget string,
          HeartbeatTimeout int,
          ElectionTimeout int,
@@ -129,7 +133,7 @@ func Run(myAddr string,
          LogLevel string,
          NoSnapshotRestoreOnStart bool) {
 
-    log.Printf("Calling Run %s, %s, %s, %p, %s", myAddr, raftId, raftDir, raftBootstrap, executorTarget)
+    log.Printf("Calling Run %s, %s, %s, %s", myAddr, raftId, raftDir, executorTarget)
     if raftId == "" {
         log.Fatalf("flag --raft_id is required")
     }
@@ -150,7 +154,6 @@ func Run(myAddr string,
                         raftId,
                         myAddr,
                         raftDir,
-                        raftBootstrap,
                         HeartbeatTimeout,
                         ElectionTimeout,
                         CommitTimeout,
@@ -210,13 +213,21 @@ func Run(myAddr string,
     }
 }
 
+func findServerByID(servers []raft.Server, id raft.ServerID) *raft.Server {
+	for _, server := range servers {
+		if server.ID == id {
+			return &server
+		}
+	}
+	return nil
+}
+
 func main() {
     raftDefaultConfig := raft.DefaultConfig()
 
     myAddr                   := flag.String("address", "localhost:50051", "TCP host+port for this node")
     raftId                   := flag.String("raft_id", "", "Node id used by Raft")
     raftDir                  := flag.String("raft_data_dir", "data/", "Raft data dir")
-    raftBootstrap            := flag.Bool("raft_bootstrap", false, "Whether to bootstrap the Raft cluster")
     executorTarget           := flag.String("executor_target", "localhost:54321", "underlying executor host+port")
     HeartbeatTimeout         := flag.Int("heartbeat_timeout", int(raftDefaultConfig.HeartbeatTimeout / time.Millisecond), "HeartbeatTimeout for the RAFT node")
     ElectionTimeout          := flag.Int("election_timeout", int(raftDefaultConfig.ElectionTimeout / time.Millisecond), "ElectionTimeout for the RAFT node")
@@ -234,7 +245,6 @@ func main() {
     Run(*myAddr,
         *raftId,
         *raftDir,
-        *raftBootstrap,
         *executorTarget,
         *HeartbeatTimeout,
         *ElectionTimeout,
@@ -256,7 +266,6 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
     var myAddr *C.char
     var raftId *C.char
     var raftDir *C.char
-    var raftBootstrap C.bool
     var executorTarget *C.char
     var HeartbeatTimeout C.int
     var ElectionTimeout C.int
@@ -290,7 +299,6 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
                              &myAddr,
                              &raftId,
                              &raftDir,
-                             &raftBootstrap,
                              &executorTarget,
                              &HeartbeatTimeout,
                              &ElectionTimeout,
@@ -307,7 +315,6 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
         Run(C.GoString(myAddr),
             C.GoString(raftId),
             C.GoString(raftDir),
-            raftBootstrap != false,
             C.GoString(executorTarget),
             int(HeartbeatTimeout),
             int(ElectionTimeout),
@@ -341,4 +348,75 @@ func add_voter(self *C.PyObject, args *C.PyObject) *C.PyObject {
     }
     C.Py_IncRef(C.Py_None);
     return C.Py_None;
+}
+
+//export get_configuration
+func get_configuration(self *C.PyObject, args *C.PyObject) *C.PyObject {
+
+    var raftId *C.char
+    var raftDir *C.char
+
+    if C.PyArg_ParseTuple_get_configuration(args, &raftId, &raftDir) != 0 {
+        config := raft.DefaultConfig()
+        config.LocalID = raft.ServerID(C.GoString(raftId))
+
+        baseDir := filepath.Join(C.GoString(raftDir), C.GoString(raftId))
+
+        logs_db, err := boltdb.NewBoltStore(filepath.Join(baseDir, "logs.dat"))
+        if logs_db != nil {
+            defer logs_db.Close()
+        }
+
+        if err != nil {
+            C.Py_IncRef(C.Py_None);
+            return C.Py_None;
+        }
+
+        stable_db, err := boltdb.NewBoltStore(filepath.Join(baseDir, "stable.dat"))
+        if stable_db != nil {
+            defer stable_db.Close()
+        }
+
+        if err != nil {
+            C.Py_IncRef(C.Py_None);
+            return C.Py_None;
+        }
+
+        file_snapshot, err := raft.NewFileSnapshotStore(baseDir, 3, os.Stderr)
+        if err != nil {
+            C.Py_IncRef(C.Py_None);
+            return C.Py_None;
+        }
+
+        // dummy transport
+        tm := transport.New(raft.ServerAddress("0.0.0.0:54321"), []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())})
+
+        // this will create a raft object, this is not really needed and we should find a work around so
+        // we can get the configuration wihtout initializing anything else
+        executorFSM := jinaraft.DummyExecutorFSM()
+
+        conf, err := jinaraft.JinaGetConfiguration(config, executorFSM, logs_db, stable_db, file_snapshot, tm.Transport())
+        if err != nil {
+            C.Py_IncRef(C.Py_None);
+            return C.Py_None;
+        } else {
+            fmt.Printf("configuration: %v\n", conf.Servers)
+        }
+
+        if len(conf.Servers) == 0 {
+            C.Py_IncRef(C.Py_None);
+            return C.Py_None;
+        }
+
+
+        server := findServerByID(conf.Servers, raft.ServerID(C.GoString(raftId)))
+        cstr := C.CString(string(server.Address))
+        defer C.free(unsafe.Pointer(cstr))
+        pyStr := C.PyUnicode_FromString(cstr)
+        return pyStr
+
+    }
+//     C.Py_IncRef(C.Py_None);
+    C.raise_exception(C.CString("Error from get_configuration, wrong parameters passed"))
+    return nil
 }

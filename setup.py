@@ -1,9 +1,9 @@
 import os
-import sys
 import subprocess
+import sys
 from os import path
 
-from setuptools import find_packages, setup, Extension
+from setuptools import Extension, find_packages, setup
 from setuptools.command.develop import develop
 from setuptools.command.egg_info import egg_info
 from setuptools.command.install import install
@@ -172,11 +172,17 @@ except Exception:
     pass
 
 if ret_code == 0:
-    golang_installed = False
     extra_golang_kw = {
         'build_golang': {'root': 'jraft', 'strip': False},
-        'ext_modules': [Extension('jraft', ['jina/serve/consensus/run.go'], py_limited_api=True, define_macros=[('Py_LIMITED_API', None)])],
-        'setup_requires': ['setuptools-golang']
+        'ext_modules': [
+            Extension(
+                'jraft',
+                ['jina/serve/consensus/run.go'],
+                py_limited_api=True,
+                define_macros=[('Py_LIMITED_API', None)],
+            )
+        ],
+        'setup_requires': ['setuptools-golang'],
     }
 
 setup(
@@ -237,5 +243,5 @@ setup(
     },
     keywords='jina cloud-native cross-modal multimodal neural-search query search index elastic neural-network encoding '
     'embedding serving docker container image video audio deep-learning mlops',
-    **extra_golang_kw
+    **extra_golang_kw,
 )
