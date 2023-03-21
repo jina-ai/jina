@@ -103,7 +103,9 @@ for key in list(reqs.keys()):
 ######################################
 # Get latest version and SHA from pypi
 ######################################
-
+#We can also use GitHub for the same purpose
+#git_rev: v0.6.7
+#git_url: https://github.com/pallets/click.git
 
 page = requests.get('https://pypi.org/project/jina/')
 soup = BeautifulSoup(page.text, 'html.parser')
