@@ -265,11 +265,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             endpoint_models[endpoint] = {
                 'input': {
                     'name': request_schema.__name__,
-                    'schema': request_schema.schema(),
+                    'model': request_schema,
                 },
                 'output': {
                     'name': response_schema.__name__,
-                    'schema': response_schema.schema(),
+                    'model': response_schema,
                 },
             }
         return endpoint_models

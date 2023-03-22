@@ -151,9 +151,13 @@ class WorkerRequestHandler:
         from jina.serve.runtimes.worker.http_fastapi_app import get_fastapi_app  # For Gateway, it works as for head
         request_models_map = self._executor._get_endpoint_models_dict()
 
+        def call_handle(request):
+            return self.handle([request], None)
+
         return get_fastapi_app(
             request_models_map=request_models_map,
-            **kwargs
+            caller=call_handle,
+                   ** kwargs
         )
 
     async def _hot_reload(self):

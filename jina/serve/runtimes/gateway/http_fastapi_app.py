@@ -377,7 +377,7 @@ def get_fastapi_app(
         :param request_iterator: request iterator, with length of 1
         :return: the first result from the request iterator
         """
-        from jina._docarray import DocumentArray, docarray_v2
+        from jina._docarray import docarray_v2
 
         async for result in streamer.rpc_stream(request_iterator=request_iterator):
             if not docarray_v2:

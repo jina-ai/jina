@@ -1,39 +1,53 @@
-from typing import Dict
+from typing import Dict, List, Optional, Callable
 
 from jina.importer import ImportExtensions
+from jina.types.request.data import DataRequest
 
 
 def get_fastapi_app(
         request_models_map: Dict,
+        caller: Callable,
         **kwargs
 ):
     with ImportExtensions(required=True):
-        from fastapi import FastAPI, APIRouter, Response
+        from fastapi import FastAPI, Response
         import pydantic
-
-        from jina._docarray import DocumentArray
 
     app = FastAPI()
 
-    def create_router(endpoint_path, input_model, output_model):
-        router = APIRouter()
-
-        @router.post(f'/{endpoint_path.strip("/")}', response_model=output_model, summary=f'Endpoint {endpoint_path}')
+    def add_route(endpoint_path, input_model, output_model):
+        @app.api_route(
+            path=f'/{endpoint_path.strip("/")}',
+            methods=['POST'],
+            summary=f'Endpoint {endpoint_path}',
+            response_model=output_model
+        )
         async def post(body: input_model, response: Response):
-            return DocumentArray.empty(2).to_dict()
-
-        return router
-
+            print(f' RECEIVE {body}')
+            req = DataRequest()
+            req.data.docs = body.docs
+            req.parameters = body.parameters
+            resp = await caller(req)
+            return output_model(docs=resp.docs, parameters=None)
+        
     for endpoint, input_output_map in request_models_map.items():
         if endpoint != '_jina_dry_run_':
-            input_model_name = input_output_map['input']['name']
-            input_model_schema = input_output_map['input']['schema']
-            request_model = pydantic.create_model(f'{endpoint}_request_{input_model_name}', **input_model_schema)
-            output_model_name = input_output_map['input']['name']
-            output_model_schema = input_output_map['input']['schema']
-            response_model = pydantic.create_model(f'{endpoint}_response_{output_model_name}', **output_model_schema)
-            router = create_router(endpoint, input_model=request_model, output_model=response_model)
-            app.include_router(router)
+            input_doc_model = input_output_map['input']['model']
+            output_doc_model = input_output_map['output']['model']
+
+            endpoint_input_model = pydantic.create_model(
+                f'{endpoint.strip("/")}_input_model',
+                docs=(List[input_doc_model], []),
+                parameters=(Optional[Dict], None)
+            )
+
+            endpoint_output_model = pydantic.create_model(
+                f'{endpoint.strip("/")}_output_model',
+                docs=(List[output_doc_model], []),
+                parameters=(Optional[Dict], None)
+            )
+
+            add_route(endpoint, input_model=endpoint_input_model, output_model=endpoint_output_model)
 
     from jina.serve.runtimes.gateway.models import JinaHealthModel
     @app.get(
