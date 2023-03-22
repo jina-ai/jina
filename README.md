@@ -28,7 +28,7 @@
 Jina is an MLOps framework to build multimodal AI **services** and **pipelines** then **serve**, **scale** and **deploy** them to a production-ready environment like Kubernetes or Jina AI Cloud. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer.
 
 <p align="center">
-<strong><a href="#build-ai--ml-services">Build and deploy a gRPC microservice</a> • <a href="#build-a-pipeline">Build and deploy a pipeline</a></strong>
+<strong><a href="#build-ai-services">Build and deploy a gRPC microservice</a> • <a href="#build-a-pipeline">Build and deploy a pipeline</a></strong>
 </p>
 
 Applications built with Jina enjoy the following features out of the box:
@@ -87,7 +87,7 @@ Jina has three fundamental concepts:
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/streamline-banner.png?raw=true" alt="Jina: Streamline AI & ML Product Delivery" width="100%"></a>
 </p>
 
-### Build AI & ML Services
+### Build AI Services
 <!-- start build-ai-services -->
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jina/blob/master/.github/getting-started/notebook.ipynb)
@@ -98,7 +98,7 @@ Let's build a fast, reliable and scalable gRPC-based AI service. In Jina we call
 > A Deployment serves just one Executor. To combine multiple Executors into a pipeline and serve that, use a [Flow](#build-a-pipeline).
 
 > **Note**
-> Run the [code in Colab](https://colab.research.google.com/assets/colab-badge.svg) to install all dependencies.
+> Run the [code in Colab](https://colab.research.google.com/github/jina-ai/jina/blob/master/.github/getting-started/notebook.ipynb#scrollTo=0l-lkmz4H-jW) to install all dependencies.
 
 Let's implement the service's logic:
 

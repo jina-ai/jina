@@ -105,7 +105,7 @@ class WebSocketBaseClient(BaseClient):
         :yields: generator over results
         """
         with ImportExtensions(required=True):
-            import aiohttp
+            pass
 
         self.inputs = inputs
         request_iterator = self._get_requests(**kwargs)
@@ -171,7 +171,7 @@ class WebSocketBaseClient(BaseClient):
                 """
                 For each request in the iterator, we send the `Message` using `iolet.send_message()`.
                 For websocket requests from client, for each request in the iterator, we send the request in `bytes`
-                using using `iolet.send_message()`.
+                using `iolet.send_message()`.
                 Then add {<request-id>: <an-empty-future>} to the request buffer.
                 This empty future is used to track the `result` of this request during `receive`.
                 :param request: current request in the iterator
@@ -201,7 +201,8 @@ class WebSocketBaseClient(BaseClient):
                 raise RuntimeError('receive task not running, can not send messages')
             try:
                 async for response in streamer.stream(
-                    request_iterator=request_iterator, results_in_order=results_in_order
+                    request_iterator=request_iterator,
+                    results_in_order=results_in_order,
                 ):
                     callback_exec(
                         response=response,

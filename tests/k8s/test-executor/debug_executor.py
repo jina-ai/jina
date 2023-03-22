@@ -1,7 +1,7 @@
 import os
-
-from jina import Executor, requests, DocumentArray
 import socket
+
+from jina import DocumentArray, Executor, requests
 
 
 class TestExecutor(Executor):

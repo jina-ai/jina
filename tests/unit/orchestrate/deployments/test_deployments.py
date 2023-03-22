@@ -89,6 +89,7 @@ def test_wrong_hostname(runtime_cls):
     with pytest.raises(RuntimeFailToStart):
         with Deployment(
             get_deployment_args_with_host('inexisting.hostname.local', runtime_cls),
+            include_gateway=False,
         ) as pod:
             pass
 
@@ -131,11 +132,11 @@ def test_uses_before_after(pod_args, shards):
         if shards == 2:
             assert (
                 pod.head_args.uses_before_address
-                == f'{pod.uses_before_args.host}:{pod.uses_before_args.port}'
+                == f'{pod.uses_before_args.host}:{pod.uses_before_args.port[0]}'
             )
             assert (
                 pod.head_args.uses_after_address
-                == f'{pod.uses_after_args.host}:{pod.uses_after_args.port}'
+                == f'{pod.uses_after_args.host}:{pod.uses_after_args.port[0]}'
             )
         else:
             assert pod.head_args is None
@@ -211,7 +212,7 @@ def test_pod_in_flow_activates_shards_replicas():
         for _ in range(6):
             response = send_request_sync(
                 _create_test_data_message(),
-                f'{pod.head_args.host}:{pod.head_args.port}',
+                f'{pod.head_args.host}:{pod.head_args.port[0]}',
             )
             response_texts.update(response.response.docs.texts)
         print(response_texts)
@@ -273,7 +274,7 @@ async def _send_requests(pod):
     for _ in range(3):
         response = send_request_sync(
             _create_test_data_message(),
-            f'{pod.head_args.host}:{pod.head_args.port}',
+            f'{pod.head_args.host}:{pod.head_args.port[0]}',
         )
         response_texts.update(response.response.docs.texts)
     return response_texts
@@ -326,7 +327,7 @@ def test_pod_activates_shards():
         # replicas are used in a round robin fashion, so sending 3 requests should hit each one time
         response = send_request_sync(
             _create_test_data_message(),
-            f'{pod.head_args.host}:{pod.head_args.port}',
+            f'{pod.head_args.host}:{pod.head_args.port[0]}',
         )
         response_texts.update(response.response.docs.texts)
         assert 4 == len(response.response.docs.texts)
@@ -438,14 +439,14 @@ def test_dynamic_polling_with_config(polling):
     with pod:
         response = send_request_sync(
             _create_test_data_message(endpoint='/all'),
-            f'{pod.head_args.host}:{pod.head_args.port}',
+            f'{pod.head_args.host}:{pod.head_args.port[0]}',
             endpoint='/all',
         )
         assert len(response.docs) == 1 + 2  # 1 source doc + 2 docs added by each shard
 
         response = send_request_sync(
             _create_test_data_message(endpoint='/any'),
-            f'{pod.head_args.host}:{pod.head_args.port}',
+            f'{pod.head_args.host}:{pod.head_args.port[0]}',
             endpoint='/any',
         )
         assert (
@@ -454,7 +455,7 @@ def test_dynamic_polling_with_config(polling):
 
         response = send_request_sync(
             _create_test_data_message(endpoint='/no_polling'),
-            f'{pod.head_args.host}:{pod.head_args.port}',
+            f'{pod.head_args.host}:{pod.head_args.port[0]}',
             endpoint='/no_polling',
         )
         if polling == 'any':
@@ -499,14 +500,14 @@ def test_dynamic_polling_default_config(polling):
     with pod:
         response = send_request_sync(
             _create_test_data_message(endpoint='/search'),
-            f'{pod.head_args.host}:{pod.head_args.port}',
+            f'{pod.head_args.host}:{pod.head_args.port[0]}',
             endpoint='/search',
         )
         assert len(response.docs) == 1 + 2
 
         response = send_request_sync(
             _create_test_data_message(endpoint='/index'),
-            f'{pod.head_args.host}:{pod.head_args.port}',
+            f'{pod.head_args.host}:{pod.head_args.port[0]}',
             endpoint='/index',
         )
         assert len(response.docs) == 1 + 1
@@ -530,7 +531,7 @@ def test_dynamic_polling_overwrite_default_config(polling):
     with pod:
         response = send_request_sync(
             _create_test_data_message(endpoint='/search'),
-            f'{pod.head_args.host}:{pod.head_args.port}',
+            f'{pod.head_args.host}:{pod.head_args.port[0]}',
             endpoint='/search',
         )
         assert (
@@ -539,7 +540,7 @@ def test_dynamic_polling_overwrite_default_config(polling):
 
         response = send_request_sync(
             _create_test_data_message(endpoint='/index'),
-            f'{pod.head_args.host}:{pod.head_args.port}',
+            f'{pod.head_args.host}:{pod.head_args.port[0]}',
             endpoint='/index',
         )
         assert (

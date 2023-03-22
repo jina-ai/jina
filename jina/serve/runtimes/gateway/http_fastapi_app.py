@@ -11,7 +11,7 @@ from jina.logging.logger import JinaLogger
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry import trace
 
-    from jina.serve.streamer import GatewayStreamer
+    from jina.serve.runtimes.gateway.streamer import GatewayStreamer
 
 
 def get_fastapi_app(
@@ -48,7 +48,7 @@ def get_fastapi_app(
     with ImportExtensions(required=True):
         from fastapi import FastAPI, Response, status
         from fastapi.middleware.cors import CORSMiddleware
-        from jina.serve.runtimes.gateway.http.models import (
+        from jina.serve.runtimes.gateway.models import (
             JinaEndpointRequestModel,
             JinaRequestModel,
             JinaResponseModel,
@@ -95,7 +95,7 @@ def get_fastapi_app(
         from jina._docarray import DocumentArray
         from jina.proto import jina_pb2
         from jina.serve.executors import __dry_run_endpoint__
-        from jina.serve.runtimes.gateway.http.models import (
+        from jina.serve.runtimes.gateway.models import (
             PROTO_TO_PYDANTIC_MODELS,
             JinaInfoModel,
         )
@@ -378,7 +378,15 @@ def get_fastapi_app(
         :param request_iterator: request iterator, with length of 1
         :return: the first result from the request iterator
         """
+        from jina._docarray import DocumentArray, docarray_v2
+
         async for result in streamer.rpc_stream(request_iterator=request_iterator):
+            if not docarray_v2:
+                for i in range(len(result.data._content.docs.docs)):
+                    if result.data._content.docs.docs[i].HasField('embedding'):
+                        result.data._content.docs.docs[i].embedding.cls_name = 'numpy'
+                    if result.data._content.docs.docs[i].HasField('tensor'):
+                        result.data._content.docs.docs[i].tensor.cls_name = 'numpy'
             result_dict = result.to_dict()
             return result_dict
 

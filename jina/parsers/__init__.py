@@ -1,8 +1,10 @@
 from jina.helper import GATEWAY_NAME
 from jina.parsers.helper import _SHOW_ALL_ARGS
 from jina.parsers.logging import mixin_suppress_root_logging_parser
-from jina.parsers.orchestrate.runtimes.container import \
-    mixin_container_runtime_parser
+from jina.parsers.orchestrate.runtimes.container import mixin_container_runtime_parser
+from jina.parsers.orchestrate.runtimes.grpc_channel import (
+    mixin_grpc_channel_options_parser,
+)
 from jina.parsers.orchestrate.runtimes.head import mixin_head_parser
 
 
@@ -142,6 +144,7 @@ def set_client_cli_parser(parser=None):
     mixin_client_gateway_parser(parser)
     mixin_client_features_parser(parser)
     mixin_client_protocol_parser(parser)
+    mixin_grpc_channel_options_parser(parser)
     mixin_prefetch_parser(parser)
     mixin_suppress_root_logging_parser(parser)
 
