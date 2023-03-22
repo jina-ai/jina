@@ -1,5 +1,5 @@
-(jcloud-yaml-spec)=
-# {octicon}`file-code` YAML specification
+(jcloud-configurations)=
+# {octicon}`file-code` Configurations
 
 JCloud extends Jina's {ref}`Flow YAML specification<flow-yaml-spec>` by introducing the special field `jcloud`. This lets you define resources and scaling policies for each Executor and gateway.
 

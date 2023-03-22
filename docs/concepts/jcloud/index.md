@@ -5,7 +5,7 @@
 ```{toctree}
 :hidden:
 
-yaml-spec
+configurations
 ```
 
 ```{figure} https://docs.jina.ai/_images/jcloud-banner.png
@@ -85,12 +85,12 @@ jina flow --uses flow.yml
 #### Project folder
 
 ````{tip}
-The best practice of creating a JCloud project is to use:
+The best practice of creating a Jina AI Cloud project is to use:
 
 ```bash
 jc new
 ```
-This ensures the correct project structure accepted by JCloud.
+This ensures the correct project structure accepted by Jina AI Cloud.
 
 ````
 
@@ -309,9 +309,13 @@ jc scale good-martin-ca6bfdef84 --executor executor0 --replicas 2
 :width: 70%
 ```
 
+## Configurations
+
+Please refer to {ref}`Configurations <jcloud-configurations>` for configuring the Flow on Jina AI Cloud.
+
 ## Restrictions
 
-JCloud scales according to your needs. You can demand different resources (GPU/RAM/CPU/storage/instance-capacity) based on the needs of your Flows and Executors. If you have specific resource requirements, please contact us [on Slack](https://jina.ai/slack) or raise a [GitHub issue](https://github.com/jina-ai/jcloud/issues/new/choose).
+Jina AI Cloud scales according to your needs. You can demand different resources (GPU/RAM/CPU/storage/instance-capacity) based on the needs of your Flows and Executors. If you have specific resource requirements, please contact us [on Slack](https://jina.ai/slack) or raise a [GitHub issue](https://github.com/jina-ai/jcloud/issues/new/choose).
 
 
 ```{admonition} Restrictions
