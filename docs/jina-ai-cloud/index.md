@@ -20,7 +20,7 @@ Executor Hub is an Executor marketplace that allows you to share, explore and te
 :link: ../concepts/jcloud/index
 :link-type: doc
 
-JCloud is a free CPU/GPU hosting platform for Jina projects.
+JCloud is a CPU/GPU hosting platform for Jina projects.
 ::::
 
 
@@ -36,15 +36,6 @@ Jina AI Cloud is the **portal** and **single entrypoint** to manage **all** your
 - [Apps](https://now.jina.ai)
 
 _Manage_ in this context means: CRUD, access control, personal access tokens, and subscription.
-
-
-```{admonition} Under Development
-:class: danger
-
-Jina AI Cloud is under a heavy developement. Features and user experiences may change over time. 
-
-We are actively working on the GUI for Jina AI Cloud. You may not see the full features right now. 
-```
 
 ```{toctree}
 :hidden:
