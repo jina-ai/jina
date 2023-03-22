@@ -329,6 +329,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         if args is None:
             args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
         self.args = args
+        self._gateway_load_balancer = False
+        if self._include_gateway and self.args.protocol[0] == ProtocolType.HTTP:
+            self._gateway_load_balancer = True
         log_config = kwargs.get('log_config')
         if log_config:
             self.args.log_config = log_config
@@ -375,6 +378,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             args = ArgNamespace.kwargs2namespace(
                 self._gateway_kwargs, gateway_parser, True
             )
+            args.protocol = self.args.protocol
 
             args.deployments_addresses = json.dumps(
                 {'executor': self._get_connection_list()}
@@ -930,7 +934,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         if self._include_gateway:
             _args = self.pod_args['gateway']
             _args.noblock_on_start = True
-            self.gateway_pod = PodFactory.build_pod(_args)
+            self.gateway_pod = PodFactory.build_pod(_args, gateway_load_balancer=self._gateway_load_balancer)
             self.enter_context(self.gateway_pod)
         for shard_id in self.pod_args['pods']:
             self.shards[shard_id] = self._ReplicaSet(

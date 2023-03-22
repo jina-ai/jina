@@ -88,7 +88,8 @@ def run(
 
         runtime = AsyncNewLoopRuntime(
             args=args,
-            req_handler_cls=req_handler_cls
+            req_handler_cls=req_handler_cls,
+            gateway_load_balancer=getattr(args, 'gateway_load_balancer', False)
         )
     except Exception as ex:
         logger.error(

@@ -248,7 +248,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._lock = contextlib.AsyncExitStack()
 
     def _get_endpoint_models_dict(self):
-        self.logger.debug('got an endpoint discovery request')
         from jina._docarray import docarray_v2
 
         if not docarray_v2:

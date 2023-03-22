@@ -140,28 +140,24 @@ class HeaderRequestHandler(MonitoringRequestMixin):
             )
         )
 
-    def _http_fastapi_default_app(self,
-                                  **kwargs):
-        from jina.serve.runtimes.worker.http_fastapi_app import get_fastapi_app  # For Gateway, it works as for head
-        import time
-        worker_response = None
-        request_models_map = {}
-        from google.protobuf import json_format
+    async def load_balance(self, request):
+        # TODO: use `self._request_handler.load_balance` so that this server can be used with head and gateway request handlers
+        import aiohttp
+        from aiohttp import web
+        import itertools
+        servers = ['0.0.0.0:8081', '0.0.0.0:8082']
+        # handle TLS also
+        self.servers = itertools.cycle(servers)
+        target_server = next(self.servers)
+        target_url = f'http://{target_server}{request.path_qs}'
 
-        while worker_response is None:
-            # the endpoint discovery will only work when some Executor is ready to respond, it may take some time
-            try:
-                worker_response, _ = await self.connection_pool.send_discover_endpoint(
-                    deployment=self._deployment_name, head=False
-                )
-                request_models_map = json_format.MessageToDict(worker_response.endpoints_models)
-            except:
-                time.sleep(0.1)
-
-        return get_fastapi_app(
-            request_models_map=request_models_map,
-            **kwargs
-        )
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(target_url) as response:
+                    content = await response.read()
+                    return web.Response(body=content, status=response.status, content_type=response.content_type)
+        except aiohttp.ClientError as e:
+            return web.Response(text=f'Error: {str(e)}', status=500)
 
     def _default_polling_dict(self, default_polling):
         return defaultdict(
@@ -456,7 +452,6 @@ class HeaderRequestHandler(MonitoringRequestMixin):
             worker_response, _ = await self.connection_pool.send_discover_endpoint(
                 deployment=self._deployment_name, head=False
             )
-            response.endpoints_models = worker_response.endpoints_models
             response.endpoints.extend(worker_response.endpoints)
         except InternalNetworkError as err:  # can't connect, Flow broken, interrupt the streaming through gRPC error mechanism
             return self._handle_internalnetworkerror(

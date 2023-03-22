@@ -157,7 +157,7 @@ class WorkerRequestHandler:
         return get_fastapi_app(
             request_models_map=request_models_map,
             caller=call_handle,
-                   ** kwargs
+            **kwargs
         )
 
     async def _hot_reload(self):
@@ -755,8 +755,6 @@ class WorkerRequestHandler:
         endpoints_proto.endpoints.extend(
             list(self._executor.requests.keys())
         )
-        endpoint_models = self._executor._get_endpoint_models_dict()
-        json_format.ParseDict(endpoint_models, endpoints_proto.endpoints_models)
 
         return endpoints_proto
 

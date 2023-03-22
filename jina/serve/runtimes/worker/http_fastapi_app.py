@@ -2,6 +2,7 @@ from typing import Dict, List, Optional, Callable
 
 from jina.importer import ImportExtensions
 from jina.types.request.data import DataRequest
+from jina import DocumentArray
 
 
 def get_fastapi_app(
@@ -23,13 +24,13 @@ def get_fastapi_app(
             response_model=output_model
         )
         async def post(body: input_model, response: Response):
-            print(f' RECEIVE {body}')
             req = DataRequest()
-            req.data.docs = body.docs
+            req.data.docs = DocumentArray(body.docs)
             req.parameters = body.parameters
+            req.header.exec_endpoint = endpoint_path
             resp = await caller(req)
-            return output_model(docs=resp.docs, parameters=None)
-        
+            return output_model(docs=resp.docs.to_dict(), parameters=resp.parameters)
+
     for endpoint, input_output_map in request_models_map.items():
         if endpoint != '_jina_dry_run_':
             input_doc_model = input_output_map['input']['model']

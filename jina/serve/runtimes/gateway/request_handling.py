@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, AsyncIterator
 import threading
 import asyncio
-
+import itertools
 from jina.helper import get_full_version
 from jina.proto import jina_pb2
 from jina.types.request.data import DataRequest
@@ -26,6 +26,7 @@ class GatewayRequestHandler:
             meter=None,
             aio_tracing_client_interceptors=None,
             tracing_client_interceptor=None,
+            works_as_load_balancer: bool = False,
             **kwargs,
     ):
         import json
@@ -42,52 +43,64 @@ class GatewayRequestHandler:
         deployments_metadata = json.loads(self.runtime_args.deployments_metadata)
         deployments_no_reduce = json.loads(self.runtime_args.deployments_no_reduce)
 
-        self.streamer = GatewayStreamer(
-            graph_representation=graph_description,
-            executor_addresses=deployments_addresses,
-            graph_conditions=graph_conditions,
-            deployments_metadata=deployments_metadata,
-            deployments_no_reduce=deployments_no_reduce,
-            timeout_send=self.runtime_args.timeout_send,
-            retries=self.runtime_args.retries,
-            compression=self.runtime_args.compression,
-            runtime_name=self.runtime_args.runtime_name,
-            prefetch=self.runtime_args.prefetch,
-            logger=self.logger,
-            metrics_registry=metrics_registry,
-            meter=meter,
-            aio_tracing_client_interceptors=aio_tracing_client_interceptors,
-            tracing_client_interceptor=tracing_client_interceptor,
-        )
-
-        GatewayStreamer._set_env_streamer_args(
-            graph_representation=graph_description,
-            executor_addresses=deployments_addresses,
-            graph_conditions=graph_conditions,
-            deployments_metadata=deployments_metadata,
-            deployments_no_reduce=deployments_no_reduce,
-            timeout_send=self.runtime_args.timeout_send,
-            retries=self.runtime_args.retries,
-            compression=self.runtime_args.compression,
-            runtime_name=self.runtime_args.runtime_name,
-            prefetch=self.runtime_args.prefetch,
-        )
-
-        self.executor = {
-            executor_name: _ExecutorStreamer(
-                self.streamer._connection_pool, executor_name=executor_name
+        if not works_as_load_balancer:
+            self.streamer = GatewayStreamer(
+                graph_representation=graph_description,
+                executor_addresses=deployments_addresses,
+                graph_conditions=graph_conditions,
+                deployments_metadata=deployments_metadata,
+                deployments_no_reduce=deployments_no_reduce,
+                timeout_send=self.runtime_args.timeout_send,
+                retries=self.runtime_args.retries,
+                compression=self.runtime_args.compression,
+                runtime_name=self.runtime_args.runtime_name,
+                prefetch=self.runtime_args.prefetch,
+                logger=self.logger,
+                metrics_registry=metrics_registry,
+                meter=meter,
+                aio_tracing_client_interceptors=aio_tracing_client_interceptors,
+                tracing_client_interceptor=tracing_client_interceptor,
             )
-            for executor_name in deployments_addresses.keys()
-        }
+
+            GatewayStreamer._set_env_streamer_args(
+                graph_representation=graph_description,
+                executor_addresses=deployments_addresses,
+                graph_conditions=graph_conditions,
+                deployments_metadata=deployments_metadata,
+                deployments_no_reduce=deployments_no_reduce,
+                timeout_send=self.runtime_args.timeout_send,
+                retries=self.runtime_args.retries,
+                compression=self.runtime_args.compression,
+                runtime_name=self.runtime_args.runtime_name,
+                prefetch=self.runtime_args.prefetch,
+            )
+
+            self.executor = {
+                executor_name: _ExecutorStreamer(
+                    self.streamer._connection_pool, executor_name=executor_name
+                )
+                for executor_name in deployments_addresses.keys()
+            }
+        else:
+            self.streamer = None
+            self.executor = {}
+        servers = []
+        for address in deployments_addresses.values():
+            if isinstance(address, list):
+                servers.extend(address)
+            else:
+                servers.append(address)
+        self.load_balancer_servers = itertools.cycle(servers)
         self.warmup_stop_event = threading.Event()
         self.warmup_task = None
-        try:
-            self.warmup_task = asyncio.create_task(
-                self.streamer.warmup(self.warmup_stop_event)
-            )
-        except RuntimeError:
-            # when Gateway is started locally, it may not have loop
-            pass
+        if not works_as_load_balancer:
+            try:
+                self.warmup_task = asyncio.create_task(
+                    self.streamer.warmup(self.warmup_stop_event)
+                )
+            except RuntimeError:
+                # when Gateway is started locally, it may not have loop
+                pass
 
     def cancel_warmup_task(self):
         """Cancel warmup task if exists and is not completed. Cancellation is required if the Flow is being terminated before the
@@ -139,28 +152,36 @@ class GatewayRequestHandler:
             )
         )
 
-    def _http_fastapi_executor_app(self,
-                                   **kwargs):
-        from jina.serve.runtimes.worker.http_fastapi_app import get_fastapi_app  # For Gateway, it works as for head
-        import time
-        worker_response = None
-        request_models_map = {}
-        from google.protobuf import json_format
+    async def load_balance(self, request):
+        # TODO: use `self._request_handler.load_balance` so that this server can be used with head and gateway request handlers
+        print(f' LOAD BALANCE')
+        import aiohttp
+        from aiohttp import web
 
-        # while worker_response is None:
-        #     # the endpoint discovery will only work when some Executor is ready to respond, it may take some time
-        #     try:
-        #         worker_response, _ = await self.streamer._connection_pool.send_discover_endpoint(
-        #             deployment='executor', head=True
-        #         )
-        #         request_models_map = json_format.MessageToDict(worker_response.endpoints_models)
-        #     except:
-        #         time.sleep(0.1)
+        target_server = next(self.load_balancer_servers)
+        print(f'{target_server}')
+        print(f' request {request} => {type(request)} ')
+        print(f' request path {request.path_qs}')
+        print(f' request method {request.method}')
+        target_url = f'{target_server}{request.path_qs}'
+        # from aiohttp.web_request import Request
+        # aiohttp.web_request.Request
 
-        return get_fastapi_app(
-            request_models_map=request_models_map,
-            **kwargs
-        )
+        try:
+            async with aiohttp.ClientSession() as session:
+                if request.method == 'GET':
+                    async with session.get(target_url) as response:
+                        content = await response.read()
+                        return web.Response(body=content, status=response.status, content_type=response.content_type)
+                elif request.method == 'POST':
+                    d = await request.read()
+                    print(f' d {d}')
+                    import json
+                    async with session.post(url=target_url, json=json.loads(d.decode())) as response:
+                        content = await response.read()
+                        return web.Response(body=content, status=response.status, content_type=response.content_type)
+        except aiohttp.ClientError as e:
+            return web.Response(text=f'Error: {str(e)}', status=500)
 
     def _websocket_fastapi_default_app(self, tracing, tracer_provider):
         from jina.helper import extend_rest_interface

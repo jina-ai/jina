@@ -29,6 +29,9 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
     ):
         self.name = name or ''
         self.runtime_args = runtime_args
+        self.works_as_load_balancer = False
+        if isinstance(runtime_args, Dict):
+            self.works_as_load_balancer = runtime_args.get('gateway_load_balancer', False)
         if isinstance(self.runtime_args, dict):
             self.logger = JinaLogger(self.name, **self.runtime_args)
         else:
@@ -81,7 +84,8 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
             runtime_name=self.name,
             aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
             tracing_client_interceptor=self.tracing_client_interceptor(),
-            deployment_name=self.name.split('/')[0]
+            deployment_name=self.name.split('/')[0],
+            works_as_load_balancer=self.works_as_load_balancer
         )
 
     def _add_gateway_args(self):

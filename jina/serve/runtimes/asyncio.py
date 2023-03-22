@@ -46,9 +46,11 @@ class AsyncNewLoopRuntime:
                 Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
             ] = None,
             req_handler_cls=None,
+            gateway_load_balancer: bool = False,
             **kwargs,
     ):
         self.req_handler_cls = req_handler_cls
+        self.gateway_load_balancer = gateway_load_balancer
         self.args = args
         if args.name:
             self.name = f'{args.name}/{self.__class__.__name__}'
@@ -137,7 +139,7 @@ class AsyncNewLoopRuntime:
                 self.timeout_send /= 1e3  # convert ms to seconds
             if not self.args.port:
                 self.args.port = random_ports(len(self.args.protocol))
-            _set_gateway_uses(self.args)
+            _set_gateway_uses(self.args, gateway_load_balancer=self.gateway_load_balancer)
             uses_with = self.args.uses_with or {}
             non_defaults = ArgNamespace.get_non_defaults_args(
                 self.args, set_gateway_parser()
@@ -188,6 +190,7 @@ class AsyncNewLoopRuntime:
                     'metrics_exporter_port': self.args.metrics_exporter_port,
                     'log_config': self.args.log_config,
                     'default_port': getattr(self.args, 'default_port', False),
+                    'gateway_load_balancer': self.gateway_load_balancer
                 },
                 py_modules=self.args.py_modules,
                 extra_search_paths=self.args.extra_search_paths,
