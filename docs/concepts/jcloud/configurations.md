@@ -1,5 +1,5 @@
-(jcloud-configurations)=
-# {octicon}`file-code` Configurations
+(jcloud-configuration)=
+# {octicon}`file-code` Configuration
 
 JCloud extends Jina's {ref}`Flow YAML specification<flow-yaml-spec>` by introducing the special field `jcloud`. This lets you define resources and scaling policies for each Executor and Gateway.
 
@@ -36,7 +36,7 @@ In JCloud, you can pass highly customizable, finely-grained resource requests fo
 JCloud uses the concept of an "Instance" to represent a specific set of hardware specifications.
 In above example, a C4 instance type represents two cores and 4 GB RAM based on the CPU Tiers Instance definition table below.
 
-Note that if you are still using the legacy resource specification interface, as such:
+Note that if you are still using the legacy resource specification interface, such as:
 
 ```{code-block} yaml
 jcloud:
@@ -54,8 +54,8 @@ There are also two types of Instance Tiers, one for CPU instances, one for GPU.
 
 (jcloud-pricing)=
 #### Pricing
-Each Instance has a fixed `Credits Per Hour` number, it's an indicator on how many credits will JCloud charge
-if certain Instance is used. For example, if an Executor uses `C3`, it implies that `10` credits will be spent
+Each Instance has a fixed `Credits Per Hour` number, it's an indicator on how many credits JCloud will charge
+if a certain Instance is used. For example, if an Executor uses `C3`, it implies that `10` credits will be spent
 from the operating user account. Other important facts to note:
 
    - If the Flow is powering other App(s) you create, you would be charged by the App(s), not the underlying Flow.
@@ -218,8 +218,8 @@ We track the minimum number of replicas in Autoscale configurations and use it a
 ### Restrictions
 ```{admonition} **Restrictions**
 
-- Autoscale currently does not allow the use of `ebs` as a storage kind in combination, please use `efs` and `ephemeral` instead.
-- If the Gateway uses multi-protocol setup, Autoscale function is not supported.
+- Autoscale does not currently allow the use of `ebs` as a storage kind in combination. Please use `efs` and `ephemeral` instead.
+- If the Gateway uses a multi-protocol setup, Autoscale is not supported.
 ```
 ## Configure availability tolerance
 
@@ -261,7 +261,7 @@ In case of disruption, ensure that if a maximum of two replicas are down, at lea
 
 ## Configure Gateway
 
-The Gateway can be customized as well just like Executors.
+The Gateway can be customized just like an Executor.
 ### Set timeout
 
 By default, the Gateway will close connections that have been idle for over 600 seconds. If you want a longer connection timeout threshold, change the `timeout` parameter under `gateway.jcloud`.
@@ -422,7 +422,7 @@ executors:
     uses: jinaai+docker://<username>/Executor1
 ```
 
-You can pass the `enable: true` argument to `gateway`, so as to only enable the tracing support in the Gateway:
+You can pass the `enable: true` argument to `gateway` to only enable tracing support in the Gateway:
 
 ```{code-block} yaml
 ---
