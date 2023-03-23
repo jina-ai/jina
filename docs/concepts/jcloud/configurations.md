@@ -206,7 +206,7 @@ Below are the defaults and requirements for the configurations:
 | min    | 1           | int                      | Minimum number of replicas (`0` means serverless) |
 | max    | 2           | int, up to 5             | Maximum number of replicas                        |
 | metric | concurrency | `concurrency`  /   `rps` | Metric for scaling                                |
-| target | 100         | int                      | Target number after which replicas autoscale      |
+| target | 100         | int                      | Target number each replicas tries to maintain     |
 
 After JCloud deployment using the autoscaling configuration, the Flow serving part is just the same: the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you can deal with the code!
 
@@ -262,7 +262,6 @@ In case of disruption, ensure that if a maximum of two replicas are down, at lea
 ## Configure Gateway
 
 The Gateway can be customized as well just like Executors.
-
 ### Set timeout
 
 By default, the Gateway will close connections that have been idle for over 600 seconds. If you want a longer connection timeout threshold, change the `timeout` parameter under `gateway.jcloud`.
