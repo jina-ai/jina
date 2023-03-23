@@ -613,6 +613,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     def serve(
         self,
         *,
+        allow_concurrent: Optional[bool] = False,
         compression: Optional[str] = None,
         connection_list: Optional[str] = None,
         disable_auto_volume: Optional[bool] = False,
@@ -674,6 +675,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     ):
         """Serve this Executor in a temporary Flow. Useful in testing an Executor in remote settings.
 
+        :param allow_concurrent: Allow concurrent requests to be processed by the Executor. This is only recommended if the Executor is thread-safe.
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
