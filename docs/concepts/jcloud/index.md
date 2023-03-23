@@ -21,7 +21,7 @@ configurations
 After building a Jina project, the next step is to deploy and host it on the cloud. [Jina AI Cloud](https://cloud.jina.ai/) is Jina's reliable, scalable and production-ready cloud-hosting solution that manages your project lifecycle without surprises or hidden development costs.
 
 ```{tip}
-At present, Jina AI Cloud hosts all your Jina projects and offers computational/storage resources **for free**!
+Are you ready to unlock the power of AI with Jina AI Cloud? Take a look at our [pricing options](https://cloud.jina.ai/pricing) now!
 ```
 
 ## Basics

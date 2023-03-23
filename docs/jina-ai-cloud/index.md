@@ -37,6 +37,10 @@ Jina AI Cloud is the **portal** and **single entrypoint** to manage **all** your
 
 _Manage_ in this context means: CRUD, access control, personal access tokens, and subscription.
 
+```{tip}
+Are you ready to unlock the power of AI with Jina AI Cloud? Take a look at our [pricing options](https://cloud.jina.ai/pricing) now!
+```
+
 ```{toctree}
 :hidden:
 
