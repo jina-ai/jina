@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -461,7 +462,7 @@
             <span class="n">metrics_exporter_host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">metrics_exporter_host</span><span class="p">,</span>
             <span class="n">metrics_exporter_port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">metrics_exporter_port</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">send_telemetry_event</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">send_telemetry_event</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="n">obj_cls_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BaseClient.teardown_instrumentation"><a class="viewcode-back" href="../../../../api/jina.clients.base/#jina.clients.base.BaseClient.teardown_instrumentation">[docs]</a>    <span class="k">def</span> <span class="nf">teardown_instrumentation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Shut down the OpenTelemetry tracer and meter if available. This ensures that the daemon threads for</span>
@@ -615,7 +616,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

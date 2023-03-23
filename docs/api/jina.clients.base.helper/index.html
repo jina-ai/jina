@@ -298,6 +298,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -429,7 +430,7 @@
 <span id="jina-clients-base-helper-module"></span><h1>jina.clients.base.helper module<a class="headerlink" href="#module-jina.clients.base.helper" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.clients.base.helper.AioHttpClientlet">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">AioHttpClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracer_provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">AioHttpClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracer_provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>aiohttp session manager</p>
 <p>HTTP Client to be used with the streamer</p>
@@ -502,7 +503,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.clients.base.helper.HTTPClientlet">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">HTTPClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracer_provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#HTTPClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.HTTPClientlet" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">HTTPClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracer_provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#HTTPClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.HTTPClientlet" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.clients.base.helper.AioHttpClientlet" title="jina.clients.base.helper.AioHttpClientlet"><code class="xref py py-class docutils literal notranslate"><span class="pre">AioHttpClientlet</span></code></a></p>
 <p>HTTP Client to be used with the streamer</p>
 <p>HTTP Client to be used with the streamer</p>
@@ -697,6 +698,16 @@ we need to make sure we don’t create multiple tasks with <cite>recv_message</c
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.clients.base.helper.WebsocketClientlet.close_code">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close_code</span></span><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet.close_code" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the close code of the ws closing response</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.clients.base.helper.WebsocketClientlet.close">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet.close" title="Permalink to this definition">#</a></dt>
@@ -707,16 +718,6 @@ we need to make sure we don’t create multiple tasks with <cite>recv_message</c
 <li><p><strong>args</strong> – positional args</p></li>
 <li><p><strong>kwargs</strong> – keyword args</p></li>
 </ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.clients.base.helper.WebsocketClientlet.close_code">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close_code</span></span><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet.close_code" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the close code of the ws closing response</p>
 </dd>
 </dl>
 </dd></dl>
@@ -734,6 +735,20 @@ we need to make sure we don’t create multiple tasks with <cite>recv_message</c
 
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.clients.base.helper.handle_response_status">
+<span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">handle_response_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">http_status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#handle_response_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.handle_response_status" title="Permalink to this definition">#</a></dt>
+<dd><p>Raise BadClient exception for HTTP 404 status.
+Raise ConnectionError for HTTP status codes 504, 504 if header information is available.
+Raise ValueError for everything other non 200 status code.
+:type http_status: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
+:param http_status: http status code
+:type response_string: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param response_string: response string
+:type url: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param url: request url string</p>
+</dd></dl>
+
 </section>
 
                 </article>
@@ -749,7 +764,7 @@ we need to make sure we don’t create multiple tasks with <cite>recv_message</c
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -808,11 +823,12 @@ we need to make sure we don’t create multiple tasks with <cite>recv_message</c
 <li><a class="reference internal" href="#jina.clients.base.helper.WebsocketClientlet.recv_message"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.recv_message()</span></code></a></li>
 <li><a class="reference internal" href="#jina.clients.base.helper.WebsocketClientlet.recv_dry_run"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.recv_dry_run()</span></code></a></li>
 <li><a class="reference internal" href="#jina.clients.base.helper.WebsocketClientlet.close_message"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.close_message</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.base.helper.WebsocketClientlet.close"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.close()</span></code></a></li>
 <li><a class="reference internal" href="#jina.clients.base.helper.WebsocketClientlet.close_code"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.close_code</span></code></a></li>
+<li><a class="reference internal" href="#jina.clients.base.helper.WebsocketClientlet.close"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.close()</span></code></a></li>
 <li><a class="reference internal" href="#jina.clients.base.helper.WebsocketClientlet.start"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.start()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#jina.clients.base.helper.handle_response_status"><code class="docutils literal notranslate"><span class="pre">handle_response_status()</span></code></a></li>
 </ul>
 </li>
 </ul>

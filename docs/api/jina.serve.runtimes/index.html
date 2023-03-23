@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve.runtimes/" />
 <meta property="og:site_name" content="Jina 3.14.2 Documentation" />
-<meta property="og:description" content="Subpackages: jina.serve.runtimes.gateway package- Subpackages- jina.serve.runtimes.gateway.composite package- Submodules, Module contents., jina.serve.runtimes.gateway.graph package- Submodules, Module contents., jina.serve.runtimes.gateway.grpc package- Submodules, Module contents., jina.serve.r..." />
+<meta property="og:description" content="Subpackages: jina.serve.runtimes.gateway package- Subpackages- jina.serve.runtimes.gateway.composite package- Module contents., jina.serve.runtimes.gateway.graph package- Submodules, Module contents., jina.serve.runtimes.gateway.grpc package- Module contents., jina.serve.runtimes.gateway.http pac..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.14.2 Documentation" />
-<meta name="description" content="Subpackages: jina.serve.runtimes.gateway package- Subpackages- jina.serve.runtimes.gateway.composite package- Submodules, Module contents., jina.serve.runtimes.gateway.graph package- Submodules, Module contents., jina.serve.runtimes.gateway.grpc package- Submodules, Module contents., jina.serve.r..." />
+<meta name="description" content="Subpackages: jina.serve.runtimes.gateway package- Subpackages- jina.serve.runtimes.gateway.composite package- Module contents., jina.serve.runtimes.gateway.graph package- Submodules, Module contents., jina.serve.runtimes.gateway.grpc package- Module contents., jina.serve.runtimes.gateway.http pac..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -300,6 +300,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -436,7 +437,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.gateway/">jina.serve.runtimes.gateway package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway/#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.composite/">jina.serve.runtimes.gateway.composite package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.composite/#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.composite/#module-jina.serve.runtimes.gateway.composite">Module contents</a></li>
 </ul>
 </li>
@@ -446,17 +446,15 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc/">jina.serve.runtimes.gateway.grpc package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc/#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc/#module-jina.serve.runtimes.gateway.grpc">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http/">jina.serve.runtimes.gateway.http package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http/#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http/#subpackages">Subpackages</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http/#module-jina.serve.runtimes.gateway.http">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket/">jina.serve.runtimes.gateway.websocket package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket/#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket/#module-jina.serve.runtimes.gateway.websocket">Module contents</a></li>
 </ul>
 </li>
@@ -467,6 +465,24 @@
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.async_request_response_handling/#jina.serve.runtimes.gateway.async_request_response_handling.AsyncRequestResponseHandler"><code class="docutils literal notranslate"><span class="pre">AsyncRequestResponseHandler</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.gateway/">jina.serve.runtimes.gateway.gateway module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.gateway/#jina.serve.runtimes.gateway.gateway.BaseGateway"><code class="docutils literal notranslate"><span class="pre">BaseGateway</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http_fastapi_app/">jina.serve.runtimes.gateway.http_fastapi_app module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http_fastapi_app/#jina.serve.runtimes.gateway.http_fastapi_app.get_fastapi_app"><code class="docutils literal notranslate"><span class="pre">get_fastapi_app()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.models/">jina.serve.runtimes.gateway.models module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.CustomConfig"><code class="docutils literal notranslate"><span class="pre">CustomConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.protobuf_to_pydantic_model"><code class="docutils literal notranslate"><span class="pre">protobuf_to_pydantic_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaHealthModel"><code class="docutils literal notranslate"><span class="pre">JinaHealthModel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaInfoModel"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaRequestModel"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaResponseModel"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaEndpointRequestModel"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.request_handling/">jina.serve.runtimes.gateway.request_handling module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler"><code class="docutils literal notranslate"><span class="pre">GatewayRequestHandler</span></code></a></li>
 </ul>
@@ -475,27 +491,13 @@
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.streamer/#jina.serve.runtimes.gateway.streamer.GatewayStreamer"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer</span></code></a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway/#module-jina.serve.runtimes.gateway">Module contents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.async_setup"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.async_setup()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.async_teardown"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.async_teardown()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.async_cancel"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.async_cancel()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.async_run_forever"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.async_run_forever()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.is_ready"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.is_ready()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.wait_for_ready_or_shutdown"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.wait_for_ready_or_shutdown()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.aio_tracing_client_interceptors"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.aio_tracing_client_interceptors()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.aio_tracing_server_interceptors"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.aio_tracing_server_interceptors()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.async_is_ready"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.async_is_ready()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.cancel_warmup_task"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.cancel_warmup_task()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.run_forever"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.run_forever()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.teardown"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.teardown()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.tracing_client_interceptor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket_fastapi_app/">jina.serve.runtimes.gateway.websocket_fastapi_app module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket_fastapi_app/#jina.serve.runtimes.gateway.websocket_fastapi_app.get_fastapi_app"><code class="docutils literal notranslate"><span class="pre">get_fastapi_app()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway/#module-jina.serve.runtimes.gateway">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.head/">jina.serve.runtimes.head package</a><ul>
@@ -506,21 +508,44 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.head/#module-jina.serve.runtimes.head">Module contents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime"><code class="docutils literal notranslate"><span class="pre">HeadRuntime</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.async_setup"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.async_setup()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.async_run_forever"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.async_run_forever()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.async_cancel"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.async_cancel()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.async_teardown"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.async_teardown()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.aio_tracing_client_interceptors"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.aio_tracing_client_interceptors()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.aio_tracing_server_interceptors"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.aio_tracing_server_interceptors()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.async_is_ready"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.async_is_ready()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.cancel_warmup_task"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.cancel_warmup_task()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.is_ready"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.is_ready()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.run_forever"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.run_forever()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.teardown"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.teardown()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.tracing_client_interceptor()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.wait_for_ready_or_shutdown"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.wait_for_ready_or_shutdown()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.head/#module-jina.serve.runtimes.head">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.servers/">jina.serve.runtimes.servers package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.servers/#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.servers.composite/">jina.serve.runtimes.servers.composite module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers.composite/#jina.serve.runtimes.servers.composite.CompositeServer"><code class="docutils literal notranslate"><span class="pre">CompositeServer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.servers.grpc/">jina.serve.runtimes.servers.grpc module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers.grpc/#jina.serve.runtimes.servers.grpc.GRPCServer"><code class="docutils literal notranslate"><span class="pre">GRPCServer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.servers.http/">jina.serve.runtimes.servers.http module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers.http/#jina.serve.runtimes.servers.http.FastAPIBaseServer"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseServer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.servers.websocket/">jina.serve.runtimes.servers.websocket module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers.websocket/#jina.serve.runtimes.servers.websocket.WebSocketServer"><code class="docutils literal notranslate"><span class="pre">WebSocketServer</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.servers/#module-jina.serve.runtimes.servers">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.servers/#jina.serve.runtimes.servers.BaseServer"><code class="docutils literal notranslate"><span class="pre">BaseServer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers/#jina.serve.runtimes.servers.BaseServer.port"><code class="docutils literal notranslate"><span class="pre">BaseServer.port</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers/#jina.serve.runtimes.servers.BaseServer.ports"><code class="docutils literal notranslate"><span class="pre">BaseServer.ports</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers/#jina.serve.runtimes.servers.BaseServer.protocols"><code class="docutils literal notranslate"><span class="pre">BaseServer.protocols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers/#jina.serve.runtimes.servers.BaseServer.host"><code class="docutils literal notranslate"><span class="pre">BaseServer.host</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers/#jina.serve.runtimes.servers.BaseServer.setup_server"><code class="docutils literal notranslate"><span class="pre">BaseServer.setup_server()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers/#jina.serve.runtimes.servers.BaseServer.run_server"><code class="docutils literal notranslate"><span class="pre">BaseServer.run_server()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers/#jina.serve.runtimes.servers.BaseServer.shutdown"><code class="docutils literal notranslate"><span class="pre">BaseServer.shutdown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers/#jina.serve.runtimes.servers.BaseServer.is_ready"><code class="docutils literal notranslate"><span class="pre">BaseServer.is_ready()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers/#jina.serve.runtimes.servers.BaseServer.aio_tracing_client_interceptors"><code class="docutils literal notranslate"><span class="pre">BaseServer.aio_tracing_client_interceptors()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers/#jina.serve.runtimes.servers.BaseServer.aio_tracing_server_interceptors"><code class="docutils literal notranslate"><span class="pre">BaseServer.aio_tracing_server_interceptors()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers/#jina.serve.runtimes.servers.BaseServer.async_is_ready"><code class="docutils literal notranslate"><span class="pre">BaseServer.async_is_ready()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers/#jina.serve.runtimes.servers.BaseServer.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">BaseServer.tracing_client_interceptor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers/#jina.serve.runtimes.servers.BaseServer.wait_for_ready_or_shutdown"><code class="docutils literal notranslate"><span class="pre">BaseServer.wait_for_ready_or_shutdown()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -539,27 +564,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.worker/#module-jina.serve.runtimes.worker">Module contents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.async_setup"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.async_setup()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.async_run_forever"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.async_run_forever()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.async_cancel"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.async_cancel()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.async_teardown"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.async_teardown()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.Check"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.Check()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.Watch"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.Watch()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.aio_tracing_client_interceptors"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.aio_tracing_client_interceptors()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.aio_tracing_server_interceptors"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.aio_tracing_server_interceptors()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.async_is_ready"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.async_is_ready()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.cancel_warmup_task"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.cancel_warmup_task()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.is_ready"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.is_ready()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.run_forever"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.run_forever()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.teardown"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.teardown()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.tracing_client_interceptor()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.wait_for_ready_or_shutdown"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.wait_for_ready_or_shutdown()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.worker/#module-jina.serve.runtimes.worker">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -575,23 +580,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.teardown"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.teardown()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_setup"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.async_setup()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_teardown"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.async_teardown()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_cancel"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.async_cancel()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_run_forever"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.async_run_forever()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.cancel_warmup_task"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.cancel_warmup_task()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.is_ready"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.is_ready()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_is_ready"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.async_is_ready()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.wait_for_ready_or_shutdown"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.wait_for_ready_or_shutdown()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.aio_tracing_client_interceptors"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.aio_tracing_client_interceptors()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.aio_tracing_server_interceptors"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.aio_tracing_server_interceptors()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.tracing_client_interceptor()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.base/">jina.serve.runtimes.base module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.base/#jina.serve.runtimes.base.BaseRuntime"><code class="docutils literal notranslate"><span class="pre">BaseRuntime</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.base/#jina.serve.runtimes.base.BaseRuntime.run_forever"><code class="docutils literal notranslate"><span class="pre">BaseRuntime.run_forever()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.base/#jina.serve.runtimes.base.BaseRuntime.teardown"><code class="docutils literal notranslate"><span class="pre">BaseRuntime.teardown()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -607,22 +596,6 @@
 </section>
 <section id="module-jina.serve.runtimes">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.serve.runtimes" title="Permalink to this heading">#</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.serve.runtimes.list_all_runtimes">
-<span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.</span></span><span class="sig-name descname"><span class="pre">list_all_runtimes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/#list_all_runtimes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.list_all_runtimes" title="Permalink to this definition">#</a></dt>
-<dd><p>List all public runtimes that can be used directly with <a class="reference internal" href="../jina.orchestrate.pods/#jina.orchestrate.pods.Pod" title="jina.orchestrate.pods.Pod"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.orchestrate.pods.Pod</span></code></a></p>
-<p># noqa: DAR101
-# noqa: DAR201</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.serve.runtimes.get_runtime">
-<span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.</span></span><span class="sig-name descname"><span class="pre">get_runtime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/#get_runtime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.get_runtime" title="Permalink to this definition">#</a></dt>
-<dd><p>Get a public runtime by its name</p>
-<p># noqa: DAR101
-# noqa: DAR201</p>
-</dd></dl>
-
 </section>
 </section>
 
@@ -639,7 +612,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -674,11 +647,7 @@
 <li><a class="reference internal" href="#">jina.serve.runtimes package</a><ul>
 <li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.serve.runtimes">Module contents</a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.list_all_runtimes"><code class="docutils literal notranslate"><span class="pre">list_all_runtimes()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.get_runtime"><code class="docutils literal notranslate"><span class="pre">get_runtime()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#module-jina.serve.runtimes">Module contents</a></li>
 </ul>
 </li>
 </ul>

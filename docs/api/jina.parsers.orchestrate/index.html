@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.parsers.orchestrate/" />
 <meta property="og:site_name" content="Jina 3.14.2 Documentation" />
-<meta property="og:description" content="Subpackages: jina.parsers.orchestrate.runtimes package- Submodules- jina.parsers.orchestrate.runtimes.container module- mixin_container_runtime_parser()., jina.parsers.orchestrate.runtimes.head module- mixin_head_parser()., jina.parsers.orchestrate.runtimes.remote module- mixin_remote_runtime_par..." />
+<meta property="og:description" content="Subpackages: jina.parsers.orchestrate.runtimes package- Submodules- jina.parsers.orchestrate.runtimes.container module- mixin_container_runtime_parser()., jina.parsers.orchestrate.runtimes.grpc_channel module- mixin_grpc_channel_options_parser()., jina.parsers.orchestrate.runtimes.head module- mi..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.14.2 Documentation" />
-<meta name="description" content="Subpackages: jina.parsers.orchestrate.runtimes package- Submodules- jina.parsers.orchestrate.runtimes.container module- mixin_container_runtime_parser()., jina.parsers.orchestrate.runtimes.head module- mixin_head_parser()., jina.parsers.orchestrate.runtimes.remote module- mixin_remote_runtime_par..." />
+<meta name="description" content="Subpackages: jina.parsers.orchestrate.runtimes package- Submodules- jina.parsers.orchestrate.runtimes.container module- mixin_container_runtime_parser()., jina.parsers.orchestrate.runtimes.grpc_channel module- mixin_grpc_channel_options_parser()., jina.parsers.orchestrate.runtimes.head module- mi..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -300,6 +300,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -439,6 +440,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../jina.parsers.orchestrate.runtimes.container/#jina.parsers.orchestrate.runtimes.container.mixin_container_runtime_parser"><code class="docutils literal notranslate"><span class="pre">mixin_container_runtime_parser()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.orchestrate.runtimes.grpc_channel/">jina.parsers.orchestrate.runtimes.grpc_channel module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.orchestrate.runtimes.grpc_channel/#jina.parsers.orchestrate.runtimes.grpc_channel.mixin_grpc_channel_options_parser"><code class="docutils literal notranslate"><span class="pre">mixin_grpc_channel_options_parser()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.parsers.orchestrate.runtimes.head/">jina.parsers.orchestrate.runtimes.head module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.parsers.orchestrate.runtimes.head/#jina.parsers.orchestrate.runtimes.head.mixin_head_parser"><code class="docutils literal notranslate"><span class="pre">mixin_head_parser()</span></code></a></li>
 </ul>
@@ -515,7 +520,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

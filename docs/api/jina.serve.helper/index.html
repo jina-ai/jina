@@ -298,6 +298,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -475,6 +476,25 @@
 :return: formatted error</p>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.serve.helper.get_default_grpc_options">
+<span class="sig-prename descclassname"><span class="pre">jina.serve.helper.</span></span><span class="sig-name descname"><span class="pre">get_default_grpc_options</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/helper/#get_default_grpc_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.helper.get_default_grpc_options" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns a list of default options used for creating grpc channels.
+Documentation is here <a class="reference external" href="https://github.com/grpc/grpc/blob/master/include/grpc/impl/codegen/grpc_types.h">https://github.com/grpc/grpc/blob/master/include/grpc/impl/codegen/grpc_types.h</a>
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]
+:returns: list of tuples defining grpc parameters</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.serve.helper.get_server_side_grpc_options">
+<span class="sig-prename descclassname"><span class="pre">jina.serve.helper.</span></span><span class="sig-name descname"><span class="pre">get_server_side_grpc_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">additional_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/helper/#get_server_side_grpc_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.helper.get_server_side_grpc_options" title="Permalink to this definition">#</a></dt>
+<dd><p>transform dict of args into grpc option, will merge the args wit the default args
+:type additional_options: <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]
+:param additional_options: a dict of argument
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]
+:return: grpc option i.e a list of tuple of key value</p>
+</dd></dl>
+
 </section>
 
                 </article>
@@ -490,7 +510,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -527,6 +547,8 @@
 <li><a class="reference internal" href="#jina.serve.helper.store_init_kwargs"><code class="docutils literal notranslate"><span class="pre">store_init_kwargs()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.helper.extract_trailing_metadata"><code class="docutils literal notranslate"><span class="pre">extract_trailing_metadata()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.helper.format_grpc_error"><code class="docutils literal notranslate"><span class="pre">format_grpc_error()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.helper.get_default_grpc_options"><code class="docutils literal notranslate"><span class="pre">get_default_grpc_options()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.helper.get_server_side_grpc_options"><code class="docutils literal notranslate"><span class="pre">get_server_side_grpc_options()</span></code></a></li>
 </ul>
 </li>
 </ul>

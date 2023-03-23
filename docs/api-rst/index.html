@@ -300,6 +300,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -533,16 +534,7 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime" title="jina.serve.runtimes.asyncio.AsyncNewLoopRuntime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asyncio.AsyncNewLoopRuntime</span></code></a></p></td>
-<td><p>The async runtime to start a new event loop.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime" title="jina.serve.runtimes.gateway.GatewayRuntime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gateway.GatewayRuntime</span></code></a></p></td>
-<td><p>The Gateway Runtime that starts a gateway pod.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime" title="jina.serve.runtimes.worker.WorkerRuntime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">worker.WorkerRuntime</span></code></a></p></td>
-<td><p>Runtime procedure leveraging <code class="xref py py-class docutils literal notranslate"><span class="pre">Grpclet</span></code> for sending DataRequests</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime" title="jina.serve.runtimes.head.HeadRuntime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">head.HeadRuntime</span></code></a></p></td>
-<td><p>Runtime is used in head pods.</p></td>
+<td><p>Runtime to make sure that a server can asynchronously run inside a new asynchronous loop.</p></td>
 </tr>
 </tbody>
 </table>
@@ -581,7 +573,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

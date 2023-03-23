@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -402,13 +403,16 @@
                 <article role="main">
                     <h1>Source code for jina.clients.base.helper</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span>
 
+<span class="kn">import</span> <span class="nn">aiohttp</span>
 <span class="kn">from</span> <span class="nn">aiohttp</span> <span class="kn">import</span> <span class="n">WSMsgType</span>
+<span class="kn">from</span> <span class="nn">starlette</span> <span class="kn">import</span> <span class="n">status</span>
 
+<span class="kn">from</span> <span class="nn">jina.clients.base</span> <span class="kn">import</span> <span class="n">retry</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">WebsocketSubProtocols</span>
+<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">BadClient</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
@@ -429,7 +433,7 @@
         <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">,</span>
         <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">initial_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
-        <span class="n">max_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">max_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">backoff_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
         <span class="n">tracer_provider</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;trace.TraceProvider&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -536,22 +540,23 @@
         <span class="n">req_dict</span><span class="p">[</span><span class="s1">&#39;exec_endpoint&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">][</span><span class="s1">&#39;exec_endpoint&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="s1">&#39;target_executor&#39;</span> <span class="ow">in</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">]:</span>
             <span class="n">req_dict</span><span class="p">[</span><span class="s1">&#39;target_executor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">][</span><span class="s1">&#39;target_executor&#39;</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">retry</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_attempts</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_attempts</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">req_dict</span><span class="p">)</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">retry</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_attempts</span><span class="p">:</span>
-                    <span class="k">raise</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">wait_time</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
-                        <span class="mi">0</span><span class="p">,</span>
-                        <span class="nb">min</span><span class="p">(</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">initial_backoff</span>
-                            <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">backoff_multiplier</span> <span class="o">**</span> <span class="p">(</span><span class="n">retry</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">max_backoff</span><span class="p">,</span>
-                        <span class="p">),</span>
-                    <span class="p">)</span>
-                    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">wait_time</span><span class="p">)</span></div>
+                <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                    <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">req_dict</span>
+                <span class="p">)</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span>
+                <span class="n">r_str</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+                <span class="n">handle_response_status</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">r_str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">response</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">ConnectionError</span><span class="p">,</span> <span class="n">BadClient</span><span class="p">,</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="k">await</span> <span class="n">retry</span><span class="o">.</span><span class="n">wait_or_raise_err</span><span class="p">(</span>
+                    <span class="n">attempt</span><span class="o">=</span><span class="n">attempt</span><span class="p">,</span>
+                    <span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">,</span>
+                    <span class="n">max_attempts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_attempts</span><span class="p">,</span>
+                    <span class="n">backoff_multiplier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backoff_multiplier</span><span class="p">,</span>
+                    <span class="n">initial_backoff</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_backoff</span><span class="p">,</span>
+                    <span class="n">max_backoff</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_backoff</span><span class="p">,</span>
+                <span class="p">)</span></div>
 
 <div class="viewcode-block" id="HTTPClientlet.send_dry_run"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.send_dry_run">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Query the dry_run endpoint from Gateway</span>
@@ -612,24 +617,18 @@
 <span class="sd">        :param request: request object</span>
 <span class="sd">        :return: send request as bytes awaitable</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># we have to send here `retries` information</span>
-        <span class="k">for</span> <span class="n">retry</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_attempts</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_attempts</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span><span class="o">.</span><span class="n">send_bytes</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">())</span>
-            <span class="k">except</span> <span class="ne">ConnectionResetError</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">retry</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_attempts</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;server connection closed already!&#39;</span><span class="p">)</span>
-                    <span class="k">raise</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">wait_time</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
-                        <span class="mi">0</span><span class="p">,</span>
-                        <span class="nb">min</span><span class="p">(</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">initial_backoff</span>
-                            <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">backoff_multiplier</span> <span class="o">**</span> <span class="p">(</span><span class="n">retry</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">max_backoff</span><span class="p">,</span>
-                        <span class="p">),</span>
-                    <span class="p">)</span>
-                    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">wait_time</span><span class="p">)</span></div>
+            <span class="k">except</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="k">await</span> <span class="n">retry</span><span class="o">.</span><span class="n">wait_or_raise_err</span><span class="p">(</span>
+                    <span class="n">attempt</span><span class="o">=</span><span class="n">attempt</span><span class="p">,</span>
+                    <span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">,</span>
+                    <span class="n">max_attempts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_attempts</span><span class="p">,</span>
+                    <span class="n">backoff_multiplier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backoff_multiplier</span><span class="p">,</span>
+                    <span class="n">initial_backoff</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_backoff</span><span class="p">,</span>
+                    <span class="n">max_backoff</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_backoff</span><span class="p">,</span>
+                <span class="p">)</span></div>
 
 <div class="viewcode-block" id="WebsocketClientlet.send_dry_run"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.send_dry_run">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Query the dry_run endpoint from Gateway</span>
@@ -679,14 +678,25 @@
             <span class="k">yield</span> <span class="n">StatusMessage</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">ws_connect</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
-            <span class="n">protocols</span><span class="o">=</span><span class="p">(</span><span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">BYTES</span><span class="o">.</span><span class="n">value</span><span class="p">,),</span>
-            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_session_kwargs</span><span class="p">,</span>
-        <span class="p">)</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">response_iter</span> <span class="o">=</span> <span class="n">WsResponseIter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">websocket</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_attempts</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">ws_connect</span><span class="p">(</span>
+                    <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+                    <span class="n">protocols</span><span class="o">=</span><span class="p">(</span><span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">BYTES</span><span class="o">.</span><span class="n">value</span><span class="p">,),</span>
+                    <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_session_kwargs</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">response_iter</span> <span class="o">=</span> <span class="n">WsResponseIter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">websocket</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span>
+            <span class="k">except</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="k">await</span> <span class="n">retry</span><span class="o">.</span><span class="n">wait_or_raise_err</span><span class="p">(</span>
+                    <span class="n">attempt</span><span class="o">=</span><span class="n">attempt</span><span class="p">,</span>
+                    <span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">,</span>
+                    <span class="n">max_attempts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_attempts</span><span class="p">,</span>
+                    <span class="n">backoff_multiplier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backoff_multiplier</span><span class="p">,</span>
+                    <span class="n">initial_backoff</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_backoff</span><span class="p">,</span>
+                    <span class="n">max_backoff</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_backoff</span><span class="p">,</span>
+                <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">close_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -697,6 +707,36 @@
     <span class="k">def</span> <span class="nf">close_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;:return: the close code of the ws closing response&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span><span class="o">.</span><span class="n">close_code</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="handle_response_status"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.handle_response_status">[docs]</a><span class="k">def</span> <span class="nf">handle_response_status</span><span class="p">(</span><span class="n">http_status</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">response_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise BadClient exception for HTTP 404 status.</span>
+<span class="sd">    Raise ConnectionError for HTTP status codes 504, 504 if header information is available.</span>
+<span class="sd">    Raise ValueError for everything other non 200 status code.</span>
+<span class="sd">    :param http_status: http status code</span>
+<span class="sd">    :param response_string: response string</span>
+<span class="sd">    :param url: request url string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">http_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_404_NOT_FOUND</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">BadClient</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;no such endpoint </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="p">(</span>
+        <span class="n">http_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_503_SERVICE_UNAVAILABLE</span>
+        <span class="ow">or</span> <span class="n">http_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_504_GATEWAY_TIMEOUT</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="s1">&#39;header&#39;</span> <span class="ow">in</span> <span class="n">response_string</span>
+            <span class="ow">and</span> <span class="s1">&#39;status&#39;</span> <span class="ow">in</span> <span class="n">response_string</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">]</span>
+            <span class="ow">and</span> <span class="s1">&#39;description&#39;</span> <span class="ow">in</span> <span class="n">response_string</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">response_string</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;description&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">response_string</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="p">(</span>
+        <span class="n">http_status</span> <span class="o">&lt;</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span>
+        <span class="ow">or</span> <span class="n">http_status</span> <span class="o">&gt;</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_300_MULTIPLE_CHOICES</span>
+    <span class="p">):</span>  <span class="c1"># failure codes</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">response_string</span><span class="p">)</span></div>
 </pre></div>
                 </article>
             </div>
@@ -711,7 +751,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

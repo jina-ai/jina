@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -461,8 +462,10 @@
         <span class="n">meter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Meter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">aio_tracing_client_interceptors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="s1">&#39;ClientInterceptor&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tracing_client_interceptor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;OpenTelemetryClientInterceptor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">channel_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="ow">or</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel_options</span> <span class="o">=</span> <span class="n">channel_options</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">compression</span> <span class="o">=</span> <span class="p">(</span>
             <span class="nb">getattr</span><span class="p">(</span><span class="n">grpc</span><span class="o">.</span><span class="n">Compression</span><span class="p">,</span> <span class="n">compression</span><span class="p">)</span>
@@ -536,12 +539,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">aio_tracing_client_interceptors</span> <span class="o">=</span> <span class="n">aio_tracing_client_interceptors</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tracing_client_interceptor</span> <span class="o">=</span> <span class="n">tracing_client_interceptor</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="n">_ConnectionPoolMap</span><span class="p">(</span>
-            <span class="n">runtime_name</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_histograms</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">aio_tracing_client_interceptors</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tracing_client_interceptor</span><span class="p">,</span>
+            <span class="n">runtime_name</span><span class="o">=</span><span class="n">runtime_name</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">,</span>
+            <span class="n">metrics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">,</span>
+            <span class="n">histograms</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_histograms</span><span class="p">,</span>
+            <span class="n">aio_tracing_client_interceptors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">aio_tracing_client_interceptors</span><span class="p">,</span>
+            <span class="n">tracing_client_interceptor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tracing_client_interceptor</span><span class="p">,</span>
+            <span class="n">channel_options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_options</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_address_map</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -931,7 +935,9 @@
 
                     <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
                     <span class="k">if</span> <span class="n">now</span> <span class="o">&gt;</span> <span class="n">timeout</span> <span class="ow">or</span> <span class="nb">all</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">replica_warmup_responses</span><span class="o">.</span><span class="n">values</span><span class="p">())):</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;completed warmup task in </span><span class="si">{</span><span class="n">now</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">}</span><span class="s1">s.&#39;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">&#39;completed warmup task in </span><span class="si">{</span><span class="n">now</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">}</span><span class="s1">s.&#39;</span>
+                        <span class="p">)</span>
                         <span class="k">return</span>
                     <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
                 <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
@@ -966,7 +972,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

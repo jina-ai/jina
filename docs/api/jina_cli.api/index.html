@@ -298,6 +298,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -475,17 +476,6 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="jina_cli.api.worker_runtime">
-<span class="sig-prename descclassname"><span class="pre">jina_cli.api.</span></span><span class="sig-name descname"><span class="pre">worker_runtime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina_cli/api/#worker_runtime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina_cli.api.worker_runtime" title="Permalink to this definition">#</a></dt>
-<dd><p>Starts a WorkerRuntime</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – arguments coming from the CLI.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="jina_cli.api.gateway">
 <span class="sig-prename descclassname"><span class="pre">jina_cli.api.</span></span><span class="sig-name descname"><span class="pre">gateway</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina_cli/api/#gateway"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina_cli.api.gateway" title="Permalink to this definition">#</a></dt>
 <dd><p>Start a Gateway Deployment</p>
@@ -609,7 +599,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -646,7 +636,6 @@
 <li><a class="reference internal" href="#jina_cli.api.pod"><code class="docutils literal notranslate"><span class="pre">pod()</span></code></a></li>
 <li><a class="reference internal" href="#jina_cli.api.executor_native"><code class="docutils literal notranslate"><span class="pre">executor_native()</span></code></a></li>
 <li><a class="reference internal" href="#jina_cli.api.executor"><code class="docutils literal notranslate"><span class="pre">executor()</span></code></a></li>
-<li><a class="reference internal" href="#jina_cli.api.worker_runtime"><code class="docutils literal notranslate"><span class="pre">worker_runtime()</span></code></a></li>
 <li><a class="reference internal" href="#jina_cli.api.gateway"><code class="docutils literal notranslate"><span class="pre">gateway()</span></code></a></li>
 <li><a class="reference internal" href="#jina_cli.api.ping"><code class="docutils literal notranslate"><span class="pre">ping()</span></code></a></li>
 <li><a class="reference internal" href="#jina_cli.api.dryrun"><code class="docutils literal notranslate"><span class="pre">dryrun()</span></code></a></li>

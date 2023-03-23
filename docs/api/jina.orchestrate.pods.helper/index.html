@@ -298,6 +298,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -442,14 +443,11 @@ that gets triggered when any of the events provided in input is triggered (OR lo
 
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.orchestrate.pods.helper.update_runtime_cls">
-<span class="sig-prename descclassname"><span class="pre">jina.orchestrate.pods.helper.</span></span><span class="sig-name descname"><span class="pre">update_runtime_cls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/pods/helper/#update_runtime_cls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.pods.helper.update_runtime_cls" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.orchestrate.pods.helper.</span></span><span class="sig-name descname"><span class="pre">update_runtime_cls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/pods/helper/#update_runtime_cls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.pods.helper.update_runtime_cls" title="Permalink to this definition">#</a></dt>
 <dd><p>Get runtime_cls as a string from args</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>args</strong> – pod/deployment namespace args</p></li>
-<li><p><strong>copy</strong> – True if args shouldn’t be modified in-place</p></li>
-</ul>
+<dd class="field-odd"><p><strong>args</strong> – pod/deployment namespace args</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></p>
@@ -475,7 +473,7 @@ that gets triggered when any of the events provided in input is triggered (OR lo
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

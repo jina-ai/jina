@@ -300,6 +300,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../client/instrumentation/">Instrumentation</a></li>
@@ -430,7 +431,7 @@
                     <section id="instrumentation">
 <span id="instrumenting-flow"></span><h1>Instrumentation<a class="headerlink" href="#instrumentation" title="Permalink to this heading">#</a></h1>
 <p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> exposes configuration parameters for leveraging <a class="reference external" href="https://opentelemetry.io">OpenTelemetry</a> Tracing and Metrics observability features. These tools let you instrument and collect various signals which help to analyze your application’s real-time behavior.</p>
-<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> is composed of several Pods, namely the <a class="reference internal" href="../../../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime" title="jina.serve.runtimes.gateway.GatewayRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">GatewayRuntime</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s, and potentially a <a class="reference internal" href="../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime" title="jina.serve.runtimes.head.HeadRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeadRuntime</span></code></a> (see the <a class="reference internal" href="../../preliminaries/#architecture-overview"><span class="std std-ref">architecture overview</span></a>). Each Pod is its own microservice. These services expose their own metrics using the Python <a class="reference external" href="https://opentelemetry-python.readthedocs.io/en/stable/api/trace.html">OpenTelemetry API and SDK</a>.</p>
+<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> is composed of several Pods, namely the <code class="xref py py-class docutils literal notranslate"><span class="pre">GatewayRuntime</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s, and potentially a <code class="xref py py-class docutils literal notranslate"><span class="pre">HeadRuntime</span></code> (see the <a class="reference internal" href="../../preliminaries/#architecture-overview"><span class="std std-ref">architecture overview</span></a>). Each Pod is its own microservice. These services expose their own metrics using the Python <a class="reference external" href="https://opentelemetry-python.readthedocs.io/en/stable/api/trace.html">OpenTelemetry API and SDK</a>.</p>
 <p>Tracing and Metrics can be enabled and configured independently to allow more flexibility in the data collection and visualization setup.</p>
 <div class="seealso admonition hint">
 <p class="admonition-title">Hint</p>
@@ -798,7 +799,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

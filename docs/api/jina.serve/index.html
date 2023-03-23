@@ -300,6 +300,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -499,7 +500,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.networking.utils/#jina.serve.networking.utils.send_health_check_sync"><code class="docutils literal notranslate"><span class="pre">send_health_check_sync()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.networking.utils/#jina.serve.networking.utils.send_health_check_async"><code class="docutils literal notranslate"><span class="pre">send_health_check_async()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.networking.utils/#jina.serve.networking.utils.send_requests_sync"><code class="docutils literal notranslate"><span class="pre">send_requests_sync()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.networking.utils/#jina.serve.networking.utils.get_default_grpc_options"><code class="docutils literal notranslate"><span class="pre">get_default_grpc_options()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.networking.utils/#jina.serve.networking.utils.send_request_async"><code class="docutils literal notranslate"><span class="pre">send_request_async()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.networking.utils/#jina.serve.networking.utils.get_available_services"><code class="docutils literal notranslate"><span class="pre">get_available_services()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.networking.utils/#jina.serve.networking.utils.in_docker"><code class="docutils literal notranslate"><span class="pre">in_docker()</span></code></a></li>
@@ -540,6 +540,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.head/#module-jina.serve.runtimes.head">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.servers/">jina.serve.runtimes.servers package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers/#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.servers/#module-jina.serve.runtimes.servers">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.worker/">jina.serve.runtimes.worker package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.worker/#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.worker/#module-jina.serve.runtimes.worker">Module contents</a></li>
@@ -552,10 +557,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.base/">jina.serve.runtimes.base module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.base/#jina.serve.runtimes.base.BaseRuntime"><code class="docutils literal notranslate"><span class="pre">BaseRuntime</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.helper/">jina.serve.runtimes.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.monitoring/">jina.serve.runtimes.monitoring module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.monitoring/#jina.serve.runtimes.monitoring.MonitoringMixin"><code class="docutils literal notranslate"><span class="pre">MonitoringMixin</span></code></a></li>
@@ -564,11 +565,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes/#module-jina.serve.runtimes">Module contents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes/#jina.serve.runtimes.list_all_runtimes"><code class="docutils literal notranslate"><span class="pre">list_all_runtimes()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes/#jina.serve.runtimes.get_runtime"><code class="docutils literal notranslate"><span class="pre">get_runtime()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes/#module-jina.serve.runtimes">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.serve.stream/">jina.serve.stream package</a><ul>
@@ -597,27 +594,13 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.serve.gateway/">jina.serve.gateway module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../jina.serve.gateway/#jina.serve.gateway.BaseGateway"><code class="docutils literal notranslate"><span class="pre">BaseGateway</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.gateway/#jina.serve.gateway.BaseGateway.port"><code class="docutils literal notranslate"><span class="pre">BaseGateway.port</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.gateway/#jina.serve.gateway.BaseGateway.ports"><code class="docutils literal notranslate"><span class="pre">BaseGateway.ports</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.gateway/#jina.serve.gateway.BaseGateway.protocols"><code class="docutils literal notranslate"><span class="pre">BaseGateway.protocols</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.gateway/#jina.serve.gateway.BaseGateway.host"><code class="docutils literal notranslate"><span class="pre">BaseGateway.host</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.gateway/#jina.serve.gateway.BaseGateway.setup_server"><code class="docutils literal notranslate"><span class="pre">BaseGateway.setup_server()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.gateway/#jina.serve.gateway.BaseGateway.run_server"><code class="docutils literal notranslate"><span class="pre">BaseGateway.run_server()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.gateway/#jina.serve.gateway.BaseGateway.shutdown"><code class="docutils literal notranslate"><span class="pre">BaseGateway.shutdown()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.gateway/#jina.serve.gateway.BaseGateway.is_valid_jaml"><code class="docutils literal notranslate"><span class="pre">BaseGateway.is_valid_jaml()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.gateway/#jina.serve.gateway.BaseGateway.load_config"><code class="docutils literal notranslate"><span class="pre">BaseGateway.load_config()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.gateway/#jina.serve.gateway.BaseGateway.save_config"><code class="docutils literal notranslate"><span class="pre">BaseGateway.save_config()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.serve.helper/">jina.serve.helper module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.serve.helper/#jina.serve.helper.wrap_func"><code class="docutils literal notranslate"><span class="pre">wrap_func()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.serve.helper/#jina.serve.helper.store_init_kwargs"><code class="docutils literal notranslate"><span class="pre">store_init_kwargs()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.serve.helper/#jina.serve.helper.extract_trailing_metadata"><code class="docutils literal notranslate"><span class="pre">extract_trailing_metadata()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.serve.helper/#jina.serve.helper.format_grpc_error"><code class="docutils literal notranslate"><span class="pre">format_grpc_error()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.helper/#jina.serve.helper.get_default_grpc_options"><code class="docutils literal notranslate"><span class="pre">get_default_grpc_options()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.helper/#jina.serve.helper.get_server_side_grpc_options"><code class="docutils literal notranslate"><span class="pre">get_server_side_grpc_options()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.serve.monitoring/">jina.serve.monitoring module</a></li>
@@ -642,7 +625,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

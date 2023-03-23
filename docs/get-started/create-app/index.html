@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/get-started/create-app/" />
 <meta property="og:site_name" content="Jina 3.14.2 Documentation" />
-<meta property="og:description" content="Let’s build a toy application with Jina. To start, use Jina CLI to make a new project: This creates a new project folder called hello-jina with the following file structure: flow.yml is the configuration file for the Flow., executor1/ is where you write your Executor code., config.yml is the conf..." />
+<meta property="og:description" content="Let’s build a toy application with Jina. To start, use Jina CLI to make a new Deployment or a Flow: Deployment This creates a new project folder called hello-jina with the following file structure: deployment.yml is the configuration file for the Deployment., executor1/ is where you write your Ex..." />
 <meta property="og:image" content="https://docs.jina.ai/_images/deploy-jcloud-ongoing.png" />
 <meta property="og:image:alt" content="Jina 3.14.2 Documentation" />
-<meta name="description" content="Let’s build a toy application with Jina. To start, use Jina CLI to make a new project: This creates a new project folder called hello-jina with the following file structure: flow.yml is the configuration file for the Flow., executor1/ is where you write your Executor code., config.yml is the conf..." />
+<meta name="description" content="Let’s build a toy application with Jina. To start, use Jina CLI to make a new Deployment or a Flow: Deployment This creates a new project folder called hello-jina with the following file structure: deployment.yml is the configuration file for the Deployment., executor1/ is where you write your Ex..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -300,6 +300,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -429,21 +430,23 @@
                 <article role="main">
                     <section id="create-first-project">
 <h1><span class="fas fa-folder-plus"></span> Create First Project<a class="headerlink" href="#create-first-project" title="Permalink to this heading">#</a></h1>
-<p>Let’s build a toy application with Jina. To start, use Jina CLI to make a new project:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>new<span class="w"> </span>hello-jina
+<p>Let’s build a toy application with Jina. To start, use Jina CLI to make a new Deployment or a Flow:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Deployment</label><div class="tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>new<span class="w"> </span>hello-jina<span class="w"> </span>--type<span class="o">=</span>deployment
 </pre></div>
 </div>
 <p>This creates a new project folder called <code class="docutils literal notranslate"><span class="pre">hello-jina</span></code> with the following file structure:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>hello-jina/
     |- client.py
-    |- flow.yml
+    |- deployment.yml
     |- executor1/
             |- config.yml
             |- executor.py
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">flow.yml</span></code> is the configuration file for the <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deployment.yml</span></code> is the configuration file for the <code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">executor1/</span></code> is where you write your <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> code.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">config.yml</span></code> is the configuration file for the <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>. It stores metadata for your Executor, as well as dependencies.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">client.py</span></code> is the entrypoint of your Jina project. You can run it via <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">app.py</span></code>.</p></li>
@@ -451,11 +454,11 @@
 <p>There are some other files like <code class="docutils literal notranslate"><span class="pre">README.md</span></code> and <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> to provide extra metadata about that <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>. More information <a class="reference internal" href="../../concepts/executor/create/#create-executor"><span class="std std-ref">can be found here</span></a>.</p>
 <p>Now run it and observe the output of the server and client:</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Run server</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>flow.yml
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Run server</label><div class="tab-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>deployment<span class="w"> </span>--uses<span class="w"> </span>deployment.yml
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>────<span class="w"> </span>🎉<span class="w"> </span>Flow<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>serve!<span class="w"> </span>────
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>────<span class="w"> </span>🎉<span class="w"> </span>Deployment<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>serve!<span class="w"> </span>────
 ╭──────────────<span class="w"> </span>🔗<span class="w"> </span>Endpoint<span class="w"> </span>───────────────╮
 │<span class="w">  </span>⛓<span class="w">     </span>Protocol<span class="w">                    </span>GRPC<span class="w">  </span>│
 │<span class="w">  </span>🏠<span class="w">       </span>Local<span class="w">           </span><span class="m">0</span>.0.0.0:54321<span class="w">  </span>│
@@ -465,7 +468,11 @@
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Run client</label><div class="tab-content docutils">
+</div>
+</div>
+</div>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--1">Run client</label><div class="tab-content docutils">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>client.py
 </pre></div>
 </div>
@@ -496,7 +503,7 @@
 </span><span class="hll">            <span class="n">doc</span><span class="o">.</span><span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
 </span></pre></div>
 </div>
-<p>Kill the last server with <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> and restart the server with <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">flow</span> <span class="pre">--uses</span> <span class="pre">flow.yml</span></code>.</p>
+<p>Kill the last server with <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> and restart the server with <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">flow</span> <span class="pre">--uses</span> <span class="pre">deployment.yml</span></code>.</p>
 </section>
 <section id="call-crunch-number-endpoint">
 <h2>Call <code class="docutils literal notranslate"><span class="pre">/crunch-number</span></code> endpoint<a class="headerlink" href="#call-crunch-number-endpoint" title="Permalink to this heading">#</a></h2>
@@ -539,7 +546,137 @@
 </section>
 <section id="deploy-to-jcloud">
 <h2>Deploy to JCloud<a class="headerlink" href="#deploy-to-jcloud" title="Permalink to this heading">#</a></h2>
+<p>JCloud offers free CPU and GPU instances to host Jina project.</p>
+<div class="highlight-admonition notranslate"><div class="highlight"><pre><span></span>:class: important
+At present, JCloud is only available for Flows. We are currently working on supporting Deployments.
+</pre></div>
+</div>
+<p>You’ve just finished your first toy Jina project, congratulations! You can now start your own project.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+````{tab} Flow
+
+```bash
+jina new hello-jina --type=flow
+```
+
+This creates a new project folder called `hello-jina` with the following file structure:
+
+```text
+hello-jina/
+    |- client.py
+    |- flow.yml
+    |- executor1/
+            |- config.yml
+            |- executor.py
+```
+- `flow.yml` is the configuration file for the {class}`~jina.Flow`.
+- `executor1/` is where you write your {class}`~jina.Executor` code.
+- `config.yml` is the configuration file for the {class}`~jina.Executor`. It stores metadata for your Executor, as well as dependencies.
+- `client.py` is the entrypoint of your Jina project. You can run it via `python app.py`.
+
+There are some other files like `README.md` and `requirements.txt` to provide extra metadata about that {class}`~jina.Executor`. More information {ref}`can be found here&lt;create-executor&gt;`.
+
+Now run it and observe the output of the server and client:
+
+````{tab} Run server
+
+```shell
+jina flow --uses flow.yml
+```
+
+```shell
+
+──── 🎉 Flow is ready to serve! ────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:54321  │
+│  🔒     Private    192.168.200.56:54321  │
+│  🌍      Public    81.223.121.124:54321  │
+╰──────────────────────────────────────────╯
+```
+</pre></div>
+</div>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--1">Run client</label><div class="tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>client.py
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="s1">&#39;hello, world!&#39;</span>,<span class="w"> </span><span class="s1">&#39;goodbye, world!&#39;</span><span class="o">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id1">
+<h2>Add logic<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<p>You can use any Python library in <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>. For example, add <code class="docutils literal notranslate"><span class="pre">pytorch</span></code> to <code class="docutils literal notranslate"><span class="pre">executor1/requirements.txt</span></code> and crunch some numbers.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">executor.py</span></code>, add another endpoint <code class="docutils literal notranslate"><span class="pre">/get-tensor</span></code> as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;hello, world!&#39;</span>
+        <span class="n">docs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;goodbye, world!&#39;</span>
+
+<span class="hll">    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/crunch-numbers&#39;</span><span class="p">)</span>
+</span><span class="hll">    <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span class="hll">        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+</span><span class="hll">            <span class="n">doc</span><span class="o">.</span><span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+</span></pre></div>
+</div>
+<p>Kill the last server with <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> and restart the server with <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">flow</span> <span class="pre">--uses</span> <span class="pre">flow.yml</span></code>.</p>
+</section>
+<section id="id2">
+<h2>Call <code class="docutils literal notranslate"><span class="pre">/crunch-number</span></code> endpoint<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<p>Modify <code class="docutils literal notranslate"><span class="pre">client.py</span></code> to call the <code class="docutils literal notranslate"><span class="pre">/crunch-numbers</span></code> endpoint:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;grpcs://1655d050ad.wolf.jina.ai&#39;</span><span class="p">)</span>
+    <span class="n">da</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/crunch-numbers&#39;</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">tensors</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After you save that, you can run your new client:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>client.py
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>tensor([[[0.9594, 0.9373],
+         [0.4729, 0.2012],
+         [0.7907, 0.3546],
+         [0.6961, 0.7463],
+         [0.3487, 0.7837],
+         [0.7825, 0.0556],
+         [0.3296, 0.2153],
+         [0.2207, 0.0220],
+         [0.9547, 0.9519],
+         [0.6703, 0.4601]],
+
+        [[0.9684, 0.6781],
+         [0.7906, 0.8454],
+         [0.2136, 0.9147],
+         [0.3999, 0.7443],
+         [0.2564, 0.0629],
+         [0.4713, 0.1018],
+         [0.3626, 0.0963],
+         [0.7562, 0.2183],
+         [0.9239, 0.3294],
+         [0.2457, 0.9189]]], dtype=torch.float64)
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h2>Deploy to JCloud<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
 <p>JCloud offers free CPU and GPU instances to host Jina project. Let’s deploy your first project to JCloud:</p>
+<div class="highlight-admonition notranslate"><div class="highlight"><pre><span></span>:class: important
+At present, JCloud is only available for Flows. We are currently working on supporting Deployments.
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>auth<span class="w"> </span>login
 </pre></div>
 </div>
@@ -607,6 +744,9 @@
 </pre></div>
 </div>
 <p>You’ve just finished your first toy Jina project, congratulations! You can now start your own project.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -641,7 +781,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -677,6 +817,9 @@
 <li><a class="reference internal" href="#add-logic">Add logic</a></li>
 <li><a class="reference internal" href="#call-crunch-number-endpoint">Call <code class="docutils literal notranslate"><span class="pre">/crunch-number</span></code> endpoint</a></li>
 <li><a class="reference internal" href="#deploy-to-jcloud">Deploy to JCloud</a></li>
+<li><a class="reference internal" href="#id1">Add logic</a></li>
+<li><a class="reference internal" href="#id2">Call <code class="docutils literal notranslate"><span class="pre">/crunch-number</span></code> endpoint</a></li>
+<li><a class="reference internal" href="#id3">Deploy to JCloud</a></li>
 <li><a class="reference internal" href="#delete-the-deployed-project">Delete the deployed project</a></li>
 </ul>
 </li>

@@ -272,6 +272,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -464,6 +465,24 @@
     <td></td>
     <td>&#160;&#160;&#160;
         <a href="../api/jina.clients.base.http/#module-jina.clients.base.http"><code class="xref">jina.clients.base.http</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="../api/jina.clients.base.retry/#module-jina.clients.base.retry"><code class="xref">jina.clients.base.retry</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="../api/jina.clients.base.stream_rpc/#module-jina.clients.base.stream_rpc"><code class="xref">jina.clients.base.stream_rpc</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="../api/jina.clients.base.unary_rpc/#module-jina.clients.base.unary_rpc"><code class="xref">jina.clients.base.unary_rpc</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
@@ -877,6 +896,12 @@
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
+        <a href="../api/jina.parsers.orchestrate.runtimes.grpc_channel/#module-jina.parsers.orchestrate.runtimes.grpc_channel"><code class="xref">jina.parsers.orchestrate.runtimes.grpc_channel</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
         <a href="../api/jina.parsers.orchestrate.runtimes.head/#module-jina.parsers.orchestrate.runtimes.head"><code class="xref">jina.parsers.orchestrate.runtimes.head</code></a></td><td>
     <em></em></td>
   </tr>
@@ -1033,12 +1058,6 @@
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="../api/jina.serve.gateway/#module-jina.serve.gateway"><code class="xref">jina.serve.gateway</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
         <a href="../api/jina.serve.helper/#module-jina.serve.helper"><code class="xref">jina.serve.helper</code></a></td><td>
     <em></em></td>
   </tr>
@@ -1105,12 +1124,6 @@
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="../api/jina.serve.runtimes.base/#module-jina.serve.runtimes.base"><code class="xref">jina.serve.runtimes.base</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
         <a href="../api/jina.serve.runtimes.gateway/#module-jina.serve.runtimes.gateway"><code class="xref">jina.serve.runtimes.gateway</code></a></td><td>
     <em></em></td>
   </tr>
@@ -1129,7 +1142,7 @@
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="../api/jina.serve.runtimes.gateway.composite.gateway/#module-jina.serve.runtimes.gateway.composite.gateway"><code class="xref">jina.serve.runtimes.gateway.composite.gateway</code></a></td><td>
+        <a href="../api/jina.serve.runtimes.gateway.gateway/#module-jina.serve.runtimes.gateway.gateway"><code class="xref">jina.serve.runtimes.gateway.gateway</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
@@ -1153,19 +1166,7 @@
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="../api/jina.serve.runtimes.gateway.grpc.gateway/#module-jina.serve.runtimes.gateway.grpc.gateway"><code class="xref">jina.serve.runtimes.gateway.grpc.gateway</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
         <a href="../api/jina.serve.runtimes.gateway.http/#module-jina.serve.runtimes.gateway.http"><code class="xref">jina.serve.runtimes.gateway.http</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="../api/jina.serve.runtimes.gateway.http.app/#module-jina.serve.runtimes.gateway.http.app"><code class="xref">jina.serve.runtimes.gateway.http.app</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
@@ -1177,13 +1178,13 @@
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="../api/jina.serve.runtimes.gateway.http.gateway/#module-jina.serve.runtimes.gateway.http.gateway"><code class="xref">jina.serve.runtimes.gateway.http.gateway</code></a></td><td>
+        <a href="../api/jina.serve.runtimes.gateway.http_fastapi_app/#module-jina.serve.runtimes.gateway.http_fastapi_app"><code class="xref">jina.serve.runtimes.gateway.http_fastapi_app</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="../api/jina.serve.runtimes.gateway.http.models/#module-jina.serve.runtimes.gateway.http.models"><code class="xref">jina.serve.runtimes.gateway.http.models</code></a></td><td>
+        <a href="../api/jina.serve.runtimes.gateway.models/#module-jina.serve.runtimes.gateway.models"><code class="xref">jina.serve.runtimes.gateway.models</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
@@ -1207,13 +1208,7 @@
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="../api/jina.serve.runtimes.gateway.websocket.app/#module-jina.serve.runtimes.gateway.websocket.app"><code class="xref">jina.serve.runtimes.gateway.websocket.app</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="../api/jina.serve.runtimes.gateway.websocket.gateway/#module-jina.serve.runtimes.gateway.websocket.gateway"><code class="xref">jina.serve.runtimes.gateway.websocket.gateway</code></a></td><td>
+        <a href="../api/jina.serve.runtimes.gateway.websocket_fastapi_app/#module-jina.serve.runtimes.gateway.websocket_fastapi_app"><code class="xref">jina.serve.runtimes.gateway.websocket_fastapi_app</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
@@ -1238,6 +1233,36 @@
     <td></td>
     <td>&#160;&#160;&#160;
         <a href="../api/jina.serve.runtimes.monitoring/#module-jina.serve.runtimes.monitoring"><code class="xref">jina.serve.runtimes.monitoring</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="../api/jina.serve.runtimes.servers/#module-jina.serve.runtimes.servers"><code class="xref">jina.serve.runtimes.servers</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="../api/jina.serve.runtimes.servers.composite/#module-jina.serve.runtimes.servers.composite"><code class="xref">jina.serve.runtimes.servers.composite</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="../api/jina.serve.runtimes.servers.grpc/#module-jina.serve.runtimes.servers.grpc"><code class="xref">jina.serve.runtimes.servers.grpc</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="../api/jina.serve.runtimes.servers.http/#module-jina.serve.runtimes.servers.http"><code class="xref">jina.serve.runtimes.servers.http</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="../api/jina.serve.runtimes.servers.websocket/#module-jina.serve.runtimes.servers.websocket"><code class="xref">jina.serve.runtimes.servers.websocket</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
@@ -1352,7 +1377,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

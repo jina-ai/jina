@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -408,6 +409,9 @@
 <ul><li><a href="jina/clients/base/grpc/">jina.clients.base.grpc</a></li>
 <li><a href="jina/clients/base/helper/">jina.clients.base.helper</a></li>
 <li><a href="jina/clients/base/http/">jina.clients.base.http</a></li>
+<li><a href="jina/clients/base/retry/">jina.clients.base.retry</a></li>
+<li><a href="jina/clients/base/stream_rpc/">jina.clients.base.stream_rpc</a></li>
+<li><a href="jina/clients/base/unary_rpc/">jina.clients.base.unary_rpc</a></li>
 <li><a href="jina/clients/base/websocket/">jina.clients.base.websocket</a></li>
 </ul><li><a href="jina/clients/grpc/">jina.clients.grpc</a></li>
 <li><a href="jina/clients/helper/">jina.clients.helper</a></li>
@@ -462,6 +466,7 @@
 <li><a href="jina/parsers/orchestrate/deployment/">jina.parsers.orchestrate.deployment</a></li>
 <li><a href="jina/parsers/orchestrate/pod/">jina.parsers.orchestrate.pod</a></li>
 <li><a href="jina/parsers/orchestrate/runtimes/container/">jina.parsers.orchestrate.runtimes.container</a></li>
+<li><a href="jina/parsers/orchestrate/runtimes/grpc_channel/">jina.parsers.orchestrate.runtimes.grpc_channel</a></li>
 <li><a href="jina/parsers/orchestrate/runtimes/head/">jina.parsers.orchestrate.runtimes.head</a></li>
 <li><a href="jina/parsers/orchestrate/runtimes/remote/">jina.parsers.orchestrate.runtimes.remote</a></li>
 <li><a href="jina/parsers/orchestrate/runtimes/runtime/">jina.parsers.orchestrate.runtimes.runtime</a></li>
@@ -474,35 +479,35 @@
 <li><a href="jina/serve/executors/">jina.serve.executors</a></li>
 <ul><li><a href="jina/serve/executors/decorators/">jina.serve.executors.decorators</a></li>
 <li><a href="jina/serve/executors/metas/">jina.serve.executors.metas</a></li>
-</ul><li><a href="jina/serve/gateway/">jina.serve.gateway</a></li>
-<li><a href="jina/serve/helper/">jina.serve.helper</a></li>
+</ul><li><a href="jina/serve/helper/">jina.serve.helper</a></li>
 <li><a href="jina/serve/instrumentation/">jina.serve.instrumentation</a></li>
 <li><a href="jina/serve/networking/">jina.serve.networking</a></li>
 <ul><li><a href="jina/serve/networking/connection_stub/">jina.serve.networking.connection_stub</a></li>
 <li><a href="jina/serve/networking/utils/">jina.serve.networking.utils</a></li>
-</ul><li><a href="jina/serve/runtimes/">jina.serve.runtimes</a></li>
-<ul><li><a href="jina/serve/runtimes/asyncio/">jina.serve.runtimes.asyncio</a></li>
-<li><a href="jina/serve/runtimes/base/">jina.serve.runtimes.base</a></li>
-<li><a href="jina/serve/runtimes/gateway/">jina.serve.runtimes.gateway</a></li>
-<ul><li><a href="jina/serve/runtimes/gateway/async_request_response_handling/">jina.serve.runtimes.gateway.async_request_response_handling</a></li>
-<li><a href="jina/serve/runtimes/gateway/composite/gateway/">jina.serve.runtimes.gateway.composite.gateway</a></li>
+</ul><li><a href="jina/serve/runtimes/asyncio/">jina.serve.runtimes.asyncio</a></li>
+<li><a href="jina/serve/runtimes/gateway/async_request_response_handling/">jina.serve.runtimes.gateway.async_request_response_handling</a></li>
+<li><a href="jina/serve/runtimes/gateway/composite/">jina.serve.runtimes.gateway.composite</a></li>
+<li><a href="jina/serve/runtimes/gateway/gateway/">jina.serve.runtimes.gateway.gateway</a></li>
 <li><a href="jina/serve/runtimes/gateway/graph/topology_graph/">jina.serve.runtimes.gateway.graph.topology_graph</a></li>
-<li><a href="jina/serve/runtimes/gateway/grpc/gateway/">jina.serve.runtimes.gateway.grpc.gateway</a></li>
-<li><a href="jina/serve/runtimes/gateway/http/app/">jina.serve.runtimes.gateway.http.app</a></li>
-<li><a href="jina/serve/runtimes/gateway/http/fastapi/">jina.serve.runtimes.gateway.http.fastapi</a></li>
-<li><a href="jina/serve/runtimes/gateway/http/gateway/">jina.serve.runtimes.gateway.http.gateway</a></li>
-<li><a href="jina/serve/runtimes/gateway/http/models/">jina.serve.runtimes.gateway.http.models</a></li>
+<li><a href="jina/serve/runtimes/gateway/grpc/">jina.serve.runtimes.gateway.grpc</a></li>
+<li><a href="jina/serve/runtimes/gateway/http/">jina.serve.runtimes.gateway.http</a></li>
+<ul><li><a href="jina/serve/runtimes/gateway/http/fastapi/">jina.serve.runtimes.gateway.http.fastapi</a></li>
+</ul><li><a href="jina/serve/runtimes/gateway/http_fastapi_app/">jina.serve.runtimes.gateway.http_fastapi_app</a></li>
+<li><a href="jina/serve/runtimes/gateway/models/">jina.serve.runtimes.gateway.models</a></li>
 <li><a href="jina/serve/runtimes/gateway/request_handling/">jina.serve.runtimes.gateway.request_handling</a></li>
 <li><a href="jina/serve/runtimes/gateway/streamer/">jina.serve.runtimes.gateway.streamer</a></li>
-<li><a href="jina/serve/runtimes/gateway/websocket/app/">jina.serve.runtimes.gateway.websocket.app</a></li>
-<li><a href="jina/serve/runtimes/gateway/websocket/gateway/">jina.serve.runtimes.gateway.websocket.gateway</a></li>
-</ul><li><a href="jina/serve/runtimes/head/">jina.serve.runtimes.head</a></li>
-<ul><li><a href="jina/serve/runtimes/head/request_handling/">jina.serve.runtimes.head.request_handling</a></li>
-</ul><li><a href="jina/serve/runtimes/monitoring/">jina.serve.runtimes.monitoring</a></li>
-<li><a href="jina/serve/runtimes/worker/">jina.serve.runtimes.worker</a></li>
-<ul><li><a href="jina/serve/runtimes/worker/batch_queue/">jina.serve.runtimes.worker.batch_queue</a></li>
+<li><a href="jina/serve/runtimes/gateway/websocket/">jina.serve.runtimes.gateway.websocket</a></li>
+<li><a href="jina/serve/runtimes/gateway/websocket_fastapi_app/">jina.serve.runtimes.gateway.websocket_fastapi_app</a></li>
+<li><a href="jina/serve/runtimes/head/request_handling/">jina.serve.runtimes.head.request_handling</a></li>
+<li><a href="jina/serve/runtimes/monitoring/">jina.serve.runtimes.monitoring</a></li>
+<li><a href="jina/serve/runtimes/servers/">jina.serve.runtimes.servers</a></li>
+<ul><li><a href="jina/serve/runtimes/servers/composite/">jina.serve.runtimes.servers.composite</a></li>
+<li><a href="jina/serve/runtimes/servers/grpc/">jina.serve.runtimes.servers.grpc</a></li>
+<li><a href="jina/serve/runtimes/servers/http/">jina.serve.runtimes.servers.http</a></li>
+<li><a href="jina/serve/runtimes/servers/websocket/">jina.serve.runtimes.servers.websocket</a></li>
+</ul><li><a href="jina/serve/runtimes/worker/batch_queue/">jina.serve.runtimes.worker.batch_queue</a></li>
 <li><a href="jina/serve/runtimes/worker/request_handling/">jina.serve.runtimes.worker.request_handling</a></li>
-</ul></ul><li><a href="jina/serve/stream/">jina.serve.stream</a></li>
+<li><a href="jina/serve/stream/">jina.serve.stream</a></li>
 <ul><li><a href="jina/serve/stream/helper/">jina.serve.stream.helper</a></li>
 </ul><li><a href="jina/types/mixin/">jina.types.mixin</a></li>
 <li><a href="jina/types/request/">jina.types.request</a></li>
@@ -531,7 +536,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

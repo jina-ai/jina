@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -422,6 +423,7 @@
 <span class="k">def</span> <span class="nf">Client</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">asyncio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">grpc_channel_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span>
     <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -448,6 +450,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a Client. Client is how user interact with Flow</span>
 
 <span class="sd">    :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
+<span class="sd">    :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {&#39;grpc.max_send_message_length&#39;: -1}. When max_attempts &gt; 1, the &#39;grpc.service_config&#39; option will not be applicable.</span>
 <span class="sd">    :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.</span>
 <span class="sd">    :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
 <span class="sd">    :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</span>
@@ -503,6 +506,7 @@
 <span class="sd">        c.post(on=&#39;/index&#39;, inputs=Document(text=&#39;hello!&#39;))</span>
 
 <span class="sd">    :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
+<span class="sd">    :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {&#39;grpc.max_send_message_length&#39;: -1}. When max_attempts &gt; 1, the &#39;grpc.service_config&#39; option will not be applicable.</span>
 <span class="sd">    :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.</span>
 <span class="sd">    :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
 <span class="sd">    :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</span>
@@ -581,7 +585,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

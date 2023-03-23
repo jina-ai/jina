@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -495,13 +496,12 @@
                     <span class="k">except</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Couldn</span><span class="se">\&#39;</span><span class="s1">t parse prefetch to int value!&#39;</span><span class="p">)</span>
 
-        <span class="n">async_iter</span><span class="p">:</span> <span class="n">AsyncIterator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stream_requests</span><span class="p">(</span>
-            <span class="n">request_iterator</span><span class="o">=</span><span class="n">request_iterator</span><span class="p">,</span>
-            <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span><span class="p">,</span>
-            <span class="n">prefetch</span><span class="o">=</span><span class="n">prefetch</span><span class="p">,</span>
-        <span class="p">)</span>
-
         <span class="k">try</span><span class="p">:</span>
+            <span class="n">async_iter</span><span class="p">:</span> <span class="n">AsyncIterator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stream_requests</span><span class="p">(</span>
+                <span class="n">request_iterator</span><span class="o">=</span><span class="n">request_iterator</span><span class="p">,</span>
+                <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span><span class="p">,</span>
+                <span class="n">prefetch</span><span class="o">=</span><span class="n">prefetch</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">async_iter</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">response</span>
         <span class="k">except</span> <span class="n">InternalNetworkError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
@@ -700,7 +700,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

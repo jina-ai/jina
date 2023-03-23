@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -1208,7 +1209,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">args</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="kn">from</span> <span class="nn">jina.serve.executors</span> <span class="kn">import</span> <span class="n">BaseExecutor</span>
-        <span class="kn">from</span> <span class="nn">jina.serve.gateway</span> <span class="kn">import</span> <span class="n">BaseGateway</span>
+        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.gateway</span> <span class="kn">import</span> <span class="n">BaseGateway</span>
 
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">k</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
@@ -2047,10 +2048,10 @@
             <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">_single_port_free</span><span class="p">(</span><span class="n">_h</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span> <span class="k">for</span> <span class="n">_h</span> <span class="ow">in</span> <span class="n">host</span><span class="p">])</span>
 
 
-<span class="k">def</span> <span class="nf">send_telemetry_event</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">send_telemetry_event</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">obj_cls_name</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Sends in a thread a request with telemetry for a given event</span>
 <span class="sd">    :param event: Event leading to the telemetry entry</span>
-<span class="sd">    :param obj: Object to be tracked</span>
+<span class="sd">    :param obj_cls_name: Class name of the object to be tracked</span>
 <span class="sd">    :param kwargs: Extra kwargs to be passed to the data sent</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -2065,7 +2066,7 @@
             <span class="n">metas</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_full_version</span><span class="p">()</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">urlsafe_b64encode</span><span class="p">(</span>
                 <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
-                    <span class="p">{</span><span class="o">**</span><span class="n">metas</span><span class="p">,</span> <span class="s1">&#39;event&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">event</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">}</span>
+                    <span class="p">{</span><span class="o">**</span><span class="n">metas</span><span class="p">,</span> <span class="s1">&#39;event&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">obj_cls_name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">event</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">}</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
             <span class="p">)</span>
 
@@ -2092,7 +2093,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

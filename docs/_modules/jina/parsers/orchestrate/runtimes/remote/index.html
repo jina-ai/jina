@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -405,6 +406,9 @@
 
 <span class="kn">from</span> <span class="nn">jina.constants</span> <span class="kn">import</span> <span class="n">__default_host__</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">CastHostAction</span><span class="p">,</span> <span class="n">KVAppendAction</span><span class="p">,</span> <span class="n">add_arg_group</span>
+<span class="kn">from</span> <span class="nn">jina.parsers.orchestrate.runtimes.grpc_channel</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">mixin_grpc_channel_options_parser</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.orchestrate.runtimes.runtime</span> <span class="kn">import</span> <span class="n">mixin_base_runtime_parser</span>
 
 
@@ -570,6 +574,7 @@
     <span class="p">)</span>
 
     <span class="n">mixin_base_runtime_parser</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+    <span class="n">mixin_grpc_channel_options_parser</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
     <span class="n">mixin_gateway_streamer_parser</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span></div>
 
 
@@ -603,7 +608,6 @@
 
 
 <span class="k">def</span> <span class="nf">_add_proxy</span><span class="p">(</span><span class="n">arg_group</span><span class="p">):</span>
-
     <span class="n">arg_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--proxy&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
@@ -744,7 +748,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

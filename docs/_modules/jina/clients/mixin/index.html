@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -406,6 +407,11 @@
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partialmethod</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">import</span> <span class="nn">grpc.aio</span>
+
+<span class="kn">from</span> <span class="nn">jina.clients.base.grpc</span> <span class="kn">import</span> <span class="n">GRPCBaseClient</span>
+<span class="kn">from</span> <span class="nn">jina.clients.base.retry</span> <span class="kn">import</span> <span class="n">wait_or_raise_err</span>
+<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">InternalNetworkError</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">deprecate_by</span><span class="p">,</span> <span class="n">get_or_reuse_loop</span><span class="p">,</span> <span class="n">run_async</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 
@@ -414,7 +420,7 @@
     <span class="kn">from</span> <span class="nn">jina.clients.base</span> <span class="kn">import</span> <span class="n">CallbackFnType</span><span class="p">,</span> <span class="n">InputType</span>
     <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">Response</span>
 
-<span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+<span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 
 <span class="k">def</span> <span class="nf">_include_results_field_in_param</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Dict&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Dict&#39;</span><span class="p">:</span>
@@ -610,6 +616,131 @@
 <div class="viewcode-block" id="PostMixin"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin">[docs]</a><span class="k">class</span> <span class="nc">PostMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The Post Mixin class for Client and Flow&quot;&quot;&quot;</span>
 
+    <span class="k">def</span> <span class="nf">_with_retry</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">func</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="p">,</span>
+        <span class="n">on_done</span><span class="p">,</span>
+        <span class="n">on_error</span><span class="p">,</span>
+        <span class="n">on_always</span><span class="p">,</span>
+        <span class="n">exec_endpoint</span><span class="p">,</span>
+        <span class="n">target_executor</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">,</span>
+        <span class="n">request_size</span><span class="p">,</span>
+        <span class="n">max_attempts</span><span class="p">,</span>
+        <span class="n">initial_backoff</span><span class="p">,</span>
+        <span class="n">max_backoff</span><span class="p">,</span>
+        <span class="n">backoff_multiplier</span><span class="p">,</span>
+        <span class="n">results_in_order</span><span class="p">,</span>
+        <span class="n">stream</span><span class="p">,</span>
+        <span class="n">prefetch</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">is_document_or_documentarray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">Document</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">inputs</span><span class="p">,</span> <span class="n">DocumentArray</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">is_document_or_documentarray</span>
+            <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="n">GRPCBaseClient</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">max_attempts</span> <span class="o">&gt;</span> <span class="mi">1</span>
+            <span class="ow">and</span> <span class="n">stream</span>
+        <span class="p">):</span>
+            <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_attempts</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">PostMixin</span><span class="o">.</span><span class="n">_run_async</span><span class="p">(</span>
+                        <span class="n">backoff_multiplier</span><span class="p">,</span>
+                        <span class="n">exec_endpoint</span><span class="p">,</span>
+                        <span class="n">func</span><span class="p">,</span>
+                        <span class="n">initial_backoff</span><span class="p">,</span>
+                        <span class="n">inputs</span><span class="p">,</span>
+                        <span class="n">kwargs</span><span class="p">,</span>
+                        <span class="n">max_attempts</span><span class="p">,</span>
+                        <span class="n">max_backoff</span><span class="p">,</span>
+                        <span class="n">on_always</span><span class="p">,</span>
+                        <span class="n">on_done</span><span class="p">,</span>
+                        <span class="n">on_error</span><span class="p">,</span>
+                        <span class="n">parameters</span><span class="p">,</span>
+                        <span class="n">prefetch</span><span class="p">,</span>
+                        <span class="n">request_size</span><span class="p">,</span>
+                        <span class="n">results_in_order</span><span class="p">,</span>
+                        <span class="n">stream</span><span class="p">,</span>
+                        <span class="n">target_executor</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="p">(</span>
+                    <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">AioRpcError</span><span class="p">,</span>
+                    <span class="n">InternalNetworkError</span><span class="p">,</span>
+                    <span class="ne">ConnectionError</span><span class="p">,</span>
+                <span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                    <span class="n">run_async</span><span class="p">(</span>
+                        <span class="n">wait_or_raise_err</span><span class="p">,</span>
+                        <span class="n">attempt</span><span class="o">=</span><span class="n">attempt</span><span class="p">,</span>
+                        <span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">,</span>
+                        <span class="n">max_attempts</span><span class="o">=</span><span class="n">max_attempts</span><span class="p">,</span>
+                        <span class="n">backoff_multiplier</span><span class="o">=</span><span class="n">backoff_multiplier</span><span class="p">,</span>
+                        <span class="n">initial_backoff</span><span class="o">=</span><span class="n">initial_backoff</span><span class="p">,</span>
+                        <span class="n">max_backoff</span><span class="o">=</span><span class="n">max_backoff</span><span class="p">,</span>
+                    <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">PostMixin</span><span class="o">.</span><span class="n">_run_async</span><span class="p">(</span>
+                <span class="n">backoff_multiplier</span><span class="p">,</span>
+                <span class="n">exec_endpoint</span><span class="p">,</span>
+                <span class="n">func</span><span class="p">,</span>
+                <span class="n">initial_backoff</span><span class="p">,</span>
+                <span class="n">inputs</span><span class="p">,</span>
+                <span class="n">kwargs</span><span class="p">,</span>
+                <span class="n">max_attempts</span><span class="p">,</span>
+                <span class="n">max_backoff</span><span class="p">,</span>
+                <span class="n">on_always</span><span class="p">,</span>
+                <span class="n">on_done</span><span class="p">,</span>
+                <span class="n">on_error</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="p">,</span>
+                <span class="n">prefetch</span><span class="p">,</span>
+                <span class="n">request_size</span><span class="p">,</span>
+                <span class="n">results_in_order</span><span class="p">,</span>
+                <span class="n">stream</span><span class="p">,</span>
+                <span class="n">target_executor</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_run_async</span><span class="p">(</span>
+        <span class="n">backoff_multiplier</span><span class="p">,</span>
+        <span class="n">exec_endpoint</span><span class="p">,</span>
+        <span class="n">func</span><span class="p">,</span>
+        <span class="n">initial_backoff</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="p">,</span>
+        <span class="n">kwargs</span><span class="p">,</span>
+        <span class="n">max_attempts</span><span class="p">,</span>
+        <span class="n">max_backoff</span><span class="p">,</span>
+        <span class="n">on_always</span><span class="p">,</span>
+        <span class="n">on_done</span><span class="p">,</span>
+        <span class="n">on_error</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">,</span>
+        <span class="n">prefetch</span><span class="p">,</span>
+        <span class="n">request_size</span><span class="p">,</span>
+        <span class="n">results_in_order</span><span class="p">,</span>
+        <span class="n">stream</span><span class="p">,</span>
+        <span class="n">target_executor</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">run_async</span><span class="p">(</span>
+            <span class="n">func</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+            <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
+            <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
+            <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
+            <span class="n">exec_endpoint</span><span class="o">=</span><span class="n">exec_endpoint</span><span class="p">,</span>
+            <span class="n">target_executor</span><span class="o">=</span><span class="n">target_executor</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+            <span class="n">request_size</span><span class="o">=</span><span class="n">request_size</span><span class="p">,</span>
+            <span class="n">max_attempts</span><span class="o">=</span><span class="n">max_attempts</span><span class="p">,</span>
+            <span class="n">initial_backoff</span><span class="o">=</span><span class="n">initial_backoff</span><span class="p">,</span>
+            <span class="n">max_backoff</span><span class="o">=</span><span class="n">max_backoff</span><span class="p">,</span>
+            <span class="n">backoff_multiplier</span><span class="o">=</span><span class="n">backoff_multiplier</span><span class="p">,</span>
+            <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span><span class="p">,</span>
+            <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span>
+            <span class="n">prefetch</span><span class="o">=</span><span class="n">prefetch</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
 <div class="viewcode-block" id="PostMixin.post"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post">[docs]</a>    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">on</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -625,7 +756,7 @@
         <span class="n">return_responses</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">initial_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
-        <span class="n">max_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">max_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">backoff_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
         <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">stream</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -681,8 +812,8 @@
             <span class="k">if</span> <span class="n">return_results</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">result</span>
 
-        <span class="k">return</span> <span class="n">run_async</span><span class="p">(</span>
-            <span class="n">_get_results</span><span class="p">,</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_with_retry</span><span class="p">(</span>
+            <span class="n">func</span><span class="o">=</span><span class="n">_get_results</span><span class="p">,</span>
             <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
             <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
             <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
@@ -691,7 +822,7 @@
             <span class="n">target_executor</span><span class="o">=</span><span class="n">target_executor</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
             <span class="n">request_size</span><span class="o">=</span><span class="n">request_size</span><span class="p">,</span>
-            <span class="n">max_attempts</span><span class="o">=</span><span class="n">max_attempts</span><span class="p">,</span>
+            <span class="n">max_attempts</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">max_attempts</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
             <span class="n">initial_backoff</span><span class="o">=</span><span class="n">initial_backoff</span><span class="p">,</span>
             <span class="n">max_backoff</span><span class="o">=</span><span class="n">max_backoff</span><span class="p">,</span>
             <span class="n">backoff_multiplier</span><span class="o">=</span><span class="n">backoff_multiplier</span><span class="p">,</span>
@@ -726,7 +857,7 @@
         <span class="n">return_responses</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">initial_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
-        <span class="n">max_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">max_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">backoff_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
         <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">stream</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -776,7 +907,7 @@
             <span class="n">target_executor</span><span class="o">=</span><span class="n">target_executor</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
             <span class="n">request_size</span><span class="o">=</span><span class="n">request_size</span><span class="p">,</span>
-            <span class="n">max_attempts</span><span class="o">=</span><span class="n">max_attempts</span><span class="p">,</span>
+            <span class="n">max_attempts</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">max_attempts</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
             <span class="n">initial_backoff</span><span class="o">=</span><span class="n">initial_backoff</span><span class="p">,</span>
             <span class="n">max_backoff</span><span class="o">=</span><span class="n">max_backoff</span><span class="p">,</span>
             <span class="n">backoff_multiplier</span><span class="o">=</span><span class="n">backoff_multiplier</span><span class="p">,</span>
@@ -811,7 +942,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

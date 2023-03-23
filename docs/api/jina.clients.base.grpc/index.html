@@ -298,6 +298,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -517,6 +518,34 @@ exporting metrics data is properly cleaned up.</p>
 
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.clients.base.grpc.client_grpc_options">
+<span class="sig-prename descclassname"><span class="pre">jina.clients.base.grpc.</span></span><span class="sig-name descname"><span class="pre">client_grpc_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backoff_multiplier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args_channel_options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/grpc/#client_grpc_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.grpc.client_grpc_options" title="Permalink to this definition">#</a></dt>
+<dd><p>Builds grpc options for the client by taking into account the retry parameters, default gRPC options and additional gRPC options.
+:type max_attempts: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
+:param max_attempts: Maximum number of attempts that are allowed.
+:type backoff_multiplier: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
+:param backoff_multiplier: Factor that will be raised to the exponent of (attempt - 1) for calculating the backoff wait time.
+:type initial_backoff: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
+:param initial_backoff: The backoff time on the first error. This will be multiplied by the backoff_multiplier exponent for subsequent wait time calculations.
+:type max_backoff: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
+:param max_backoff: The maximum backoff wait time.
+:type args_channel_options: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]
+:param args_channel_options: additional gRPC options that must be merged with the default options
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]
+:return: List of gRPC options</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.clients.base.grpc.remove_grpc_service_config">
+<span class="sig-prename descclassname"><span class="pre">jina.clients.base.grpc.</span></span><span class="sig-name descname"><span class="pre">remove_grpc_service_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/grpc/#remove_grpc_service_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.grpc.remove_grpc_service_config" title="Permalink to this definition">#</a></dt>
+<dd><p>Removes the ‘grpc.service_config’ configuration from the list of options.
+:type options: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]
+:param options: List of gRPC options
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]
+:return: List of gRPC options</p>
+</dd></dl>
+
 </section>
 
                 </article>
@@ -532,7 +561,7 @@ exporting metrics data is properly cleaned up.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -575,6 +604,8 @@ exporting metrics data is properly cleaned up.</p>
 <li><a class="reference internal" href="#jina.clients.base.grpc.GRPCBaseClient.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">GRPCBaseClient.tracing_client_interceptor()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#jina.clients.base.grpc.client_grpc_options"><code class="docutils literal notranslate"><span class="pre">client_grpc_options()</span></code></a></li>
+<li><a class="reference internal" href="#jina.clients.base.grpc.remove_grpc_service_config"><code class="docutils literal notranslate"><span class="pre">remove_grpc_service_config()</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -508,7 +509,7 @@
 <span class="sd">        :yields: generator over results</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="kn">import</span> <span class="nn">aiohttp</span>
+            <span class="k">pass</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">inputs</span>
         <span class="n">request_iterator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_requests</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -574,7 +575,7 @@
 <span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                For each request in the iterator, we send the `Message` using `iolet.send_message()`.</span>
 <span class="sd">                For websocket requests from client, for each request in the iterator, we send the request in `bytes`</span>
-<span class="sd">                using using `iolet.send_message()`.</span>
+<span class="sd">                using `iolet.send_message()`.</span>
 <span class="sd">                Then add {&lt;request-id&gt;: &lt;an-empty-future&gt;} to the request buffer.</span>
 <span class="sd">                This empty future is used to track the `result` of this request during `receive`.</span>
 <span class="sd">                :param request: current request in the iterator</span>
@@ -604,7 +605,8 @@
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;receive task not running, can not send messages&#39;</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span>
-                    <span class="n">request_iterator</span><span class="o">=</span><span class="n">request_iterator</span><span class="p">,</span> <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span>
+                    <span class="n">request_iterator</span><span class="o">=</span><span class="n">request_iterator</span><span class="p">,</span>
+                    <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span><span class="p">,</span>
                 <span class="p">):</span>
                     <span class="n">callback_exec</span><span class="p">(</span>
                         <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
@@ -647,7 +649,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

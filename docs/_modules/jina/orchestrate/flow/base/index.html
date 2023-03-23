@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -441,7 +442,7 @@
 
 <span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">jina.clients.mixin</span> <span class="kn">import</span> <span class="n">AsyncPostMixin</span><span class="p">,</span> <span class="n">HealthCheckMixin</span><span class="p">,</span> <span class="n">PostMixin</span><span class="p">,</span> <span class="n">ProfileMixin</span>
-<span class="kn">from</span> <span class="nn">jina.constants</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span><span class="p">,</span> <span class="n">__windows__</span>
+<span class="kn">from</span> <span class="nn">jina.constants</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__windows__</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">DeploymentRoleType</span><span class="p">,</span>
     <span class="n">FlowBuildLevel</span><span class="p">,</span>
@@ -475,7 +476,6 @@
     <span class="n">set_gateway_parser</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.flow</span> <span class="kn">import</span> <span class="n">set_flow_parser</span>
-<span class="kn">from</span> <span class="nn">jina.serve.networking.utils</span> <span class="kn">import</span> <span class="n">host_is_local</span><span class="p">,</span> <span class="n">in_docker</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">]</span>
 <span class="n">GATEWAY_ARGS_BLACKLIST</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;uses&#39;</span><span class="p">,</span> <span class="s1">&#39;uses_with&#39;</span><span class="p">]</span>
@@ -519,6 +519,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">asyncio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">grpc_channel_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span>
         <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -538,6 +539,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.</span>
 
 <span class="sd">        :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
+<span class="sd">        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {&#39;grpc.max_send_message_length&#39;: -1}. When max_attempts &gt; 1, the &#39;grpc.service_config&#39; option will not be applicable.</span>
 <span class="sd">        :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.</span>
 <span class="sd">        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
 <span class="sd">        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</span>
@@ -582,6 +584,7 @@
         <span class="n">floating</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">graph_conditions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
         <span class="n">graph_description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="n">grpc_channel_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">grpc_server_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span>
         <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -639,6 +642,7 @@
 <span class="sd">        :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.</span>
 <span class="sd">        :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.</span>
 <span class="sd">        :param graph_description: Routing graph for the gateway</span>
+<span class="sd">        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {&#39;grpc.max_send_message_length&#39;: -1}. When max_attempts &gt; 1, the &#39;grpc.service_config&#39; option will not be applicable.</span>
 <span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
 <span class="sd">        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
@@ -793,6 +797,7 @@
 <span class="sd">        - `port`, `port_monitoring`, `uses` and `uses_with` won&#39;t be passed to Executor</span>
 
 <span class="sd">        :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
+<span class="sd">        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {&#39;grpc.max_send_message_length&#39;: -1}. When max_attempts &gt; 1, the &#39;grpc.service_config&#39; option will not be applicable.</span>
 <span class="sd">        :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.</span>
 <span class="sd">        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
 <span class="sd">        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</span>
@@ -827,6 +832,7 @@
 <span class="sd">        :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.</span>
 <span class="sd">        :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.</span>
 <span class="sd">        :param graph_description: Routing graph for the gateway</span>
+<span class="sd">        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {&#39;grpc.max_send_message_length&#39;: -1}. When max_attempts &gt; 1, the &#39;grpc.service_config&#39; option will not be applicable.</span>
 <span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
 <span class="sd">        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
@@ -1236,6 +1242,7 @@
         <span class="n">floating</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">force_update</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">gpus</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">grpc_channel_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">grpc_metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">grpc_server_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">],</span>
@@ -1306,6 +1313,7 @@
 <span class="sd">              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`</span>
 <span class="sd">              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`</span>
 <span class="sd">              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</span>
+<span class="sd">        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {&#39;grpc.max_send_message_length&#39;: -1}. When max_attempts &gt; 1, the &#39;grpc.service_config&#39; option will not be applicable.</span>
 <span class="sd">        :param grpc_metadata: The metadata to be passed to the gRPC request.</span>
 <span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
 <span class="sd">        :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.</span>
@@ -1456,6 +1464,7 @@
 <span class="sd">              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`</span>
 <span class="sd">              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`</span>
 <span class="sd">              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</span>
+<span class="sd">        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {&#39;grpc.max_send_message_length&#39;: -1}. When max_attempts &gt; 1, the &#39;grpc.service_config&#39; option will not be applicable.</span>
 <span class="sd">        :param grpc_metadata: The metadata to be passed to the gRPC request.</span>
 <span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
 <span class="sd">        :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.</span>
@@ -1662,6 +1671,7 @@
         <span class="n">floating</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">graph_conditions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
         <span class="n">graph_description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="n">grpc_channel_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">grpc_server_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span>
         <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1719,6 +1729,7 @@
 <span class="sd">        :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.</span>
 <span class="sd">        :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.</span>
 <span class="sd">        :param graph_description: Routing graph for the gateway</span>
+<span class="sd">        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {&#39;grpc.max_send_message_length&#39;: -1}. When max_attempts &gt; 1, the &#39;grpc.service_config&#39; option will not be applicable.</span>
 <span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
 <span class="sd">        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
@@ -1817,6 +1828,7 @@
 <span class="sd">        :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.</span>
 <span class="sd">        :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.</span>
 <span class="sd">        :param graph_description: Routing graph for the gateway</span>
+<span class="sd">        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {&#39;grpc.max_send_message_length&#39;: -1}. When max_attempts &gt; 1, the &#39;grpc.service_config&#39; option will not be applicable.</span>
 <span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
 <span class="sd">        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
@@ -2151,7 +2163,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_stop_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="n">send_telemetry_event</span><span class="p">(</span>
             <span class="n">event</span><span class="o">=</span><span class="s1">&#39;stop&#39;</span><span class="p">,</span>
-            <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">obj_cls_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
             <span class="n">entity_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_entity_id</span><span class="p">,</span>
             <span class="n">duration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_stop_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span><span class="p">,</span>
             <span class="n">exc_type</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">exc_type</span><span class="p">),</span>
@@ -2198,7 +2210,11 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">RUNNING</span>
 
-        <span class="n">send_telemetry_event</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_entity_id</span><span class="p">)</span>
+        <span class="n">send_telemetry_event</span><span class="p">(</span>
+            <span class="n">event</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">,</span>
+            <span class="n">obj_cls_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+            <span class="n">entity_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_entity_id</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
@@ -2577,7 +2593,7 @@
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">GATEWAY_NAME</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">:</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">port</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;port&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="s1">&#39;ports&#39;</span><span class="p">,</span> <span class="kc">None</span>
@@ -3241,7 +3257,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

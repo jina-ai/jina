@@ -3,12 +3,14 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<meta property="og:title" content="jina.serve.runtimes.gateway.http.fastapi module" />
+<meta property="og:title" content="jina.serve.runtimes.gateway.http.fastapi package" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve.runtimes.gateway.http.fastapi/" />
 <meta property="og:site_name" content="Jina 3.14.2 Documentation" />
+<meta property="og:description" content="Module contents:" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.14.2 Documentation" />
+<meta name="description" content="Module contents:" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -31,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.runtimes.gateway.http.fastapi.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>jina.serve.runtimes.gateway.http.fastapi module - Jina 3.14.2 documentation</title>
+        <title>jina.serve.runtimes.gateway.http.fastapi package - Jina 3.14.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -298,6 +300,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -425,15 +428,15 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section id="module-jina.serve.runtimes.gateway.http.fastapi">
-<span id="jina-serve-runtimes-gateway-http-fastapi-module"></span><h1>jina.serve.runtimes.gateway.http.fastapi module<a class="headerlink" href="#module-jina.serve.runtimes.gateway.http.fastapi" title="Permalink to this heading">#</a></h1>
+                    <section id="jina-serve-runtimes-gateway-http-fastapi-package">
+<h1>jina.serve.runtimes.gateway.http.fastapi package<a class="headerlink" href="#jina-serve-runtimes-gateway-http-fastapi-package" title="Permalink to this heading">#</a></h1>
+<section id="module-jina.serve.runtimes.gateway.http.fastapi">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.serve.runtimes.gateway.http.fastapi" title="Permalink to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.http.fastapi.</span></span><span class="sig-name descname"><span class="pre">FastAPIBaseGateway</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ssl_keyfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssl_certfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uvicorn_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proxy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/fastapi/#FastAPIBaseGateway"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.serve.gateway/#jina.serve.gateway.BaseGateway" title="jina.serve.gateway.BaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGateway</span></code></a></p>
-<p>Base FastAPI gateway. Implement this abstract class in-case you want to build a fastapi-based Gateway by
-implementing the <cite>app</cite> property. This property should return a fastapi app. The base Gateway will handle starting
-a server and serving the application using that server.</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.http.fastapi.</span></span><span class="sig-name descname"><span class="pre">FastAPIBaseGateway</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ssl_keyfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssl_certfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uvicorn_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proxy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_debug_endpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_crud_endpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expose_endpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expose_graphql_endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/fastapi/#FastAPIBaseGateway"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../jina.serve.runtimes.servers.http/#jina.serve.runtimes.servers.http.FastAPIBaseServer" title="jina.serve.runtimes.servers.http.FastAPIBaseServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseServer</span></code></a>, <a class="reference internal" href="../jina.serve.runtimes.gateway.gateway/#jina.serve.runtimes.gateway.gateway.BaseGateway" title="jina.serve.runtimes.gateway.gateway.BaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGateway</span></code></a></p>
+<p><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a> is a FastAPIBaseServer that can be loaded from YAML as any other Gateway</p>
 <p>Initialize the FastAPIBaseGateway
 :type ssl_keyfile: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
 :param ssl_keyfile: the path to the key file
@@ -448,9 +451,35 @@ a server and serving the application using that server.</p>
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kwargs</strong> – keyword args</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The title of this HTTP server. It will be used in automatics docs such as Swagger UI.</p></li>
+<li><p><strong>description</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The description of this HTTP server. It will be used in automatics docs such as Swagger UI.</p></li>
+<li><p><strong>no_debug_endpoints</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – If set, <cite>/status</cite> <cite>/post</cite> endpoints are removed from HTTP interface.</p></li>
+<li><p><strong>no_crud_endpoints</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – If set, <cite>/index</cite>, <cite>/search</cite>, <cite>/update</cite>, <cite>/delete</cite> endpoints are removed from HTTP interface.
+Any executor that has <cite>&#64;requests(on=…)</cite> bound with those values will receive data requests.</p></li>
+<li><p><strong>expose_endpoints</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – A JSON string that represents a map from executor endpoints (<cite>&#64;requests(on=…)</cite>) to HTTP endpoints.</p></li>
+<li><p><strong>expose_graphql_endpoint</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – If set, /graphql endpoint is added to HTTP interface.</p></li>
+<li><p><strong>cors</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.</p></li>
+<li><p><strong>kwargs</strong> – keyword args</p></li>
+</ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.aio_tracing_client_interceptors">
+<span class="sig-name descname"><span class="pre">aio_tracing_client_interceptors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.aio_tracing_client_interceptors" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a gRPC client aio channel interceptor.
+:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ClientInterceptor</span></code>]]
+:returns: An invocation-side list of aio interceptor objects.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.aio_tracing_server_interceptors">
+<span class="sig-name descname"><span class="pre">aio_tracing_server_interceptors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.aio_tracing_server_interceptors" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a gRPC aio server interceptor.
+:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ServerInterceptor</span></code>]]
+:returns: A service-side aio interceptor object.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.app">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">app</span></span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.app" title="Permalink to this definition">#</a></dt>
@@ -458,21 +487,16 @@ a server and serving the application using that server.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.setup_server">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setup_server</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/fastapi/#FastAPIBaseGateway.setup_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.setup_server" title="Permalink to this definition">#</a></dt>
-<dd><p>Initialize and return GRPC server</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.shutdown">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/fastapi/#FastAPIBaseGateway.shutdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.shutdown" title="Permalink to this definition">#</a></dt>
-<dd><p>Free resources allocated when setting up HTTP server</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.run_server">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run_server</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/fastapi/#FastAPIBaseGateway.run_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.run_server" title="Permalink to this definition">#</a></dt>
-<dd><p>Run HTTP server forever</p>
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.async_is_ready">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.async_is_ready" title="Permalink to this definition">#</a></dt>
+<dd><p>Async Check if status is ready.
+:type ctrl_address: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param ctrl_address: the address where the control request needs to be sent
+:type timeout: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
+:param timeout: timeout of the health check in seconds
+:param kwargs: extra keyword arguments
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:return: True if status is ready else False.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -480,6 +504,19 @@ a server and serving the application using that server.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">host</span></span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.host" title="Permalink to this definition">#</a></dt>
 <dd><p>Gets the host from the runtime_args
 :return: The host where to bind the gateway</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.is_ready">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.is_ready" title="Permalink to this definition">#</a></dt>
+<dd><p>Check if status is ready.
+:type ctrl_address: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param ctrl_address: the address where the control request needs to be sent
+:type timeout: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
+:param timeout: timeout of the health check in seconds
+:param kwargs: extra keyword arguments
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:return: True if status is ready else False.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -583,6 +620,12 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.run_server">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run_server</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.run_server" title="Permalink to this definition">#</a></dt>
+<dd><p>Run HTTP server forever</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.save_config">
 <span class="sig-name descname"><span class="pre">save_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.save_config" title="Permalink to this definition">#</a></dt>
 <dd><p>Save the object’s config into a YAML file.</p>
@@ -593,8 +636,50 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.setup_server">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setup_server</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.setup_server" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialize and return GRPC server</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.shutdown">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.shutdown" title="Permalink to this definition">#</a></dt>
+<dd><p>Free resources allocated when setting up HTTP server</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.tracing_client_interceptor">
+<span class="sig-name descname"><span class="pre">tracing_client_interceptor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.tracing_client_interceptor" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">OpenTelemetryClientInterceptor</span></code>]</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a gRPC client interceptor with the global tracing provider.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.wait_for_ready_or_shutdown">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wait_for_ready_or_shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ready_or_shutdown_event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">health_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.wait_for_ready_or_shutdown" title="Permalink to this definition">#</a></dt>
+<dd><p>Check if the runtime has successfully started
+:type timeout: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]
+:param timeout: The time to wait before readiness or failure is determined
+:type ctrl_address: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param ctrl_address: the address where the control message needs to be sent
+:type ready_or_shutdown_event: <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>]
+:param ready_or_shutdown_event: the multiprocessing event to detect if the process failed or is ready
+:type health_check: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param health_check: if true, a grpc health check will be used instead of relying on the event
+:param kwargs: extra keyword arguments
+:return: True if is ready or it needs to be shutdown</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 </section>
 
                 </article>
@@ -610,7 +695,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -642,19 +727,28 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
                 <div class="toc-tree-container">
                     <div class="toc-tree">
                         <ul>
-<li><a class="reference internal" href="#">jina.serve.runtimes.gateway.http.fastapi module</a><ul>
+<li><a class="reference internal" href="#">jina.serve.runtimes.gateway.http.fastapi package</a><ul>
+<li><a class="reference internal" href="#module-jina.serve.runtimes.gateway.http.fastapi">Module contents</a><ul>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a><ul>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.aio_tracing_client_interceptors"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.aio_tracing_client_interceptors()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.aio_tracing_server_interceptors"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.aio_tracing_server_interceptors()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.app"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.app</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.setup_server"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.setup_server()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.shutdown"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.shutdown()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.run_server"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.run_server()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.async_is_ready"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.async_is_ready()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.host"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.host</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.is_ready"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.is_ready()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.is_valid_jaml"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.is_valid_jaml()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.load_config"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.load_config()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.port"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.port</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.ports"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.ports</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.protocols"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.protocols</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.run_server"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.run_server()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.save_config"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.save_config()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.setup_server"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.setup_server()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.shutdown"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.shutdown()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.tracing_client_interceptor()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.wait_for_ready_or_shutdown"><code class="docutils literal notranslate"><span class="pre">FastAPIBaseGateway.wait_for_ready_or_shutdown()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

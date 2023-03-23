@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -403,7 +404,7 @@
                     <h1>Source code for jina.serve.networking.utils</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">ipaddress</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">grpc</span>
 <span class="kn">from</span> <span class="nn">grpc_health.v1</span> <span class="kn">import</span> <span class="n">health_pb2</span><span class="p">,</span> <span class="n">health_pb2_grpc</span>
@@ -411,6 +412,7 @@
 <span class="kn">from</span> <span class="nn">grpc_reflection.v1alpha.reflection_pb2_grpc</span> <span class="kn">import</span> <span class="n">ServerReflectionStub</span>
 
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2_grpc</span>
+<span class="kn">from</span> <span class="nn">jina.serve.helper</span> <span class="kn">import</span> <span class="n">get_server_side_grpc_options</span>
 <span class="kn">from</span> <span class="nn">jina.serve.networking.instrumentation</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_aio_channel_with_tracing_interceptor</span><span class="p">,</span>
     <span class="n">_channel_with_tracing_interceptor</span><span class="p">,</span>
@@ -426,7 +428,7 @@
 
 <div class="viewcode-block" id="get_grpc_channel"><a class="viewcode-back" href="../../../../../api/jina.serve.networking.utils/#jina.serve.networking.utils.get_grpc_channel">[docs]</a><span class="k">def</span> <span class="nf">get_grpc_channel</span><span class="p">(</span>
     <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">asyncio</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">tls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">root_certificates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -442,12 +444,11 @@
 <span class="sd">    :param tls: If True, use tls encryption for the grpc channel</span>
 <span class="sd">    :param root_certificates: The path to the root certificates for tls, only used if tls is True</span>
 <span class="sd">    :param aio_tracing_client_interceptors: List of async io gprc client tracing interceptors for tracing requests if asycnio is True</span>
-<span class="sd">    :param tracing_client_interceptor: A gprc client tracing interceptor for tracing requests if asyncio is False</span>
+<span class="sd">    :param tracing_client_interceptor: A grpc client tracing interceptor for tracing requests if asyncio is False</span>
 <span class="sd">    :return: A grpc channel or an asyncio channel</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">options</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">options</span> <span class="o">=</span> <span class="n">get_default_grpc_options</span><span class="p">()</span>
+    <span class="n">merged_grpc_options</span> <span class="o">=</span> <span class="n">get_server_side_grpc_options</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
 
     <span class="n">credentials</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">tls</span><span class="p">:</span>
@@ -455,11 +456,11 @@
 
     <span class="k">if</span> <span class="n">asyncio</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">_aio_channel_with_tracing_interceptor</span><span class="p">(</span>
-            <span class="n">address</span><span class="p">,</span> <span class="n">credentials</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">aio_tracing_client_interceptors</span>
+            <span class="n">address</span><span class="p">,</span> <span class="n">credentials</span><span class="p">,</span> <span class="n">merged_grpc_options</span><span class="p">,</span> <span class="n">aio_tracing_client_interceptors</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">_channel_with_tracing_interceptor</span><span class="p">(</span>
-        <span class="n">address</span><span class="p">,</span> <span class="n">credentials</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">tracing_client_interceptor</span>
+        <span class="n">address</span><span class="p">,</span> <span class="n">credentials</span><span class="p">,</span> <span class="n">merged_grpc_options</span><span class="p">,</span> <span class="n">tracing_client_interceptor</span>
     <span class="p">)</span></div>
 
 
@@ -470,6 +471,7 @@
     <span class="n">tls</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">root_certificates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Request</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sends a request synchronously to the target via grpc</span>
@@ -480,7 +482,7 @@
 <span class="sd">    :param tls: if True, use tls encryption for the grpc channel</span>
 <span class="sd">    :param root_certificates: the path to the root certificates for tls, only used if tls is True</span>
 <span class="sd">    :param endpoint: endpoint to target with the request</span>
-
+<span class="sd">    :param channel_options: gRPC channel options</span>
 <span class="sd">    :returns: the response request</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -490,6 +492,7 @@
                 <span class="n">target</span><span class="p">,</span>
                 <span class="n">tls</span><span class="o">=</span><span class="n">tls</span><span class="p">,</span>
                 <span class="n">root_certificates</span><span class="o">=</span><span class="n">root_certificates</span><span class="p">,</span>
+                <span class="n">options</span><span class="o">=</span><span class="n">channel_options</span><span class="p">,</span>
             <span class="p">)</span> <span class="k">as</span> <span class="n">channel</span><span class="p">:</span>
                 <span class="n">metadata</span> <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;endpoint&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">),)</span> <span class="k">if</span> <span class="n">endpoint</span> <span class="k">else</span> <span class="kc">None</span>
                 <span class="n">stub</span> <span class="o">=</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaSingleDataRequestRPCStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
@@ -578,6 +581,7 @@
     <span class="n">tls</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">root_certificates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Request</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sends a list of requests synchronically to the target via grpc</span>
@@ -588,7 +592,7 @@
 <span class="sd">    :param tls: if True, use tls for the grpc channel</span>
 <span class="sd">    :param root_certificates: the path to the root certificates for tls, only used if tls is True</span>
 <span class="sd">    :param endpoint: endpoint to target with the request</span>
-
+<span class="sd">    :param channel_options: gRPC channel options</span>
 <span class="sd">    :returns: the response request</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -598,6 +602,7 @@
                 <span class="n">target</span><span class="p">,</span>
                 <span class="n">tls</span><span class="o">=</span><span class="n">tls</span><span class="p">,</span>
                 <span class="n">root_certificates</span><span class="o">=</span><span class="n">root_certificates</span><span class="p">,</span>
+                <span class="n">options</span><span class="o">=</span><span class="n">channel_options</span><span class="p">,</span>
             <span class="p">)</span> <span class="k">as</span> <span class="n">channel</span><span class="p">:</span>
                 <span class="n">metadata</span> <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;endpoint&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">),)</span> <span class="k">if</span> <span class="n">endpoint</span> <span class="k">else</span> <span class="kc">None</span>
                 <span class="n">stub</span> <span class="o">=</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaDataRequestRPCStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
@@ -612,38 +617,13 @@
                 <span class="k">raise</span></div>
 
 
-<div class="viewcode-block" id="get_default_grpc_options"><a class="viewcode-back" href="../../../../../api/jina.serve.networking.utils/#jina.serve.networking.utils.get_default_grpc_options">[docs]</a><span class="k">def</span> <span class="nf">get_default_grpc_options</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns a list of default options used for creating grpc channels.</span>
-<span class="sd">    Documentation is here https://github.com/grpc/grpc/blob/master/include/grpc/impl/codegen/grpc_types.h</span>
-<span class="sd">    :returns: list of tuples defining grpc parameters</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="p">[</span>
-        <span class="p">(</span><span class="s1">&#39;grpc.max_send_message_length&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
-        <span class="p">(</span><span class="s1">&#39;grpc.max_receive_message_length&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
-        <span class="c1"># for the following see this blog post for the choice of default value https://cs.mcgill.ca/~mxia2/2019/02/23/Using-gRPC-in-Production/</span>
-        <span class="p">(</span><span class="s1">&#39;grpc.keepalive_time_ms&#39;</span><span class="p">,</span> <span class="mi">9999</span><span class="p">),</span>
-        <span class="c1"># send keepalive ping every 9 second, default is 2 hours.</span>
-        <span class="p">(</span><span class="s1">&#39;grpc.keepalive_timeout_ms&#39;</span><span class="p">,</span> <span class="mi">4999</span><span class="p">),</span>
-        <span class="c1"># keepalive ping time out after 4 seconds, default is 20 seconds</span>
-        <span class="p">(</span><span class="s1">&#39;grpc.keepalive_permit_without_calls&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
-        <span class="c1"># allow keepalive pings when there&#39;s no gRPC calls</span>
-        <span class="p">(</span><span class="s1">&#39;grpc.http1.max_pings_without_data&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
-        <span class="c1"># allow unlimited amount of keepalive pings without data</span>
-        <span class="p">(</span><span class="s1">&#39;grpc.http1.min_time_between_pings_ms&#39;</span><span class="p">,</span> <span class="mi">10000</span><span class="p">),</span>
-        <span class="c1"># allow grpc pings from client every 9 seconds</span>
-        <span class="p">(</span><span class="s1">&#39;grpc.http1.min_ping_interval_without_data_ms&#39;</span><span class="p">,</span> <span class="mi">5000</span><span class="p">),</span>
-        <span class="c1"># allow grpc pings from client without data every 4 seconds</span>
-    <span class="p">]</span></div>
-
-
 <div class="viewcode-block" id="send_request_async"><a class="viewcode-back" href="../../../../../api/jina.serve.networking.utils/#jina.serve.networking.utils.send_request_async">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">send_request_async</span><span class="p">(</span>
     <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
     <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="n">tls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">root_certificates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Request</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sends a request asynchronously to the target via grpc</span>
@@ -653,7 +633,7 @@
 <span class="sd">    :param timeout: timeout for the send</span>
 <span class="sd">    :param tls: if True, use tls for the grpc channel</span>
 <span class="sd">    :param root_certificates: the path to the root certificates for tls, only used if tls is True</span>
-
+<span class="sd">    :param channel_options: gRPC channel options</span>
 <span class="sd">    :returns: the response request</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -662,6 +642,7 @@
         <span class="n">asyncio</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">tls</span><span class="o">=</span><span class="n">tls</span><span class="p">,</span>
         <span class="n">root_certificates</span><span class="o">=</span><span class="n">root_certificates</span><span class="p">,</span>
+        <span class="n">options</span><span class="o">=</span><span class="n">channel_options</span><span class="p">,</span>
     <span class="p">)</span> <span class="k">as</span> <span class="n">channel</span><span class="p">:</span>
         <span class="n">stub</span> <span class="o">=</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaSingleDataRequestRPCStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">stub</span><span class="o">.</span><span class="n">process_single_data</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
@@ -743,7 +724,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

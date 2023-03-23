@@ -10,6 +10,9 @@ Submodules
    jina.clients.base.grpc
    jina.clients.base.helper
    jina.clients.base.http
+   jina.clients.base.retry
+   jina.clients.base.stream_rpc
+   jina.clients.base.unary_rpc
    jina.clients.base.websocket
 
 Module contents

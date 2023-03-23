@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -421,8 +422,10 @@
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.async_request_response_handling</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AsyncRequestResponseHandler</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.graph.topology_graph</span> <span class="kn">import</span> <span class="n">TopologyGraph</span>
-<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.async_request_response_handling</span> <span class="kn">import</span> <span class="n">AsyncRequestResponseHandler</span>
 <span class="kn">from</span> <span class="nn">jina.serve.stream</span> <span class="kn">import</span> <span class="n">RequestStreamer</span>
 <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
@@ -460,6 +463,7 @@
         <span class="n">meter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Meter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">aio_tracing_client_interceptors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="s1">&#39;ClientInterceptor&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tracing_client_interceptor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;OpenTelemetryClientInterceptor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">grpc_channel_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param graph_representation: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to</span>
@@ -480,6 +484,7 @@
 <span class="sd">        :param meter: optional OpenTelemetry meter that can provide instruments for collecting metrics</span>
 <span class="sd">        :param aio_tracing_client_interceptors: Optional list of aio grpc tracing server interceptors.</span>
 <span class="sd">        :param tracing_client_interceptor: Optional gprc tracing server interceptor.</span>
+<span class="sd">        :param grpc_channel_options: Optional gprc channel options.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="ow">or</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="n">topology_graph</span> <span class="o">=</span> <span class="n">TopologyGraph</span><span class="p">(</span>
@@ -505,6 +510,7 @@
             <span class="n">logger</span><span class="p">,</span>
             <span class="n">aio_tracing_client_interceptors</span><span class="p">,</span>
             <span class="n">tracing_client_interceptor</span><span class="p">,</span>
+            <span class="n">grpc_channel_options</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">request_handler</span> <span class="o">=</span> <span class="n">AsyncRequestResponseHandler</span><span class="p">(</span>
             <span class="n">metrics_registry</span><span class="p">,</span> <span class="n">meter</span><span class="p">,</span> <span class="n">runtime_name</span><span class="p">,</span> <span class="n">logger</span>
@@ -529,6 +535,7 @@
         <span class="n">logger</span><span class="p">,</span>
         <span class="n">aio_tracing_client_interceptors</span><span class="p">,</span>
         <span class="n">tracing_client_interceptor</span><span class="p">,</span>
+        <span class="n">grpc_channel_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># add the connections needed</span>
         <span class="n">connection_pool</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="p">(</span>
@@ -539,6 +546,7 @@
             <span class="n">meter</span><span class="o">=</span><span class="n">meter</span><span class="p">,</span>
             <span class="n">aio_tracing_client_interceptors</span><span class="o">=</span><span class="n">aio_tracing_client_interceptors</span><span class="p">,</span>
             <span class="n">tracing_client_interceptor</span><span class="o">=</span><span class="n">tracing_client_interceptor</span><span class="p">,</span>
+            <span class="n">channel_options</span><span class="o">=</span><span class="n">grpc_channel_options</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">deployment_name</span><span class="p">,</span> <span class="n">addresses</span> <span class="ow">in</span> <span class="n">deployments_addresses</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">:</span>
@@ -770,7 +778,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -406,18 +407,21 @@
 <span class="kn">import</span> <span class="nn">signal</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">grpc</span> <span class="kn">import</span> <span class="n">RpcError</span>
-
 <span class="kn">from</span> <span class="nn">jina.constants</span> <span class="kn">import</span> <span class="n">__windows__</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">send_telemetry_event</span>
-<span class="kn">from</span> <span class="nn">jina.serve.instrumentation</span> <span class="kn">import</span> <span class="n">InstrumentationMixin</span>
-<span class="kn">from</span> <span class="nn">jina.serve.networking.utils</span> <span class="kn">import</span> <span class="n">send_health_check_async</span><span class="p">,</span> <span class="n">send_health_check_sync</span>
-<span class="kn">from</span> <span class="nn">jina.serve.runtimes.base</span> <span class="kn">import</span> <span class="n">BaseRuntime</span>
-<span class="kn">from</span> <span class="nn">jina.serve.runtimes.monitoring</span> <span class="kn">import</span> <span class="n">MonitoringMixin</span>
-<span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
+<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">PortAlreadyUsed</span><span class="p">,</span> <span class="n">RuntimeTerminated</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">ArgNamespace</span><span class="p">,</span> <span class="n">is_port_free</span><span class="p">,</span> <span class="n">random_ports</span><span class="p">,</span> <span class="n">send_telemetry_event</span>
+<span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">set_gateway_parser</span>
+<span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">_set_gateway_uses</span>
+
+<span class="c1"># Keep these imports even if not used, since YAML parser needs to find them in imported modules</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.composite</span> <span class="kn">import</span> <span class="n">CompositeGateway</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.gateway</span> <span class="kn">import</span> <span class="n">BaseGateway</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.grpc</span> <span class="kn">import</span> <span class="n">GRPCGateway</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http</span> <span class="kn">import</span> <span class="n">HTTPGateway</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.websocket</span> <span class="kn">import</span> <span class="n">WebSocketGateway</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">import</span> <span class="nn">multiprocessing</span>
@@ -429,9 +433,10 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="AsyncNewLoopRuntime"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime">[docs]</a><span class="k">class</span> <span class="nc">AsyncNewLoopRuntime</span><span class="p">(</span><span class="n">BaseRuntime</span><span class="p">,</span> <span class="n">MonitoringMixin</span><span class="p">,</span> <span class="n">InstrumentationMixin</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<div class="viewcode-block" id="AsyncNewLoopRuntime"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime">[docs]</a><span class="k">class</span> <span class="nc">AsyncNewLoopRuntime</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The async runtime to start a new event loop.</span>
+<span class="sd">    Runtime to make sure that a server can asynchronously run inside a new asynchronous loop. It will make sure that the server is run forever while handling the TERMINATE signals</span>
+<span class="sd">    to be received by the orchestrator to shutdown the server and its resources.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -440,9 +445,16 @@
         <span class="n">cancel_event</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
             <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;asyncio.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">]</span>
         <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">req_handler_cls</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">req_handler_cls</span> <span class="o">=</span> <span class="n">req_handler_cls</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
         <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span> <span class="o">=</span> <span class="n">cancel_event</span> <span class="ow">or</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
@@ -467,24 +479,9 @@
             <span class="k">for</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">HANDLED_SIGNALS</span><span class="p">:</span>
                 <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">_cancel</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_monitoring</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_instrumentation</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="n">tracing</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">tracing</span><span class="p">,</span>
-            <span class="n">traces_exporter_host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">traces_exporter_host</span><span class="p">,</span>
-            <span class="n">traces_exporter_port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">traces_exporter_port</span><span class="p">,</span>
-            <span class="n">metrics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span>
-            <span class="n">metrics_exporter_host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">metrics_exporter_host</span><span class="p">,</span>
-            <span class="n">metrics_exporter_port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">metrics_exporter_port</span><span class="p">,</span>
-        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">async_setup</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_send_telemetry_event</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">warmup_task</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">warmup_stop_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_send_telemetry_event</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">send_telemetry_event</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_entity_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_telemetry_event</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.run_forever"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.run_forever">[docs]</a>    <span class="k">def</span> <span class="nf">run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -494,46 +491,31 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop_body</span><span class="p">())</span></div>
 
-    <span class="k">def</span> <span class="nf">_teardown_instrumentation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracing</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracer_provider</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracer_provider</span><span class="p">,</span> <span class="s1">&#39;force_flush&#39;</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">tracer_provider</span><span class="o">.</span><span class="n">force_flush</span><span class="p">()</span>
-                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracer_provider</span><span class="p">,</span> <span class="s1">&#39;shutdown&#39;</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">tracer_provider</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">meter_provider</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">meter_provider</span><span class="p">,</span> <span class="s1">&#39;force_flush&#39;</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">meter_provider</span><span class="o">.</span><span class="n">force_flush</span><span class="p">()</span>
-                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">meter_provider</span><span class="p">,</span> <span class="s1">&#39;shutdown&#39;</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">meter_provider</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Exception during instrumentation teardown, </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-
 <div class="viewcode-block" id="AsyncNewLoopRuntime.teardown"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.teardown">[docs]</a>    <span class="k">def</span> <span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Call async_teardown() and stop and close the event loop.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_teardown_instrumentation</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">async_teardown</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stop_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        <span class="n">send_telemetry_event</span><span class="p">(</span>
-            <span class="n">event</span><span class="o">=</span><span class="s1">&#39;stop&#39;</span><span class="p">,</span>
-            <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-            <span class="n">duration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_stop_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span><span class="p">,</span>
-            <span class="n">entity_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_entity_id</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_telemetry_event</span><span class="p">(</span>
+            <span class="n">event</span><span class="o">=</span><span class="s1">&#39;stop&#39;</span><span class="p">,</span> <span class="n">extra_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span><span class="p">}</span>
         <span class="p">)</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_for_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Do NOT override this method when inheriting from :class:`GatewayPod`&quot;&quot;&quot;</span>
         <span class="c1"># threads are not using asyncio.Event, but threading.Event</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="s1">&#39;_should_exit&#39;</span>
+        <span class="p">):</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="s1">&#39;_should_exit&#39;</span><span class="p">,</span> <span class="kc">False</span>
+            <span class="p">):</span>
                 <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
 
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_teardown</span><span class="p">()</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_loop_body</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Do NOT override this method when inheriting from :class:`GatewayPod`&quot;&quot;&quot;</span>
@@ -548,109 +530,110 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
+    <span class="k">def</span> <span class="nf">_get_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># construct server type based on protocol (and potentially req handler class to keep backwards compatibility)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">req_handler_cls</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;GatewayRequestHandler&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_send</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span> <span class="o">/=</span> <span class="mf">1e3</span>  <span class="c1"># convert ms to seconds</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">random_ports</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">))</span>
+            <span class="n">_set_gateway_uses</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">uses_with</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses_with</span> <span class="ow">or</span> <span class="p">{}</span>
+            <span class="n">non_defaults</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">get_non_defaults_args</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">set_gateway_parser</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;title&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">non_defaults</span><span class="p">:</span>
+                <span class="n">uses_with</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">title</span>
+            <span class="k">if</span> <span class="s1">&#39;description&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">non_defaults</span><span class="p">:</span>
+                <span class="n">uses_with</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">description</span>
+            <span class="k">if</span> <span class="s1">&#39;no_debug_endpoints&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">non_defaults</span><span class="p">:</span>
+                <span class="n">uses_with</span><span class="p">[</span><span class="s1">&#39;no_debug_endpoints&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_debug_endpoints</span>
+            <span class="k">if</span> <span class="s1">&#39;no_crud_endpoints&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">non_defaults</span><span class="p">:</span>
+                <span class="n">uses_with</span><span class="p">[</span><span class="s1">&#39;no_crud_endpoints&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_crud_endpoints</span>
+            <span class="k">if</span> <span class="s1">&#39;expose_endpoints&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">non_defaults</span><span class="p">:</span>
+                <span class="n">uses_with</span><span class="p">[</span><span class="s1">&#39;expose_endpoints&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">expose_endpoints</span>
+            <span class="k">if</span> <span class="s1">&#39;expose_graphql_endpoint&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">non_defaults</span><span class="p">:</span>
+                <span class="n">uses_with</span><span class="p">[</span><span class="s1">&#39;expose_graphql_endpoint&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">expose_graphql_endpoint</span>
+            <span class="k">if</span> <span class="s1">&#39;cors&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">non_defaults</span><span class="p">:</span>
+                <span class="n">uses_with</span><span class="p">[</span><span class="s1">&#39;cors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">cors</span>
+            <span class="k">return</span> <span class="n">BaseGateway</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">,</span>
+                <span class="n">uses_with</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="o">**</span><span class="n">non_defaults</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">uses_with</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">uses_metas</span><span class="o">=</span><span class="p">{},</span>
+                <span class="n">runtime_args</span><span class="o">=</span><span class="p">{</span>  <span class="c1"># these are not parsed to the yaml config file but are pass directly during init</span>
+                    <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">),</span>
+                    <span class="s1">&#39;default_port&#39;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;default_port&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+                    <span class="s1">&#39;timeout_send&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="n">py_modules</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">py_modules</span><span class="p">,</span>
+                <span class="n">extra_search_paths</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">extra_search_paths</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;protocol&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;GRPC&#39;</span>
+        <span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">jina.serve.runtimes.servers.grpc</span> <span class="kn">import</span> <span class="n">GRPCServer</span>
+
+            <span class="k">return</span> <span class="n">GRPCServer</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">runtime_args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+                <span class="n">req_handler_cls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">req_handler_cls</span><span class="p">,</span>
+                <span class="n">grpc_server_options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">grpc_server_options</span><span class="p">,</span>
+                <span class="n">ssl_keyfile</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;ssl_keyfile&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                <span class="n">ssl_certfile</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;ssl_certfile&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_send_telemetry_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">extra_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">gateway_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">req_handler_cls</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;WorkerRequestHandler&#39;</span><span class="p">:</span>
+            <span class="n">runtime_cls_name</span> <span class="o">=</span> <span class="s1">&#39;WorkerRuntime&#39;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">req_handler_cls</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;HeaderRequestHandler&#39;</span><span class="p">:</span>
+            <span class="n">runtime_cls_name</span> <span class="o">=</span> <span class="s1">&#39;HeadRuntime&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">runtime_cls_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="vm">__class__</span>
+            <span class="n">gateway_kwargs</span><span class="p">[</span><span class="s1">&#39;is_custom_gateway&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="vm">__class__</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="n">CompositeGateway</span><span class="p">,</span>
+                <span class="n">GRPCGateway</span><span class="p">,</span>
+                <span class="n">HTTPGateway</span><span class="p">,</span>
+                <span class="n">WebSocketGateway</span><span class="p">,</span>
+            <span class="p">]</span>
+            <span class="n">gateway_kwargs</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span>
+
+        <span class="n">extra_kwargs</span> <span class="o">=</span> <span class="n">extra_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+
+        <span class="n">send_telemetry_event</span><span class="p">(</span>
+            <span class="n">event</span><span class="o">=</span><span class="n">event</span><span class="p">,</span>
+            <span class="n">obj_cls_name</span><span class="o">=</span><span class="n">runtime_cls_name</span><span class="p">,</span>
+            <span class="n">entity_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_entity_id</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">gateway_kwargs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">extra_kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
 <div class="viewcode-block" id="AsyncNewLoopRuntime.async_setup"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_setup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The async method to setup.&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The async method setup the runtime.</span>
+
+<span class="sd">        Setup the uvicorn server.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">is_port_free</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">PortAlreadyUsed</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;port:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_server</span><span class="p">()</span>
+
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">setup_server</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.async_teardown"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The async method to clean up resources during teardown. This method should free all resources allocated</span>
-<span class="sd">        during async_setup&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Shutdown the server.&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="AsyncNewLoopRuntime.async_cancel"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_cancel">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;An async method to cancel async_run_forever.&quot;&quot;&quot;</span>
-        <span class="o">...</span></div>
-
-<div class="viewcode-block" id="AsyncNewLoopRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_run_forever">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The async method to run until it is stopped.&quot;&quot;&quot;</span>
-        <span class="o">...</span></div>
-
-<div class="viewcode-block" id="AsyncNewLoopRuntime.cancel_warmup_task"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.cancel_warmup_task">[docs]</a>    <span class="k">def</span> <span class="nf">cancel_warmup_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cancel warmup task if exists and is not completed. Cancellation is required if the Flow is being terminated before the</span>
-<span class="sd">        task is successful or hasn&#39;t reached the max timeout.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_task</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cancelling warmup task.&#39;</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">warmup_stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>  <span class="c1"># this event is useless if simply cancel</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">warmup_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;exception during warmup task cancellation: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-                <span class="k">pass</span></div>
-
-    <span class="c1"># Static methods used by the Pod to communicate with the `Runtime` in the separate process</span>
-
-<div class="viewcode-block" id="AsyncNewLoopRuntime.is_ready"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.is_ready">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Check if status is ready.</span>
-
-<span class="sd">        :param ctrl_address: the address where the control request needs to be sent</span>
-<span class="sd">        :param timeout: timeout of the health check in seconds</span>
-<span class="sd">        :param kwargs: extra keyword arguments</span>
-
-<span class="sd">        :return: True if status is ready else False.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">grpc_health.v1</span> <span class="kn">import</span> <span class="n">health_pb2</span><span class="p">,</span> <span class="n">health_pb2_grpc</span>
-
-            <span class="n">response</span> <span class="o">=</span> <span class="n">send_health_check_sync</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
-            <span class="k">return</span> <span class="p">(</span>
-                <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">health_pb2</span><span class="o">.</span><span class="n">HealthCheckResponse</span><span class="o">.</span><span class="n">ServingStatus</span><span class="o">.</span><span class="n">SERVING</span>
-            <span class="p">)</span>
-        <span class="k">except</span> <span class="n">RpcError</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
-
-<div class="viewcode-block" id="AsyncNewLoopRuntime.async_is_ready"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_is_ready">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_is_ready</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Async Check if status is ready.</span>
-<span class="sd">        :param ctrl_address: the address where the control request needs to be sent</span>
-<span class="sd">        :param timeout: timeout of the health check in seconds</span>
-<span class="sd">        :param kwargs: extra keyword arguments</span>
-<span class="sd">        :return: True if status is ready else False.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">grpc_health.v1</span> <span class="kn">import</span> <span class="n">health_pb2</span><span class="p">,</span> <span class="n">health_pb2_grpc</span>
-
-            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send_health_check_async</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
-            <span class="k">return</span> <span class="p">(</span>
-                <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">health_pb2</span><span class="o">.</span><span class="n">HealthCheckResponse</span><span class="o">.</span><span class="n">ServingStatus</span><span class="o">.</span><span class="n">SERVING</span>
-            <span class="p">)</span>
-        <span class="k">except</span> <span class="n">RpcError</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
-
-<div class="viewcode-block" id="AsyncNewLoopRuntime.wait_for_ready_or_shutdown"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.wait_for_ready_or_shutdown">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">wait_for_ready_or_shutdown</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span>
-        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
-        <span class="n">ready_or_shutdown_event</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">],</span>
-        <span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">health_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Check if the runtime has successfully started</span>
-
-<span class="sd">        :param timeout: The time to wait before readiness or failure is determined</span>
-<span class="sd">        :param ctrl_address: the address where the control message needs to be sent</span>
-<span class="sd">        :param ready_or_shutdown_event: the multiprocessing event to detect if the process failed or is ready</span>
-<span class="sd">        :param health_check: if true, a grpc health check will be used instead of relying on the event</span>
-<span class="sd">        :param kwargs: extra keyword arguments</span>
-<span class="sd">        :return: True if is ready or it needs to be shutdown</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">timeout_ns</span> <span class="o">=</span> <span class="mi">1000000000</span> <span class="o">*</span> <span class="n">timeout</span> <span class="k">if</span> <span class="n">timeout</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">health_check</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
-        <span class="k">while</span> <span class="n">timeout_ns</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">-</span> <span class="n">now</span> <span class="o">&lt;</span> <span class="n">timeout_ns</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">ready_or_shutdown_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                <span class="k">return</span> <span class="kc">True</span>
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">False</span></div>
+<div class="viewcode-block" id="AsyncNewLoopRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Running method of the server.&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">run_server</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_entity_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -659,7 +642,46 @@
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_entity_id_&#39;</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entity_id_</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_entity_id_</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entity_id_</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entity_id_</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">exc_type</span> <span class="o">==</span> <span class="n">RuntimeTerminated</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s1"> is ended&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">exc_type</span> <span class="o">==</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s1"> is interrupted by user&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">exc_type</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">exc_val</span><span class="si">!r}</span><span class="s1"> during </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">run_forever</span><span class="si">!r}</span><span class="s1">&#39;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> add &quot;--quiet-error&quot; to suppress the exception details&#39;</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span>
+                <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="c1"># OSError(Stream is closed) already</span>
+            <span class="k">pass</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1"> during </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">teardown</span><span class="si">!r}</span><span class="s1">&#39;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> add &quot;--quiet-error&quot; to suppress the exception details&#39;</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span>
+                <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># https://stackoverflow.com/a/28158006</span>
+        <span class="c1"># return True will silent all exception stack trace here, silence is desired here as otherwise it is too</span>
+        <span class="c1"># noisy</span>
+        <span class="c1">#</span>
+        <span class="c1"># doc: If an exception is supplied, and the method wishes to suppress the exception (i.e., prevent it</span>
+        <span class="c1"># from being propagated), it should return a true value. Otherwise, the exception will be processed normally</span>
+        <span class="c1"># upon exit from this method.</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
 </pre></div>
                 </article>
             </div>
@@ -674,7 +696,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

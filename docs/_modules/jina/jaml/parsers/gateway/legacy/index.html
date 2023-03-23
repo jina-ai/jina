@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -404,7 +405,8 @@
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span>
 
 <span class="kn">from</span> <span class="nn">jina.jaml.parsers.base</span> <span class="kn">import</span> <span class="n">BaseLegacyParser</span>
-<span class="kn">from</span> <span class="nn">jina.serve.gateway</span> <span class="kn">import</span> <span class="n">BaseGateway</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.gateway</span> <span class="kn">import</span> <span class="n">BaseGateway</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.request_handling</span> <span class="kn">import</span> <span class="n">GatewayRequestHandler</span>
 
 
 <div class="viewcode-block" id="GatewayLegacyParser"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.gateway.legacy/#jina.jaml.parsers.gateway.legacy.GatewayLegacyParser">[docs]</a><span class="k">class</span> <span class="nc">GatewayLegacyParser</span><span class="p">(</span><span class="n">BaseLegacyParser</span><span class="p">):</span>
@@ -422,7 +424,6 @@
 <span class="sd">        :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config</span>
 <span class="sd">        :return: the Gateway YAML parser given the syntax version number</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
         <span class="n">data</span><span class="p">[</span><span class="s1">&#39;metas&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -461,9 +462,10 @@
             <span class="n">metas</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;metas&#39;</span><span class="p">,</span> <span class="p">{}),</span>
             <span class="n">requests</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;requests&#39;</span><span class="p">,</span> <span class="p">{}),</span>
             <span class="n">runtime_args</span><span class="o">=</span><span class="n">runtime_args</span><span class="p">,</span>
+            <span class="n">req_handler_cls</span><span class="o">=</span><span class="n">GatewayRequestHandler</span>
         <span class="p">)</span>
-        <span class="bp">cls</span><span class="o">.</span><span class="n">_init_from_yaml</span> <span class="o">=</span> <span class="kc">False</span>
 
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_init_from_yaml</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">is_updated</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="n">obj</span></div>
 
@@ -492,7 +494,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

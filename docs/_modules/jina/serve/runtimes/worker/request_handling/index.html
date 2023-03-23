@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -937,7 +938,6 @@
             <span class="k">await</span> <span class="n">task</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">docs</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">get_docs_from_request</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
-
             <span class="n">docs_matrix</span><span class="p">,</span> <span class="n">docs_map</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">_get_docs_matrix_from_request</span><span class="p">(</span>
                 <span class="n">requests</span>
             <span class="p">)</span>
@@ -1128,7 +1128,6 @@
 <span class="sd">        :param context: grpc context</span>
 <span class="sd">        :returns: the response request</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_data</span><span class="p">([</span><span class="n">request</span><span class="p">],</span> <span class="n">context</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WorkerRequestHandler.endpoint_discovery"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.endpoint_discovery">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">endpoint_discovery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">EndpointsProto</span><span class="p">:</span>
@@ -1264,7 +1263,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

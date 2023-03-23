@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -682,21 +683,22 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">_get_gateway_class</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="vm">__name__</span>
-        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">random_port</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">)):</span>
+                    <span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">random_port</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s1">&#39;You need to specify as much protocols as ports if you want to use a jina built-in gateway&#39;</span>
+                <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.composite</span> <span class="kn">import</span> <span class="n">CompositeGateway</span>
-
             <span class="n">args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">CompositeGateway</span><span class="o">.</span><span class="vm">__name__</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s1">&#39;You need to specify as much protocols as ports if you want to use a jina built-in gateway&#39;</span>
-            <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_update_gateway_args</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;argparse.Namespace&#39;</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">random_ports</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">:</span>
-        <span class="n">args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">random_ports</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">))</span>
     <span class="n">_set_gateway_uses</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
 
@@ -750,6 +752,7 @@
             <span class="n">d</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">))</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span></div>
 
+
 <span class="n">_chf</span> <span class="o">=</span> <span class="n">_ColoredHelpFormatter</span>
 </pre></div>
                 </article>
@@ -765,7 +768,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

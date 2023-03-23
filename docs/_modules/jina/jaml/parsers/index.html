@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -408,7 +409,7 @@
 <span class="kn">from</span> <span class="nn">jina.jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span>
 <span class="kn">from</span> <span class="nn">jina.jaml.parsers.base</span> <span class="kn">import</span> <span class="n">VersionedYAMLParser</span>
 <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments</span> <span class="kn">import</span> <span class="n">Deployment</span>
-<span class="kn">from</span> <span class="nn">jina.serve.gateway</span> <span class="kn">import</span> <span class="n">BaseGateway</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.gateway</span> <span class="kn">import</span> <span class="n">BaseGateway</span>
 
 
 <span class="k">def</span> <span class="nf">_get_all_parser</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;JAMLCompatible&#39;</span><span class="p">]):</span>
@@ -518,7 +519,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

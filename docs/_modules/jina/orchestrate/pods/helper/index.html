@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -471,14 +472,13 @@
         <span class="n">e</span><span class="o">.</span><span class="n">clear</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_custom_clear</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="update_runtime_cls"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.pods.helper/#jina.orchestrate.pods.helper.update_runtime_cls">[docs]</a><span class="k">def</span> <span class="nf">update_runtime_cls</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Namespace&#39;</span><span class="p">:</span>
+<div class="viewcode-block" id="update_runtime_cls"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.pods.helper/#jina.orchestrate.pods.helper.update_runtime_cls">[docs]</a><span class="k">def</span> <span class="nf">update_runtime_cls</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Namespace&#39;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get runtime_cls as a string from args</span>
 
 <span class="sd">    :param args: pod/deployment namespace args</span>
-<span class="sd">    :param copy: True if args shouldn&#39;t be modified in-place</span>
 <span class="sd">    :return: runtime class as a string</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_args</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="n">args</span>
+    <span class="n">_args</span> <span class="o">=</span> <span class="n">args</span>
 
     <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">&#39;WorkerRuntime&#39;</span> <span class="ow">and</span> <span class="n">is_valid_huburi</span><span class="p">(</span><span class="n">_args</span><span class="o">.</span><span class="n">uses</span><span class="p">):</span>
         <span class="n">_hub_args</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
@@ -506,7 +506,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

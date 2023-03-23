@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/flow/add-executors/" />
 <meta property="og:site_name" content="Jina 3.14.2 Documentation" />
-<meta property="og:description" content="A Flow orchestrates its Executor s as a graph and sends requests to all Executors in the order specified by add() or listed in a YAML file. When you start a Flow, Executors always run in separate processes. Multiple Executors run in different processes. Multiprocessing is the lowest level of sepa..." />
+<meta property="og:description" content="A Flow orchestrates its Executor s as a graph and sends requests to all Executors in the order specified by add() or listed in a YAML file. When you start a Flow, Executors always run in separate processes. Multiple Executors run in **different processes**. Multiprocessing is the lowest level of ..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.14.2 Documentation" />
-<meta name="description" content="A Flow orchestrates its Executor s as a graph and sends requests to all Executors in the order specified by add() or listed in a YAML file. When you start a Flow, Executors always run in separate processes. Multiple Executors run in different processes. Multiprocessing is the lowest level of sepa..." />
+<meta name="description" content="A Flow orchestrates its Executor s as a graph and sends requests to all Executors in the order specified by add() or listed in a YAML file. When you start a Flow, Executors always run in separate processes. Multiple Executors run in **different processes**. Multiprocessing is the lowest level of ..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -300,6 +300,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../client/instrumentation/">Instrumentation</a></li>
@@ -429,8 +430,11 @@
                 <article role="main">
                     <section id="add-executors">
 <span id="flow-add-executors"></span><h1>Add Executors<a class="headerlink" href="#add-executors" title="Permalink to this heading">#</a></h1>
-<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> orchestrates its <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s as a graph and sends requests to all Executors in the order specified by <code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code> or listed in <a class="reference internal" href="../yaml-spec/#flow-yaml-spec"><span class="std std-ref">a YAML file</span></a>.</p>
-<p>When you start a Flow, Executors always run in <strong>separate processes</strong>. Multiple Executors run in <strong>different processes</strong>. Multiprocessing is the lowest level of separation when you run a Flow locally. When running a Flow on Kubernetes, Docker Swarm, <a class="reference internal" href="../../jcloud/#jcloud"><span class="std std-ref">Jina AI Cloud Hosting</span></a>, different Executors run in different containers, pods or instances.</p>
+<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> orchestrates its <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s as a graph and sends requests to all Executors in the
+order specified by <code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code> or listed in <a class="reference internal" href="../yaml-spec/#flow-yaml-spec"><span class="std std-ref">a YAML file</span></a>.</p>
+<p>When you start a Flow, Executors always run in <strong>separate processes</strong>. Multiple Executors run in **different processes
+**. Multiprocessing is the lowest level of separation when you run a Flow locally. When running a Flow on Kubernetes,
+Docker Swarm, <a class="reference internal" href="../../jcloud/#jcloud"><span class="std std-ref">Jina AI Cloud Hosting</span></a>, different Executors run in different containers, pods or instances.</p>
 <section id="add-executors-sequentially">
 <h2>Add Executors sequentially<a class="headerlink" href="#add-executors-sequentially" title="Permalink to this heading">#</a></h2>
 <p>Executors can be added into a Flow with <code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code>.</p>
@@ -439,7 +443,8 @@
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>This adds an “empty” Executor called <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor" title="jina.serve.executors.BaseExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code></a> to the Flow. This Executor (without any parameters) performs no actions.</p>
+<p>This adds an “empty” Executor called <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor" title="jina.serve.executors.BaseExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code></a> to the Flow. This Executor (without any
+parameters) performs no actions.</p>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../../_images/no-op-flow.svg"><img alt="../../../_images/no-op-flow.svg" src="../../../_images/no-op-flow.svg" /></a>
 </figure>
@@ -467,9 +472,12 @@
 </section>
 <section id="define-topologies-over-executors">
 <h2>Define topologies over Executors<a class="headerlink" href="#define-topologies-over-executors" title="Permalink to this heading">#</a></h2>
-<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>s are not restricted to sequential execution. Internally they are modeled as graphs, so they can represent any complex, non-cyclic topology.</p>
-<p>A typical use case for such a Flow is a topology with a common pre-processing part, but different indexers separating embeddings and data.</p>
-<p>To define a custom topology you can use the <code class="docutils literal notranslate"><span class="pre">needs</span></code> keyword when adding an <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>. By default, a Flow assumes that every Executor needs the previously added Executor.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>s are not restricted to sequential execution. Internally they are modeled as graphs, so they can
+represent any complex, non-cyclic topology.</p>
+<p>A typical use case for such a Flow is a topology with a common pre-processing part, but different indexers separating
+embeddings and data.</p>
+<p>To define a custom topology you can use the <code class="docutils literal notranslate"><span class="pre">needs</span></code> keyword when adding an <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>. By default, a Flow
+assumes that every Executor needs the previously added Executor.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 
@@ -515,12 +523,17 @@
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[&#39;foo was here and got 0 document&#39;, &#39;bar was here and got 1 document&#39;, &#39;baz was here and got 1 document&#39;]
 </pre></div>
 </div>
-<p>Both <code class="docutils literal notranslate"><span class="pre">BarExecutor</span></code> and <code class="docutils literal notranslate"><span class="pre">BazExecutor</span></code> only received a single <code class="docutils literal notranslate"><span class="pre">Document</span></code> from <code class="docutils literal notranslate"><span class="pre">FooExecutor</span></code> because they are run in parallel. The last Executor <code class="docutils literal notranslate"><span class="pre">executor3</span></code> receives both DocumentArrays and merges them automatically.
-This automated merging can be disabled with <code class="docutils literal notranslate"><span class="pre">no_reduce=True</span></code>. This is useful for providing custom merge logic in a separate Executor. In this case the last <code class="docutils literal notranslate"><span class="pre">.add()</span></code> call would look like <code class="docutils literal notranslate"><span class="pre">.add(needs=['barExecutor',</span> <span class="pre">'bazExecutor'],</span> <span class="pre">uses=CustomMergeExecutor,</span> <span class="pre">no_reduce=True)</span></code>. This feature requires Jina &gt;= 3.0.2.</p>
+<p>Both <code class="docutils literal notranslate"><span class="pre">BarExecutor</span></code> and <code class="docutils literal notranslate"><span class="pre">BazExecutor</span></code> only received a single <code class="docutils literal notranslate"><span class="pre">Document</span></code> from <code class="docutils literal notranslate"><span class="pre">FooExecutor</span></code> because they are run in
+parallel. The last Executor <code class="docutils literal notranslate"><span class="pre">executor3</span></code> receives both DocumentArrays and merges them automatically.
+This automated merging can be disabled with <code class="docutils literal notranslate"><span class="pre">no_reduce=True</span></code>. This is useful for providing custom merge logic in a
+separate Executor. In this case the last <code class="docutils literal notranslate"><span class="pre">.add()</span></code> call would look
+like <code class="docutils literal notranslate"><span class="pre">.add(needs=['barExecutor',</span> <span class="pre">'bazExecutor'],</span> <span class="pre">uses=CustomMergeExecutor,</span> <span class="pre">no_reduce=True)</span></code>. This feature requires
+Jina &gt;= 3.0.2.</p>
 </section>
 <section id="how-executors-process-documentarrays-in-a-flow">
 <h2>How Executors process DocumentArrays in a Flow<a class="headerlink" href="#how-executors-process-documentarrays-in-a-flow" title="Permalink to this heading">#</a></h2>
-<p>Let’s understand how Executors process DocumentArray’s inside a Flow, and how changes are chained and applied, affecting downstream Executors in the Flow.</p>
+<p>Let’s understand how Executors process DocumentArray’s inside a Flow, and how changes are chained and applied, affecting
+downstream Executors in the Flow.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 
 
@@ -575,7 +588,8 @@ This automated merging can be disabled with <code class="docutils literal notran
 </section>
 <section id="define-executor-with-uses">
 <h2>Define Executor with <code class="docutils literal notranslate"><span class="pre">uses</span></code><a class="headerlink" href="#define-executor-with-uses" title="Permalink to this heading">#</a></h2>
-<p>An <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>’s type is defined by the <code class="docutils literal notranslate"><span class="pre">uses</span></code> keyword. Note that some usages are not supported on JCloud due to security reasons and the nature of facilitating local debugging.</p>
+<p>An <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>’s type is defined by the <code class="docutils literal notranslate"><span class="pre">uses</span></code> keyword. Note that some usages are not supported on JCloud
+due to security reasons and the nature of facilitating local debugging.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -664,10 +678,12 @@ Instead, you can configure a common search path for all Executors:</p>
 </div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">uses_with</span></code> is a key-value map that defines the <a class="reference internal" href="../yaml-spec/#executor-args"><span class="std std-ref">arguments of the Executor’</span></a> <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">uses_requests</span></code> is a key-value map that defines the <a class="reference internal" href="../../executor/create/#executor-requests"><span class="std std-ref">mapping from endpoint to class method</span></a>. This is useful to overwrite the default endpoint-to-method mapping defined in the Executor python implementation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uses_requests</span></code> is a key-value map that defines the <a class="reference internal" href="../../executor/create/#executor-requests"><span class="std std-ref">mapping from endpoint to class method</span></a>.
+This is useful to overwrite the default endpoint-to-method mapping defined in the Executor python implementation.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code> is a string that defines the <a class="reference internal" href="../../executor/create/#executor-workspace"><span class="std std-ref">workspace</span></a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">py_modules</span></code> is a list of strings that defines the Executor’s Python dependencies;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">uses_metas</span></code> is a key-value map that defines some of the Executor’s <a class="reference internal" href="../../executor/create/#executor-metas"><span class="std std-ref">internal attributes</span></a>. It contains the following fields:</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">uses_metas</span></code> is a key-value map that defines some of the Executor’s <a class="reference internal" href="../../executor/create/#executor-metas"><span class="std std-ref">internal attributes</span></a>. It
+contains the following fields:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> is a string that defines the name of the Executor;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">description</span></code> is a string that defines the description of this Executor. It is used in the automatic docs UI;</p></li>
@@ -721,7 +737,8 @@ In the following code:</p>
 <li><p>We replace the endpoint <code class="docutils literal notranslate"><span class="pre">/foo</span></code> bound to the <code class="docutils literal notranslate"><span class="pre">foo()</span></code> function with both <code class="docutils literal notranslate"><span class="pre">/non_foo</span></code> and <code class="docutils literal notranslate"><span class="pre">/alias_foo</span></code>.</p></li>
 <li><p>We add a new endpoint <code class="docutils literal notranslate"><span class="pre">/bar</span></code> for binding <code class="docutils literal notranslate"><span class="pre">bar()</span></code>.</p></li>
 </ul>
-<p>Note the <code class="docutils literal notranslate"><span class="pre">all_req()</span></code> function is bound to <strong>all</strong> endpoints except those explicitly bound to other functions, i.e. <code class="docutils literal notranslate"><span class="pre">/non_foo</span></code>, <code class="docutils literal notranslate"><span class="pre">/alias_foo</span></code> and <code class="docutils literal notranslate"><span class="pre">/bar</span></code>.</p>
+<p>Note the <code class="docutils literal notranslate"><span class="pre">all_req()</span></code> function is bound to <strong>all</strong> endpoints except those explicitly bound to other functions,
+i.e. <code class="docutils literal notranslate"><span class="pre">/non_foo</span></code>, <code class="docutils literal notranslate"><span class="pre">/alias_foo</span></code> and <code class="docutils literal notranslate"><span class="pre">/bar</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
 
 
@@ -799,7 +816,8 @@ different_name
 </section>
 <section id="unify-output-ndarray-types">
 <h3>Unify output <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> types<a class="headerlink" href="#unify-output-ndarray-types" title="Permalink to this heading">#</a></h3>
-<p>Different <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s in a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> may depend on different <code class="docutils literal notranslate"><span class="pre">types</span></code> for array-like data such as <code class="docutils literal notranslate"><span class="pre">doc.tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">doc.embedding</span></code>,
+<p>Different <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s in a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> may depend on different <code class="docutils literal notranslate"><span class="pre">types</span></code> for array-like data such
+as <code class="docutils literal notranslate"><span class="pre">doc.tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">doc.embedding</span></code>,
 often because they were written with different machine learning frameworks.
 As the builder of a Flow you don’t always have control over this, for example when using Executors from Executor Hub.</p>
 <p>To ease the integration of different Executors, a Flow allows you to convert <code class="docutils literal notranslate"><span class="pre">tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">embedding</span></code>
@@ -809,7 +827,8 @@ by using the <code class="docutils literal notranslate"><span class="pre">f.add(
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">output_array_type</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">NeedsNumpyExecutor</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This converts the <code class="docutils literal notranslate"><span class="pre">.tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">.embedding</span></code> fields of all output Documents of <code class="docutils literal notranslate"><span class="pre">MyExecutor</span></code> to <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, making the data
+<p>This converts the <code class="docutils literal notranslate"><span class="pre">.tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">.embedding</span></code> fields of all output Documents of <code class="docutils literal notranslate"><span class="pre">MyExecutor</span></code> to <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, making
+the data
 usable by <code class="docutils literal notranslate"><span class="pre">NeedsNumpyExecutor</span></code>. This works whether <code class="docutils literal notranslate"><span class="pre">MyExecutor</span></code> populates these fields with arrays/tensors from
 PyTorch, TensorFlow, or any other popular ML framework.</p>
 <div class="note admonition">
@@ -818,10 +837,42 @@ PyTorch, TensorFlow, or any other popular ML framework.</p>
 <a class="reference external" href="https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf">protobuf serialization docs</a>.</p>
 </div>
 </section>
+<section id="configure-executor-grpc-options">
+<span id="executor-grpc-server-options"></span><h3>Configure Executor gRPC options<a class="headerlink" href="#configure-executor-grpc-options" title="Permalink to this heading">#</a></h3>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> supports the <code class="docutils literal notranslate"><span class="pre">grpc_server_options</span></code> parameter which allows more customization of the <strong>gRPC</strong>
+server. The <code class="docutils literal notranslate"><span class="pre">grpc_server_options</span></code> parameter accepts a dictionary of <strong>gRPC</strong> configuration options which will be
+used to overwrite the default options. The <strong>gRPC</strong> channel used for server to server communication can also be
+customized using the <code class="docutils literal notranslate"><span class="pre">grpc_channel_options</span></code> parameter.</p>
+<p>The default <strong>gRPC</strong> options are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s1">&#39;grpc.max_send_message_length&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+<span class="p">(</span><span class="s1">&#39;grpc.max_receive_message_length&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+<span class="p">(</span><span class="s1">&#39;grpc.keepalive_time_ms&#39;</span><span class="p">,</span> <span class="mi">9999</span><span class="p">),</span>
+<span class="c1"># send keepalive ping every 9 second, default is 2 hours.</span>
+<span class="p">(</span><span class="s1">&#39;grpc.keepalive_timeout_ms&#39;</span><span class="p">,</span> <span class="mi">4999</span><span class="p">),</span>
+<span class="c1"># keepalive ping time out after 4 seconds, default is 20 seconds</span>
+<span class="p">(</span><span class="s1">&#39;grpc.keepalive_permit_without_calls&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+<span class="c1"># allow keepalive pings when there&#39;s no gRPC calls</span>
+<span class="p">(</span><span class="s1">&#39;grpc.http1.max_pings_without_data&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+<span class="c1"># allow unlimited amount of keepalive pings without data</span>
+<span class="p">(</span><span class="s1">&#39;grpc.http1.min_time_between_pings_ms&#39;</span><span class="p">,</span> <span class="mi">10000</span><span class="p">),</span>
+<span class="c1"># allow grpc pings from client every 9 seconds</span>
+<span class="p">(</span><span class="s1">&#39;grpc.http1.min_ping_interval_without_data_ms&#39;</span><span class="p">,</span> <span class="mi">5000</span><span class="p">),</span>
+<span class="c1"># allow grpc pings from client without data every 4 seconds</span>
+</pre></div>
+</div>
+<p>Refer to the <a class="reference external" href="https://grpc.github.io/grpc/python/glossary.html#term-channel_arguments">channel_arguments</a> section for
+the full list of available <strong>gRPC</strong> options.</p>
+<div class="seealso admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Refer to the <a class="reference internal" href="../../client/send-receive-data/#client-grpc-channel-options"><span class="std std-ref">Configure gRPC Client options</span></a> section for configuring the <code class="docutils literal notranslate"><span class="pre">Client</span></code> <strong>gRPC</strong> channel options.
+Refer to the <span class="xref std std-ref">Configure Gateway gRPC options</span> section for configuring the <code class="docutils literal notranslate"><span class="pre">Gateway</span></code> <strong>gRPC</strong> options.</p>
+</div>
+</section>
 </section>
 <section id="add-external-executors">
 <span id="external-executors"></span><h2>Add external Executors<a class="headerlink" href="#add-external-executors" title="Permalink to this heading">#</a></h2>
-<p>Usually a Flow starts and stops all of its own Executors. External Executors are owned by <em>other</em> Flows, meaning they can reside on any machine and their lifetime are controlled by others.</p>
+<p>Usually a Flow starts and stops all of its own Executors. External Executors are owned by <em>other</em> Flows, meaning they
+can reside on any machine and their lifetime are controlled by others.</p>
 <p>Using external Executors is useful for sharing expensive Executors (like stateless, GPU-based encoders) between Flows.</p>
 <p>Both <a class="reference internal" href="../../executor/serve/#serve-executor-standalone"><span class="std std-ref">served and shared Executors</span></a> can be used as external Executors.</p>
 <p>When you add an external Executor to a Flow, you have to provide a <code class="docutils literal notranslate"><span class="pre">host</span></code> and <code class="docutils literal notranslate"><span class="pre">port</span></code>, and enable the <code class="docutils literal notranslate"><span class="pre">external</span></code> flag:</p>
@@ -834,8 +885,10 @@ PyTorch, TensorFlow, or any other popular ML framework.</p>
 <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;123.45.67.89:12345&#39;</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The Flow doesn’t start or stop this Executor and assumes that it is externally managed and available at <code class="docutils literal notranslate"><span class="pre">123.45.67.89:12345</span></code>.</p>
-<p>Despite the lifetime control, the external Executor behaves just like a regular one. You can even add the same Executor to multiple
+<p>The Flow doesn’t start or stop this Executor and assumes that it is externally managed and available
+at <code class="docutils literal notranslate"><span class="pre">123.45.67.89:12345</span></code>.</p>
+<p>Despite the lifetime control, the external Executor behaves just like a regular one. You can even add the same Executor
+to multiple
 Flows.</p>
 <section id="enable-tls">
 <h3>Enable TLS<a class="headerlink" href="#enable-tls" title="Permalink to this heading">#</a></h3>
@@ -845,7 +898,8 @@ Flows.</p>
 <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;123.45.67.89:443&#39;</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>After that, the external Executor behaves just like an internal one. You can even add the same Executor to multiple Flows.</p>
+<p>After that, the external Executor behaves just like an internal one. You can even add the same Executor to multiple
+Flows.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>Using <code class="docutils literal notranslate"><span class="pre">tls</span></code> to connect to the External Executor is especially needed to use an external Executor deployed with JCloud. See the JCloud <a class="reference internal" href="../../jcloud/#jcloud"><span class="std std-ref">documentation</span></a> for further details</p>
@@ -855,7 +909,8 @@ Flows.</p>
 <h3>Pass arguments<a class="headerlink" href="#pass-arguments" title="Permalink to this heading">#</a></h3>
 <p>External Executor may require extra configs to run.
 Think about an Executor that requires authentication to run.
-You can pass the <code class="docutils literal notranslate"><span class="pre">grpc_metadata</span></code> parameter to the Executor. <code class="docutils literal notranslate"><span class="pre">grpc_metadata</span></code> is a dictionary of key-value pairs to be passed along with every gRPC request send to that Executor.</p>
+You can pass the <code class="docutils literal notranslate"><span class="pre">grpc_metadata</span></code> parameter to the Executor. <code class="docutils literal notranslate"><span class="pre">grpc_metadata</span></code> is a dictionary of key-value pairs to be
+passed along with every gRPC request send to that Executor.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
@@ -874,11 +929,15 @@ You can pass the <code class="docutils literal notranslate"><span class="pre">gr
 </section>
 <section id="add-floating-executors">
 <span id="floating-executors"></span><h2>Add floating Executors<a class="headerlink" href="#add-floating-executors" title="Permalink to this heading">#</a></h2>
-<p>Some Executors in your Flow can be used for asynchronous background tasks that take time and don’t generate a required output. For instance,
+<p>Some Executors in your Flow can be used for asynchronous background tasks that take time and don’t generate a required
+output. For instance,
 logging specific information in external services, storing partial results, etc.</p>
 <p>You can unblock your Flow from such tasks by using <em>floating Executors</em>.</p>
-<p>Normally, all Executors form a pipeline that handles and transforms a given request until it is finally returned to the Client.</p>
-<p>However, floating Executors do not feed their outputs back into the pipeline. Therefore, the Executor’s output does not affect the response for the Client, and the response can be returned without waiting for the floating Executor to complete its task.</p>
+<p>Normally, all Executors form a pipeline that handles and transforms a given request until it is finally returned to the
+Client.</p>
+<p>However, floating Executors do not feed their outputs back into the pipeline. Therefore, the Executor’s output does not
+affect the response for the Client, and the response can be returned without waiting for the floating Executor to
+complete its task.</p>
 <p>Those Executors are marked with the <code class="docutils literal notranslate"><span class="pre">floating</span></code> keyword when added to a <code class="docutils literal notranslate"><span class="pre">Flow</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">DocumentArray</span>
@@ -924,16 +983,19 @@ logging specific information in external services, storing partial results, etc.
  Received [&#39;Hello World&#39;, &#39;Hello World&#39;]
 </pre></div>
 </div>
-<p>In this example the response is returned without waiting for the floating Executor to complete. However, the Flow is not closed until
+<p>In this example the response is returned without waiting for the floating Executor to complete. However, the Flow is not
+closed until
 the floating Executor has handled the request.</p>
 <p>You can plot the Flow and see the Executor is floating disconnected from the <strong>Gateway</strong>.</p>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../../_images/flow_floating.svg"><img alt="../../../_images/flow_floating.svg" src="../../../_images/flow_floating.svg" width="70%" /></a>
 </figure>
-<p>A floating Executor can <em>never</em> come before a non-floating Executor in your Flow’s <a class="reference internal" href="../scale-out/#flow-complex-topologies"><span class="std std-ref">topology</span></a>.</p>
+<p>A floating Executor can <em>never</em> come before a non-floating Executor in your Flow’s
+<a class="reference internal" href="../scale-out/#flow-complex-topologies"><span class="std std-ref">topology</span></a>.</p>
 <p>This leads to the following behaviors:</p>
 <ul class="simple">
-<li><p><strong>Implicit reordering</strong>: When you add a non-floating Executor after a floating Executor without specifying its <code class="docutils literal notranslate"><span class="pre">needs</span></code> parameter, the non-floating Executor is chained after the previous non-floating one.</p></li>
+<li><p><strong>Implicit reordering</strong>: When you add a non-floating Executor after a floating Executor without specifying its <code class="docutils literal notranslate"><span class="pre">needs</span></code>
+parameter, the non-floating Executor is chained after the previous non-floating one.</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -945,7 +1007,8 @@ the floating Executor has handled the request.</p>
 <a class="reference internal image-reference" href="../../../_images/flow_middle_1.svg"><img alt="../../../_images/flow_middle_1.svg" src="../../../_images/flow_middle_1.svg" width="70%" /></a>
 </figure>
 <ul class="simple">
-<li><p><strong>Chaining floating Executors</strong>: To chain more than one floating Executor, you need to add all of them with the <code class="docutils literal notranslate"><span class="pre">floating</span></code> flag, and explicitly specify the <code class="docutils literal notranslate"><span class="pre">needs</span></code> argument.</p></li>
+<li><p><strong>Chaining floating Executors</strong>: To chain more than one floating Executor, you need to add all of them with
+the <code class="docutils literal notranslate"><span class="pre">floating</span></code> flag, and explicitly specify the <code class="docutils literal notranslate"><span class="pre">needs</span></code> argument.</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -957,7 +1020,8 @@ the floating Executor has handled the request.</p>
 <a class="reference internal image-reference" href="../../../_images/flow_chain_floating.svg"><img alt="../../../_images/flow_chain_floating.svg" src="../../../_images/flow_chain_floating.svg" width="70%" /></a>
 </figure>
 <ul class="simple">
-<li><p><strong>Overriding the <code class="docutils literal notranslate"><span class="pre">floating</span></code> flag</strong>: If you add a floating Executor as part of <code class="docutils literal notranslate"><span class="pre">needs</span></code> parameter of a non-floating Executor, then the floating Executor is no longer considered floating.</p></li>
+<li><p><strong>Overriding the <code class="docutils literal notranslate"><span class="pre">floating</span></code> flag</strong>: If you add a floating Executor as part of <code class="docutils literal notranslate"><span class="pre">needs</span></code> parameter of a non-floating
+Executor, then the floating Executor is no longer considered floating.</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -1002,7 +1066,7 @@ the floating Executor has handled the request.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -1044,6 +1108,7 @@ the floating Executor has handled the request.</p>
 <li><a class="reference internal" href="#set-requests-via-uses-requests">Set <code class="docutils literal notranslate"><span class="pre">requests</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_requests</span></code></a></li>
 <li><a class="reference internal" href="#set-metas-via-uses-metas">Set <code class="docutils literal notranslate"><span class="pre">metas</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code></a></li>
 <li><a class="reference internal" href="#unify-output-ndarray-types">Unify output <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> types</a></li>
+<li><a class="reference internal" href="#configure-executor-grpc-options">Configure Executor gRPC options</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#add-external-executors">Add external Executors</a><ul>

@@ -300,6 +300,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -467,6 +468,7 @@
               <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">exceptions</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">channel</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">auto</span><span class="o">-</span><span class="n">volume</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">host</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
@@ -609,6 +611,9 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 <dt><kbd>--grpc-server-options</kbd></dt>
 <dd><p>Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {‘grpc.max_send_message_length’: -1}</p>
 </dd>
+<dt><kbd>--grpc-channel-options</kbd></dt>
+<dd><p>Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {‘grpc.max_send_message_length’: -1}. When max_attempts &gt; 1, the ‘grpc.service_config’ option will not be applicable.</p>
+</dd>
 </dl>
 </section>
 <section id="ContainerRuntime arguments">
@@ -684,9 +689,9 @@ container.</p>
 <dd><p>If set, try to install <cite>requirements.txt</cite> from the local Executor if exists in the Executor folder. If using Hub, install <cite>requirements.txt</cite> in the Hub Executor bundle to local.</p>
 <p>Default: False</p>
 </dd>
-<dt><kbd>--port, --port-in</kbd></dt>
+<dt><kbd>--port, --ports</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [52311]</p>
+<p>Default: [51413]</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -694,7 +699,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [54223]</p>
+<p>Default: [50261]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -992,7 +997,7 @@ Use -1 for waiting forever</p>
 <section id="new">
 <h3>new<a class="headerlink" href="#new" title="Permalink to this heading">#</a></h3>
 <p>Create a new Jina toy project with the predefined template.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">new</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">name</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">new</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">type</span><span class="p">]</span> <span class="n">name</span>
 </pre></div>
 </div>
 <section id="Positional Arguments_repeat5">
@@ -1001,6 +1006,15 @@ Use -1 for waiting forever</p>
 <dt><kbd>name</kbd></dt>
 <dd><p>The name of the project</p>
 <p>Default: “hello-jina”</p>
+</dd>
+</dl>
+</section>
+<section id="Named Arguments_repeat7">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--type</kbd></dt>
+<dd><p>The type of project to be created (either flow or deployment)</p>
+<p>Default: “flow”</p>
 </dd>
 </dl>
 </section>
@@ -1020,6 +1034,7 @@ Use -1 for waiting forever</p>
              <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">channel</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">graph</span><span class="o">-</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">graph</span><span class="o">-</span><span class="n">conditions</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">addresses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">metadata</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
@@ -1033,8 +1048,8 @@ Use -1 for waiting forever</p>
              <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat7">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this heading">#</a></h4>
+<section id="Named Arguments_repeat8">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--protocol, --protocols</kbd></dt>
 <dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
@@ -1207,6 +1222,9 @@ which should be structured as a python package.</p>
 <dt><kbd>--grpc-server-options</kbd></dt>
 <dd><p>Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {‘grpc.max_send_message_length’: -1}</p>
 </dd>
+<dt><kbd>--grpc-channel-options</kbd></dt>
+<dd><p>Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {‘grpc.max_send_message_length’: -1}. When max_attempts &gt; 1, the ‘grpc.service_config’ option will not be applicable.</p>
+</dd>
 <dt><kbd>--graph-description</kbd></dt>
 <dd><p>Routing graph for the gateway</p>
 <p>Default: “{}”</p>
@@ -1261,8 +1279,9 @@ which should be structured as a python package.</p>
 <dd><p>If set, the Gateway will restart while serving if YAML configuration source is changed.</p>
 <p>Default: False</p>
 </dd>
-<dt><kbd>--port, --port-expose, --port-in, --ports</kbd></dt>
+<dt><kbd>--port, --ports, --port-expose, --port-in</kbd></dt>
 <dd><p>The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.</p>
+<p>Default: [52642]</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -1270,7 +1289,7 @@ which should be structured as a python package.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [57339]</p>
+<p>Default: [59222]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1321,8 +1340,8 @@ which should be structured as a python package.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">login</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat8">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat9">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>-f, --force</kbd></dt>
 <dd><p>Force to login</p>
@@ -1368,8 +1387,8 @@ which should be structured as a python package.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat9">
-<h6 aria-level="8">Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat10">
+<h6 aria-level="8">Named Arguments<a class="headerlink" href="#Named Arguments_repeat10" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>-e, --expire</kbd></dt>
 <dd><p>Validity period (days)</p>
@@ -1472,8 +1491,8 @@ which should be structured as a python package.</p>
               <span class="n">path</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat10">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat10" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat11">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--no-usage</kbd></dt>
 <dd><p>If set, Hub executor usage will not be printed.</p>
@@ -1547,8 +1566,8 @@ which should be structured as a python package.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat11">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat12">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat12" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--no-usage</kbd></dt>
 <dd><p>If set, Hub executor usage will not be printed.</p>
@@ -1624,8 +1643,8 @@ which should be structured as a python package.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat12">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat12" title="Permalink to this heading">#</a></h4>
+<section id="Named Arguments_repeat13">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat13" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>-v, --version</kbd></dt>
 <dd><p>Show version.</p>
@@ -1682,8 +1701,8 @@ which should be structured as a python package.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat13">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat13" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat14">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat14" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>-o, --output</kbd></dt>
 <dd><p>The output path to the normalized Jina Flow yml file.</p>
@@ -1703,8 +1722,8 @@ which should be structured as a python package.</p>
                 <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat14">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat14" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat15">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat15" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--phase</kbd></dt>
 <dd><p>Possible choices: , Pending, Starting, Serving, Failed, Updating, Deleted, Paused, All</p>
@@ -1730,8 +1749,8 @@ which should be structured as a python package.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat15">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat15" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat16">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat16" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--verbose</kbd></dt>
 <dd><p>Pass if you want to see the full details of the Flow.</p>
@@ -1756,8 +1775,8 @@ which should be structured as a python package.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat16">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat16" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat17">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat17" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--phase</kbd></dt>
 <dd><p>Possible choices: Pending, Starting, Updating, Serving, Paused, Failed</p>
@@ -1814,8 +1833,8 @@ which should be structured as a python package.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat17">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat17" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat18">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat18" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--gateway</kbd></dt>
 <dd><p>to restart only gateway</p>
@@ -1871,8 +1890,8 @@ which should be structured as a python package.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat18">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat18" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat19">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat19" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--executor</kbd></dt>
 <dd><p>The name of the executor to scale</p>
@@ -1933,7 +1952,8 @@ which should be structured as a python package.</p>
          <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">dynamic</span><span class="o">-</span><span class="n">batching</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">exceptions</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">channel</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">auto</span><span class="o">-</span><span class="n">volume</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">host</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
@@ -2075,6 +2095,9 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 <dt><kbd>--grpc-server-options</kbd></dt>
 <dd><p>Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {‘grpc.max_send_message_length’: -1}</p>
 </dd>
+<dt><kbd>--grpc-channel-options</kbd></dt>
+<dd><p>Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {‘grpc.max_send_message_length’: -1}. When max_attempts &gt; 1, the ‘grpc.service_config’ option will not be applicable.</p>
+</dd>
 </dl>
 </section>
 <section id="ContainerRuntime arguments_repeat2">
@@ -2150,9 +2173,9 @@ container.</p>
 <dd><p>If set, try to install <cite>requirements.txt</cite> from the local Executor if exists in the Executor folder. If using Hub, install <cite>requirements.txt</cite> in the Hub Executor bundle to local.</p>
 <p>Default: False</p>
 </dd>
-<dt><kbd>--port, --port-in</kbd></dt>
+<dt><kbd>--port, --ports</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [59151]</p>
+<p>Default: [50837]</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -2160,7 +2183,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [55887]</p>
+<p>Default: [62339]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2235,6 +2258,7 @@ container.</p>
                 <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">exceptions</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">channel</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">auto</span><span class="o">-</span><span class="n">volume</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">host</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
@@ -2381,6 +2405,9 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 <dt><kbd>--grpc-server-options</kbd></dt>
 <dd><p>Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {‘grpc.max_send_message_length’: -1}</p>
 </dd>
+<dt><kbd>--grpc-channel-options</kbd></dt>
+<dd><p>Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {‘grpc.max_send_message_length’: -1}. When max_attempts &gt; 1, the ‘grpc.service_config’ option will not be applicable.</p>
+</dd>
 </dl>
 </section>
 <section id="ContainerRuntime arguments_repeat3">
@@ -2456,9 +2483,9 @@ container.</p>
 <dd><p>If set, try to install <cite>requirements.txt</cite> from the local Executor if exists in the Executor folder. If using Hub, install <cite>requirements.txt</cite> in the Hub Executor bundle to local.</p>
 <p>Default: False</p>
 </dd>
-<dt><kbd>--port, --port-in</kbd></dt>
+<dt><kbd>--port, --ports</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [64180]</p>
+<p>Default: [50631]</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -2466,7 +2493,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [53886]</p>
+<p>Default: [62470]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2559,12 +2586,13 @@ container.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">client</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">asyncio</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span>
             <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span>
             <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span>
-            <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="p">]</span>
-            <span class="p">[</span><span class="o">--</span><span class="n">suppress</span><span class="o">-</span><span class="n">root</span><span class="o">-</span><span class="n">logging</span><span class="p">]</span>
+            <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span>
+            <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">channel</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+            <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">suppress</span><span class="o">-</span><span class="n">root</span><span class="o">-</span><span class="n">logging</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat19">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat19" title="Permalink to this heading">#</a></h4>
+<section id="Named Arguments_repeat20">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat20" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--asyncio</kbd></dt>
 <dd><p>If set, then the input and output of this Client work in an asynchronous manner.</p>
@@ -2598,6 +2626,9 @@ container.</p>
 <dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
 <p>Communication protocol between server and client.</p>
 <p>Default: GRPC</p>
+</dd>
+<dt><kbd>--grpc-channel-options</kbd></dt>
+<dd><p>Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {‘grpc.max_send_message_length’: -1}. When max_attempts &gt; 1, the ‘grpc.service_config’ option will not be applicable.</p>
 </dd>
 <dt><kbd>--suppress-root-logging</kbd></dt>
 <dd><p>If set, then no root handlers will be suppressed from logging.</p>
@@ -2672,7 +2703,7 @@ container.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -2758,10 +2789,11 @@ container.</p>
 </li>
 <li><a class="reference internal" href="#new">new</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat5">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#gateway">gateway</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat8">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments_repeat2">Essential arguments</a></li>
 <li><a class="reference internal" href="#Base Deployment arguments">Base Deployment arguments</a></li>
 <li><a class="reference internal" href="#ContainerRuntime arguments_repeat1">ContainerRuntime arguments</a></li>
@@ -2776,7 +2808,7 @@ container.</p>
 <li><a class="reference internal" href="#Positional Arguments_repeat6">Positional Arguments</a></li>
 <li><a class="reference internal" href="#Sub-commands:_repeat2">Sub-commands:</a><ul>
 <li><a class="reference internal" href="#login">login</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat8">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat9">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#logout">logout</a></li>
@@ -2785,7 +2817,7 @@ container.</p>
 <li><a class="reference internal" href="#Sub-commands:_repeat3">Sub-commands:</a><ul>
 <li><a class="reference internal" href="#create">create</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat8">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat9">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat10">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#delete">delete</a><ul>
@@ -2809,14 +2841,14 @@ container.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#push">push</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat10">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat11">Named Arguments</a></li>
 <li><a class="reference internal" href="#Push arguments">Push arguments</a></li>
 <li><a class="reference internal" href="#Visibility arguments">Visibility arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#pull">pull</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat10">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat11">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat12">Named Arguments</a></li>
 <li><a class="reference internal" href="#Pull arguments_repeat1">Pull arguments</a></li>
 </ul>
 </li>
@@ -2831,7 +2863,7 @@ container.</p>
 </li>
 <li><a class="reference internal" href="#cloud">cloud</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat11">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat12">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat13">Named Arguments</a></li>
 <li><a class="reference internal" href="#Sub-commands:_repeat5">Sub-commands:</a><ul>
 <li><a class="reference internal" href="#login_repeat1">login</a></li>
 <li><a class="reference internal" href="#logout_repeat1">logout</a></li>
@@ -2841,21 +2873,21 @@ container.</p>
 </li>
 <li><a class="reference internal" href="#normalize">normalize</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat13">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat13">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat14">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#list_repeat2">list</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat14">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat15">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#status_repeat1">status</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat14">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat15">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat16">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#remove">remove</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat15">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat16">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat17">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#new_repeat2">new</a><ul>
@@ -2868,7 +2900,7 @@ container.</p>
 </li>
 <li><a class="reference internal" href="#restart">restart</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat18">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat17">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat18">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#pause">pause</a><ul>
@@ -2881,7 +2913,7 @@ container.</p>
 </li>
 <li><a class="reference internal" href="#scale">scale</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat21">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat18">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat19">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#recreate">recreate</a><ul>
@@ -2921,7 +2953,7 @@ container.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#client">client</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat19">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat20">Named Arguments</a></li>
 <li><a class="reference internal" href="#ClientGateway arguments">ClientGateway arguments</a></li>
 <li><a class="reference internal" href="#Prefetch arguments_repeat1">Prefetch arguments</a></li>
 </ul>

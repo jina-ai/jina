@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -405,12 +406,9 @@
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">AsyncExitStack</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">from</span> <span class="nn">starlette</span> <span class="kn">import</span> <span class="n">status</span>
-
 <span class="kn">from</span> <span class="nn">jina.clients.base</span> <span class="kn">import</span> <span class="n">BaseClient</span>
-<span class="kn">from</span> <span class="nn">jina.clients.base.helper</span> <span class="kn">import</span> <span class="n">HTTPClientlet</span>
+<span class="kn">from</span> <span class="nn">jina.clients.base.helper</span> <span class="kn">import</span> <span class="n">HTTPClientlet</span><span class="p">,</span> <span class="n">handle_response_status</span>
 <span class="kn">from</span> <span class="nn">jina.clients.helper</span> <span class="kn">import</span> <span class="n">callback_exec</span>
-<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">BadClient</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.logging.profile</span> <span class="kn">import</span> <span class="n">ProgressBar</span>
 <span class="kn">from</span> <span class="nn">jina.serve.stream</span> <span class="kn">import</span> <span class="n">RequestStreamer</span>
@@ -423,26 +421,6 @@
 
 <div class="viewcode-block" id="HTTPBaseClient"><a class="viewcode-back" href="../../../../../api/jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient">[docs]</a><span class="k">class</span> <span class="nc">HTTPBaseClient</span><span class="p">(</span><span class="n">BaseClient</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A MixIn for HTTP Client.&quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">_handle_response_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_status</span><span class="p">,</span> <span class="n">r_str</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">r_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_404_NOT_FOUND</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">BadClient</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;no such endpoint </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="p">(</span>
-            <span class="n">r_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_503_SERVICE_UNAVAILABLE</span>
-            <span class="ow">or</span> <span class="n">r_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_504_GATEWAY_TIMEOUT</span>
-        <span class="p">):</span>
-            <span class="k">if</span> <span class="p">(</span>
-                <span class="s1">&#39;header&#39;</span> <span class="ow">in</span> <span class="n">r_str</span>
-                <span class="ow">and</span> <span class="s1">&#39;status&#39;</span> <span class="ow">in</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">]</span>
-                <span class="ow">and</span> <span class="s1">&#39;description&#39;</span> <span class="ow">in</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span>
-            <span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;description&#39;</span><span class="p">])</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">r_str</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="p">(</span>
-            <span class="n">r_status</span> <span class="o">&lt;</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span> <span class="ow">or</span> <span class="n">r_status</span> <span class="o">&gt;</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_300_MULTIPLE_CHOICES</span>
-        <span class="p">):</span>  <span class="c1"># failure codes</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">r_str</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_is_flow_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sends a dry run to the Flow to validate if the Flow is ready to receive requests</span>
@@ -469,7 +447,7 @@
                 <span class="n">r_status</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span>
 
                 <span class="n">r_str</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response_status</span><span class="p">(</span><span class="n">r_status</span><span class="p">,</span> <span class="n">r_str</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+                <span class="n">handle_response_status</span><span class="p">(</span><span class="n">r_status</span><span class="p">,</span> <span class="n">r_str</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">:</span>
                     <span class="k">return</span> <span class="kc">True</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -511,7 +489,7 @@
 <span class="sd">        :yields: generator over results</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="kn">import</span> <span class="nn">aiohttp</span>
+            <span class="k">pass</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">inputs</span>
         <span class="n">request_iterator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_requests</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -566,7 +544,7 @@
                 <span class="n">r_status</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span>
 
                 <span class="n">r_str</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response_status</span><span class="p">(</span><span class="n">r_status</span><span class="p">,</span> <span class="n">r_str</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+                <span class="n">handle_response_status</span><span class="p">(</span><span class="n">r_status</span><span class="p">,</span> <span class="n">r_str</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
 
                 <span class="n">da</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">if</span> <span class="s1">&#39;data&#39;</span> <span class="ow">in</span> <span class="n">r_str</span> <span class="ow">and</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -604,7 +582,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

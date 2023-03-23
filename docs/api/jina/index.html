@@ -300,6 +300,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -746,15 +747,13 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.serve/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.gateway/">jina.serve.gateway module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.serve.gateway/#jina.serve.gateway.BaseGateway"><code class="docutils literal notranslate"><span class="pre">BaseGateway</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.helper/">jina.serve.helper module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.helper/#jina.serve.helper.wrap_func"><code class="docutils literal notranslate"><span class="pre">wrap_func()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.helper/#jina.serve.helper.store_init_kwargs"><code class="docutils literal notranslate"><span class="pre">store_init_kwargs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.helper/#jina.serve.helper.extract_trailing_metadata"><code class="docutils literal notranslate"><span class="pre">extract_trailing_metadata()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.helper/#jina.serve.helper.format_grpc_error"><code class="docutils literal notranslate"><span class="pre">format_grpc_error()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.helper/#jina.serve.helper.get_default_grpc_options"><code class="docutils literal notranslate"><span class="pre">get_default_grpc_options()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.helper/#jina.serve.helper.get_server_side_grpc_options"><code class="docutils literal notranslate"><span class="pre">get_server_side_grpc_options()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.monitoring/">jina.serve.monitoring module</a></li>
@@ -1076,7 +1075,7 @@ sub-modules, as described below.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

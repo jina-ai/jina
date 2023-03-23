@@ -300,6 +300,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../client/instrumentation/">Instrumentation</a></li>
@@ -811,7 +812,7 @@ Docker Compose and Jina Cloud, this information is crucial for orchestrating the
 Since you have full control over your custom gateways, you are always responsible for implementing health-check endpoints:</p>
 <ul class="simple">
 <li><p>If the protocol used is gRPC, a health servicer (for instance <code class="docutils literal notranslate"><span class="pre">health.aio.HealthServicer()</span></code>) from <code class="docutils literal notranslate"><span class="pre">grpcio-health-checking</span></code>
-is expected to be added to the gRPC server. Refer to <a class="reference internal" href="../../../api/jina.serve.runtimes.gateway.grpc.gateway/#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway" title="jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">GRPCGateway</span></code></a> as
+is expected to be added to the gRPC server. Refer to <code class="xref py py-class docutils literal notranslate"><span class="pre">GRPCGateway</span></code> as
 an example.</p></li>
 <li><p>Otherwise, an HTTP GET request to the root path is expected to return a <code class="docutils literal notranslate"><span class="pre">200</span></code> status code.</p></li>
 </ul>
@@ -1009,7 +1010,7 @@ health checks will be sent, it is important to specify them when including the G
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -422,8 +423,7 @@
 
         <span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">Client</span>
         <span class="kn">from</span> <span class="nn">jina.logging.profile</span> <span class="kn">import</span> <span class="n">TimeContext</span>
-        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway</span> <span class="kn">import</span> <span class="n">GatewayRuntime</span>
-        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.worker</span> <span class="kn">import</span> <span class="n">WorkerRuntime</span>
+        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.servers</span> <span class="kn">import</span> <span class="n">BaseServer</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">total_time</span> <span class="o">=</span> <span class="mi">0</span>
@@ -433,21 +433,15 @@
                 <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">&#39;ping </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">target</span><span class="si">}</span><span class="s1"> on </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1"> at </span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1"> round&#39;</span><span class="p">,</span> <span class="n">default_logger</span>
                 <span class="p">)</span> <span class="k">as</span> <span class="n">tc</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">target</span> <span class="o">==</span> <span class="s1">&#39;executor&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">target</span> <span class="o">==</span> <span class="s1">&#39;flow&#39;</span><span class="p">:</span>
+                        <span class="n">r</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">)</span><span class="o">.</span><span class="n">is_flow_ready</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
                         <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">parse_host_scheme</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
-                        <span class="n">r</span> <span class="o">=</span> <span class="n">WorkerRuntime</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(</span>
+                        <span class="n">r</span> <span class="o">=</span> <span class="n">BaseServer</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(</span>
                             <span class="n">ctrl_address</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hostname</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
                             <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                            <span class="n">protocol</span><span class="o">=</span><span class="n">protocol</span><span class="p">,</span>
                         <span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">target</span> <span class="o">==</span> <span class="s1">&#39;gateway&#39;</span><span class="p">:</span>
-                        <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">parse_host_scheme</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
-                        <span class="n">r</span> <span class="o">=</span> <span class="n">GatewayRuntime</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hostname</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                            <span class="n">protocol</span><span class="o">=</span><span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">protocol</span><span class="p">),</span>
-                            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
-                        <span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">target</span> <span class="o">==</span> <span class="s1">&#39;flow&#39;</span><span class="p">:</span>
-                        <span class="n">r</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">)</span><span class="o">.</span><span class="n">is_flow_ready</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="p">:</span>
                         <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                             <span class="s1">&#39;not responding, attempt (</span><span class="si">%d</span><span class="s1">/</span><span class="si">%d</span><span class="s1">) in 1s&#39;</span>
@@ -500,7 +494,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

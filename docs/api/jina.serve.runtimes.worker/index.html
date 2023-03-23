@@ -300,6 +300,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -466,166 +467,6 @@
 </section>
 <section id="module-jina.serve.runtimes.worker">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.serve.runtimes.worker" title="Permalink to this heading">#</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.worker.WorkerRuntime">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.worker.</span></span><span class="sig-name descname"><span class="pre">WorkerRuntime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/worker/#WorkerRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.worker.WorkerRuntime" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime" title="jina.serve.runtimes.asyncio.AsyncNewLoopRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
-<p>Runtime procedure leveraging <code class="xref py py-class docutils literal notranslate"><span class="pre">Grpclet</span></code> for sending DataRequests</p>
-<p>Initialize grpc and data request handling.
-:type args: <code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>
-:param args: args from CLI
-:param kwargs: keyword args</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.worker.WorkerRuntime.async_setup">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/worker/#WorkerRuntime.async_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.worker.WorkerRuntime.async_setup" title="Permalink to this definition">#</a></dt>
-<dd><p>Start the WorkerRequestHandler and wait for the GRPC and Monitoring servers to start</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.worker.WorkerRuntime.async_run_forever">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_run_forever</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/worker/#WorkerRuntime.async_run_forever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.worker.WorkerRuntime.async_run_forever" title="Permalink to this definition">#</a></dt>
-<dd><p>Block until the GRPC server is terminated</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.worker.WorkerRuntime.async_cancel">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/worker/#WorkerRuntime.async_cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.worker.WorkerRuntime.async_cancel" title="Permalink to this definition">#</a></dt>
-<dd><p>Stop the GRPC server</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.worker.WorkerRuntime.async_teardown">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_teardown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/worker/#WorkerRuntime.async_teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.worker.WorkerRuntime.async_teardown" title="Permalink to this definition">#</a></dt>
-<dd><p>Close the data request handler</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.worker.WorkerRuntime.Check">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/worker/#WorkerRuntime.Check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.worker.WorkerRuntime.Check" title="Permalink to this definition">#</a></dt>
-<dd><p>Calls the underlying HealthServicer.Check method with the same arguments
-:type request: <code class="xref py py-class docutils literal notranslate"><span class="pre">HealthCheckRequest</span></code>
-:param request: grpc request
-:param context: grpc request context
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">HealthCheckResponse</span></code>
-:returns: the grpc HealthCheckResponse</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.worker.WorkerRuntime.Watch">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Watch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/worker/#WorkerRuntime.Watch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.worker.WorkerRuntime.Watch" title="Permalink to this definition">#</a></dt>
-<dd><p>Calls the underlying HealthServicer.Watch method with the same arguments
-:type request: <code class="xref py py-class docutils literal notranslate"><span class="pre">HealthCheckRequest</span></code>
-:param request: grpc request
-:param context: grpc request context
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">HealthCheckResponse</span></code>
-:returns: the grpc HealthCheckResponse</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.worker.WorkerRuntime.aio_tracing_client_interceptors">
-<span class="sig-name descname"><span class="pre">aio_tracing_client_interceptors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.worker.WorkerRuntime.aio_tracing_client_interceptors" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a gRPC client aio channel interceptor.
-:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ClientInterceptor</span></code>]]
-:returns: An invocation-side list of aio interceptor objects.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.worker.WorkerRuntime.aio_tracing_server_interceptors">
-<span class="sig-name descname"><span class="pre">aio_tracing_server_interceptors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.worker.WorkerRuntime.aio_tracing_server_interceptors" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a gRPC aio server interceptor.
-:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ServerInterceptor</span></code>]]
-:returns: A service-side aio interceptor object.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.worker.WorkerRuntime.async_is_ready">
-<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.worker.WorkerRuntime.async_is_ready" title="Permalink to this definition">#</a></dt>
-<dd><p>Async Check if status is ready.
-:type ctrl_address: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param ctrl_address: the address where the control request needs to be sent
-:type timeout: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
-:param timeout: timeout of the health check in seconds
-:param kwargs: extra keyword arguments
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
-:return: True if status is ready else False.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.worker.WorkerRuntime.cancel_warmup_task">
-<span class="sig-name descname"><span class="pre">cancel_warmup_task</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.worker.WorkerRuntime.cancel_warmup_task" title="Permalink to this definition">#</a></dt>
-<dd><p>Cancel warmup task if exists and is not completed. Cancellation is required if the Flow is being terminated before the
-task is successful or hasn’t reached the max timeout.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.worker.WorkerRuntime.is_ready">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.worker.WorkerRuntime.is_ready" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if status is ready.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ctrl_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the address where the control request needs to be sent</p></li>
-<li><p><strong>timeout</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – timeout of the health check in seconds</p></li>
-<li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True if status is ready else False.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.worker.WorkerRuntime.run_forever">
-<span class="sig-name descname"><span class="pre">run_forever</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.worker.WorkerRuntime.run_forever" title="Permalink to this definition">#</a></dt>
-<dd><p>Running method to block the main thread.</p>
-<p>Run the event loop until a Future is done.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.worker.WorkerRuntime.teardown">
-<span class="sig-name descname"><span class="pre">teardown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.worker.WorkerRuntime.teardown" title="Permalink to this definition">#</a></dt>
-<dd><p>Call async_teardown() and stop and close the event loop.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.worker.WorkerRuntime.tracing_client_interceptor">
-<span class="sig-name descname"><span class="pre">tracing_client_interceptor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.worker.WorkerRuntime.tracing_client_interceptor" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">OpenTelemetryClientInterceptor</span></code>]</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a gRPC client interceptor with the global tracing provider.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.worker.WorkerRuntime.wait_for_ready_or_shutdown">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wait_for_ready_or_shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ready_or_shutdown_event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">health_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.worker.WorkerRuntime.wait_for_ready_or_shutdown" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if the runtime has successfully started</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>timeout</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – The time to wait before readiness or failure is determined</p></li>
-<li><p><strong>ctrl_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the address where the control message needs to be sent</p></li>
-<li><p><strong>ready_or_shutdown_event</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>]) – the multiprocessing event to detect if the process failed or is ready</p></li>
-<li><p><strong>health_check</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if true, a grpc health check will be used instead of relying on the event</p></li>
-<li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if is ready or it needs to be shutdown</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 </section>
 
@@ -642,7 +483,7 @@ task is successful or hasn’t reached the max timeout.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -676,27 +517,7 @@ task is successful or hasn’t reached the max timeout.</p>
                         <ul>
 <li><a class="reference internal" href="#">jina.serve.runtimes.worker package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.serve.runtimes.worker">Module contents</a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.async_setup"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.async_setup()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.async_run_forever"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.async_run_forever()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.async_cancel"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.async_cancel()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.async_teardown"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.async_teardown()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.Check"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.Check()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.Watch"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.Watch()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.aio_tracing_client_interceptors"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.aio_tracing_client_interceptors()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.aio_tracing_server_interceptors"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.aio_tracing_server_interceptors()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.async_is_ready"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.async_is_ready()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.cancel_warmup_task"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.cancel_warmup_task()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.is_ready"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.is_ready()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.run_forever"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.run_forever()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.teardown"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.teardown()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.tracing_client_interceptor()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.wait_for_ready_or_shutdown"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.wait_for_ready_or_shutdown()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#module-jina.serve.runtimes.worker">Module contents</a></li>
 </ul>
 </li>
 </ul>

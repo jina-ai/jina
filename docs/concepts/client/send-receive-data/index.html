@@ -300,6 +300,7 @@
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../instrumentation/">Instrumentation</a></li>
@@ -429,8 +430,10 @@
                 <article role="main">
                     <section id="send-receive-data">
 <h1>Send &amp; Receive Data<a class="headerlink" href="#send-receive-data" title="Permalink to this heading">#</a></h1>
-<p>After a <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code> has connected to a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>, it can send requests to the Flow using its <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> method.
-This expects as inputs the <a class="reference internal" href="../../executor/add-endpoints/#exec-endpoint"><span class="std std-ref">Executor endpoint</span></a> that you want to target, as well as a Document or Iterable of Documents:</p>
+<p>After a <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code> has connected to a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>, it can send requests to the Flow using its
+<a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> method.
+This expects as inputs the <a class="reference internal" href="../../executor/add-endpoints/#exec-endpoint"><span class="std std-ref">Executor endpoint</span></a> that you want to target, as well as a Document or
+Iterable of Documents:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">A single Document</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
@@ -493,7 +496,8 @@ Hence, <code class="docutils literal notranslate"><span class="pre">flow.post()<
 <section id="send-data-in-batches">
 <h2>Send data in batches<a class="headerlink" href="#send-data-in-batches" title="Permalink to this heading">#</a></h2>
 <p>Especially during indexing, a Client can send up to thousands or millions of Documents to a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>.
-Those Documents are internally batched into a <code class="docutils literal notranslate"><span class="pre">Request</span></code>, providing a smaller memory footprint and faster response times thanks
+Those Documents are internally batched into a <code class="docutils literal notranslate"><span class="pre">Request</span></code>, providing a smaller memory footprint and faster response times
+thanks
 to <a class="reference internal" href="../callbacks/#callback-functions"><span class="std std-ref">callback functions</span></a>.</p>
 <p>The size of these batches can be controlled with the <code class="docutils literal notranslate"><span class="pre">request_size</span></code> keyword.
 The default <code class="docutils literal notranslate"><span class="pre">request_size</span></code> is 100 Documents. The optimal size will depend on your use case.</p>
@@ -507,8 +511,10 @@ The default <code class="docutils literal notranslate"><span class="pre">request
 </section>
 <section id="send-data-asynchronously">
 <h2>Send data asynchronously<a class="headerlink" href="#send-data-asynchronously" title="Permalink to this heading">#</a></h2>
-<p>There is an async version of the Python Client which works with <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> and <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.MutateMixin.mutate" title="jina.clients.mixin.MutateMixin.mutate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mutate()</span></code></a>.</p>
-<p>While the standard <code class="docutils literal notranslate"><span class="pre">Client</span></code> is also asynchronous under the hood, its async version exposes this fact to the outside world,
+<p>There is an async version of the Python Client which works with <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> and
+<a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.MutateMixin.mutate" title="jina.clients.mixin.MutateMixin.mutate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mutate()</span></code></a>.</p>
+<p>While the standard <code class="docutils literal notranslate"><span class="pre">Client</span></code> is also asynchronous under the hood, its async version exposes this fact to the outside
+world,
 by allowing <em>coroutines</em> as input, and returning an <em>asynchronous iterator</em>.
 This means you can iterate over Responses one by one, as they come in.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
@@ -537,7 +543,6 @@ This means you can iterate over Responses one by one, as they come in.</p>
 
 
 <span class="k">class</span> <span class="nc">DummyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-
     <span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;grpc://0.0.0.0:51234&#39;</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="nd">@requests</span>
@@ -548,7 +553,10 @@ This means you can iterate over Responses one by one, as they come in.</p>
 </section>
 <section id="send-data-to-specific-executors">
 <h2>Send data to specific Executors<a class="headerlink" href="#send-data-to-specific-executors" title="Permalink to this heading">#</a></h2>
-<p>Usually a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> will send each request to all <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s with matching endpoints as configured. But the <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code> also allows you to only target specific Executors in a Flow using the <code class="docutils literal notranslate"><span class="pre">target_executor</span></code> keyword. The request will then only be processed by the Executors which match the provided target_executor regex. Its usage is shown in the listing below.</p>
+<p>Usually a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> will send each request to all <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s with matching endpoints as
+configured. But the <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code> also allows you to only target specific Executors in a Flow using
+the <code class="docutils literal notranslate"><span class="pre">target_executor</span></code> keyword. The request will then only be processed by the Executors which match the provided
+target_executor regex. Its usage is shown in the listing below.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 
@@ -577,11 +585,16 @@ This means you can iterate over Responses one by one, as they come in.</p>
 </pre></div>
 </div>
 <p>This will send the request to all Executors whose names start with ‘bar’, such as ‘barExecutor’.
-In the simplest case, you can specify a precise Executor name, and the request will be sent only to that single Executor.</p>
+In the simplest case, you can specify a precise Executor name, and the request will be sent only to that single
+Executor.</p>
 </section>
 <section id="use-unary-or-streaming-grpc">
 <h2>Use Unary or Streaming gRPC<a class="headerlink" href="#use-unary-or-streaming-grpc" title="Permalink to this heading">#</a></h2>
-<p>The Flow with <strong>gRPC</strong> protocol implements the unary and the streaming RPC lifecycle for communicating with the clients. When sending more than one request using the batching or the iterator mechanism, the RPC lifecycle for the <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> method can be controlled using the <code class="docutils literal notranslate"><span class="pre">stream</span></code> boolean method argument. By default the stream option is set to <code class="docutils literal notranslate"><span class="pre">True</span></code> which uses the streaming RPC to send the data to the Flow. If the stream option is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, the unary RPC is used to send the data to the Flow.
+<p>The Flow with <strong>gRPC</strong> protocol implements the unary and the streaming RPC lifecycle for communicating with the clients.
+When sending more than one request using the batching or the iterator mechanism, the RPC lifecycle for the
+<a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> method can be controlled using the <code class="docutils literal notranslate"><span class="pre">stream</span></code> boolean method argument. By
+default the stream option is set to <code class="docutils literal notranslate"><span class="pre">True</span></code> which uses the streaming RPC to send the data to the Flow. If the stream
+option is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, the unary RPC is used to send the data to the Flow.
 Both RPC lifecycles are implemented to provide the flexibility for the clients.</p>
 <p>There might be performance penalties when using the streaming RPC in the Python gRPC implementation.</p>
 <div class="admonition hint">
@@ -590,9 +603,42 @@ Both RPC lifecycles are implemented to provide the flexibility for the clients.<
 <p>Refer to the gRPC <a class="reference external" href="https://grpc.io/docs/guides/performance/#general">Performance Best Practices</a> guide for more implementations details and considerations.</p>
 </div>
 </section>
+<section id="configure-grpc-client-options">
+<span id="client-grpc-channel-options"></span><h2>Configure gRPC Client options<a class="headerlink" href="#configure-grpc-client-options" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Client</span></code> supports the <code class="docutils literal notranslate"><span class="pre">grpc_channel_options</span></code> parameter which allows more customization of the <strong>gRPC</strong> channel
+construction. The <code class="docutils literal notranslate"><span class="pre">grpc_channel_options</span></code> parameter accepts a dictionary of <strong>gRPC</strong> configuration options which will be
+used to overwrite the default options. The default <strong>gRPC</strong> options are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s1">&#39;grpc.max_send_message_length&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+<span class="p">(</span><span class="s1">&#39;grpc.max_receive_message_length&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+<span class="p">(</span><span class="s1">&#39;grpc.keepalive_time_ms&#39;</span><span class="p">,</span> <span class="mi">9999</span><span class="p">),</span>
+<span class="c1"># send keepalive ping every 9 second, default is 2 hours.</span>
+<span class="p">(</span><span class="s1">&#39;grpc.keepalive_timeout_ms&#39;</span><span class="p">,</span> <span class="mi">4999</span><span class="p">),</span>
+<span class="c1"># keepalive ping time out after 4 seconds, default is 20 seconds</span>
+<span class="p">(</span><span class="s1">&#39;grpc.keepalive_permit_without_calls&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+<span class="c1"># allow keepalive pings when there&#39;s no gRPC calls</span>
+<span class="p">(</span><span class="s1">&#39;grpc.http1.max_pings_without_data&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+<span class="c1"># allow unlimited amount of keepalive pings without data</span>
+<span class="p">(</span><span class="s1">&#39;grpc.http1.min_time_between_pings_ms&#39;</span><span class="p">,</span> <span class="mi">10000</span><span class="p">),</span>
+<span class="c1"># allow grpc pings from client every 9 seconds</span>
+<span class="p">(</span><span class="s1">&#39;grpc.http1.min_ping_interval_without_data_ms&#39;</span><span class="p">,</span> <span class="mi">5000</span><span class="p">),</span>
+<span class="c1"># allow grpc pings from client without data every 4 seconds</span>
+</pre></div>
+</div>
+<p>If the <code class="docutils literal notranslate"><span class="pre">max_attempts</span></code> is greater than 1 on the <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> method,
+the <code class="docutils literal notranslate"><span class="pre">grpc.service_config</span></code> option will not be applied since the retry
+options will be configured internally.</p>
+<p>Refer to the <a class="reference external" href="https://grpc.github.io/grpc/python/glossary.html#term-channel_arguments">channel_arguments</a> section for
+the full list of available <strong>gRPC</strong> options.</p>
+<div class="seealso admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Refer to the <a class="reference internal" href="../../flow/add-executors/#executor-grpc-server-options"><span class="std std-ref">Configure Executor gRPC options</span></a> section for configuring the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> <strong>gRPC</strong> options.</p>
+</div>
+</section>
 <section id="returns">
 <h2>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">#</a></h2>
-<p><a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> returns a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> containing all Documents flattened over all Requests. When setting <code class="docutils literal notranslate"><span class="pre">return_responses=True</span></code>, this behavior is changed to returning a list of <a class="reference internal" href="../../../api/jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a> objects.</p>
+<p><a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> returns a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> containing all Documents flattened over all
+Requests. When setting <code class="docutils literal notranslate"><span class="pre">return_responses=True</span></code>, this behavior is changed to returning a list of
+<a class="reference internal" href="../../../api/jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a> objects.</p>
 <p>If a callback function is provided, <code class="docutils literal notranslate"><span class="pre">client.post()</span></code> will return none.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Return as DocumentArray objects</label><div class="tab-content docutils">
@@ -646,14 +692,19 @@ Both RPC lifecycles are implemented to provide the flexibility for the clients.<
 </div>
 <section id="callbacks-vs-returns">
 <h3>Callbacks vs returns<a class="headerlink" href="#callbacks-vs-returns" title="Permalink to this heading">#</a></h3>
-<p>Callback operates on every sub-request generated by <code class="docutils literal notranslate"><span class="pre">request_size</span></code>. The callback function consumes the response one by one. The old response is immediately free from the memory after the consumption.</p>
+<p>Callback operates on every sub-request generated by <code class="docutils literal notranslate"><span class="pre">request_size</span></code>. The callback function consumes the response one by
+one. The old response is immediately free from the memory after the consumption.</p>
 <p>When callback is not provided, the client accumulates all DocumentArray of all Requests before returning.
-This means you will not receive results until all Requests have been processed, which is slower and requires more memory.</p>
+This means you will not receive results until all Requests have been processed, which is slower and requires more
+memory.</p>
 </section>
 <section id="force-the-order-of-responses">
 <h3>Force the order of responses<a class="headerlink" href="#force-the-order-of-responses" title="Permalink to this heading">#</a></h3>
-<p>Note that the Flow processes Documents in an asynchronous and a distributed manner. The order of the Flow processing the requests may not be the same order as the Client sending them. Hence, the response order may also not be consistent as the sending order.</p>
-<p>To force the order of the results to be deterministic and the same as when they are sent, passing <code class="docutils literal notranslate"><span class="pre">results_in_order</span></code> parameter to <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a>.</p>
+<p>Note that the Flow processes Documents in an asynchronous and a distributed manner. The order of the Flow processing the
+requests may not be the same order as the Client sending them. Hence, the response order may also not be consistent as
+the sending order.</p>
+<p>To force the order of the results to be deterministic and the same as when they are sent, passing <code class="docutils literal notranslate"><span class="pre">results_in_order</span></code>
+parameter to <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
@@ -712,7 +763,7 @@ This means you will not receive results until all Requests have been processed, 
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -749,6 +800,7 @@ This means you will not receive results until all Requests have been processed, 
 <li><a class="reference internal" href="#send-data-asynchronously">Send data asynchronously</a></li>
 <li><a class="reference internal" href="#send-data-to-specific-executors">Send data to specific Executors</a></li>
 <li><a class="reference internal" href="#use-unary-or-streaming-grpc">Use Unary or Streaming gRPC</a></li>
+<li><a class="reference internal" href="#configure-grpc-client-options">Configure gRPC Client options</a></li>
 <li><a class="reference internal" href="#returns">Returns</a><ul>
 <li><a class="reference internal" href="#callbacks-vs-returns">Callbacks vs returns</a></li>
 <li><a class="reference internal" href="#force-the-order-of-responses">Force the order of responses</a></li>

@@ -298,6 +298,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -429,9 +430,22 @@
 <span id="jina-serve-runtimes-gateway-request-handling-module"></span><h1>jina.serve.runtimes.gateway.request_handling module<a class="headerlink" href="#module-jina.serve.runtimes.gateway.request_handling" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.request_handling.</span></span><span class="sig-name descname"><span class="pre">GatewayRequestHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">streamer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/request_handling/#GatewayRequestHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.request_handling.</span></span><span class="sig-name descname"><span class="pre">GatewayRequestHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics_registry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aio_tracing_client_interceptors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracing_client_interceptor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/request_handling/#GatewayRequestHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Object to encapsulate the code related to handle the data requests in the Gateway</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.cancel_warmup_task">
+<span class="sig-name descname"><span class="pre">cancel_warmup_task</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/request_handling/#GatewayRequestHandler.cancel_warmup_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.cancel_warmup_task" title="Permalink to this definition">#</a></dt>
+<dd><p>Cancel warmup task if exists and is not completed. Cancellation is required if the Flow is being terminated before the
+task is successful or hasn’t reached the max timeout.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.close">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/request_handling/#GatewayRequestHandler.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.close" title="Permalink to this definition">#</a></dt>
+<dd><p>Gratefully closes the object making sure all the floating requests are taken care and the connections are closed gracefully</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.dry_run">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dry_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">empty</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/request_handling/#GatewayRequestHandler.dry_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.dry_run" title="Permalink to this definition">#</a></dt>
@@ -524,7 +538,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -558,6 +572,8 @@
                         <ul>
 <li><a class="reference internal" href="#">jina.serve.runtimes.gateway.request_handling module</a><ul>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler"><code class="docutils literal notranslate"><span class="pre">GatewayRequestHandler</span></code></a><ul>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.cancel_warmup_task"><code class="docutils literal notranslate"><span class="pre">GatewayRequestHandler.cancel_warmup_task()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.close"><code class="docutils literal notranslate"><span class="pre">GatewayRequestHandler.close()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.dry_run"><code class="docutils literal notranslate"><span class="pre">GatewayRequestHandler.dry_run()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.stream"><code class="docutils literal notranslate"><span class="pre">GatewayRequestHandler.stream()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.process_single_data"><code class="docutils literal notranslate"><span class="pre">GatewayRequestHandler.process_single_data()</span></code></a></li>

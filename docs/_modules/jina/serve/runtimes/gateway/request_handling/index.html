@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -401,7 +402,9 @@
                 </div>
                 <article role="main">
                     <h1>Source code for jina.serve.runtimes.gateway.request_handling</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncIterator</span>
 
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_full_version</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
@@ -423,7 +426,10 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">args</span><span class="p">:</span> <span class="s1">&#39;SimpleNamespace&#39;</span><span class="p">,</span>
         <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">,</span>
-        <span class="n">streamer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;GatewayStreamer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">metrics_registry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">meter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">aio_tracing_client_interceptors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">tracing_client_interceptor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="kn">import</span> <span class="nn">json</span>
@@ -441,7 +447,7 @@
         <span class="n">deployments_metadata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">deployments_metadata</span><span class="p">)</span>
         <span class="n">deployments_no_reduce</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">deployments_no_reduce</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span> <span class="o">=</span> <span class="n">streamer</span> <span class="ow">or</span> <span class="n">GatewayStreamer</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span> <span class="o">=</span> <span class="n">GatewayStreamer</span><span class="p">(</span>
             <span class="n">graph_representation</span><span class="o">=</span><span class="n">graph_description</span><span class="p">,</span>
             <span class="n">executor_addresses</span><span class="o">=</span><span class="n">deployments_addresses</span><span class="p">,</span>
             <span class="n">graph_conditions</span><span class="o">=</span><span class="n">graph_conditions</span><span class="p">,</span>
@@ -453,10 +459,13 @@
             <span class="n">runtime_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">runtime_name</span><span class="p">,</span>
             <span class="n">prefetch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">prefetch</span><span class="p">,</span>
             <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-            <span class="n">metrics_registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">,</span>
-            <span class="n">meter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span>
-            <span class="n">aio_tracing_client_interceptors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">aio_tracing_client_interceptors</span><span class="p">,</span>
-            <span class="n">tracing_client_interceptor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">tracing_client_interceptor</span><span class="p">,</span>
+            <span class="n">metrics_registry</span><span class="o">=</span><span class="n">metrics_registry</span><span class="p">,</span>
+            <span class="n">meter</span><span class="o">=</span><span class="n">meter</span><span class="p">,</span>
+            <span class="n">aio_tracing_client_interceptors</span><span class="o">=</span><span class="n">aio_tracing_client_interceptors</span><span class="p">,</span>
+            <span class="n">tracing_client_interceptor</span><span class="o">=</span><span class="n">tracing_client_interceptor</span><span class="p">,</span>
+            <span class="n">grpc_channel_options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">grpc_channel_options</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="p">,</span> <span class="s1">&#39;grpc_channel_options&#39;</span><span class="p">)</span>
+            <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">GatewayStreamer</span><span class="o">.</span><span class="n">_set_env_streamer_args</span><span class="p">(</span>
@@ -478,6 +487,80 @@
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">executor_name</span> <span class="ow">in</span> <span class="n">deployments_addresses</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">warmup_stop_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">warmup_task</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">warmup_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">warmup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">warmup_stop_event</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+            <span class="c1"># when Gateway is started locally, it may not have loop</span>
+            <span class="k">pass</span>
+
+<div class="viewcode-block" id="GatewayRequestHandler.cancel_warmup_task"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.cancel_warmup_task">[docs]</a>    <span class="k">def</span> <span class="nf">cancel_warmup_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cancel warmup task if exists and is not completed. Cancellation is required if the Flow is being terminated before the</span>
+<span class="sd">        task is successful or hasn&#39;t reached the max timeout.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_task</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cancelling warmup task.&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">warmup_stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>  <span class="c1"># this event is useless if simply cancel</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">warmup_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;exception during warmup task cancellation: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="GatewayRequestHandler.close"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gratefully closes the object making sure all the floating requests are taken care and the connections are closed gracefully</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancel_warmup_task</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_http_fastapi_default_app</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">,</span>
+        <span class="n">no_debug_endpoints</span><span class="p">,</span>
+        <span class="n">no_crud_endpoints</span><span class="p">,</span>
+        <span class="n">expose_endpoints</span><span class="p">,</span>
+        <span class="n">expose_graphql_endpoint</span><span class="p">,</span>
+        <span class="n">cors</span><span class="p">,</span>
+        <span class="n">tracing</span><span class="p">,</span>
+        <span class="n">tracer_provider</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">extend_rest_interface</span>
+        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http_fastapi_app</span> <span class="kn">import</span> <span class="n">get_fastapi_app</span>
+
+        <span class="k">return</span> <span class="n">extend_rest_interface</span><span class="p">(</span>
+            <span class="n">get_fastapi_app</span><span class="p">(</span>
+                <span class="n">streamer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+                <span class="n">no_debug_endpoints</span><span class="o">=</span><span class="n">no_debug_endpoints</span><span class="p">,</span>
+                <span class="n">no_crud_endpoints</span><span class="o">=</span><span class="n">no_crud_endpoints</span><span class="p">,</span>
+                <span class="n">expose_endpoints</span><span class="o">=</span><span class="n">expose_endpoints</span><span class="p">,</span>
+                <span class="n">expose_graphql_endpoint</span><span class="o">=</span><span class="n">expose_graphql_endpoint</span><span class="p">,</span>
+                <span class="n">cors</span><span class="o">=</span><span class="n">cors</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+                <span class="n">tracing</span><span class="o">=</span><span class="n">tracing</span><span class="p">,</span>
+                <span class="n">tracer_provider</span><span class="o">=</span><span class="n">tracer_provider</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_websocket_fastapi_default_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tracing</span><span class="p">,</span> <span class="n">tracer_provider</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">extend_rest_interface</span>
+        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.websocket_fastapi_app</span> <span class="kn">import</span> <span class="n">get_fastapi_app</span>
+
+        <span class="k">return</span> <span class="n">extend_rest_interface</span><span class="p">(</span>
+            <span class="n">get_fastapi_app</span><span class="p">(</span>
+                <span class="n">streamer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+                <span class="n">tracing</span><span class="o">=</span><span class="n">tracing</span><span class="p">,</span>
+                <span class="n">tracer_provider</span><span class="o">=</span><span class="n">tracer_provider</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="GatewayRequestHandler.dry_run"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.dry_run">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -562,7 +645,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

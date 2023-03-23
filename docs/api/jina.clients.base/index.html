@@ -300,6 +300,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -444,6 +445,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">GRPCBaseClient.tracing_client_interceptor()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.client_grpc_options"><code class="docutils literal notranslate"><span class="pre">client_grpc_options()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.remove_grpc_service_config"><code class="docutils literal notranslate"><span class="pre">remove_grpc_service_config()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.helper/">jina.clients.base.helper module</a><ul>
@@ -473,11 +476,12 @@
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.recv_message"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.recv_message()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.recv_dry_run"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.recv_dry_run()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.close_message"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.close_message</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.close"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.close()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.close_code"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.close_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.close"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.close()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.start"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.start()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.handle_response_status"><code class="docutils literal notranslate"><span class="pre">handle_response_status()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.http/">jina.clients.base.http module</a><ul>
@@ -489,6 +493,24 @@
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient.inputs"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.inputs</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient.teardown_instrumentation"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.teardown_instrumentation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.tracing_client_interceptor()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.retry/">jina.clients.base.retry module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.retry/#jina.clients.base.retry.wait_or_raise_err"><code class="docutils literal notranslate"><span class="pre">wait_or_raise_err()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.stream_rpc/">jina.clients.base.stream_rpc module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.stream_rpc/#jina.clients.base.stream_rpc.StreamRpc"><code class="docutils literal notranslate"><span class="pre">StreamRpc</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.stream_rpc/#jina.clients.base.stream_rpc.StreamRpc.stream_rpc_with_retry"><code class="docutils literal notranslate"><span class="pre">StreamRpc.stream_rpc_with_retry()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.unary_rpc/">jina.clients.base.unary_rpc module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.unary_rpc/#jina.clients.base.unary_rpc.UnaryRpc"><code class="docutils literal notranslate"><span class="pre">UnaryRpc</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.unary_rpc/#jina.clients.base.unary_rpc.UnaryRpc.unary_rpc_with_retry"><code class="docutils literal notranslate"><span class="pre">UnaryRpc.unary_rpc_with_retry()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -625,7 +647,7 @@ exporting metrics data is properly cleaned up.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

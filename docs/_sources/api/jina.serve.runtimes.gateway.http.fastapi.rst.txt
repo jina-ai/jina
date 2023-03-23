@@ -1,5 +1,8 @@
-jina.serve.runtimes.gateway.http.fastapi module
-===============================================
+jina.serve.runtimes.gateway.http.fastapi package
+================================================
+
+Module contents
+---------------
 
 .. automodule:: jina.serve.runtimes.gateway.http.fastapi
    :members:

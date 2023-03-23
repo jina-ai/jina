@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -446,25 +447,23 @@
 
 <span class="sd">    :param args: arguments coming from the CLI.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
+    <span class="kn">from</span> <span class="nn">jina.serve.runtimes.asyncio</span> <span class="kn">import</span> <span class="n">AsyncNewLoopRuntime</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">&#39;WorkerRuntime&#39;</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.worker</span> <span class="kn">import</span> <span class="n">WorkerRuntime</span>
-
-        <span class="n">runtime_cls</span> <span class="o">=</span> <span class="n">WorkerRuntime</span>
+        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.worker.request_handling</span> <span class="kn">import</span> <span class="n">WorkerRequestHandler</span>
+        <span class="n">req_handler_cls</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span>
     <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">&#39;HeadRuntime&#39;</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.head</span> <span class="kn">import</span> <span class="n">HeadRuntime</span>
-
-        <span class="n">runtime_cls</span> <span class="o">=</span> <span class="n">HeadRuntime</span>
+        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.head.request_handling</span> <span class="kn">import</span> <span class="n">HeaderRequestHandler</span>
+        <span class="n">req_handler_cls</span> <span class="o">=</span> <span class="n">HeaderRequestHandler</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39; runtime_cls </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span><span class="si">}</span><span class="s1"> is not supported with `--native` argument. `WorkerRuntime` is supported&#39;</span>
         <span class="p">)</span>
 
-    <span class="k">with</span> <span class="n">runtime_cls</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">rt</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">AsyncNewLoopRuntime</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">req_handler_cls</span><span class="o">=</span><span class="n">req_handler_cls</span><span class="p">)</span> <span class="k">as</span> <span class="n">rt</span><span class="p">:</span>
         <span class="n">name</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">rt</span><span class="o">.</span><span class="n">_request_handler</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="s1">&#39;_request_handler&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">rt</span><span class="o">.</span><span class="n">_request_handler</span><span class="p">,</span> <span class="s1">&#39;_executor&#39;</span><span class="p">)</span>
-            <span class="k">else</span> <span class="n">rt</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">rt</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">_request_handler</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">rt</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="s1">&#39;_request_handler&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">rt</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">_request_handler</span><span class="p">,</span> <span class="s1">&#39;_executor&#39;</span><span class="p">)</span>
+            <span class="k">else</span> <span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span>
         <span class="p">)</span>
         <span class="n">rt</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Executor </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> started&#39;</span><span class="p">)</span>
         <span class="n">rt</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span></div>
@@ -479,7 +478,6 @@
 <span class="sd">    :returns: return the same as `pod` or `worker_runtime`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">native</span><span class="p">:</span>
@@ -488,35 +486,19 @@
         <span class="k">return</span> <span class="n">pod</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="worker_runtime"><a class="viewcode-back" href="../../../api/jina_cli.api/#jina_cli.api.worker_runtime">[docs]</a><span class="k">def</span> <span class="nf">worker_runtime</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;Namespace&#39;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Starts a WorkerRuntime</span>
-
-<span class="sd">    :param args: arguments coming from the CLI.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">jina.serve.runtimes.worker</span> <span class="kn">import</span> <span class="n">WorkerRuntime</span>
-
-    <span class="k">with</span> <span class="n">WorkerRuntime</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">runtime</span><span class="p">:</span>
-        <span class="n">runtime</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Executor </span><span class="si">{</span><span class="n">runtime</span><span class="o">.</span><span class="n">_worker_request_handler</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> started&#39;</span>
-        <span class="p">)</span>
-        <span class="n">runtime</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span></div>
-
-
 <div class="viewcode-block" id="gateway"><a class="viewcode-back" href="../../../api/jina_cli.api/#jina_cli.api.gateway">[docs]</a><span class="k">def</span> <span class="nf">gateway</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;Namespace&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start a Gateway Deployment</span>
 
 <span class="sd">    :param args: arguments coming from the CLI.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">jina.serve.runtimes</span> <span class="kn">import</span> <span class="n">get_runtime</span>
+    <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.request_handling</span> <span class="kn">import</span> <span class="n">GatewayRequestHandler</span>
+    <span class="kn">from</span> <span class="nn">jina.serve.runtimes.asyncio</span> <span class="kn">import</span> <span class="n">AsyncNewLoopRuntime</span>
 
     <span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">_update_gateway_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
-    <span class="n">runtime_cls</span> <span class="o">=</span> <span class="n">get_runtime</span><span class="p">(</span><span class="s1">&#39;GatewayRuntime&#39;</span><span class="p">)</span>
-
-    <span class="k">with</span> <span class="n">runtime_cls</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">runtime</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">AsyncNewLoopRuntime</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">req_handler_cls</span><span class="o">=</span><span class="n">GatewayRequestHandler</span><span class="p">)</span> <span class="k">as</span> <span class="n">runtime</span><span class="p">:</span>
         <span class="n">runtime</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Gateway started&#39;</span><span class="p">)</span>
         <span class="n">runtime</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span></div>
 
@@ -600,10 +582,15 @@
     <span class="kn">import</span> <span class="nn">shutil</span>
 
     <span class="kn">from</span> <span class="nn">jina.constants</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
-
-    <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__resources_path__</span><span class="p">,</span> <span class="s1">&#39;project-template&#39;</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-    <span class="p">)</span></div>
+    
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;deployment&#39;</span><span class="p">:</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__resources_path__</span><span class="p">,</span> <span class="s1">&#39;project-template&#39;</span><span class="p">,</span> <span class="s1">&#39;deployment&#39;</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__resources_path__</span><span class="p">,</span> <span class="s1">&#39;project-template&#39;</span><span class="p">,</span> <span class="s1">&#39;flow&#39;</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="help"><a class="viewcode-back" href="../../../api/jina_cli.api/#jina_cli.api.help">[docs]</a><span class="k">def</span> <span class="nf">help</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;Namespace&#39;</span><span class="p">):</span>
@@ -649,7 +636,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

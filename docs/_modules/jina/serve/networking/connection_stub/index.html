@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -402,7 +403,7 @@
                 <article role="main">
                     <h1>Source code for jina.serve.networking.connection_stub</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">grpc</span>
 
@@ -623,6 +624,7 @@
     <span class="n">tls</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">root_certificates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">aio_tracing_client_interceptors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="s1">&#39;ClientInterceptor&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">_ConnectionStubs</span><span class="p">,</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">Channel</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates an async GRPC Channel. This channel has to be closed eventually!</span>
@@ -634,6 +636,7 @@
 <span class="sd">    :param metrics: NetworkingMetrics object that contain optional metrics</span>
 <span class="sd">    :param histograms: NetworkingHistograms object that optionally record metrics</span>
 <span class="sd">    :param aio_tracing_client_interceptors: List of async io gprc client tracing interceptors for tracing requests for asycnio channel</span>
+<span class="sd">    :param channel_options: gRPC channel options</span>
 <span class="sd">    :returns: DataRequest stubs and an async grpc channel</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">channel</span> <span class="o">=</span> <span class="n">get_grpc_channel</span><span class="p">(</span>
@@ -642,6 +645,7 @@
         <span class="n">tls</span><span class="o">=</span><span class="n">tls</span><span class="p">,</span>
         <span class="n">root_certificates</span><span class="o">=</span><span class="n">root_certificates</span><span class="p">,</span>
         <span class="n">aio_tracing_client_interceptors</span><span class="o">=</span><span class="n">aio_tracing_client_interceptors</span><span class="p">,</span>
+        <span class="n">options</span><span class="o">=</span><span class="n">channel_options</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="p">(</span>
@@ -662,7 +666,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

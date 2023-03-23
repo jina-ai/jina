@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -401,32 +402,31 @@
                 </div>
                 <article role="main">
                     <h1>Source code for jina.serve.runtimes.head.request_handling</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-
-<span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
-<span class="kn">from</span> <span class="nn">jina.serve.runtimes.monitoring</span> <span class="kn">import</span> <span class="n">MonitoringRequestMixin</span>
-<span class="kn">from</span> <span class="nn">jina.serve.runtimes.worker.request_handling</span> <span class="kn">import</span> <span class="n">WorkerRequestHandler</span>
-<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PollingType</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">grpc</span>
-<span class="kn">import</span> <span class="nn">threading</span>
 
+<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PollingType</span>
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">InternalNetworkError</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_full_version</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
+<span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.monitoring</span> <span class="kn">import</span> <span class="n">MonitoringRequestMixin</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.worker.request_handling</span> <span class="kn">import</span> <span class="n">WorkerRequestHandler</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">Response</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">CollectorRegistry</span>
 
     <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
-    <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
     <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
+    <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
 
 
 <div class="viewcode-block" id="HeaderRequestHandler"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler">[docs]</a><span class="k">class</span> <span class="nc">HeaderRequestHandler</span><span class="p">(</span><span class="n">MonitoringRequestMixin</span><span class="p">):</span>
@@ -436,18 +436,19 @@
 <span class="sd">    :param metrics_registry: optional metrics registry for prometheus. Used if we need to expose metrics from the executor or from the data request handler</span>
 <span class="sd">    :param runtime_name: optional runtime_name that will be registered during monitoring</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">DEFAULT_POLLING</span> <span class="o">=</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">args</span><span class="p">:</span> <span class="s1">&#39;argparse.Namespace&#39;</span><span class="p">,</span>
-            <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">,</span>
-            <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CollectorRegistry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">meter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">runtime_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">aio_tracing_client_interceptors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">tracing_client_interceptor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="s1">&#39;argparse.Namespace&#39;</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">,</span>
+        <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CollectorRegistry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">meter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">runtime_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">aio_tracing_client_interceptors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">tracing_client_interceptor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
@@ -467,6 +468,7 @@
             <span class="n">meter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span>
             <span class="n">aio_tracing_client_interceptors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">aio_tracing_client_interceptors</span><span class="p">,</span>
             <span class="n">tracing_client_interceptor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tracing_client_interceptor</span><span class="p">,</span>
+            <span class="n">channel_options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">grpc_channel_options</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_retries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">retries</span>
 
@@ -550,13 +552,13 @@
         <span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_gather_worker_tasks</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">requests</span><span class="p">,</span>
-            <span class="n">connection_pool</span><span class="p">,</span>
-            <span class="n">deployment_name</span><span class="p">,</span>
-            <span class="n">polling_type</span><span class="p">,</span>
-            <span class="n">timeout_send</span><span class="p">,</span>
-            <span class="n">retries</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">requests</span><span class="p">,</span>
+        <span class="n">connection_pool</span><span class="p">,</span>
+        <span class="n">deployment_name</span><span class="p">,</span>
+        <span class="n">polling_type</span><span class="p">,</span>
+        <span class="n">timeout_send</span><span class="p">,</span>
+        <span class="n">retries</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="n">worker_send_tasks</span> <span class="o">=</span> <span class="n">connection_pool</span><span class="o">.</span><span class="n">send_requests</span><span class="p">(</span>
             <span class="n">requests</span><span class="o">=</span><span class="n">requests</span><span class="p">,</span>
@@ -585,11 +587,11 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_merge_metadata</span><span class="p">(</span>
-            <span class="n">metadata</span><span class="p">,</span>
-            <span class="n">uses_after_metadata</span><span class="p">,</span>
-            <span class="n">uses_before_metadata</span><span class="p">,</span>
-            <span class="n">total_shards</span><span class="p">,</span>
-            <span class="n">failed_shards</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="p">,</span>
+        <span class="n">uses_after_metadata</span><span class="p">,</span>
+        <span class="n">uses_before_metadata</span><span class="p">,</span>
+        <span class="n">total_shards</span><span class="p">,</span>
+        <span class="n">failed_shards</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="n">merged_metadata</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">uses_before_metadata</span><span class="p">:</span>
@@ -607,16 +609,16 @@
         <span class="k">return</span> <span class="n">merged_metadata</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_handle_data_request</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">requests</span><span class="p">,</span>
-            <span class="n">connection_pool</span><span class="p">,</span>
-            <span class="n">uses_before_address</span><span class="p">,</span>
-            <span class="n">uses_after_address</span><span class="p">,</span>
-            <span class="n">timeout_send</span><span class="p">,</span>
-            <span class="n">retries</span><span class="p">,</span>
-            <span class="n">reduce</span><span class="p">,</span>
-            <span class="n">polling_type</span><span class="p">,</span>
-            <span class="n">deployment_name</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">requests</span><span class="p">,</span>
+        <span class="n">connection_pool</span><span class="p">,</span>
+        <span class="n">uses_before_address</span><span class="p">,</span>
+        <span class="n">uses_after_address</span><span class="p">,</span>
+        <span class="n">timeout_send</span><span class="p">,</span>
+        <span class="n">retries</span><span class="p">,</span>
+        <span class="n">reduce</span><span class="p">,</span>
+        <span class="n">polling_type</span><span class="p">,</span>
+        <span class="n">deployment_name</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
         <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">requests</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_start_request_metrics</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
@@ -697,10 +699,10 @@
         <span class="k">return</span> <span class="n">response_request</span><span class="p">,</span> <span class="n">merged_metadata</span>
 
 <div class="viewcode-block" id="HeaderRequestHandler.warmup"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.warmup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">warmup</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">connection_pool</span><span class="p">:</span> <span class="n">GrpcConnectionPool</span><span class="p">,</span>
-            <span class="n">stop_event</span><span class="p">:</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">,</span>
-            <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">connection_pool</span><span class="p">:</span> <span class="n">GrpcConnectionPool</span><span class="p">,</span>
+        <span class="n">stop_event</span><span class="p">:</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">,</span>
+        <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Executes warmup task against the deployments from the connection pool.</span>
 <span class="sd">        :param connection_pool: GrpcConnectionPool that implements the warmup to the connected deployments.</span>
@@ -723,7 +725,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cancelling warmup task.&#39;</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">warmup_stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span> <span class="c1"># this event is useless if simply cancel</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">warmup_stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>  <span class="c1"># this event is useless if simply cancel</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">warmup_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;exception during warmup task cancellation: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -793,8 +795,8 @@
                 <span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">Response</span><span class="p">()</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span>
-                <span class="ne">RuntimeError</span><span class="p">,</span>
-                <span class="ne">Exception</span><span class="p">,</span>
+            <span class="ne">RuntimeError</span><span class="p">,</span>
+            <span class="ne">Exception</span><span class="p">,</span>
         <span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>  <span class="c1"># some other error, keep streaming going just add error info</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> add &quot;--quiet-error&quot; to suppress the exception details&#39;</span>
@@ -862,7 +864,7 @@
         <span class="k">return</span> <span class="n">infoProto</span>
 
 <div class="viewcode-block" id="HeaderRequestHandler.stream"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.stream">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">request_iterator</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">request_iterator</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        stream requests from client iterator and stream responses back.</span>
@@ -891,7 +893,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

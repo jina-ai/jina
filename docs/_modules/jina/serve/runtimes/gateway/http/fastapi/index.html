@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -401,153 +402,17 @@
                 </div>
                 <article role="main">
                     <h1>Source code for jina.serve.runtimes.gateway.http.fastapi</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.gateway</span> <span class="kn">import</span> <span class="n">BaseGateway</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.servers.http</span> <span class="kn">import</span> <span class="n">FastAPIBaseServer</span>
 
-<span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
-<span class="kn">from</span> <span class="nn">jina.serve.gateway</span> <span class="kn">import</span> <span class="n">BaseGateway</span>
-
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;FastAPIBaseGateway&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="FastAPIBaseGateway"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway">[docs]</a><span class="k">class</span> <span class="nc">FastAPIBaseGateway</span><span class="p">(</span><span class="n">BaseGateway</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base FastAPI gateway. Implement this abstract class in-case you want to build a fastapi-based Gateway by</span>
-<span class="sd">    implementing the `app` property. This property should return a fastapi app. The base Gateway will handle starting</span>
-<span class="sd">    a server and serving the application using that server.&quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">ssl_keyfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">ssl_certfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">uvicorn_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">proxy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the FastAPIBaseGateway</span>
-<span class="sd">        :param ssl_keyfile: the path to the key file</span>
-<span class="sd">        :param ssl_certfile: the path to the certificate file</span>
-<span class="sd">        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server</span>
-<span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables, otherwise, it will unset</span>
-<span class="sd">            these proxy variables before start. gRPC seems to prefer no proxy</span>
-<span class="sd">        :param kwargs: keyword args</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">uvicorn_kwargs</span> <span class="o">=</span> <span class="n">uvicorn_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
-
-        <span class="k">if</span> <span class="n">ssl_keyfile</span> <span class="ow">and</span> <span class="s1">&#39;ssl_keyfile&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">uvicorn_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">uvicorn_kwargs</span><span class="p">[</span><span class="s1">&#39;ssl_keyfile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ssl_keyfile</span>
-
-        <span class="k">if</span> <span class="n">ssl_certfile</span> <span class="ow">and</span> <span class="s1">&#39;ssl_certfile&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">uvicorn_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">uvicorn_kwargs</span><span class="p">[</span><span class="s1">&#39;ssl_certfile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ssl_certfile</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">proxy</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;nt&#39;</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s1">&#39;http_proxy&#39;</span><span class="p">)</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s1">&#39;https_proxy&#39;</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a FastAPI app&quot;&quot;&quot;</span>
-        <span class="o">...</span>
-
-<div class="viewcode-block" id="FastAPIBaseGateway.setup_server"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.setup_server">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">setup_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize and return GRPC server</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="kn">from</span> <span class="nn">uvicorn</span> <span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">Server</span>
-
-        <span class="k">class</span> <span class="nc">UviServer</span><span class="p">(</span><span class="n">Server</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;The uvicorn server.&quot;&quot;&quot;</span>
-
-            <span class="k">async</span> <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sockets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                Setup uvicorn server.</span>
-
-<span class="sd">                :param sockets: sockets of server.</span>
-<span class="sd">                &quot;&quot;&quot;</span>
-                <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">loaded</span><span class="p">:</span>
-                    <span class="n">config</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">lifespan</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">lifespan_class</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">startup</span><span class="p">(</span><span class="n">sockets</span><span class="o">=</span><span class="n">sockets</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_exit</span><span class="p">:</span>
-                    <span class="k">return</span>
-
-            <span class="k">async</span> <span class="k">def</span> <span class="nf">serve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                Start the server.</span>
-
-<span class="sd">                :param kwargs: keyword arguments</span>
-<span class="sd">                &quot;&quot;&quot;</span>
-                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_loop</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="s1">&#39;CICD_JINA_DISABLE_HEALTHCHECK_LOGS&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
-
-            <span class="k">class</span> <span class="nc">_EndpointFilter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Filter</span><span class="p">):</span>
-                <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-                    <span class="c1"># NOTE: space is important after `GET /`, else all logs will be disabled.</span>
-                    <span class="k">return</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;GET / &quot;</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
-
-            <span class="c1"># Filter out healthcheck endpoint `GET /`</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;uvicorn.access&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">addFilter</span><span class="p">(</span><span class="n">_EndpointFilter</span><span class="p">())</span>
-
-        <span class="c1"># app property will generate a new fastapi app each time called</span>
-        <span class="n">app</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span>
-        <span class="n">_install_health_check</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">UviServer</span><span class="p">(</span>
-            <span class="n">config</span><span class="o">=</span><span class="n">Config</span><span class="p">(</span>
-                <span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span>
-                <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
-                <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
-                <span class="n">log_level</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;JINA_LOG_LEVEL&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
-                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">uvicorn_kwargs</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="FastAPIBaseGateway.shutdown"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.shutdown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Free resources allocated when setting up HTTP server</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">should_exit</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="FastAPIBaseGateway.run_server"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.run_server">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run HTTP server forever&quot;&quot;&quot;</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">serve</span><span class="p">()</span></div></div>
-
-
-<span class="k">def</span> <span class="nf">_install_health_check</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="s1">&#39;FastAPI&#39;</span><span class="p">,</span> <span class="n">logger</span><span class="p">):</span>
-    <span class="n">health_check_exists</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="n">app</span><span class="o">.</span><span class="n">routes</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">route</span><span class="p">,</span> <span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;/&#39;</span> <span class="ow">and</span> <span class="s1">&#39;GET&#39;</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span>
-            <span class="n">route</span><span class="p">,</span> <span class="s1">&#39;methods&#39;</span><span class="p">,</span> <span class="kc">None</span>
-        <span class="p">):</span>
-            <span class="n">health_check_exists</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s1">&#39;endpoint GET on &quot;/&quot; is used for health checks, make sure it</span><span class="se">\&#39;</span><span class="s1">s still accessible&#39;</span>
-            <span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">health_check_exists</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http.models</span> <span class="kn">import</span> <span class="n">JinaHealthModel</span>
-
-        <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
-            <span class="n">summary</span><span class="o">=</span><span class="s1">&#39;Get the health of Jina Gateway service&#39;</span><span class="p">,</span>
-            <span class="n">response_model</span><span class="o">=</span><span class="n">JinaHealthModel</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">_gateway_health</span><span class="p">():</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Get the health of this Gateway service.</span>
-<span class="sd">            .. # noqa: DAR201</span>
-
-<span class="sd">            &quot;&quot;&quot;</span>
-            <span class="k">return</span> <span class="p">{}</span>
+<div class="viewcode-block" id="FastAPIBaseGateway"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway">[docs]</a><span class="k">class</span> <span class="nc">FastAPIBaseGateway</span><span class="p">(</span><span class="n">FastAPIBaseServer</span><span class="p">,</span> <span class="n">BaseGateway</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :class:`FastAPIBaseGateway` is a FastAPIBaseServer that can be loaded from YAML as any other Gateway</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
 </pre></div>
                 </article>
             </div>
@@ -562,7 +427,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

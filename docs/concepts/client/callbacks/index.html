@@ -29,7 +29,7 @@
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     
-<link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Rate Limit" href="../rate-limit/" /><link rel="prev" title="Send GraphQL Mutation" href="../send-graphql-mutation/" />
+<link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Rate Limit" href="../rate-limit/" /><link rel="prev" title="Transient Errors" href="../transient-errors/" />
         <link rel="canonical" href="https://docs.jina.ai/concepts/client/callbacks.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
@@ -300,6 +300,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../instrumentation/">Instrumentation</a></li>
@@ -601,19 +602,6 @@ If something goes wrong, it beeps. Finally, the result is written to output.txt.
 </ul>
 </div>
 </section>
-<section id="continue-streaming-when-an-error-occurs">
-<h2>Continue streaming when an error occurs<a class="headerlink" href="#continue-streaming-when-an-error-occurs" title="Permalink to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">client.post()</span></code> accepts a <code class="docutils literal notranslate"><span class="pre">continue_on_error</span></code> parameter. When set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the Client will keep trying to send the remaining requests. The <code class="docutils literal notranslate"><span class="pre">continue_on_error</span></code> parameter will only apply
-to Exceptions caused by an Executor, but in case of network connectivity issues, an Exception will be raised.</p>
-</section>
-<section id="transient-fault-handling-with-retries">
-<h2>Transient fault handling with retries<a class="headerlink" href="#transient-fault-handling-with-retries" title="Permalink to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">client.post()</span></code> accepts <code class="docutils literal notranslate"><span class="pre">max_attempts</span></code>, <code class="docutils literal notranslate"><span class="pre">initial_backoff</span></code>, <code class="docutils literal notranslate"><span class="pre">max_backoff</span></code> and <code class="docutils literal notranslate"><span class="pre">backoff_multiplier</span></code> parameters to control the capacity to retry requests, when a transient connectivity error occurs, using an exponential backoff strategy.
-This can help to overcome transient network connectivity issues.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">max_attempts</span></code> parameter determines the number of sending attempts, including the original request.
-The <code class="docutils literal notranslate"><span class="pre">initial_backoff</span></code>, <code class="docutils literal notranslate"><span class="pre">max_backoff</span></code>, and <code class="docutils literal notranslate"><span class="pre">backoff_multiplier</span></code> parameters determine the randomized delay in seconds before retry attempts.</p>
-<p>The initial retry attempt will occur at <code class="docutils literal notranslate"><span class="pre">random(0,</span> <span class="pre">initial_backoff)</span></code>. In general, the <em>n-th</em> attempt will occur at <code class="docutils literal notranslate"><span class="pre">random(0,</span> <span class="pre">min(initial_backoff*backoff_multiplier**(n-1),</span> <span class="pre">max_backoff))</span></code>.</p>
-</section>
 </section>
 
                 </article>
@@ -630,14 +618,14 @@ The <code class="docutils literal notranslate"><span class="pre">initial_backoff
                         </div>
                         <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
                     </a>
-                    <a class="prev-page" href="../send-graphql-mutation/">
+                    <a class="prev-page" href="../transient-errors/">
                         <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
                         <div class="page-info">
                             <div class="context">
                                 <span>Previous</span>
                             </div>
                             
-                            <div class="title">Send GraphQL Mutation</div>
+                            <div class="title">Transient Errors</div>
                             
                         </div>
                     </a>
@@ -647,7 +635,7 @@ The <code class="docutils literal notranslate"><span class="pre">initial_backoff
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -682,8 +670,6 @@ The <code class="docutils literal notranslate"><span class="pre">initial_backoff
 <li><a class="reference internal" href="#">Callbacks</a><ul>
 <li><a class="reference internal" href="#handle-datarequest-in-callbacks">Handle DataRequest in callbacks</a></li>
 <li><a class="reference internal" href="#handle-exceptions-in-callbacks">Handle exceptions in callbacks</a></li>
-<li><a class="reference internal" href="#continue-streaming-when-an-error-occurs">Continue streaming when an error occurs</a></li>
-<li><a class="reference internal" href="#transient-fault-handling-with-retries">Transient fault handling with retries</a></li>
 </ul>
 </li>
 </ul>

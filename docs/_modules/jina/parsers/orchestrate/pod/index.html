@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -454,7 +455,7 @@
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">600000</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting &#39;</span>
-        <span class="s1">&#39;forever&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;forever&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -499,7 +500,7 @@
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, starting a Pod/Deployment does not block the thread/process. It then relies on &#39;</span>
-        <span class="s1">&#39;`wait_start_success` at outer function for the postpone check.&#39;</span>
+             <span class="s1">&#39;`wait_start_success` at outer function for the postpone check.&#39;</span>
         <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
         <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
     <span class="p">)</span>
@@ -509,7 +510,7 @@
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, the current Pod/Deployment can not be further chained, &#39;</span>
-        <span class="s1">&#39;and the next `.add()` will chain after the last Pod/Deployment not this current one.&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;and the next `.add()` will chain after the last Pod/Deployment not this current one.&#39;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">pod_type</span> <span class="o">!=</span> <span class="s1">&#39;gateway&#39;</span><span class="p">:</span>
         <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -517,9 +518,9 @@
             <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, the Executor will restart while serving if YAML configuration source or Executor modules &#39;</span>
-            <span class="s1">&#39;are changed. If YAML configuration is changed, the whole deployment is reloaded and new &#39;</span>
-            <span class="s1">&#39;processes will be restarted. If only Python modules of the Executor have changed, they will be &#39;</span>
-            <span class="s1">&#39;reloaded to the interpreter without restarting process.&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;are changed. If YAML configuration is changed, the whole deployment is reloaded and new &#39;</span>
+                 <span class="s1">&#39;processes will be restarted. If only Python modules of the Executor have changed, they will be &#39;</span>
+                 <span class="s1">&#39;reloaded to the interpreter without restarting process.&#39;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
             <span class="s1">&#39;--install-requirements&#39;</span><span class="p">,</span>
@@ -542,21 +543,12 @@
 <span class="sd">    :param arg_group: the parser instance or args group to which we add arguments</span>
 <span class="sd">    :param pod_type: the pod_type configured by the parser. Can be either &#39;worker&#39; for WorkerRuntime or &#39;gateway&#39; for GatewayRuntime</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">port_description</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s1">&#39;The port for input data to bind to, default is a random port between [49152, 65535]. &#39;</span>
-        <span class="s1">&#39;In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. &#39;</span>
-        <span class="s1">&#39;Then, every resulting address will be considered as one replica of the Executor.&#39;</span>
-    <span class="p">)</span>
-
+    <span class="n">alias</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;--port&#39;</span><span class="p">,</span> <span class="s1">&#39;--ports&#39;</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">pod_type</span> <span class="o">!=</span> <span class="s1">&#39;gateway&#39;</span><span class="p">:</span>
-        <span class="n">arg_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s1">&#39;--port&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;--port-in&#39;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-            <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="n">random_port</span><span class="p">()],</span>
-            <span class="n">action</span><span class="o">=</span><span class="n">CastToIntAction</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="n">port_description</span><span class="p">,</span>
+        <span class="n">port_description</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;The port for input data to bind to, default is a random port between [49152, 65535]. &#39;</span>
+            <span class="s1">&#39;In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. &#39;</span>
+            <span class="s1">&#39;Then, every resulting address will be considered as one replica of the Executor.&#39;</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">port_description</span> <span class="o">=</span> <span class="p">(</span>
@@ -564,17 +556,15 @@
             <span class="s1">&#39;The port argument can be either 1 single value in case only 1 protocol is used or multiple values when &#39;</span>
             <span class="s1">&#39;many protocols are used.&#39;</span>
         <span class="p">)</span>
-        <span class="n">arg_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s1">&#39;--port&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;--port-expose&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;--port-in&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;--ports&#39;</span><span class="p">,</span>
-            <span class="n">action</span><span class="o">=</span><span class="n">CastToIntAction</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-            <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="n">port_description</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="n">alias</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;--port-expose&#39;</span><span class="p">,</span><span class="s1">&#39;--port-in&#39;</span><span class="p">])</span>
+    <span class="n">arg_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="o">*</span><span class="n">alias</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">CastToIntAction</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="n">random_port</span><span class="p">()],</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">port_description</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="n">arg_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--monitoring&#39;</span><span class="p">,</span>
@@ -606,7 +596,7 @@
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. &#39;</span>
-        <span class="s1">&#39;Otherwise a no-op implementation will be provided.&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;Otherwise a no-op implementation will be provided.&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">arg_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -628,7 +618,7 @@
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. &#39;</span>
-        <span class="s1">&#39;Otherwise a no-op implementation will be provided.&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;Otherwise a no-op implementation will be provided.&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">arg_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -658,7 +648,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

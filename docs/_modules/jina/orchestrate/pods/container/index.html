@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -409,7 +410,6 @@
 <span class="kn">import</span> <span class="nn">platform</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">signal</span>
-<span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
@@ -427,8 +427,6 @@
     <span class="n">get_gpu_device_requests</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">set_gateway_parser</span>
-<span class="kn">from</span> <span class="nn">jina.serve.runtimes.asyncio</span> <span class="kn">import</span> <span class="n">AsyncNewLoopRuntime</span>
-<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway</span> <span class="kn">import</span> <span class="n">GatewayRuntime</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">from</span> <span class="nn">docker.client</span> <span class="kn">import</span> <span class="n">DockerClient</span>
@@ -651,12 +649,10 @@
         <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
         <span class="k">def</span> <span class="nf">_is_ready</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">==</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">GatewayRuntime</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(</span>
-                    <span class="n">runtime_ctrl_address</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">AsyncNewLoopRuntime</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(</span><span class="n">runtime_ctrl_address</span><span class="p">)</span>
+            <span class="kn">from</span> <span class="nn">jina.serve.runtimes.servers</span> <span class="kn">import</span> <span class="n">BaseServer</span>
+            <span class="k">return</span> <span class="n">BaseServer</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(</span>
+                <span class="n">ctrl_address</span><span class="o">=</span><span class="n">runtime_ctrl_address</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;protocol&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;grpc&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">_is_container_alive</span><span class="p">(</span><span class="n">container</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">docker.errors</span>
@@ -752,7 +748,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">==</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
                 <span class="n">ctrl_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ctrl_host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">ctrl_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ctrl_host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">ctrl_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ctrl_host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
 
             <span class="n">net_node</span><span class="p">,</span> <span class="n">runtime_ctrl_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_network_for_dind_linux</span><span class="p">(</span>
                 <span class="n">client</span><span class="p">,</span> <span class="n">ctrl_address</span>
@@ -778,7 +774,7 @@
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">==</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
                         <span class="n">runtime_ctrl_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bridge_network</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;IPAM&quot;</span><span class="p">][</span><span class="s2">&quot;Config&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;Gateway&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">runtime_ctrl_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bridge_network</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;IPAM&quot;</span><span class="p">][</span><span class="s2">&quot;Config&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;Gateway&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
+                        <span class="n">runtime_ctrl_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bridge_network</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;IPAM&quot;</span><span class="p">][</span><span class="s2">&quot;Config&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;Gateway&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">&#39;Unable to set control address from &quot;bridge&quot; network: </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">&#39;</span>
@@ -871,7 +867,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

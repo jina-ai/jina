@@ -300,6 +300,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../client/instrumentation/">Instrumentation</a></li>
@@ -686,6 +687,37 @@ docker<span class="w"> </span>run<span class="w"> </span>--network<span class="o
 <p>You can also use it to check Executor status, as Executor’s communication protocol is gRPC.</p>
 </div>
 </section>
+<section id="configure-gateway-grpc-options">
+<span id="gateway-grpc-server-options"></span><h3>Configure Gateway gRPC options<a class="headerlink" href="#configure-gateway-grpc-options" title="Permalink to this heading">#</a></h3>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code> supports the <code class="docutils literal notranslate"><span class="pre">grpc_server_options</span></code> parameter which allows more customization of the <strong>gRPC</strong>
+server. The <code class="docutils literal notranslate"><span class="pre">grpc_server_options</span></code> parameter accepts a dictionary of <strong>gRPC</strong> configuration options which will be
+used to overwrite the default options. The <strong>gRPC</strong> channel used for server to server communication can also be
+customized using the <code class="docutils literal notranslate"><span class="pre">grpc_channel_options</span></code> parameter.</p>
+<p>The default <strong>gRPC</strong> options are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s1">&#39;grpc.max_send_message_length&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+<span class="p">(</span><span class="s1">&#39;grpc.max_receive_message_length&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+<span class="p">(</span><span class="s1">&#39;grpc.keepalive_time_ms&#39;</span><span class="p">,</span> <span class="mi">9999</span><span class="p">),</span>
+<span class="c1"># send keepalive ping every 9 second, default is 2 hours.</span>
+<span class="p">(</span><span class="s1">&#39;grpc.keepalive_timeout_ms&#39;</span><span class="p">,</span> <span class="mi">4999</span><span class="p">),</span>
+<span class="c1"># keepalive ping time out after 4 seconds, default is 20 seconds</span>
+<span class="p">(</span><span class="s1">&#39;grpc.keepalive_permit_without_calls&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+<span class="c1"># allow keepalive pings when there&#39;s no gRPC calls</span>
+<span class="p">(</span><span class="s1">&#39;grpc.http1.max_pings_without_data&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+<span class="c1"># allow unlimited amount of keepalive pings without data</span>
+<span class="p">(</span><span class="s1">&#39;grpc.http1.min_time_between_pings_ms&#39;</span><span class="p">,</span> <span class="mi">10000</span><span class="p">),</span>
+<span class="c1"># allow grpc pings from client every 9 seconds</span>
+<span class="p">(</span><span class="s1">&#39;grpc.http1.min_ping_interval_without_data_ms&#39;</span><span class="p">,</span> <span class="mi">5000</span><span class="p">),</span>
+<span class="c1"># allow grpc pings from client without data every 4 seconds</span>
+</pre></div>
+</div>
+<p>Refer to the <a class="reference external" href="https://grpc.github.io/grpc/python/glossary.html#term-channel_arguments">channel_arguments</a> section for
+the full list of available <strong>gRPC</strong> options.</p>
+<div class="seealso admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Refer to the <a class="reference internal" href="../client/send-receive-data/#client-grpc-channel-options"><span class="std std-ref">Configure gRPC Client options</span></a> section for configuring the <code class="docutils literal notranslate"><span class="pre">Client</span></code> <strong>gRPC</strong> channel options.
+Refer to the <span class="xref std std-ref">Configure Executor gRPC options</span> section for configuring the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> <strong>gRPC</strong> options.</p>
+</div>
+</section>
 <section id="use-http-websocket">
 <h3>Use HTTP/WebSocket<a class="headerlink" href="#use-http-websocket" title="Permalink to this heading">#</a></h3>
 <p>When using HTTP or WebSocket as the Gateway protocol, you can use curl to target the <code class="docutils literal notranslate"><span class="pre">/status</span></code> endpoint and get the Jina
@@ -806,7 +838,7 @@ The <code class="docutils literal notranslate"><span class="pre">Gateway</span><
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -846,6 +878,7 @@ The <code class="docutils literal notranslate"><span class="pre">Gateway</span><
 <li><a class="reference internal" href="#enable-in-flow-compression">Enable in-Flow compression</a></li>
 <li><a class="reference internal" href="#get-environment-information">Get environment information</a><ul>
 <li><a class="reference internal" href="#use-grpc">Use gRPC</a></li>
+<li><a class="reference internal" href="#configure-gateway-grpc-options">Configure Gateway gRPC options</a></li>
 <li><a class="reference internal" href="#use-http-websocket">Use HTTP/WebSocket</a></li>
 </ul>
 </li>

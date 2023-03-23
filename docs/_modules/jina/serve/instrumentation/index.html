@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -538,9 +539,9 @@
             <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="InstrumentationMixin.tracing_client_interceptor"><a class="viewcode-back" href="../../../../api/jina.serve.instrumentation/#jina.serve.instrumentation.InstrumentationMixin.tracing_client_interceptor">[docs]</a>    <span class="k">def</span> <span class="nf">tracing_client_interceptor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;OpenTelemetryClientInterceptor&#39;</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :returns: a gRPC client interceptor with the global tracing provider.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracing</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">opentelemetry.instrumentation.grpc</span> <span class="kn">import</span> <span class="p">(</span>
                 <span class="n">client_interceptor</span> <span class="k">as</span> <span class="n">grpc_client_interceptor</span><span class="p">,</span>
@@ -552,7 +553,8 @@
 
 
 <div class="viewcode-block" id="MetricsTimer"><a class="viewcode-back" href="../../../../api/jina.serve.instrumentation/#jina.serve.instrumentation.MetricsTimer">[docs]</a><span class="k">class</span> <span class="nc">MetricsTimer</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper dataclass that accepts optional Summary or Histogram recorders which are used to record the time take to execute</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper dataclass that accepts optional Summary or Histogram recorders which are used to record the time take to execute</span>
 <span class="sd">    the decorated or context managed function</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -612,7 +614,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

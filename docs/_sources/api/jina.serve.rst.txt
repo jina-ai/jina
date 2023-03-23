@@ -19,7 +19,6 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   jina.serve.gateway
    jina.serve.helper
    jina.serve.monitoring
 

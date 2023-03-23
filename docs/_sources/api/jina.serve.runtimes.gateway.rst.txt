@@ -20,8 +20,12 @@ Submodules
    :maxdepth: 4
 
    jina.serve.runtimes.gateway.async_request_response_handling
+   jina.serve.runtimes.gateway.gateway
+   jina.serve.runtimes.gateway.http_fastapi_app
+   jina.serve.runtimes.gateway.models
    jina.serve.runtimes.gateway.request_handling
    jina.serve.runtimes.gateway.streamer
+   jina.serve.runtimes.gateway.websocket_fastapi_app
 
 Module contents
 ---------------

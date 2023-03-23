@@ -9,6 +9,7 @@ Subpackages
 
    jina.serve.runtimes.gateway
    jina.serve.runtimes.head
+   jina.serve.runtimes.servers
    jina.serve.runtimes.worker
 
 Submodules
@@ -18,7 +19,6 @@ Submodules
    :maxdepth: 4
 
    jina.serve.runtimes.asyncio
-   jina.serve.runtimes.base
    jina.serve.runtimes.helper
    jina.serve.runtimes.monitoring
 

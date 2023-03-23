@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -404,20 +405,19 @@
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">grpc</span>
 <span class="kn">from</span> <span class="nn">grpc</span> <span class="kn">import</span> <span class="n">RpcError</span>
 
 <span class="kn">from</span> <span class="nn">jina.clients.base</span> <span class="kn">import</span> <span class="n">BaseClient</span>
-<span class="kn">from</span> <span class="nn">jina.clients.helper</span> <span class="kn">import</span> <span class="n">callback_exec</span>
+<span class="kn">from</span> <span class="nn">jina.clients.base.stream_rpc</span> <span class="kn">import</span> <span class="n">StreamRpc</span>
+<span class="kn">from</span> <span class="nn">jina.clients.base.unary_rpc</span> <span class="kn">import</span> <span class="n">UnaryRpc</span>
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">BadClientInput</span><span class="p">,</span> <span class="n">BadServerFlow</span><span class="p">,</span> <span class="n">InternalNetworkError</span>
 <span class="kn">from</span> <span class="nn">jina.logging.profile</span> <span class="kn">import</span> <span class="n">ProgressBar</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span><span class="p">,</span> <span class="n">jina_pb2_grpc</span>
-<span class="kn">from</span> <span class="nn">jina.serve.helper</span> <span class="kn">import</span> <span class="n">extract_trailing_metadata</span>
-<span class="kn">from</span> <span class="nn">jina.serve.networking.utils</span> <span class="kn">import</span> <span class="n">get_default_grpc_options</span><span class="p">,</span> <span class="n">get_grpc_channel</span>
-<span class="kn">from</span> <span class="nn">jina.serve.stream</span> <span class="kn">import</span> <span class="n">RequestStreamer</span>
-<span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">jina.serve.helper</span> <span class="kn">import</span> <span class="n">extract_trailing_metadata</span><span class="p">,</span> <span class="n">get_default_grpc_options</span>
+<span class="kn">from</span> <span class="nn">jina.serve.networking.utils</span> <span class="kn">import</span> <span class="n">get_grpc_channel</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">from</span> <span class="nn">jina.clients.base</span> <span class="kn">import</span> <span class="n">CallbackFnType</span><span class="p">,</span> <span class="n">InputType</span>
@@ -468,98 +468,6 @@
 
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_stream_rpc</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">channel</span><span class="p">,</span>
-        <span class="n">req_iter</span><span class="p">,</span>
-        <span class="n">metadata</span><span class="p">,</span>
-        <span class="n">on_error</span><span class="p">,</span>
-        <span class="n">on_done</span><span class="p">,</span>
-        <span class="n">on_always</span><span class="p">,</span>
-        <span class="n">continue_on_error</span><span class="p">,</span>
-        <span class="n">p_bar</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="n">stub</span> <span class="o">=</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaRPCStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
-        <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="n">stub</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span>
-            <span class="n">req_iter</span><span class="p">,</span>
-            <span class="n">compression</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span>
-            <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
-            <span class="n">credentials</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;credentials&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-            <span class="n">timeout</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;timeout&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-        <span class="p">):</span>
-            <span class="n">callback_exec</span><span class="p">(</span>
-                <span class="n">response</span><span class="o">=</span><span class="n">resp</span><span class="p">,</span>
-                <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
-                <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
-                <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
-                <span class="n">continue_on_error</span><span class="o">=</span><span class="n">continue_on_error</span><span class="p">,</span>
-                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
-                <span class="n">p_bar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-            <span class="k">yield</span> <span class="n">resp</span>
-
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_unary_rpc</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">channel</span><span class="p">,</span>
-        <span class="n">req_iter</span><span class="p">,</span>
-        <span class="n">metadata</span><span class="p">,</span>
-        <span class="n">on_error</span><span class="p">,</span>
-        <span class="n">on_done</span><span class="p">,</span>
-        <span class="n">on_always</span><span class="p">,</span>
-        <span class="n">continue_on_error</span><span class="p">,</span>
-        <span class="n">p_bar</span><span class="p">,</span>
-        <span class="n">results_in_order</span><span class="p">,</span>
-        <span class="n">prefetch</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="n">stub</span> <span class="o">=</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaSingleDataRequestRPCStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
-
-        <span class="k">def</span> <span class="nf">_request_handler</span><span class="p">(</span>
-            <span class="n">request</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">,</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Tuple[asyncio.Future, Optional[asyncio.Future]]&#39;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">(</span>
-                <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span>
-                    <span class="n">stub</span><span class="o">.</span><span class="n">process_single_data</span><span class="p">(</span>
-                        <span class="n">request</span><span class="p">,</span>
-                        <span class="n">compression</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span>
-                        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
-                        <span class="n">credentials</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;credentials&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                        <span class="n">timeout</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;timeout&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                    <span class="p">)</span>
-                <span class="p">),</span>
-                <span class="kc">None</span><span class="p">,</span>
-            <span class="p">)</span>
-
-        <span class="k">def</span> <span class="nf">_result_handler</span><span class="p">(</span><span class="n">resp</span><span class="p">):</span>
-            <span class="n">callback_exec</span><span class="p">(</span>
-                <span class="n">response</span><span class="o">=</span><span class="n">resp</span><span class="p">,</span>
-                <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
-                <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
-                <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
-                <span class="n">continue_on_error</span><span class="o">=</span><span class="n">continue_on_error</span><span class="p">,</span>
-                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="k">return</span> <span class="n">resp</span>
-
-        <span class="n">streamer_args</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">prefetch</span><span class="p">:</span>
-            <span class="n">streamer_args</span><span class="p">[</span><span class="s1">&#39;prefetch&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prefetch</span>
-        <span class="n">streamer</span> <span class="o">=</span> <span class="n">RequestStreamer</span><span class="p">(</span>
-            <span class="n">request_handler</span><span class="o">=</span><span class="n">_request_handler</span><span class="p">,</span>
-            <span class="n">result_handler</span><span class="o">=</span><span class="n">_result_handler</span><span class="p">,</span>
-            <span class="n">iterate_sync_in_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">streamer_args</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span>
-            <span class="n">request_iterator</span><span class="o">=</span><span class="n">req_iter</span><span class="p">,</span> <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span>
-        <span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
-                <span class="n">p_bar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-            <span class="k">yield</span> <span class="n">response</span>
-
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_results</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">inputs</span><span class="p">:</span> <span class="s1">&#39;InputType&#39;</span><span class="p">,</span>
@@ -569,7 +477,7 @@
         <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">initial_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
-        <span class="n">max_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">max_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">backoff_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
         <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">stream</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -587,32 +495,13 @@
             <span class="n">req_iter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_requests</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="n">continue_on_error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">continue_on_error</span>
             <span class="c1"># while loop with retries, check in which state the `iterator` remains after failure</span>
-            <span class="n">options</span> <span class="o">=</span> <span class="n">get_default_grpc_options</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">max_attempts</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">service_config_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
-                    <span class="p">{</span>
-                        <span class="s2">&quot;methodConfig&quot;</span><span class="p">:</span> <span class="p">[</span>
-                            <span class="p">{</span>
-                                <span class="c1"># To apply retry to all methods, put [{}] in the &quot;name&quot; field</span>
-                                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">[{}],</span>
-                                <span class="s2">&quot;retryPolicy&quot;</span><span class="p">:</span> <span class="p">{</span>
-                                    <span class="s2">&quot;maxAttempts&quot;</span><span class="p">:</span> <span class="n">max_attempts</span><span class="p">,</span>
-                                    <span class="s2">&quot;initialBackoff&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">initial_backoff</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">,</span>
-                                    <span class="s2">&quot;maxBackoff&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">max_backoff</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">,</span>
-                                    <span class="s2">&quot;backoffMultiplier&quot;</span><span class="p">:</span> <span class="n">backoff_multiplier</span><span class="p">,</span>
-                                    <span class="s2">&quot;retryableStatusCodes&quot;</span><span class="p">:</span> <span class="p">[</span>
-                                        <span class="s2">&quot;UNAVAILABLE&quot;</span><span class="p">,</span>
-                                        <span class="s2">&quot;DEADLINE_EXCEEDED&quot;</span><span class="p">,</span>
-                                        <span class="s2">&quot;INTERNAL&quot;</span><span class="p">,</span>
-                                    <span class="p">],</span>
-                                <span class="p">},</span>
-                            <span class="p">}</span>
-                        <span class="p">]</span>
-                    <span class="p">}</span>
-                <span class="p">)</span>
-                <span class="c1"># NOTE: the retry feature will be enabled by default &gt;=v1.40.0</span>
-                <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;grpc.enable_retries&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-                <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;grpc.service_config&quot;</span><span class="p">,</span> <span class="n">service_config_json</span><span class="p">))</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="n">client_grpc_options</span><span class="p">(</span>
+                <span class="n">backoff_multiplier</span><span class="p">,</span>
+                <span class="n">initial_backoff</span><span class="p">,</span>
+                <span class="n">max_attempts</span><span class="p">,</span>
+                <span class="n">max_backoff</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">grpc_channel_options</span><span class="p">,</span>
+            <span class="p">)</span>
 
             <span class="n">metadata</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;metadata&#39;</span><span class="p">,</span> <span class="p">())</span>
             <span class="k">if</span> <span class="n">results_in_order</span><span class="p">:</span>
@@ -636,77 +525,52 @@
                     <span class="p">)</span> <span class="k">as</span> <span class="n">p_bar</span><span class="p">:</span>
                         <span class="k">try</span><span class="p">:</span>
                             <span class="k">if</span> <span class="n">stream</span><span class="p">:</span>
-                                <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stream_rpc</span><span class="p">(</span>
+                                <span class="n">stream_rpc</span> <span class="o">=</span> <span class="n">StreamRpc</span><span class="p">(</span>
                                     <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
-                                    <span class="n">req_iter</span><span class="o">=</span><span class="n">req_iter</span><span class="p">,</span>
-                                    <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
-                                    <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
-                                    <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
-                                    <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
                                     <span class="n">continue_on_error</span><span class="o">=</span><span class="n">continue_on_error</span><span class="p">,</span>
+                                    <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                                    <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
+                                    <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
+                                    <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
                                     <span class="n">p_bar</span><span class="o">=</span><span class="n">p_bar</span><span class="p">,</span>
+                                    <span class="n">req_iter</span><span class="o">=</span><span class="n">req_iter</span><span class="p">,</span>
+                                    <span class="n">max_attempts</span><span class="o">=</span><span class="n">max_attempts</span><span class="p">,</span>
+                                    <span class="n">backoff_multiplier</span><span class="o">=</span><span class="n">backoff_multiplier</span><span class="p">,</span>
+                                    <span class="n">initial_backoff</span><span class="o">=</span><span class="n">initial_backoff</span><span class="p">,</span>
+                                    <span class="n">max_backoff</span><span class="o">=</span><span class="n">max_backoff</span><span class="p">,</span>
+                                    <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+                                    <span class="n">show_progress</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span><span class="p">,</span>
+                                    <span class="n">compression</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span>
                                     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-                                <span class="p">):</span>
-                                    <span class="k">yield</span> <span class="n">resp</span>
+                                <span class="p">)</span>
+                                <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">stream_rpc</span><span class="o">.</span><span class="n">stream_rpc_with_retry</span><span class="p">():</span>
+                                    <span class="k">yield</span> <span class="n">response</span>
                             <span class="k">else</span><span class="p">:</span>
-                                <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unary_rpc</span><span class="p">(</span>
+                                <span class="n">unary_rpc</span> <span class="o">=</span> <span class="n">UnaryRpc</span><span class="p">(</span>
                                     <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
-                                    <span class="n">req_iter</span><span class="o">=</span><span class="n">req_iter</span><span class="p">,</span>
-                                    <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
-                                    <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
-                                    <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
-                                    <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
                                     <span class="n">continue_on_error</span><span class="o">=</span><span class="n">continue_on_error</span><span class="p">,</span>
+                                    <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                                    <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
+                                    <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
+                                    <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
                                     <span class="n">p_bar</span><span class="o">=</span><span class="n">p_bar</span><span class="p">,</span>
-                                    <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span><span class="p">,</span>
+                                    <span class="n">req_iter</span><span class="o">=</span><span class="n">req_iter</span><span class="p">,</span>
+                                    <span class="n">max_attempts</span><span class="o">=</span><span class="n">max_attempts</span><span class="p">,</span>
+                                    <span class="n">backoff_multiplier</span><span class="o">=</span><span class="n">backoff_multiplier</span><span class="p">,</span>
+                                    <span class="n">initial_backoff</span><span class="o">=</span><span class="n">initial_backoff</span><span class="p">,</span>
+                                    <span class="n">max_backoff</span><span class="o">=</span><span class="n">max_backoff</span><span class="p">,</span>
+                                    <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+                                    <span class="n">show_progress</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span><span class="p">,</span>
+                                    <span class="n">compression</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span>
+                                    <span class="n">client_args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
                                     <span class="n">prefetch</span><span class="o">=</span><span class="n">prefetch</span><span class="p">,</span>
+                                    <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span><span class="p">,</span>
                                     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-                                <span class="p">):</span>
-                                    <span class="k">yield</span> <span class="n">resp</span>
-
-                        <span class="k">except</span> <span class="p">(</span>
-                            <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">_call</span><span class="o">.</span><span class="n">AioRpcError</span><span class="p">,</span>
-                            <span class="n">InternalNetworkError</span><span class="p">,</span>
-                        <span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                            <span class="n">my_code</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">()</span>
-                            <span class="n">my_details</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span>
-                            <span class="n">trailing_metadata</span> <span class="o">=</span> <span class="n">extract_trailing_metadata</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
-                            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;gRPC error: </span><span class="si">{</span><span class="n">my_code</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">my_details</span><span class="si">}</span><span class="s1">&#39;</span>
-                            <span class="k">if</span> <span class="n">trailing_metadata</span><span class="p">:</span>
-                                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;gRPC error: </span><span class="si">{</span><span class="n">my_code</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">my_details</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">trailing_metadata</span><span class="si">}</span><span class="s1">&#39;</span>
-
-                            <span class="k">if</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">The ongoing request is terminated as the server is not available or closed already.&#39;</span>
                                 <span class="p">)</span>
-                                <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">my_details</span><span class="p">)</span>
-                            <span class="k">if</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">NOT_FOUND</span><span class="p">:</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">The ongoing request is terminated as a resource cannot be found.&#39;</span>
-                                <span class="p">)</span>
-                                <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">my_details</span><span class="p">)</span>
-                            <span class="k">elif</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">DEADLINE_EXCEEDED</span><span class="p">:</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">The ongoing request is terminated due to a server-side timeout.&#39;</span>
-                                <span class="p">)</span>
-                                <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">my_details</span><span class="p">)</span>
-                            <span class="k">elif</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">INTERNAL</span><span class="p">:</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">internal error on the server side&#39;</span>
-                                <span class="p">)</span>
-                                <span class="k">raise</span> <span class="n">err</span>
-                            <span class="k">elif</span> <span class="p">(</span>
-                                <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNKNOWN</span>
-                                <span class="ow">and</span> <span class="s1">&#39;asyncio.exceptions.TimeoutError&#39;</span> <span class="ow">in</span> <span class="n">my_details</span>
-                            <span class="p">):</span>
-                                <span class="k">raise</span> <span class="n">BadClientInput</span><span class="p">(</span>
-                                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
-                                    <span class="s1">&#39;often the case is that you define/send a bad input iterator to jina, &#39;</span>
-                                    <span class="s1">&#39;please double check your input iterator&#39;</span>
-                                <span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
-                            <span class="k">else</span><span class="p">:</span>
-                                <span class="k">raise</span> <span class="n">BadServerFlow</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
-
+                                <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">unary_rpc</span><span class="o">.</span><span class="n">unary_rpc_with_retry</span><span class="p">():</span>
+                                    <span class="k">yield</span> <span class="n">response</span>
+                        <span class="k">except</span> <span class="p">(</span><span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">AioRpcError</span><span class="p">,</span> <span class="n">InternalNetworkError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_error_and_metadata</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;user cancel the process&#39;</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
@@ -714,7 +578,103 @@
             <span class="k">raise</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="c1"># Not sure why, adding this line helps in fixing a hanging test</span>
-            <span class="k">raise</span></div>
+            <span class="k">raise</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_handle_error_and_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err</span><span class="p">):</span>
+        <span class="n">my_code</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">()</span>
+        <span class="n">my_details</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span>
+        <span class="n">trailing_metadata</span> <span class="o">=</span> <span class="n">extract_trailing_metadata</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;gRPC error: </span><span class="si">{</span><span class="n">my_code</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">my_details</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">trailing_metadata</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">if</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">The ongoing request is terminated as the server is not available or closed already.&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">NOT_FOUND</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">The ongoing request is terminated as a resource cannot be found.&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">DEADLINE_EXCEEDED</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">The ongoing request is terminated due to a server-side timeout.&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">INTERNAL</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">internal error on the server side&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">err</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNKNOWN</span>
+            <span class="ow">and</span> <span class="s1">&#39;asyncio.exceptions.TimeoutError&#39;</span> <span class="ow">in</span> <span class="n">my_details</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">BadClientInput</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="s1">&#39;often the case is that you define/send a bad input iterator to jina, &#39;</span>
+                <span class="s1">&#39;please double check your input iterator&#39;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">BadServerFlow</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span></div>
+
+
+<div class="viewcode-block" id="client_grpc_options"><a class="viewcode-back" href="../../../../../api/jina.clients.base.grpc/#jina.clients.base.grpc.client_grpc_options">[docs]</a><span class="k">def</span> <span class="nf">client_grpc_options</span><span class="p">(</span>
+    <span class="n">backoff_multiplier</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">initial_backoff</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">max_backoff</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">args_channel_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Builds grpc options for the client by taking into account the retry parameters, default gRPC options and additional gRPC options.</span>
+<span class="sd">    :param max_attempts: Maximum number of attempts that are allowed.</span>
+<span class="sd">    :param backoff_multiplier: Factor that will be raised to the exponent of (attempt - 1) for calculating the backoff wait time.</span>
+<span class="sd">    :param initial_backoff: The backoff time on the first error. This will be multiplied by the backoff_multiplier exponent for subsequent wait time calculations.</span>
+<span class="sd">    :param max_backoff: The maximum backoff wait time.</span>
+<span class="sd">    :param args_channel_options: additional gRPC options that must be merged with the default options</span>
+<span class="sd">    :return: List of gRPC options</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">grpc_options</span> <span class="o">=</span> <span class="n">get_default_grpc_options</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">args_channel_options</span><span class="p">:</span>
+        <span class="n">grpc_options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">args_channel_options</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">max_attempts</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">options_with_retry_config</span> <span class="o">=</span> <span class="n">remove_grpc_service_config</span><span class="p">(</span><span class="n">grpc_options</span><span class="p">)</span>
+        <span class="n">service_config_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;methodConfig&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="c1"># To apply retry to all methods, put [{}] in the &quot;name&quot; field</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">[{}],</span>
+                        <span class="s2">&quot;retryPolicy&quot;</span><span class="p">:</span> <span class="p">{</span>
+                            <span class="s2">&quot;maxAttempts&quot;</span><span class="p">:</span> <span class="n">max_attempts</span><span class="p">,</span>
+                            <span class="s2">&quot;initialBackoff&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">initial_backoff</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;maxBackoff&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">max_backoff</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;backoffMultiplier&quot;</span><span class="p">:</span> <span class="n">backoff_multiplier</span><span class="p">,</span>
+                            <span class="s2">&quot;retryableStatusCodes&quot;</span><span class="p">:</span> <span class="p">[</span>
+                                <span class="s2">&quot;UNAVAILABLE&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;DEADLINE_EXCEEDED&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;INTERNAL&quot;</span><span class="p">,</span>
+                            <span class="p">],</span>
+                        <span class="p">},</span>
+                    <span class="p">}</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="c1"># NOTE: the retry feature will be enabled by default &gt;=v1.40.0</span>
+        <span class="n">options_with_retry_config</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;grpc.enable_retries&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">options_with_retry_config</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;grpc.service_config&quot;</span><span class="p">,</span> <span class="n">service_config_json</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">options_with_retry_config</span>
+
+    <span class="k">return</span> <span class="n">grpc_options</span></div>
+
+
+<div class="viewcode-block" id="remove_grpc_service_config"><a class="viewcode-back" href="../../../../../api/jina.clients.base.grpc/#jina.clients.base.grpc.remove_grpc_service_config">[docs]</a><span class="k">def</span> <span class="nf">remove_grpc_service_config</span><span class="p">(</span><span class="n">options</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Removes the &#39;grpc.service_config&#39; configuration from the list of options.</span>
+<span class="sd">    :param options: List of gRPC options</span>
+<span class="sd">    :return: List of gRPC options</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">tup</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">options</span> <span class="k">if</span> <span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;grpc.service_config&#39;</span><span class="p">]</span></div>
 </pre></div>
                 </article>
             </div>
@@ -729,7 +689,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

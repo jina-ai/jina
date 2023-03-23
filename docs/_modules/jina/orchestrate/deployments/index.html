@@ -273,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -543,6 +544,7 @@
         <span class="n">floating</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">force_update</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">gpus</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">grpc_channel_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">grpc_metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">grpc_server_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">],</span>
@@ -613,6 +615,7 @@
 <span class="sd">              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`</span>
 <span class="sd">              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`</span>
 <span class="sd">              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</span>
+<span class="sd">        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {&#39;grpc.max_send_message_length&#39;: -1}. When max_attempts &gt; 1, the &#39;grpc.service_config&#39; option will not be applicable.</span>
 <span class="sd">        :param grpc_metadata: The metadata to be passed to the gRPC request.</span>
 <span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
 <span class="sd">        :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.</span>
@@ -712,6 +715,7 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_include_gateway</span> <span class="o">=</span> <span class="n">include_gateway</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_gateway</span><span class="p">:</span>
@@ -814,7 +818,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_stop_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
             <span class="n">send_telemetry_event</span><span class="p">(</span>
                 <span class="n">event</span><span class="o">=</span><span class="s1">&#39;stop&#39;</span><span class="p">,</span>
-                <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">obj_cls_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
                 <span class="n">entity_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_entity_id</span><span class="p">,</span>
                 <span class="n">duration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_stop_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span><span class="p">,</span>
                 <span class="n">exc_type</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">exc_type</span><span class="p">),</span>
@@ -898,10 +902,10 @@
             <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">deploy_public_sandbox</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sandbox_deployed</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="p">[</span><span class="n">port</span><span class="p">]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="p">[</span><span class="n">port</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Deployment.update_worker_pod_args"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.update_worker_pod_args">[docs]</a>    <span class="k">def</span> <span class="nf">update_worker_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update args of all its worker pods based on Deployment args. Does not touch head and tail&quot;&quot;&quot;</span>
@@ -948,7 +952,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the port of the HeadPod of this deployment</span>
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">head_port_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -967,6 +971,7 @@
             <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
             <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
             <span class="n">protocol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span>
+            <span class="n">grpc_channel_options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">grpc_channel_options</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Client</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -982,7 +987,7 @@
 
         <span class="n">_head_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="n">_head_args</span><span class="o">.</span><span class="n">polling</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">polling</span>
-        <span class="n">_head_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">_head_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span>
         <span class="n">_head_args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">_head_args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">uses</span>
         <span class="n">_head_args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">HEAD</span>
@@ -1101,7 +1106,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: the port of this deployment</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ports</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
@@ -1350,7 +1355,11 @@
 
             <span class="nb">print</span><span class="p">(</span><span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;:tada: Deployment is ready to serve!&#39;</span><span class="p">),</span> <span class="o">*</span><span class="n">all_panels</span><span class="p">)</span>
 
-            <span class="n">send_telemetry_event</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_entity_id</span><span class="p">)</span>
+            <span class="n">send_telemetry_event</span><span class="p">(</span>
+                <span class="n">event</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">,</span>
+                <span class="n">obj_cls_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                <span class="n">entity_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_entity_id</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
@@ -1573,7 +1582,7 @@
 
                 <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">shards</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">replicas</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span>
                         <span class="n">_args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span>
 
                     <span class="k">elif</span> <span class="n">shards</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -1584,7 +1593,7 @@
                         <span class="p">)</span>
                         <span class="c1"># if there are no shards/replicas, we dont need to distribute ports randomly</span>
                         <span class="c1"># we should rather use the pre assigned one</span>
-                        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">random_port</span><span class="p">()</span>
+                        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="p">[</span><span class="n">random_port</span><span class="p">()]</span>
                     <span class="k">elif</span> <span class="n">shards</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                         <span class="n">port_monitoring_index</span> <span class="o">=</span> <span class="p">(</span>
                             <span class="n">replica_id</span> <span class="o">+</span> <span class="n">replicas</span> <span class="o">*</span> <span class="n">shard_id</span> <span class="o">+</span> <span class="mi">1</span>
@@ -1597,13 +1606,13 @@
                                 <span class="n">port_monitoring_index</span>
                             <span class="p">]</span>  <span class="c1"># we skip the head port here</span>
                         <span class="p">)</span>
-                        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">random_port</span><span class="p">()</span>
+                        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="p">[</span><span class="n">random_port</span><span class="p">()]</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">random_port</span><span class="p">()</span>
+                        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="p">[</span><span class="n">random_port</span><span class="p">()]</span>
                         <span class="n">_args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="n">random_port</span><span class="p">()</span>
 
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext_repl_ports</span><span class="p">[</span><span class="n">replica_id</span><span class="p">]</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ext_repl_ports</span><span class="p">[</span><span class="n">replica_id</span><span class="p">]]</span>
                     <span class="n">_args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext_repl_hosts</span><span class="p">[</span><span class="n">replica_id</span><span class="p">]</span>
                     <span class="n">_args</span><span class="o">.</span><span class="n">scheme</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext_repl_schemes</span><span class="p">[</span><span class="n">replica_id</span><span class="p">]</span>
                     <span class="n">_args</span><span class="o">.</span><span class="n">tls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext_repl_tls</span><span class="p">[</span><span class="n">replica_id</span><span class="p">]</span>
@@ -1613,6 +1622,7 @@
                     <span class="n">_args</span><span class="o">.</span><span class="n">workspace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">workspace</span>
                 <span class="n">replica_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
             <span class="n">result</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">replica_args</span>
+
         <span class="k">return</span> <span class="n">result</span>
 
     <span class="nd">@staticmethod</span>
@@ -1621,7 +1631,7 @@
         <span class="n">_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="n">_args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">WORKER</span>
         <span class="n">_args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">_args</span><span class="o">.</span><span class="n">host</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">__default_host__</span>
-        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">random_port</span><span class="p">()</span>
+        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="p">[</span><span class="n">random_port</span><span class="p">()]</span>
 
         <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">name</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;/</span><span class="si">{</span><span class="n">entity_type</span><span class="si">}</span><span class="s1">-0&#39;</span>
@@ -1665,7 +1675,7 @@
                 <span class="p">)</span>
                 <span class="n">parsed_args</span><span class="p">[</span><span class="s1">&#39;uses_before&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">uses_before_args</span>
                 <span class="n">args</span><span class="o">.</span><span class="n">uses_before_address</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">uses_before_args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">uses_before_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">uses_before_args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">uses_before_args</span><span class="o">.</span><span class="n">port</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;uses_after&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -1676,7 +1686,7 @@
                 <span class="p">)</span>
                 <span class="n">parsed_args</span><span class="p">[</span><span class="s1">&#39;uses_after&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">uses_after_args</span>
                 <span class="n">args</span><span class="o">.</span><span class="n">uses_after_address</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">uses_after_args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">uses_after_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">uses_after_args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">uses_after_args</span><span class="o">.</span><span class="n">port</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
                 <span class="p">)</span>
 
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Deployment</span><span class="o">.</span><span class="n">_copy_to_head_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
@@ -1689,7 +1699,9 @@
             <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="n">parsed_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">]:</span>
                 <span class="k">for</span> <span class="n">pod_idx</span><span class="p">,</span> <span class="n">pod_args</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parsed_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">][</span><span class="n">shard_id</span><span class="p">]):</span>
                     <span class="n">worker_host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_worker_host</span><span class="p">(</span><span class="n">pod_args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_docker</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-                    <span class="n">connection_list</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">worker_host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">pod_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="n">connection_list</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">worker_host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">pod_args</span><span class="o">.</span><span class="n">port</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="p">)</span>
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">connection_list</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">connection_list</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">parsed_args</span>
@@ -2005,8 +2017,8 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">default_port</span><span class="p">:</span>
                 <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="p">[</span><span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="p">[</span><span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span><span class="p">]</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_MONITORING</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="p">(</span>
@@ -2016,8 +2028,6 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">default_port</span> <span class="o">=</span> <span class="kc">False</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">deployments_addresses</span> <span class="o">=</span> <span class="n">k8s_deployments_addresses</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_gateway</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span>
         <span class="n">k8s_deployment</span> <span class="o">=</span> <span class="n">K8sDeploymentConfig</span><span class="p">(</span>
             <span class="n">args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">k8s_namespace</span><span class="o">=</span><span class="n">k8s_namespace</span><span class="p">,</span> <span class="n">k8s_port</span><span class="o">=</span><span class="n">k8s_port</span>
         <span class="p">)</span>
@@ -2073,7 +2083,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -298,6 +298,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/client/transient-errors/">Transient Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/callbacks/">Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/client/instrumentation/">Instrumentation</a></li>
@@ -438,13 +439,13 @@
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cls</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="../jina.serve.gateway/#jina.serve.gateway.BaseGateway" title="jina.serve.gateway.BaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGateway</span></code></a>]) – target class type to parse into, must be a <code class="xref py py-class docutils literal notranslate"><span class="pre">JAMLCompatible</span></code> type</p></li>
+<li><p><strong>cls</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="../jina.serve.runtimes.gateway.gateway/#jina.serve.runtimes.gateway.gateway.BaseGateway" title="jina.serve.runtimes.gateway.gateway.BaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGateway</span></code></a>]) – target class type to parse into, must be a <code class="xref py py-class docutils literal notranslate"><span class="pre">JAMLCompatible</span></code> type</p></li>
 <li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – gateway yaml file loaded as python dict</p></li>
 <li><p><strong>runtime_args</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – Optional runtime_args to be directly passed without being parsed into a yaml config</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../jina.serve.gateway/#jina.serve.gateway.BaseGateway" title="jina.serve.gateway.BaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGateway</span></code></a></p>
+<dd class="field-even"><p><a class="reference internal" href="../jina.serve.runtimes.gateway.gateway/#jina.serve.runtimes.gateway.gateway.BaseGateway" title="jina.serve.runtimes.gateway.gateway.BaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGateway</span></code></a></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>the Gateway YAML parser given the syntax version number</p>
@@ -457,7 +458,7 @@
 <span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/jaml/parsers/gateway/legacy/#GatewayLegacyParser.dump"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.parsers.gateway.legacy.GatewayLegacyParser.dump" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="../jina.serve.gateway/#jina.serve.gateway.BaseGateway" title="jina.serve.gateway.BaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGateway</span></code></a>) – versioned gateway object</p>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="../jina.serve.runtimes.gateway.gateway/#jina.serve.runtimes.gateway.gateway.BaseGateway" title="jina.serve.runtimes.gateway.gateway.BaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGateway</span></code></a>) – versioned gateway object</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
@@ -491,7 +492,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 13, 2023</div>
+                            Last updated on Mar 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
