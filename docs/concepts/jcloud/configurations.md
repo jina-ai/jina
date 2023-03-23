@@ -1,7 +1,7 @@
 (jcloud-configurations)=
 # {octicon}`file-code` Configurations
 
-JCloud extends Jina's {ref}`Flow YAML specification<flow-yaml-spec>` by introducing the special field `jcloud`. This lets you define resources and scaling policies for each Executor and gateway.
+JCloud extends Jina's {ref}`Flow YAML specification<flow-yaml-spec>` by introducing the special field `jcloud`. This lets you define resources and scaling policies for each Executor and Gateway.
 
 Here's a Flow with two Executors that have specific resource needs: `indexer` requires a 10 GB `ebs` disk, whereas `encoder` requires a G4 instance, which implies that two cores and 4 GB RAM are used. See the below sections for further information about instance types.
 
@@ -219,6 +219,7 @@ We track the minimum number of replicas in Autoscale configurations and use it a
 ```{admonition} **Restrictions**
 
 - Autoscale currently does not allow the use of `ebs` as a storage kind in combination, please use `efs` and `ephemeral` instead.
+- If the Gateway uses multi-protocol setup, Autoscale function is not supported.
 ```
 ## Configure availability tolerance
 
@@ -242,7 +243,7 @@ executors:
     jcloud:
       minAvailable: 2
 ```
-> In case of disruption, ensure at least two replicas will still be available, while three may be down.
+In case of disruption, ensure at least two replicas will still be available, while three may be down.
 
 ```{code-block} yaml
 ---
@@ -255,22 +256,16 @@ executors:
     jcloud:
       maxUnavailable: 2
 ```
-> In case of disruption, ensure that if a maximum of two replicas are down, at least three replicas will still be available.
+In case of disruption, ensure that if a maximum of two replicas are down, at least three replicas will still be available.
 
 
 ## Configure Gateway
 
-JCloud provides support Ingress gateways to expose your Flows to the public internet with TLS.
-
-In JCloud. We use [Let's Encrypt](https://letsencrypt.org/) for TLS.
-
-```{hint}
-The JCloud gateway is different from Jina's gateway. In JCloud, a gateway works as a proxy to distribute internet traffic between Flows, each of which has a Jina gateway (which is responsible for managing external gRPC/HTTP/WebSocket traffic to your Executors)
-```
+The Gateway can be customized as well just like Executors.
 
 ### Set timeout
 
-By default, the JCloud gateway will close connections that have been idle for over 600 seconds. If you want a longer connection timeout threshold, change the `timeout` parameter under `gateway.jcloud`.
+By default, the Gateway will close connections that have been idle for over 600 seconds. If you want a longer connection timeout threshold, change the `timeout` parameter under `gateway.jcloud`.
 
 ```{code-block} yaml
 ---
@@ -279,15 +274,15 @@ emphasize-lines: 2-4
 jtype: Flow
 gateway:
   jcloud:
-    timeout: 600
+    timeout: 800
 executors:
   - name: executor1
     uses: jinaai+docker://<username>/Executor1
 ```
 
-### Control gateway resources
+### Control Gateway resources
 
-To customize the gateway's CPU or memory, specify the instance type under `gateway.jcloud.resources`:
+To customize the Gateway's CPU or memory, specify the instance type under `gateway.jcloud.resources`:
 
 ```{code-block} yaml
 ---
@@ -428,11 +423,11 @@ executors:
     uses: jinaai+docker://<username>/Executor1
 ```
 
-You can pass the `enable: true` argument to `gateway`, so as to only enable the tracing support in gateway:
+You can pass the `enable: true` argument to `gateway`, so as to only enable the tracing support in the Gateway:
 
 ```{code-block} yaml
 ---
-emphasize-lines: 2-5
+emphasize-lines: 2-6
 ---
 jtype: Flow
 gateway:
