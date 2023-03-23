@@ -141,37 +141,14 @@ If your Executor needs high IO, you can use `ebs` instead. Note that:
 - Default storage size is `5G`.
 ````
 
-JCloud also supports retaining the data a Flow was using while active. You can set the `retain` argument to `true` to enable this feature.
-
-```{code-block} yaml
----
-emphasize-lines: 5-10,13-16
----
-jtype: Flow
-executors:
-  - name: executor1
-    uses: jinaai+docker://<username>/Executor1
-    jcloud:
-      resources:
-        storage:
-          kind: ebs
-          size: 10G
-          retain: true
-  - name: executor2
-    uses: jinaai+docker://<username>/Executor2
-    jcloud:
-      resources:
-        storage:
-          kind: efs
-```
 #### Pricing
 Here are the numbers in terms of per GB Credits Per Month used for three kinds of storage described above.
 
-| Instance  | Credits Per Month |
-|-----------|-------------------|
-| Ephemeral | 0                 |
-| EBS       | 30                |
-| EFS       | 75                |
+| Instance  | Credits Per Month Per GB|
+|-----------|-------------------------|
+| Ephemeral | 0                       |
+| EBS       | 30                      |
+| EFS       | 75                      |
 
 For example, using a 10 GB EBS storage for a month, it costs `30` credits.
 If shards/replicas are used, we will multiply credits further by the number of storages created.
