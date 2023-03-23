@@ -20,7 +20,7 @@ Executor Hub is an Executor marketplace that allows you to share, explore and te
 :link: ../concepts/jcloud/index
 :link-type: doc
 
-JCloud is a CPU/GPU hosting platform for Jina projects.
+JCloud is a cost-efficient hosting platform specifically designed for Jina projects.
 ::::
 
 

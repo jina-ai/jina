@@ -238,6 +238,11 @@ At this moment, pricing for autoscaled Executor/Gateway follows the same {ref}`J
 We track the minimum number of replicas in Autoscale configurations and use it as multiplier for the replicas used when calculating the
 `Credits Per Hour`.
 
+### Restrictions
+```{admonition} **Restrictions**
+
+- Autoscale currently does not allow the use of `ebs` as a storage kind in combination, please use `efs` and `ephemeral` instead.
+```
 ## Configure availability tolerance
 
 If service issues cause disruption of Executors, JCloud lets you specify a tolerance level for number of replicas that stay up or go down.
