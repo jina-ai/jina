@@ -33,8 +33,8 @@ In JCloud, you can pass highly customizable, finely-grained resource requests fo
 
 ### Instance
 
-JCloud uses the concept of an "Instance" to represent a specific set of hardware specifications.
-In above example, a C4 instance type represents two cores and 4 GB RAM based on the CPU Tiers Instance definition table below.
+JCloud uses the concept of an "instance" to represent a specific set of hardware specifications.
+In above example, a C4 instance type represents two cores and 4 GB RAM based on the CPU Tiers instance definition table below.
 
 Note that if you are still using the legacy resource specification interface, such as:
 
@@ -45,17 +45,17 @@ jcloud:
     memory: 8G
 ```
 
-We would translate the raw numbers from input to Instance tier that fits most. 
-There are circumstances the Instance tier does not exactly fulfill the CPU cores and Memory you need, like in above example.
+We would translate the raw numbers from input to instance tier that fits most.
+There are circumstances the instance tier does not exactly fulfill the CPU cores and Memory you need, like in above example.
 But we would "ceil" the requests to the lowest tier that would satisfy all the specifications. 
 In this case, `C6` would be considered, as `C5`'s `Cores` is lower than what's being requested (4 vs 8).
 
-There are also two types of Instance Tiers, one for CPU instances, one for GPU.
+There are also two types of instance tiers, one for CPU instances, one for GPU.
 
 (jcloud-pricing)=
 #### Pricing
-Each Instance has a fixed `Credits Per Hour` number, it's an indicator on how many credits JCloud will charge
-if a certain Instance is used. For example, if an Executor uses `C3`, it implies that `10` credits will be spent
+Each instance has a fixed `Credits Per Hour` number, it's an indicator on how many credits JCloud will charge
+if a certain instance is used. For example, if an Executor uses `C3`, it implies that `10` credits will be spent
 from the operating user account. Other important facts to note:
 
    - If the Flow is powering other App(s) you create, you would be charged by the App(s), not the underlying Flow.
