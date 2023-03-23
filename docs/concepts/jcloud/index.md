@@ -85,12 +85,12 @@ jina flow --uses flow.yml
 #### Project folder
 
 ````{tip}
-The best practice of creating a Jina AI Cloud project is to use:
+The best practice for creating a Jina AI Cloud project is to use:
 
 ```bash
 jc new
 ```
-This ensures the correct project structure accepted by Jina AI Cloud.
+This ensures the correct project structure that is accepted by Jina AI Cloud.
 
 ````
 

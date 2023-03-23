@@ -34,9 +34,11 @@ In JCloud, you can pass highly customizable, finely-grained resource requests fo
 ### Instance
 
 JCloud uses the concept of an "instance" to represent a specific set of hardware specifications.
-In above example, a C4 instance type represents two cores and 4 GB RAM based on the CPU Tiers instance definition table below.
+In the above example, a C4 instance type represents two cores and 4 GB RAM based on the CPU tiers instance definition table below.
 
-Note that if you are still using the legacy resource specification interface, such as:
+````{admonition} Note
+:class: note
+We will translate the raw numbers from input to instance tier that fits most closely if you are still using the legacy resource specification interface, such as:
 
 ```{code-block} yaml
 jcloud:
@@ -45,34 +47,33 @@ jcloud:
     memory: 8G
 ```
 
-We would translate the raw numbers from input to instance tier that fits most.
-There are circumstances the instance tier does not exactly fulfill the CPU cores and Memory you need, like in above example.
-But we would "ceil" the requests to the lowest tier that would satisfy all the specifications. 
-In this case, `C6` would be considered, as `C5`'s `Cores` is lower than what's being requested (4 vs 8).
+There are circumstances in the instance tier where they don't exactly fulfill the CPU cores and memory you need, like in the above example.
+In cases like this we "ceil" the requests to the lowest tier that satisfies all the specifications. 
+In this case, `C6` would be considered, as `C5`'s `Cores` are lower than what's being requested (4 vs 8).
+````
 
 There are also two types of instance tiers, one for CPU instances, one for GPU.
 
 (jcloud-pricing)=
 #### Pricing
-Each instance has a fixed `Credits Per Hour` number, it's an indicator on how many credits JCloud will charge
+Each instance has a fixed `Credits Per Hour` number, indicating how many credits JCloud will charge
 if a certain instance is used. For example, if an Executor uses `C3`, it implies that `10` credits will be spent
 from the operating user account. Other important facts to note:
 
-   - If the Flow is powering other App(s) you create, you would be charged by the App(s), not the underlying Flow.
+   - If the Flow is powering other App(s) you create, you will be charged by the App(s), not the underlying Flow.
    - `Credits Per Hour` is on an Executor/Gateway basis, the total `Credits Per Hour` of a Flow is the sum of all the credits
      each components cost.
-   - If shards/replicas are used in Executor/Gateway, same instance type would be used, so `Credits Per Hour` would be multiplied.
+   - If shards/replicas are used in an Executor/Gateway, the same instance type will be used, so `Credits Per Hour` will be multiplied.
      For example, if an Executor uses `C3` and it has two replicas, the `Credits Per Hour` for the Executor would double to `20`.
-     The only exception here is when sharding is used, `C1` would be used for the shards head, regardless of what instance type has been
-     entered for the shared Executor.
+     The only exception is when sharding is used. In that case `C1` would be used for the shards head, regardless of what instance type has been entered for the shared Executor.
 
 ```{hint}
 Please visit [Jina AI Cloud Pricing](https://cloud.jina.ai/pricing/) for more information about billing and credits.
 ```
 
-#### CPU Tiers
+#### CPU tiers
 
-| Instance | Cores | Memory   | Credits Per Hour |
+| Instance | Cores | Memory   | Credits per hour |
 |----------|-------|----------|------------------|
 | C1       | 0.1   | 0.2 GB   | 1                |
 | C2       | 0.5   | 1 GB     | 5                |
@@ -88,17 +89,17 @@ By default, C1 is allocated to each Executor and Gateway.
 
 JCloud offers the general Intel Xeon processor (Skylake 8175M or Cascade Lake 8259CL) for the CPU instances. 
 
-#### GPU Tiers
+#### GPU tiers
 
 JCloud supports GPU workloads with two different usages: `shared` or `dedicated`. 
 
-If GPU is enabled, JCloud will provide NVIDIA A10G Tensor Core GPUs with 24G memory for workloads in both usage types.
+If GPU is enabled, JCloud will provide NVIDIA A10G Tensor Core GPUs with 24 GB memory for workloads in both usage types.
 
 ```{hint}
 When using GPU resources, it may take a few extra minutes before all Executors are ready to serve traffic.
 ```
 
-| Instance | GPU    | Memory   | Credits Per Hour |
+| Instance | GPU    | Memory   | Credits per hour |
 |----------|--------|----------|------------------|
 | G1       | shared | 14 GB    | 100              |
 | G2       | 1      | 14 GB    | 125              |
@@ -110,15 +111,16 @@ When using GPU resources, it may take a few extra minutes before all Executors a
 An Executor using a `shared` GPU shares this GPU with up to four other Executors.
 This enables time-slicing, which allows workloads that land on oversubscribed GPUs to interleave with one another.
 
-To use `shared` GPU, `G1` needs to be specified as instance type.
+To use `shared` GPU, `G1` needs to be specified as the instance type.
 
-The tradeoffs with a `shared` GPU are increased latency, jitter, and potential out-of-memory (OOM) conditions when many different applications are time-slicing on the GPU. If your application is memory consuming, we suggest using a dedicated GPU.
+The tradeoffs with a `shared` GPU are increased latency, jitter, and potential out-of-memory (OOM) conditions when many different applications are time-slicing on the GPU. If your application is consuming a lot of memory, we suggest using a dedicated GPU.
 
 ##### Dedicated GPU
 
 Using a dedicated GPU is the default way to provision a GPU for an Executor. This automatically creates nodes or assigns the Executor to a GPU node. In this case, the Executor owns the whole GPU.
 
-To use `dedicated` GPU, `G2`/ `G3` / `G4` needs to be specified as instance type.
+To use a `dedicated` GPU, `G2`/ `G3` / `G4` needs to be specified as instance type.
+
 ### Storage
 
 JCloud supports three kinds of storage: ephemeral (default), [efs](https://aws.amazon.com/efs/) (network file storage) and [ebs](https://aws.amazon.com/ebs/) (block device).
@@ -133,24 +135,24 @@ If your Executor needs to share data with other Executors and retain data persis
 
 - IO performance is slower compared to `ebs` or `ephemeral`
 - The disk can be shared with other Executors or Flows.
-- Default storage size is `5G`.
+- Default storage size is 5 GB.
 
 If your Executor needs high IO, you can use `ebs` instead. Note that:
 
 - The disk cannot be shared with other Executors or Flows.
-- Default storage size is `5G`.
+- Default storage size is 5 GB.
 ````
 
 #### Pricing
-Here are the numbers in terms of per GB Credits Per Month used for three kinds of storage described above.
+Here are the numbers in terms of credits per GB per month for the three kinds of storage described above.
 
-| Instance  | Credits Per Month Per GB|
+| Instance  | Credits per GB per month|
 |-----------|-------------------------|
 | Ephemeral | 0                       |
 | EBS       | 30                      |
 | EFS       | 75                      |
 
-For example, using a 10 GB EBS storage for a month, it costs `30` credits.
+For example, using 10 GB of EBS storage for a month costs `30` credits.
 If shards/replicas are used, we will multiply credits further by the number of storages created.
 
 ## Scale out Executors
@@ -206,20 +208,20 @@ Below are the defaults and requirements for the configurations:
 | min    | 1           | int                      | Minimum number of replicas (`0` means serverless) |
 | max    | 2           | int, up to 5             | Maximum number of replicas                        |
 | metric | concurrency | `concurrency`  /   `rps` | Metric for scaling                                |
-| target | 100         | int                      | Target number each replicas tries to maintain     |
+| target | 100         | int                      | Target number of replicas to try to maintain     |
 
-After JCloud deployment using the autoscaling configuration, the Flow serving part is just the same: the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you can deal with the code!
+After a JCloud deployment using the autoscaling configuration, the Flow serving part is just the same: the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you can deal with the code!
 
 ### Pricing
-At this moment, pricing for autoscaled Executor/Gateway follows the same {ref}`JCloud pricing rules <jcloud-pricing>` for the most part.
-We track the minimum number of replicas in Autoscale configurations and use it as multiplier for the replicas used when calculating the
+At present, pricing for autoscaled Executor/Gateway follows the same {ref}`JCloud pricing rules <jcloud-pricing>` for the most part.
+We track the minimum number of replicas in autoscale configurations and use it as a multiplier for the replicas used when calculating the
 `Credits Per Hour`.
 
 ### Restrictions
 ```{admonition} **Restrictions**
 
-- Autoscale does not currently allow the use of `ebs` as a storage kind in combination. Please use `efs` and `ephemeral` instead.
-- If the Gateway uses a multi-protocol setup, Autoscale is not supported.
+- Autoscale does not currently allow the use of `ebs` as a storage type in combination. Please use `efs` and `ephemeral` instead.
+- Autoscale is not supported for multi-protocol Gateways.
 ```
 ## Configure availability tolerance
 
