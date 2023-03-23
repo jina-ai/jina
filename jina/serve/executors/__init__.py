@@ -240,12 +240,17 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 self._dry_run_func
             )
 
+        self._lock = contextlib.AsyncExitStack()
         try:
-            self._lock = (
-                asyncio.Lock()
-            )  # Lock to run in Executor non async methods in a way that does not block the event loop to do health checks without the fear of having race conditions or multithreading issues.
+            if (
+                hasattr(self.runtime_args, 'allow_concurrent')
+                and not self.runtime_args.allow_concurrent
+            ):
+                self._lock = (
+                    asyncio.Lock()  # Lock to run in Executor non async methods in a way that does not block the event loop to do health checks without the fear of having race conditions or multithreading issues.
+                )
         except RuntimeError:
-            self._lock = contextlib.AsyncExitStack()
+            pass
 
     def _dry_run_func(self, *args, **kwargs):
         pass
