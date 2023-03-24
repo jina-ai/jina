@@ -343,13 +343,24 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         if getattr(args, 'shards', 1) == 1:
             self.args.polling = PollingType.ANY
 
-        if getattr(args, 'shards', 1) > 1 and ProtocolType.HTTP in self.args.protocol and self.args.deployment_role != DeploymentRoleType.GATEWAY:
-            raise RuntimeError(f'It is not supported to have {ProtocolType.HTTP.to_string()} deployment for '
-                               f'Deployments with more than one shard')
+        if (
+            getattr(args, 'shards', 1) > 1
+            and ProtocolType.HTTP in self.args.protocol
+            and self.args.deployment_role != DeploymentRoleType.GATEWAY
+        ):
+            raise RuntimeError(
+                f'It is not supported to have {ProtocolType.HTTP.to_string()} deployment for '
+                f'Deployments with more than one shard'
+            )
 
-        if ProtocolType.WEBSOCKET in self.args.protocol and self.args.deployment_role != DeploymentRoleType.GATEWAY:
-            raise RuntimeError(f'It is not supported to have {ProtocolType.WEBSOCKET.to_string()} deployment for '
-                               f'Deployments with more than one shard')
+        if (
+            ProtocolType.WEBSOCKET in self.args.protocol
+            and self.args.deployment_role != DeploymentRoleType.GATEWAY
+        ):
+            raise RuntimeError(
+                f'It is not supported to have {ProtocolType.WEBSOCKET.to_string()} deployment for '
+                f'Deployments with more than one shard'
+            )
         self.needs = (
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
@@ -420,7 +431,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 f'{self.protocol}://{host}:{port}' for host, port in zip(hosts, ports)
             ]
 
-    def _get_connection_list_for_single_executor(self) -> Union[List[str], Dict[str, List[str]]]:
+    def _get_connection_list_for_single_executor(
+        self,
+    ) -> Union[List[str], Dict[str, List[str]]]:
         if self.head_args:
             # add head information
             return [f'{self.protocol}://{self.host}:{self.head_port}']
@@ -428,14 +441,24 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             # there is no head, add the worker connection information instead
             ports_dict = defaultdict(list)
             for replica_pod_arg in self.pod_args['pods'][0]:
-                for protocol, port in zip(replica_pod_arg.protocol, replica_pod_arg.port):
+                for protocol, port in zip(
+                    replica_pod_arg.protocol, replica_pod_arg.port
+                ):
                     ports_dict[str(protocol)].append(port)
 
-            host = __docker_host__ if host_is_local(self.args.host[0]) and in_docker() and self.dockerized_uses else self.args.host[0]
+            host = (
+                __docker_host__
+                if host_is_local(self.args.host[0])
+                and in_docker()
+                and self.dockerized_uses
+                else self.args.host[0]
+            )
 
             connection_dict = {}
             for protocol, ports in ports_dict.items():
-                connection_dict[protocol] = [f'{protocol}://{host}:{port}' for port in ports]
+                connection_dict[protocol] = [
+                    f'{protocol}://{host}:{port}' for port in ports
+                ]
 
             return connection_dict
 
@@ -963,7 +986,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         if self._include_gateway:
             _args = self.pod_args['gateway']
             _args.noblock_on_start = True
-            self.gateway_pod = PodFactory.build_pod(_args, gateway_load_balancer=self._gateway_load_balancer)
+            self.gateway_pod = PodFactory.build_pod(
+                _args, gateway_load_balancer=self._gateway_load_balancer
+            )
             self.enter_context(self.gateway_pod)
         for shard_id in self.pod_args['pods']:
             self.shards[shard_id] = self._ReplicaSet(
@@ -1221,7 +1246,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                         )
                         # if there are no shards/replicas, we dont need to distribute ports randomly
                         # we should rather use the pre assigned one
-                        _args.port = [random_port() for _ in range(len(self.args.protocol))]
+                        _args.port = [
+                            random_port() for _ in range(len(self.args.protocol))
+                        ]
                     elif shards > 1:
                         port_monitoring_index = (
                             replica_id + replicas * shard_id + 1

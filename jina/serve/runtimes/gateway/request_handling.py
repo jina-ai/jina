@@ -1,7 +1,7 @@
 import asyncio
 import itertools
 import threading
-from typing import TYPE_CHECKING, AsyncIterator
+from typing import TYPE_CHECKING, AsyncIterator, Dict
 
 from jina.helper import get_full_version
 from jina.proto import jina_pb2
@@ -88,7 +88,8 @@ class GatewayRequestHandler:
         }
         servers = []
         for address in deployments_addresses.values():
-            servers.extend(address[ProtocolType.HTTP.to_string()])
+            if isinstance(address, Dict):
+                servers.extend(address[ProtocolType.HTTP.to_string()])
         self.load_balancer_servers = itertools.cycle(servers)
         self.warmup_stop_event = threading.Event()
         self.warmup_task = None
