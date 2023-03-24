@@ -19,7 +19,7 @@ class LoadBalancingServer(BaseServer):
         self._server_exit = False
 
     async def handle_request(self, request):
-        return await self._request_handler.load_balance(request)
+        return await self._request_handler._load_balance(request)
 
     async def setup_server(self):
         """
@@ -39,6 +39,7 @@ class LoadBalancingServer(BaseServer):
         self._server_exit = True
 
     async def shutdown(self):
+        self._server_exit = True
         await super().shutdown()
         await self._request_handler.close()
 

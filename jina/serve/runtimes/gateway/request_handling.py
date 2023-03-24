@@ -46,9 +46,18 @@ class GatewayRequestHandler:
         deployments_metadata = json.loads(self.runtime_args.deployments_metadata)
         deployments_no_reduce = json.loads(self.runtime_args.deployments_no_reduce)
 
+        deployment_grpc_addresses = {}
+        for deployment_name, addresses in deployments_addresses.items():
+            if isinstance(addresses, Dict):
+                deployment_grpc_addresses[deployment_name] = addresses.get(ProtocolType.GRPC.to_string(), [])
+            else:
+                deployment_grpc_addresses[deployment_name] = addresses
+
+        print(f' deployments_addresses {deployments_addresses} vs {deployment_grpc_addresses}')
+
         self.streamer = GatewayStreamer(
             graph_representation=graph_description,
-            executor_addresses=deployments_addresses,
+            executor_addresses=deployment_grpc_addresses,
             graph_conditions=graph_conditions,
             deployments_metadata=deployments_metadata,
             deployments_no_reduce=deployments_no_reduce,
@@ -69,7 +78,7 @@ class GatewayRequestHandler:
 
         GatewayStreamer._set_env_streamer_args(
             graph_representation=graph_description,
-            executor_addresses=deployments_addresses,
+            executor_addresses=deployment_grpc_addresses,
             graph_conditions=graph_conditions,
             deployments_metadata=deployments_metadata,
             deployments_no_reduce=deployments_no_reduce,
@@ -84,12 +93,12 @@ class GatewayRequestHandler:
             executor_name: _ExecutorStreamer(
                 self.streamer._connection_pool, executor_name=executor_name
             )
-            for executor_name in deployments_addresses.keys()
+            for executor_name in deployment_grpc_addresses.keys()
         }
         servers = []
-        for address in deployments_addresses.values():
-            if isinstance(address, Dict):
-                servers.extend(address[ProtocolType.HTTP.to_string()])
+        for addresses in deployments_addresses.values():
+            if isinstance(addresses, Dict):
+                servers.extend(addresses.get(ProtocolType.HTTP.to_string(), []))
         self.load_balancer_servers = itertools.cycle(servers)
         self.warmup_stop_event = threading.Event()
         self.warmup_task = None
@@ -154,8 +163,7 @@ class GatewayRequestHandler:
             )
         )
 
-    async def load_balance(self, request):
-        # TODO: use `self._request_handler.load_balance` so that this server can be used with head and gateway request handlers
+    async def _load_balance(self, request):
         import aiohttp
         from aiohttp import web
 
@@ -243,6 +251,7 @@ class GatewayRequestHandler:
         :param kwargs: keyword arguments
         :yield: responses to the request after streaming to Executors in Flow
         """
+        self.logger.error(f' STREAAAAM')
         async for resp in self.streamer.rpc_stream(
             request_iterator=request_iterator, context=context, *args, **kwargs
         ):

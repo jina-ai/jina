@@ -19,6 +19,7 @@ class CompositeServer(BaseServer):
         from jina.parsers.helper import _get_gateway_class
 
         self.servers: List[BaseServer] = []
+        self.logger.error(f' {self.name} COMPOSITE')
         for port, protocol in zip(self.ports, self.protocols):
             server_cls = _get_gateway_class(protocol, works_as_load_balancer=self.works_as_load_balancer)
             # ignore monitoring and tracing args since they are not copyable
@@ -37,6 +38,7 @@ class CompositeServer(BaseServer):
             server_kwargs = {k: v for k, v in kwargs.items() if k != 'runtime_args'}
             server_kwargs['runtime_args'] = dict(vars(runtime_args))
             server_kwargs['req_handler'] = self._request_handler
+            self.logger.error(f' {protocol} ==> {server_cls}')
             server = server_cls(**server_kwargs)
             self.servers.append(server)
 

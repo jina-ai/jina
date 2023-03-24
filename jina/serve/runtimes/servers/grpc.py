@@ -43,6 +43,7 @@ class GRPCServer(BaseServer):
             interceptors=self.grpc_tracing_server_interceptors,
         )
 
+        self.logger.error(f'{self.name} SETUP GRPC SERVER')
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self._request_handler, self.server)
 
         jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(

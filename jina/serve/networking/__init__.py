@@ -413,6 +413,7 @@ class GrpcConnectionPool:
                 current_connection = await connections.get_next_connection(
                     num_retries=total_num_tries
                 )
+                print(f' current_connection address {current_connection.address}')
                 tried_addresses.add(current_connection.address)
                 try:
                     return await current_connection.send_requests(

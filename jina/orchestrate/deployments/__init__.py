@@ -1510,10 +1510,14 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         else:
             _protocols = [str(_p) for _p in self.protocol]
 
-        if not isinstance(self.port, list):
-            _ports = [self.port]
+        print(f' protocols {_protocols}')
+
+        if not isinstance(self.first_pod_args.port, list):
+            _ports = [self.first_pod_args.port]
         else:
-            _ports = [str(_p) for _p in self.port]
+            _ports = [str(_p) for _p in self.first_pod_args.port]
+
+        print(f' _ports {_ports}')
 
         for _port, _protocol in zip(_ports, _protocols):
 

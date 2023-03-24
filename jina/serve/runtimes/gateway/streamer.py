@@ -25,7 +25,6 @@ from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.stream import RequestStreamer
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
-from jina.enums import ProtocolType
 
 __all__ = ['GatewayStreamer']
 
@@ -99,6 +98,7 @@ class GatewayStreamer:
         self.tracing_client_interceptor = tracing_client_interceptor
         self._executor_addresses = executor_addresses
 
+        self.logger.error(f' executor_addresses {executor_addresses}')
         self._connection_pool = self._create_connection_pool(
             executor_addresses,
             compression,
@@ -146,11 +146,7 @@ class GatewayStreamer:
             channel_options=grpc_channel_options,
         )
         for deployment_name, addresses in deployments_addresses.items():
-            address_list = addresses
-            if isinstance(addresses, Dict):
-                address_list = addresses.get(ProtocolType.GRPC.to_string(), [])
-
-            for address in address_list:
+            for address in addresses:
                 connection_pool.add_connection(
                     deployment=deployment_name, address=address, head=True
                 )
