@@ -534,7 +534,6 @@ class WorkerRequestHandler:
             await task
         else:
             docs = WorkerRequestHandler.get_docs_from_request(requests)
-
             docs_matrix, docs_map = WorkerRequestHandler._get_docs_matrix_from_request(
                 requests
             )
@@ -725,7 +724,6 @@ class WorkerRequestHandler:
         :param context: grpc context
         :returns: the response request
         """
-
         return await self.process_data([request], context)
 
     async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:

@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, AsyncIterator, Optional
+import asyncio
+import threading
+from typing import TYPE_CHECKING, AsyncIterator
 
 from jina.helper import get_full_version
 from jina.proto import jina_pb2
@@ -20,7 +22,10 @@ class GatewayRequestHandler:
         self,
         args: 'SimpleNamespace',
         logger: 'JinaLogger',
-        streamer: Optional['GatewayStreamer'] = None,
+        metrics_registry=None,
+        meter=None,
+        aio_tracing_client_interceptors=None,
+        tracing_client_interceptor=None,
         **kwargs,
     ):
         import json
@@ -38,7 +43,7 @@ class GatewayRequestHandler:
         deployments_metadata = json.loads(self.runtime_args.deployments_metadata)
         deployments_no_reduce = json.loads(self.runtime_args.deployments_no_reduce)
 
-        self.streamer = streamer or GatewayStreamer(
+        self.streamer = GatewayStreamer(
             graph_representation=graph_description,
             executor_addresses=deployments_addresses,
             graph_conditions=graph_conditions,
@@ -50,10 +55,13 @@ class GatewayRequestHandler:
             runtime_name=self.runtime_args.runtime_name,
             prefetch=self.runtime_args.prefetch,
             logger=self.logger,
-            metrics_registry=self.runtime_args.metrics_registry,
-            meter=self.runtime_args.meter,
-            aio_tracing_client_interceptors=self.runtime_args.aio_tracing_client_interceptors,
-            tracing_client_interceptor=self.runtime_args.tracing_client_interceptor,
+            metrics_registry=metrics_registry,
+            meter=meter,
+            aio_tracing_client_interceptors=aio_tracing_client_interceptors,
+            tracing_client_interceptor=tracing_client_interceptor,
+            grpc_channel_options=self.runtime_args.grpc_channel_options
+            if hasattr(self.runtime_args, 'grpc_channel_options')
+            else None,
         )
 
         GatewayStreamer._set_env_streamer_args(
@@ -75,6 +83,80 @@ class GatewayRequestHandler:
             )
             for executor_name in deployments_addresses.keys()
         }
+        self.warmup_stop_event = threading.Event()
+        self.warmup_task = None
+        try:
+            self.warmup_task = asyncio.create_task(
+                self.streamer.warmup(self.warmup_stop_event)
+            )
+        except RuntimeError:
+            # when Gateway is started locally, it may not have loop
+            pass
+
+    def cancel_warmup_task(self):
+        """Cancel warmup task if exists and is not completed. Cancellation is required if the Flow is being terminated before the
+        task is successful or hasn't reached the max timeout.
+        """
+        if self.warmup_task:
+            try:
+                if not self.warmup_task.done():
+                    self.logger.debug(f'Cancelling warmup task.')
+                    self.warmup_stop_event.set()  # this event is useless if simply cancel
+                    self.warmup_task.cancel()
+            except Exception as ex:
+                self.logger.debug(f'exception during warmup task cancellation: {ex}')
+                pass
+
+    async def close(self):
+        """
+        Gratefully closes the object making sure all the floating requests are taken care and the connections are closed gracefully
+        """
+        self.cancel_warmup_task()
+        await self.streamer.close()
+
+    def _http_fastapi_default_app(
+        self,
+        title,
+        description,
+        no_debug_endpoints,
+        no_crud_endpoints,
+        expose_endpoints,
+        expose_graphql_endpoint,
+        cors,
+        tracing,
+        tracer_provider,
+    ):
+        from jina.helper import extend_rest_interface
+        from jina.serve.runtimes.gateway.http_fastapi_app import get_fastapi_app
+
+        return extend_rest_interface(
+            get_fastapi_app(
+                streamer=self.streamer,
+                title=title,
+                description=description,
+                no_debug_endpoints=no_debug_endpoints,
+                no_crud_endpoints=no_crud_endpoints,
+                expose_endpoints=expose_endpoints,
+                expose_graphql_endpoint=expose_graphql_endpoint,
+                cors=cors,
+                logger=self.logger,
+                tracing=tracing,
+                tracer_provider=tracer_provider,
+            )
+        )
+
+    def _websocket_fastapi_default_app(self, tracing, tracer_provider):
+        from jina.helper import extend_rest_interface
+        from jina.serve.runtimes.gateway.websocket_fastapi_app import get_fastapi_app
+
+        return extend_rest_interface(
+            get_fastapi_app(
+                streamer=self.streamer,
+                logger=self.logger,
+                tracing=tracing,
+                tracer_provider=tracer_provider,
+            )
+        )
 
     async def dry_run(self, empty, context) -> jina_pb2.StatusProto:
         """

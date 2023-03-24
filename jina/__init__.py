@@ -142,4 +142,4 @@ from jina.serve.executors import BaseExecutor as Executor
 from jina.serve.executors.decorators import dynamic_batching, monitor, requests
 
 # Custom Gateway
-from jina.serve.gateway import BaseGateway as Gateway
+from jina.serve.runtimes.gateway.gateway import Gateway

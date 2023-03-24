@@ -8,9 +8,9 @@ from docarray import DocumentArray
 from jina import Client, Executor, requests
 from jina.parsers import set_gateway_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.gateway import GatewayRuntime
-from jina.serve.runtimes.worker import WorkerRuntime
+from jina.serve.runtimes.servers import BaseServer
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
+from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 from tests.helper import _generate_pod_args
 
 from .test_runtimes import _create_gateway_runtime, _create_head_runtime
@@ -20,7 +20,6 @@ class DummyExec(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._id = str(uuid.uuid4())
-        print(f'DummyExecutor {self._id} created')
 
     @requests(on='/foo')
     def foo(self, docs, *args, **kwargs):
@@ -29,12 +28,12 @@ class DummyExec(Executor):
 
 def _create_worker_runtime(port, name='', executor=None):
     args = _generate_pod_args()
-    args.port = port
+    args.port = [port]
     args.uses = 'DummyExec'
     args.name = name
     if executor:
         args.uses = executor
-    with WorkerRuntime(args) as runtime:
+    with AsyncNewLoopRuntime(args, req_handler_cls=WorkerRequestHandler) as runtime:
         runtime.run_forever()
 
 
@@ -119,13 +118,13 @@ async def test_runtimes_headless_topology(
 
     time.sleep(1.0)
 
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{worker_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{gateway_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
@@ -218,7 +217,7 @@ async def test_runtimes_resource_not_found(port_generator, protocol, monkeypatch
 
     time.sleep(1.0)
 
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{gateway_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
@@ -259,7 +258,7 @@ async def test_runtimes_reconnect(port_generator, protocol, fail_endpoint_discov
         gateway_port, graph_description, pod_addresses, protocol
     )
 
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{gateway_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
@@ -276,7 +275,7 @@ async def test_runtimes_reconnect(port_generator, protocol, fail_endpoint_discov
             assert p.exitcode != 0  # The request will fail and raise
 
         worker_process = _create_worker(worker_port)
-        assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        assert BaseServer.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=f'0.0.0.0:{worker_port}',
             ready_or_shutdown_event=multiprocessing.Event(),
@@ -298,7 +297,7 @@ async def test_runtimes_reconnect(port_generator, protocol, fail_endpoint_discov
 
         worker_process = _create_worker(worker_port)
 
-        assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        assert BaseServer.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=f'0.0.0.0:{worker_port}',
             ready_or_shutdown_event=multiprocessing.Event(),
@@ -344,7 +343,7 @@ async def test_runtimes_reconnect_replicas(
     for p in worker_ports:
         worker_processes.append(_create_worker(p))
         time.sleep(0.1)
-        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        BaseServer.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=f'0.0.0.0:{p}',
             ready_or_shutdown_event=multiprocessing.Event(),
@@ -353,7 +352,7 @@ async def test_runtimes_reconnect_replicas(
     gateway_process = _create_gateway(
         gateway_port, graph_description, pod_addresses, protocol
     )
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{gateway_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
@@ -390,7 +389,7 @@ async def test_runtimes_reconnect_replicas(
 
         worker_processes[1] = _create_worker(worker_ports[1])
 
-        assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        assert BaseServer.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=f'0.0.0.0:{worker_ports[1]}',
             ready_or_shutdown_event=multiprocessing.Event(),
@@ -435,7 +434,7 @@ async def test_runtimes_replicas(
     for p in worker_ports:
         worker_processes.append(_create_worker(p))
         time.sleep(0.1)
-        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        BaseServer.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=f'0.0.0.0:{p}',
             ready_or_shutdown_event=multiprocessing.Event(),
@@ -444,7 +443,7 @@ async def test_runtimes_replicas(
     gateway_process = _create_gateway(
         gateway_port, graph_description, pod_addresses, protocol
     )
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{gateway_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
@@ -511,19 +510,19 @@ async def test_runtimes_headful_topology(port_generator, protocol, terminate_hea
 
     time.sleep(1.0)
 
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{head_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{worker_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{gateway_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
@@ -596,7 +595,7 @@ def _test_gql_error(gateway_port, error_port):
 
 
 def _create_gqlgateway_runtime(graph_description, pod_addresses, port):
-    with GatewayRuntime(
+    with AsyncNewLoopRuntime(
         set_gateway_parser().parse_args(
             [
                 '--graph-description',
@@ -609,7 +608,7 @@ def _create_gqlgateway_runtime(graph_description, pod_addresses, port):
                 '--protocol',
                 'http',
             ]
-        )
+        ), req_handler_cls=GatewayRequestHandler
     ) as runtime:
         runtime.run_forever()
 
@@ -640,13 +639,13 @@ async def test_runtimes_graphql(port_generator):
 
     time.sleep(1.0)
 
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{worker_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{gateway_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
@@ -699,7 +698,7 @@ async def test_replica_retry(port_generator):
     for p in worker_ports:
         worker_processes.append(_create_worker(p))
         time.sleep(0.1)
-        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        BaseServer.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=f'0.0.0.0:{p}',
             ready_or_shutdown_event=multiprocessing.Event(),
@@ -708,7 +707,7 @@ async def test_replica_retry(port_generator):
     gateway_process = _create_gateway(
         gateway_port, graph_description, pod_addresses, 'grpc'
     )
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{gateway_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
@@ -754,7 +753,7 @@ async def test_replica_retry_all_fail(port_generator):
     for p in worker_ports:
         worker_processes.append(_create_worker(p))
         time.sleep(0.1)
-        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        BaseServer.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=f'0.0.0.0:{p}',
             ready_or_shutdown_event=multiprocessing.Event(),
@@ -763,7 +762,7 @@ async def test_replica_retry_all_fail(port_generator):
     gateway_process = _create_gateway(
         gateway_port, graph_description, pod_addresses, 'grpc'
     )
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{gateway_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
@@ -828,7 +827,7 @@ def test_custom_num_retries(port_generator, retries, capfd):
     for p in worker_ports:
         worker_processes.append(_create_worker(p))
         time.sleep(0.1)
-        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        BaseServer.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=f'0.0.0.0:{p}',
             ready_or_shutdown_event=multiprocessing.Event(),
@@ -842,7 +841,7 @@ def test_custom_num_retries(port_generator, retries, capfd):
         retries=retries,
         log_config='json',
     )
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{gateway_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
@@ -898,19 +897,19 @@ def test_custom_num_retries_headful(port_generator, retries, capfd):
 
     time.sleep(1.0)
 
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{head_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{worker_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{gateway_port}',
         ready_or_shutdown_event=multiprocessing.Event(),

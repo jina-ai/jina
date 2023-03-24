@@ -1,29 +1,23 @@
 import logging
 import os
-from abc import abstractmethod
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from jina.importer import ImportExtensions
-from jina.serve.gateway import BaseGateway
-
-if TYPE_CHECKING:
-    from fastapi import FastAPI
+from jina.serve.runtimes.servers import BaseServer
 
 
-class FastAPIBaseGateway(BaseGateway):
-    """Base FastAPI gateway. Implement this abstract class in-case you want to build a fastapi-based Gateway by
-    implementing the `app` property. This property should return a fastapi app. The base Gateway will handle starting
-    a server and serving the application using that server."""
+class WebSocketServer(BaseServer):
+    """WebSocket Server implementation"""
 
     def __init__(
-        self,
-        ssl_keyfile: Optional[str] = None,
-        ssl_certfile: Optional[str] = None,
-        uvicorn_kwargs: Optional[dict] = None,
-        proxy: bool = False,
-        **kwargs
+            self,
+            ssl_keyfile: Optional[str] = None,
+            ssl_certfile: Optional[str] = None,
+            uvicorn_kwargs: Optional[dict] = None,
+            proxy: Optional[bool] = None,
+            **kwargs
     ):
-        """Initialize the FastAPIBaseGateway
+        """Initialize the gateway
         :param ssl_keyfile: the path to the key file
         :param ssl_certfile: the path to the certificate file
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
@@ -32,28 +26,20 @@ class FastAPIBaseGateway(BaseGateway):
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
-        self.uvicorn_kwargs = uvicorn_kwargs or {}
-
-        if ssl_keyfile and 'ssl_keyfile' not in self.uvicorn_kwargs.keys():
-            self.uvicorn_kwargs['ssl_keyfile'] = ssl_keyfile
-
-        if ssl_certfile and 'ssl_certfile' not in self.uvicorn_kwargs.keys():
-            self.uvicorn_kwargs['ssl_certfile'] = ssl_certfile
+        self.ssl_keyfile = ssl_keyfile
+        self.ssl_certfile = ssl_certfile
+        self.uvicorn_kwargs = uvicorn_kwargs
 
         if not proxy and os.name != 'nt':
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
 
-    @property
-    @abstractmethod
-    def app(self):
-        """Get a FastAPI app"""
-        ...
-
     async def setup_server(self):
         """
-        Initialize and return GRPC server
+        Setup WebSocket Server
         """
+        self.app = self._request_handler._websocket_fastapi_default_app(tracing=self.tracing, tracer_provider=self.tracer_provider)
+
         with ImportExtensions(required=True):
             from uvicorn import Config, Server
 
@@ -92,56 +78,33 @@ class FastAPIBaseGateway(BaseGateway):
             # Filter out healthcheck endpoint `GET /`
             logging.getLogger("uvicorn.access").addFilter(_EndpointFilter())
 
-        # app property will generate a new fastapi app each time called
-        app = self.app
-        _install_health_check(app, self.logger)
+        uvicorn_kwargs = self.uvicorn_kwargs or {}
+
+        if self.ssl_keyfile and 'ssl_keyfile' not in uvicorn_kwargs.keys():
+            uvicorn_kwargs['ssl_keyfile'] = self.ssl_keyfile
+
+        if self.ssl_certfile and 'ssl_certfile' not in uvicorn_kwargs.keys():
+            uvicorn_kwargs['ssl_certfile'] = self.ssl_certfile
+
         self.server = UviServer(
             config=Config(
-                app=app,
+                app=self.app,
                 host=self.host,
                 port=self.port,
+                ws_max_size=1024 * 1024 * 1024,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
-                **self.uvicorn_kwargs,
+                **uvicorn_kwargs,
             )
         )
 
         await self.server.setup()
 
     async def shutdown(self):
-        """
-        Free resources allocated when setting up HTTP server
-        """
+        """Free other resources allocated with the server, e.g, gateway object, ..."""
+        await super().shutdown()
         self.server.should_exit = True
         await self.server.shutdown()
 
     async def run_server(self):
-        """Run HTTP server forever"""
+        """Run WebSocket server forever"""
         await self.server.serve()
-
-
-def _install_health_check(app: 'FastAPI', logger):
-    health_check_exists = False
-    for route in app.routes:
-        if getattr(route, 'path', None) == '/' and 'GET' in getattr(
-            route, 'methods', None
-        ):
-            health_check_exists = True
-            logger.warning(
-                'endpoint GET on "/" is used for health checks, make sure it\'s still accessible'
-            )
-
-    if not health_check_exists:
-        from jina.serve.runtimes.gateway.http.models import JinaHealthModel
-
-        @app.get(
-            path='/',
-            summary='Get the health of Jina Gateway service',
-            response_model=JinaHealthModel,
-        )
-        async def _gateway_health():
-            """
-            Get the health of this Gateway service.
-            .. # noqa: DAR201
-
-            """
-            return {}

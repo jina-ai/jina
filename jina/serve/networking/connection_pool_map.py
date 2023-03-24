@@ -25,6 +25,7 @@ class _ConnectionPoolMap:
         histograms: _NetworkingHistograms,
         aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
         tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
+        channel_options: Optional[list] = None,
     ):
         self._logger = logger
         # this maps deployments to shards or heads
@@ -39,6 +40,7 @@ class _ConnectionPoolMap:
             os.unsetenv('https_proxy')
         self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
         self.tracing_client_interceptor = tracing_client_interceptor
+        self.channel_options = channel_options
 
     def add_replica(self, deployment: str, shard_id: int, address: str):
         self._add_connection(deployment, shard_id, address, 'shards')
@@ -141,6 +143,7 @@ class _ConnectionPoolMap:
                 aio_tracing_client_interceptors=self.aio_tracing_client_interceptors,
                 tracing_client_interceptor=self.tracing_client_interceptor,
                 deployment_name=deployment,
+                channel_options=self.channel_options,
             )
             self._deployments[deployment][type][entity_id] = connection_list
 
@@ -150,6 +153,9 @@ class _ConnectionPoolMap:
             )
             self._deployments[deployment][type][entity_id].add_connection(
                 address, deployment_name=deployment
+            )
+            self._logger.debug(
+                f'connection for deployment {deployment}/{type}/{entity_id} to {address} added'
             )
         else:
             self._logger.debug(

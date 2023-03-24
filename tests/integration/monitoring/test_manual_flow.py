@@ -8,14 +8,16 @@ from docarray import Document, DocumentArray
 from jina import Executor, Flow, requests
 from jina.parsers import set_gateway_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.gateway import GatewayRuntime
-from jina.serve.runtimes.worker import WorkerRuntime
+from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
+from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+from jina.serve.runtimes.servers import BaseServer
+
 from tests.helper import _generate_pod_args
 
 
 def _create_worker_runtime(port, name='', executor=None, port_monitoring=None):
     args = _generate_pod_args()
-    args.port = port
+    args.port = [port]
     args.name = name
 
     if port_monitoring:
@@ -25,7 +27,7 @@ def _create_worker_runtime(port, name='', executor=None, port_monitoring=None):
     if executor:
         args.uses = executor
 
-    with WorkerRuntime(args) as runtime:
+    with AsyncNewLoopRuntime(args, req_handler_cls=WorkerRequestHandler) as runtime:
         runtime.run_forever()
 
 
@@ -50,7 +52,7 @@ def _create_gateway_runtime(
         ]
     )
     args.port_monitoring = port_monitoring
-    with GatewayRuntime(args) as runtime:
+    with AsyncNewLoopRuntime(args, req_handler_cls=GatewayRequestHandler) as runtime:
         runtime.run_forever()
 
 
@@ -107,7 +109,7 @@ async def test_kill_worker(port_generator):
 
     worker_process = _create_worker(worker_port, port_monitoring=worker_monitoring_port)
     time.sleep(0.1)
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{worker_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
@@ -117,7 +119,7 @@ async def test_kill_worker(port_generator):
         gateway_port, gateway_monitoring_port, graph_description, pod_addresses, 'grpc'
     )
 
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{gateway_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
@@ -183,7 +185,7 @@ def test_pending_requests_with_connection_error(port_generator, protocol):
 
     time.sleep(1.0)
 
-    GatewayRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{gateway_port}',
         ready_or_shutdown_event=multiprocessing.Event(),

@@ -3,12 +3,13 @@ import os
 import pytest
 import yaml
 
-from jina import Deployment, Gateway
-from jina.constants import __default_executor__, __default_host__
+from jina import Deployment
+from jina.constants import __default_executor__
 from jina.helper import expand_dict, expand_env_var
 from jina.jaml import JAML
 from jina.serve.executors import BaseExecutor
-from jina.serve.runtimes.gateway import HTTPGateway
+from jina.serve.runtimes.gateway.gateway import BaseGateway
+from jina.serve.runtimes.gateway.http import HTTPGateway
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -180,7 +181,7 @@ def test_load_from_dict():
     ],
 )
 def test_load_gateway_external_success(yaml_file, gateway_name):
-    with Gateway.load_config(
+    with BaseGateway.load_config(
         f'yaml/{yaml_file}', runtime_args={'port': [12345]}
     ) as gateway:
         assert gateway.__class__.__name__ == gateway_name
@@ -212,7 +213,7 @@ def test_load_http_gateway_success():
     ],
 )
 def test_load_gateway_override_with(yaml_file, gateway_name):
-    with Gateway.load_config(
+    with BaseGateway.load_config(
         f'yaml/{yaml_file}',
         uses_with={'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
         runtime_args={'port': [12345]},
@@ -224,14 +225,24 @@ def test_load_gateway_override_with(yaml_file, gateway_name):
 
 
 @pytest.mark.parametrize(
-    'yaml_file,expected_replicas,expected_shards,expected_uses',
+    'yaml_file,expected_replicas,expected_shards,expected_uses,grpc_options',
     [
-        ('test-deployment.yml', 2, 3, 'DummyExternalIndexer'),
-        ('test-deployment-exec-config.yml', 3, 2, 'dummy_ext_exec_success.yml'),
+        (
+            'test-deployment.yml',
+            2,
+            3,
+            'DummyExternalIndexer',
+            {'grpc.max_send_message_length': -1},
+        ),
+        ('test-deployment-exec-config.yml', 3, 2, 'dummy_ext_exec_success.yml', None),
     ],
 )
-def test_load_deployment(yaml_file, expected_replicas, expected_shards, expected_uses):
+def test_load_deployment(
+    yaml_file, expected_replicas, expected_shards, expected_uses, grpc_options
+):
     with Deployment.load_config(os.path.join(cur_dir, f'yaml/{yaml_file}')) as dep:
         assert dep.args.replicas == expected_replicas
         assert dep.args.shards == expected_shards
         assert dep.args.uses == expected_uses
+        assert dep.args.grpc_server_options == grpc_options
+        assert dep.args.grpc_channel_options == grpc_options

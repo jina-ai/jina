@@ -1,20 +1,19 @@
 import asyncio
 import json
 import threading
-from typing import TYPE_CHECKING, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 
 import grpc
 from grpc import RpcError
 
 from jina.clients.base import BaseClient
-from jina.clients.helper import callback_exec
+from jina.clients.base.stream_rpc import StreamRpc
+from jina.clients.base.unary_rpc import UnaryRpc
 from jina.excepts import BadClientInput, BadServerFlow, InternalNetworkError
 from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2, jina_pb2_grpc
-from jina.serve.helper import extract_trailing_metadata
-from jina.serve.networking.utils import get_default_grpc_options, get_grpc_channel
-from jina.serve.stream import RequestStreamer
-from jina.types.request.data import Request
+from jina.serve.helper import extract_trailing_metadata, get_default_grpc_options
+from jina.serve.networking.utils import get_grpc_channel
 
 if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
@@ -65,98 +64,6 @@ class GRPCBaseClient(BaseClient):
 
         return False
 
-    async def _stream_rpc(
-        self,
-        channel,
-        req_iter,
-        metadata,
-        on_error,
-        on_done,
-        on_always,
-        continue_on_error,
-        p_bar,
-        **kwargs,
-    ):
-        stub = jina_pb2_grpc.JinaRPCStub(channel)
-        async for resp in stub.Call(
-            req_iter,
-            compression=self.compression,
-            metadata=metadata,
-            credentials=kwargs.get('credentials', None),
-            timeout=kwargs.get('timeout', None),
-        ):
-            callback_exec(
-                response=resp,
-                on_error=on_error,
-                on_done=on_done,
-                on_always=on_always,
-                continue_on_error=continue_on_error,
-                logger=self.logger,
-            )
-            if self.show_progress:
-                p_bar.update()
-            yield resp
-
-    async def _unary_rpc(
-        self,
-        channel,
-        req_iter,
-        metadata,
-        on_error,
-        on_done,
-        on_always,
-        continue_on_error,
-        p_bar,
-        results_in_order,
-        prefetch,
-        **kwargs,
-    ):
-        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
-
-        def _request_handler(
-            request: 'Request',
-        ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
-            return (
-                asyncio.ensure_future(
-                    stub.process_single_data(
-                        request,
-                        compression=self.compression,
-                        metadata=metadata,
-                        credentials=kwargs.get('credentials', None),
-                        timeout=kwargs.get('timeout', None),
-                    )
-                ),
-                None,
-            )
-
-        def _result_handler(resp):
-            callback_exec(
-                response=resp,
-                on_error=on_error,
-                on_done=on_done,
-                on_always=on_always,
-                continue_on_error=continue_on_error,
-                logger=self.logger,
-            )
-            return resp
-
-        streamer_args = vars(self.args)
-        if prefetch:
-            streamer_args['prefetch'] = prefetch
-        streamer = RequestStreamer(
-            request_handler=_request_handler,
-            result_handler=_result_handler,
-            iterate_sync_in_thread=False,
-            logger=self.logger,
-            **streamer_args,
-        )
-        async for response in streamer.stream(
-            request_iterator=req_iter, results_in_order=results_in_order
-        ):
-            if self.show_progress:
-                p_bar.update()
-            yield response
-
     async def _get_results(
         self,
         inputs: 'InputType',
@@ -166,7 +73,7 @@ class GRPCBaseClient(BaseClient):
         compression: Optional[str] = None,
         max_attempts: int = 1,
         initial_backoff: float = 0.5,
-        max_backoff: float = 0.1,
+        max_backoff: float = 2,
         backoff_multiplier: float = 1.5,
         results_in_order: bool = False,
         stream: bool = True,
@@ -184,32 +91,13 @@ class GRPCBaseClient(BaseClient):
             req_iter = self._get_requests(**kwargs)
             continue_on_error = self.continue_on_error
             # while loop with retries, check in which state the `iterator` remains after failure
-            options = get_default_grpc_options()
-            if max_attempts > 1:
-                service_config_json = json.dumps(
-                    {
-                        "methodConfig": [
-                            {
-                                # To apply retry to all methods, put [{}] in the "name" field
-                                "name": [{}],
-                                "retryPolicy": {
-                                    "maxAttempts": max_attempts,
-                                    "initialBackoff": f"{initial_backoff}s",
-                                    "maxBackoff": f"{max_backoff}s",
-                                    "backoffMultiplier": backoff_multiplier,
-                                    "retryableStatusCodes": [
-                                        "UNAVAILABLE",
-                                        "DEADLINE_EXCEEDED",
-                                        "INTERNAL",
-                                    ],
-                                },
-                            }
-                        ]
-                    }
-                )
-                # NOTE: the retry feature will be enabled by default >=v1.40.0
-                options.append(("grpc.enable_retries", 1))
-                options.append(("grpc.service_config", service_config_json))
+            options = client_grpc_options(
+                backoff_multiplier,
+                initial_backoff,
+                max_attempts,
+                max_backoff,
+                self.args.grpc_channel_options,
+            )
 
             metadata = kwargs.pop('metadata', ())
             if results_in_order:
@@ -233,77 +121,52 @@ class GRPCBaseClient(BaseClient):
                     ) as p_bar:
                         try:
                             if stream:
-                                async for resp in self._stream_rpc(
+                                stream_rpc = StreamRpc(
                                     channel=channel,
-                                    req_iter=req_iter,
-                                    metadata=metadata,
-                                    on_error=on_error,
-                                    on_done=on_done,
-                                    on_always=on_always,
                                     continue_on_error=continue_on_error,
+                                    metadata=metadata,
+                                    on_always=on_always,
+                                    on_done=on_done,
+                                    on_error=on_error,
                                     p_bar=p_bar,
+                                    req_iter=req_iter,
+                                    max_attempts=max_attempts,
+                                    backoff_multiplier=backoff_multiplier,
+                                    initial_backoff=initial_backoff,
+                                    max_backoff=max_backoff,
+                                    logger=self.logger,
+                                    show_progress=self.show_progress,
+                                    compression=self.compression,
                                     **kwargs,
-                                ):
-                                    yield resp
+                                )
+                                async for response in stream_rpc.stream_rpc_with_retry():
+                                    yield response
                             else:
-                                async for resp in self._unary_rpc(
+                                unary_rpc = UnaryRpc(
                                     channel=channel,
-                                    req_iter=req_iter,
-                                    metadata=metadata,
-                                    on_error=on_error,
-                                    on_done=on_done,
-                                    on_always=on_always,
                                     continue_on_error=continue_on_error,
+                                    metadata=metadata,
+                                    on_always=on_always,
+                                    on_done=on_done,
+                                    on_error=on_error,
                                     p_bar=p_bar,
-                                    results_in_order=results_in_order,
+                                    req_iter=req_iter,
+                                    max_attempts=max_attempts,
+                                    backoff_multiplier=backoff_multiplier,
+                                    initial_backoff=initial_backoff,
+                                    max_backoff=max_backoff,
+                                    logger=self.logger,
+                                    show_progress=self.show_progress,
+                                    compression=self.compression,
+                                    client_args=self.args,
                                     prefetch=prefetch,
+                                    results_in_order=results_in_order,
                                     **kwargs,
-                                ):
-                                    yield resp
-
-                        except (
-                            grpc.aio._call.AioRpcError,
-                            InternalNetworkError,
-                        ) as err:
-                            my_code = err.code()
-                            my_details = err.details()
-                            trailing_metadata = extract_trailing_metadata(err)
-                            msg = f'gRPC error: {my_code} {my_details}'
-                            if trailing_metadata:
-                                msg = f'gRPC error: {my_code} {my_details}\n{trailing_metadata}'
-
-                            if my_code == grpc.StatusCode.UNAVAILABLE:
-                                self.logger.error(
-                                    f'{msg}\nThe ongoing request is terminated as the server is not available or closed already.'
                                 )
-                                raise ConnectionError(my_details)
-                            if my_code == grpc.StatusCode.NOT_FOUND:
-                                self.logger.error(
-                                    f'{msg}\nThe ongoing request is terminated as a resource cannot be found.'
-                                )
-                                raise ConnectionError(my_details)
-                            elif my_code == grpc.StatusCode.DEADLINE_EXCEEDED:
-                                self.logger.error(
-                                    f'{msg}\nThe ongoing request is terminated due to a server-side timeout.'
-                                )
-                                raise ConnectionError(my_details)
-                            elif my_code == grpc.StatusCode.INTERNAL:
-                                self.logger.error(
-                                    f'{msg}\ninternal error on the server side'
-                                )
-                                raise err
-                            elif (
-                                my_code == grpc.StatusCode.UNKNOWN
-                                and 'asyncio.exceptions.TimeoutError' in my_details
-                            ):
-                                raise BadClientInput(
-                                    f'{msg}\n'
-                                    'often the case is that you define/send a bad input iterator to jina, '
-                                    'please double check your input iterator'
-                                ) from err
-                            else:
-                                raise BadServerFlow(msg) from err
-
+                                async for response in unary_rpc.unary_rpc_with_retry():
+                                    yield response
+                        except (grpc.aio.AioRpcError, InternalNetworkError) as err:
+                            await self._handle_error_and_metadata(err)
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
         except asyncio.CancelledError as ex:
@@ -312,3 +175,99 @@ class GRPCBaseClient(BaseClient):
         except:
             # Not sure why, adding this line helps in fixing a hanging test
             raise
+
+    async def _handle_error_and_metadata(self, err):
+        my_code = err.code()
+        my_details = err.details()
+        trailing_metadata = extract_trailing_metadata(err)
+        msg = f'gRPC error: {my_code} {my_details}\n{trailing_metadata}'
+        if my_code == grpc.StatusCode.UNAVAILABLE:
+            self.logger.error(
+                f'{msg}\nThe ongoing request is terminated as the server is not available or closed already.'
+            )
+            raise ConnectionError(msg)
+        if my_code == grpc.StatusCode.NOT_FOUND:
+            self.logger.error(
+                f'{msg}\nThe ongoing request is terminated as a resource cannot be found.'
+            )
+            raise ConnectionError(msg)
+        elif my_code == grpc.StatusCode.DEADLINE_EXCEEDED:
+            self.logger.error(
+                f'{msg}\nThe ongoing request is terminated due to a server-side timeout.'
+            )
+            raise ConnectionError(msg)
+        elif my_code == grpc.StatusCode.INTERNAL:
+            self.logger.error(f'{msg}\ninternal error on the server side')
+            raise err
+        elif (
+            my_code == grpc.StatusCode.UNKNOWN
+            and 'asyncio.exceptions.TimeoutError' in my_details
+        ):
+            raise BadClientInput(
+                f'{msg}\n'
+                'often the case is that you define/send a bad input iterator to jina, '
+                'please double check your input iterator'
+            ) from err
+        else:
+            raise BadServerFlow(msg) from err
+
+
+def client_grpc_options(
+    backoff_multiplier: float,
+    initial_backoff: float,
+    max_attempts: int,
+    max_backoff: float,
+    args_channel_options: Optional[Dict[str, Any]],
+) -> List[Tuple[str, Any]]:
+    """
+    Builds grpc options for the client by taking into account the retry parameters, default gRPC options and additional gRPC options.
+    :param max_attempts: Maximum number of attempts that are allowed.
+    :param backoff_multiplier: Factor that will be raised to the exponent of (attempt - 1) for calculating the backoff wait time.
+    :param initial_backoff: The backoff time on the first error. This will be multiplied by the backoff_multiplier exponent for subsequent wait time calculations.
+    :param max_backoff: The maximum backoff wait time.
+    :param args_channel_options: additional gRPC options that must be merged with the default options
+    :return: List of gRPC options
+    """
+    grpc_options = get_default_grpc_options()
+
+    if args_channel_options:
+        grpc_options.extend(list(args_channel_options))
+
+    if max_attempts > 1:
+        options_with_retry_config = remove_grpc_service_config(grpc_options)
+        service_config_json = json.dumps(
+            {
+                "methodConfig": [
+                    {
+                        # To apply retry to all methods, put [{}] in the "name" field
+                        "name": [{}],
+                        "retryPolicy": {
+                            "maxAttempts": max_attempts,
+                            "initialBackoff": f"{initial_backoff}s",
+                            "maxBackoff": f"{max_backoff}s",
+                            "backoffMultiplier": backoff_multiplier,
+                            "retryableStatusCodes": [
+                                "UNAVAILABLE",
+                                "DEADLINE_EXCEEDED",
+                                "INTERNAL",
+                            ],
+                        },
+                    }
+                ]
+            }
+        )
+        # NOTE: the retry feature will be enabled by default >=v1.40.0
+        options_with_retry_config.append(("grpc.enable_retries", 1))
+        options_with_retry_config.append(("grpc.service_config", service_config_json))
+        return options_with_retry_config
+
+    return grpc_options
+
+
+def remove_grpc_service_config(options: List[Tuple[str, Any]]) -> List[Tuple[str, Any]]:
+    """
+    Removes the 'grpc.service_config' configuration from the list of options.
+    :param options: List of gRPC options
+    :return: List of gRPC options
+    """
+    return [tup for tup in options if tup[0] != 'grpc.service_config']

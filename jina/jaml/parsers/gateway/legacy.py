@@ -1,7 +1,8 @@
 from typing import Any, Dict, Optional, Type
 
 from jina.jaml.parsers.base import BaseLegacyParser
-from jina.serve.gateway import BaseGateway
+from jina.serve.runtimes.gateway.gateway import BaseGateway
+from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 
 
 class GatewayLegacyParser(BaseLegacyParser):
@@ -19,7 +20,6 @@ class GatewayLegacyParser(BaseLegacyParser):
         :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config
         :return: the Gateway YAML parser given the syntax version number
         """
-        from jina.logging.predefined import default_logger
 
         data['metas'] = {}
 
@@ -58,9 +58,10 @@ class GatewayLegacyParser(BaseLegacyParser):
             metas=data.get('metas', {}),
             requests=data.get('requests', {}),
             runtime_args=runtime_args,
+            req_handler_cls=GatewayRequestHandler
         )
-        cls._init_from_yaml = False
 
+        cls._init_from_yaml = False
         obj.is_updated = False
         return obj
 
