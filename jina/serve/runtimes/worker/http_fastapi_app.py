@@ -25,11 +25,11 @@ def get_fastapi_app(
         )
         async def post(body: input_model, response: Response):
             req = DataRequest()
-            req.data.docs = DocumentArray(body.docs)
+            req.data.docs = DocumentArray.from_pydantic_model(body.data)
             req.parameters = body.parameters
             req.header.exec_endpoint = endpoint_path
             resp = await caller(req)
-            return output_model(docs=resp.docs.to_dict(), parameters=resp.parameters)
+            return output_model(data=resp.docs.to_dict(), parameters=resp.parameters)
 
     for endpoint, input_output_map in request_models_map.items():
         if endpoint != '_jina_dry_run_':
@@ -38,13 +38,13 @@ def get_fastapi_app(
 
             endpoint_input_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_input_model',
-                docs=(List[input_doc_model], []),
+                data=(List[input_doc_model], []),
                 parameters=(Optional[Dict], None)
             )
 
             endpoint_output_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_output_model',
-                docs=(List[output_doc_model], []),
+                data=(List[output_doc_model], []),
                 parameters=(Optional[Dict], None)
             )
 

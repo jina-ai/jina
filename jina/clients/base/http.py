@@ -18,6 +18,22 @@ if TYPE_CHECKING:  # pragma: no cover
 class HTTPBaseClient(BaseClient):
     """A MixIn for HTTP Client."""
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._endpoints = []
+
+    async def _get_endpoints_from_openapi(self):
+        import aiohttp
+        import json
+
+        proto = 'https' if self.args.tls else 'http'
+        target_url = f'{proto}://{self.args.host}:{self.args.port}/openapi.json'
+        async with aiohttp.ClientSession() as session:
+            async with session.get(target_url) as response:
+                content = await response.read()
+                openapi_response = json.loads(content.decode())
+                self._endpoints = [path.strip('/') for path in openapi_response['paths'].keys()]
+
     async def _is_flow_ready(self, **kwargs) -> bool:
         """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
 
@@ -57,18 +73,18 @@ class HTTPBaseClient(BaseClient):
         return False
 
     async def _get_results(
-        self,
-        inputs: 'InputType',
-        on_done: 'CallbackFnType',
-        on_error: Optional['CallbackFnType'] = None,
-        on_always: Optional['CallbackFnType'] = None,
-        max_attempts: int = 1,
-        initial_backoff: float = 0.5,
-        max_backoff: float = 0.1,
-        backoff_multiplier: float = 1.5,
-        results_in_order: bool = False,
-        prefetch: Optional[int] = None,
-        **kwargs,
+            self,
+            inputs: 'InputType',
+            on_done: 'CallbackFnType',
+            on_error: Optional['CallbackFnType'] = None,
+            on_always: Optional['CallbackFnType'] = None,
+            max_attempts: int = 1,
+            initial_backoff: float = 0.5,
+            max_backoff: float = 0.1,
+            backoff_multiplier: float = 1.5,
+            results_in_order: bool = False,
+            prefetch: Optional[int] = None,
+            **kwargs,
     ):
         """
         :param inputs: the callable
@@ -89,15 +105,21 @@ class HTTPBaseClient(BaseClient):
 
         self.inputs = inputs
         request_iterator = self._get_requests(**kwargs)
+        on = kwargs.get('on', '/post')
+        if len(self._endpoints) == 0:
+            await self._get_endpoints_from_openapi()
 
         async with AsyncExitStack() as stack:
             cm1 = ProgressBar(
-                total_length=self._inputs_length, disable=not (self.show_progress)
+                total_length=self._inputs_length, disable=not self.show_progress
             )
             p_bar = stack.enter_context(cm1)
 
             proto = 'https' if self.args.tls else 'http'
-            url = f'{proto}://{self.args.host}:{self.args.port}/post'
+            if on.strip('/') in self._endpoints:
+                url = f'{proto}://{self.args.host}:{self.args.port}/{on.strip("/")}'
+            else:
+                url = f'{proto}://{self.args.host}:{self.args.port}/post'
             iolet = await stack.enter_async_context(
                 HTTPClientlet(
                     url=url,
@@ -112,7 +134,7 @@ class HTTPBaseClient(BaseClient):
             )
 
             def _request_handler(
-                request: 'Request',
+                    request: 'Request',
             ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
                 """
                 For HTTP Client, for each request in the iterator, we `send_message` using
@@ -135,7 +157,7 @@ class HTTPBaseClient(BaseClient):
                 **streamer_args,
             )
             async for response in streamer.stream(
-                request_iterator=request_iterator, results_in_order=results_in_order
+                    request_iterator=request_iterator, results_in_order=results_in_order
             ):
                 r_status = response.status
 

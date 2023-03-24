@@ -148,18 +148,11 @@ class GatewayRequestHandler:
 
     async def load_balance(self, request):
         # TODO: use `self._request_handler.load_balance` so that this server can be used with head and gateway request handlers
-        print(f' LOAD BALANCE')
         import aiohttp
         from aiohttp import web
 
         target_server = next(self.load_balancer_servers)
-        print(f'{target_server}')
-        print(f' request {request} => {type(request)} ')
-        print(f' request path {request.path_qs}')
-        print(f' request method {request.method}')
         target_url = f'{target_server}{request.path_qs}'
-        # from aiohttp.web_request import Request
-        # aiohttp.web_request.Request
 
         try:
             async with aiohttp.ClientSession() as session:
@@ -169,7 +162,6 @@ class GatewayRequestHandler:
                         return web.Response(body=content, status=response.status, content_type=response.content_type)
                 elif request.method == 'POST':
                     d = await request.read()
-                    print(f' d {d}')
                     import json
                     async with session.post(url=target_url, json=json.loads(d.decode())) as response:
                         content = await response.read()
