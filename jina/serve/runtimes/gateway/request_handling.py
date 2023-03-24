@@ -6,6 +6,7 @@ from jina.helper import get_full_version
 from jina.proto import jina_pb2
 from jina.types.request.data import DataRequest
 from jina.types.request.status import StatusMessage
+from jina.enums import ProtocolType
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import SimpleNamespace
@@ -43,53 +44,46 @@ class GatewayRequestHandler:
         deployments_metadata = json.loads(self.runtime_args.deployments_metadata)
         deployments_no_reduce = json.loads(self.runtime_args.deployments_no_reduce)
 
-        if not works_as_load_balancer:
-            self.streamer = GatewayStreamer(
-                graph_representation=graph_description,
-                executor_addresses=deployments_addresses,
-                graph_conditions=graph_conditions,
-                deployments_metadata=deployments_metadata,
-                deployments_no_reduce=deployments_no_reduce,
-                timeout_send=self.runtime_args.timeout_send,
-                retries=self.runtime_args.retries,
-                compression=self.runtime_args.compression,
-                runtime_name=self.runtime_args.runtime_name,
-                prefetch=self.runtime_args.prefetch,
-                logger=self.logger,
-                metrics_registry=metrics_registry,
-                meter=meter,
-                aio_tracing_client_interceptors=aio_tracing_client_interceptors,
-                tracing_client_interceptor=tracing_client_interceptor,
-            )
+        self.streamer = GatewayStreamer(
+            graph_representation=graph_description,
+            executor_addresses=deployments_addresses,
+            graph_conditions=graph_conditions,
+            deployments_metadata=deployments_metadata,
+            deployments_no_reduce=deployments_no_reduce,
+            timeout_send=self.runtime_args.timeout_send,
+            retries=self.runtime_args.retries,
+            compression=self.runtime_args.compression,
+            runtime_name=self.runtime_args.runtime_name,
+            prefetch=self.runtime_args.prefetch,
+            logger=self.logger,
+            metrics_registry=metrics_registry,
+            meter=meter,
+            aio_tracing_client_interceptors=aio_tracing_client_interceptors,
+            tracing_client_interceptor=tracing_client_interceptor,
+        )
 
-            GatewayStreamer._set_env_streamer_args(
-                graph_representation=graph_description,
-                executor_addresses=deployments_addresses,
-                graph_conditions=graph_conditions,
-                deployments_metadata=deployments_metadata,
-                deployments_no_reduce=deployments_no_reduce,
-                timeout_send=self.runtime_args.timeout_send,
-                retries=self.runtime_args.retries,
-                compression=self.runtime_args.compression,
-                runtime_name=self.runtime_args.runtime_name,
-                prefetch=self.runtime_args.prefetch,
-            )
+        GatewayStreamer._set_env_streamer_args(
+            graph_representation=graph_description,
+            executor_addresses=deployments_addresses,
+            graph_conditions=graph_conditions,
+            deployments_metadata=deployments_metadata,
+            deployments_no_reduce=deployments_no_reduce,
+            timeout_send=self.runtime_args.timeout_send,
+            retries=self.runtime_args.retries,
+            compression=self.runtime_args.compression,
+            runtime_name=self.runtime_args.runtime_name,
+            prefetch=self.runtime_args.prefetch,
+        )
 
-            self.executor = {
-                executor_name: _ExecutorStreamer(
-                    self.streamer._connection_pool, executor_name=executor_name
-                )
-                for executor_name in deployments_addresses.keys()
-            }
-        else:
-            self.streamer = None
-            self.executor = {}
+        self.executor = {
+            executor_name: _ExecutorStreamer(
+                self.streamer._connection_pool, executor_name=executor_name
+            )
+            for executor_name in deployments_addresses.keys()
+        }
         servers = []
         for address in deployments_addresses.values():
-            if isinstance(address, list):
-                servers.extend(address)
-            else:
-                servers.append(address)
+            servers.extend(address[ProtocolType.HTTP.to_string()])
         self.load_balancer_servers = itertools.cycle(servers)
         self.warmup_stop_event = threading.Event()
         self.warmup_task = None

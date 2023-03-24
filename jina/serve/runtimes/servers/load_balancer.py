@@ -40,6 +40,7 @@ class LoadBalancingServer(BaseServer):
 
     async def shutdown(self):
         await super().shutdown()
+        await self._request_handler.close()
 
     @property
     def _should_exit(self):

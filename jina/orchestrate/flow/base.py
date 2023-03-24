@@ -686,7 +686,7 @@ class Flow(
         for node, deployment in self._deployment_nodes.items():
             if node == GATEWAY_NAME:
                 continue
-            graph_dict[node] = deployment._get_connection_list()
+            graph_dict[node] = deployment._get_connection_list_for_flow()
 
         return graph_dict
 

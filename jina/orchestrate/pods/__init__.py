@@ -124,7 +124,7 @@ class BasePod(ABC):
     def __init__(self, args: 'argparse.Namespace'):
         self.args = args
         if self.args.pod_role == PodRoleType.GATEWAY:
-            _update_gateway_args(self.args)
+            _update_gateway_args(self.args, gateway_load_balancer=getattr(self.args, 'gateway_load_balancer', False))
         self.args.parallel = getattr(self.args, 'shards', 1)
         self.name = self.args.name or self.__class__.__name__
         self.is_forked = False

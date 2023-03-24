@@ -16,12 +16,11 @@ class CompositeServer(BaseServer):
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
-
         from jina.parsers.helper import _get_gateway_class
 
         self.servers: List[BaseServer] = []
         for port, protocol in zip(self.ports, self.protocols):
-            server_cls = _get_gateway_class(protocol)
+            server_cls = _get_gateway_class(protocol, works_as_load_balancer=self.works_as_load_balancer)
             # ignore monitoring and tracing args since they are not copyable
             ignored_attrs = [
                 'metrics_registry',

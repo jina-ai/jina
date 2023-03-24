@@ -311,7 +311,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         **kwargs,
     ):
         super().__init__()
-
         self._gateway_kwargs = {}
         self._include_gateway = include_gateway
         if self._include_gateway:
@@ -341,6 +340,14 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         # polling only works for shards, if there are none, polling will be ignored
         if getattr(args, 'shards', 1) == 1:
             self.args.polling = PollingType.ANY
+
+        if getattr(args, 'shards', 1) > 1 and ProtocolType.HTTP in self.args.protocol and self.args.deployment_role != DeploymentRoleType.GATEWAY:
+            raise RuntimeError(f'It is not supported to have {ProtocolType.HTTP.to_string()} deployment for '
+                               f'Deployments with more than one shard')
+
+        if ProtocolType.WEBSOCKET in self.args.protocol and self.args.deployment_role != DeploymentRoleType.GATEWAY:
+            raise RuntimeError(f'It is not supported to have {ProtocolType.WEBSOCKET.to_string()} deployment for '
+                               f'Deployments with more than one shard')
         self.needs = (
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
@@ -362,7 +369,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 raise ValueError(
                     f'Number of hosts ({len(self.args.host)}) does not match the number of replicas ({self.args.replicas})'
                 )
-            else:
+            elif self.args.external:
                 self.args.replicas = len(self.ext_repl_ports)
 
         self.uses_before_pod = None
@@ -381,7 +388,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             args.protocol = self.args.protocol
 
             args.deployments_addresses = json.dumps(
-                {'executor': self._get_connection_list()}
+                {'executor': self._get_connection_list_for_single_executor()}
             )
             args.graph_description = (
                 '{"start-gateway": ["executor"], "executor": ["end-gateway"]}'
@@ -394,7 +401,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
 
-    def _get_connection_list(self) -> List[str]:
+    def _get_connection_list_for_flow(self) -> List[str]:
         if self.head_args:
             # add head information
             return [f'{self.protocol}://{self.host}:{self.head_port}']
@@ -410,6 +417,25 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             return [
                 f'{self.protocol}://{host}:{port}' for host, port in zip(hosts, ports)
             ]
+
+    def _get_connection_list_for_single_executor(self) -> Union[List[str], Dict[str, List[str]]]:
+        if self.head_args:
+            # add head information
+            return [f'{self.protocol}://{self.host}:{self.head_port}']
+        else:
+            # there is no head, add the worker connection information instead
+            ports_dict = defaultdict(list)
+            for replica_pod_arg in self.pod_args['pods'][0]:
+                for protocol, port in zip(replica_pod_arg.protocol, replica_pod_arg.port):
+                    ports_dict[str(protocol)].append(port)
+
+            host = __docker_host__ if host_is_local(self.args.host[0]) and in_docker() and self.dockerized_uses else self.args.host[0]
+
+            connection_dict = {}
+            for protocol, ports in ports_dict.items():
+                connection_dict[protocol] = [f'{protocol}://{host}:{port}' for port in ports]
+
+            return connection_dict
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
@@ -1149,10 +1175,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             replica_args = []
             for replica_id in range(replicas):
                 _args = copy.deepcopy(self.args)
-                if shards > 1:
-                    _args.protocol = [
-                        ProtocolType.GRPC
-                    ]  # If there are shards, protocol only matters for Head
                 if self.args.deployment_role == DeploymentRoleType.GATEWAY:
                     _args.replicas = replicas
                 _args.shard_id = shard_id
@@ -1196,7 +1218,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                         )
                         # if there are no shards/replicas, we dont need to distribute ports randomly
                         # we should rather use the pre assigned one
-                        _args.port = [random_port()]
+                        _args.port = [random_port() for _ in range(len(self.args.protocol))]
                     elif shards > 1:
                         port_monitoring_index = (
                             replica_id + replicas * shard_id + 1
