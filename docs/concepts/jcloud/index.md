@@ -5,7 +5,7 @@
 ```{toctree}
 :hidden:
 
-configurations
+configuration
 ```
 
 ```{figure} https://docs.jina.ai/_images/jcloud-banner.png
@@ -309,9 +309,9 @@ jc scale good-martin-ca6bfdef84 --executor executor0 --replicas 2
 :width: 70%
 ```
 
-## Configurations
+## Configuration
 
-Please refer to {ref}`Configurations <jcloud-configurations>` for configuring the Flow on Jina AI Cloud.
+Please refer to {ref}`Configuration <jcloud-configuration>` for configuring the Flow on Jina AI Cloud.
 
 ## Restrictions
 
