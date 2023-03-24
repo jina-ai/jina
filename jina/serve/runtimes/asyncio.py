@@ -1,27 +1,23 @@
+import argparse
+import asyncio
 import signal
 import threading
 import time
-import argparse
-import asyncio
-
-from jina.logging.logger import JinaLogger
-from jina.constants import __windows__
-from jina.excepts import RuntimeTerminated
-
 from typing import TYPE_CHECKING, Optional, Union
 
-from jina.excepts import PortAlreadyUsed
-from jina.helper import ArgNamespace, is_port_free, send_telemetry_event
+from jina.constants import __windows__
+from jina.excepts import PortAlreadyUsed, RuntimeTerminated
+from jina.helper import ArgNamespace, is_port_free, random_ports, send_telemetry_event
+from jina.logging.logger import JinaLogger
 from jina.parsers import set_gateway_parser
 from jina.parsers.helper import _set_gateway_uses
-from jina.serve.runtimes.gateway.gateway import BaseGateway
 
 # Keep these imports even if not used, since YAML parser needs to find them in imported modules
 from jina.serve.runtimes.gateway.composite import CompositeGateway
+from jina.serve.runtimes.gateway.gateway import BaseGateway
 from jina.serve.runtimes.gateway.grpc import GRPCGateway
 from jina.serve.runtimes.gateway.http import HTTPGateway
 from jina.serve.runtimes.gateway.websocket import WebSocketGateway
-from jina.helper import random_ports
 
 if TYPE_CHECKING:  # pragma: no cover
     import multiprocessing
@@ -101,17 +97,19 @@ class AsyncNewLoopRuntime:
         self.logger.close()
         self._stop_time = time.time()
         self._send_telemetry_event(
-            event='stop',
-            extra_kwargs={'duration': self._stop_time - self._start_time})
+            event='stop', extra_kwargs={'duration': self._stop_time - self._start_time}
+        )
 
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPod`"""
         # threads are not using asyncio.Event, but threading.Event
-        if isinstance(self.is_cancel, asyncio.Event) and not hasattr(self.server, '_should_exit'):
+        if isinstance(self.is_cancel, asyncio.Event) and not hasattr(
+            self.server, '_should_exit'
+        ):
             await self.is_cancel.wait()
         else:
             while not self.is_cancel.is_set() and not getattr(
-                    self.server, '_should_exit', False
+                self.server, '_should_exit', False
             ):
                 await asyncio.sleep(0.1)
 
@@ -166,45 +164,28 @@ class AsyncNewLoopRuntime:
                 ),
                 uses_metas={},
                 runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
-                    'name': self.args.name,
-                    'port': self.args.port,
-                    'protocol': self.args.protocol,
-                    'host': self.args.host,
-                    'graph_description': self.args.graph_description,
-                    'graph_conditions': self.args.graph_conditions,
-                    'deployments_addresses': self.args.deployments_addresses,
-                    'deployments_metadata': self.args.deployments_metadata,
-                    'deployments_no_reduce': self.args.deployments_no_reduce,
-                    'timeout_send': self.timeout_send,
-                    'retries': self.args.retries,
-                    'compression': self.args.compression,
-                    'runtime_name': self.args.name,
-                    'prefetch': self.args.prefetch,
-                    'monitoring': self.args.monitoring,
-                    'port_monitoring': self.args.port_monitoring,
-                    'tracing': self.args.tracing,
-                    'traces_exporter_host': self.args.traces_exporter_host,
-                    'traces_exporter_port': self.args.traces_exporter_port,
-                    'metrics': self.args.metrics,
-                    'metrics_exporter_host': self.args.metrics_exporter_host,
-                    'metrics_exporter_port': self.args.metrics_exporter_port,
-                    'log_config': self.args.log_config,
+                    **vars(self.args),
                     'default_port': getattr(self.args, 'default_port', False),
-                    'gateway_load_balancer': self.gateway_load_balancer
+                    'gateway_load_balancer': self.gateway_load_balancer,
+                    'timeout_send': self.timeout_send,
                 },
                 py_modules=self.args.py_modules,
                 extra_search_paths=self.args.extra_search_paths,
             )
 
         elif not hasattr(self.args, 'protocol') or (
-                len(self.args.protocol) == 1 and self.args.protocol[0] == ProtocolType.GRPC):
+            len(self.args.protocol) == 1 and self.args.protocol[0] == ProtocolType.GRPC
+        ):
             from jina.serve.runtimes.servers.grpc import GRPCServer
-            return GRPCServer(name=self.args.name,
-                              runtime_args=self.args,
-                              req_handler_cls=self.req_handler_cls,
-                              grpc_server_options=self.args.grpc_server_options,
-                              ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
-                              ssl_certfile=getattr(self.args, 'ssl_certfile', None))
+
+            return GRPCServer(
+                name=self.args.name,
+                runtime_args=self.args,
+                req_handler_cls=self.req_handler_cls,
+                grpc_server_options=self.args.grpc_server_options,
+                ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
+                ssl_certfile=getattr(self.args, 'ssl_certfile', None),
+            )
 
         elif len(self.args.protocol) == 1 and self.args.protocol[0] == ProtocolType.HTTP:
             from jina.serve.runtimes.servers.http import HTTPServer  # we need a concrete implementation of this
@@ -254,8 +235,13 @@ class AsyncNewLoopRuntime:
 
         extra_kwargs = extra_kwargs or {}
 
-        send_telemetry_event(event=event, obj_cls_name=runtime_cls_name, entity_id=self._entity_id, **gateway_kwargs,
-                             **extra_kwargs)
+        send_telemetry_event(
+            event=event,
+            obj_cls_name=runtime_cls_name,
+            entity_id=self._entity_id,
+            **gateway_kwargs,
+            **extra_kwargs,
+        )
 
     async def async_setup(self):
         """

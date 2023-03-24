@@ -12,15 +12,15 @@ from docarray import Document, DocumentArray
 from jina.clients.request import request_generator
 from jina.enums import PollingType
 from jina.proto import jina_pb2_grpc
+from jina.serve.helper import get_default_grpc_options
 from jina.serve.networking.utils import (
     get_available_services,
-    get_default_grpc_options,
     send_request_sync,
     send_requests_sync,
 )
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.servers import BaseServer
 from jina.serve.runtimes.head.request_handling import HeaderRequestHandler
+from jina.serve.runtimes.servers import BaseServer
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
 from tests.helper import _generate_pod_args
@@ -93,7 +93,9 @@ def test_uses_before_uses_after():
 
     assert handle_queue.empty()
 
-    result = send_request_sync(_create_test_data_message(), f'{args.host}:{args.port[0]}')
+    result = send_request_sync(
+        _create_test_data_message(), f'{args.host}:{args.port[0]}'
+    )
     assert result
     assert _queue_length(handle_queue) == 5  # uses_before + 3 workers + uses_after
     assert len(result.response.docs) == 1
@@ -308,8 +310,14 @@ def _create_runtime(args):
 
         if not hasattr(runtime_args, 'name') or not runtime_args.name:
             runtime_args.name = 'testHead'
-        with AsyncNewLoopRuntime(runtime_args, cancel_event=cancel_event, req_handler_cls=HeaderRequestHandler) as runtime:
-            runtime.server._request_handler.connection_pool._send_requests = _send_requests_mock
+        with AsyncNewLoopRuntime(
+            runtime_args,
+            cancel_event=cancel_event,
+            req_handler_cls=HeaderRequestHandler,
+        ) as runtime:
+            runtime.server._request_handler.connection_pool._send_requests = (
+                _send_requests_mock
+            )
             runtime.run_forever()
 
     runtime_thread = Process(

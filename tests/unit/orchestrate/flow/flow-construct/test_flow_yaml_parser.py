@@ -118,7 +118,11 @@ def test_dump_load_build(monkeypatch):
         - name: executor3
           uses: docker://exec
           shards: 2
-    '''
+          grpc_server_options: 
+            'grpc.max_send_message_length': -1
+          grpc_channel_options: 
+            'grpc.keepalive_time_ms': 9999
+            '''
     ).build()
 
     f1: Flow = Flow.load_config(JAML.dump(f)).build()
@@ -127,6 +131,11 @@ def test_dump_load_build(monkeypatch):
     assert f.protocol == f1.protocol
     assert f['executor1'].args.port == f1['executor1'].args.port
     assert f['executor2'].args.host == f1['executor2'].args.host
+    assert f['executor3'].args.grpc_server_options == {
+        'grpc.max_send_message_length': -1
+    }
+    assert f['executor3'].args.grpc_channel_options == {'grpc.keepalive_time_ms': 9999}
+
     # this was set during `load_config`
     assert f['executor2'].args.port == f1['executor2'].args.port
 

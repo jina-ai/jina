@@ -6,20 +6,20 @@ from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
 
 from jina.proto import jina_pb2, jina_pb2_grpc
-from jina.serve.runtimes.servers import BaseServer
-from jina.serve.runtimes.helper import _get_grpc_server_options
+from jina.serve.helper import get_server_side_grpc_options
 from jina.serve.networking.utils import send_health_check_async, send_health_check_sync
+from jina.serve.runtimes.servers import BaseServer
 
 
 class GRPCServer(BaseServer):
     """GRPC Server implementation"""
 
     def __init__(
-            self,
-            grpc_server_options: Optional[dict] = None,
-            ssl_keyfile: Optional[str] = None,
-            ssl_certfile: Optional[str] = None,
-            **kwargs,
+        self,
+        grpc_server_options: Optional[dict] = None,
+        ssl_keyfile: Optional[str] = None,
+        ssl_certfile: Optional[str] = None,
+        **kwargs,
     ):
         """Initialize the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
@@ -29,9 +29,7 @@ class GRPCServer(BaseServer):
         """
         super().__init__(**kwargs)
         self.grpc_server_options = grpc_server_options
-        self.grpc_tracing_server_interceptors = (
-            self.aio_tracing_server_interceptors()
-        )
+        self.grpc_tracing_server_interceptors = self.aio_tracing_server_interceptors()
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
         self.health_servicer = health.aio.HealthServicer()
@@ -41,23 +39,33 @@ class GRPCServer(BaseServer):
         setup GRPC server
         """
         self.server = grpc.aio.server(
-            options=_get_grpc_server_options(self.grpc_server_options),
+            options=get_server_side_grpc_options(self.grpc_server_options),
             interceptors=self.grpc_tracing_server_interceptors,
         )
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self._request_handler, self.server)
 
-        jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(self._request_handler, self.server)
+        jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
+            self._request_handler, self.server
+        )
 
         if hasattr(self._request_handler, 'endpoint_discovery'):
-            jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server(self._request_handler, self.server)
+            jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server(
+                self._request_handler, self.server
+            )
 
         if hasattr(self._request_handler, 'process_data'):
-            jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server(self._request_handler, self.server)
+            jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server(
+                self._request_handler, self.server
+            )
 
         if hasattr(self._request_handler, 'dry_run'):
-            jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self._request_handler, self.server)
-        jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self._request_handler, self.server)
+            jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(
+                self._request_handler, self.server
+            )
+        jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(
+            self._request_handler, self.server
+        )
 
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,
@@ -91,7 +99,7 @@ class GRPCServer(BaseServer):
             )
             self.server.add_secure_port(bind_addr, server_credentials)
         elif (
-                self.ssl_keyfile != self.ssl_certfile
+            self.ssl_keyfile != self.ssl_certfile
         ):  # if we have only ssl_keyfile and not ssl_certfile or vice versa
             raise ValueError(
                 f"you can't pass a ssl_keyfile without a ssl_certfile and vice versa"
@@ -130,7 +138,7 @@ class GRPCServer(BaseServer):
 
             response = send_health_check_sync(ctrl_address, timeout=timeout)
             return (
-                    response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
+                response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
             )
         except RpcError:
             return False
@@ -149,7 +157,7 @@ class GRPCServer(BaseServer):
 
             response = await send_health_check_async(ctrl_address, timeout=timeout)
             return (
-                    response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
+                response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
             )
         except RpcError:
             return False

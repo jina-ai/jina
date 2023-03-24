@@ -2,6 +2,9 @@
 
 from jina.constants import __default_host__
 from jina.parsers.helper import CastHostAction, KVAppendAction, add_arg_group
+from jina.parsers.orchestrate.runtimes.grpc_channel import (
+    mixin_grpc_channel_options_parser,
+)
 from jina.parsers.orchestrate.runtimes.runtime import mixin_base_runtime_parser
 
 
@@ -167,6 +170,7 @@ which should be structured as a python package.
     )
 
     mixin_base_runtime_parser(gp)
+    mixin_grpc_channel_options_parser(gp)
     mixin_gateway_streamer_parser(gp)
 
 
