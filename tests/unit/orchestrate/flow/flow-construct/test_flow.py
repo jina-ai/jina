@@ -657,7 +657,7 @@ def _validate_flow(f):
 def test_set_port_deployment(port_generator):
     port = port_generator()
     with Flow().add(uses=Executor, port=port) as f:
-        assert int(f._deployment_nodes['executor0'].pod_args['pods'][0][0].port) == port
+        assert int(f._deployment_nodes['executor0'].pod_args['pods'][0][0].port[0]) == port
         f.index(inputs=[])
 
 

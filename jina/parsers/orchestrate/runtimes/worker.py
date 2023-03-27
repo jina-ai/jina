@@ -1,7 +1,13 @@
 """Argparser module for WorkerRuntime"""
 
 from jina.parsers.helper import KVAppendAction, add_arg_group
-from jina.parsers.orchestrate.runtimes.runtime import mixin_base_runtime_parser, mixin_raft_parser
+from jina.parsers.orchestrate.runtimes.grpc_channel import (
+    mixin_grpc_channel_options_parser,
+)
+from jina.parsers.orchestrate.runtimes.runtime import (
+    mixin_base_runtime_parser,
+    mixin_raft_parser,
+)
 
 
 def mixin_worker_runtime_parser(parser):
@@ -108,8 +114,9 @@ Defaults to retaining whatever type is returned by the Executor.
         action='store_true',
         default=False,
         help='Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor '
-             'itself by operating on a `docs_matrix` or `docs_map`',
+        'itself by operating on a `docs_matrix` or `docs_map`',
     )
 
     mixin_base_runtime_parser(gp)
     mixin_raft_parser(gp)
+    mixin_grpc_channel_options_parser(gp)

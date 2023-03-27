@@ -6,9 +6,9 @@ import copy
 import functools
 import inspect
 import multiprocessing
+import os
 import threading
 import warnings
-import os
 from types import SimpleNamespace
 from typing import (
     TYPE_CHECKING,
@@ -42,9 +42,12 @@ from jina.serve.executors.decorators import (
     avoid_concurrent_lock_cls,
 )
 from jina.serve.executors.metas import get_executor_taboo
-from jina.serve.helper import store_init_kwargs, wrap_func
+from jina.serve.helper import (
+    _get_workspace_from_name_and_shards,
+    store_init_kwargs,
+    wrap_func,
+)
 from jina.serve.instrumentation import MetricsTimer
-from jina.serve.helper import _get_workspace_from_name_and_shards
 
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry.context.context import Context
@@ -637,6 +640,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         floating: Optional[bool] = False,
         force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
+        grpc_channel_options: Optional[dict] = None,
         grpc_metadata: Optional[dict] = None,
         grpc_server_options: Optional[dict] = None,
         host: Optional[List[str]] = ['0.0.0.0'],
@@ -710,6 +714,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
               - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param grpc_metadata: The metadata to be passed to the gRPC request.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.

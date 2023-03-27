@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from uvicorn import Config, Server
 
 from jina import Gateway
-from jina.serve.streamer import GatewayStreamer
+from jina.serve.runtimes.gateway.streamer import GatewayStreamer
 
 
 class DummyResponseModel(BaseModel):
