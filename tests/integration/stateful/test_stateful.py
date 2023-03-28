@@ -6,8 +6,6 @@ import pytest
 
 from jina import Client, Document, DocumentArray, Executor, Flow, requests
 from jina.helper import random_port
-from jina.orchestrate.pods.factory import PodFactory
-from jina.parsers import set_pod_parser
 from jina.serve.executors.decorators import write
 
 os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
