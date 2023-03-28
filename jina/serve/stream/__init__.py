@@ -92,13 +92,12 @@ class RequestStreamer:
                     except:
                         self.logger.debug(f'Couldn\'t parse prefetch to int value!')
 
-        async_iter: AsyncIterator = self._stream_requests(
-            request_iterator=request_iterator,
-            results_in_order=results_in_order,
-            prefetch=prefetch,
-        )
-
         try:
+            async_iter: AsyncIterator = self._stream_requests(
+                request_iterator=request_iterator,
+                results_in_order=results_in_order,
+                prefetch=prefetch,
+            )
             async for response in async_iter:
                 yield response
         except InternalNetworkError as err:

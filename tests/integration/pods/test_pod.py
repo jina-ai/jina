@@ -497,15 +497,6 @@ class FastSlowExecutor(Executor):
                 time.sleep(1.0)
 
 
-async def _activate_worker(head_port, worker_port, shard_id=None):
-    # this would be done by the Pod, its adding the worker to the head
-    activate_msg = ControlRequest(command='ACTIVATE')
-    activate_msg.add_related_entity(
-        'worker', '127.0.0.1', worker_port, shard_id=shard_id
-    )
-    send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
-
-
 async def _start_create_pod(pod, port_generator, type='worker', executor=None):
     port = port_generator()
     pod = _create_worker_pod(port, f'{pod}/{type}', executor)
@@ -516,7 +507,7 @@ async def _start_create_pod(pod, port_generator, type='worker', executor=None):
 
 def _create_worker_pod(port, name='', executor=None):
     args = _generate_pod_args()
-    args.port = port
+    args.port = [port]
     args.name = name
     args.no_block_on_start = True
     if executor:
@@ -533,9 +524,9 @@ def _create_head_pod(
     uses_after=None,
 ):
     args = _generate_pod_args()
-    args.port = port
+    args.port = [port]
     args.name = name
-    args.pod_cls = 'HeadRuntime'
+    args.runtime_cls = 'HeadRuntime'
     args.pod_role = PodRoleType.HEAD
     args.no_block_on_start = True
     args.polling = PollingType.ANY if polling == 'ANY' else PollingType.ALL

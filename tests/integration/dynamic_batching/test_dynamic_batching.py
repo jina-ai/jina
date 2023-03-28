@@ -19,7 +19,7 @@ from jina import (
 )
 from jina.clients.request import request_generator
 from jina.serve.networking.utils import send_request_sync
-from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.servers import BaseServer
 from jina_cli.api import executor_native
 from tests.helper import _generate_pod_args
 
@@ -591,9 +591,9 @@ async def test_sigterm_handling(signal, uses_with):
         process.start()
         time.sleep(2)
 
-        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        BaseServer.wait_for_ready_or_shutdown(
             timeout=-1,
-            ctrl_address=f'{args.host}:{args.port}',
+            ctrl_address=f'{args.host}:{args.port[0]}',
             ready_or_shutdown_event=multiprocessing.Event(),
         )
 
@@ -602,7 +602,7 @@ async def test_sigterm_handling(signal, uses_with):
         with mp.Pool(3) as p:
             results = [
                 p.apply_async(
-                    _assert_all_docs_processed, (args.port, req_size, '/long_timeout')
+                    _assert_all_docs_processed, (args.port[0], req_size, '/long_timeout')
                 )
                 for req_size in [10, 20, 30]
             ]

@@ -31,7 +31,7 @@ def get_trace_ids(traces):
 
 
 def partition_spans_by_kind(traces):
-    '''Returns three lists each containing spans of kind SpanKind.SERVER, SpanKind.CLIENT and SpandKind.INTERNAL'''
+    """Returns three lists each containing spans of kind SpanKind.SERVER, SpanKind.CLIENT and SpandKind.INTERNAL"""
     server_spans = []
     client_spans = []
     internal_spans = []

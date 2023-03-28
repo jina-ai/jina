@@ -24,8 +24,8 @@ def test_func_simple_routing():
             parameters={'hello': 'world', 'topk': 10},
             return_responses=True,
         )
-        assert results[0].header.status.code == 0
-        assert results[0].data.docs[0].tags['hello'] == 'world'
+    assert results[0].header.status.code == 0
+    assert results[0].data.docs[0].tags['hello'] == 'world'
 
     with f:
         results = Client(port=f.port).post(
@@ -34,7 +34,7 @@ def test_func_simple_routing():
             parameters={'hello': 'world', 'topk': 10},
             return_responses=True,
         )
-        assert results[0].header.status.code == 0
+    assert results[0].header.status.code == 0
 
 
 def test_func_failure():
@@ -88,13 +88,12 @@ def test_func_return_():
     f = Flow(port=port).add(uses=MyExecutor)
 
     with f:
-        Client(port=f.port).post(
+        ret = Client(port=f.port).post(
             on='/some_endpoint',
             inputs=[Document() for _ in range(3)],
             parameters={'hello': 'world', 'topk': 10},
-            on_done=print,
-            return_responses=True,
         )
+    assert len(ret) == 2
 
 
 def test_func_joiner():
@@ -141,17 +140,13 @@ def test_func_joiner():
 def test_dealer_routing(mocker):
     port = random_port()
     f = Flow(port=port).add(shards=3)
-    mock = mocker.Mock()
     with f:
-        Client(port=f.port).post(
+        docs = Client(port=f.port).post(
             on='/some_endpoint',
             inputs=[Document() for _ in range(100)],
             request_size=2,
-            on_done=mock,
-            return_responses=True,
         )
-
-    mock.assert_called()
+    assert len(docs) == 100
 
 
 def test_target_executor(mocker):
@@ -170,23 +165,19 @@ def test_target_executor(mocker):
     f = Flow(port=port).add(name='p0', uses=Foo).add(name='p1', uses=Bar)
 
     with f:
-        success_mock = mocker.Mock()
         fail_mock = mocker.Mock()
-        Client(port=f.port).post(
+        docs = Client(port=f.port).post(
             '/hello',
             target_executor='p0',
             inputs=Document(),
-            on_done=success_mock,
             on_error=fail_mock,
             return_responses=True,
         )
-        success_mock.assert_called()
-        fail_mock.assert_not_called()
+        assert len(docs) == 1
 
-        success_mock = mocker.Mock()
         fail_mock = mocker.Mock()
-        f.post('/hello', inputs=Document(), on_done=success_mock, on_error=fail_mock)
-        success_mock.assert_called()
+        docs = f.post('/hello', inputs=Document(), on_error=fail_mock)
+        assert len(docs) == 1
         fail_mock.assert_not_called()
 
 
@@ -209,28 +200,25 @@ def test_target_executor_with_overlaped_name(mocker):
     )
 
     with f:
-        mock = mocker.Mock()
-        Client(port=f.port).post(
+        docs = Client(port=f.port).post(
             on='/foo',
             target_executor='^foo$',
             inputs=Document(),
-            on_done=mock,
-            return_responses=True,
         )
-        mock.assert_called()
+
+        assert len(docs) == 1
 
 
 def test_target_executor_with_one_pathways():
     port = random_port()
     f = Flow(port=port).add().add(name='my_target')
     with f:
-        results = Client(port=f.port).post(
+        docs = Client(port=f.port).post(
             on='/search',
             inputs=Document(),
             target_executor='my_target',
-            return_responses=True,
         )
-        assert len(results[0].data.docs) == 1
+    assert len(docs) == 1
 
 
 def test_target_executor_with_two_pathways():

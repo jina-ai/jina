@@ -58,7 +58,7 @@ class BaseClient(InstrumentationMixin, ABC):
             metrics_exporter_host=self.args.metrics_exporter_host,
             metrics_exporter_port=self.args.metrics_exporter_port,
         )
-        send_telemetry_event(event='start', obj=self)
+        send_telemetry_event(event='start', obj_cls_name=self.__class__.__name__)
 
     def teardown_instrumentation(self):
         """Shut down the OpenTelemetry tracer and meter if available. This ensures that the daemon threads for

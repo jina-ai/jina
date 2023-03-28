@@ -5,6 +5,7 @@ from typing import List
 
 import docker
 import pytest
+
 from jina.logging.logger import JinaLogger
 
 client = docker.from_env()
@@ -26,6 +27,7 @@ def image_name_tag_map():
     return {
         'reload-executor': '0.13.1',
         'test-executor': '0.13.1',
+        'test-executor-torch': '0.13.1',
         'executor-merger': '0.1.1',
         'custom-gateway': '0.1.1',
         'multiprotocol-gateway': '0.1.1',
@@ -89,8 +91,8 @@ class DockerComposeServices:
                 f'docker-compose -f {self.dump_path} ps -q'.split(' '),
                 capture_output=True,
             )
-                .stdout.decode("utf-8")
-                .split('\n')
+            .stdout.decode("utf-8")
+            .split('\n')
         )
         container_ids.remove('')  # remove empty  return line
 
@@ -113,7 +115,7 @@ class DockerComposeServices:
 
     @staticmethod
     def _are_all_container_healthy(
-            container_ids: List[str], client: docker.client.DockerClient
+        container_ids: List[str], client: docker.client.DockerClient
     ) -> bool:
 
         for id_ in container_ids:

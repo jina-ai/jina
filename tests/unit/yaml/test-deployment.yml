@@ -3,6 +3,9 @@ with:
   replicas: 2
   shards: 3
   uses: DummyExternalIndexer
+  grpc_server_options:
+    'grpc.max_send_message_length': -1
+  grpc_channel_options:
+    'grpc.max_send_message_length': -1
   py_modules:
     - dummy_exec.py
-

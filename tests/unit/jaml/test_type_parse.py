@@ -239,7 +239,7 @@ def test_jtype(tmpdir):
 
     loaded_deployment = Deployment.load_config(dep_path)
     assert type(loaded_deployment) == Deployment
-    assert loaded_deployment.port == [12345]
+    assert loaded_deployment.port == 12345
     assert loaded_deployment.args.shards == 2
     assert loaded_deployment.args.replicas == 3
 

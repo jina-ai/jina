@@ -194,6 +194,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         floating: Optional[bool] = False,
         force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
+        grpc_channel_options: Optional[dict] = None,
         grpc_metadata: Optional[dict] = None,
         grpc_server_options: Optional[dict] = None,
         host: Optional[List[str]] = ['0.0.0.0'],
@@ -267,6 +268,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
               - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param grpc_metadata: The metadata to be passed to the gRPC request.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
@@ -369,6 +371,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         **kwargs,
     ):
         super().__init__()
+
         self._gateway_kwargs = {}
         self._include_gateway = include_gateway
         if self._include_gateway:
@@ -471,7 +474,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             self._stop_time = time.time()
             send_telemetry_event(
                 event='stop',
-                obj=self,
+                obj_cls_name=self.__class__.__name__,
                 entity_id=self._entity_id,
                 duration=self._stop_time - self._start_time,
                 exc_type=str(exc_type),
@@ -555,10 +558,10 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             host, port = HubIO.deploy_public_sandbox(self.args)
             self._sandbox_deployed = True
             self.first_pod_args.host = host
-            self.first_pod_args.port = port
+            self.first_pod_args.port = [port]
             if self.head_args:
                 self.pod_args['head'].host = host
-                self.pod_args['head'].port = port
+                self.pod_args['head'].port = [port]
 
     def update_worker_pod_args(self):
         """Update args of all its worker pods based on Deployment args. Does not touch head and tail"""
@@ -605,7 +608,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         """Get the port of the HeadPod of this deployment
         .. # noqa: DAR201
         """
-        return self.head_args.port if self.head_args else None
+        return self.head_args.port[0] if self.head_args else None
 
     @property
     def head_port_monitoring(self):
@@ -624,6 +627,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             host=self.host,
             port=self.port,
             protocol=self.protocol,
+            grpc_channel_options=self.args.grpc_channel_options,
         )
         kwargs.update(self._gateway_kwargs)
         return Client(**kwargs)
@@ -639,7 +643,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         _head_args = copy.deepcopy(args)
         _head_args.polling = args.polling
-        _head_args.port = args.port if isinstance(args.port, int) else args.port[0]
+        _head_args.port = args.port
         _head_args.host = args.host[0]
         _head_args.uses = args.uses
         _head_args.pod_role = PodRoleType.HEAD
@@ -758,7 +762,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         """
         :return: the port of this deployment
         """
-        return self.first_pod_args.port
+        return self.first_pod_args.port[0]
 
     @property
     def ports(self) -> List[int]:
@@ -1007,7 +1011,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
             print(Rule(':tada: Deployment is ready to serve!'), *all_panels)
 
-            send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
+            send_telemetry_event(
+                event='start',
+                obj_cls_name=self.__class__.__name__,
+                entity_id=self._entity_id,
+            )
 
         return self
 
@@ -1240,7 +1248,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
                 elif not self.external:
                     if shards == 1 and replicas == 1:
-                        _args.port = self.args.port[0]
+                        _args.port = self.args.port
                         _args.port_monitoring = self.args.port_monitoring
 
                     elif shards == 1:
@@ -1251,7 +1259,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                         )
                         # if there are no shards/replicas, we dont need to distribute ports randomly
                         # we should rather use the pre assigned one
-                        _args.port = pod_port
+                        _args.port = [random_port()]
                     elif shards > 1:
                         port_monitoring_index = (
                             replica_id + replicas * shard_id + 1
@@ -1264,13 +1272,13 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                                 port_monitoring_index
                             ]  # we skip the head port here
                         )
-                        _args.port = pod_port
+                        _args.port = [random_port()]
                     else:
-                        _args.port = pod_port
+                        _args.port = [random_port()]
                         _args.port_monitoring = random_port()
 
                 else:
-                    _args.port = self.ext_repl_ports[replica_id]
+                    _args.port = [self.ext_repl_ports[replica_id]]
                     _args.host = self.ext_repl_hosts[replica_id]
                     _args.scheme = self.ext_repl_schemes[replica_id]
                     _args.tls = self.ext_repl_tls[replica_id]
@@ -1280,6 +1288,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     _args.workspace = self.args.workspace
                 replica_args.append(_args)
             result[shard_id] = replica_args
+
         return result
 
     @staticmethod
@@ -1288,7 +1297,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         _args = copy.deepcopy(args)
         _args.pod_role = PodRoleType.WORKER
         _args.host = _args.host[0] or __default_host__
-        _args.port = random_port()
+        _args.port = [random_port()]
 
         if _args.name:
             _args.name += f'/{entity_type}-0'
@@ -1332,7 +1341,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 )
                 parsed_args['uses_before'] = uses_before_args
                 args.uses_before_address = (
-                    f'{uses_before_args.host}:{uses_before_args.port}'
+                    f'{uses_before_args.host}:{uses_before_args.port[0]}'
                 )
             if (
                 getattr(args, 'uses_after', None)
@@ -1343,7 +1352,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 )
                 parsed_args['uses_after'] = uses_after_args
                 args.uses_after_address = (
-                    f'{uses_after_args.host}:{uses_after_args.port}'
+                    f'{uses_after_args.host}:{uses_after_args.port[0]}'
                 )
 
             parsed_args['head'] = Deployment._copy_to_head_args(args)
@@ -1356,7 +1365,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             for shard_id in parsed_args['pods']:
                 for pod_idx, pod_args in enumerate(parsed_args['pods'][shard_id]):
                     worker_host = self.get_worker_host(pod_args, self._is_docker, False)
-                    connection_list[shard_id].append(f'{worker_host}:{pod_args.port}')
+                    connection_list[shard_id].append(
+                        f'{worker_host}:{pod_args.port[0]}'
+                    )
             parsed_args['head'].connection_list = json.dumps(connection_list)
 
         return parsed_args
@@ -1672,8 +1683,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             if self.args.default_port:
                 from jina.serve.networking import GrpcConnectionPool
 
-                self.args.port = GrpcConnectionPool.K8S_PORT
-                self.first_pod_args.port = GrpcConnectionPool.K8S_PORT
+                self.args.port = [GrpcConnectionPool.K8S_PORT]
+                self.first_pod_args.port = [GrpcConnectionPool.K8S_PORT]
 
                 self.args.port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
                 self.first_pod_args.port_monitoring = (
@@ -1683,8 +1694,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 self.args.default_port = False
 
             self.args.deployments_addresses = k8s_deployments_addresses
-        elif self._include_gateway and self.port:
-            self.args.port = self._gateway_kwargs['port']
         k8s_deployment = K8sDeploymentConfig(
             args=self.args, k8s_namespace=k8s_namespace, k8s_port=k8s_port
         )
