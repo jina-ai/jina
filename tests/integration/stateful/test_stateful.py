@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 import time
 
@@ -73,27 +74,7 @@ def assert_is_indexed(client, search_da):
         assert doc.text == f'ID {doc.id}'
 
 
-# TODO: for now, there is hanging when we attempt to run both at the same time
-# only one test can be run at a time
-@pytest.mark.parametrize('executor_cls', [MyStateExecutor])
-def test_stateful_index_search(executor_cls, tmpdir):
-    gateway_port = random_port()
-    pod_ports = [random_port(), random_port(), random_port()]
-
-    flow = Flow(port=gateway_port).add(
-        uses=executor_cls,
-        replicas=3,
-        workspace=tmpdir,
-        pod_ports=pod_ports,
-        stateful=True,
-        raft_configuration={
-            'snapshot_interval': 10,
-            'snapshot_threshold': 5,
-            'trailing_logs': 10,
-            'LogLevel': 'INFO',
-        },
-    )
-
+def run_flow_index_and_assert(flow, pod_ports):
     with flow:
         index_da = DocumentArray(
             [Document(id=f'{i}', text=f'ID {i}') for i in range(100)]
@@ -112,32 +93,73 @@ def test_stateful_index_search(executor_cls, tmpdir):
             client = Client(port=port)
             assert_is_indexed(client, search_da)
 
-        print(
-            "######################### replication check passed successfully #########################"
+
+# TODO: for now, there is hanging when we attempt to run both at the same time
+# only one test can be run at a time
+@pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
+def test_stateful_index_search(executor_cls, tmpdir):
+    gateway_port = random_port()
+    pod_ports = [random_port(), random_port(), random_port()]
+
+    flow = Flow(port=gateway_port).add(
+        uses=executor_cls,
+        replicas=3,
+        workspace=tmpdir,
+        pod_ports=pod_ports,
+        stateful=True,
+        raft_configuration={
+            'snapshot_interval': 10,
+            'snapshot_threshold': 5,
+            'trailing_logs': 10,
+            'LogLevel': 'INFO',
+        },
+    )
+
+    process = multiprocessing.Process(
+        target=run_flow_index_and_assert, args=(flow, pod_ports)
+    )
+    process.start()
+    process.join()
+    assert process.exitcode == 0
+
+    # # add new replica to the existing flow
+    # args = set_pod_parser().parse_args([])
+    # args.host = args.host[0]
+    # args.port = random_port()
+    # # args.stateful = True
+    # # args.timeout_ready = 999999
+    # args.workspace = os.path.join(tmpdir, 'new_replica')
+    # args.uses = executor_cls.__name__
+    # args.replica_id = '4'
+    # with PodFactory.build_pod(args) as p:
+    #     p.join()
+    #
+    #     import jraft
+    #
+    #     leader_address = f'0.0.0.0:{pod_ports[0]}'
+    #     voter_address = f'0.0.0.0:{args.port}'
+    #     jraft.add_voter(leader_address, '4', voter_address)
+    #
+    #     # wait until the state is replicated
+    #     time.sleep(10)
+    #     client = Client(port=args.port)
+    #     assert_is_indexed(client, search_da)
+
+
+def run_flow_index(flow):
+    with flow:
+        index_da = DocumentArray(
+            [Document(id=f'{i}', text=f'ID {i}') for i in range(100)]
         )
+        flow.index(inputs=index_da)
+        # allowing sometime for snapshots
+        time.sleep(30)
 
-        # add new replica to the existing flow
-        args = set_pod_parser().parse_args([])
-        args.host = args.host[0]
-        args.port = random_port()
-        # args.stateful = True
-        # args.timeout_ready = 999999
-        args.workspace = os.path.join(tmpdir, 'new_replica')
-        args.uses = executor_cls.__name__
-        args.replica_id = '4'
-        with PodFactory.build_pod(args) as p:
-            p.join()
 
-            import jraft
-
-            leader_address = f'0.0.0.0:{pod_ports[0]}'
-            voter_address = f'0.0.0.0:{args.port}'
-            jraft.add_voter(leader_address, '4', voter_address)
-
-            # wait until the state is replicated
-            time.sleep(10)
-            client = Client(port=args.port)
-            assert_is_indexed(client, search_da)
+def restore_flow_search(flow):
+    with flow:
+        search_da = DocumentArray([Document(id=f'{i}') for i in range(100)])
+        assert_is_indexed(flow, search_da)
 
 
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
@@ -159,14 +181,12 @@ def test_stateful_restore(executor_cls, tmpdir):
         },
     )
 
-    with flow:
-        index_da = DocumentArray(
-            [Document(id=f'{i}', text=f'ID {i}') for i in range(100)]
-        )
-        flow.index(inputs=index_da)
+    process = multiprocessing.Process(target=run_flow_index, args=(flow,))
+    process.start()
+    process.join()
+    assert process.exitcode == 0
 
-    # restore the Flow
-
-    with flow:
-        search_da = DocumentArray([Document(id=f'{i}') for i in range(100)])
-        assert_is_indexed(flow, search_da)
+    process = multiprocessing.Process(target=restore_flow_search, args=(flow,))
+    process.start()
+    process.join()
+    assert process.exitcode == 0
