@@ -94,8 +94,6 @@ def run_flow_index_and_assert(flow, pod_ports):
             assert_is_indexed(client, search_da)
 
 
-# TODO: for now, there is hanging when we attempt to run both at the same time
-# only one test can be run at a time
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
 def test_stateful_index_search(executor_cls, tmpdir):
     gateway_port = random_port()
@@ -121,29 +119,6 @@ def test_stateful_index_search(executor_cls, tmpdir):
     process.start()
     process.join()
     assert process.exitcode == 0
-
-    # # add new replica to the existing flow
-    # args = set_pod_parser().parse_args([])
-    # args.host = args.host[0]
-    # args.port = random_port()
-    # # args.stateful = True
-    # # args.timeout_ready = 999999
-    # args.workspace = os.path.join(tmpdir, 'new_replica')
-    # args.uses = executor_cls.__name__
-    # args.replica_id = '4'
-    # with PodFactory.build_pod(args) as p:
-    #     p.join()
-    #
-    #     import jraft
-    #
-    #     leader_address = f'0.0.0.0:{pod_ports[0]}'
-    #     voter_address = f'0.0.0.0:{args.port}'
-    #     jraft.add_voter(leader_address, '4', voter_address)
-    #
-    #     # wait until the state is replicated
-    #     time.sleep(10)
-    #     client = Client(port=args.port)
-    #     assert_is_indexed(client, search_da)
 
 
 def run_flow_index(flow):
