@@ -430,7 +430,7 @@ jobs:
   build_wheels:
     name: Build wheel for cp${{ matrix.python }}-${{ matrix.platform_id }}-${{ matrix.manylinux_image }}
     runs-on: ${{ matrix.os }}
-    needs: check_build_trigger
+    needs: prep-testbed
 
     strategy:
       # Ensure that a wheel builder finishes even if another fails
@@ -438,8 +438,53 @@ jobs:
       needs: prep-testbed
       runs-on: ubuntu-latest
       matrix:
-        os: [manylinux_x86_64, win_amd64, macosx_x86_64]
-        python: [38, 39, 310, 311]
+        include:
+          # linux
+          - os: ubuntu-latest
+            python: 38
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux2014
+          - os: ubuntu-latest
+            python: 39
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux2014
+          - os: ubuntu-latest
+            python: 310
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux2014
+          - os: ubuntu-latest
+            python: 311
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux2014
+
+          # MacOS
+          - os: macos-latest
+            python: 38
+            platform_id: macosx_x86_64
+          - os: macos-latest
+            python: 39
+            platform_id: macosx_x86_64
+          - os: macos-latest
+            python: 310
+            platform_id: macosx_x86_64
+          - os: macos-latest
+            python: 311
+            platform_id: macosx_x86_64
+
+          # Windows
+          - os: windows-2019
+            python: 38
+            platform_id: win_amd64
+          - os: windows-2019
+            python: 39
+            platform_id: win_amd64
+          - os: windows-2019
+            python: 310
+            platform_id: win_amd64
+          - os: windows-2019
+            python: 311
+            platform_id: win_amd64
+
 
     steps:
       - uses: actions/checkout@v2.5.0
@@ -450,7 +495,7 @@ jobs:
 
       - name: Build and test wheels
         env:
-          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.os }}
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_ARCHS: all
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
           CIBW_MANYLINUX_I686_IMAGE: manylinux2014
