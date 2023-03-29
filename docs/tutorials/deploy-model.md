@@ -142,7 +142,7 @@ In `deployment.py`:
 ```python
 from jina import Deployment
 
-dep = Deployment(uses=TextToImage, timeout_ready=-1, install_requirements=True)
+dep = Deployment(uses=TextToImage, timeout_ready=-1)
 
 with dep:
   dep.block()
@@ -160,7 +160,6 @@ with:
   py_modules:
     - text_to_image.py # name of the module containing your Executor
   timeout_ready: -1
-  install_requirements=True
 ```
 
 And run the YAML Deployment with the CLI: `jina deployment --uses deployment.yml`
@@ -229,7 +228,6 @@ jtype: Deployment
 with:
   timeout_ready: -1
   uses: jinaai://jina-ai/TextToImage
-  install_requirements: true
   env:
    CUDA_VISIBLE_DEVICES: RR
   replicas: 2
