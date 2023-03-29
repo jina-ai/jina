@@ -1235,7 +1235,12 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
                 elif not self.external:
                     if shards == 1 and replicas == 1:
-                        _args.port = self.args.port
+                        if len(_args.protocol) > 0 and self._include_gateway:
+                            _args.port = [
+                                random_port() for _ in range(len(self.args.protocol))
+                            ]
+                        else:
+                            _args.port = self.args.port
                         _args.port_monitoring = self.args.port_monitoring
 
                     elif shards == 1:
@@ -1510,14 +1515,10 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         else:
             _protocols = [str(_p) for _p in self.protocol]
 
-        print(f' protocols {_protocols}')
-
         if not isinstance(self.first_pod_args.port, list):
             _ports = [self.first_pod_args.port]
         else:
             _ports = [str(_p) for _p in self.first_pod_args.port]
-
-        print(f' _ports {_ports}')
 
         for _port, _protocol in zip(_ports, _protocols):
 

@@ -98,7 +98,6 @@ class GatewayStreamer:
         self.tracing_client_interceptor = tracing_client_interceptor
         self._executor_addresses = executor_addresses
 
-        self.logger.error(f' executor_addresses {executor_addresses}')
         self._connection_pool = self._create_connection_pool(
             executor_addresses,
             compression,

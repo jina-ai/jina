@@ -144,6 +144,11 @@ class FastAPIBaseServer(BaseServer):
     def _should_exit(self):
         return self.server.should_exit
 
+    @property
+    def should_exit(self):
+        return self._should_exit
+
+
     @staticmethod
     def is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
         """

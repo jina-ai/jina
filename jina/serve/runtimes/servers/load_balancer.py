@@ -30,13 +30,14 @@ class LoadBalancingServer(BaseServer):
 
     async def run_server(self):
         """Run HTTP server forever"""
+        #await asyncio.sleep(3)
         await web._run_app(
             app=self.app,
             host=self.host,
             port=self.port,
         )
         # if we are here, it finished
-        self._server_exit = True
+        #self._server_exit = True
 
     async def shutdown(self):
         self._server_exit = True
@@ -46,3 +47,7 @@ class LoadBalancingServer(BaseServer):
     @property
     def _should_exit(self):
         return self._server_exit
+
+    @property
+    def should_exit(self):
+        return self._should_exit

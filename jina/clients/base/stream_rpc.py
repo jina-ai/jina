@@ -48,7 +48,6 @@ class StreamRpc:
         :yields: Responses received from the target.
         """
         stub = jina_pb2_grpc.JinaRPCStub(self.channel)
-        self.logger.debug(' HEREE JOAAAN')
         async for resp in stub.Call(
             self.req_iter,
             compression=self.compression,

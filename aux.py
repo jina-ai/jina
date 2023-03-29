@@ -106,21 +106,42 @@ class MyExec(Executor):
 #     except:
 #         pass
 
+
+# f = Flow(protocol=['http', 'grpc'], port=[8081, 8082]).add(uses=MyExec, replicas=2)
+# with f:
+#     import time
+#     time.sleep(2)
+#     try:
+#         c = Client(port=8081, protocol='http')
+#         r = c.post(on='/bar', inputs=DocumentArray([Document(text='input ')]))
+#         print(f' result {r[0].text}')
+#         r = c.post(on='/foo', inputs=DocumentArray([Document(text='input ')]))
+#         print(f' result {r[0].text}')
+#         c = Client(port=8082, protocol='grpc')
+#         r = c.post(on='/bar', inputs=DocumentArray([Document(text='input ')]))
+#         print(f' result {r[0].text}')
+#         r = c.post(on='/foo', inputs=DocumentArray([Document(text='input ')]))
+#         print(f' result {r[0].text}')
+#
+#     except Exception as exc:
+#         print(f' Exception {exc}')
+
 d = Deployment(include_gateway=True, protocol=['http', 'grpc'], uses=MyExec, port=[8081, 8082], replicas=2)
 with d:
     try:
-        c = Client(port=8082)
-        r = c.post(on='/bar', inputs=DocumentArray([Document(text='input ')]))
-        print(f' result {r[0].text}')
-        r = c.post(on='/foo', inputs=DocumentArray([Document(text='input ')]))
-        print(f' result {r[0].text}')
         c = Client(port=8081, protocol='http')
         r = c.post(on='/bar', inputs=DocumentArray([Document(text='input ')]))
         print(f' result {r[0].text}')
         r = c.post(on='/foo', inputs=DocumentArray([Document(text='input ')]))
         print(f' result {r[0].text}')
-    except:
-        pass
+        c = Client(port=8082, protocol='grpc')
+        r = c.post(on='/bar', inputs=DocumentArray([Document(text='input ')]))
+        print(f' result {r[0].text}')
+        r = c.post(on='/foo', inputs=DocumentArray([Document(text='input ')]))
+        print(f' result {r[0].text}')
+
+    except Exception as exc:
+        print(f' Exception {exc}')
 
 # f = Flow(protocol='HTTP', port=8081).add(uses=MyExec)
 # with f:

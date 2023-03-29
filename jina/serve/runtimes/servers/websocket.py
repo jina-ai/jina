@@ -99,6 +99,14 @@ class WebSocketServer(BaseServer):
 
         await self.server.setup()
 
+    @property
+    def _should_exit(self):
+        return self.server.should_exit
+
+    @property
+    def should_exit(self):
+        return self._should_exit
+
     async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
         await super().shutdown()

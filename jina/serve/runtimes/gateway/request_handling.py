@@ -53,8 +53,6 @@ class GatewayRequestHandler:
             else:
                 deployment_grpc_addresses[deployment_name] = addresses
 
-        print(f' deployments_addresses {deployments_addresses} vs {deployment_grpc_addresses}')
-
         self.streamer = GatewayStreamer(
             graph_representation=graph_description,
             executor_addresses=deployment_grpc_addresses,
@@ -251,7 +249,6 @@ class GatewayRequestHandler:
         :param kwargs: keyword arguments
         :yield: responses to the request after streaming to Executors in Flow
         """
-        self.logger.error(f' STREAAAAM')
         async for resp in self.streamer.rpc_stream(
             request_iterator=request_iterator, context=context, *args, **kwargs
         ):
