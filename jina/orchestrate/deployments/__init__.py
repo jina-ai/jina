@@ -460,7 +460,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 connection_dict[protocol] = [
                     f'{protocol.lower()}://{host}:{port}' for port in ports
                 ]
-
             return connection_dict
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -1236,7 +1235,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
                 elif not self.external:
                     if shards == 1 and replicas == 1:
-                        if len(_args.protocol) > 0 and self._include_gateway:
+                        if len(_args.protocol) > 1 and self._include_gateway:
                             _args.port = [
                                 random_port() for _ in range(len(self.args.protocol))
                             ]

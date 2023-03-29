@@ -693,7 +693,6 @@ class Flow(
             if node == GATEWAY_NAME:
                 continue
             graph_dict[node] = deployment._get_connection_list_for_flow()
-
         return graph_dict
 
     def _get_k8s_deployments_addresses(
@@ -720,7 +719,7 @@ class Flow(
 
             external_port = v.head_port if v.head_port else v.port
             graph_dict[node] = [
-                f'{v.protocol}://{deployment_k8s_address}:{external_port if v.external else GrpcConnectionPool.K8S_PORT}'
+                f'{v.protocol.lower()}://{deployment_k8s_address}:{external_port if v.external else GrpcConnectionPool.K8S_PORT}'
             ]
 
         return graph_dict if graph_dict else None
