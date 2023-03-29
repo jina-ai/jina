@@ -428,7 +428,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 for host in self.hosts
             ]
             return [
-                f'{self.protocol.lower()}://{host}:{port}' for host, port in zip(hosts, ports)
+                f'{self.protocol.lower()}://{host}:{port}'
+                for host, port in zip(hosts, ports)
             ]
 
     def _get_connection_list_for_single_executor(
