@@ -29,6 +29,7 @@ Because a shared Executor does not reside behind a Gataway, it requires fewer ne
 However, it is not suitable for exposing a standalone service, outside the scope of a Flow.
 ````
 
+(deployment)=
 ## Serve directly
 An {class}`~jina.Executor` can be served using the {class}`~jina.orchestrate.deployments.Deployment` class.
 

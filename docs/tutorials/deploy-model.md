@@ -34,7 +34,7 @@ You can also run this code interactively in [Colab](https://colab.research.googl
 
 - All data that goes in and out of Jina is in the form of a [DocumentArray](https://docarray.jina.ai/fundamentals/documentarray/) from the [DocArray](https://docarray.org) package.
 - An {ref}`Executor <executor-cookbook>` is a self-contained gRPC microservice that performs a task on a DocumentArray. This could be very simple (like merely capitalizing the entire text of a Document) or a lot more complex (like generating vector embeddings for a given piece of content).
-- A [Deployment]() lets you serve your Executor, scale it up with replicas, and allow users to send and receive requests.
+- A {ref}`Deployment <deployment>` lets you serve your Executor, scale it up with replicas, and allow users to send and receive requests.
 
 When you build a model or service in Jina, it's always in the form of an Executor. An Executor is a Python class that transforms and processes Documents, and can go way beyond image generation, for example, encoding text/images into vectors, OCR, extracting tables from PDFs, or lots more.
 
