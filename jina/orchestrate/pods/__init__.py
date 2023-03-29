@@ -399,7 +399,11 @@ class Pod(BasePod):
                 daemon=True,
             )
             cargs = copy.deepcopy(cargs_stateful)
-            cargs.port += 1
+
+            if isinstance(cargs.port, int):
+                cargs.port += 1
+            elif isinstance(cargs.port, list):
+                cargs.port = [port + 1 for port in cargs.port]
         # if stateful, have a raft_worker
         self.worker = multiprocessing.Process(
             target=run,
