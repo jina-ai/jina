@@ -134,8 +134,9 @@ def run_raft(
         workspace=args.workspace, name='raft', shard_id=shard_id
     )
 
-    address = f'{args.host}:{args.port}'
-    executor_target = f'{args.host}:{args.port + 1}'
+    port = args.port[0] if isinstance(args.port, list) else args.port
+    address = f'{args.host}:{port}'
+    executor_target = f'{args.host}:{port + 1}'
 
     # if the Executor was already persisted, retrieve its port and host configuration
     persisted_address = jraft.get_configuration(raft_id, raft_dir)
