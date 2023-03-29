@@ -24,14 +24,14 @@ __all__ = ['BasePod', 'Pod']
 
 
 def run(
-    args: 'argparse.Namespace',
-    name: str,
-    runtime_cls: Type[AsyncNewLoopRuntime],
-    envs: Dict[str, str],
-    is_started: Union['multiprocessing.Event', 'threading.Event'],
-    is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
-    is_ready: Union['multiprocessing.Event', 'threading.Event'],
-    jaml_classes: Optional[Dict] = None,
+        args: 'argparse.Namespace',
+        name: str,
+        runtime_cls: Type[AsyncNewLoopRuntime],
+        envs: Dict[str, str],
+        is_started: Union['multiprocessing.Event', 'threading.Event'],
+        is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
+        is_ready: Union['multiprocessing.Event', 'threading.Event'],
+        jaml_classes: Optional[Dict] = None,
 ):
     """Method representing the :class:`BaseRuntime` activity.
 
@@ -66,15 +66,12 @@ def run(
     req_handler_cls = None
     if runtime_cls == 'GatewayRuntime':
         from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
-
         req_handler_cls = GatewayRequestHandler
     elif runtime_cls == 'WorkerRuntime':
         from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
-
         req_handler_cls = WorkerRequestHandler
     elif runtime_cls == 'HeadRuntime':
         from jina.serve.runtimes.head.request_handling import HeaderRequestHandler
-
         req_handler_cls = HeaderRequestHandler
 
     logger = JinaLogger(name, **vars(args))
@@ -91,7 +88,10 @@ def run(
     try:
         _set_envs()
 
-        runtime = AsyncNewLoopRuntime(args=args, req_handler_cls=req_handler_cls)
+        runtime = AsyncNewLoopRuntime(
+            args=args,
+            req_handler_cls=req_handler_cls
+        )
     except Exception as ex:
         logger.error(
             f'{ex!r} during {runtime_cls!r} initialization'
@@ -217,7 +217,7 @@ class BasePod(ABC):
                 self.logger.debug(f'terminate')
                 self._terminate()
                 if not self.is_shutdown.wait(
-                    timeout=self._timeout_ctrl if not __windows__ else 1.0
+                        timeout=self._timeout_ctrl if not __windows__ else 1.0
                 ):
                     if not __windows__:
                         raise Exception(
@@ -259,7 +259,6 @@ class BasePod(ABC):
             .. # noqa: DAR201
         """
         from jina.serve.runtimes.servers import BaseServer
-
         return BaseServer.wait_for_ready_or_shutdown(
             timeout=timeout,
             ready_or_shutdown_event=self.ready_or_shutdown.event,
@@ -318,6 +317,7 @@ class BasePod(ABC):
         Wait for the `Pod` to start successfully in a non-blocking manner
         """
         import asyncio
+        from jina.serve.runtimes.servers import BaseServer
 
         from jina.serve.runtimes.servers import BaseServer
 
@@ -330,17 +330,20 @@ class BasePod(ABC):
         timeout_ns = 1e9 * _timeout if _timeout else None
         now = time.time_ns()
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
-            if self.ready_or_shutdown.event.is_set() and (  # submit the health check to the pod, if it is
-                self.is_shutdown.is_set()  # a worker and not shutdown
-                or not self.args.pod_role == PodRoleType.WORKER
-                or (
-                    await BaseServer.async_is_ready(
-                        ctrl_address=self.runtime_ctrl_address,
-                        timeout=_timeout,
-                        protocol=getattr(self.args, 'protocol', ["grpc"])[0]
-                        # Executor does not have protocol yet
+            if (
+                    self.ready_or_shutdown.event.is_set()
+                    and (  # submit the health check to the pod, if it is
+                    self.is_shutdown.is_set()  # a worker and not shutdown
+                    or not self.args.pod_role == PodRoleType.WORKER
+                    or (
+                            await BaseServer.async_is_ready(
+                                ctrl_address=self.runtime_ctrl_address,
+                                timeout=_timeout,
+                                protocol=getattr(self.args, 'protocol', ["grpc"])[0]
+                                # Executor does not have protocol yet
+                            )
                     )
-                )
+            )
             ):
                 self._check_failed_to_start()
                 self.logger.debug(__ready_msg__)

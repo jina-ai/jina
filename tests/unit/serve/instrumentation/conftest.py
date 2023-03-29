@@ -1,9 +1,10 @@
 import random
-import pytest
 from pathlib import Path
-from typing import Dict, Tuple, Callable
+from typing import Callable, Dict, Tuple
+
 import opentelemetry.sdk.metrics.export
 import opentelemetry.sdk.metrics.view
+import pytest
 from opentelemetry.sdk.metrics.export import (
     AggregationTemporality,
     MetricExporter,
@@ -59,11 +60,12 @@ class DirMetricExporter(MetricExporter):
 def monkeypatch_metric_exporter(
     tmpdir_factory: pytest.TempdirFactory,
 ) -> Tuple[Callable, Callable]:
-    import opentelemetry.sdk.metrics.export
-    from pathlib import Path
-    import time
-    import os
     import json
+    import os
+    import time
+    from pathlib import Path
+
+    import opentelemetry.sdk.metrics.export
 
     collect_path = Path(tmpdir_factory.mktemp('otel-collector'))
     metrics_path = collect_path / 'metrics'
@@ -81,14 +83,14 @@ def monkeypatch_metric_exporter(
         time.sleep(2)
 
     def _get_service_name(otel_measurement):
-        return otel_measurement[0]['resource_metrics'][0]['resource']['attributes'][
+        return otel_measurement['resource_metrics'][0]['resource']['attributes'][
             'service.name'
         ]
 
     def read_metrics():
         def read_metric_file(filename):
             with open(filename, 'r') as f:
-                return list(map(json.loads, f.readlines()))
+                return json.loads(f.read())
 
         return {
             _get_service_name(i): i

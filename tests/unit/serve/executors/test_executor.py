@@ -534,9 +534,7 @@ async def test_blocking_sync_exec():
     cancel_event = multiprocessing.Event()
 
     def start_runtime(args, cancel_event):
-        with AsyncNewLoopRuntime(
-            args, cancel_event=cancel_event, req_handler_cls=WorkerRequestHandler
-        ) as runtime:
+        with AsyncNewLoopRuntime(args, cancel_event=cancel_event, req_handler_cls=WorkerRequestHandler) as runtime:
             runtime.run_forever()
 
     runtime_thread = Process(

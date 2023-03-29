@@ -16,9 +16,24 @@ from jina.proto import jina_pb2
 from jina.serve.executors import BaseExecutor
 from jina.serve.instrumentation import MetricsTimer
 from jina.serve.runtimes.worker.batch_queue import BatchQueue
+import argparse
+import asyncio
+from typing import TYPE_CHECKING, AsyncIterator, List, Optional
+
+import grpc
+
+from jina.excepts import RuntimeTerminated
+from jina.helper import get_full_version
+from jina.importer import ImportExtensions
+from jina.proto import jina_pb2
+from jina.serve.instrumentation import MetricsTimer
 from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:  # pragma: no cover
+    from opentelemetry.propagate import Context
+
+    from jina.types.request import Request
+
     from opentelemetry import metrics, trace
     from opentelemetry.context.context import Context
     from opentelemetry.propagate import Context
@@ -34,16 +49,16 @@ class WorkerRequestHandler:
     _KEY_RESULT = '__results__'
 
     def __init__(
-        self,
-        args: 'argparse.Namespace',
-        logger: 'JinaLogger',
-        metrics_registry: Optional['CollectorRegistry'] = None,
-        tracer_provider: Optional['trace.TracerProvider'] = None,
-        meter_provider: Optional['metrics.MeterProvider'] = None,
-        meter=None,
-        tracer=None,
-        deployment_name: str = '',
-        **kwargs,
+            self,
+            args: 'argparse.Namespace',
+            logger: 'JinaLogger',
+            metrics_registry: Optional['CollectorRegistry'] = None,
+            tracer_provider: Optional['trace.TracerProvider'] = None,
+            meter_provider: Optional['metrics.MeterProvider'] = None,
+            meter=None,
+            tracer=None,
+            deployment_name: str = '',
+            **kwargs,
     ):
         """Initialize private parameters and execute private loading functions.
 
@@ -66,8 +81,8 @@ class WorkerRequestHandler:
         self._is_closed = False
         if self.metrics_registry:
             with ImportExtensions(
-                required=True,
-                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+                    required=True,
+                    help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
                 from prometheus_client import Counter, Summary
 
@@ -157,9 +172,9 @@ class WorkerRequestHandler:
             watched_files.add(extra_python_file)
 
         with ImportExtensions(
-            required=True,
-            logger=self.logger,
-            help_text='''hot reload requires watchfiles dependency to be installed. You can do `pip install 
+                required=True,
+                logger=self.logger,
+                help_text='''hot reload requires watchfiles dependency to be installed. You can do `pip install 
                 watchfiles''',
         ):
             from watchfiles import awatch
@@ -225,16 +240,16 @@ class WorkerRequestHandler:
             }
 
     def _init_monitoring(
-        self,
-        metrics_registry: Optional['CollectorRegistry'] = None,
-        meter: Optional['metrics.Meter'] = None,
+            self,
+            metrics_registry: Optional['CollectorRegistry'] = None,
+            meter: Optional['metrics.Meter'] = None,
     ):
 
         if metrics_registry:
 
             with ImportExtensions(
-                required=True,
-                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+                    required=True,
+                    help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
                 from prometheus_client import Counter, Summary
 
@@ -290,10 +305,10 @@ class WorkerRequestHandler:
             self._sent_response_size_histogram = None
 
     def _load_executor(
-        self,
-        metrics_registry: Optional['CollectorRegistry'] = None,
-        tracer_provider: Optional['trace.TracerProvider'] = None,
-        meter_provider: Optional['metrics.MeterProvider'] = None,
+            self,
+            metrics_registry: Optional['CollectorRegistry'] = None,
+            tracer_provider: Optional['trace.TracerProvider'] = None,
+            meter_provider: Optional['metrics.MeterProvider'] = None,
     ):
         """
         Load the executor to this runtime, specified by ``uses`` CLI argument.
@@ -477,7 +492,7 @@ class WorkerRequestHandler:
         return docs
 
     async def handle(
-        self, requests: List['DataRequest'], tracing_context: Optional['Context'] = None
+            self, requests: List['DataRequest'], tracing_context: Optional['Context'] = None
     ) -> DataRequest:
         """Initialize private parameters and execute private loading functions.
 
@@ -553,7 +568,7 @@ class WorkerRequestHandler:
 
     @staticmethod
     def replace_docs(
-        request: List['DataRequest'], docs: 'DocumentArray', ndarray_type: str = None
+            request: List['DataRequest'], docs: 'DocumentArray', ndarray_type: str = None
     ) -> None:
         """Replaces the docs in a message with new Documents.
 
@@ -598,7 +613,7 @@ class WorkerRequestHandler:
 
     @staticmethod
     def _get_docs_matrix_from_request(
-        requests: List['DataRequest'],
+            requests: List['DataRequest'],
     ) -> Tuple[Optional[List['DocumentArray']], Optional[Dict[str, 'DocumentArray']]]:
         """
         Returns a docs matrix from a list of DataRequest objects.
@@ -622,7 +637,7 @@ class WorkerRequestHandler:
 
     @staticmethod
     def get_parameters_dict_from_request(
-        requests: List['DataRequest'],
+            requests: List['DataRequest'],
     ) -> 'Dict':
         """
         Returns a parameters dict from a list of DataRequest objects.
@@ -642,7 +657,7 @@ class WorkerRequestHandler:
 
     @staticmethod
     def get_docs_from_request(
-        requests: List['DataRequest'],
+            requests: List['DataRequest'],
     ) -> 'DocumentArray':
         """
         Gets a field from the message
@@ -731,11 +746,13 @@ class WorkerRequestHandler:
         """
         self.logger.debug('got an endpoint discovery request')
         endpoints_proto = jina_pb2.EndpointsProto()
-        endpoints_proto.endpoints.extend(list(self._executor.requests.keys()))
+        endpoints_proto.endpoints.extend(
+            list(self._executor.requests.keys())
+        )
         return endpoints_proto
 
     def _extract_tracing_context(
-        self, metadata: grpc.aio.Metadata
+            self, metadata: grpc.aio.Metadata
     ) -> Optional['Context']:
         if self.tracer:
             from opentelemetry.propagate import extract
@@ -759,7 +776,7 @@ class WorkerRequestHandler:
         :returns: the response request
         """
         with MetricsTimer(
-            self._summary, self._receiving_request_seconds, self._metric_attributes
+                self._summary, self._receiving_request_seconds, self._metric_attributes
         ):
             try:
                 if self.logger.debug_enabled:
@@ -797,8 +814,8 @@ class WorkerRequestHandler:
                     )
 
                 if (
-                    self.args.exit_on_exceptions
-                    and type(ex).__name__ in self.args.exit_on_exceptions
+                        self.args.exit_on_exceptions
+                        and type(ex).__name__ in self.args.exit_on_exceptions
                 ):
                     self.logger.info('Exiting because of "--exit-on-exceptions".')
                     raise RuntimeTerminated
@@ -823,7 +840,7 @@ class WorkerRequestHandler:
         return info_proto
 
     async def stream(
-        self, request_iterator, context=None, *args, **kwargs
+            self, request_iterator, context=None, *args, **kwargs
     ) -> AsyncIterator['Request']:
         """
         stream requests from client iterator and stream responses back.

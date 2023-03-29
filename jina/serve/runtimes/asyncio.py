@@ -5,8 +5,6 @@ import threading
 import time
 from typing import TYPE_CHECKING, Optional, Union
 
-from grpc import RpcError
-
 from jina.constants import __windows__
 from jina.excepts import PortAlreadyUsed, RuntimeTerminated
 from jina.helper import ArgNamespace, is_port_free, random_ports, send_telemetry_event
@@ -223,18 +221,6 @@ class AsyncNewLoopRuntime:
 
         self.server = self._get_server()
         await self.server.setup_server()
-
-    @staticmethod
-    async def async_is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
-        """
-        Async Check if status is ready.
-        :param ctrl_address: the address where the control request needs to be sent
-        :param timeout: timeout of the health check in seconds
-        :param kwargs: extra keyword arguments
-        :return: True if status is ready else False.
-        """
-        try:
-            from grpc_health.v1 import health_pb2, health_pb2_grpc
 
             response = await send_health_check_async(ctrl_address, timeout=timeout)
             return (
