@@ -23,6 +23,15 @@ class HTTPBaseClient(BaseClient):
         self._endpoints = []
 
     async def _get_endpoints_from_openapi(self):
+        def extract_paths_by_method(spec):
+            paths_by_method = {}
+            for path, methods in spec["paths"].items():
+                for method, details in methods.items():
+                    if method not in paths_by_method:
+                        paths_by_method[method] = []
+                    paths_by_method[method].append(path)
+
+            return paths_by_method
         import aiohttp
         import json
 
@@ -32,7 +41,7 @@ class HTTPBaseClient(BaseClient):
             async with session.get(target_url) as response:
                 content = await response.read()
                 openapi_response = json.loads(content.decode())
-                self._endpoints = [path.strip('/') for path in openapi_response['paths'].keys()]
+                self._endpoints = extract_paths_by_method(openapi_response).get('post', [])
 
     async def _is_flow_ready(self, **kwargs) -> bool:
         """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
@@ -114,12 +123,13 @@ class HTTPBaseClient(BaseClient):
                 total_length=self._inputs_length, disable=not self.show_progress
             )
             p_bar = stack.enter_context(cm1)
-
             proto = 'https' if self.args.tls else 'http'
-            if on.strip('/') in self._endpoints:
+            endpoint = on.strip('/')
+            if endpoint != '' and endpoint in self._endpoints: # and 'post' not in self._endpoints : # TODO: post is an special endpoint. If post is there
                 url = f'{proto}://{self.args.host}:{self.args.port}/{on.strip("/")}'
             else:
                 url = f'{proto}://{self.args.host}:{self.args.port}/post'
+
             iolet = await stack.enter_async_context(
                 HTTPClientlet(
                     url=url,

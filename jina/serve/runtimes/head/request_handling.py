@@ -141,25 +141,6 @@ class HeaderRequestHandler(MonitoringRequestMixin):
             )
         )
 
-    async def load_balance(self, request):
-        # TODO: use `self._request_handler.load_balance` so that this server can be used with head and gateway request handlers
-        import aiohttp
-        from aiohttp import web
-        import itertools
-        servers = ['0.0.0.0:8081', '0.0.0.0:8082']
-        # handle TLS also
-        self.servers = itertools.cycle(servers)
-        target_server = next(self.servers)
-        target_url = f'http://{target_server}{request.path_qs}'
-
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(target_url) as response:
-                    content = await response.read()
-                    return web.Response(body=content, status=response.status, content_type=response.content_type)
-        except aiohttp.ClientError as e:
-            return web.Response(text=f'Error: {str(e)}', status=500)
-
     def _default_polling_dict(self, default_polling):
         return defaultdict(
             lambda: default_polling,

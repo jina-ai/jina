@@ -749,8 +749,6 @@ class WorkerRequestHandler:
         :returns: the response request
         """
         self.logger.debug('got an endpoint discovery request')
-        from google.protobuf import json_format
-
         endpoints_proto = jina_pb2.EndpointsProto()
         endpoints_proto.endpoints.extend(
             list(self._executor.requests.keys())
