@@ -426,6 +426,53 @@ jobs:
           flags: ${{ steps.test.outputs.codecov_flag }}
           fail_ci_if_error: false
 
+  # Build the wheels for Linux, Windows and macOS for Python 3.8 and newer
+  build_wheels:
+    name: Build wheel for cp${{ matrix.python }}-${{ matrix.platform_id }}-${{ matrix.manylinux_image }}
+    runs-on: ${{ matrix.os }}
+    needs: check_build_trigger
+
+    strategy:
+      # Ensure that a wheel builder finishes even if another fails
+      fail-fast: false
+      needs: prep-testbed
+      runs-on: ubuntu-latest
+      matrix:
+        os: [manylinux_x86_64, win_amd64, macosx_x86_64]
+        python: [38, 39, 310, 311]
+
+    steps:
+      - uses: actions/checkout@v2.5.0
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.7
+
+      - name: Build and test wheels
+        env:
+#          CONFTEST_PATH: ${{ github.workspace }}/conftest.py
+#          CONFTEST_NAME: conftest.py
+#          CIBW_ENVIRONMENT: SKLEARN_SKIP_NETWORK_TESTS=1
+#            SKLEARN_BUILD_PARALLEL=3
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.os }}
+          CIBW_ARCHS: all
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
+          CIBW_MANYLINUX_I686_IMAGE: manylinux2014
+#          CIBW_TEST_SKIP: "*-macosx_arm64"
+#          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: bash build_tools/github/repair_windows_wheels.sh {wheel} {dest_dir}
+#          CIBW_BEFORE_TEST_WINDOWS: bash build_tools/github/build_minimal_windows_image.sh ${{ matrix.python }}
+#          CIBW_TEST_REQUIRES: pytest pandas threadpoolctl
+          CIBW_TEST_COMMAND: python -c "import jina; import jraft"
+#          CIBW_TEST_COMMAND_WINDOWS: bash {project}/build_tools/github/test_windows_wheels.sh ${{ matrix.python }}
+          CIBW_BUILD_VERBOSITY: 1
+
+        run: python -m pip install cibuildwheel && python -m cibuildwheel --output-dir wheelhouse
+
+      - name: Store artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: wheelhouse/*.whl
+
   core-test:
     needs: prep-testbed
     runs-on: ubuntu-latest
