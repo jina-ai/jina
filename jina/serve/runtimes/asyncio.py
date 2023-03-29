@@ -222,13 +222,6 @@ class AsyncNewLoopRuntime:
         self.server = self._get_server()
         await self.server.setup_server()
 
-            response = await send_health_check_async(ctrl_address, timeout=timeout)
-            return (
-                response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
-            )
-        except RpcError:
-            return False
-
     async def async_teardown(self):
         """Shutdown the server."""
         await self.server.shutdown()
