@@ -435,8 +435,6 @@ jobs:
     strategy:
       # Ensure that a wheel builder finishes even if another fails
       fail-fast: false
-      needs: prep-testbed
-      runs-on: ubuntu-latest
       matrix:
         include:
           # linux
