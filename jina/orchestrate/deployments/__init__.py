@@ -417,7 +417,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
     def _get_connection_list_for_flow(self) -> List[str]:
         if self.head_args:
             # add head information
-            return [f'{self.protocol}://{self.host}:{self.head_port}']
+            return [f'{self.protocol.lower()}://{self.host}:{self.head_port}']
         else:
             # there is no head, add the worker connection information instead
             ports = self.ports
@@ -428,7 +428,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 for host in self.hosts
             ]
             return [
-                f'{self.protocol}://{host}:{port}' for host, port in zip(hosts, ports)
+                f'{self.protocol.lower()}://{host}:{port}' for host, port in zip(hosts, ports)
             ]
 
     def _get_connection_list_for_single_executor(
@@ -436,7 +436,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
     ) -> Union[List[str], Dict[str, List[str]]]:
         if self.head_args:
             # add head information
-            return [f'{self.protocol}://{self.host}:{self.head_port}']
+            return [f'{self.protocol.lower()}://{self.host}:{self.head_port}']
         else:
             # there is no head, add the worker connection information instead
             ports_dict = defaultdict(list)
@@ -457,7 +457,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             connection_dict = {}
             for protocol, ports in ports_dict.items():
                 connection_dict[protocol] = [
-                    f'{protocol}://{host}:{port}' for port in ports
+                    f'{protocol.lower()}://{host}:{port}' for port in ports
                 ]
 
             return connection_dict
