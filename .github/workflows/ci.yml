@@ -450,20 +450,11 @@ jobs:
 
       - name: Build and test wheels
         env:
-#          CONFTEST_PATH: ${{ github.workspace }}/conftest.py
-#          CONFTEST_NAME: conftest.py
-#          CIBW_ENVIRONMENT: SKLEARN_SKIP_NETWORK_TESTS=1
-#            SKLEARN_BUILD_PARALLEL=3
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.os }}
           CIBW_ARCHS: all
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
           CIBW_MANYLINUX_I686_IMAGE: manylinux2014
-#          CIBW_TEST_SKIP: "*-macosx_arm64"
-#          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: bash build_tools/github/repair_windows_wheels.sh {wheel} {dest_dir}
-#          CIBW_BEFORE_TEST_WINDOWS: bash build_tools/github/build_minimal_windows_image.sh ${{ matrix.python }}
-#          CIBW_TEST_REQUIRES: pytest pandas threadpoolctl
           CIBW_TEST_COMMAND: python -c "import jina; import jraft"
-#          CIBW_TEST_COMMAND_WINDOWS: bash {project}/build_tools/github/test_windows_wheels.sh ${{ matrix.python }}
           CIBW_BUILD_VERBOSITY: 1
 
         run: python -m pip install cibuildwheel && python -m cibuildwheel --output-dir wheelhouse
