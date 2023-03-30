@@ -21,7 +21,7 @@ class LoadBalancingServer(BaseServer):
     async def handle_request(self, request):
         """Method called to handle requests coming to the LoadBalancer
         :param request: request to handle
-        :return the response to the request
+        :return: the response to the request
         """
         return await self._request_handler._load_balance(request)
 

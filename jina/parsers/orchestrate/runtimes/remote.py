@@ -217,26 +217,7 @@ def mixin_http_gateway_parser(parser=None):
     """
     gp = add_arg_group(parser, title='HTTP Gateway')
 
-    gp.add_argument(
-        '--title',
-        type=str,
-        help='The title of this HTTP server. It will be used in automatics docs such as Swagger UI.',
-    )
-
-    gp.add_argument(
-        '--description',
-        type=str,
-        help='The description of this HTTP server. It will be used in automatics docs such as Swagger UI.',
-    )
-
-    gp.add_argument(
-        '--cors',
-        action='store_true',
-        default=False,
-        help='''
-        If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
-        ''',
-    )
+    _mixin_http_server_parser(gp)
 
     gp.add_argument(
         '--no-debug-endpoints',
@@ -264,7 +245,29 @@ def mixin_http_gateway_parser(parser=None):
         ''',
     )
 
-    gp.add_argument(
+
+def _mixin_http_server_parser(arg_group):
+    arg_group.add_argument(
+        '--title',
+        type=str,
+        help='The title of this HTTP server. It will be used in automatics docs such as Swagger UI.',
+    )
+
+    arg_group.add_argument(
+        '--description',
+        type=str,
+        help='The description of this HTTP server. It will be used in automatics docs such as Swagger UI.',
+    )
+
+    arg_group.add_argument(
+        '--cors',
+        action='store_true',
+        default=False,
+        help='''
+        If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
+        ''',
+    )
+    arg_group.add_argument(
         '--uvicorn-kwargs',
         action=KVAppendAction,
         metavar='KEY: VALUE',
@@ -276,8 +279,7 @@ More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
 
 ''',
     )
-
-    gp.add_argument(
+    arg_group.add_argument(
         '--ssl-certfile',
         type=str,
         help='''
@@ -286,12 +288,12 @@ More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         dest='ssl_certfile',
     )
 
-    gp.add_argument(
+    arg_group.add_argument(
         '--ssl-keyfile',
         type=str,
         help='''
-        the path to the key file
-        ''',
+            the path to the key file
+            ''',
         dest='ssl_keyfile',
     )
 
