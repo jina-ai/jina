@@ -1961,10 +1961,11 @@ class Flow(
                 f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
             )
 
-            print(
-                'Do you love Open Source? Help us get better and be heard in just 1 minute and 30 seconds :sparkling_heart:'
-                'Your feedback will help us build better features for [link=https://github.com/jina-ai/jina]Jina[/link], your loved open-source project :tada: https://10sw1tcpld4.typeform.com/jinasurveyfeb23?utm_source=jina Take the Jina user survey!'
-            )
+            if 'JINA_HIDE_SURVEY' not in os.environ:
+                print(
+                    'Do you love open source? Help us improve [link=https://github.com/jina-ai/jina]Jina[/link] in just 1 minute and 30 seconds by taking our survey: https://10sw1tcpld4.typeform.com/jinasurveyfeb23?utm_source=jina'
+                    '(Set environment variable JINA_HIDE_SURVEY=1 to hide this message.)'
+                )
 
     @property
     def num_deployments(self) -> int:
