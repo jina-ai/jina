@@ -518,13 +518,18 @@ jobs:
         with:
           go-version: '^1.19.5' # The Go version to download (if necessary) and use.
 
-      - name: Install cibuildwheel
-        run: python -m pip install cibuildwheel==2.12.1
-
       - name: Build and test wheels
+        env:
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_ARCHS: all
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
+          CIBW_MANYLINUX_I686_IMAGE: manylinux2014
+          CIBW_TEST_COMMAND: python -c "import jina; import jraft"
+          CIBW_BUILD_VERBOSITY: 1
 
         run: |
           ls jina/serve/consensus
+          python -m pip install cibuildwheel
           python -m cibuildwheel --output-dir wheelhouse
 
       - name: Store artifacts
