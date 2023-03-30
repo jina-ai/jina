@@ -1964,7 +1964,7 @@ class Flow(
             if 'JINA_HIDE_SURVEY' not in os.environ:
                 print(
                     'Do you love open source? Help us improve [link=https://github.com/jina-ai/jina]Jina[/link] in just 1 minute and 30 seconds by taking our survey: https://10sw1tcpld4.typeform.com/jinasurveyfeb23?utm_source=jina'
-                    '(Set JINA_HIDE_SURVEY=1 to hide this message.)'
+                    '(Set environment variable JINA_HIDE_SURVEY=1 to hide this message.)'
                 )
 
     @property
