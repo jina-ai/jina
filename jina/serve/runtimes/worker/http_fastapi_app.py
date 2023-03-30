@@ -10,6 +10,14 @@ def get_fastapi_app(
         caller: Callable,
         **kwargs
 ):
+    """
+    Get the app from FastAPI as the REST interface.
+
+    :param request_models_map: Map describing the endpoints and its Pydantic models
+    :param caller: Callable to be handled by the endpoints of the returned FastAPI app
+    :param kwargs: Extra kwargs to make it compatible with other methods
+    :return: fastapi app
+    """
     with ImportExtensions(required=True):
         from fastapi import FastAPI, Response
         import pydantic

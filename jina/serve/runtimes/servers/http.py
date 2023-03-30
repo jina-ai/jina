@@ -142,12 +142,17 @@ class FastAPIBaseServer(BaseServer):
 
     @property
     def _should_exit(self):
+        """Property describing if server is ready to exit
+        :return: boolean indicating if Server ready to exit
+        """
         return self.server.should_exit
 
     @property
     def should_exit(self):
+        """Property describing if server is ready to exit
+        :return: boolean indicating if Server ready to exit
+        """
         return self._should_exit
-
 
     @staticmethod
     def is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:

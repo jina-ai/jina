@@ -44,6 +44,7 @@ def get_fastapi_app(
     :param logger: Jina logger.
     :param tracing: Enables tracing if set to True.
     :param tracer_provider: If tracing is enabled the tracer_provider will be used to instrument the code.
+    :param kwargs: Extra kwargs to make it compatible with other methods
     :return: fastapi app
     """
     with ImportExtensions(required=True):

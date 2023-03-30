@@ -19,6 +19,10 @@ class LoadBalancingServer(BaseServer):
         self._server_exit = False
 
     async def handle_request(self, request):
+        """Method called to handle requests coming to the LoadBalancer
+        :param request: request to handle
+        :return the response to the request
+        """
         return await self._request_handler._load_balance(request)
 
     async def setup_server(self):
@@ -30,24 +34,28 @@ class LoadBalancingServer(BaseServer):
 
     async def run_server(self):
         """Run HTTP server forever"""
-        #await asyncio.sleep(3)
         await web._run_app(
             app=self.app,
             host=self.host,
             port=self.port,
         )
-        # if we are here, it finished
-        #self._server_exit = True
 
     async def shutdown(self):
+        """Shutdown the server and free other allocated resources, e.g, streamer object, health check service, ..."""
         self._server_exit = True
         await super().shutdown()
         await self._request_handler.close()
 
     @property
     def _should_exit(self):
+        """Property describing if server is ready to exit
+        :return: boolean indicating if Server ready to exit
+        """
         return self._server_exit
 
     @property
     def should_exit(self):
+        """Property describing if server is ready to exit
+        :return: boolean indicating if Server ready to exit
+        """
         return self._should_exit

@@ -101,10 +101,16 @@ class WebSocketServer(BaseServer):
 
     @property
     def _should_exit(self):
+        """Property describing if server is ready to exit
+        :return: boolean indicating if Server ready to exit
+        """
         return self.server.should_exit
 
     @property
     def should_exit(self):
+        """Property describing if server is ready to exit
+        :return: boolean indicating if Server ready to exit
+        """
         return self._should_exit
 
     async def shutdown(self):
