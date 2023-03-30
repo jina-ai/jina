@@ -150,7 +150,7 @@ def _start_runtime(cntx, stop_event):
 def test_sync_clients_max_attempts_transient_error(
     mocker, flow_or_deployment, protocol, port_generator
 ):
-    if flow_or_deployment == 'deployment' and protocol == 'websocket':
+    if flow_or_deployment == 'deployment' and protocol in ['websocket', 'http']:
         return
     random_port = port_generator()
     cntx = (

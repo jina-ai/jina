@@ -727,7 +727,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         protocol = getattr(args, 'protocol', ['grpc'])
         if not isinstance(protocol, list):
             protocol = [protocol]
-        protocol = [str(_p) + ('s' if self.tls_enabled else '') for _p in protocol]
+        protocol = [str(_p).lower() + ('s' if self.tls_enabled else '') for _p in protocol]
         if len(protocol) == 1:
             return protocol[0]
         else:
