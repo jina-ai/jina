@@ -128,9 +128,12 @@ class HTTPBaseClient(BaseClient):
             p_bar = stack.enter_context(cm1)
             proto = 'https' if self.args.tls else 'http'
             endpoint = on.strip('/')
-            print(f' endpoint {endpoint} vs {self._endpoints}')
-            if endpoint != '' and endpoint in self._endpoints: # TODO: post is an special endpoint. If post is there
+            has_default_endpoint = 'default' in self._endpoints
+
+            if endpoint != '' and endpoint in self._endpoints:
                 url = f'{proto}://{self.args.host}:{self.args.port}/{on.strip("/")}'
+            elif has_default_endpoint:
+                url = f'{proto}://{self.args.host}:{self.args.port}/default'
             else:
                 url = f'{proto}://{self.args.host}:{self.args.port}/post'
 

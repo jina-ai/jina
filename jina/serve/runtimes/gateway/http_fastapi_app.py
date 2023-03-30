@@ -247,23 +247,61 @@ def get_fastapi_app(
         )
         kwargs['methods'] = kwargs.get('methods', ['POST'])
 
-        @app.api_route(
-            path=http_path or exec_endpoint, name=http_path or exec_endpoint, **kwargs
-        )
-        async def foo(body: JinaRequestModel):
-            from jina.enums import DataInputType
-
-            bd = body.dict() if body else {'data': None}
-            bd['exec_endpoint'] = exec_endpoint
-            req_generator_input = bd
-            req_generator_input['data_type'] = DataInputType.DICT
-            if bd['data'] is not None and 'docs' in bd['data']:
-                req_generator_input['data'] = req_generator_input['data']['docs']
-
-            result = await _get_singleton_result(
-                request_generator(**req_generator_input)
+        if kwargs['methods'] == ['POST']:
+            @app.api_route(
+                path=http_path or exec_endpoint, name=http_path or exec_endpoint, **kwargs
             )
-            return result
+            async def foo_post(body: JinaRequestModel, response: Response):
+                from jina.enums import DataInputType
+                bd = body.dict() if body else {'data': None}
+                bd['exec_endpoint'] = exec_endpoint
+                req_generator_input = bd
+                req_generator_input['data_type'] = DataInputType.DICT
+                if bd['data'] is not None and 'docs' in bd['data']:
+                    req_generator_input['data'] = req_generator_input['data']['docs']
+
+                try:
+                    result = await _get_singleton_result(
+                        request_generator(**req_generator_input)
+                    )
+                except InternalNetworkError as err:
+                    import grpc
+
+                    if (
+                            err.code() == grpc.StatusCode.UNAVAILABLE
+                            or err.code() == grpc.StatusCode.NOT_FOUND
+                    ):
+                        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+                    elif err.code() == grpc.StatusCode.DEADLINE_EXCEEDED:
+                        response.status_code = status.HTTP_504_GATEWAY_TIMEOUT
+                    else:
+                        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+                    result = bd  # send back the request
+                    result['header'] = _generate_exception_header(
+                        err
+                    )  # attach exception details to response header
+                    logger.error(
+                        f'Error while getting responses from deployments: {err.details()}'
+                    )
+                return result
+        else:
+            @app.api_route(
+                path=http_path or exec_endpoint, name=http_path or exec_endpoint, **kwargs
+            )
+            async def foo_no_post(body: JinaRequestModel):
+                from jina.enums import DataInputType
+                bd = body.dict() if body else {'data': None}
+                bd['exec_endpoint'] = exec_endpoint
+                req_generator_input = bd
+                req_generator_input['data_type'] = DataInputType.DICT
+                if bd['data'] is not None and 'docs' in bd['data']:
+                    req_generator_input['data'] = req_generator_input['data']['docs']
+
+                return await _get_singleton_result(
+                    request_generator(**req_generator_input)
+                )
+
+
 
     if not no_crud_endpoints:
         openapi_tags.append(
