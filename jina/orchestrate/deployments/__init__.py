@@ -128,6 +128,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
     def __init__(
         self,
         *,
+        allow_concurrent: Optional[bool] = False,
         compression: Optional[str] = None,
         connection_list: Optional[str] = None,
         disable_auto_volume: Optional[bool] = False,
@@ -190,6 +191,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
     ):
         """Create a Deployment to serve or deploy and Executor or Gateway
 
+        :param allow_concurrent: Allow concurrent requests to be processed by the Executor. This is only recommended if the Executor is thread-safe.
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
@@ -727,7 +729,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         protocol = getattr(args, 'protocol', ['grpc'])
         if not isinstance(protocol, list):
             protocol = [protocol]
-        protocol = [str(_p).lower() + ('s' if self.tls_enabled else '') for _p in protocol]
+        protocol = [
+            str(_p).lower() + ('s' if self.tls_enabled else '') for _p in protocol
+        ]
         if len(protocol) == 1:
             return protocol[0]
         else:
