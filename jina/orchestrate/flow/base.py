@@ -828,6 +828,8 @@ class Flow(
         allow_concurrent: Optional[bool] = False,
         compression: Optional[str] = None,
         connection_list: Optional[str] = None,
+        cors: Optional[bool] = False,
+        description: Optional[str] = None,
         disable_auto_volume: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
@@ -865,9 +867,12 @@ class Flow(
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'WorkerRuntime',
         shards: Optional[int] = 1,
+        ssl_certfile: Optional[str] = None,
+        ssl_keyfile: Optional[str] = None,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
+        title: Optional[str] = None,
         tls: Optional[bool] = False,
         traces_exporter_host: Optional[str] = None,
         traces_exporter_port: Optional[int] = None,
@@ -881,6 +886,7 @@ class Flow(
         uses_metas: Optional[dict] = None,
         uses_requests: Optional[dict] = None,
         uses_with: Optional[dict] = None,
+        uvicorn_kwargs: Optional[dict] = None,
         volumes: Optional[List[str]] = None,
         when: Optional[dict] = None,
         workspace: Optional[str] = None,
@@ -891,6 +897,8 @@ class Flow(
         :param allow_concurrent: Allow concurrent requests to be processed by the Executor. This is only recommended if the Executor is thread-safe.
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
+        :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
+        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -962,9 +970,12 @@ class Flow(
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
+        :param ssl_certfile: the path to the certificate file
+        :param ssl_keyfile: the path to the key file
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
+        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param tls: If set, connect to deployment using tls encryption
         :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
         :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
@@ -988,6 +999,9 @@ class Flow(
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
+        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
+
+          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         :param volumes: The path on the host to be mounted inside the container.
 
           Note,
@@ -1044,6 +1058,8 @@ class Flow(
         :param allow_concurrent: Allow concurrent requests to be processed by the Executor. This is only recommended if the Executor is thread-safe.
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
+        :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
+        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -1115,9 +1131,12 @@ class Flow(
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
+        :param ssl_certfile: the path to the certificate file
+        :param ssl_keyfile: the path to the key file
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
+        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param tls: If set, connect to deployment using tls encryption
         :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
         :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
@@ -1141,6 +1160,9 @@ class Flow(
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
+        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
+
+          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         :param volumes: The path on the host to be mounted inside the container.
 
           Note,

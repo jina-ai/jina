@@ -12,12 +12,12 @@
 | `title` | The title of this HTTP server. It will be used in automatics docs such as Swagger UI. | `string` | `None` |
 | `description` | The description of this HTTP server. It will be used in automatics docs such as Swagger UI. | `string` | `None` |
 | `cors` | If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access. | `boolean` | `False` |
-| `no_debug_endpoints` | If set, `/status` `/post` endpoints are removed from HTTP interface. | `boolean` | `False` |
-| `no_crud_endpoints` | If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.<br><br>        Any executor that has `@requests(on=...)` bound with those values will receive data requests. | `boolean` | `False` |
-| `expose_endpoints` | A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints. | `string` | `None` |
 | `uvicorn_kwargs` | Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server<br><br>More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/ | `object` | `None` |
 | `ssl_certfile` | the path to the certificate file | `string` | `None` |
 | `ssl_keyfile` | the path to the key file | `string` | `None` |
+| `no_debug_endpoints` | If set, `/status` `/post` endpoints are removed from HTTP interface. | `boolean` | `False` |
+| `no_crud_endpoints` | If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.<br><br>        Any executor that has `@requests(on=...)` bound with those values will receive data requests. | `boolean` | `False` |
+| `expose_endpoints` | A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints. | `string` | `None` |
 | `expose_graphql_endpoint` | If set, /graphql endpoint is added to HTTP interface. | `boolean` | `False` |
 | `host` | The host address of the runtime, by default it is 0.0.0.0. | `string` | `0.0.0.0` |
 | `proxy` | If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy | `boolean` | `False` |

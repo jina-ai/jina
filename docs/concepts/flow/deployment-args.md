@@ -59,3 +59,9 @@
 | `external` | The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow. | `boolean` | `False` |
 | `grpc_metadata` | The metadata to be passed to the gRPC request. | `object` | `None` |
 | `tls` | If set, connect to deployment using tls encryption | `boolean` | `False` |
+| `title` | The title of this HTTP server. It will be used in automatics docs such as Swagger UI. | `string` | `None` |
+| `description` | The description of this HTTP server. It will be used in automatics docs such as Swagger UI. | `string` | `None` |
+| `cors` | If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access. | `boolean` | `False` |
+| `uvicorn_kwargs` | Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server<br><br>More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/ | `object` | `None` |
+| `ssl_certfile` | the path to the certificate file | `string` | `None` |
+| `ssl_keyfile` | the path to the key file | `string` | `None` |
