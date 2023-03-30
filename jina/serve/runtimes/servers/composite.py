@@ -40,6 +40,7 @@ class CompositeServer(BaseServer):
             server_kwargs['req_handler'] = self._request_handler
             server = server_cls(**server_kwargs)
             self.servers.append(server)
+        self.gateways = self.servers # for backwards compatibility
 
     async def setup_server(self):
         """
