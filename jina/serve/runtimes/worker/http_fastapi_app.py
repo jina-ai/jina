@@ -19,8 +19,9 @@ def get_fastapi_app(
     :return: fastapi app
     """
     with ImportExtensions(required=True):
-        from fastapi import FastAPI, Response
+        from fastapi import FastAPI, Response, HTTPException
         import pydantic
+    from jina.proto import jina_pb2
 
     app = FastAPI()
 
@@ -37,7 +38,11 @@ def get_fastapi_app(
             req.parameters = body.parameters
             req.header.exec_endpoint = endpoint_path
             resp = await caller(req)
-            return output_model(data=resp.docs.to_dict(), parameters=resp.parameters)
+            status = resp.header.status
+            if status.code == jina_pb2.StatusProto.ERROR:
+                raise HTTPException(status_code=499, detail=status.description)
+            else:
+                return output_model(data=resp.docs.to_dict(), parameters=resp.parameters)
 
     for endpoint, input_output_map in request_models_map.items():
         if endpoint != '_jina_dry_run_':
