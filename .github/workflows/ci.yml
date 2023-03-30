@@ -455,7 +455,7 @@ jobs:
             platform_id: manylinux_x86_64
             manylinux_image: manylinux2014
 
-          # MacOS
+          # MacOS emulated
           - os: macos-latest
             python: 38
             platform_id: macosx_x86_64
@@ -468,6 +468,20 @@ jobs:
           - os: macos-latest
             python: 311
             platform_id: macosx_x86_64
+
+          # MacOS native
+          - os: macos-latest
+            python: 38
+            platform_id: macosx_arn64
+          - os: macos-latest
+            python: 39
+            platform_id: macosx_arn64
+          - os: macos-latest
+            python: 310
+            platform_id: macosx_arn64
+          - os: macos-latest
+            python: 311
+            platform_id: macosx_arn64
 
           # Windows
           - os: windows-2019
