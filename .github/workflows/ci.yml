@@ -439,6 +439,10 @@ jobs:
         include:
           # linux
           - os: ubuntu-latest
+            python: 37
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux2014
+          - os: ubuntu-latest
             python: 38
             platform_id: manylinux_x86_64
             manylinux_image: manylinux2014
@@ -457,6 +461,9 @@ jobs:
 
           # MacOS emulated
           - os: macos-latest
+            python: 37
+            platform_id: macosx_x86_64
+          - os: macos-latest
             python: 38
             platform_id: macosx_x86_64
           - os: macos-latest
@@ -472,18 +479,21 @@ jobs:
           # MacOS native
           - os: macos-latest
             python: 38
-            platform_id: macosx_arn64
+            platform_id: macosx_arm64
           - os: macos-latest
             python: 39
-            platform_id: macosx_arn64
+            platform_id: macosx_arm64
           - os: macos-latest
             python: 310
-            platform_id: macosx_arn64
+            platform_id: macosx_arm64
           - os: macos-latest
             python: 311
-            platform_id: macosx_arn64
+            platform_id: macosx_arm64
 
           # Windows
+          - os: windows-2019
+            python: 37
+            platform_id: win_amd64
           - os: windows-2019
             python: 38
             platform_id: win_amd64
