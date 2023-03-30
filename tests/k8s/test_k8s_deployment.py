@@ -1,12 +1,12 @@
 import asyncio
 import os
-import uuid
 
 import pytest
 from docarray import DocumentArray
 from pytest_kind import cluster
 
 from jina import Deployment
+from jina.helper import random_port
 from tests.k8s.conftest import shell_portforward
 
 cluster.KIND_VERSION = 'v0.11.1'
@@ -118,7 +118,7 @@ async def test_deployment_serve_k8s(
     app_client = client.AppsV1Api(api_client=api_client)
 
     # test with custom port
-    port = 12345
+    port = random_port()
     try:
         dep = Deployment(
             name='test-executor',
@@ -192,3 +192,7 @@ async def test_deployment_serve_k8s(
     except Exception as exc:
         logger.error(f' Exception raised {exc}')
         raise exc
+
+
+async def test_deployment_http_composite():
+    pass
