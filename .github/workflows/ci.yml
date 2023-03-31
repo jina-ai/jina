@@ -430,9 +430,11 @@ jobs:
   build-wheels:
     runs-on: ${{ matrix.os }}
     strategy:
+      # Ensure that a wheel builder finishes even if another fails
+      fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
-        python-version: [ 3.7, 3.8, 3.9, 3.10 ]
+        python-version: [ 3.7, 3.8, 3.9 ]
 
     steps:
       - name: Check out repository
