@@ -457,7 +457,7 @@ jobs:
 
       - name: Build wheels
         run: |
-          pkg-config --list-all | grep python
+          pkg-config --list-all
           python setup.py build_ext --inplace
           python setup.py bdist_wheel
 
