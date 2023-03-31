@@ -8,10 +8,11 @@ from jina import Client, Document, Deployment
 from tests.docker_compose.conftest import DockerComposeServices
 
 
-async def run_test(port, endpoint, num_docs=10, request_size=10):
+async def run_test(port, endpoint, num_docs=10, request_size=10, protocol='grpc'):
     # start port forwarding
     client_kwargs = dict(
         host='localhost',
+        protocol=protocol,
         port=port,
         asyncio=True,
     )
@@ -45,9 +46,10 @@ def deployment_with_replicas_with_sharding(docker_images, polling):
 
 
 @pytest.fixture()
-def deployment_without_replicas_without_sharding(docker_images):
+def deployment_without_replicas_without_sharding(docker_images, protocol='grpc'):
     deployment = Deployment(
         name='test_executor',
+        protocol=protocol,
         port=9090,
         uses=f'docker://{docker_images[0]}',
     )
@@ -252,13 +254,14 @@ async def test_deployment_with_replicas_without_sharding(deployment_with_replica
     [['test-executor', 'jinaai/jina']],
     indirect=True,
 )
-async def test_deployment_without_replicas_without_sharding(deployment_without_replicas_without_sharding, tmpdir):
+@pytest.mark.parametrize('protocol', ['grpc', 'http'],  indirect=True)
+async def test_deployment_without_replicas_without_sharding(deployment_without_replicas_without_sharding, tmpdir, protocol):
     dump_path = os.path.join(str(tmpdir), 'docker-compose-deployment-without-replicas-without-sharding.yml')
     deployment_without_replicas_without_sharding.to_docker_compose_yaml(dump_path)
 
     with DockerComposeServices(dump_path):
         resp = await run_test(
-            port=deployment_without_replicas_without_sharding.port, endpoint='/debug', num_docs=10, request_size=1
+            port=deployment_without_replicas_without_sharding.port, endpoint='/debug', num_docs=10, request_size=1, protocol=protocol
         )
 
     assert len(resp) == 10

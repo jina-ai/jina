@@ -107,9 +107,12 @@ async def create_executor_deployment_and_wait_ready(
 )
 @pytest.mark.parametrize('shards', [1, 2])
 @pytest.mark.parametrize('replicas', [1, 2])
+@pytest.mark.parametrize('protocol', ['grpc', 'http'])
 async def test_deployment_serve_k8s(
-    logger, docker_images, shards, replicas, tmpdir, k8s_cluster
+    logger, docker_images, shards, replicas, protocol, tmpdir, k8s_cluster
 ):
+    if protocol == 'http' and shards > 1:
+        return
     from kubernetes import client
 
     namespace = f'test-deployment-serve-k8s-{shards}-{replicas}'
@@ -124,6 +127,7 @@ async def test_deployment_serve_k8s(
             name='test-executor',
             uses=f'docker://{docker_images[0]}',
             shards=shards,
+            protocol=protocol,
             replicas=replicas,
             port=port,
         )
@@ -163,7 +167,7 @@ async def test_deployment_serve_k8s(
             port,
             namespace,
         ):
-            client = Client(port=port, asyncio=True)
+            client = Client(port=port, asyncio=True, protocol=protocol)
 
             # test with streaming
             async for docs in client.post(
