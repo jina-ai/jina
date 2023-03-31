@@ -459,6 +459,11 @@ jobs:
         run: |
           python setup.py build_ext --inplace
           python setup.py bdist_wheel
+      - name: Test wheels
+        run: |
+          WHEEL_FILE=$(ls dist/*.whl)
+          python -m pip install $WHEEL_FILE
+          python -c "import jraft"
 
       - name: Upload wheels as artifacts
         uses: actions/upload-artifact@v2
