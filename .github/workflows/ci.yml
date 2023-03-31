@@ -427,115 +427,42 @@ jobs:
           fail_ci_if_error: false
 
   # Build the wheels for Linux, Windows and macOS for Python 3.8 and newer
-  build_wheels:
-    name: Build wheel for cp${{ matrix.python }}-${{ matrix.platform_id }}-${{ matrix.manylinux_image }}
+  build-wheels:
     runs-on: ${{ matrix.os }}
-    needs: prep-testbed
-
     strategy:
-      # Ensure that a wheel builder finishes even if another fails
-      fail-fast: false
       matrix:
-        include:
-          # linux
-          - os: ubuntu-latest
-            python: 37
-            platform_id: manylinux_x86_64
-            manylinux_image: manylinux2014
-          - os: ubuntu-latest
-            python: 38
-            platform_id: manylinux_x86_64
-            manylinux_image: manylinux2014
-          - os: ubuntu-latest
-            python: 39
-            platform_id: manylinux_x86_64
-            manylinux_image: manylinux2014
-          - os: ubuntu-latest
-            python: 310
-            platform_id: manylinux_x86_64
-            manylinux_image: manylinux2014
-          - os: ubuntu-latest
-            python: 311
-            platform_id: manylinux_x86_64
-            manylinux_image: manylinux2014
-
-          # MacOS emulated
-          - os: macos-latest
-            python: 37
-            platform_id: macosx_x86_64
-          - os: macos-latest
-            python: 38
-            platform_id: macosx_x86_64
-          - os: macos-latest
-            python: 39
-            platform_id: macosx_x86_64
-          - os: macos-latest
-            python: 310
-            platform_id: macosx_x86_64
-          - os: macos-latest
-            python: 311
-            platform_id: macosx_x86_64
-
-          # MacOS native
-          - os: macos-latest
-            python: 38
-            platform_id: macosx_arm64
-          - os: macos-latest
-            python: 39
-            platform_id: macosx_arm64
-          - os: macos-latest
-            python: 310
-            platform_id: macosx_arm64
-          - os: macos-latest
-            python: 311
-            platform_id: macosx_arm64
-
-          # Windows
-          - os: windows-2019
-            python: 37
-            platform_id: win_amd64
-          - os: windows-2019
-            python: 38
-            platform_id: win_amd64
-          - os: windows-2019
-            python: 39
-            platform_id: win_amd64
-          - os: windows-2019
-            python: 310
-            platform_id: win_amd64
-          - os: windows-2019
-            python: 311
-            platform_id: win_amd64
-
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        python-version: [ 3.7, 3.8, 3.9, 3.10 ]
 
     steps:
-      - uses: actions/checkout@v2.5.0
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.9
-      - uses: actions/setup-go@v4
-        with:
-          go-version: '^1.19.5' # The Go version to download (if necessary) and use.
+      - name: Check out repository
+        uses: actions/checkout@v2
 
-      - name: Build and test wheels
-        env:
-          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
-          CIBW_ARCHS: all
-          CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
-          CIBW_MANYLINUX_I686_IMAGE: manylinux2014
-          CIBW_TEST_COMMAND: python -c "import jina; import jraft"
-          CIBW_BUILD_VERBOSITY: 1
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
 
+      - name: Set up Golang
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.19
+
+      - name: Install dependencies
         run: |
-          ls jina/serve/consensus
-          python -m pip install cibuildwheel
-          python -m cibuildwheel --output-dir wheelhouse
+          python -m pip install --upgrade pip
+          pip install setuptools wheel
 
-      - name: Store artifacts
-        uses: actions/upload-artifact@v3
+      - name: Build wheels
+        run: |
+          python setup.py build_ext --inplace
+          python setup.py bdist_wheel
+
+      - name: Upload wheels as artifacts
+        uses: actions/upload-artifact@v2
         with:
-          path: wheelhouse/*.whl
+          name: wheels-${{ matrix.os }}-${{ matrix.python-version }}
+          path: dist/*.whl
 
   core-test:
     needs: prep-testbed
