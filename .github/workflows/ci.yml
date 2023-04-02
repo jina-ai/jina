@@ -457,7 +457,7 @@ jobs:
 
       - name: Build wheels
         run: |
-          setuptools-golang-build-manylinux-wheels --golang 1.19.5 --pythons ${{ matrix.python-version[1] }}
+          setuptools-golang-build-manylinux-wheels --pythons ${{ matrix.python-version[1] }}
 
       - name: Test wheels
         run: |
