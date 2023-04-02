@@ -527,10 +527,7 @@ jobs:
           CIBW_TEST_COMMAND: python -c "import jina; import jraft"
           CIBW_BUILD_VERBOSITY: 1
 
-        run: |
-          ls jina/serve/consensus
-          python -m pip install cibuildwheel
-          python -m cibuildwheel --output-dir wheelhouse
+        run: python -m pip install cibuildwheel && python -m cibuildwheel --output-dir wheelhouse
 
       - name: Store artifacts
         uses: actions/upload-artifact@v3
