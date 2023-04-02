@@ -433,33 +433,31 @@ jobs:
       # Ensure that a wheel builder finishes even if another fails
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
-        python-version: [ 3.7, 3.8, 3.9 ]
+        os: [ ubuntu-latest ]
+        python-version: [ ['3.7', "cp37-cp37m"], ['3.8', "cp38-cp38"], ['3.9', "cp39-cp39"], ['3.10', "cp310-cp310"] ]
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
 
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version[0] }}
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.python-version[0] }}
 
       - name: Set up Golang
         uses: actions/setup-go@v2
         with:
-          go-version: 1.19
+          go-version: 1.19.5
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install setuptools wheel
+          pip install setuptools wheel setuptools-golang
 
       - name: Build wheels
         run: |
-          pkg-config --list-all
-          python setup.py build_ext --inplace
-          python setup.py bdist_wheel
+          setuptools-golang-build-manylinux-wheels --golang 1.19.5 --pythons ${{ matrix.python-version[1] }}
 
       - name: Test wheels
         run: |
