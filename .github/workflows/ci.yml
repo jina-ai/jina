@@ -518,7 +518,7 @@ jobs:
           pip install cibuildwheel
 
       - name: Build wheels with setuptools-golang-build-manylinux-wheel
-        if: ${{ matrix.os }} == 'ubuntu-latest'
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           setuptools-golang-build-manylinux-wheels --pythons ${{ matrix.python-manylinux-tag }}
 
@@ -528,7 +528,7 @@ jobs:
           CIBW_ARCHS: all
           CIBW_TEST_COMMAND: python -c "import jina; import jraft"
           CIBW_BUILD_VERBOSITY: 1
-        if: ${{ matrix.os }} == 'macos-latest'
+        if: ${{ matrix.os == 'macos-latest' }}
         run: |
           python -m cibuildwheel --output-dir dist
 
