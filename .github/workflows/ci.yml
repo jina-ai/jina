@@ -433,7 +433,6 @@ jobs:
       # Ensure that a wheel builder finishes even if another fails
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
         include:
           # linux
           - os: ubuntu-latest
@@ -533,6 +532,7 @@ jobs:
           WHEEL_FILE=$(ls dist/*.whl)
           python -m pip install $WHEEL_FILE
           python -c "import jraft"
+        if: ${{ matrix.os != 'macos-latest' || matrix.platform_id != 'macosx_arm64' }} # runners do not necessarily have macos ARM, so cannot run this test for it
 
       - name: Upload wheels as artifacts
         uses: actions/upload-artifact@v2
