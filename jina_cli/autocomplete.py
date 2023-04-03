@@ -232,7 +232,7 @@ ac_table = {
         'cloud logout': ['--help'],
         'cloud deploy': ['--help'],
         'cloud normalize': ['--help', '--output', '--verbose'],
-        'cloud list': ['--help', '--phase', '--name'],
+        'cloud list': ['--help', '--phase', '--name', '--labels'],
         'cloud status': ['--help', '--verbose'],
         'cloud remove': ['--help', '--phase'],
         'cloud new': ['--help'],
