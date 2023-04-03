@@ -562,7 +562,8 @@ jobs:
 
       - name: Pre-release (.devN)
         run: |
-          ls dist # git fetch --depth=1 origin +refs/tags/*:refs/tags/* && pip install twine wheel && ./scripts/release.sh
+          pip install twine wheel
+          twine upload dist/*
         env:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
