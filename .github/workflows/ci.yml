@@ -436,9 +436,6 @@ jobs:
         include:
           # linux
           - os: ubuntu-latest
-            python: '3.7'
-            python-manylinux-tag: "cp37-cp37m"
-          - os: ubuntu-latest
             python: '3.8'
             python-manylinux-tag: "cp38-cp38"
           - os: ubuntu-latest
@@ -537,8 +534,32 @@ jobs:
       - name: Upload wheels as artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: wheels-${{ matrix.os }}-${{ matrix.python }}
           path: dist/*.whl
+
+  regular-release:
+    needs: build-wheels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+          fetch-depth: 100  # means max contribute history is limited to 100 lines
+      #          submodules: true
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - uses: actions/download-artifact@v3
+        with:
+          name: artifact
+
+      - name: Pre-release (.devN)
+        run: |
+          ls # git fetch --depth=1 origin +refs/tags/*:refs/tags/* && pip install twine wheel && ./scripts/release.sh
+        env:
+          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+          JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
+
 
   core-test:
     needs: prep-testbed
