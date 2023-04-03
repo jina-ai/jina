@@ -551,10 +551,12 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: artifact
+          path: dist
+
 
       - name: Pre-release (.devN)
         run: |
-          ls # git fetch --depth=1 origin +refs/tags/*:refs/tags/* && pip install twine wheel && ./scripts/release.sh
+          ls dist # git fetch --depth=1 origin +refs/tags/*:refs/tags/* && pip install twine wheel && ./scripts/release.sh
         env:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
