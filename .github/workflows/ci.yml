@@ -434,16 +434,76 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ ['3.7', "cp37-cp37m"], ['3.8', "cp38-cp38"], ['3.9', "cp39-cp39"], ['3.10', "cp310-cp310"], ['3.11', "cp311-cp311"] ]
+        include:
+          # linux
+          - os: ubuntu-latest
+            python: '3.7'
+            python-manylinux-tag: "cp37-cp37m"
+          - os: ubuntu-latest
+            python: '3.8'
+            python-manylinux-tag: "cp38-cp38"
+          - os: ubuntu-latest
+            python: '3.9'
+            python-manylinux-tag: "cp39-cp39"
+          - os: ubuntu-latest
+            python: '3.10'
+            python-manylinux-tag: "cp310-cp310"
+          - os: ubuntu-latest
+            python: '3.11'
+            python-manylinux-tag: "cp311-cp311"
+
+          # MacOS emulated
+          - os: macos-latest
+            python: '3.7'
+            python-cibuildwheels: '37'
+            platform_id: macosx_x86_64
+          - os: macos-latest
+            python: '3.8'
+            python-cibuildwheels: '38'
+            platform_id: macosx_x86_64
+          - os: macos-latest
+            python: '3.9'
+            python-cibuildwheels: '39'
+            platform_id: macosx_x86_64
+          - os: macos-latest
+            python: '3.10'
+            python-cibuildwheels: '310'
+            platform_id: macosx_x86_64
+          - os: macos-latest
+            python: '3.11'
+            python-cibuildwheels: '311'
+            platform_id: macosx_x86_64
+
+          # MacOS native
+          - os: macos-latest
+            python: '3.7'
+            python-cibuildwheels: '37'
+            platform_id: macosx_arm64
+          - os: macos-latest
+            python: '3.8'
+            python-cibuildwheels: '38'
+            platform_id: macosx_arm64
+          - os: macos-latest
+            python: '3.9'
+            python-cibuildwheels: '39'
+            platform_id: macosx_arm64
+          - os: macos-latest
+            python: '3.10'
+            python-cibuildwheels: '310'
+            platform_id: macosx_arm64
+          - os: macos-latest
+            python: '3.11'
+            python-cibuildwheels: '311'
+            platform_id: macosx_arm64
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
 
-      - name: Set up Python ${{ matrix.python-version[0] }}
+      - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version[0] }}
+          python-version: ${{ matrix.python }}
 
       - name: Set up Golang
         uses: actions/setup-go@v2
@@ -455,10 +515,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install setuptools wheel
           pip install git+https://github.com/alaeddine-13/setuptools-golang.git
+          pip install cibuildwheel
 
-      - name: Build wheels
+      - name: Build wheels with setuptools-golang-build-manylinux-wheel
+        if: ${{ matrix.os }} == 'ubuntu-latest'
         run: |
-          setuptools-golang-build-manylinux-wheels --pythons ${{ matrix.python-version[1] }}
+          setuptools-golang-build-manylinux-wheels --pythons ${{ matrix.python-manylinux-tag }}
+
+      - name: Build wheels with cibuildwheels on macos
+        env:
+          CIBW_BUILD: cp${{ matrix.python-cibuildwheels }}-${{ matrix.platform_id }}
+          CIBW_ARCHS: all
+          CIBW_TEST_COMMAND: python -c "import jina; import jraft"
+          CIBW_BUILD_VERBOSITY: 1
+        if: ${{ matrix.os }} == 'macos-latest'
+        run: |
+          python -m cibuildwheel --output-dir dist
 
       - name: Test wheels
         run: |
@@ -469,7 +541,7 @@ jobs:
       - name: Upload wheels as artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: wheels-${{ matrix.os }}-${{ matrix.python-version }}
+          name: wheels-${{ matrix.os }}-${{ matrix.python }}
           path: dist/*.whl
 
   core-test:
