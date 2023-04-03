@@ -46,10 +46,9 @@ def deployment_with_replicas_with_sharding(docker_images, polling):
 
 
 @pytest.fixture()
-def deployment_without_replicas_without_sharding(docker_images, protocol='grpc'):
+def deployment_without_replicas_without_sharding(docker_images):
     deployment = Deployment(
         name='test_executor',
-        protocol=protocol,
         port=9090,
         uses=f'docker://{docker_images[0]}',
     )
@@ -254,14 +253,13 @@ async def test_deployment_with_replicas_without_sharding(deployment_with_replica
     [['test-executor', 'jinaai/jina']],
     indirect=True,
 )
-@pytest.mark.parametrize('protocol', ['grpc', 'http'],  indirect=True)
-async def test_deployment_without_replicas_without_sharding(deployment_without_replicas_without_sharding, tmpdir, protocol):
+async def test_deployment_without_replicas_without_sharding(deployment_without_replicas_without_sharding, tmpdir):
     dump_path = os.path.join(str(tmpdir), 'docker-compose-deployment-without-replicas-without-sharding.yml')
     deployment_without_replicas_without_sharding.to_docker_compose_yaml(dump_path)
 
     with DockerComposeServices(dump_path):
         resp = await run_test(
-            port=deployment_without_replicas_without_sharding.port, endpoint='/debug', num_docs=10, request_size=1, protocol=protocol
+            port=deployment_without_replicas_without_sharding.port, endpoint='/debug', num_docs=10, request_size=1
         )
 
     assert len(resp) == 10

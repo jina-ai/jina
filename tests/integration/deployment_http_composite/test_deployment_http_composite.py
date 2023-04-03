@@ -32,6 +32,11 @@ class SingleExecutorDeployment(Executor):
     async def return_parameters(self, docs, **kwargs):
         return {'pid': os.getpid()}
 
+    @requests(on='/docsparams')
+    async def docs_with_params(self, docs, parameters, **kwargs):
+        for doc in docs:
+            doc.text = parameters['key']
+
 
 @pytest.mark.parametrize('replicas', [1, 2, 3])
 @pytest.mark.parametrize('include_gateway', [True, False])
@@ -113,6 +118,10 @@ def test_return_parameters(replicas, include_gateway, protocols, init_sleep_time
             assert all(['__results__' in response.parameters.keys() for response in res])
             different_pids = set([list(response.parameters['__results__'].values())[0]['pid'] for response in res])
             assert len(different_pids) == replicas
+            res = c.post(on='/docsparams', inputs=DocumentArray.empty(10), parameters={'key': 'value'},
+                         request_size=1)
+            assert len(res) == 10
+            assert all([doc.text == 'value' for doc in res])
 
 
 @pytest.mark.parametrize('replicas', [1, 2, 3])

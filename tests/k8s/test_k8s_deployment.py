@@ -115,7 +115,7 @@ async def test_deployment_serve_k8s(
         return
     from kubernetes import client
 
-    namespace = f'test-deployment-serve-k8s-{shards}-{replicas}'
+    namespace = f'test-deployment-serve-k8s-{shards}-{replicas}-{protocol}'
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
