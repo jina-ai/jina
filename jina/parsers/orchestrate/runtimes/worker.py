@@ -117,6 +117,13 @@ Defaults to retaining whatever type is returned by the Executor.
         'itself by operating on a `docs_matrix` or `docs_map`',
     )
 
+    gp.add_argument(
+        '--allow-concurrent',
+        action='store_true',
+        default=False,
+        help='Allow concurrent requests to be processed by the Executor. This is only recommended if the Executor is thread-safe.',
+    )
+
     mixin_base_runtime_parser(gp)
     mixin_raft_parser(gp)
     mixin_grpc_channel_options_parser(gp)
