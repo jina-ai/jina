@@ -77,8 +77,6 @@ elif [[ $1 == 'stateful' ]]; then
   VER_TAG_NEXT=$VER_TAG\'${NEXT_VER}\'
   update_ver_line "$VER_TAG" "$VER_TAG_NEXT" "$INIT_FILE"
 
-fi
-
 else
   # as a prerelease, pypi update only, no back commit etc.
   COMMITS_SINCE_LAST_VER=$(git rev-list $LAST_VER..HEAD --count)
