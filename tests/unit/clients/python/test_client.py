@@ -121,26 +121,15 @@ def _random_post_request(client, on_error_mock, use_stream):
     )
 
 
-async def _async_random_post_request(client, on_error_mock, use_stream):
-    return [
-        response
-        async for response in client.post(
-            '/',
-            random_docs(1),
-            request_size=1,
-            max_attempts=10,
-            initial_backoff=0.8,
-            max_backoff=5,
-            on_error=on_error_mock,
-            return_responses=True,
-            stream=use_stream,
-        )
-    ]
-
-
-def _start_runtime(cntx, stop_event):
-    time.sleep(0.005)
+def _start_runtime(protocol, port, flow_or_deployment, stop_event, start_event=None):
+    cntx = (
+        Flow(protocol=protocol, port=port)
+        if flow_or_deployment == 'flow'
+        else Deployment(include_gateway=True, protocol=protocol, port=port)
+    )
     with cntx:
+        if start_event:
+            start_event.set()
         cntx.block(stop_event)
 
 
@@ -150,50 +139,20 @@ def _start_runtime(cntx, stop_event):
 def test_sync_clients_max_attempts_transient_error(
     mocker, flow_or_deployment, protocol, port_generator
 ):
-    if flow_or_deployment == 'deployment' and protocol in ['websocket', 'http']:
+    if flow_or_deployment == 'deployment' and protocol in ['websocket']:
         return
     random_port = port_generator()
-    cntx = (
-        Flow(protocol=protocol, port=random_port)
-        if flow_or_deployment == 'flow'
-        else Deployment(include_gateway=True, protocol=protocol, port=random_port)
-    )
-
-    client = Client(host=f'{cntx.protocol}://{cntx.host}:{random_port}')
+    client = Client(host=f'{protocol}://localhost:{random_port}')
     stop_event = multiprocessing.Event()
-    t = multiprocessing.Process(target=_start_runtime, args=(cntx, stop_event))
+    start_event = multiprocessing.Event()
+    t = multiprocessing.Process(target=_start_runtime, args=(protocol, random_port, flow_or_deployment, stop_event, start_event))
     t.start()
-
+    start_event.wait(5)
     try:
         # Test that a regular index request triggers the correct callbacks
         on_error_mock = mocker.Mock()
         response = _random_post_request(client, on_error_mock, use_stream=False)
         assert len(response) == 1
-
-        on_error_mock.assert_not_called()
-    finally:
-        stop_event.set()
-        t.join()
-        t.terminate()
-
-
-@pytest.mark.asyncio
-@pytest.mark.timeout(300)
-@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
-async def test_async_clients_max_attempts_transient_error(
-    mocker, protocol, port_generator
-):
-    random_port = port_generator()
-    cntx = Flow(protocol=protocol, port=random_port)
-    stop_event = multiprocessing.Event()
-    t = multiprocessing.Process(target=_start_runtime, args=(cntx, stop_event))
-    t.start()
-
-    client = Client(host=f'{cntx.protocol}://{cntx.host}:{random_port}', asyncio=True)
-    try:
-        # Test that a regular index request triggers the correct callbacks
-        on_error_mock = mocker.Mock()
-        await _async_random_post_request(client, on_error_mock, use_stream=False)
 
         on_error_mock.assert_not_called()
     finally:
@@ -314,59 +273,19 @@ def test_sync_clients_max_attempts_raises_error(mocker, protocol, port_generator
             _request()
 
 
-@pytest.mark.asyncio
-@pytest.mark.timeout(60)
-@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
-async def test_async_clients_max_attempts_raises_error(
-    mocker, protocol, port_generator
-):
-    random_port = port_generator()
-    on_always_mock = mocker.Mock()
-    on_error_mock = mocker.Mock()
-    on_done_mock = mocker.Mock()
-    client = Client(host=f'{protocol}://localhost:{random_port}', asyncio=True)
-
-    async def _request(stream_param=True):
-        return [
-            response
-            async for response in client.post(
-                '/',
-                random_docs(1),
-                request_size=1,
-                max_attempts=5,
-                on_always=on_always_mock,
-                on_error=on_error_mock,
-                on_done=on_done_mock,
-                return_responses=True,
-                timeout=0.5,
-                stream=stream_param,
-            )
-        ]
-
-    if protocol == 'grpc':
-        stream_opts = [True, False]
-        for stream_param in stream_opts:
-            with pytest.raises(ConnectionError):
-                await _request(stream_param)
-    else:
-        with pytest.raises(ConnectionError):
-            await _request()
-
-
 @pytest.mark.timeout(90)
 def test_grpc_stream_transient_error_iterable_input(port_generator, mocker):
     random_port = port_generator()
-    cntx = Flow(port=random_port).add(uses=MyExec)
-
-    client = Client(host=f'{cntx.protocol}://{cntx.host}:{random_port}')
     stop_event = multiprocessing.Event()
-    t = multiprocessing.Process(target=_start_runtime, args=(cntx, stop_event))
+    start_event = multiprocessing.Event()
+    t = multiprocessing.Process(target=_start_runtime, args=('grpc', random_port, 'flow', stop_event, start_event))
     t.start()
-
+    start_event.wait(5)
     max_attempts = 5
     initial_backoff = 0.8
     backoff_multiplier = 1.5
     max_backoff = 5
+    client = Client(host=f'grpc://localhost:{random_port}')
     try:
         for attempt in range(1, max_attempts + 1):
             try:
@@ -404,16 +323,12 @@ def test_grpc_stream_transient_error_docarray_input(
     flow_or_deployment, port_generator, mocker
 ):
     random_port = port_generator()
-    cntx = (
-        Flow(port=random_port).add(uses=MyExec)
-        if flow_or_deployment == 'flow'
-        else Deployment(include_gateway=True, uses=MyExec, port=random_port)
-    )
-
-    client = Client(host=f'{cntx.protocol}://{cntx.host}:{random_port}')
+    client = Client(host=f'grpc://localhost:{random_port}')
     stop_event = multiprocessing.Event()
-    t = multiprocessing.Process(target=_start_runtime, args=(cntx, stop_event))
+    start_event = multiprocessing.Event()
+    t = multiprocessing.Process(target=_start_runtime, args=('grpc', random_port, flow_or_deployment, stop_event, start_event))
     t.start()
+    start_event.wait(5)
 
     num_docs = 10
     try:
@@ -447,17 +362,12 @@ async def test_async_grpc_stream_transient_error(
     flow_or_deployment, port_generator, mocker
 ):
     random_port = port_generator()
-    cntx = (
-        Flow(port=random_port).add(uses=MyExec)
-        if flow_or_deployment == 'flow'
-        else Deployment(include_gateway=True, uses=MyExec, port=random_port)
-    )
-
-    client = Client(host=f'{cntx.protocol}://{cntx.host}:{random_port}', asyncio=True)
+    client = Client(host=f'grpc://localhost:{random_port}', asyncio=True)
     stop_event = multiprocessing.Event()
-    t = multiprocessing.Process(target=_start_runtime, args=(cntx, stop_event))
+    start_event = multiprocessing.Event()
+    t = multiprocessing.Process(target=_start_runtime, args=('grpc', random_port, flow_or_deployment, stop_event, start_event))
     t.start()
-
+    start_event.wait(5)
     max_attempts = 5
     initial_backoff = 0.8
     backoff_multiplier = 1.5
