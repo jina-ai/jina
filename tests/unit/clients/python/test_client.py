@@ -365,6 +365,7 @@ def test_grpc_stream_transient_error_iterable_input(port_generator, mocker):
     initial_backoff = 0.8
     backoff_multiplier = 1.5
     max_backoff = 5
+    # test
     try:
         for attempt in range(1, max_attempts + 1):
             try:
