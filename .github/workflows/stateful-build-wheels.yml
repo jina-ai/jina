@@ -1,9 +1,9 @@
-name: Jina v-raft Workflow
+name: Jina StatefulExecutor build and release wheels Workflow
 
 on:
   push:
     branches:
-      - ci-build-wheels # change later with jina-v-raft
+      - jina-v-raft # change later with jina-v-raft
 
 jobs:
   # Build the wheels for Linux, Windows and macOS for Python 3.8 and newer
@@ -71,6 +71,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 200
 
       - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v2
@@ -85,7 +87,9 @@ jobs:
       - name: Update version
         shell: bash
         run: |
-          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+          git fetch --depth=200 origin +refs/tags/*:refs/tags/*
+          echo "commits since v3.14.1"
+          git rev-list v3.14.1..HEAD --count
           ./scripts/update-version.sh stateful
 
       - name: Install dependencies
