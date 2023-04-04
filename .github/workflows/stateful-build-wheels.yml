@@ -85,7 +85,7 @@ jobs:
       - name: Update version
         shell: bash
         run: |
-          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+          git fetch --depth=50 origin +refs/tags/*:refs/tags/*
           echo "last version"
           git tag -l | sort -V | tail -n1
           echo "current commit"
