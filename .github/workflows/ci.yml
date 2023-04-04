@@ -395,7 +395,7 @@ jobs:
       - name: Prepare environment
         run: |
           docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
-          pip install -U "git+https://github.com/docarray/docarray@feat-rewrite-v2#egg=docarray[common]"
+          pip install -U "git+https://github.com/docarray/docarray@refactor-rename-docarray-var#egg=docarray[common]"
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[common,devel,test]" --no-cache-dir
