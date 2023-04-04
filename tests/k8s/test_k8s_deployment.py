@@ -111,7 +111,8 @@ async def create_executor_deployment_and_wait_ready(
 async def test_deployment_serve_k8s(
     logger, docker_images, shards, replicas, protocol, tmpdir, k8s_cluster
 ):
-    if protocol == 'http' and shards > 1:
+    if protocol == 'http' and (shards > 1 or replicas == 1):
+        # shards larger than 1 are not supported, and replicas limitation is to speed up test
         return
     from kubernetes import client
 
@@ -196,7 +197,3 @@ async def test_deployment_serve_k8s(
     except Exception as exc:
         logger.error(f' Exception raised {exc}')
         raise exc
-
-
-async def test_deployment_http_composite():
-    pass

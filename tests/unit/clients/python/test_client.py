@@ -8,8 +8,7 @@ import requests
 from jina import Deployment, DocumentArray, Executor, Flow, helper
 from jina import requests as req
 from jina.clients import Client
-from jina.clients.base.retry import wait_or_raise_err
-from jina.helper import run_async
+from jina.clients.base.retry import wait_or_raise_err, sync_wait_or_raise_err
 from jina.orchestrate.pods.factory import PodFactory
 from jina.parsers import set_gateway_parser
 from tests import random_docs
@@ -137,7 +136,7 @@ def _start_runtime(protocol, port, flow_or_deployment, stop_event, start_event=N
 @pytest.mark.parametrize('flow_or_deployment', ['flow', 'deployment'])
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_sync_clients_max_attempts_transient_error(
-    mocker, flow_or_deployment, protocol, port_generator
+        mocker, flow_or_deployment, protocol, port_generator
 ):
     if flow_or_deployment == 'deployment' and protocol in ['websocket']:
         return
@@ -145,7 +144,8 @@ def test_sync_clients_max_attempts_transient_error(
     client = Client(host=f'{protocol}://localhost:{random_port}')
     stop_event = multiprocessing.Event()
     start_event = multiprocessing.Event()
-    t = multiprocessing.Process(target=_start_runtime, args=(protocol, random_port, flow_or_deployment, stop_event, start_event))
+    t = multiprocessing.Process(target=_start_runtime,
+                                args=(protocol, random_port, flow_or_deployment, stop_event, start_event))
     t.start()
     start_event.wait(5)
     try:
@@ -157,7 +157,7 @@ def test_sync_clients_max_attempts_transient_error(
         on_error_mock.assert_not_called()
     finally:
         stop_event.set()
-        t.join()
+        t.join(5)
         t.terminate()
 
 
@@ -302,31 +302,29 @@ def test_grpc_stream_transient_error_iterable_input(port_generator, mocker):
 
                 on_error_mock.assert_not_called()
             except ConnectionError as err:
-                run_async(
-                    wait_or_raise_err,
-                    attempt=attempt,
-                    err=err,
-                    max_attempts=max_attempts,
-                    backoff_multiplier=backoff_multiplier,
-                    initial_backoff=initial_backoff,
-                    max_backoff=max_backoff,
-                )
+                sync_wait_or_raise_err(                    attempt=attempt,
+                                                           err=err,
+                                                           max_attempts=max_attempts,
+                                                           backoff_multiplier=backoff_multiplier,
+                                                           initial_backoff=initial_backoff,
+                                                           max_backoff=max_backoff)
     finally:
         stop_event.set()
-        t.join()
+        t.join(5)
         t.terminate()
 
 
 @pytest.mark.timeout(90)
 @pytest.mark.parametrize('flow_or_deployment', ['deployment', 'flow'])
 def test_grpc_stream_transient_error_docarray_input(
-    flow_or_deployment, port_generator, mocker
+        flow_or_deployment, port_generator, mocker
 ):
     random_port = port_generator()
     client = Client(host=f'grpc://localhost:{random_port}')
     stop_event = multiprocessing.Event()
     start_event = multiprocessing.Event()
-    t = multiprocessing.Process(target=_start_runtime, args=('grpc', random_port, flow_or_deployment, stop_event, start_event))
+    t = multiprocessing.Process(target=_start_runtime,
+                                args=('grpc', random_port, flow_or_deployment, stop_event, start_event))
     t.start()
     start_event.wait(5)
 
@@ -350,7 +348,7 @@ def test_grpc_stream_transient_error_docarray_input(
         on_error_mock.assert_not_called()
     finally:
         stop_event.set()
-        t.join()
+        t.join(5)
         t.terminate()
 
 
@@ -359,13 +357,14 @@ def test_grpc_stream_transient_error_docarray_input(
 @pytest.mark.parametrize('flow_or_deployment', ['deployment', 'flow'])
 @pytest.mark.ignore
 async def test_async_grpc_stream_transient_error(
-    flow_or_deployment, port_generator, mocker
+        flow_or_deployment, port_generator, mocker
 ):
     random_port = port_generator()
     client = Client(host=f'grpc://localhost:{random_port}', asyncio=True)
     stop_event = multiprocessing.Event()
     start_event = multiprocessing.Event()
-    t = multiprocessing.Process(target=_start_runtime, args=('grpc', random_port, flow_or_deployment, stop_event, start_event))
+    t = multiprocessing.Process(target=_start_runtime,
+                                args=('grpc', random_port, flow_or_deployment, stop_event, start_event))
     t.start()
     start_event.wait(5)
     max_attempts = 5
@@ -401,5 +400,5 @@ async def test_async_grpc_stream_transient_error(
                 )
     finally:
         stop_event.set()
-        t.join()
+        t.join(5)
         t.terminate()
