@@ -2,7 +2,7 @@ from typing import Optional
 
 import numpy as np
 from docarray import BaseDoc
-from docarray import DocArray as DocumentArray
+from docarray import DocList as DocumentArray
 from docarray.documents import ImageDoc
 from docarray.typing import AnyTensor, ImageUrl
 
@@ -60,7 +60,7 @@ def test_input_response_schema():
             response_schema=DocumentArray[MyDoc],
         )
         def foo(self, docs, **kwargs):
-            assert docs.__class__.document_type == MyDoc
+            assert docs.__class__.doc_type == MyDoc
             docs[0].text = 'hello world'
             return docs
 
@@ -69,7 +69,7 @@ def test_input_response_schema():
             on='/foo', inputs=MyDoc(text='hello'), return_type=DocumentArray[MyDoc]
         )
         assert docs[0].text == 'hello world'
-        assert docs.__class__.document_type == MyDoc
+        assert docs.__class__.doc_type == MyDoc
 
 
 def test_input_response_schema_annotation():
@@ -79,7 +79,7 @@ def test_input_response_schema_annotation():
     class MyExec(Executor):
         @requests(on='/bar')
         def bar(self, docs: DocumentArray[MyDoc], **kwargs) -> DocumentArray[MyDoc]:
-            assert docs.__class__.document_type == MyDoc
+            assert docs.__class__.doc_type == MyDoc
             docs[0].text = 'hello world'
             return docs
 
@@ -88,7 +88,7 @@ def test_input_response_schema_annotation():
             on='/bar', inputs=MyDoc(text='hello'), return_type=DocumentArray[MyDoc]
         )
         assert docs[0].text == 'hello world'
-        assert docs.__class__.document_type == MyDoc
+        assert docs.__class__.doc_type == MyDoc
 
 
 def test_different_output_input():
@@ -115,7 +115,7 @@ def test_different_output_input():
             return_type=DocumentArray[OutputDoc],
         )
         assert docs[0].embedding.shape == (100, 1)
-        assert docs.__class__.document_type == OutputDoc
+        assert docs.__class__.doc_type == OutputDoc
 
 
 def test_deployments():
@@ -142,4 +142,4 @@ def test_deployments():
             return_type=DocumentArray[OutputDoc],
         )
         assert docs[0].embedding.shape == (100, 1)
-        assert docs.__class__.document_type == OutputDoc
+        assert docs.__class__.doc_type == OutputDoc
