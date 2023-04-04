@@ -86,12 +86,6 @@ jobs:
         shell: bash
         run: |
           git fetch --depth=50 origin +refs/tags/*:refs/tags/*
-          echo "last version"
-          git tag -l | sort -V | tail -n1
-          echo "current commit"
-          git rev-parse HEAD
-          echo "commits since v3.14.1"
-          git rev-list v3.14.1..HEAD --count
           ./scripts/update-version.sh stateful
 
       - name: Install dependencies
