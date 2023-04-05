@@ -1,5 +1,9 @@
 """Argparser module for container runtimes"""
+import argparse
 from jina.parsers.helper import KVAppendAction, add_arg_group
+from jina.parsers.helper import _SHOW_ALL_ARGS
+
+from jina.enums import DockerNetworkMode
 
 
 def mixin_container_runtime_parser(parser, pod_type: str = 'executor'):
@@ -13,7 +17,7 @@ def mixin_container_runtime_parser(parser, pod_type: str = 'executor'):
         '--entrypoint',
         type=str,
         help='The entrypoint command overrides the ENTRYPOINT in Docker image. '
-        'when not set then the Docker image ENTRYPOINT takes effective.',
+             'when not set then the Docker image ENTRYPOINT takes effective.',
     )
     gp.add_argument(
         '--docker-kwargs',
@@ -64,4 +68,14 @@ Note,
             action='store_true',
             default=False,
             help=f'Do not automatically mount a volume for dockerized Executors.',
+        )
+
+        gp.add_argument(
+            '--force-network-mode',
+            type=DockerNetworkMode.from_string,
+            choices=list(DockerNetworkMode),
+            default=DockerNetworkMode.AUTO,
+            help='TODO: Description about these options.'
+            if _SHOW_ALL_ARGS
+            else argparse.SUPPRESS,
         )
