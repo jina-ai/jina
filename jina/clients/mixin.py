@@ -425,6 +425,7 @@ class PostMixin:
             results_in_order=results_in_order,
             stream=stream,
             prefetch=prefetch,
+            on=on,
             **kwargs,
         )
 
@@ -495,6 +496,7 @@ class AsyncPostMixin:
         parameters = _include_results_field_in_param(parameters)
 
         async for result in c._get_results(
+            on=on,
             inputs=inputs,
             on_done=on_done,
             on_error=on_error,

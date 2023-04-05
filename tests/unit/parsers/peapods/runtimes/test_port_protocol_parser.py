@@ -1,6 +1,6 @@
 import pytest
 
-from jina.enums import GatewayProtocolType
+from jina.enums import ProtocolType
 from jina.helper import ArgNamespace
 from jina.parsers import set_gateway_parser, set_pod_parser
 
@@ -16,9 +16,9 @@ from jina.parsers import set_gateway_parser, set_pod_parser
 @pytest.mark.parametrize(
     'protocol,expected_protocol',
     [
-        ('http', [GatewayProtocolType.HTTP]),
-        (['GRPC'], [GatewayProtocolType.GRPC]),
-        (['grpc', 'http'], [GatewayProtocolType.GRPC, GatewayProtocolType.HTTP]),
+        ('http', [ProtocolType.HTTP]),
+        (['GRPC'], [ProtocolType.GRPC]),
+        (['grpc', 'http'], [ProtocolType.GRPC, ProtocolType.HTTP]),
     ],
 )
 def test_multiple_port_protocol_gateway_kwargs(
@@ -42,9 +42,9 @@ def test_multiple_port_protocol_gateway_kwargs(
 @pytest.mark.parametrize(
     'protocol,expected_protocol',
     [
-        (['http'], [GatewayProtocolType.HTTP]),
-        (['GRPC'], [GatewayProtocolType.GRPC]),
-        (['grpc', 'http'], [GatewayProtocolType.GRPC, GatewayProtocolType.HTTP]),
+        (['http'], [ProtocolType.HTTP]),
+        (['GRPC'], [ProtocolType.GRPC]),
+        (['grpc', 'http'], [ProtocolType.GRPC, ProtocolType.HTTP]),
     ],
 )
 def test_multiple_port_protocol_gateway_args_list(
@@ -99,7 +99,7 @@ def test_pod_host_default():
 def test_default_port_protocol_gateway():
     args = set_gateway_parser().parse_args([])
     assert len(args.port) == 1
-    assert args.protocol == [GatewayProtocolType.GRPC]
+    assert args.protocol == [ProtocolType.GRPC]
 
 
 def test_get_non_defaults_args():

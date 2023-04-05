@@ -143,7 +143,17 @@ class FastAPIBaseServer(BaseServer):
 
     @property
     def _should_exit(self):
+        """Property describing if server is ready to exit
+        :return: boolean indicating if Server ready to exit
+        """
         return self.server.should_exit
+
+    @property
+    def should_exit(self):
+        """Property describing if server is ready to exit
+        :return: boolean indicating if Server ready to exit
+        """
+        return self._should_exit
 
     @staticmethod
     def is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
@@ -201,3 +211,24 @@ def _install_health_check(app: 'FastAPI', logger):
 
             """
             return {}
+
+
+class HTTPServer(FastAPIBaseServer):
+    """
+    :class:`HTTPServer` is a FastAPIBaseServer that uses the default FastAPI app for a given request handler
+    """
+
+    @property
+    def app(self):
+        """Get the default base API app for Server
+        :return: Return a FastAPI app for the default HTTPGateway
+        """
+        return self._request_handler._http_fastapi_default_app(title=self.title,
+                                                               description=self.description,
+                                                               no_crud_endpoints=self.no_crud_endpoints,
+                                                               no_debug_endpoints=self.no_debug_endpoints,
+                                                               expose_endpoints=self.expose_endpoints,
+                                                               expose_graphql_endpoint=self.expose_graphql_endpoint,
+                                                               tracing=self.tracing,
+                                                               tracer_provider=self.tracer_provider,
+                                                               cors=self.cors)
