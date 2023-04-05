@@ -36,15 +36,17 @@ class AsyncNewLoopRuntime:
     """
 
     def __init__(
-        self,
-        args: 'argparse.Namespace',
-        cancel_event: Optional[
-            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
-        ] = None,
-        req_handler_cls=None,
-        **kwargs,
+            self,
+            args: 'argparse.Namespace',
+            cancel_event: Optional[
+                Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
+            ] = None,
+            req_handler_cls=None,
+            gateway_load_balancer: bool = False,
+            **kwargs,
     ):
         self.req_handler_cls = req_handler_cls
+        self.gateway_load_balancer = gateway_load_balancer
         self.args = args
         if args.name:
             self.name = f'{args.name}/{self.__class__.__name__}'
@@ -128,13 +130,14 @@ class AsyncNewLoopRuntime:
 
     def _get_server(self):
         # construct server type based on protocol (and potentially req handler class to keep backwards compatibility)
+        from jina.enums import ProtocolType
         if self.req_handler_cls.__name__ == 'GatewayRequestHandler':
             self.timeout_send = self.args.timeout_send
             if self.timeout_send:
                 self.timeout_send /= 1e3  # convert ms to seconds
             if not self.args.port:
                 self.args.port = random_ports(len(self.args.protocol))
-            _set_gateway_uses(self.args)
+            _set_gateway_uses(self.args, gateway_load_balancer=self.gateway_load_balancer)
             uses_with = self.args.uses_with or {}
             non_defaults = ArgNamespace.get_non_defaults_args(
                 self.args, set_gateway_parser()
@@ -163,6 +166,7 @@ class AsyncNewLoopRuntime:
                 runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
                     **vars(self.args),
                     'default_port': getattr(self.args, 'default_port', False),
+                    'gateway_load_balancer': self.gateway_load_balancer,
                     'timeout_send': self.timeout_send,
                 },
                 py_modules=self.args.py_modules,
@@ -170,7 +174,7 @@ class AsyncNewLoopRuntime:
             )
 
         elif not hasattr(self.args, 'protocol') or (
-            len(self.args.protocol) == 1 and self.args.protocol[0] == 'GRPC'
+            len(self.args.protocol) == 1 and self.args.protocol[0] == ProtocolType.GRPC
         ):
             from jina.serve.runtimes.servers.grpc import GRPCServer
 
@@ -182,6 +186,36 @@ class AsyncNewLoopRuntime:
                 ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
                 ssl_certfile=getattr(self.args, 'ssl_certfile', None),
             )
+
+        elif len(self.args.protocol) == 1 and self.args.protocol[0] == ProtocolType.HTTP:
+            from jina.serve.runtimes.servers.http import HTTPServer  # we need a concrete implementation of this
+            return HTTPServer(name=self.args.name,
+                              runtime_args=self.args,
+                              req_handler_cls=self.req_handler_cls,
+                              proxy=getattr(self.args, 'proxy', None),
+                              uvicorn_kwargs=getattr(self.args, 'uvicorn_kwargs', None),
+                              ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
+                              ssl_certfile=getattr(self.args, 'ssl_certfile', None),
+                              cors=getattr(self.args, 'cors', None),
+                              )
+        elif len(self.args.protocol) == 1 and self.args.protocol[0] == ProtocolType.WEBSOCKET:
+            from jina.serve.runtimes.servers.websocket import \
+                WebSocketServer  # we need a concrete implementation of this
+            return WebSocketServer(name=self.args.name,
+                                   runtime_args=self.args,
+                                   req_handler_cls=self.req_handler_cls,
+                                   proxy=getattr(self.args, 'proxy', None),
+                                   uvicorn_kwargs=getattr(self.args, 'uvicorn_kwargs', None),
+                                   ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
+                                   ssl_certfile=getattr(self.args, 'ssl_certfile', None))
+        elif len(self.args.protocol) > 1:
+            from jina.serve.runtimes.servers.composite import \
+                CompositeServer  # we need a concrete implementation of this
+            return CompositeServer(name=self.args.name,
+                                   runtime_args=self.args,
+                                   req_handler_cls=self.req_handler_cls,
+                                   ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
+                                   ssl_certfile=getattr(self.args, 'ssl_certfile', None))
 
     def _send_telemetry_event(self, event, extra_kwargs=None):
         gateway_kwargs = {}

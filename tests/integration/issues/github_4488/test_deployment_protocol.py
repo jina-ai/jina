@@ -40,7 +40,8 @@ def test_deployment_protocol(protocol, tls, cert_pem, key_pem, uses):
     cert = cert_pem if tls else None
     key = key_pem if tls else None
     f = (
-        Flow(protocol=protocol, ssl_certfile=cert, ssl_keyfile=key)
+        Flow(protocol=protocol)
+        .config_gateway(ssl_certfile=cert, ssl_keyfile=key)
         .add(uses=MyExec)
         .add(uses=uses)
     )

@@ -29,6 +29,9 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
     ):
         self.name = name or ''
         self.runtime_args = runtime_args
+        self.works_as_load_balancer = False
+        if isinstance(runtime_args, Dict):
+            self.works_as_load_balancer = runtime_args.get('gateway_load_balancer', False)
         if isinstance(self.runtime_args, dict):
             self.logger = JinaLogger(self.name, **self.runtime_args)
         else:
@@ -85,6 +88,7 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
             aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
             tracing_client_interceptor=self.tracing_client_interceptor(),
             deployment_name=self.name.split('/')[0],
+            works_as_load_balancer=self.works_as_load_balancer
         )
 
     def _add_gateway_args(self):
@@ -175,14 +179,14 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         :param kwargs: extra keyword arguments
         :return: True if status is ready else False.
         """
-        from jina.enums import GatewayProtocolType
         from jina.serve.runtimes.servers.grpc import GRPCServer
         from jina.serve.runtimes.servers.http import FastAPIBaseServer
+        from jina.enums import ProtocolType
 
         if (
-            protocol is None
-            or protocol == GatewayProtocolType.GRPC
-            or protocol == 'grpc'
+                protocol is None
+                or protocol == ProtocolType.GRPC
+                or protocol == 'grpc'
         ):
             res = GRPCServer.is_ready(ctrl_address)
         else:
@@ -204,14 +208,14 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         :param kwargs: extra keyword arguments
         :return: True if status is ready else False.
         """
-        from jina.enums import GatewayProtocolType
         from jina.serve.runtimes.servers.grpc import GRPCServer
         from jina.serve.runtimes.servers.http import FastAPIBaseServer
+        from jina.enums import ProtocolType
 
         if (
-            protocol is None
-            or protocol == GatewayProtocolType.GRPC
-            or protocol == 'grpc'
+                protocol is None
+                or protocol == ProtocolType.GRPC
+                or protocol == 'grpc'
         ):
             res = await GRPCServer.async_is_ready(ctrl_address)
         else:

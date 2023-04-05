@@ -36,6 +36,7 @@
 | `reload` | If set, the Executor will restart while serving if YAML configuration source or Executor modules are changed. If YAML configuration is changed, the whole deployment is reloaded and new processes will be restarted. If only Python modules of the Executor have changed, they will be reloaded to the interpreter without restarting process. | `boolean` | `False` |
 | `install_requirements` | If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local. | `boolean` | `False` |
 | `port` | The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor. | `number` | `random in [49152, 65535]` |
+| `protocol` | Communication protocol of the server exposed by the Executor. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET']. | `array` | `[<ProtocolType.GRPC: 0>]` |
 | `monitoring` | If set, spawn an http server with a prometheus endpoint to expose metrics | `boolean` | `False` |
 | `port_monitoring` | The port on which the prometheus server is exposed, default is a random port between [49152, 65535] | `number` | `random in [49152, 65535]` |
 | `retries` | Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas) | `number` | `-1` |
@@ -58,3 +59,9 @@
 | `external` | The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow. | `boolean` | `False` |
 | `grpc_metadata` | The metadata to be passed to the gRPC request. | `object` | `None` |
 | `tls` | If set, connect to deployment using tls encryption | `boolean` | `False` |
+| `title` | The title of this HTTP server. It will be used in automatics docs such as Swagger UI. | `string` | `None` |
+| `description` | The description of this HTTP server. It will be used in automatics docs such as Swagger UI. | `string` | `None` |
+| `cors` | If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access. | `boolean` | `False` |
+| `uvicorn_kwargs` | Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server<br><br>More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/ | `object` | `None` |
+| `ssl_certfile` | the path to the certificate file | `string` | `None` |
+| `ssl_keyfile` | the path to the key file | `string` | `None` |
