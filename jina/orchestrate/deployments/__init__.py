@@ -26,7 +26,7 @@ from jina.constants import (
     __docker_host__,
     __windows__,
 )
-from jina.enums import DeploymentRoleType, PodRoleType, PollingType
+from jina.enums import DeploymentRoleType, PodRoleType, PollingType, ProtocolType
 from jina.helper import (
     ArgNamespace,
     parse_host_scheme,
@@ -131,6 +131,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         allow_concurrent: Optional[bool] = False,
         compression: Optional[str] = None,
         connection_list: Optional[str] = None,
+        cors: Optional[bool] = False,
+        description: Optional[str] = None,
         disable_auto_volume: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
@@ -159,6 +161,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         port: Optional[int] = None,
         port_monitoring: Optional[int] = None,
         prefer_platform: Optional[str] = None,
+        protocol: Optional[Union[str, List[str]]] = ['GRPC'],
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
@@ -167,9 +170,12 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'WorkerRuntime',
         shards: Optional[int] = 1,
+        ssl_certfile: Optional[str] = None,
+        ssl_keyfile: Optional[str] = None,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
+        title: Optional[str] = None,
         tls: Optional[bool] = False,
         traces_exporter_host: Optional[str] = None,
         traces_exporter_port: Optional[int] = None,
@@ -183,6 +189,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         uses_metas: Optional[dict] = None,
         uses_requests: Optional[dict] = None,
         uses_with: Optional[dict] = None,
+        uvicorn_kwargs: Optional[dict] = None,
         volumes: Optional[List[str]] = None,
         when: Optional[dict] = None,
         workspace: Optional[str] = None,
@@ -193,6 +200,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :param allow_concurrent: Allow concurrent requests to be processed by the Executor. This is only recommended if the Executor is thread-safe.
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
+        :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
+        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -250,6 +259,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
+        :param protocol: Communication protocol of the server exposed by the Executor. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your
@@ -263,9 +273,12 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
+        :param ssl_certfile: the path to the certificate file
+        :param ssl_keyfile: the path to the key file
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
+        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param tls: If set, connect to deployment using tls encryption
         :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
         :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
@@ -289,6 +302,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
+        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
+
+          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         :param volumes: The path on the host to be mounted inside the container.
 
           Note,
@@ -313,7 +329,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         **kwargs,
     ):
         super().__init__()
-
         self._gateway_kwargs = {}
         self._include_gateway = include_gateway
         if self._include_gateway:
@@ -331,6 +346,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         if args is None:
             args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
         self.args = args
+        self._gateway_load_balancer = False
+        if self._include_gateway and self.args.protocol[0] == ProtocolType.HTTP:
+            self._gateway_load_balancer = True
         log_config = kwargs.get('log_config')
         if log_config:
             self.args.log_config = log_config
@@ -340,6 +358,25 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         # polling only works for shards, if there are none, polling will be ignored
         if getattr(args, 'shards', 1) == 1:
             self.args.polling = PollingType.ANY
+
+        if (
+            getattr(args, 'shards', 1) > 1
+            and ProtocolType.HTTP in self.args.protocol
+            and self.args.deployment_role != DeploymentRoleType.GATEWAY
+        ):
+            raise RuntimeError(
+                f'It is not supported to have {ProtocolType.HTTP.to_string()} deployment for '
+                f'Deployments with more than one shard'
+            )
+
+        if (
+            ProtocolType.WEBSOCKET in self.args.protocol
+            and self.args.deployment_role != DeploymentRoleType.GATEWAY
+        ):
+            raise RuntimeError(
+                f'It is not supported to have {ProtocolType.WEBSOCKET.to_string()} deployment for '
+                f'Deployments with more than one shard'
+            )
         self.needs = (
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
@@ -361,7 +398,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 raise ValueError(
                     f'Number of hosts ({len(self.args.host)}) does not match the number of replicas ({self.args.replicas})'
                 )
-            else:
+            elif self.args.external:
                 self.args.replicas = len(self.ext_repl_ports)
 
         self.uses_before_pod = None
@@ -377,9 +414,10 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             args = ArgNamespace.kwargs2namespace(
                 self._gateway_kwargs, gateway_parser, True
             )
+            args.protocol = self.args.protocol
 
             args.deployments_addresses = json.dumps(
-                {'executor': self._get_connection_list()}
+                {'executor': self._get_connection_list_for_single_executor()}
             )
             args.graph_description = (
                 '{"start-gateway": ["executor"], "executor": ["end-gateway"]}'
@@ -392,10 +430,10 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
 
-    def _get_connection_list(self) -> List[str]:
+    def _get_connection_list_for_flow(self) -> List[str]:
         if self.head_args:
             # add head information
-            return [f'{self.protocol}://{self.host}:{self.head_port}']
+            return [f'{self.protocol.lower()}://{self.host}:{self.head_port}']
         else:
             # there is no head, add the worker connection information instead
             ports = self.ports
@@ -406,8 +444,39 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 for host in self.hosts
             ]
             return [
-                f'{self.protocol}://{host}:{port}' for host, port in zip(hosts, ports)
+                f'{self.protocol.lower()}://{host}:{port}'
+                for host, port in zip(hosts, ports)
             ]
+
+    def _get_connection_list_for_single_executor(
+        self,
+    ) -> Union[List[str], Dict[str, List[str]]]:
+        if self.head_args:
+            # add head information
+            return [f'{self.protocol.lower()}://{self.host}:{self.head_port}']
+        else:
+            # there is no head, add the worker connection information instead
+            ports_dict = defaultdict(list)
+            for replica_pod_arg in self.pod_args['pods'][0]:
+                for protocol, port in zip(
+                    replica_pod_arg.protocol, replica_pod_arg.port
+                ):
+                    ports_dict[str(protocol)].append(port)
+
+            host = (
+                __docker_host__
+                if host_is_local(self.args.host[0])
+                and in_docker()
+                and self.dockerized_uses
+                else self.args.host[0]
+            )
+
+            connection_dict = {}
+            for protocol, ports in ports_dict.items():
+                connection_dict[protocol] = [
+                    f'{protocol.lower()}://{host}:{port}' for port in ports
+                ]
+            return connection_dict
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
@@ -674,7 +743,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         protocol = getattr(args, 'protocol', ['grpc'])
         if not isinstance(protocol, list):
             protocol = [protocol]
-        protocol = [str(_p) + ('s' if self.tls_enabled else '') for _p in protocol]
+        protocol = [
+            str(_p).lower() + ('s' if self.tls_enabled else '') for _p in protocol
+        ]
         if len(protocol) == 1:
             return protocol[0]
         else:
@@ -933,7 +1004,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         if self._include_gateway:
             _args = self.pod_args['gateway']
             _args.noblock_on_start = True
-            self.gateway_pod = PodFactory.build_pod(_args)
+            self.gateway_pod = PodFactory.build_pod(
+                _args, gateway_load_balancer=self._gateway_load_balancer
+            )
             self.enter_context(self.gateway_pod)
         for shard_id in self.pod_args['pods']:
             self.shards[shard_id] = self._ReplicaSet(
@@ -1180,7 +1253,12 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
                 elif not self.external:
                     if shards == 1 and replicas == 1:
-                        _args.port = self.args.port
+                        if len(_args.protocol) > 1 and self._include_gateway:
+                            _args.port = [
+                                random_port() for _ in range(len(self.args.protocol))
+                            ]
+                        else:
+                            _args.port = self.args.port
                         _args.port_monitoring = self.args.port_monitoring
 
                     elif shards == 1:
@@ -1191,7 +1269,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                         )
                         # if there are no shards/replicas, we dont need to distribute ports randomly
                         # we should rather use the pre assigned one
-                        _args.port = [random_port()]
+                        _args.port = [
+                            random_port() for _ in range(len(self.args.protocol))
+                        ]
                     elif shards > 1:
                         port_monitoring_index = (
                             replica_id + replicas * shard_id + 1
@@ -1453,10 +1533,10 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         else:
             _protocols = [str(_p) for _p in self.protocol]
 
-        if not isinstance(self.port, list):
-            _ports = [self.port]
+        if not isinstance(self.first_pod_args.port, list):
+            _ports = [self.first_pod_args.port]
         else:
-            _ports = [str(_p) for _p in self.port]
+            _ports = [str(_p) for _p in self.first_pod_args.port]
 
         for _port, _protocol in zip(_ports, _protocols):
 

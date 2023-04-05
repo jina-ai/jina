@@ -202,6 +202,7 @@ class K8sDeploymentConfig:
                 pull_policy='IfNotPresent',
                 jina_deployment_name=self.jina_deployment_name,
                 pod_type=self.pod_type,
+                protocol=self.common_args.protocol,
                 shard_id=self.shard_id,
                 env=cargs.env,
                 env_from_secret=cargs.env_from_secret,

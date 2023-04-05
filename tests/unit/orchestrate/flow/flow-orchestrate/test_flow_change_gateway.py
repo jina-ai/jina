@@ -1,7 +1,7 @@
 import pytest
 
 from jina import Flow
-from jina.enums import GatewayProtocolType
+from jina.enums import ProtocolType
 from tests import random_docs
 
 
@@ -21,11 +21,11 @@ def test_change_gateway(protocol, changeto_protocol):
 @pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
 def test_client_gateway_in_flow(protocol):
     f = Flow(protocol=protocol, port=12345)
-    assert f.client.args.protocol == GatewayProtocolType.from_string(protocol)
+    assert f.client.args.protocol == ProtocolType.from_string(protocol)
     # gateway_args returns multiple protocols
-    assert f.gateway_args.protocol[0] == GatewayProtocolType.from_string(protocol)
+    assert f.gateway_args.protocol[0] == ProtocolType.from_string(protocol)
     # flow returns single or multiple protocols
-    assert f.protocol == GatewayProtocolType.from_string(protocol)
+    assert f.protocol == ProtocolType.from_string(protocol)
 
     assert f.client.args.port == 12345
     # gateway_args returns multiple ports

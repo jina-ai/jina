@@ -6,7 +6,7 @@ import pytest
 from docarray.document.generators import from_ndarray
 
 from jina import Executor, Flow
-from jina.enums import GatewayProtocolType
+from jina.enums import ProtocolType
 from jina.excepts import BadYAMLVersion
 from jina.jaml import JAML
 from jina.jaml.parsers import get_supported_versions
@@ -73,7 +73,7 @@ def test_load_modify_dump_load(tmpdir, yaml_file):
     # assert vars inside `with`
     assert f._kwargs['name'] == 'abc'
     assert f.port == 12345
-    assert f.protocol == GatewayProtocolType.HTTP
+    assert f.protocol == ProtocolType.HTTP
     # assert executor args
     assert f._deployment_nodes['custom1'].args.uses == 'jinahub://CustomExecutor1'
     assert f._deployment_nodes['custom2'].args.uses == 'CustomExecutor2'
@@ -81,7 +81,7 @@ def test_load_modify_dump_load(tmpdir, yaml_file):
 
     # change args inside the gateway configuration
     f.port = 12346
-    f.protocol = GatewayProtocolType.WEBSOCKET
+    f.protocol = ProtocolType.WEBSOCKET
     # change executor args
     f._deployment_nodes['custom2'].args.port = 23457
 
@@ -96,7 +96,7 @@ def test_load_modify_dump_load(tmpdir, yaml_file):
     assert f1._deployment_nodes['custom2'].args.uses == 'CustomExecutor2'
     # assert args modified in code
     assert f1.port == 12346
-    assert f1.protocol == GatewayProtocolType.WEBSOCKET
+    assert f1.protocol == ProtocolType.WEBSOCKET
     assert f1._deployment_nodes['custom2'].args.port == [23457]
 
 
@@ -199,17 +199,17 @@ def test_flow_uses_from_dict():
 
 
 def test_flow_yaml_override_with_protocol():
-    from jina.enums import GatewayProtocolType
+    from jina.enums import ProtocolType
 
     path = os.path.join(
         cur_dir.parent.parent.parent, 'yaml/examples/faiss/flow-index.yml'
     )
     f1 = Flow.load_config(path)
-    assert f1.protocol == GatewayProtocolType.GRPC
+    assert f1.protocol == ProtocolType.GRPC
     f2 = Flow.load_config(path, uses_with={'protocol': 'http'})
-    assert f2.protocol == GatewayProtocolType.HTTP
+    assert f2.protocol == ProtocolType.HTTP
     f3 = Flow.load_config(path, uses_with={'protocol': 'websocket'})
-    assert f3.protocol == GatewayProtocolType.WEBSOCKET
+    assert f3.protocol == ProtocolType.WEBSOCKET
 
 
 @pytest.mark.parametrize(
@@ -223,5 +223,5 @@ def test_load_flow_with_gateway(yaml_file):
     )
     with flow:
         # protocol and port are overridden by the gateway configuration
-        assert flow.protocol == GatewayProtocolType.HTTP
+        assert flow.protocol == ProtocolType.HTTP
         assert flow.port == 12344
