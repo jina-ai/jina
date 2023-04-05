@@ -31,6 +31,8 @@ This build the docker image that will be used to generate the python code from t
 
 ## 2. generate the python code from the proto
 
+note: you need to be in the root of the repo to do the following steps
+
 ### For DocArray v1
 
 ``` cmd

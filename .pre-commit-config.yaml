@@ -39,11 +39,13 @@ repos:
   rev: v1.12.1
   hooks:
   -   id: blacken-docs
+      exclude: ^(jina/helloworld/|jina/proto/pb/jina_pb2.py|jina/proto/pb/jina_pb2_grpc.py|jina/proto/pb2/jina_pb2.py|jina/proto/pb2/jina_pb2_grpc.py|docs/|jina/resources/|jina/proto/docarray_v1|jina/proto/docarray_v2)
       args:
         - -S
 - repo: https://github.com/pycqa/isort
   rev: 5.10.1
   hooks:
     - id: isort
+      exclude: ^(jina/helloworld/|jina/proto/pb/jina_pb2.py|jina/proto/pb/jina_pb2_grpc.py|jina/proto/pb2/jina_pb2.py|jina/proto/pb2/jina_pb2_grpc.py|docs/|jina/resources/|jina/proto/docarray_v1|jina/proto/docarray_v2)
       args: ["--profile", "black"]
 
