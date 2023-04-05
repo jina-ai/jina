@@ -394,7 +394,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Prepare environment
         run: |
-#          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           pip install -U "git+https://github.com/docarray/docarray@feat-rewrite-v2#egg=docarray[common]"
           python -m pip install --upgrade pip
           python -m pip install wheel
