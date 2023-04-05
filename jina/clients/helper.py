@@ -6,7 +6,6 @@ from typing import Callable
 from jina.excepts import BadClientCallback, BadServer
 from jina.helper import get_rich_console
 from jina.logging.logger import JinaLogger
-from jina.proto import jina_pb2
 from jina.types.request.data import Response
 
 
@@ -24,6 +23,7 @@ def pprint_routes(resp: 'Response', stack_limit: int = 3):
     table = Table(box=box.SIMPLE)
     for v in ('Executor', 'Time', 'Exception'):
         table.add_column(v)
+    from jina.proto import jina_pb2
 
     for route in routes:
         status_icon = '🟢'
@@ -72,6 +72,8 @@ def callback_exec(
     :param continue_on_error: whether to continue on error
     :param logger: a logger instance
     """
+    from jina.proto import jina_pb2
+
     if response.header.status.code >= jina_pb2.StatusProto.ERROR:
         if on_error:
             _safe_callback(on_error, continue_on_error, logger)(response)
