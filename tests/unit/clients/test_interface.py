@@ -1,15 +1,15 @@
 import pytest
 
 from jina import Client
-from jina.enums import GatewayProtocolType
+from jina.enums import ProtocolType
 
 
 @pytest.mark.parametrize(
     'protocol, gateway_type',
     [
-        ('http', GatewayProtocolType.HTTP),
-        ('grpc', GatewayProtocolType.GRPC),
-        ('ws', GatewayProtocolType.WEBSOCKET),
+        ('http', ProtocolType.HTTP),
+        ('grpc', ProtocolType.GRPC),
+        ('ws', ProtocolType.WEBSOCKET),
         (None, None),
     ],
 )
@@ -73,7 +73,7 @@ def test_host_unpacking_basic():
     host = f'{protocol}://{hostname}'
     c = Client(host=host)
 
-    assert c.args.protocol == GatewayProtocolType.HTTP
+    assert c.args.protocol == ProtocolType.HTTP
     assert c.args.host == hostname
 
 

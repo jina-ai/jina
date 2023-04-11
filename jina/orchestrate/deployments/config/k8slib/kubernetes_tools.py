@@ -47,6 +47,7 @@ def _get_yaml(template: str, params: Dict) -> Dict:
         for k, v in params.items():
             content = content.replace(f'{{{k}}}', str(v))
         d = yaml.safe_load(content)
+
     return d
 
 

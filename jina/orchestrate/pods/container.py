@@ -137,10 +137,7 @@ def _docker_run(
 
     _args = ArgNamespace.kwargs2list(non_defaults)
 
-    if args.pod_role == PodRoleType.GATEWAY:
-        ports = {f'{_port}/tcp': _port for _port in args.port} if not net_mode else None
-    else:
-        ports = {f'{args.port}/tcp': args.port} if not net_mode else None
+    ports = {f'{_port}/tcp': _port for _port in args.port} if not net_mode else None
 
     if platform.system() == 'Darwin':
         image_architecture = client.images.get(uses_img).attrs.get('Architecture', '')

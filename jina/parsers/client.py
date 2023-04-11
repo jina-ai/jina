@@ -7,13 +7,13 @@ def mixin_client_protocol_parser(parser):
     :param parser: the parser configure
     """
 
-    from jina.enums import GatewayProtocolType
+    from jina.enums import ProtocolType
 
     parser.add_argument(
         '--protocol',
-        type=GatewayProtocolType.from_string,
-        choices=list(GatewayProtocolType),
-        default=GatewayProtocolType.GRPC,
+        type=ProtocolType.from_string,
+        choices=list(ProtocolType),
+        default=ProtocolType.GRPC,
         help='Communication protocol between server and client.',
     )
 
