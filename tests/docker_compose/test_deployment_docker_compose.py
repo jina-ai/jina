@@ -2,15 +2,17 @@
 import os
 import pytest
 import requests as req
+from jina.helper import random_port
 
 from jina import Client, Document, Deployment
 from tests.docker_compose.conftest import DockerComposeServices
 
 
-async def run_test(port, endpoint, num_docs=10, request_size=10):
+async def run_test(port, endpoint, num_docs=10, request_size=10, protocol='grpc'):
     # start port forwarding
     client_kwargs = dict(
         host='localhost',
+        protocol=protocol,
         port=port,
         asyncio=True,
     )
@@ -313,8 +315,9 @@ async def test_deployment_with_configmap(deployment_configmap, docker_images, tm
     indirect=True,
 )
 async def test_deployment_with_workspace(logger, docker_images, tmpdir):
+    port = random_port()
     deployment = Deployment(
-        port=9090,
+        port=port,
         name='test_executor',
         uses=f'docker://{docker_images[0]}',
         workspace='/shared',
@@ -333,3 +336,7 @@ async def test_deployment_with_workspace(logger, docker_images, tmpdir):
     assert len(docs) == 10
     for doc in docs:
         assert doc.tags['workspace'] == '/shared/TestExecutor/0'
+
+
+async def test_deployment_http_composite():
+    pass

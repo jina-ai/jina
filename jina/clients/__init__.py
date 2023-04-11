@@ -6,7 +6,7 @@ from jina.helper import parse_client
 
 __all__ = ['Client']
 
-from jina.enums import GatewayProtocolType
+from jina.enums import ProtocolType
 
 if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.grpc import AsyncGRPCClient, GRPCClient
@@ -132,15 +132,13 @@ def Client(
     ):  # we need to parse the kwargs as soon as possible otherwise to get the gateway type
         args = parse_client(kwargs)
 
-    protocol = (
-        args.protocol if args else kwargs.get('protocol', GatewayProtocolType.GRPC)
-    )
+    protocol = args.protocol if args else kwargs.get('protocol', ProtocolType.GRPC)
     if isinstance(protocol, str):
-        protocol = GatewayProtocolType.from_string(protocol)
+        protocol = ProtocolType.from_string(protocol)
 
     is_async = (args and args.asyncio) or kwargs.get('asyncio', False)
 
-    if protocol == GatewayProtocolType.GRPC:
+    if protocol == ProtocolType.GRPC:
         if is_async:
             from jina.clients.grpc import AsyncGRPCClient
 
@@ -149,7 +147,7 @@ def Client(
             from jina.clients.grpc import GRPCClient
 
             return GRPCClient(args, **kwargs)
-    elif protocol == GatewayProtocolType.WEBSOCKET:
+    elif protocol == ProtocolType.WEBSOCKET:
         if is_async:
             from jina.clients.websocket import AsyncWebSocketClient
 
@@ -158,7 +156,7 @@ def Client(
             from jina.clients.websocket import WebSocketClient
 
             return WebSocketClient(args, **kwargs)
-    elif protocol == GatewayProtocolType.HTTP:
+    elif protocol == ProtocolType.HTTP:
         if is_async:
             from jina.clients.http import AsyncHTTPClient
 

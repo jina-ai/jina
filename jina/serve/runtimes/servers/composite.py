@@ -16,12 +16,11 @@ class CompositeServer(BaseServer):
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
-
         from jina.parsers.helper import _get_gateway_class
 
         self.servers: List[BaseServer] = []
         for port, protocol in zip(self.ports, self.protocols):
-            server_cls = _get_gateway_class(protocol)
+            server_cls = _get_gateway_class(protocol, works_as_load_balancer=self.works_as_load_balancer)
             # ignore monitoring and tracing args since they are not copyable
             ignored_attrs = [
                 'metrics_registry',
@@ -44,7 +43,7 @@ class CompositeServer(BaseServer):
 
     async def setup_server(self):
         """
-        setup GRPC server
+        setup servers inside CompositeServer
         """
         tasks = []
         for server in self.servers:
@@ -62,7 +61,7 @@ class CompositeServer(BaseServer):
         await asyncio.gather(*shutdown_tasks)
 
     async def run_server(self):
-        """Run GRPC server forever"""
+        """Run servers inside CompositeServer forever"""
         run_server_tasks = []
         for server in self.servers:
             run_server_tasks.append(asyncio.create_task(server.run_server()))
@@ -88,6 +87,6 @@ class CompositeServer(BaseServer):
     @property
     def _should_exit(self) -> bool:
         should_exit_values = [
-            getattr(server.server, 'should_exit', True) for server in self.servers
+            getattr(server, 'should_exit', True) for server in self.servers
         ]
         return all(should_exit_values)

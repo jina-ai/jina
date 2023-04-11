@@ -1,11 +1,13 @@
 import asyncio
+import itertools
 import threading
-from typing import TYPE_CHECKING, AsyncIterator
+from typing import TYPE_CHECKING, AsyncIterator, Dict
 
 from jina.helper import get_full_version
 from jina.proto import jina_pb2
 from jina.types.request.data import DataRequest
 from jina.types.request.status import StatusMessage
+from jina.enums import ProtocolType
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import SimpleNamespace
@@ -19,14 +21,15 @@ class GatewayRequestHandler:
     """Object to encapsulate the code related to handle the data requests in the Gateway"""
 
     def __init__(
-        self,
-        args: 'SimpleNamespace',
-        logger: 'JinaLogger',
-        metrics_registry=None,
-        meter=None,
-        aio_tracing_client_interceptors=None,
-        tracing_client_interceptor=None,
-        **kwargs,
+            self,
+            args: 'SimpleNamespace',
+            logger: 'JinaLogger',
+            metrics_registry=None,
+            meter=None,
+            aio_tracing_client_interceptors=None,
+            tracing_client_interceptor=None,
+            works_as_load_balancer: bool = False,
+            **kwargs,
     ):
         import json
 
@@ -43,9 +46,16 @@ class GatewayRequestHandler:
         deployments_metadata = json.loads(self.runtime_args.deployments_metadata)
         deployments_no_reduce = json.loads(self.runtime_args.deployments_no_reduce)
 
+        deployment_grpc_addresses = {}
+        for deployment_name, addresses in deployments_addresses.items():
+            if isinstance(addresses, Dict):
+                deployment_grpc_addresses[deployment_name] = addresses.get(ProtocolType.GRPC.to_string(), [])
+            else:
+                deployment_grpc_addresses[deployment_name] = addresses
+
         self.streamer = GatewayStreamer(
             graph_representation=graph_description,
-            executor_addresses=deployments_addresses,
+            executor_addresses=deployment_grpc_addresses,
             graph_conditions=graph_conditions,
             deployments_metadata=deployments_metadata,
             deployments_no_reduce=deployments_no_reduce,
@@ -66,7 +76,7 @@ class GatewayRequestHandler:
 
         GatewayStreamer._set_env_streamer_args(
             graph_representation=graph_description,
-            executor_addresses=deployments_addresses,
+            executor_addresses=deployment_grpc_addresses,
             graph_conditions=graph_conditions,
             deployments_metadata=deployments_metadata,
             deployments_no_reduce=deployments_no_reduce,
@@ -81,17 +91,23 @@ class GatewayRequestHandler:
             executor_name: _ExecutorStreamer(
                 self.streamer._connection_pool, executor_name=executor_name
             )
-            for executor_name in deployments_addresses.keys()
+            for executor_name in deployment_grpc_addresses.keys()
         }
+        servers = []
+        for addresses in deployments_addresses.values():
+            if isinstance(addresses, Dict):
+                servers.extend(addresses.get(ProtocolType.HTTP.to_string(), []))
+        self.load_balancer_servers = itertools.cycle(servers)
         self.warmup_stop_event = threading.Event()
         self.warmup_task = None
-        try:
-            self.warmup_task = asyncio.create_task(
-                self.streamer.warmup(self.warmup_stop_event)
-            )
-        except RuntimeError:
-            # when Gateway is started locally, it may not have loop
-            pass
+        if not works_as_load_balancer:
+            try:
+                self.warmup_task = asyncio.create_task(
+                    self.streamer.warmup(self.warmup_stop_event)
+                )
+            except RuntimeError:
+                # when Gateway is started locally, it may not have loop
+                pass
 
     def cancel_warmup_task(self):
         """Cancel warmup task if exists and is not completed. Cancellation is required if the Flow is being terminated before the
@@ -144,6 +160,28 @@ class GatewayRequestHandler:
                 tracer_provider=tracer_provider,
             )
         )
+
+    async def _load_balance(self, request):
+        import aiohttp
+        from aiohttp import web
+
+        target_server = next(self.load_balancer_servers)
+        target_url = f'{target_server}{request.path_qs}'
+
+        try:
+            async with aiohttp.ClientSession() as session:
+                if request.method == 'GET':
+                    async with session.get(target_url) as response:
+                        content = await response.read()
+                        return web.Response(body=content, status=response.status, content_type=response.content_type)
+                elif request.method == 'POST':
+                    d = await request.read()
+                    import json
+                    async with session.post(url=target_url, json=json.loads(d.decode())) as response:
+                        content = await response.read()
+                        return web.Response(body=content, status=response.status, content_type=response.content_type)
+        except aiohttp.ClientError as e:
+            return web.Response(text=f'Error: {str(e)}', status=500)
 
     def _websocket_fastapi_default_app(self, tracing, tracer_provider):
         from jina.helper import extend_rest_interface

@@ -1,12 +1,12 @@
 import asyncio
 import os
-import uuid
 
 import pytest
 from docarray import DocumentArray
 from pytest_kind import cluster
 
 from jina import Deployment
+from jina.helper import random_port
 from tests.k8s.conftest import shell_portforward
 
 cluster.KIND_VERSION = 'v0.11.1'
@@ -107,23 +107,28 @@ async def create_executor_deployment_and_wait_ready(
 )
 @pytest.mark.parametrize('shards', [1, 2])
 @pytest.mark.parametrize('replicas', [1, 2])
+@pytest.mark.parametrize('protocol', ['grpc', 'http'])
 async def test_deployment_serve_k8s(
-    logger, docker_images, shards, replicas, tmpdir, k8s_cluster
+    logger, docker_images, shards, replicas, protocol, tmpdir, k8s_cluster
 ):
+    if protocol == 'http' and (shards > 1 or replicas == 1):
+        # shards larger than 1 are not supported, and replicas limitation is to speed up test
+        return
     from kubernetes import client
 
-    namespace = f'test-deployment-serve-k8s-{shards}-{replicas}'
+    namespace = f'test-deployment-serve-k8s-{shards}-{replicas}-{protocol}'
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
 
     # test with custom port
-    port = 12345
+    port = random_port()
     try:
         dep = Deployment(
             name='test-executor',
             uses=f'docker://{docker_images[0]}',
             shards=shards,
+            protocol=protocol,
             replicas=replicas,
             port=port,
         )
@@ -163,7 +168,7 @@ async def test_deployment_serve_k8s(
             port,
             namespace,
         ):
-            client = Client(port=port, asyncio=True)
+            client = Client(port=port, asyncio=True, protocol=protocol)
 
             # test with streaming
             async for docs in client.post(

@@ -3,7 +3,7 @@
 import grpc
 
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
-from .. import serializer as jina__pb2
+from ... import serializer as jina__pb2
 
 
 class JinaDataRequestRPCStub(object):
@@ -147,7 +147,7 @@ class JinaSingleDataRequestRPC(object):
 
 class JinaRPCStub(object):
     """*
-    jina Gateway gRPC service.
+    jina streaming gRPC service.
     """
 
     def __init__(self, channel):
@@ -165,7 +165,7 @@ class JinaRPCStub(object):
 
 class JinaRPCServicer(object):
     """*
-    jina Gateway gRPC service.
+    jina streaming gRPC service.
     """
 
     def Call(self, request_iterator, context):
@@ -192,7 +192,7 @@ def add_JinaRPCServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class JinaRPC(object):
     """*
-    jina Gateway gRPC service.
+    jina streaming gRPC service.
     """
 
     @staticmethod
