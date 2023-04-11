@@ -15,11 +15,12 @@ from jina.clients.request import request_generator
 from jina.constants import __cache_path__
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port
+from jina.serve.executors.decorators import write
 from jina.serve.executors.metas import get_default_metas
 from jina.serve.networking.utils import send_request_async
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.worker import WorkerRuntime
-from jina.serve.executors.decorators import write
+from jina.serve.runtimes.servers import BaseServer
+from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from tests.helper import _generate_pod_args
 
 
@@ -533,7 +534,7 @@ async def test_blocking_sync_exec():
     cancel_event = multiprocessing.Event()
 
     def start_runtime(args, cancel_event):
-        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
+        with AsyncNewLoopRuntime(args, cancel_event=cancel_event, req_handler_cls=WorkerRequestHandler) as runtime:
             runtime.run_forever()
 
     runtime_thread = Process(
@@ -543,9 +544,9 @@ async def test_blocking_sync_exec():
     )
     runtime_thread.start()
 
-    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host}:{args.port}',
+        ctrl_address=f'{args.host}:{args.port[0]}',
         ready_or_shutdown_event=Event(),
     )
 
@@ -556,7 +557,7 @@ async def test_blocking_sync_exec():
             asyncio.create_task(
                 send_request_async(
                     _create_test_data_message(),
-                    target=f'{args.host}:{args.port}',
+                    target=f'{args.host}:{args.port[0]}',
                     timeout=3.0,
                 )
             )
@@ -666,9 +667,7 @@ def test_combined_decorators(inputs, expected_values):
 
 
 def test_write_decorator():
-
     class WriteExecutor(Executor):
-
         @requests(on='/index')
         @write()
         def index(self, **kwargs):
@@ -689,4 +688,3 @@ def test_write_decorator():
 
     exec = WriteExecutor()
     assert set(exec.write_endpoints) == {'/index', '/update'}
-

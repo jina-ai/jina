@@ -38,7 +38,7 @@ from rich.progress import (
 
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin, ProfileMixin
-from jina.constants import __default_host__, __docker_host__, __windows__
+from jina.constants import __default_host__, __windows__
 from jina.enums import (
     DeploymentRoleType,
     FlowBuildLevel,
@@ -72,7 +72,6 @@ from jina.parsers import (
     set_gateway_parser,
 )
 from jina.parsers.flow import set_flow_parser
-from jina.serve.networking.utils import host_is_local, in_docker
 
 __all__ = ['Flow']
 GATEWAY_ARGS_BLACKLIST = ['uses', 'uses_with']
@@ -116,6 +115,7 @@ class Flow(
         self,
         *,
         asyncio: Optional[bool] = False,
+        grpc_channel_options: Optional[dict] = None,
         host: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
         metrics: Optional[bool] = False,
@@ -135,6 +135,7 @@ class Flow(
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
         :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
@@ -179,6 +180,7 @@ class Flow(
         floating: Optional[bool] = False,
         graph_conditions: Optional[str] = '{}',
         graph_description: Optional[str] = '{}',
+        grpc_channel_options: Optional[dict] = None,
         grpc_server_options: Optional[dict] = None,
         host: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
@@ -238,6 +240,7 @@ class Flow(
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
@@ -394,6 +397,7 @@ class Flow(
         - `port`, `port_monitoring`, `uses` and `uses_with` won't be passed to Executor
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
         :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
@@ -428,6 +432,7 @@ class Flow(
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
@@ -827,6 +832,7 @@ class Flow(
     def add(
         self,
         *,
+        allow_concurrent: Optional[bool] = False,
         compression: Optional[str] = None,
         connection_list: Optional[str] = None,
         disable_auto_volume: Optional[bool] = False,
@@ -839,6 +845,7 @@ class Flow(
         floating: Optional[bool] = False,
         force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
+        grpc_channel_options: Optional[dict] = None,
         grpc_metadata: Optional[dict] = None,
         grpc_server_options: Optional[dict] = None,
         host: Optional[List[str]] = ['0.0.0.0'],
@@ -890,6 +897,7 @@ class Flow(
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
+        :param allow_concurrent: Allow concurrent requests to be processed by the Executor. This is only recommended if the Executor is thread-safe.
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
@@ -912,6 +920,7 @@ class Flow(
               - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param grpc_metadata: The metadata to be passed to the gRPC request.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
@@ -1043,6 +1052,7 @@ class Flow(
         """Add a Deployment to the current Flow object and return the new modified Flow object.
         The attribute of the Deployment can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`
 
+        :param allow_concurrent: Allow concurrent requests to be processed by the Executor. This is only recommended if the Executor is thread-safe.
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
@@ -1065,6 +1075,7 @@ class Flow(
               - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param grpc_metadata: The metadata to be passed to the gRPC request.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
@@ -1274,6 +1285,7 @@ class Flow(
         floating: Optional[bool] = False,
         graph_conditions: Optional[str] = '{}',
         graph_description: Optional[str] = '{}',
+        grpc_channel_options: Optional[dict] = None,
         grpc_server_options: Optional[dict] = None,
         host: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
@@ -1333,6 +1345,7 @@ class Flow(
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
@@ -1433,6 +1446,7 @@ class Flow(
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
@@ -1769,7 +1783,7 @@ class Flow(
         self._stop_time = time.time()
         send_telemetry_event(
             event='stop',
-            obj=self,
+            obj_cls_name=self.__class__.__name__,
             entity_id=self._entity_id,
             duration=self._stop_time - self._start_time,
             exc_type=str(exc_type),
@@ -1816,7 +1830,11 @@ class Flow(
 
         self._build_level = FlowBuildLevel.RUNNING
 
-        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
+        send_telemetry_event(
+            event='start',
+            obj_cls_name=self.__class__.__name__,
+            entity_id=self._entity_id,
+        )
 
         return self
 
@@ -1964,10 +1982,11 @@ class Flow(
                 f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
             )
 
-            print(
-                'Do you love Open Source? Help us get better and be heard in just 1 minute and 30 seconds :sparkling_heart:'
-                'Your feedback will help us build better features for [link=https://github.com/jina-ai/jina]Jina[/link], your loved open-source project :tada: https://10sw1tcpld4.typeform.com/jinasurveyfeb23?utm_source=jina Take the Jina user survey!'
-            )
+            if 'JINA_HIDE_SURVEY' not in os.environ:
+                print(
+                    'Do you love open source? Help us improve [link=https://github.com/jina-ai/jina]Jina[/link] in just 1 minute and 30 seconds by taking our survey: https://10sw1tcpld4.typeform.com/jinasurveyfeb23?utm_source=jina'
+                    '(Set environment variable JINA_HIDE_SURVEY=1 to hide this message.)'
+                )
 
     @property
     def num_deployments(self) -> int:
@@ -2195,7 +2214,7 @@ class Flow(
         .. # noqa: DAR201
         """
         if GATEWAY_NAME in self._deployment_nodes:
-            res = self._deployment_nodes[GATEWAY_NAME].port
+            res = self._deployment_nodes[GATEWAY_NAME].first_pod_args.port
         else:
             res = self._gateway_kwargs.get('port', None) or self._gateway_kwargs.get(
                 'ports', None

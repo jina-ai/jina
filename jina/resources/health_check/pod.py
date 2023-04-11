@@ -3,9 +3,9 @@ def check_health_pod(addr: str):
 
     :param addr: the address on which the pod is serving ex : localhost:1234
     """
-    from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+    from jina.serve.runtimes.servers import BaseServer
 
-    is_ready = AsyncNewLoopRuntime.is_ready(addr)
+    is_ready = BaseServer.is_ready(addr)
 
     if not is_ready:
         raise Exception('Pod is unhealthy')

@@ -37,13 +37,13 @@ emphasize-lines: 17,18
 ---
 from jina import Executor, requests
 from docarray import BaseDocument, DocumentArray
-from docarray.documents import Image
+from docarray.documents import ImageDoc
 from docarray.typing import AnyTensor
 
 import numpy as np
 
 class InputDoc(BaseDocument):
-    img: Image
+    img: ImageDoc
 
 class OutputDoc(BaseDocument):
     embedding: AnyTensor
@@ -82,7 +82,7 @@ class MyExec(Executor):
         request_schema=DocumentArray[InputDoc],
         response_schema=DocumentArray[OutputDoc],
     )
-    def bar(self, docs, **kwargs) 
+    def bar(self, docs, **kwargs):
         docs_return = DocumentArray[OutputDoc](
             [OutputDoc(embedding=np.zeros((100, 1))) for _ in range(len(docs))]
         )
@@ -106,7 +106,7 @@ from jina import Deployment
 with Deployment(uses=MyExec) as dep:
     docs = dep.post(
         on='/bar',
-        inputs=InputDoc(img=Image(tensor=np.zeros((3, 224, 224)))),
+        inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
         return_type=DocumentArray[OutputDoc],
     )
     assert docs[0].embedding.shape == (100, 1)

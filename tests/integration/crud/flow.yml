@@ -1,6 +1,5 @@
 jtype: Flow
 with:
-  return_results: True
   port: 12345
   protocol: $RESTFUL
 executors:

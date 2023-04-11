@@ -2,8 +2,8 @@ import json
 
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_gateway_parser
-from jina.serve.runtimes.gateway.http.app import get_fastapi_app
-from jina.serve.streamer import GatewayStreamer
+from jina.serve.runtimes.gateway.http_fastapi_app import get_fastapi_app
+from jina.serve.runtimes.gateway.streamer import GatewayStreamer
 
 JINA_LOGO_URL = 'https://api.jina.ai/logo/logo-product/jina-core/horizontal-layout/colored/Product%20logo_Core_vertical_colorful%402x-margin.png'
 GATEWAY_SCHEMA_FILENAME = 'gateway.json'

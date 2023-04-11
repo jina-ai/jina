@@ -1,15 +1,16 @@
 from typing import Optional
 
 import numpy as np
-from docarray import BaseDocument, DocumentArray
-from docarray.documents import Image
+from docarray import BaseDoc
+from docarray import DocArray as DocumentArray
+from docarray.documents import ImageDoc
 from docarray.typing import AnyTensor, ImageUrl
 
 from jina import Deployment, Executor, Flow, requests
 
 
 def test_different_document_schema():
-    class Image(BaseDocument):
+    class Image(BaseDoc):
         tensor: Optional[AnyTensor]
         url: ImageUrl
 
@@ -33,7 +34,7 @@ def test_different_document_schema():
 
 
 def test_send_custom_doc():
-    class MyDoc(BaseDocument):
+    class MyDoc(BaseDoc):
         text: str
 
     class MyExec(Executor):
@@ -49,7 +50,7 @@ def test_send_custom_doc():
 
 
 def test_input_response_schema():
-    class MyDoc(BaseDocument):
+    class MyDoc(BaseDoc):
         text: str
 
     class MyExec(Executor):
@@ -72,7 +73,7 @@ def test_input_response_schema():
 
 
 def test_input_response_schema_annotation():
-    class MyDoc(BaseDocument):
+    class MyDoc(BaseDoc):
         text: str
 
     class MyExec(Executor):
@@ -91,10 +92,10 @@ def test_input_response_schema_annotation():
 
 
 def test_different_output_input():
-    class InputDoc(BaseDocument):
-        img: Image
+    class InputDoc(BaseDoc):
+        img: ImageDoc
 
-    class OutputDoc(BaseDocument):
+    class OutputDoc(BaseDoc):
         embedding: AnyTensor
 
     class MyExec(Executor):
@@ -110,7 +111,7 @@ def test_different_output_input():
     with Flow().add(uses=MyExec) as f:
         docs = f.post(
             on='/bar',
-            inputs=InputDoc(img=Image(tensor=np.zeros((3, 224, 224)))),
+            inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
             return_type=DocumentArray[OutputDoc],
         )
         assert docs[0].embedding.shape == (100, 1)
@@ -118,10 +119,10 @@ def test_different_output_input():
 
 
 def test_deployments():
-    class InputDoc(BaseDocument):
-        img: Image
+    class InputDoc(BaseDoc):
+        img: ImageDoc
 
-    class OutputDoc(BaseDocument):
+    class OutputDoc(BaseDoc):
         embedding: AnyTensor
 
     class MyExec(Executor):
@@ -137,7 +138,7 @@ def test_deployments():
     with Deployment(uses=MyExec) as dep:
         docs = dep.post(
             on='/bar',
-            inputs=InputDoc(img=Image(tensor=np.zeros((3, 224, 224)))),
+            inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
             return_type=DocumentArray[OutputDoc],
         )
         assert docs[0].embedding.shape == (100, 1)

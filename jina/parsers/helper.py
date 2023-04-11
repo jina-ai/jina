@@ -279,21 +279,22 @@ def _set_gateway_uses(args: 'argparse.Namespace'):
     if not args.uses:
         if len(args.protocol) == 1 and len(args.port) == 1:
             args.uses = _get_gateway_class(args.protocol[0]).__name__
-        elif len(args.protocol) == len(args.port):
+        elif len(args.protocol) > len(args.port):
+            if len(args.port) == 1:
+                from jina.helper import random_port
+                args.port = []
+                for _ in range(len(args.protocol)):
+                    args.port.append(random_port())
+            else:
+                raise ValueError(
+                    'You need to specify as much protocols as ports if you want to use a jina built-in gateway'
+                )
+        if len(args.protocol) > 1:
             from jina.serve.runtimes.gateway.composite import CompositeGateway
-
             args.uses = CompositeGateway.__name__
-        else:
-            raise ValueError(
-                'You need to specify as much protocols as ports if you want to use a jina built-in gateway'
-            )
 
 
 def _update_gateway_args(args: 'argparse.Namespace'):
-    from jina.helper import random_ports
-
-    if not args.port:
-        args.port = random_ports(len(args.protocol))
     _set_gateway_uses(args)
 
 
@@ -346,5 +347,6 @@ class CastHostAction(argparse.Action):
         for value in values:
             d.extend(value.split(','))
         setattr(args, self.dest, d)
+
 
 _chf = _ColoredHelpFormatter

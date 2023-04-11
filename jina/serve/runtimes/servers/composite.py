@@ -1,16 +1,16 @@
 import asyncio
 import copy
-from typing import Any, List, Optional
+from typing import Any, List
 
-from jina.serve.gateway import BaseGateway
+from jina.serve.runtimes.servers import BaseServer
 
 
-class CompositeGateway(BaseGateway):
-    """GRPC Gateway implementation"""
+class CompositeServer(BaseServer):
+    """Composite Server implementation"""
 
     def __init__(
-        self,
-        **kwargs,
+            self,
+            **kwargs,
     ):
         """Initialize the gateway
         :param kwargs: keyword args
@@ -19,44 +19,53 @@ class CompositeGateway(BaseGateway):
 
         from jina.parsers.helper import _get_gateway_class
 
-        self.gateways: List[BaseGateway] = []
+        self.servers: List[BaseServer] = []
         for port, protocol in zip(self.ports, self.protocols):
-            gateway_cls = _get_gateway_class(protocol)
-            # ignore metrics_registry since it is not copyable
+            server_cls = _get_gateway_class(protocol)
+            # ignore monitoring and tracing args since they are not copyable
+            ignored_attrs = [
+                'metrics_registry',
+                'tracer_provider',
+                'grpc_tracing_server_interceptors',
+                'aio_tracing_client_interceptors',
+                'tracing_client_interceptor',
+            ]
             runtime_args = self._deepcopy_with_ignore_attrs(
-                self.runtime_args, ['metrics_registry']
+                self.runtime_args, ignored_attrs
             )
             runtime_args.port = [port]
             runtime_args.protocol = [protocol]
-            gateway_kwargs = {k: v for k, v in kwargs.items() if k != 'runtime_args'}
-            gateway_kwargs['runtime_args'] = dict(vars(runtime_args))
-            gateway = gateway_cls(**gateway_kwargs)
-            gateway.streamer = self.streamer
-            self.gateways.append(gateway)
+            server_kwargs = {k: v for k, v in kwargs.items() if k != 'runtime_args'}
+            server_kwargs['runtime_args'] = dict(vars(runtime_args))
+            server_kwargs['req_handler'] = self._request_handler
+            server = server_cls(**server_kwargs)
+            self.servers.append(server)
+        self.gateways = self.servers # for backwards compatibility
 
     async def setup_server(self):
         """
         setup GRPC server
         """
         tasks = []
-        for gateway in self.gateways:
-            tasks.append(asyncio.create_task(gateway.setup_server()))
+        for server in self.servers:
+            tasks.append(asyncio.create_task(server.setup_server()))
 
         await asyncio.gather(*tasks)
 
     async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
+        await super().shutdown()
         shutdown_tasks = []
-        for gateway in self.gateways:
-            shutdown_tasks.append(asyncio.create_task(gateway.shutdown()))
+        for server in self.servers:
+            shutdown_tasks.append(asyncio.create_task(server.shutdown()))
 
         await asyncio.gather(*shutdown_tasks)
 
     async def run_server(self):
         """Run GRPC server forever"""
         run_server_tasks = []
-        for gateway in self.gateways:
-            run_server_tasks.append(asyncio.create_task(gateway.run_server()))
+        for server in self.servers:
+            run_server_tasks.append(asyncio.create_task(server.run_server()))
 
         await asyncio.gather(*run_server_tasks)
 
@@ -79,6 +88,6 @@ class CompositeGateway(BaseGateway):
     @property
     def _should_exit(self) -> bool:
         should_exit_values = [
-            getattr(gateway.server, 'should_exit', True) for gateway in self.gateways
+            getattr(server.server, 'should_exit', True) for server in self.servers
         ]
         return all(should_exit_values)

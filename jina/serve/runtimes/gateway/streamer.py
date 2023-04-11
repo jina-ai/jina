@@ -18,8 +18,10 @@ from jina.excepts import ExecutorError
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2
 from jina.serve.networking import GrpcConnectionPool
+from jina.serve.runtimes.gateway.async_request_response_handling import (
+    AsyncRequestResponseHandler,
+)
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
-from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 from jina.serve.stream import RequestStreamer
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
@@ -41,22 +43,23 @@ class GatewayStreamer:
     """
 
     def __init__(
-            self,
-            graph_representation: Dict,
-            executor_addresses: Dict[str, Union[str, List[str]]],
-            graph_conditions: Dict = {},
-            deployments_metadata: Dict[str, Dict[str, str]] = {},
-            deployments_no_reduce: List[str] = [],
-            timeout_send: Optional[float] = None,
-            retries: int = 0,
-            compression: Optional[str] = None,
-            runtime_name: str = 'custom gateway',
-            prefetch: int = 0,
-            logger: Optional['JinaLogger'] = None,
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            meter: Optional['Meter'] = None,
-            aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
-            tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
+        self,
+        graph_representation: Dict,
+        executor_addresses: Dict[str, Union[str, List[str]]],
+        graph_conditions: Dict = {},
+        deployments_metadata: Dict[str, Dict[str, str]] = {},
+        deployments_no_reduce: List[str] = [],
+        timeout_send: Optional[float] = None,
+        retries: int = 0,
+        compression: Optional[str] = None,
+        runtime_name: str = 'custom gateway',
+        prefetch: int = 0,
+        logger: Optional['JinaLogger'] = None,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        meter: Optional['Meter'] = None,
+        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
+        tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
+        grpc_channel_options: Optional[list] = None,
     ):
         """
         :param graph_representation: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to
@@ -77,6 +80,7 @@ class GatewayStreamer:
         :param meter: optional OpenTelemetry meter that can provide instruments for collecting metrics
         :param aio_tracing_client_interceptors: Optional list of aio grpc tracing server interceptors.
         :param tracing_client_interceptor: Optional gprc tracing server interceptor.
+        :param grpc_channel_options: Optional gprc channel options.
         """
         self.logger = logger or JinaLogger(self.__class__.__name__)
         topology_graph = TopologyGraph(
@@ -102,8 +106,9 @@ class GatewayStreamer:
             logger,
             aio_tracing_client_interceptors,
             tracing_client_interceptor,
+            grpc_channel_options,
         )
-        request_handler = GatewayRequestHandler(
+        request_handler = AsyncRequestResponseHandler(
             metrics_registry, meter, runtime_name, logger
         )
 
@@ -118,14 +123,15 @@ class GatewayStreamer:
         self._streamer.Call = self._streamer.stream
 
     def _create_connection_pool(
-            self,
-            deployments_addresses,
-            compression,
-            metrics_registry,
-            meter,
-            logger,
-            aio_tracing_client_interceptors,
-            tracing_client_interceptor,
+        self,
+        deployments_addresses,
+        compression,
+        metrics_registry,
+        meter,
+        logger,
+        aio_tracing_client_interceptors,
+        tracing_client_interceptor,
+        grpc_channel_options=None,
     ):
         # add the connections needed
         connection_pool = GrpcConnectionPool(
@@ -136,6 +142,7 @@ class GatewayStreamer:
             meter=meter,
             aio_tracing_client_interceptors=aio_tracing_client_interceptors,
             tracing_client_interceptor=tracing_client_interceptor,
+            channel_options=grpc_channel_options,
         )
         for deployment_name, addresses in deployments_addresses.items():
             for address in addresses:
@@ -202,14 +209,14 @@ class GatewayStreamer:
                 yield result.data.docs, error
 
     async def stream_docs(
-            self,
-            docs: DocumentArray,
-            request_size: int = 100,
-            return_results: bool = False,
-            exec_endpoint: Optional[str] = None,
-            target_executor: Optional[str] = None,
-            parameters: Optional[Dict] = None,
-            results_in_order: bool = False,
+        self,
+        docs: DocumentArray,
+        request_size: int = 100,
+        return_results: bool = False,
+        exec_endpoint: Optional[str] = None,
+        target_executor: Optional[str] = None,
+        parameters: Optional[Dict] = None,
+        results_in_order: bool = False,
     ):
         """
         stream documents and stream responses back.
@@ -255,7 +262,7 @@ class GatewayStreamer:
     Call = rpc_stream
 
     async def process_single_data(
-            self, request: DataRequest, context=None
+        self, request: DataRequest, context=None
     ) -> DataRequest:
         """Implements request and response handling of a single DataRequest
         :param request: DataRequest from Client

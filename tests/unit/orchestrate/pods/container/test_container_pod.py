@@ -10,6 +10,7 @@ from jina.enums import GatewayProtocolType
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port
 from jina.orchestrate.pods.container import ContainerPod
+from jina.serve.runtimes import servers
 from jina.parsers import set_gateway_parser
 from tests.helper import _generate_pod_args, _validate_dummy_custom_gateway_response
 
@@ -156,9 +157,12 @@ def test_failing_executor(fail_start_docker_image_built):
 def test_pass_arbitrary_kwargs(monkeypatch, mocker):
     import docker
 
-    mocker.patch(
-        'jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.is_ready',
-        return_value=True,
+    def _mock_is_ready(*args, **kwargs):
+        return True
+    monkeypatch.setattr(
+        servers.BaseServer,
+        'is_ready',
+        _mock_is_ready,
     )
 
     class MockContainers:
