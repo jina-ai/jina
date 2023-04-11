@@ -56,7 +56,7 @@ spec:
                 - jina
                 - ping
                 - executor
-                - 127.0.0.1:{port}
+                - {protocol}://127.0.0.1:{port}
             initialDelaySeconds: 5
             periodSeconds: {period_seconds}
             failureThreshold: {failure_threshold}
@@ -67,7 +67,7 @@ spec:
                 - jina
                 - ping
                 - executor
-                - 127.0.0.1:{port}
+                - {protocol}://127.0.0.1:{port}
                 - --timeout 9500
             initialDelaySeconds: 30
             periodSeconds: 5
