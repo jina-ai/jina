@@ -347,7 +347,7 @@ executors:
 
 ### Customize Flow name
 
-You can use `name` argument to specify the Flow name in the Flow YAML:
+You can use the `name` argument to specify the Flow name in the Flow YAML:
 
 ```{code-block} yaml
 ---
