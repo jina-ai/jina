@@ -31,9 +31,9 @@ jobs:
         run: |
           pip install flake8
           # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/resources/,jina/proto/pb/jina_pb2.py,jina/proto/pb/jina_pb2_grpc.py,jina/proto/pb2/jina_pb2.py,jina/proto/pb2/jina_pb2_grpc.py
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/resources/,jina/proto/docarray_v1,jina/proto/docarray_v2
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/resources/,jina/proto/pb/jina_pb2.py,jina/proto/pb/jina_pb2_grpc.py,jina/proto/pb2/jina_pb2.py,jina/proto/pb2/jina_pb2_grpc.py
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/proto/docarray_v1,jina/proto/docarray_v2
 
   check-docstring:
     runs-on: ubuntu-latest
@@ -395,9 +395,9 @@ jobs:
       - name: Prepare environment
         run: |
           docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
-          pip install -U "git+https://github.com/docarray/docarray@feat-rewrite-v2#egg=docarray[common]"
           python -m pip install --upgrade pip
           python -m pip install wheel
+          pip install -U "git+https://github.com/docarray/docarray@feat-rewrite-v2#egg=docarray[common]"
           pip install ".[common,devel,test]" --no-cache-dir
           pip install -U protobuf${{ matrix.protobuf-version }}
           jina
