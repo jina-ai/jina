@@ -16,7 +16,7 @@ This tutorial assumes familiarity with basic Jina concepts, such as Document, [E
 ## Jina and GPUs in a nutshell
 
 For a thorough walkthrough of using GPU resources in your code, check the full tutorial in the {ref}`next section <gpu-prerequisites>`.
-#trigger ci
+
 If you already know how to use your GPU, just proceed like you usually would in your machine learning framework of choice.
 Jina lets you use GPUs like you would in a Python script or Docker 
 container, without imposing additional requirements or configuration.
