@@ -98,7 +98,18 @@ def _docker_run(
         client.images.get(uses_img)
     except docker.errors.ImageNotFound:
         logger.error(f'can not find local image: {uses_img}')
-        img_not_found = True
+        # try to pull the image
+        try:
+            logger.debug(f'pulling image: {uses_img}')
+            client.images.pull(uses_img)
+            logger.debug(f'pulled image: {uses_img}')
+            logger.debug(f'getting image: {uses_img}')
+            client.images.get(uses_img)
+            logger.debug(f'successfully got image: {uses_img}')
+            img_not_found = False
+        except docker.errors.ImageNotFound:
+            logger.error(f'can not find remote image: {uses_img}')
+            img_not_found = True
 
     if img_not_found:
         raise BadImageNameError(f'image: {uses_img} can not be found local & remote.')
