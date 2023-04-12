@@ -58,19 +58,25 @@ DocArray is the foundational data structure of Jina. Before starting Jina, first
 ::::
 
 ::::{grid-item-card} {octicon}`gear;1.5em` Learn Executor
-:link: concepts/executor/index
+:link: concepts/serve/executor/index
 :link-type: doc
 
 {term}`Executor` is a Python class that can serve logic using `Documents`.
 
 ::::
 
-::::{grid-item-card} {octicon}`workflow;1.5em` Learn Flow
-:link: concepts/flow/index
+::::{grid-item-card} {octicon}`workflow;1.5em` Learn Deployment
+:link: concepts/orchestration/deployment
 :link-type: doc
 
+{term}`Deployment` serves an Executor as an scalable service making it available to receive `Documents` using `grpc` or `HTTP`.
+::::
 
-{term}`Flow` orchestrates Executors into a processing pipeline to accomplish a task.
+::::{grid-item-card} {octicon}`workflow;1.5em` Learn Flow
+:link: concepts/orchestraion/flow
+:link-type: doc
+
+{term}`Flow` orchestrates Executors using different Deployments into a processing pipeline to accomplish a task.
 ::::
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Explore Executor Hub
