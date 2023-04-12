@@ -370,15 +370,16 @@ class ContainerPod(BasePod):
         if sys.platform in ('linux', 'linux2') and 'microsoft' not in uname().release:
             if net_mode == DockerNetworkMode.AUTO:
                 net_mode = DockerNetworkMode.HOST
-            try:
-                bridge_network = client.networks.get('bridge')
-                if bridge_network:
-                    runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port[0]}'
-            except Exception as ex:
-                self.logger.warning(
-                    f'Unable to set control address from "bridge" network: {ex!r}'
-                    f' Control address set to {runtime_ctrl_address}'
-                )
+            if net_mode != DockerNetworkMode.NONE:
+                try:
+                    bridge_network = client.networks.get('bridge')
+                    if bridge_network:
+                        runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port[0]}'
+                except Exception as ex:
+                    self.logger.warning(
+                        f'Unable to set control address from "bridge" network: {ex!r}'
+                        f' Control address set to {runtime_ctrl_address}'
+                    )
 
         if net_mode in {DockerNetworkMode.AUTO, DockerNetworkMode.NONE}:
             net_mode = None
