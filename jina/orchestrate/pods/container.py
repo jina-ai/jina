@@ -366,7 +366,7 @@ class ContainerPod(BasePod):
         # Related to potential docker-in-docker communication. If `Runtime` lives already inside a container.
         # it will need to communicate using the `bridge` network.
         # In WSL, we need to set ports explicitly
-        net_mode, runtime_ctrl_address = self.args.force_network_mode, ctrl_address
+        net_mode, runtime_ctrl_address = getattr(self.args, 'force_network_mode', DockerNetworkMode.AUTO), ctrl_address
         if sys.platform in ('linux', 'linux2') and 'microsoft' not in uname().release:
             if net_mode == DockerNetworkMode.AUTO:
                 net_mode = DockerNetworkMode.HOST
