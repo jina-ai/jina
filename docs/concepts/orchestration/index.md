@@ -13,7 +13,7 @@ Both Deployment and Flow share similar syntax and behavior. The main differences
 ```{toctree}
 :hidden:
 deployment
-flow-placeholder
+flow
 add-executors
 scale-out
 hot-reload
