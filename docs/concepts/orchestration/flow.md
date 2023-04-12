@@ -2,7 +2,7 @@
 # Flow
 
 ```{important}
-A Flow is a kind of {class}`~jina.Orchestration`. Be sure to read up on that too!
+A Flow is a set of {ref}`Deployments <deployment>`. Be sure to read up on those before diving more deeply into Flows!
 ```
 
 A {class}`~jina.Flow` orchestrates {class}`~jina.Executor`s into a processing pipeline to accomplish a task. Documents "flow" through the pipeline and are processed by Executors.
