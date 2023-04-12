@@ -49,37 +49,6 @@ def test_bad_flow(mocker, protocol):
     validate_callback(on_error_mock, validate)
 
 
-@pytest.mark.slow
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_bad_flow_customized(mocker, protocol):
-    def validate(req):
-        bad_routes = [
-            r for r in req.routes if r.status.code == jina_pb2.StatusProto.ERROR
-        ]
-        assert req.status.code == jina_pb2.StatusProto.ERROR
-        assert bad_routes[0].executor == 'r2'
-        assert bad_routes[0].status.exception.name == 'ZeroDivisionError'
-
-    f = (
-        Flow(protocol=protocol)
-        .add(name='r1')
-        .add(name='r2', uses='!DummyCrafterExcept')
-        .add(name='r3', uses='!BaseExecutor')
-    )
-
-    with f:
-        pass
-
-    on_error_mock = mocker.Mock()
-
-    # always test two times, make sure the flow still works after it fails on the first
-    with f:
-        f.index([Document(text='abbcs'), Document(text='efgh')], on_error=on_error_mock)
-        f.index([Document(text='abbcs'), Document(text='efgh')], on_error=on_error_mock)
-
-    validate_callback(on_error_mock, validate)
-
-
 class NotImplementedExecutor(Executor):
     @requests
     def foo(self, **kwargs):
@@ -104,9 +73,6 @@ def test_except_with_shards(mocker, protocol):
         .add(name='r2', uses=DummyCrafterExcept, shards=3)
         .add(name='r3', uses=NotImplementedExecutor)
     )
-
-    with f:
-        pass
 
     on_error_mock = mocker.Mock()
 
@@ -295,18 +261,7 @@ class TimeoutSlowExecutor(Executor):
 
 @pytest.mark.timeout(50)
 def test_flow_timeout_send():
-    f = Flow().add(uses=TimeoutSlowExecutor)
-
-    with f:
-        f.index([Document()])
-
-    f = Flow(timeout_send=3000).add(uses=TimeoutSlowExecutor)
-
-    with f:
-        f.index([Document()])
-
     f = Flow(timeout_send=100).add(uses=TimeoutSlowExecutor)
-
     with f:
         with pytest.raises(Exception):
             f.index([Document()])

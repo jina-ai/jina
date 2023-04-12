@@ -1,6 +1,6 @@
 import argparse
 
-from jina.enums import GatewayProtocolType
+from jina.enums import ProtocolType
 from jina.helper import parse_host_scheme
 from jina.logging.predefined import default_logger
 
@@ -19,8 +19,7 @@ class NetworkChecker:
 
         from jina.clients import Client
         from jina.logging.profile import TimeContext
-        from jina.serve.runtimes.gateway import GatewayRuntime
-        from jina.serve.runtimes.worker import WorkerRuntime
+        from jina.serve.runtimes.servers import BaseServer
 
         try:
             total_time = 0
@@ -30,21 +29,15 @@ class NetworkChecker:
                 with TimeContext(
                     f'ping {args.target} on {args.host} at {j} round', default_logger
                 ) as tc:
-                    if args.target == 'executor':
+                    if args.target == 'flow':
+                        r = Client(host=args.host).is_flow_ready(timeout=timeout)
+                    else:
                         hostname, port, protocol, _ = parse_host_scheme(args.host)
-                        r = WorkerRuntime.is_ready(
+                        r = BaseServer.is_ready(
                             ctrl_address=f'{hostname}:{port}',
                             timeout=timeout,
+                            protocol=protocol,
                         )
-                    elif args.target == 'gateway':
-                        hostname, port, protocol, _ = parse_host_scheme(args.host)
-                        r = GatewayRuntime.is_ready(
-                            f'{hostname}:{port}',
-                            protocol=GatewayProtocolType.from_string(protocol),
-                            timeout=timeout,
-                        )
-                    elif args.target == 'flow':
-                        r = Client(host=args.host).is_flow_ready(timeout=timeout)
                     if not r:
                         default_logger.warning(
                             'not responding, attempt (%d/%d) in 1s'

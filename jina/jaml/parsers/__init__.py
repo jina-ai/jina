@@ -5,7 +5,7 @@ from jina.excepts import BadYAMLVersion
 from jina.jaml import JAMLCompatible
 from jina.jaml.parsers.base import VersionedYAMLParser
 from jina.orchestrate.deployments import Deployment
-from jina.serve.gateway import BaseGateway
+from jina.serve.runtimes.gateway.gateway import BaseGateway
 
 
 def _get_all_parser(cls: Type['JAMLCompatible']):

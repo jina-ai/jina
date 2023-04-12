@@ -146,6 +146,20 @@ class WorkerRequestHandler:
         if self.args.reload:
             self._hot_reload_task = asyncio.create_task(self._hot_reload())
 
+    def _http_fastapi_default_app(self,
+                                  **kwargs):
+        from jina.serve.runtimes.worker.http_fastapi_app import get_fastapi_app  # For Gateway, it works as for head
+        request_models_map = self._executor._get_endpoint_models_dict()
+
+        def call_handle(request):
+            return self.handle([request], None)
+
+        return get_fastapi_app(
+            request_models_map=request_models_map,
+            caller=call_handle,
+            **kwargs
+        )
+
     async def _hot_reload(self):
         import inspect
 
@@ -534,7 +548,6 @@ class WorkerRequestHandler:
             await task
         else:
             docs = WorkerRequestHandler.get_docs_from_request(requests)
-
             docs_matrix, docs_map = WorkerRequestHandler._get_docs_matrix_from_request(
                 requests
             )
@@ -725,7 +738,6 @@ class WorkerRequestHandler:
         :param context: grpc context
         :returns: the response request
         """
-
         return await self.process_data([request], context)
 
     async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
@@ -741,6 +753,7 @@ class WorkerRequestHandler:
         endpoints_proto.endpoints.extend(
             list(self._executor.requests.keys())
         )
+
         return endpoints_proto
 
     def _extract_tracing_context(

@@ -14,7 +14,8 @@ from jina.clients import Client
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
 from jina.serve import networking
-from jina.serve.runtimes.gateway import GatewayRuntime
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 
 INPUT_LEN = 4
 INPUT_GEN_SLEEP_TIME = 1
@@ -184,7 +185,7 @@ def create_runtime(graph_dict: Dict, protocol: str, port: int, prefetch: int = 0
             protocol,
         ]
     )
-    with GatewayRuntime(args) as runtime:
+    with AsyncNewLoopRuntime(args, req_handler_cls=GatewayRequestHandler) as runtime:
         runtime.run_forever()
 
 

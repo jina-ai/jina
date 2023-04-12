@@ -1,11 +1,14 @@
 import asyncio
-import random
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional
 
+import aiohttp
 from aiohttp import WSMsgType
+from starlette import status
 
+from jina.clients.base import retry
 from jina.enums import WebsocketSubProtocols
+from jina.excepts import BadClient
 from jina.importer import ImportExtensions
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
@@ -26,7 +29,7 @@ class AioHttpClientlet(ABC):
         logger: 'JinaLogger',
         max_attempts: int = 1,
         initial_backoff: float = 0.5,
-        max_backoff: float = 0.1,
+        max_backoff: float = 2,
         backoff_multiplier: float = 1.5,
         tracer_provider: Optional['trace.TraceProvider'] = None,
         **kwargs,
@@ -133,22 +136,23 @@ class HTTPClientlet(AioHttpClientlet):
         req_dict['exec_endpoint'] = req_dict['header']['exec_endpoint']
         if 'target_executor' in req_dict['header']:
             req_dict['target_executor'] = req_dict['header']['target_executor']
-        for retry in range(1, self.max_attempts + 1):
+        for attempt in range(1, self.max_attempts + 1):
             try:
-                return await self.session.post(url=self.url, json=req_dict).__aenter__()
-            except:
-                if retry == self.max_attempts:
-                    raise
-                else:
-                    wait_time = random.uniform(
-                        0,
-                        min(
-                            self.initial_backoff
-                            * self.backoff_multiplier ** (retry - 1),
-                            self.max_backoff,
-                        ),
-                    )
-                    await asyncio.sleep(wait_time)
+                response = await self.session.post(
+                    url=self.url, json=req_dict
+                ).__aenter__()
+                r_str = await response.json()
+                handle_response_status(response.status, r_str, self.url)
+                return response
+            except (ValueError, ConnectionError, BadClient, aiohttp.ClientError) as err:
+                await retry.wait_or_raise_err(
+                    attempt=attempt,
+                    err=err,
+                    max_attempts=self.max_attempts,
+                    backoff_multiplier=self.backoff_multiplier,
+                    initial_backoff=self.initial_backoff,
+                    max_backoff=self.max_backoff,
+                )
 
     async def send_dry_run(self, **kwargs):
         """Query the dry_run endpoint from Gateway
@@ -209,24 +213,18 @@ class WebsocketClientlet(AioHttpClientlet):
         :param request: request object
         :return: send request as bytes awaitable
         """
-        # we have to send here `retries` information
-        for retry in range(1, self.max_attempts + 1):
+        for attempt in range(1, self.max_attempts + 1):
             try:
                 return await self.websocket.send_bytes(request.SerializeToString())
-            except ConnectionResetError:
-                if retry == self.max_attempts:
-                    self.logger.critical(f'server connection closed already!')
-                    raise
-                else:
-                    wait_time = random.uniform(
-                        0,
-                        min(
-                            self.initial_backoff
-                            * self.backoff_multiplier ** (retry - 1),
-                            self.max_backoff,
-                        ),
-                    )
-                    await asyncio.sleep(wait_time)
+            except aiohttp.ClientError as err:
+                await retry.wait_or_raise_err(
+                    attempt=attempt,
+                    err=err,
+                    max_attempts=self.max_attempts,
+                    backoff_multiplier=self.backoff_multiplier,
+                    initial_backoff=self.initial_backoff,
+                    max_backoff=self.max_backoff,
+                )
 
     async def send_dry_run(self, **kwargs):
         """Query the dry_run endpoint from Gateway
@@ -276,14 +274,25 @@ class WebsocketClientlet(AioHttpClientlet):
             yield StatusMessage(response.data)
 
     async def __aenter__(self):
-        await super().__aenter__()
-        self.websocket = await self.session.ws_connect(
-            url=self.url,
-            protocols=(WebsocketSubProtocols.BYTES.value,),
-            **self._session_kwargs,
-        ).__aenter__()
-        self.response_iter = WsResponseIter(self.websocket)
-        return self
+        for attempt in range(1, self.max_attempts + 1):
+            try:
+                await super().__aenter__()
+                self.websocket = await self.session.ws_connect(
+                    url=self.url,
+                    protocols=(WebsocketSubProtocols.BYTES.value,),
+                    **self._session_kwargs,
+                ).__aenter__()
+                self.response_iter = WsResponseIter(self.websocket)
+                return self
+            except aiohttp.ClientError as err:
+                await retry.wait_or_raise_err(
+                    attempt=attempt,
+                    err=err,
+                    max_attempts=self.max_attempts,
+                    backoff_multiplier=self.backoff_multiplier,
+                    initial_backoff=self.initial_backoff,
+                    max_backoff=self.max_backoff,
+                )
 
     @property
     def close_message(self):
@@ -294,3 +303,33 @@ class WebsocketClientlet(AioHttpClientlet):
     def close_code(self):
         """:return: the close code of the ws closing response"""
         return self.websocket.close_code if self.websocket else None
+
+
+def handle_response_status(http_status: int, response_string: str, url: str):
+    """
+    Raise BadClient exception for HTTP 404 status.
+    Raise ConnectionError for HTTP status codes 504, 504 if header information is available.
+    Raise ValueError for everything other non 200 status code.
+    :param http_status: http status code
+    :param response_string: response string
+    :param url: request url string
+    """
+    if http_status == status.HTTP_404_NOT_FOUND:
+        raise BadClient(f'no such endpoint {url}')
+    elif (
+        http_status == status.HTTP_503_SERVICE_UNAVAILABLE
+        or http_status == status.HTTP_504_GATEWAY_TIMEOUT
+    ):
+        if (
+            'header' in response_string
+            and 'status' in response_string['header']
+            and 'description' in response_string['header']['status']
+        ):
+            raise ConnectionError(response_string['header']['status']['description'])
+        else:
+            raise ValueError(response_string)
+    elif (
+        http_status < status.HTTP_200_OK
+        or http_status > status.HTTP_300_MULTIPLE_CHOICES
+    ):  # failure codes
+        raise ValueError(response_string)

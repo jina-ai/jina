@@ -7,7 +7,8 @@ import pytest
 from jina import Document, DocumentArray, Executor, requests
 from jina.excepts import ExecutorError
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.worker import WorkerRuntime
+from jina.serve.runtimes.servers import BaseServer
+from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from jina.serve.runtimes.gateway.streamer import GatewayStreamer
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
@@ -24,10 +25,10 @@ class StreamerTestExecutor(Executor):
 
 def _create_worker_runtime(port, uses, name=''):
     args = _generate_pod_args()
-    args.port = port
+    args.port = [port]
     args.name = name
     args.uses = uses
-    with WorkerRuntime(args) as runtime:
+    with AsyncNewLoopRuntime(args, req_handler_cls=WorkerRequestHandler) as runtime:
         runtime.run_forever()
 
 
@@ -42,12 +43,12 @@ def _setup(pod0_port, pod1_port):
     )
     pod1_process.start()
 
-    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{pod0_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
-    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{pod1_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
@@ -141,7 +142,7 @@ async def test_gateway_stream_executor_error(port_generator, return_results):
         target=_create_worker_runtime, args=(pod_port, 'TestExecutor')
     )
     pod_process.start()
-    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{pod_port}',
         ready_or_shutdown_event=multiprocessing.Event(),

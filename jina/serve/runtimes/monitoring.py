@@ -1,7 +1,5 @@
-import asyncio
-import copy
 import time
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Union
 
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2
@@ -16,23 +14,25 @@ if TYPE_CHECKING:  # pragma: no cover
 class MonitoringMixin:
     """The Monitoring Mixin for pods"""
 
-    def _setup_monitoring(self):
+    def _setup_monitoring(self, monitoring: bool, port_monitoring: Union[int, str]):
         """
         Wait for the monitoring server to start
+        :param monitoring: flag indicating whether monitoring has to be activated
+        :param port_monitoring: port where to expose the monitoring
         """
 
-        if self.args.monitoring:
+        if monitoring:
             from prometheus_client import CollectorRegistry
 
             self.metrics_registry = CollectorRegistry()
         else:
             self.metrics_registry = None
 
-        if self.args.monitoring:
+        if monitoring:
             from prometheus_client import start_http_server
 
             start_http_server(
-                int(self.args.port_monitoring), registry=self.metrics_registry
+                int(port_monitoring), registry=self.metrics_registry
             )
 
 

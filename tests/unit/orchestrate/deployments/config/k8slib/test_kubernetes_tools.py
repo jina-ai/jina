@@ -11,7 +11,7 @@ from jina.orchestrate.deployments.config.k8slib.kubernetes_tools import get_yaml
     [
         ('namespace', {'name': 'test-ns'}),
         ('service', {'name': 'test-svc'}),
-        ('deployment-executor', {'name': 'test-dep'}),
+        ('deployment-executor', {'name': 'test-dep', 'protocol': 'grpc'}),
         (
             'configmap',
             {
@@ -42,6 +42,7 @@ def test_get_deployment_with_device_plugin(template, monkeypatch):
         'replicas': 1,
         'command': 'test-command',
         'args': 'test-args',
+        'protocol': 'grpc',
         'port': 1234,
         'port_out': 1234,
         'port_ctrl': 1234,

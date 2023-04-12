@@ -4,7 +4,7 @@ import argparse
 import os
 from typing import Tuple
 
-from jina.enums import GatewayProtocolType
+from jina.enums import ProtocolType
 from jina.logging.predefined import default_logger
 
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
@@ -262,39 +262,47 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         return lines
 
 
-def _get_gateway_class(protocol):
+def _get_gateway_class(protocol, works_as_load_balancer = False):
     from jina.serve.runtimes.gateway.grpc import GRPCGateway
     from jina.serve.runtimes.gateway.http import HTTPGateway
     from jina.serve.runtimes.gateway.websocket import WebSocketGateway
 
     gateway_dict = {
-        GatewayProtocolType.GRPC: GRPCGateway,
-        GatewayProtocolType.WEBSOCKET: WebSocketGateway,
-        GatewayProtocolType.HTTP: HTTPGateway,
+        ProtocolType.GRPC: GRPCGateway,
+        ProtocolType.WEBSOCKET: WebSocketGateway,
+        ProtocolType.HTTP: HTTPGateway,
     }
-    return gateway_dict[protocol]
+    if protocol == ProtocolType.HTTP and works_as_load_balancer:
+        from jina.serve.runtimes.gateway.load_balancer import LoadBalancerGateway
+        return LoadBalancerGateway
+    else:
+        return gateway_dict[protocol]
 
 
-def _set_gateway_uses(args: 'argparse.Namespace'):
+def _set_gateway_uses(args: 'argparse.Namespace', gateway_load_balancer: bool = False):
     if not args.uses:
         if len(args.protocol) == 1 and len(args.port) == 1:
             args.uses = _get_gateway_class(args.protocol[0]).__name__
-        elif len(args.protocol) == len(args.port):
+        elif len(args.protocol) > len(args.port):
+            if len(args.port) == 1:
+                from jina.helper import random_port
+                args.port = []
+                for _ in range(len(args.protocol)):
+                    args.port.append(random_port())
+            else:
+                raise ValueError(
+                    'You need to specify as much protocols as ports if you want to use a jina built-in gateway'
+                )
+        if len(args.protocol) > 1:
             from jina.serve.runtimes.gateway.composite import CompositeGateway
-
             args.uses = CompositeGateway.__name__
-        else:
-            raise ValueError(
-                'You need to specify as much protocols as ports if you want to use a jina built-in gateway'
-            )
+        elif gateway_load_balancer:
+            from jina.serve.runtimes.gateway.load_balancer import LoadBalancerGateway
+            args.uses = LoadBalancerGateway.__name__
 
 
-def _update_gateway_args(args: 'argparse.Namespace'):
-    from jina.helper import random_ports
-
-    if not args.port:
-        args.port = random_ports(len(args.protocol))
-    _set_gateway_uses(args)
+def _update_gateway_args(args: 'argparse.Namespace', **kwargs):
+    _set_gateway_uses(args, **kwargs)
 
 
 class CastToIntAction(argparse.Action):
@@ -346,5 +354,6 @@ class CastHostAction(argparse.Action):
         for value in values:
             d.extend(value.split(','))
         setattr(args, self.dest, d)
+
 
 _chf = _ColoredHelpFormatter

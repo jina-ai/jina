@@ -1,29 +1,28 @@
-import asyncio
-import os
-import json
 import argparse
+import asyncio
+import json
+import os
+import threading
 from collections import defaultdict
-
-from jina.serve.networking import GrpcConnectionPool
-from jina.serve.runtimes.monitoring import MonitoringRequestMixin
-from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
-from jina.enums import PollingType
-from typing import TYPE_CHECKING, AsyncIterator, List, Dict, Optional, Tuple
+from typing import TYPE_CHECKING, AsyncIterator, Dict, List, Optional, Tuple
 
 import grpc
-import threading
 
+from jina.enums import PollingType
 from jina.excepts import InternalNetworkError
 from jina.helper import get_full_version
 from jina.proto import jina_pb2
+from jina.serve.networking import GrpcConnectionPool
+from jina.serve.runtimes.monitoring import MonitoringRequestMixin
+from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from jina.types.request.data import DataRequest, Response
 
 if TYPE_CHECKING:  # pragma: no cover
     from prometheus_client import CollectorRegistry
 
     from jina.logging.logger import JinaLogger
-    from jina.types.request.data import DataRequest
     from jina.types.request import Request
+    from jina.types.request.data import DataRequest
 
 
 class HeaderRequestHandler(MonitoringRequestMixin):
@@ -33,18 +32,19 @@ class HeaderRequestHandler(MonitoringRequestMixin):
     :param metrics_registry: optional metrics registry for prometheus. Used if we need to expose metrics from the executor or from the data request handler
     :param runtime_name: optional runtime_name that will be registered during monitoring
     """
+
     DEFAULT_POLLING = PollingType.ANY
 
     def __init__(
-            self,
-            args: 'argparse.Namespace',
-            logger: 'JinaLogger',
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            meter=None,
-            runtime_name: Optional[str] = None,
-            aio_tracing_client_interceptors=None,
-            tracing_client_interceptor=None,
-            **kwargs,
+        self,
+        args: 'argparse.Namespace',
+        logger: 'JinaLogger',
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        meter=None,
+        runtime_name: Optional[str] = None,
+        aio_tracing_client_interceptors=None,
+        tracing_client_interceptor=None,
+        **kwargs,
     ):
         if args.name is None:
             args.name = ''
@@ -64,6 +64,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
             meter=self.meter,
             aio_tracing_client_interceptors=self.aio_tracing_client_interceptors,
             tracing_client_interceptor=self.tracing_client_interceptor,
+            channel_options=self.args.grpc_channel_options,
         )
         self._retries = self.args.retries
 
@@ -147,13 +148,13 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         )
 
     async def _gather_worker_tasks(
-            self,
-            requests,
-            connection_pool,
-            deployment_name,
-            polling_type,
-            timeout_send,
-            retries,
+        self,
+        requests,
+        connection_pool,
+        deployment_name,
+        polling_type,
+        timeout_send,
+        retries,
     ):
         worker_send_tasks = connection_pool.send_requests(
             requests=requests,
@@ -182,11 +183,11 @@ class HeaderRequestHandler(MonitoringRequestMixin):
 
     @staticmethod
     def _merge_metadata(
-            metadata,
-            uses_after_metadata,
-            uses_before_metadata,
-            total_shards,
-            failed_shards,
+        metadata,
+        uses_after_metadata,
+        uses_before_metadata,
+        total_shards,
+        failed_shards,
     ):
         merged_metadata = {}
         if uses_before_metadata:
@@ -204,16 +205,16 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         return merged_metadata
 
     async def _handle_data_request(
-            self,
-            requests,
-            connection_pool,
-            uses_before_address,
-            uses_after_address,
-            timeout_send,
-            retries,
-            reduce,
-            polling_type,
-            deployment_name,
+        self,
+        requests,
+        connection_pool,
+        uses_before_address,
+        uses_after_address,
+        timeout_send,
+        retries,
+        reduce,
+        polling_type,
+        deployment_name,
     ) -> Tuple['DataRequest', Dict]:
         for req in requests:
             self._update_start_request_metrics(req)
@@ -294,10 +295,10 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         return response_request, merged_metadata
 
     async def warmup(
-            self,
-            connection_pool: GrpcConnectionPool,
-            stop_event: 'threading.Event',
-            deployment: str,
+        self,
+        connection_pool: GrpcConnectionPool,
+        stop_event: 'threading.Event',
+        deployment: str,
     ):
         """Executes warmup task against the deployments from the connection pool.
         :param connection_pool: GrpcConnectionPool that implements the warmup to the connected deployments.
@@ -320,7 +321,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
             try:
                 if not self.warmup_task.done():
                     self.logger.debug(f'Cancelling warmup task.')
-                    self.warmup_stop_event.set() # this event is useless if simply cancel
+                    self.warmup_stop_event.set()  # this event is useless if simply cancel
                     self.warmup_task.cancel()
             except Exception as ex:
                 self.logger.debug(f'exception during warmup task cancellation: {ex}')
@@ -390,8 +391,8 @@ class HeaderRequestHandler(MonitoringRequestMixin):
                 err=err, context=context, response=Response()
             )
         except (
-                RuntimeError,
-                Exception,
+            RuntimeError,
+            Exception,
         ) as ex:  # some other error, keep streaming going just add error info
             self.logger.error(
                 f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
@@ -459,7 +460,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         return infoProto
 
     async def stream(
-            self, request_iterator, context=None, *args, **kwargs
+        self, request_iterator, context=None, *args, **kwargs
     ) -> AsyncIterator['Request']:
         """
         stream requests from client iterator and stream responses back.

@@ -135,9 +135,9 @@ class InstrumentationMixin:
             return None
 
     def tracing_client_interceptor(self) -> Optional['OpenTelemetryClientInterceptor']:
-        '''
+        """
         :returns: a gRPC client interceptor with the global tracing provider.
-        '''
+        """
         if self.tracing:
             from opentelemetry.instrumentation.grpc import (
                 client_interceptor as grpc_client_interceptor,
@@ -149,7 +149,8 @@ class InstrumentationMixin:
 
 
 class MetricsTimer:
-    """Helper dataclass that accepts optional Summary or Histogram recorders which are used to record the time take to execute
+    """
+    Helper dataclass that accepts optional Summary or Histogram recorders which are used to record the time take to execute
     the decorated or context managed function
     """
 
