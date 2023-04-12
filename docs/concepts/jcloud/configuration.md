@@ -345,6 +345,22 @@ executors:
 
 ## Other deployment options
 
+### Customize Flow name
+
+You can use the `name` argument to specify the Flow name in the Flow YAML:
+
+```{code-block} yaml
+---
+emphasize-lines: 2-3
+---
+jtype: Flow
+jcloud:
+  name: my-name
+executors:
+  - name: executor1
+    uses: jinaai+docker://<username>/Executor1
+```
+
 ### Specify Jina version
 
 To control Jina's version while deploying a Flow to `jcloud`, you can pass the `version` argument in the Flow YAML:
