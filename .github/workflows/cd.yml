@@ -125,11 +125,11 @@ jobs:
       - name: Prepare environment
         run: |
           docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
-          pip install -U "git+https://github.com/docarray/docarray@feat-rewrite-v2#egg=docarray[common]"
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install -U protobuf==3.20.3
           pip install ".[common,devel,test]" --no-cache-dir
+          pip install -U "git+https://github.com/docarray/docarray@feat-rewrite-v2#egg=docarray[common]"
           jina
           export JINA_LOG_LEVEL="ERROR"
       - name: Test
