@@ -64,7 +64,7 @@ Applications built with Jina enjoy the following features out of the box:
 ## Install 
 
 ```bash
-pip install jina
+pip install jina transformers sentencepiece
 ```
 
 Find more install options on [Apple Silicon](https://docs.jina.ai/get-started/install/apple-silicon-m1-m2/)/[Windows](https://docs.jina.ai/get-started/install/windows/).
@@ -155,6 +155,7 @@ Then we deploy it with either the Python API or YAML:
 
 ```python
 from jina import Deployment
+from translate_executor import Translator
 
 with Deployment(uses=Translator, timeout_ready=-1) as dep:
     dep.block()
