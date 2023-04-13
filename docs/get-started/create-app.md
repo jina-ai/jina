@@ -185,10 +185,80 @@ tensor([[[0.9594, 0.9373],
 
 JCloud offers free CPU and GPU instances to host Jina projects.
 
-````{admonition}
+```{admonition}
 :class: important
 At present, JCloud is only available for Flows. We are currently working on supporting Deployments.
-````
+```
+
+```bash
+jina auth login
+```
+
+Log in with your GitHub, Google or Email account.
+
+```bash
+jina cloud deploy ./
+```
+
+```{figure} deploy-jcloud-ongoing.png
+```
+
+Deployment is fully automatic and takes a few minutes.
+
+After it is done, you should see the following message in the terminal.
+
+
+```text
+╭────────────── 🎉 Flow is available! ──────────────╮
+│                                                   │
+│   ID            1655d050ad                        │
+│   Endpoint(s)   grpcs://1655d050ad.wolf.jina.ai   │
+│                                                   │
+╰───────────────────────────────────────────────────╯
+```
+
+
+Now change the Client's code to use the deployed endpoint shown above:
+
+```{code-block} python
+---
+emphasize-lines: 4
+---
+from jina import Client, DocumentArray
+
+if __name__ == '__main__':
+    c = Client(host='grpcs://1655d050ad.wolf.jina.ai')
+    da = c.post('/crunch-numbers', DocumentArray.empty(2))
+    print(da.tensors)
+```
+
+```{tip}
+The very first request can be a bit slow because the server is starting up.
+```
+
+```text
+tensor([[[0.4254, 0.4305],
+         [0.6200, 0.5783],
+         [0.7989, 0.8742],
+         [0.1324, 0.7228],
+         [0.1274, 0.6538],
+         [0.1533, 0.7543],
+         [0.3025, 0.7702],
+         [0.6938, 0.9289],
+         [0.5222, 0.7280],
+         [0.7298, 0.4923]],
+
+        [[0.9747, 0.5026],
+         [0.6438, 0.4007],
+         [0.0899, 0.8635],
+         [0.3142, 0.4142],
+         [0.4447, 0.2540],
+         [0.1109, 0.6260],
+         [0.3850, 0.9894],
+         [0.0845, 0.7538],
+         [0.1444, 0.5136],
+         [0.3368, 0.6162]]], dtype=torch.float64)
+```
 
 You've just finished your first toy Jina project, congratulations! You can now start your own project.
 
