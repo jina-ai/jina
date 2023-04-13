@@ -78,13 +78,13 @@ Data structures coming from [DocArray](https://docarray.jina.ai/fundamentals/doc
     Document is the basic object for representing multimodal data. More information can be found in [DocArray's Docs](https://docs.docarray.org/fundamentals/document/). 
 
 - **DocumentArray**
-    DocumentArray is a list-like container of multiple Documents. It is the essential element of IO in Jina services More information can be found in [DocArray's Docs](https://docarray.jina.ai/fundamentals/documentarray/). 
+    DocumentArray is a list-like container of multiple Documents. It is the essential element of IO in Jina services. More information can be found in [DocArray's Docs](https://docarray.jina.ai/fundamentals/documentarray/). 
 
 **Serving**
 
 This layer contains all the objects and concepts that are used to actually serve the logic and receive and respond to queries. These components are designed to be used
 as microservices ready to be containerized. 
-These components can be orchestrated by Jina {term}`orchestration` layer or by other container orchestration frameworks as Kubernetes or Docker Compose.
+These components can be orchestrated by Jina's {term}`orchestration` layer or by other container orchestration frameworks such as Kubernetes or Docker Compose.
  
 
 - **Executor**
@@ -96,7 +96,7 @@ These components can be orchestrated by Jina {term}`orchestration` layer or by o
 
 **Orchestration**
 
-These layer contains the components making sure that the objects (specially the {term}`Executor`) are deployed and scaled for serving. 
+This layer contains the components making sure that the objects (especially the {term}`Executor`) are deployed and scaled for serving.
 They wrap them to provide them the **scalability** and **serving** capabilities. They also provide easy translation to other orchestration
 frameworks (Kubernetes, Docker compose) to provide more advanced and production-ready settings. They can also be directly deployed to [Jina AI Cloud](https://cloud.jina.ai)
 with a single command line.
@@ -107,10 +107,10 @@ with a single command line.
     service or as part of a {term}`Flow`. It encapsulates and abstracts internal replication and serving details.
 
 - **Flow**
-    {class}`~jina.Flow` ties multiple {class}`~jina.Deployments`s together into a logic pipeline to achieve a more complex task. It orchestrates both {term}`Executor` and {term}`Gateway`.
+    {class}`~jina.Flow` ties multiple {class}`~jina.Deployments`s together into a logic pipeline to achieve a more complex task. It orchestrates both {term}`Executor`s and the {term}`Gateway`.
 
 **Client**
-{class}`~jina.Client` connects to a {term}`Gateway` or {term}`Executor` and sends/receives and streams data from it.
+{class}`~jina.Client` connects to a {term}`Gateway` or {term}`Executor` and sends/receives/streams data from it.
 
 ```
 

@@ -69,7 +69,7 @@ DocArray is the foundational data structure of Jina. Before starting Jina, first
 :link: concepts/orchestration/deployment
 :link-type: doc
 
-{term}`Deployment` serves an Executor as an scalable service making it available to receive `Documents` using `grpc` or `HTTP`.
+{term}`Deployment` serves an Executor as a scalable service making it available to receive `Documents` using `gRPC` or `HTTP`.
 ::::
 
 ::::{grid-item-card} {octicon}`workflow;1.5em` Learn Flow
@@ -82,7 +82,7 @@ DocArray is the foundational data structure of Jina. Before starting Jina, first
 ::::{grid-item-card} {octicon}`cross-reference;1.5em` Learn Gateway
 :link: concepts/serving/gateway/index
 
-Gateway is a microservice that serves as an entrypoint of a {term}`Flow`. It exposes multiple protocols for external communications; it routes all internal traffic.. 
+The Gateway is a microservice that serves as the entrypoint of a {term}`Flow`. It exposes multiple protocols for external communications and routes all internal traffic.
 ::::
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Explore Executor Hub

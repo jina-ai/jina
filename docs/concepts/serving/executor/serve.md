@@ -1,7 +1,7 @@
 (serve-executor-standalone)=
 # Serve
 
-{class}`~jina.Executor`s can be served and accessed over the nerwork using gRPC or HTTP protocols, allowing you to use them to create service for tasks like model inference, data processing, generative AI, and search services.
+{class}`~jina.Executor`s can be served and accessed over the network using gRPC or HTTP protocols, allowing you to use them to create services for tasks like model inference, data processing, generative AI, and search services.
 
 There are different options for deploying and running a standalone Executor:
 * Run the Executor directly from Python with the {class}`~jina.orchestrate.deployments.Deployment` class
@@ -260,7 +260,7 @@ export EXTERNAL_IP=`kubectl get service executor-exposed -n my-namespace -o=json
 ```
 
 Then, we can send requests using {meth}`~jina.Client`. Since Kubernetes load balancers cannot load balance streaming 
-gRPC requests, it is recommended to set `stream=False` when using gRPC protocol (note that this is only applicable for Kubernetes deployments of Executors):
+gRPC requests, it is recommended to set `stream=False` when using gRPC (note that this is only applicable for Kubernetes deployments of Executors):
 ```python
 import os
 from jina import Client, Document

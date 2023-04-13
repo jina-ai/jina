@@ -43,12 +43,12 @@ docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12346 grpc
 :class: caution
 For Executors running with HTTP, the gRPC health check response codes outlined {ref}`above <health-check-microservices>` do not apply.
 
-Instead, an error free response signifies healthiness.
+Instead, an error-free response signifies healthiness.
 ````
 
 When using HTTP as the protocol for the Executor, you can query the endpoint `'/'` to check the status.
 
-First, create a Deployment with HTTP protocol:
+First, create a Deployment with the HTTP protocol:
 
 ```python
 from jina import Deployment

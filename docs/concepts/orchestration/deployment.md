@@ -157,11 +157,11 @@ dep.save_config('deployment.yml')
 
 ## Start and stop
 
-When an {class}`~jina.Deployment` starts, all the replicated Executors will start as well, making it possible to {ref}`reach the service through its API <third-party-client>`.
+When a {class}`~jina.Deployment` starts, all the replicated Executors will start as well, making it possible to {ref}`reach the service through its API <third-party-client>`.
 
 There are three ways to start a Deployment: In Python, from a YAML file, or from the terminal.
 
-- Generally in Python: use Deployment as a context manager in Python.
+- Generally in Python: use Deployment as a context manager.
 - As an entrypoint from terminal: use `Jina CLI <cli>` and a Deployment YAML file.
 - As an entrypoint from Python code: use Deployment as a context manager inside `if __name__ == '__main__'`
 - No context manager, manually call {meth}`~jina.Deployment.start` and {meth}`~jina.Deployment.close`.
@@ -384,13 +384,13 @@ with:
 
 A Deployment can be used to deploy an Executor and serve it using `gRPC` or `HTTP` protocol, or a composition of them. 
 
-### GRPC protocol
+### gRPC protocol
 
-GRPC protocol is the default protocol used by a Deployment to expose Executor to the outside world, and is the protocol used to communicate between Gateway and an Executor inside a Flow.
+gRPC is the default protocol used by a Deployment to expose Executors to the outside world, and is used to communicate between the Gateway and an Executor inside a Flow.
 
 ### HTTP protocol
 
-A Deployment when used in stand-alone (without being part of a Flow) can be served using HTTP protocol which would allow external services to connect via REST. 
+HTTP can be used for a stand-alone Deployment (without being part of a Flow), which allows external services to connect via REST. 
 
 ```python
 from jina import Deployment, Executor, requests
@@ -436,7 +436,7 @@ with dep:
     dep.block()
 ````
 
-This will make the Deployment reachable via gRPC and HTTP simultanously.
+This will make the Deployment reachable via gRPC and HTTP simultaneously.
 
 ## Methods
 

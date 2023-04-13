@@ -7,7 +7,7 @@
 Executors use `docarray.DocumentArray` as their input and output data structure. [Read DocArray's docs](https://docs.docarray.org) to see how it works.
 ```
 
-An {class}`~jina.Executor` is a self-contained microservice exposed using gRPC or HTTP protocol. 
+An {class}`~jina.Executor` is a self-contained microservice exposed using a gRPC or HTTP protocol. 
 It contains functions (decorated with `@requests`) that process `DocumentArray`s. Executors follow three principles:
 
 1. An Executor should subclass directly from the `jina.Executor` class.
