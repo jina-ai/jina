@@ -1,9 +1,8 @@
 """Argparser module for container runtimes"""
 import argparse
-from jina.parsers.helper import KVAppendAction, add_arg_group
-from jina.parsers.helper import _SHOW_ALL_ARGS
 
 from jina.enums import DockerNetworkMode
+from jina.parsers.helper import _SHOW_ALL_ARGS, KVAppendAction, add_arg_group
 
 
 def mixin_container_runtime_parser(parser, pod_type: str = 'executor'):
@@ -17,7 +16,7 @@ def mixin_container_runtime_parser(parser, pod_type: str = 'executor'):
         '--entrypoint',
         type=str,
         help='The entrypoint command overrides the ENTRYPOINT in Docker image. '
-             'when not set then the Docker image ENTRYPOINT takes effective.',
+        'when not set then the Docker image ENTRYPOINT takes effective.',
     )
     gp.add_argument(
         '--docker-kwargs',
@@ -75,7 +74,15 @@ Note,
             type=DockerNetworkMode.from_string,
             choices=list(DockerNetworkMode),
             default=DockerNetworkMode.AUTO,
-            help='TODO: Description about these options.'
+            help='''
+    Force the use of the specified docker network mode (default: auto). 
+
+    Valid options are,
+    - auto: Automatically detect the docker network.
+    - host: Use the host network.
+    - bridge: Use a user-defined bridge network.
+    - none: Use no network (equivalent to the --network=none option).
+        '''
             if _SHOW_ALL_ARGS
             else argparse.SUPPRESS,
         )
