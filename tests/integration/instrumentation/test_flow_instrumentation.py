@@ -136,7 +136,7 @@ def test_multiprotocol_gateway_instrumentation(
         gateway_traces
     )
     assert len(client_spans) == 11
-    assert len(server_spans) == 11
+    assert len(server_spans) == 12
 
 
 def test_executor_instrumentation(jaeger_port, otlp_collector, otlp_receiver_port):

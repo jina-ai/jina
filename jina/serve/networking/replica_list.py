@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence, Union
 from urllib.parse import urlparse
 
 from grpc.aio import ClientInterceptor
@@ -31,6 +31,7 @@ class _ReplicaList:
         aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
         tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
         deployment_name: str = '',
+        channel_options: Optional[Union[list, Dict[str, Any]]] = None,
     ):
         self.runtime_name = runtime_name
         self._connections = []
@@ -43,6 +44,7 @@ class _ReplicaList:
         self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
         self.tracing_client_interceptors = tracing_client_interceptor
         self._deployment_name = deployment_name
+        self.channel_options = channel_options
         # a set containing all the ConnectionStubs that will be created using add_connection
         # this set is not updated in reset_connection and remove_connection
         self._warmup_stubs = set()
@@ -126,6 +128,7 @@ class _ReplicaList:
             histograms=self._histograms,
             tls=use_tls,
             aio_tracing_client_interceptors=self.aio_tracing_client_interceptors,
+            channel_options=self.channel_options,
         )
         return stubs, channel
 

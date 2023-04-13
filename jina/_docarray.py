@@ -1,6 +1,6 @@
 try:
-    from docarray import BaseDocument as Document
-    from docarray import DocumentArray
+    from docarray import BaseDoc as Document
+    from docarray import DocList as DocumentArray
 
     docarray_v2 = True
 

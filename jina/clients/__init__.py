@@ -6,7 +6,7 @@ from jina.helper import parse_client
 
 __all__ = ['Client']
 
-from jina.enums import GatewayProtocolType
+from jina.enums import ProtocolType
 
 if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.grpc import AsyncGRPCClient, GRPCClient
@@ -19,6 +19,7 @@ if TYPE_CHECKING:  # pragma: no cover
 def Client(
     *,
     asyncio: Optional[bool] = False,
+    grpc_channel_options: Optional[dict] = None,
     host: Optional[str] = '0.0.0.0',
     log_config: Optional[str] = None,
     metrics: Optional[bool] = False,
@@ -45,6 +46,7 @@ def Client(
     """Create a Client. Client is how user interact with Flow
 
     :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
+    :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
     :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
     :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
     :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
@@ -100,6 +102,7 @@ def Client(
         c.post(on='/index', inputs=Document(text='hello!'))
 
     :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
+    :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
     :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
     :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
     :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
@@ -129,15 +132,13 @@ def Client(
     ):  # we need to parse the kwargs as soon as possible otherwise to get the gateway type
         args = parse_client(kwargs)
 
-    protocol = (
-        args.protocol if args else kwargs.get('protocol', GatewayProtocolType.GRPC)
-    )
+    protocol = args.protocol if args else kwargs.get('protocol', ProtocolType.GRPC)
     if isinstance(protocol, str):
-        protocol = GatewayProtocolType.from_string(protocol)
+        protocol = ProtocolType.from_string(protocol)
 
     is_async = (args and args.asyncio) or kwargs.get('asyncio', False)
 
-    if protocol == GatewayProtocolType.GRPC:
+    if protocol == ProtocolType.GRPC:
         if is_async:
             from jina.clients.grpc import AsyncGRPCClient
 
@@ -146,7 +147,7 @@ def Client(
             from jina.clients.grpc import GRPCClient
 
             return GRPCClient(args, **kwargs)
-    elif protocol == GatewayProtocolType.WEBSOCKET:
+    elif protocol == ProtocolType.WEBSOCKET:
         if is_async:
             from jina.clients.websocket import AsyncWebSocketClient
 
@@ -155,7 +156,7 @@ def Client(
             from jina.clients.websocket import WebSocketClient
 
             return WebSocketClient(args, **kwargs)
-    elif protocol == GatewayProtocolType.HTTP:
+    elif protocol == ProtocolType.HTTP:
         if is_async:
             from jina.clients.http import AsyncHTTPClient
 

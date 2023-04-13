@@ -27,7 +27,7 @@ def test_gateway_metric_labels(monkeypatch_metric_exporter):
         collect_metrics()
         metrics = read_metrics()
         print(f' metrics {metrics.keys()}')
-        gateway_metrics = metrics['gateway/rep-0'][0]['resource_metrics'][0][
+        gateway_metrics = metrics['gateway/rep-0']['resource_metrics'][0][
             'scope_metrics'
         ][0]['metrics']
         gateway_metric_data_point = {
@@ -118,7 +118,7 @@ def test_merge_with_no_reduce(monkeypatch_metric_exporter):
         collect_metrics()
         metrics = read_metrics()
 
-        gateway_metrics = metrics['gateway/rep-0'][0]['resource_metrics'][0][
+        gateway_metrics = metrics['gateway/rep-0']['resource_metrics'][0][
             'scope_metrics'
         ][0]['metrics']
         gateway_metric_data_point = {

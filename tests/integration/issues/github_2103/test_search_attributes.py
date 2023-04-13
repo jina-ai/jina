@@ -50,7 +50,6 @@ def test_no_matches_rest(query_dict):
     with Flow(
         protocol='http',
         port=port,
-        including_default_value_fields=True,
     ).add(uses=MockExecutor):
         # temporarily adding sleep
         time.sleep(0.5)

@@ -3,7 +3,7 @@ repos:
     rev: 4.0.1
     hooks:
     -   id: flake8
-        exclude: ^(.git|__pycache__|docs/source/conf.py|old|build|dist|tests|jina/resources/|jina/proto/pb/jina_pb2.py|jina/proto/pb/jina_pb2_grpc.py|jina/proto/pb2/jina_pb2.py|jina/proto/pb2/jina_pb2_grpc.py)
+        exclude: ^(.git|__pycache__|docs/source/conf.py|old|build|dist|tests|jina/resources/|jina/proto/docarray_v1|jina/proto/docarray_v2)
         args:
           - --max-complexity=10
           - --max-line-length=127
@@ -13,7 +13,7 @@ repos:
   hooks:
   - id: darglint
     files: jina/
-    exclude: ^(jina/helloworld/|jina/proto/pb/jina_pb2.py|jina/proto/pb/jina_pb2_grpc.py|jina/proto/pb2/jina_pb2.py|jina/proto/pb2/jina_pb2_grpc.py|docs/|jina/resources/)
+    exclude: ^(jina/helloworld/|jina/proto/pb/jina_pb2.py|jina/proto/pb/jina_pb2_grpc.py|jina/proto/pb2/jina_pb2.py|jina/proto/pb2/jina_pb2_grpc.py|docs/|jina/resources/|jina/proto/docarray_v1|jina/proto/docarray_v2)
     args:
     - --message-template={path}:{line} {msg_id} {msg}
     - -s=sphinx
@@ -24,7 +24,7 @@ repos:
   hooks:
   -   id: pydocstyle
       files: jina/
-      exclude: ^(jina/helloworld/|jina/proto/pb/jina_pb2.py|jina/proto/pb/jina_pb2_grpc.py|jina/proto/pb2/jina_pb2.py|jina/proto/pb2/jina_pb2_grpc.py|docs/|jina/resources/)
+      exclude: ^(jina/helloworld/|jina/proto/pb/jina_pb2.py|jina/proto/pb/jina_pb2_grpc.py|jina/proto/pb2/jina_pb2.py|jina/proto/pb2/jina_pb2_grpc.py|docs/|jina/resources/|jina/proto/docarray_v1|jina/proto/docarray_v2)
       args:
       - --select=D101,D102,D103
 - repo: https://github.com/ambv/black
@@ -32,18 +32,20 @@ repos:
   hooks:
   - id: black
     types: [python]
-    exclude: ^(jina/proto/pb/jina_pb2.py|jina/proto/pb/jina_pb2_grpc.py|jina/proto/pb2/jina_pb2.py|jina/proto/pb2/jina_pb2_grpc.py|docs/|jina/resources/)
+    exclude: ^(jina/proto/pb/jina_pb2.py|jina/proto/pb/jina_pb2_grpc.py|jina/proto/pb2/jina_pb2.py|jina/proto/pb2/jina_pb2_grpc.py|docs/|jina/resources/|jina/proto/docarray_v1|jina/proto/docarray_v2)
     args:
       - -S
 - repo: https://github.com/asottile/blacken-docs
   rev: v1.12.1
   hooks:
   -   id: blacken-docs
+      exclude: ^(jina/helloworld/|jina/proto/pb/jina_pb2.py|jina/proto/pb/jina_pb2_grpc.py|jina/proto/pb2/jina_pb2.py|jina/proto/pb2/jina_pb2_grpc.py|docs/|jina/resources/|jina/proto/docarray_v1|jina/proto/docarray_v2)
       args:
         - -S
 - repo: https://github.com/pycqa/isort
   rev: 5.10.1
   hooks:
     - id: isort
+      exclude: ^(jina/helloworld/|jina/proto/pb/jina_pb2.py|jina/proto/pb/jina_pb2_grpc.py|jina/proto/pb2/jina_pb2.py|jina/proto/pb2/jina_pb2_grpc.py|docs/|jina/resources/|jina/proto/docarray_v1|jina/proto/docarray_v2)
       args: ["--profile", "black"]
 

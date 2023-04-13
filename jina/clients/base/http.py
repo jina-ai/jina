@@ -18,6 +18,34 @@ if TYPE_CHECKING:  # pragma: no cover
 class HTTPBaseClient(BaseClient):
     """A MixIn for HTTP Client."""
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._endpoints = []
+
+    async def _get_endpoints_from_openapi(self):
+        def extract_paths_by_method(spec):
+            paths_by_method = {}
+            for path, methods in spec['paths'].items():
+                for method, details in methods.items():
+                    if method not in paths_by_method:
+                        paths_by_method[method] = []
+                    paths_by_method[method].append(path.strip('/'))
+
+            return paths_by_method
+        import aiohttp
+        import json
+
+        proto = 'https' if self.args.tls else 'http'
+        target_url = f'{proto}://{self.args.host}:{self.args.port}/openapi.json'
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(target_url) as response:
+                    content = await response.read()
+                    openapi_response = json.loads(content.decode())
+                    self._endpoints = extract_paths_by_method(openapi_response).get('post', [])
+        except:
+            pass
+
     async def _is_flow_ready(self, **kwargs) -> bool:
         """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
 
@@ -57,18 +85,19 @@ class HTTPBaseClient(BaseClient):
         return False
 
     async def _get_results(
-        self,
-        inputs: 'InputType',
-        on_done: 'CallbackFnType',
-        on_error: Optional['CallbackFnType'] = None,
-        on_always: Optional['CallbackFnType'] = None,
-        max_attempts: int = 1,
-        initial_backoff: float = 0.5,
-        max_backoff: float = 0.1,
-        backoff_multiplier: float = 1.5,
-        results_in_order: bool = False,
-        prefetch: Optional[int] = None,
-        **kwargs,
+            self,
+            inputs: 'InputType',
+            on_done: 'CallbackFnType',
+            on_error: Optional['CallbackFnType'] = None,
+            on_always: Optional['CallbackFnType'] = None,
+            max_attempts: int = 1,
+            initial_backoff: float = 0.5,
+            max_backoff: float = 0.1,
+            backoff_multiplier: float = 1.5,
+            results_in_order: bool = False,
+            prefetch: Optional[int] = None,
+            timeout: Optional[int] = None,
+            **kwargs,
     ):
         """
         :param inputs: the callable
@@ -81,6 +110,7 @@ class HTTPBaseClient(BaseClient):
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
         :param results_in_order: return the results in the same order as the inputs
         :param prefetch: How many Requests are processed from the Client at the same time.
+        :param timeout: Timeout for the client to remain connected to the server.
         :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `HTTPClientlet`
         :yields: generator over results
         """
@@ -89,15 +119,26 @@ class HTTPBaseClient(BaseClient):
 
         self.inputs = inputs
         request_iterator = self._get_requests(**kwargs)
+        on = kwargs.get('on', '/post')
+        if len(self._endpoints) == 0:
+            await self._get_endpoints_from_openapi()
 
         async with AsyncExitStack() as stack:
             cm1 = ProgressBar(
-                total_length=self._inputs_length, disable=not (self.show_progress)
+                total_length=self._inputs_length, disable=not self.show_progress
             )
             p_bar = stack.enter_context(cm1)
-
             proto = 'https' if self.args.tls else 'http'
-            url = f'{proto}://{self.args.host}:{self.args.port}/post'
+            endpoint = on.strip('/')
+            has_default_endpoint = 'default' in self._endpoints
+
+            if endpoint != '' and endpoint in self._endpoints:
+                url = f'{proto}://{self.args.host}:{self.args.port}/{on.strip("/")}'
+            elif has_default_endpoint:
+                url = f'{proto}://{self.args.host}:{self.args.port}/default'
+            else:
+                url = f'{proto}://{self.args.host}:{self.args.port}/post'
+
             iolet = await stack.enter_async_context(
                 HTTPClientlet(
                     url=url,
@@ -107,12 +148,13 @@ class HTTPBaseClient(BaseClient):
                     initial_backoff=initial_backoff,
                     max_backoff=max_backoff,
                     backoff_multiplier=backoff_multiplier,
+                    timeout=timeout,
                     **kwargs,
                 )
             )
 
             def _request_handler(
-                request: 'Request',
+                    request: 'Request',
             ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
                 """
                 For HTTP Client, for each request in the iterator, we `send_message` using
@@ -135,7 +177,7 @@ class HTTPBaseClient(BaseClient):
                 **streamer_args,
             )
             async for response in streamer.stream(
-                request_iterator=request_iterator, results_in_order=results_in_order
+                    request_iterator=request_iterator, results_in_order=results_in_order
             ):
                 r_status = response.status
 

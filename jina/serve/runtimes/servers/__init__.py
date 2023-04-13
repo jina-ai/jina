@@ -1,10 +1,9 @@
 import abc
-from typing import Dict, Optional, Union, TYPE_CHECKING
-
 import time
+from types import SimpleNamespace
+from typing import TYPE_CHECKING, Dict, Optional, Union
 
 from jina.logging.logger import JinaLogger
-from types import SimpleNamespace
 from jina.serve.instrumentation import InstrumentationMixin
 from jina.serve.runtimes.monitoring import MonitoringMixin
 
@@ -19,16 +18,20 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
     """
     BaseServer class that is handled by AsyncNewLoopRuntime. It makes sure that the Request Handler is exposed via a server.
     """
+
     def __init__(
-            self,
-            name: Optional[str] = 'gateway',
-            runtime_args: Optional[Dict] = None,
-            req_handler_cls=None,
-            req_handler=None,
-            **kwargs,
+        self,
+        name: Optional[str] = 'gateway',
+        runtime_args: Optional[Dict] = None,
+        req_handler_cls=None,
+        req_handler=None,
+        **kwargs,
     ):
         self.name = name or ''
         self.runtime_args = runtime_args
+        self.works_as_load_balancer = False
+        if isinstance(runtime_args, Dict):
+            self.works_as_load_balancer = runtime_args.get('gateway_load_balancer', False)
         if isinstance(self.runtime_args, dict):
             self.logger = JinaLogger(self.name, **self.runtime_args)
         else:
@@ -69,7 +72,10 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
             self.logger.warning(f'Exception during instrumentation teardown, {str(ex)}')
 
     def _get_request_handler(self):
-        self._setup_monitoring(monitoring=self.runtime_args.monitoring, port_monitoring=self.runtime_args.port_monitoring)
+        self._setup_monitoring(
+            monitoring=self.runtime_args.monitoring,
+            port_monitoring=self.runtime_args.port_monitoring,
+        )
         return self.req_handler_cls(
             args=self.runtime_args,
             logger=self.logger,
@@ -81,7 +87,8 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
             runtime_name=self.name,
             aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
             tracing_client_interceptor=self.tracing_client_interceptor(),
-            deployment_name=self.name.split('/')[0]
+            deployment_name=self.name.split('/')[0],
+            works_as_load_balancer=self.works_as_load_balancer
         )
 
     def _add_gateway_args(self):
@@ -91,11 +98,15 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         parser = set_gateway_runtime_args_parser()
         default_args = parser.parse_args([])
         default_args_dict = dict(vars(default_args))
-        _runtime_args = self.runtime_args if isinstance(self.runtime_args, dict) else vars(self.runtime_args or {})
+        _runtime_args = (
+            self.runtime_args
+            if isinstance(self.runtime_args, dict)
+            else vars(self.runtime_args or {})
+        )
         runtime_set_args = {
             'tracer_provider': None,
             'grpc_tracing_server_interceptors': None,
-            'runtime_name': 'test',
+            'runtime_name': _runtime_args.get('name', 'test'),
             'metrics_registry': None,
             'meter': None,
             'aio_tracing_client_interceptors': None,
@@ -155,10 +166,10 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
 
     @staticmethod
     def is_ready(
-            ctrl_address: str,
-            protocol: Optional[str] = 'grpc',
-            timeout: float = 1.0,
-            **kwargs,
+        ctrl_address: str,
+        protocol: Optional[str] = 'grpc',
+        timeout: float = 1.0,
+        **kwargs,
     ) -> bool:
         """
         Check if status is ready.
@@ -170,11 +181,11 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         """
         from jina.serve.runtimes.servers.grpc import GRPCServer
         from jina.serve.runtimes.servers.http import FastAPIBaseServer
-        from jina.enums import GatewayProtocolType
+        from jina.enums import ProtocolType
 
         if (
                 protocol is None
-                or protocol == GatewayProtocolType.GRPC
+                or protocol == ProtocolType.GRPC
                 or protocol == 'grpc'
         ):
             res = GRPCServer.is_ready(ctrl_address)
@@ -184,10 +195,10 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
 
     @staticmethod
     async def async_is_ready(
-            ctrl_address: str,
-            protocol: Optional[str] = 'grpc',
-            timeout: float = 1.0,
-            **kwargs,
+        ctrl_address: str,
+        protocol: Optional[str] = 'grpc',
+        timeout: float = 1.0,
+        **kwargs,
     ) -> bool:
         """
         Check if status is ready.
@@ -199,11 +210,11 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         """
         from jina.serve.runtimes.servers.grpc import GRPCServer
         from jina.serve.runtimes.servers.http import FastAPIBaseServer
-        from jina.enums import GatewayProtocolType
+        from jina.enums import ProtocolType
 
         if (
                 protocol is None
-                or protocol == GatewayProtocolType.GRPC
+                or protocol == ProtocolType.GRPC
                 or protocol == 'grpc'
         ):
             res = await GRPCServer.async_is_ready(ctrl_address)
@@ -213,12 +224,12 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
 
     @classmethod
     def wait_for_ready_or_shutdown(
-            cls,
-            timeout: Optional[float],
-            ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
-            ctrl_address: str,
-            health_check: bool = False,
-            **kwargs,
+        cls,
+        timeout: Optional[float],
+        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+        ctrl_address: str,
+        health_check: bool = False,
+        **kwargs,
     ):
         """
         Check if the runtime has successfully started
