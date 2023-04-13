@@ -123,6 +123,16 @@ get-started/create-app
 ```
 
 ```{toctree}
+:caption: Tutorials
+:hidden:
+
+tutorials/before-you-start
+tutorials/deploy-model
+tutorials/deploy-pipeline
+tutorials/gpu-executor
+```
+
+```{toctree}
 :caption: Concepts
 :hidden:
 

@@ -53,6 +53,7 @@ class MyExecutor(Executor):
 
 For a more detailed breakdown of the file structure, see {ref}`here <executor-file-structure>`.
 
+(executor-constructor)=
 ## Constructor
 
 You only need to implement `__init__` if your Executor contains initial state.
