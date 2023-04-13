@@ -1,7 +1,11 @@
 (orchestration)=
-# {fas}`network-wired` Orchestration
+# {fas}`network-wired` Orchestration layer
 
-An {class}`~Orchestration` lets you orchestrate your Executors, and serve and scale with ease. Orchestrations come in two types:
+As seen in the {ref}`architecture overview <architecture-overview>`, Jina is organized in different layers.
+
+The Orchestration layer is composed of concepts that let you orchestrate, serve and scale your Executors with ease.
+
+Two objects belong to this family:
 - A single Executor ({class}`~Deployment`), ideal for serving a single model or microservice.
 - A pipeline of Executors ({class}`~Flow`), ideal for more complex operations where Documents need to be processed in multiple ways.
 

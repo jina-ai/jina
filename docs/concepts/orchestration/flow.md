@@ -157,7 +157,7 @@ When a {class}`~jina.Flow` starts, all included Executors (single for a Deployme
 There are three ways to start an Flow: In Python, from a YAML file, or from the terminal.
 
 - Generally in Python: use Deployment or Flow as a context manager in Python.
-- As an entrypoint from terminal: use `Jina CLI <cli>` and a Deployment or Flow YAML file.
+- As an entrypoint from terminal: use `Jina CLI <cli>` and a Flow YAML file.
 - As an entrypoint from Python code: use Flow as a context manager inside `if __name__ == '__main__'`
 - No context manager: manually call {meth}`~jina.Flow.start` and {meth}`~jina.Flow.close`.
 

@@ -64,7 +64,7 @@ GRPC, WebSocket, HTTP are network protocols for transmitting data. gRPC is alway
 TLS is a security protocol to facilitate privacy and data security for communications over the Internet. The communication between {term}`Client` and {term}`Gateway` is protected by TLS.
 ```
 
-Jina is structured in two main layers that together with DocArray data structure and Jina Python Client complete the framework, all of them are covered in the user guide
+Jina as an MLOPs framework is structured in two main layers that together with DocArray data structure and Jina Python Client complete the framework, all of them are covered in the user guide
 and contains the following concepts:
 
 ```{glossary}
