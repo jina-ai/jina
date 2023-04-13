@@ -185,7 +185,7 @@ tensor([[[0.9594, 0.9373],
 
 JCloud offers free CPU and GPU instances to host Jina projects.
 
-```{admonition}
+```{admonition} Deployments on JCloud
 :class: important
 At present, JCloud is only available for Flows. We are currently working on supporting Deployments.
 ```
