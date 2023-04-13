@@ -32,9 +32,9 @@ For Gateways running with HTTP or WebSockets, the gRPC health check response cod
 Instead, an error free response signifies healthiness.
 ````
 
-When using HTTP or WebSockets as the protocol for the Gateway, you can query the endpoint `'/'` to check the status.
+When using HTTP or WebSockets as the Gateway protocol, you can query the endpoint `'/'` to check the status.
 
-First, crate a Flow with HTTP or WebSockets protocol:
+First, create a Flow with HTTP or WebSockets protocol:
 
 ```python
 from jina import Flow

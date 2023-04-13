@@ -17,7 +17,8 @@ change.
 
 At the heart of DocArray v2 is a new schema that is more flexible and expressive than the original DocArray schema.
 
-You can refer to the [DocArray v2 readme](https://github.com/docarray/docarray/tree/feat-rewrite-v2) for more details.
+You can refer to the [DocArray v2 readme](https://github.com/docarray/docarray/tree/feat-rewrite-v2) for more details. 
+Please note that also the names of data structure change in the new version of DocArray.
 
 
 On the Jina side, this flexibility extends to every Executor, where you can now customize input and output schemas:
@@ -36,24 +37,24 @@ design is inspired by [FastAPI](https://fastapi.tiangolo.com/).
 emphasize-lines: 17,18
 ---
 from jina import Executor, requests
-from docarray import BaseDocument, DocumentArray
+from docarray import DocList, BaseDoc
 from docarray.documents import ImageDoc
 from docarray.typing import AnyTensor
 
 import numpy as np
 
-class InputDoc(BaseDocument):
+class InputDoc(BaseDoc):
     img: ImageDoc
 
-class OutputDoc(BaseDocument):
+class OutputDoc(BaseDoc):
     embedding: AnyTensor
 
 class MyExec(Executor):
     @requests(on='/bar')
     def bar(
-        self, docs: DocumentArray[InputDoc], **kwargs
+        self, docs: DocList[InputDoc], **kwargs
     ) -> DocumentArray[OutputDoc]:
-        docs_return = DocumentArray[OutputDoc](
+        docs_return = DocList[OutputDoc](
             [OutputDoc(embedding=np.zeros((100, 1))) for _ in range(len(docs))]
         )
         return docs_return
@@ -79,11 +80,11 @@ emphasize-lines: 4,5
 class MyExec(Executor):
     @requests(
         on='/bar',
-        request_schema=DocumentArray[InputDoc],
-        response_schema=DocumentArray[OutputDoc],
+        request_schema=DocList[InputDoc],
+        response_schema=DocList[OutputDoc],
     )
     def bar(self, docs, **kwargs):
-        docs_return = DocumentArray[OutputDoc](
+        docs_return = DocList[OutputDoc](
             [OutputDoc(embedding=np.zeros((100, 1))) for _ in range(len(docs))]
         )
         return docs_return
@@ -107,7 +108,7 @@ with Deployment(uses=MyExec) as dep:
     docs = dep.post(
         on='/bar',
         inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
-        return_type=DocumentArray[OutputDoc],
+        return_type=DocList[OutputDoc],
     )
     assert docs[0].embedding.shape == (100, 1)
     assert docs.__class__.document_type == OutputDoc

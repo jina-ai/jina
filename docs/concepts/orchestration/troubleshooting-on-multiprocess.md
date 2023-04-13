@@ -1,8 +1,17 @@
+(multiprocessing-spawn)=
 # Troubleshooting on Multiprocessing
 
-When running a Jina Flow locally, you may encounter errors caused by `multiprocessing` package depending on your operating system and Python version. Here are some suggestions:
+When running an Orchestration locally, you may encounter errors caused by the `multiprocessing` package depending on your operating system and Python version. 
 
-- Define & start the Flow via an explicit function call inside `if __name__ == '__main__'`, **especially when using `spawn` multiprocessing start method**. For example
+```{admonition} Troubleshooting a Flow
+:class: information
+
+In this section we show an example showing a {ref}`Deployment <deployment>`. However, exactly the same methodology applies to troubleshooting a Flow.
+```
+
+Here are some suggestions:
+
+- Define and start the Orchestration via an explicit function call inside `if __name__ == '__main__'`, **especially when using `spawn` multiprocessing start method**. For example
 
     ````{tab} ✅ Do
     ```{code-block} python
@@ -10,7 +19,7 @@ When running a Jina Flow locally, you may encounter errors caused by `multiproce
     emphasize-lines: 13, 14
     ---
 
-    from jina import Flow, Executor, requests
+    from jina import Deployment, Executor, requests
 
     class CustomExecutor(Executor):
         @requests
@@ -18,8 +27,8 @@ When running a Jina Flow locally, you may encounter errors caused by `multiproce
             ...
 
     def main():
-        f = Flow().add(uses=CustomExecutor)
-        with f:
+        dep = Deployment(uses=CustomExecutor)
+        with dep:
             ...
 
     if __name__ == '__main__':
@@ -33,15 +42,15 @@ When running a Jina Flow locally, you may encounter errors caused by `multiproce
     emphasize-lines: 2
     ---
 
-    from jina import Flow, Executor, requests
+    from jina import Deployment, Executor, requests
 
     class CustomExecutor(Executor):
         @requests
         def foo(self, **kwargs):
             ...
 
-    f = Flow().add(uses=CustomExecutor)
-    with f:
+    dep = Deployment(uses=CustomExecutor)
+    with dep:
         ...
 
     """
@@ -76,8 +85,8 @@ When running a Jina Flow locally, you may encounter errors caused by `multiproce
             ...
 
     def main():
-        f = Flow().add(uses=Executor)
-        with f:
+        dep = Deployment(uses=Executor)
+        with dep:
             ...
 
     ```
@@ -95,17 +104,15 @@ When running a Jina Flow locally, you may encounter errors caused by `multiproce
             def foo(self, **kwargs):
                 ...
 
-        f = Flow().add(uses=Executor)
-        with f:
+        dep = Deployment(uses=Executor)
+        with dep:
             ...
     ```
     ````
 
 - **Always provide absolute path**
 
-    While passing filepaths to different jina arguments (e.g.- `uses`, `py_modules`), always pass the absolute path.
-
-
+    While passing filepaths to different Jina arguments (e.g.- `uses`, `py_modules`), always pass the absolute path.
 
 ## Using Multiprocessing Spawn
 

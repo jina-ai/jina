@@ -1,7 +1,7 @@
 (flow-yaml-spec)=
 # {octicon}`file-code` YAML specification
 
-To generate a YAML configuration from a {class}`~jina.Flow` Python object, use {meth}`~jina.jaml.JAMLCompatible.save_config`.
+To generate a YAML configuration from an Orchestration, use {meth}`~jina.jaml.JAMLCompatible.save_config`.
 
 ## YAML completion in IDE
 
@@ -28,6 +28,20 @@ You can bind Schema to any file suffix you commonly used for Jina Flow's YAML.
 
 ## Example YAML
 
+````{tab} Deployment
+```yaml
+jtype: Deployment
+version: '1'
+with:
+  protocol: http
+name: firstexec
+uses:
+  jtype: MyExec
+  py_modules:
+    - executor.py
+```
+````
+````{tab} Flow
 ```yaml
 jtype: Flow
 version: '1'
@@ -48,35 +62,52 @@ executors:
 - name: thirdexec
   uses: CustomExec  # located in executor.py
 ```
+````
 
 ## Fields
 
 ### `jtype`
-String that is always set to "Flow", indicating the corresponding Python class.
+String that is always set to either "Flow" or "Deployment", indicating the corresponding Python class.
 
 ### `version`
-String indicating the version of the Flow.
+String indicating the version of the Flow or Deployment.
 
 ### `with`
 
 Keyword arguments are passed to a Flow's `__init__()` method. You can set Flow-specific arguments and Gateway-specific arguments here:
 
-#### Flow arguments
+#### Orchestration arguments
 
+````{tab} Deployment
+```{include} deployment-args.md
+```
+````
+````{tab} Flow
 ```{include} flow-args.md
 ```
-
-#### Gateway arguments 
+##### Gateway arguments
+These apply only to Flows, not Deployments
 
 ```{include} gateway-args.md
 ```
+````
 
 (executor-args)=
 ### `executors`
-Collection of Executors used in the Flow.
-Each item in the collection corresponds to on {meth}`~jina.Flow.add` call and specifies one Executor.
+Collection of Executors used in the Orchestration. In the case of a Deployment, this is a single Executor, while a Flow can have an arbitrary amount.
 
-All keyword arguments passed to the Flow {meth}`~jina.Flow.add` method can be used here.
+Each item in the collection specifies one Executor and can be used via:
+
+````{tab} Deployment
+```python
+dep = Deployment(uses=MyExec, arg1="foo", arg2="bar")
+```
+````
+````{tab} Deployment
+```python
+f = Flow().add(uses=MyExec, arg1="foo", arg2="bar")
+```
+````
 
 ```{include} executor-args.md
 ```

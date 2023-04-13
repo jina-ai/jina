@@ -1,17 +1,38 @@
 # Readiness
 
-A Flow is marked as "ready", when all its Executors and its Gateway are fully loaded and ready. After that, Flow is able to process requests.
+An Orchestration is marked as "ready", when:
+- Its Executor is fully loaded and ready (in the case of a Deployment)
+- All its Executors and Gateway are fully loaded and ready (in the case of a Flow)
+ 
+After that, an Orchestration is able to process requests.
 
+{class}`~jina.Client` offers an API to query these readiness endpoints. You can do this via the Orchestration directly, via the Client, or via the CLI: You can call {meth}`~jina.clients.mixin.HealthCheckMixin.is_flow_ready` or {meth}`~jina.Flow.is_flow_ready`. It returns `True` if the Flow is ready, and `False` if it is not.
 
-<!-- start flow-ready -->
+## Via Orchestration
 
-{class}`~jina.Client` offers an API to query these readiness endpoints. You can call {meth}`~jina.clients.mixin.HealthCheckMixin.is_flow_ready` or {meth}`~jina.Flow.is_flow_ready`. It returns `True` if the Flow is ready, and `False` if it is not.
+````{tab} Deployment
+```python
+from jina import Deployment
 
-````{tab} via Flow
+dep = Deployment()
+
+with dep:
+    print(dep.is_deployment_ready())
+
+print(dep.is_deployment_ready())
+```
+```text
+True
+False
+```
+````
+````{tab} Flow
 ```python
 from jina import Flow
 
-with Flow().add() as f:
+f = Flow.add()
+
+with f:
     print(f.is_flow_ready())
 
 print(f.is_flow_ready())
@@ -21,11 +42,35 @@ True
 False
 ```
 ````
-````{tab} via Client
+
+## Via Jina Client
+
+````{tab} Deployment
+```python
+from jina import Deployment
+
+dep = Deployment(port=12345)
+
+with dep:
+    dep.block()
+```
+```python
+from jina import Client
+
+client = Client(port=12345)
+print(client.is_deployment_ready())
+```
+```text
+True
+```
+````
+````{tab} Flow
 ```python
 from jina import Flow
 
-with Flow(port=12345).add() as f:
+f = Flow(port=12345).add()
+
+with f:
     f.block()
 ```
 ```python
@@ -39,11 +84,76 @@ True
 ```
 ````
 
-`````{tab} via CLI
+### Via CLI
+
+`````{tab} Deployment
+```python
+from jina import Deployment
+
+dep = Deployment(port=12345)
+
+with dep:
+    dep.block()
+```
+```bash
+jina ping executor grpc://localhost:12345
+```
+
+````{tab} Success
+```text
+INFO   JINA@92877 ping grpc://localhost:12345 at 0 round...                                                                                              [09/08/22 12:58:13]
+INFO   JINA@92877 ping grpc://localhost:12345 at 0 round takes 0 seconds (0.04s)
+INFO   JINA@92877 ping grpc://localhost:12345 at 1 round...                                                                                              [09/08/22 12:58:14]
+INFO   JINA@92877 ping grpc://localhost:12345 at 1 round takes 0 seconds (0.01s)
+INFO   JINA@92877 ping grpc://localhost:12345 at 2 round...                                                                                              [09/08/22 12:58:15]
+INFO   JINA@92877 ping grpc://localhost:12345 at 2 round takes 0 seconds (0.01s)
+INFO   JINA@92877 avg. latency: 24 ms                                                                                                                    [09/08/22 12:58:16]
+```
+````
+
+````{tab} Failure
+```text
+INFO   JINA@92986 ping grpc://localhost:12345 at 0 round...                                                                                              [09/08/22 12:59:00]
+ERROR  GRPCClient@92986 Error while getting response from grpc server <AioRpcError of RPC that terminated with:                                          [09/08/22 12:59:00]
+               status = StatusCode.UNAVAILABLE
+               details = "failed to connect to all addresses; last error: UNKNOWN: Failed to connect to remote host: Connection refused"
+               debug_error_string = "UNKNOWN:Failed to pick subchannel {created_time:"2022-09-08T12:59:00.518707+02:00", children:[UNKNOWN:failed to
+       connect to all addresses; last error: UNKNOWN: Failed to connect to remote host: Connection refused {grpc_status:14,
+       created_time:"2022-09-08T12:59:00.518706+02:00"}]}"
+       >
+WARNI… JINA@92986 not responding, retry (1/3) in 1s
+INFO   JINA@92986 ping grpc://localhost:12345 at 0 round takes 0 seconds (0.01s)
+INFO   JINA@92986 ping grpc://localhost:12345 at 1 round...                                                                                              [09/08/22 12:59:01]
+ERROR  GRPCClient@92986 Error while getting response from grpc server <AioRpcError of RPC that terminated with:                                          [09/08/22 12:59:01]
+               status = StatusCode.UNAVAILABLE
+               details = "failed to connect to all addresses; last error: UNKNOWN: Failed to connect to remote host: Connection refused"
+               debug_error_string = "UNKNOWN:Failed to pick subchannel {created_time:"2022-09-08T12:59:01.537293+02:00", children:[UNKNOWN:failed to
+       connect to all addresses; last error: UNKNOWN: Failed to connect to remote host: Connection refused {grpc_status:14,
+       created_time:"2022-09-08T12:59:01.537291+02:00"}]}"
+       >
+WARNI… JINA@92986 not responding, retry (2/3) in 1s
+INFO   JINA@92986 ping grpc://localhost:12345 at 1 round takes 0 seconds (0.01s)
+INFO   JINA@92986 ping grpc://localhost:12345 at 2 round...                                                                                              [09/08/22 12:59:02]
+ERROR  GRPCClient@92986 Error while getting response from grpc server <AioRpcError of RPC that terminated with:                                          [09/08/22 12:59:02]
+               status = StatusCode.UNAVAILABLE
+               details = "failed to connect to all addresses; last error: UNKNOWN: Failed to connect to remote host: Connection refused"
+               debug_error_string = "UNKNOWN:Failed to pick subchannel {created_time:"2022-09-08T12:59:02.557195+02:00", children:[UNKNOWN:failed to
+       connect to all addresses; last error: UNKNOWN: Failed to connect to remote host: Connection refused {grpc_status:14,
+       created_time:"2022-09-08T12:59:02.557193+02:00"}]}"
+       >
+WARNI… JINA@92986 not responding, retry (3/3) in 1s
+INFO   JINA@92986 ping grpc://localhost:12345 at 2 round takes 0 seconds (0.02s)
+WARNI… JINA@92986 message lost 100% (3/3)
+```
+````
+`````
+`````{tab} Flow
 ```python
 from jina import Flow
 
-with Flow(port=12345).add() as f:
+f = Flow(port=12345)
+
+with f:
     f.block()
 ```
 ```bash
@@ -107,6 +217,38 @@ You can check the status of a Flow using any gRPC/HTTP/WebSockets client, not ju
 
 To see how this works, first instantiate the Flow with its corresponding protocol and block it for serving:
 
+````{tab} Deployment
+```python
+from jina import Deployment
+import os
+
+PROTOCOL = 'grpc'  # it could also be http or websocket
+
+os.environ[
+    'JINA_LOG_LEVEL'
+] = 'DEBUG'  # this way we can check what is the PID of the Executor
+
+dep = Deployment(protocol=PROTOCOL, port=12345)
+
+with dep:
+    dep.block()
+```
+
+```text
+⠋  Waiting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 0/0 -:--:--DEBUG  gateway/rep-0@19075 adding connection for deployment executor0/heads/0 to grpc://0.0.0.0:12346                                                                                           [05/31/22 18:10:16]
+DEBUG  executor0/rep-0@19074 start listening on 0.0.0.0:12346                                                                                                                                   [05/31/22 18:10:16]
+DEBUG  gateway/rep-0@19075 start server bound to 0.0.0.0:12345                                                                                                                                  [05/31/22 18:10:17]
+DEBUG  executor0/rep-0@19059 ready and listening                                                                                                                                                [05/31/22 18:10:17]
+DEBUG  gateway/rep-0@19059 ready and listening                                                                                                                                                  [05/31/22 18:10:17]
+╭─── 🎉 Deployment is ready to serve! ───╮
+│  🔗  Protocol                  GRPC    │
+│  🏠     Local         0.0.0.0:12345    │
+│  🔒   Private    192.168.1.13:12345    │
+╰────────────────────────────────────────╯
+DEBUG  Deployment@19059 2 Deployments (i.e. 2 Pods) are running in this Deployment 
+```
+````
+````{tab} Flow
 ```python
 from jina import Flow
 import os
@@ -117,7 +259,9 @@ os.environ[
     'JINA_LOG_LEVEL'
 ] = 'DEBUG'  # this way we can check what is the PID of the Executor
 
-with Flow(protocol=PROTOCOL, port=12345).add() as f:
+f = Flow(protocol=PROTOCOL, port=12345).add()
+
+with f:
     f.block()
 ```
 
@@ -134,16 +278,17 @@ DEBUG  gateway/rep-0@19059 ready and listening                                  
 ╰────────────────────────────────────────╯
 DEBUG  Flow@19059 2 Deployments (i.e. 2 Pods) are running in this Flow 
 ```
+````
 
 ### Using gRPC
 
-When using grpc, use [grpcurl](https://github.com/fullstorydev/grpcurl) to access the Gateway's gRPC service that is responsible for reporting the Flow status.
+When using grpc, use [grpcurl](https://github.com/fullstorydev/grpcurl) to access the Gateway's gRPC service that is responsible for reporting the Orchestration status.
 
 ```shell
 docker pull fullstorydev/grpcurl:latest
 docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12345 jina.JinaGatewayDryRunRPC/dry_run
 ```
-The error-free output below signifies a correctly running Flow:
+The error-free output below signifies a correctly running Orchestration:
 ```json
 {}
 ```
@@ -195,7 +340,6 @@ docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12345 jina
 }
 ```
 ````
-
 
 ### Using HTTP or WebSockets
 

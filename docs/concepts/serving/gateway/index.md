@@ -1,6 +1,6 @@
 (gateway)=
 
-# {fas}`door-open` Gateway
+# Gateway
 
 Every {class}`~jina.Flow` has a Gateway component that receives requests over the network, allowing clients to send data
 to the Flow for processing.
