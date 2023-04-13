@@ -175,6 +175,15 @@ class FlowBuildLevel(BetterEnum):
     RUNNING = 2  #: the graph is started and all deployment are running
 
 
+class DockerNetworkMode(BetterEnum):
+    """Potential forced network modes"""
+
+    AUTO = 0
+    HOST = 1
+    BRIDGE = 2
+    NONE = 3
+
+
 class ProtocolType(BetterEnum):
     """
     Gateway communication protocol
