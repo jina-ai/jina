@@ -63,6 +63,9 @@ class AioHttpClientlet(ABC):
             self._session_kwargs['auth'] = kwargs.get('auth')
         if kwargs.get('cookies', None):
             self._session_kwargs['cookies'] = kwargs.get('cookies')
+        if kwargs.get('timeout', None):
+            timeout = aiohttp.ClientTimeout(total=kwargs.get('timeout'))
+            self._session_kwargs['timeout'] = timeout
         self.max_attempts = max_attempts
         self.initial_backoff = initial_backoff
         self.max_backoff = max_backoff

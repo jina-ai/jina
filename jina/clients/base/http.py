@@ -96,6 +96,7 @@ class HTTPBaseClient(BaseClient):
             backoff_multiplier: float = 1.5,
             results_in_order: bool = False,
             prefetch: Optional[int] = None,
+            timeout: Optional[int] = None,
             **kwargs,
     ):
         """
@@ -109,6 +110,7 @@ class HTTPBaseClient(BaseClient):
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
         :param results_in_order: return the results in the same order as the inputs
         :param prefetch: How many Requests are processed from the Client at the same time.
+        :param timeout: Timeout for the client to remain connected to the server.
         :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `HTTPClientlet`
         :yields: generator over results
         """
@@ -146,6 +148,7 @@ class HTTPBaseClient(BaseClient):
                     initial_backoff=initial_backoff,
                     max_backoff=max_backoff,
                     backoff_multiplier=backoff_multiplier,
+                    timeout=timeout,
                     **kwargs,
                 )
             )
