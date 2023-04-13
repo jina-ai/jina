@@ -1,6 +1,8 @@
 (health-check-microservices)=
 # Health Check
 
+## Using gRPC
+
 You can check every individual Executor, by using a [standard gRPC health check endpoint](https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
 In most cases this is not necessary, since such checks are performed by Jina, a Kubernetes service mesh or a load balancer under the hood.
 Nevertheless, you can perform these checks yourself.
@@ -33,4 +35,34 @@ docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12346 grpc
 {
   "status": "SERVING"
 }
+```
+
+## Using HTTP
+
+````{admonition} Caution
+:class: caution
+For Executors running with HTTP, the gRPC health check response codes outlined {ref}`above <health-check-microservices>` do not apply.
+
+Instead, an error-free response signifies healthiness.
+````
+
+When using HTTP as the protocol for the Executor, you can query the endpoint `'/'` to check the status.
+
+First, create a Deployment with the HTTP protocol:
+
+```python
+from jina import Deployment
+
+d = Deployment(protocol='http', port=12345)
+with d:
+    d.block()
+```
+Then query the "empty" endpoint:
+```bash
+curl http://localhost:12345
+```
+
+You get a valid empty response indicating the Executor's ability to serve:
+```json
+{}
 ```

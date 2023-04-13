@@ -1,7 +1,7 @@
 (executor-cookbook)=
 # Executor
 
-An {class}`~jina.Executor` is a self-contained gRPC microservice that performs a task on a `DocumentArray`. 
+An {class}`~jina.Executor` is a self-contained microservice that performs a task on a `DocumentArray`. 
 
 You can create an Executor by extending the `Executor` class and adding logic to endpoint methods.
 

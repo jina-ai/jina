@@ -2,7 +2,7 @@
 # Deployment
 
 ```{important}
-A Deployment is a kind of {ref}`Orchestration <orchestration>`. Be sure to read up on that too!
+A Deployment is part of the orchestration layer {ref}`Orchestration <orchestration>`. Be sure to read up on that too!
 ```
 
 A {class}`~jina.Deployment` orchestrates a single {class}`~jina.Executor` to accomplish a task. Documents are processed by Executors.
@@ -157,16 +157,14 @@ dep.save_config('deployment.yml')
 
 ## Start and stop
 
-When an {class}`~jina.Flow` starts, all included Executors will start as well, making it possible to {ref}`reach the service through its API <third-party-client>`.
+When a {class}`~jina.Deployment` starts, all the replicated Executors will start as well, making it possible to {ref}`reach the service through its API <third-party-client>`.
 
 There are three ways to start a Deployment: In Python, from a YAML file, or from the terminal.
 
-- Generally in Python: use Deployment or Flow as a context manager in Python.
-- As an entrypoint from terminal: use `Jina CLI <cli>` and a Deployment or Flow YAML file.
-- As an entrypoint from Python code: use Deployment or Flow as a context manager inside `if __name__ == '__main__'`
-- No context manager: 
-  - Deployment: manually call {meth}`~jina.Deployment.start` and {meth}`~jina.Deployment.close`.
-  - Flow: manually call {meth}`~jina.Flow.start` and {meth}`~jina.Flow.close`.
+- Generally in Python: use Deployment as a context manager.
+- As an entrypoint from terminal: use `Jina CLI <cli>` and a Deployment YAML file.
+- As an entrypoint from Python code: use Deployment as a context manager inside `if __name__ == '__main__'`
+- No context manager, manually call {meth}`~jina.Deployment.start` and {meth}`~jina.Deployment.close`.
 
 ````{tab} General in Python
 ```python
@@ -381,6 +379,64 @@ with:
     log_config: './logging.json.yml'
 ```
 ````
+
+### Supported protocols
+
+A Deployment can be used to deploy an Executor and serve it using `gRPC` or `HTTP` protocol, or a composition of them. 
+
+### gRPC protocol
+
+gRPC is the default protocol used by a Deployment to expose Executors to the outside world, and is used to communicate between the Gateway and an Executor inside a Flow.
+
+### HTTP protocol
+
+HTTP can be used for a stand-alone Deployment (without being part of a Flow), which allows external services to connect via REST. 
+
+```python
+from jina import Deployment, Executor, requests
+
+
+class MyExec(Executor):
+
+    @requests(on='/bar')
+    def bar(self, docs, **kwargs):
+        pass
+
+
+dep = Deployment(protocol='http', port=12345, uses=MyExec)
+
+with dep:
+    dep.block()
+````
+
+This will make it available at port 12345 and you can get the [OpenAPI schema](https://swagger.io/specification/) for the service.
+
+```{figure} images/http-deployment-swagger.png
+:scale: 70%
+```
+
+### Composite protocol
+
+A Deployment can also deploy an Executor and serve it with a combination of gRPC and HTTP protocols.
+
+```python
+from jina import Deployment, Executor, requests
+
+
+class MyExec(Executor):
+
+    @requests(on='/bar')
+    def bar(self, docs, **kwargs):
+        pass
+
+
+dep = Deployment(protocol=['grpc', 'http'], port=[12345, 12346], uses=MyExec)
+
+with dep:
+    dep.block()
+````
+
+This will make the Deployment reachable via gRPC and HTTP simultaneously.
 
 ## Methods
 
