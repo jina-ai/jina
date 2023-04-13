@@ -74,14 +74,14 @@ Note,
             type=DockerNetworkMode.from_string,
             choices=list(DockerNetworkMode),
             default=DockerNetworkMode.AUTO,
-            help='''
+            help=f'''
     Force the use of the specified docker network mode (default: auto). 
 
     Valid options are,
-    - auto: Automatically detect the docker network.
-    - host: Use the host network.
-    - bridge: Use a user-defined bridge network.
-    - none: Use no network (equivalent to the --network=none option).
+    - {str(DockerNetworkMode.AUTO)}: Automatically detect the docker network.
+    - {str(DockerNetworkMode.HOST)}: Use the host network.
+    - {str(DockerNetworkMode.BRIDGE)}: Use a user-defined bridge network.
+    - {str(DockerNetworkMode.NONE)}: Use no network (equivalent to the --network=none option).
         '''
             if _SHOW_ALL_ARGS
             else argparse.SUPPRESS,
