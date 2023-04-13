@@ -26,9 +26,11 @@
 <!-- start jina-description -->
 
 Jina is an MLOps framework to build multimodal AI microservice-based applications written in Python that can communicate via gRPC, HTTP and Websocket protocols.
-Jina allows developers to build and serve **services** and **pipelines** while **scaling** and **deploying** them to a production.
+It allows developers to build and serve **services** and **pipelines** while **scaling** and **deploying** them to a production while removing the complexity, letting them focus on the 
+logic/algorithmic part, saving valuable time and resources for engineering teams.
+
 Jina aims to provide a Pythonic and smooth experience transitioning from local deployment to deploying to advanced orchestration frameworks as Docker-Compose, Kubernetes or Jina AI Cloud.
-Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer.
+It handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer.
 
 
 

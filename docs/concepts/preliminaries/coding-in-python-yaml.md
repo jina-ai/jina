@@ -5,10 +5,10 @@ In the docs, you often see two coding styles when describing a Jina project:
 ```{glossary}
 
 **Pythonic**
-    The Flow and Executors are all written in Python files, and the entrypoint is via Python.
+    The Flow, Deployment and Executors are all written in Python files, and the entrypoint is via Python.
     
 **YAMLish**
-    Executors are written in Python files, and the Flow is defined in a YAML file. The entrypoint is via Jina CLI `jina flow --uses flow.yml`.
+    Executors are written in Python files, and the Flow or Deployment are defined in a YAML file. The entrypoint is via Jina CLI `jina flow --uses flow.yml`.
 ```
 
 For example, {ref}`the server-side code<dummy-example>` above follows {term}`Pythonic` style. It can be written in {term}`YAMLish` style as follows:
@@ -54,7 +54,8 @@ jina flow --uses flow.yml
 ```
 ````
 
-The YAMLish style separates the Flow representation from the logic code. It is more flexible to configure and should be used for more complex projects in production. In many integrations such as JCloud, Kubernetes, YAMLish is preferred. 
+In general, the YAML style can be used to represent and configure the objects Flow and Deployment which are the objects orchestrating the serving of Executors and applications. 
+The YAMLish style separates the Flow or Deployment representation from the logic code from Executors. It is more flexible to configure and should be used for more complex projects in production. In many integrations such as JCloud, Kubernetes, YAMLish is preferred. 
 
 Note that the two coding styles can be converted to each other easily. To load a Flow YAML into Python and run it:
 
