@@ -7,13 +7,13 @@
 Executors use `docarray.DocumentArray` as their input and output data structure. [Read DocArray's docs](https://docs.docarray.org) to see how it works.
 ```
 
-An {class}`~jina.Executor` is a self-contained microservice exposed using the gRPC protocol. 
+An {class}`~jina.Executor` is a self-contained microservice exposed using gRPC or HTTP protocol. 
 It contains functions (decorated with `@requests`) that process `DocumentArray`s. Executors follow three principles:
 
 1. An Executor should subclass directly from the `jina.Executor` class.
 2. An Executor class is a bag of functions with shared state or configuration (via `self`); it can contain an arbitrary number of
 functions with arbitrary names.
-3. Functions decorated by {class}`~jina.requests` are exposed as gRPC services according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions. This will be explained later in {ref}`Add Endpoints Section<exec-endpoint>`
+3. Functions decorated by {class}`~jina.requests` are exposed as services according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions. This will be explained later in {ref}`Add Endpoints Section<exec-endpoint>`
 
 ## Create an Executor
 
