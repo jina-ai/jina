@@ -194,7 +194,7 @@ At present, JCloud is only available for Flows. We are currently working on supp
 jina auth login
 ```
 
-Log in with your GitHub, Google or Email account.
+Log in with your GitHub, Google or Email account:
 
 ```bash
 jina cloud deploy ./
@@ -203,7 +203,7 @@ jina cloud deploy ./
 ```{figure} deploy-jcloud-ongoing.png
 ```
 
-Deployment is fully automatic and takes a few minutes.
+Deploying a Flow to the cloud is fully automatic and takes a few minutes.
 
 After it is done, you should see the following message in the terminal.
 
@@ -216,7 +216,6 @@ After it is done, you should see the following message in the terminal.
 │                                                   │
 ╰───────────────────────────────────────────────────╯
 ```
-
 
 Now change the Client's code to use the deployed endpoint shown above:
 
@@ -259,8 +258,6 @@ tensor([[[0.4254, 0.4305],
          [0.1444, 0.5136],
          [0.3368, 0.6162]]], dtype=torch.float64)
 ```
-
-You've just finished your first toy Jina project, congratulations! You can now start your own project.
 
 ## Delete the deployed project
 
