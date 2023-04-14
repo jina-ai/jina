@@ -108,9 +108,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         async def _async_add_voter_to_leader(self):
             import jraft
 
-            leader_address = f'{self._pods[0].args.host}:{self._pods[0].args.port}'
+            leader_address = f'{self._pods[0].args.host}:{self._pods[0].args.port[0]}'
             for pod in self._pods[1:]:
-                voter_address = f'{pod.args.host}:{pod.args.port}'
+                voter_address = f'{pod.args.host}:{pod.args.port[0]}'
                 success = False
                 for _ in range(10):
                     try:
