@@ -58,19 +58,31 @@ DocArray is the foundational data structure of Jina. Before starting Jina, first
 ::::
 
 ::::{grid-item-card} {octicon}`gear;1.5em` Learn Executor
-:link: concepts/executor/index
+:link: concepts/serving/executor/index
 :link-type: doc
 
 {term}`Executor` is a Python class that can serve logic using `Documents`.
 
 ::::
 
-::::{grid-item-card} {octicon}`workflow;1.5em` Learn Flow
-:link: concepts/flow/index
+::::{grid-item-card} {octicon}`workflow;1.5em` Learn Deployment
+:link: concepts/orchestration/deployment
 :link-type: doc
 
+{term}`Deployment` serves an Executor as a scalable service making it available to receive `Documents` using `gRPC` or `HTTP`.
+::::
 
-{term}`Flow` orchestrates Executors into a processing pipeline to accomplish a task.
+::::{grid-item-card} {octicon}`workflow;1.5em` Learn Flow
+:link: concepts/orchestration/flow
+:link-type: doc
+
+{term}`Flow` orchestrates Executors using different Deployments into a processing pipeline to accomplish a task.
+::::
+
+::::{grid-item-card} {octicon}`cross-reference;1.5em` Learn Gateway
+:link: concepts/serving/gateway/index
+
+The Gateway is a microservice that serves as the entrypoint of a {term}`Flow`. It exposes multiple protocols for external communications and routes all internal traffic.
 ::::
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Explore Executor Hub
@@ -108,16 +120,25 @@ Jina AI Cloud is the MLOps platform for hosting Jina projects.
 
 get-started/install/index
 get-started/create-app
-concepts/preliminaries/index
+```
+
+```{toctree}
+:caption: Tutorials
+:hidden:
+
+tutorials/before-you-start
+tutorials/deploy-model
+tutorials/deploy-pipeline
+tutorials/gpu-executor
 ```
 
 ```{toctree}
 :caption: Concepts
 :hidden:
 
-concepts/executor/index
-concepts/flow/index
-concepts/gateway/index
+concepts/preliminaries/index
+concepts/serving/index
+concepts/orchestration/index
 concepts/client/index
 ```
 
@@ -160,4 +181,3 @@ Jina 2 Documentation <https://docs2.jina.ai/>
 
 ---
 {ref}`genindex` | {ref}`modindex`
-
