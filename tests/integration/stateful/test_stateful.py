@@ -1,5 +1,3 @@
-import multiprocessing
-import os
 import time
 
 import pytest
@@ -7,8 +5,6 @@ import pytest
 from jina import Client, Document, DocumentArray, Executor, Flow, requests
 from jina.helper import random_port
 from jina.serve.executors.decorators import write
-
-os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
 
 
 class MyStateExecutor(Executor):
@@ -72,7 +68,24 @@ def assert_is_indexed(client, search_da):
         assert doc.text == f'ID {doc.id}'
 
 
-def run_flow_index_and_assert(flow, pod_ports):
+@pytest.mark.parametrize('executor_cls', [MyStateExecutor])
+def test_stateful_index_search(executor_cls, tmpdir):
+    gateway_port = random_port()
+    pod_ports = [random_port(), random_port(), random_port()]
+
+    flow = Flow(port=gateway_port).add(
+        uses=executor_cls,
+        replicas=3,
+        workspace=tmpdir,
+        pod_ports=pod_ports,
+        stateful=True,
+        raft_configuration={
+            'snapshot_interval': 10,
+            'snapshot_threshold': 5,
+            'trailing_logs': 10,
+            'LogLevel': 'INFO',
+        },
+    )
     with flow:
         index_da = DocumentArray(
             [Document(id=f'{i}', text=f'ID {i}') for i in range(100)]
@@ -93,49 +106,6 @@ def run_flow_index_and_assert(flow, pod_ports):
 
 
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
-def test_stateful_index_search(executor_cls, tmpdir):
-    gateway_port = random_port()
-    pod_ports = [random_port(), random_port(), random_port()]
-
-    flow = Flow(port=gateway_port).add(
-        uses=executor_cls,
-        replicas=3,
-        workspace=tmpdir,
-        pod_ports=pod_ports,
-        stateful=True,
-        raft_configuration={
-            'snapshot_interval': 10,
-            'snapshot_threshold': 5,
-            'trailing_logs': 10,
-            'LogLevel': 'INFO',
-        },
-    )
-
-    process = multiprocessing.Process(
-        target=run_flow_index_and_assert, args=(flow, pod_ports)
-    )
-    process.start()
-    process.join()
-    assert process.exitcode == 0
-
-
-def run_flow_index(flow):
-    with flow:
-        index_da = DocumentArray(
-            [Document(id=f'{i}', text=f'ID {i}') for i in range(100)]
-        )
-        flow.index(inputs=index_da)
-        # allowing sometime for snapshots
-        time.sleep(30)
-
-
-def restore_flow_search(flow):
-    with flow:
-        search_da = DocumentArray([Document(id=f'{i}') for i in range(100)])
-        assert_is_indexed(flow, search_da)
-
-
-@pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
 def test_stateful_restore(executor_cls, tmpdir):
     gateway_port = random_port()
     pod_ports = [random_port(), random_port(), random_port()]
@@ -153,13 +123,14 @@ def test_stateful_restore(executor_cls, tmpdir):
             'LogLevel': 'INFO',
         },
     )
+    with flow:
+        index_da = DocumentArray(
+            [Document(id=f'{i}', text=f'ID {i}') for i in range(100)]
+        )
+        flow.index(inputs=index_da)
+        # allowing sometime for snapshots
+        time.sleep(30)
 
-    process = multiprocessing.Process(target=run_flow_index, args=(flow,))
-    process.start()
-    process.join()
-    assert process.exitcode == 0
-
-    process = multiprocessing.Process(target=restore_flow_search, args=(flow,))
-    process.start()
-    process.join()
-    assert process.exitcode == 0
+    with flow:
+        search_da = DocumentArray([Document(id=f'{i}') for i in range(100)])
+        assert_is_indexed(flow, search_da)
