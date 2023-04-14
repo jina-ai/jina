@@ -25,7 +25,14 @@
 
 <!-- start jina-description -->
 
-Jina is an MLOps framework to build multimodal AI **services** and **pipelines** then **serve**, **scale** and **deploy** them to a production-ready environment like Kubernetes or Jina AI Cloud. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer.
+Jina is an MLOps framework to build multimodal AI microservice-based applications written in Python that can communicate via gRPC, HTTP and WebSocket protocols.
+It allows developers to build and serve **services** and **pipelines** while **scaling** and **deploying** them to a production while removing the complexity, letting them focus on the 
+logic/algorithmic part, saving valuable time and resources for engineering teams.
+
+Jina aims to provide a smooth Pythonic experience transitioning from local deployment to deploying to advanced orchestration frameworks such as Docker-Compose, Kubernetes, or Jina AI Cloud.
+It handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer.
+
+
 
 <p align="center">
 <strong><a href="#build-ai-services">Build and deploy a gRPC microservice</a> • <a href="#build-a-pipeline">Build and deploy a pipeline</a></strong>
@@ -53,6 +60,21 @@ Applications built with Jina enjoy the following features out of the box:
   - Improved engineering efficiency thanks to the Jina AI ecosystem, so you can focus on innovating with the data applications you build.
   - Free CPU/GPU hosting via [Jina AI Cloud](https://cloud.jina.ai).
 
+Jina's value proposition may seem quite similar to that of FastAPI. However, there are several fundamental differences:
+
+ **Data structure and communication protocols**
+  - FastAPI communication relies on Pydantic and Jina relies on [DocArray](https://github.com/docarray/docarray) allowing Jina to support multiple protocols
+  to expose its services.
+
+ **Advanced orchestration and scaling capabilities**
+  - Jina lets you deploy applications formed from multiple microservices that can be containerized and scaled independently.
+  - Jina allows you to easily containerize and orchestrate your services, providing concurrency and scalability.
+
+ **Journey to the cloud**
+  - Jina provides a smooth transition from local development (using [DocArray](https://github.com/docarray/docarray)) to local serving using (Jina's orchestration layer)
+  to having production-ready services by using Kubernetes capacity to orchestrate the lifetime of containers.
+  - By using [Jina AI Cloud](https://cloud.jina.ai) you have access to scalable and serverless deployments of your applications in one command.
+
 <!-- end jina-description -->
 
 <p align="center">
@@ -64,7 +86,7 @@ Applications built with Jina enjoy the following features out of the box:
 ## Install 
 
 ```bash
-pip install jina
+pip install jina transformers sentencepiece
 ```
 
 Find more install options on [Apple Silicon](https://docs.jina.ai/get-started/install/apple-silicon-m1-m2/)/[Windows](https://docs.jina.ai/get-started/install/windows/).
@@ -73,7 +95,7 @@ Find more install options on [Apple Silicon](https://docs.jina.ai/get-started/in
 
 ### Basic Concepts
 
-Jina has three fundamental concepts:
+Jina has four fundamental concepts:
 
 - A [**Document**](https://docarray.jina.ai/) (from [DocArray](https://github.com/docarray/docarray)) is the input/output format in Jina.
 - An [**Executor**](https://docs.jina.ai/concepts/executor/) is a Python class that transforms and processes Documents.
@@ -155,6 +177,7 @@ Then we deploy it with either the Python API or YAML:
 
 ```python
 from jina import Deployment
+from translate_executor import Translator
 
 with Deployment(uses=Translator, timeout_ready=-1) as dep:
     dep.block()
