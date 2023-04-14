@@ -194,7 +194,6 @@ func Run(myAddr string,
         Raft:     r,
     })
 
-
     raftadmin.Register(grpcServer, r)
     reflection.Register(grpcServer)
     sigchnl := make(chan os.Signal, 1)

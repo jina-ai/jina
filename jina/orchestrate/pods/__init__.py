@@ -321,8 +321,6 @@ class BasePod(ABC):
         import asyncio
         from jina.serve.runtimes.servers import BaseServer
 
-        from jina.serve.runtimes.servers import BaseServer
-
         _timeout = self.args.timeout_ready
         if _timeout <= 0:
             _timeout = None
