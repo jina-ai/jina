@@ -11,6 +11,7 @@ Subpackages
    jina.serve.runtimes.gateway.graph
    jina.serve.runtimes.gateway.grpc
    jina.serve.runtimes.gateway.http
+   jina.serve.runtimes.gateway.load_balancer
    jina.serve.runtimes.gateway.websocket
 
 Submodules

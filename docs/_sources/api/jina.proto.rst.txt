@@ -7,8 +7,8 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   jina.proto.pb
-   jina.proto.pb2
+   jina.proto.docarray_v1
+   jina.proto.docarray_v2
 
 Submodules
 ----------

@@ -5,13 +5,13 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/clients/websocket.html" />
 
-    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.23 -->
-        <title>jina.clients.websocket - Jina 3.14.2 documentation</title>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
+        <title>jina.clients.websocket - Jina 3.15.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/docbot.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.14.2 documentation</div>
+                <div class="brand">Jina 3.15.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -225,51 +225,59 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../get-started/create-app/"><span class="fas fa-folder-plus"></span> Create First Project</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/before-you-start/">Before you start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/deploy-model/">Deploy a model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../concepts/preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/preliminaries/coding-in-python-yaml/">Coding in Python/YAML</a></li>
 </ul>
 </li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
-<ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../concepts/executor/"><span class="fas fa-gears"></span> Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/create/">Create</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/serve/">Serve</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/dynamic-batching/">Dynamic Batching</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/health-check/">Health Check</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/hot-reload/">Hot Reload</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/file-structure/">File Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/containerize/">Containerize</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/instrumentation/">Instrumentation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/executor-in-flow/">Executors in Flows</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/docarray-v2/">(Beta) DocArray v2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../concepts/serving/"><span class="fas fa-gears"></span> Serving</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../concepts/serving/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/create/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/add-endpoints/">Add Endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/serve/">Serve</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/dynamic-batching/">Dynamic Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/health-check/">Health Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/hot-reload/">Hot Reload</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/file-structure/">File Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/containerize/">Containerize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/docarray-v2/">(Beta) DocArray v2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../concepts/flow/"><span class="fas fa-network-wired"></span> Flow</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/flow/basics/">Basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/flow/add-executors/">Add Executors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/flow/add-conditioning/">Add Conditioning</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/flow/scale-out/">Scale Out</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/flow/hot-reload/">Hot Reload</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/flow/handle-exceptions/">Handle Exceptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/flow/readiness/">Readiness</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/flow/health-check/">Health Check</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/flow/instrumentation/">Instrumentation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/flow/troubleshooting-on-multiprocess/">Troubleshooting on Multiprocessing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../concepts/serving/gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/gateway/health-check/">Health Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/gateway/rate-limit/">Rate Limit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/gateway/customize-http-endpoints/">Customize HTTP endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/gateway/customization/">Customization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/gateway/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../concepts/gateway/"><span class="fas fa-door-open"></span> Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/gateway/health-check/">Health Check</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/gateway/rate-limit/">Rate Limit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/gateway/customize-http-endpoints/">Customize HTTP endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/gateway/customization/">Customization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/gateway/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../concepts/client/"><span class="fas fa-laptop-code"></span> Client</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../concepts/orchestration/"><span class="fas fa-network-wired"></span> Orchestration layer</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/deployment/">Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/flow/">Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/add-executors/">Add Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/scale-out/">Scale Out</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/hot-reload/">Hot Reload</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/handle-exceptions/">Handle Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/readiness/">Readiness</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/health-check/">Health Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/troubleshooting-on-multiprocess/">Troubleshooting on Multiprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../concepts/client/"><span class="fas fa-laptop-code"></span> Client</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
@@ -283,27 +291,18 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cloud Native</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../cloud-nativeness/k8s/"><span class="fas fa-dharmachakra"></span> Kubernetes Support</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../cloud-nativeness/k8s/"><span class="fas fa-dharmachakra"></span> Kubernetes Support</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../cloud-nativeness/kubernetes/">Deploy on Kubernetes</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cloud-nativeness/docker-compose/"><span class="fab fa-docker"></span> Docker Compose Support</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../cloud-nativeness/opentelemetry/"><svg aria-hidden="true" class="sd-octicon sd-octicon-telescope-fill" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M8.531 10.21a.75.75 0 01.944.253l2.644 3.864a.75.75 0 11-1.238.847L9 12.424v2.826a.75.75 0 01-1.5 0v-2.826l-1.881 2.75a.75.75 0 01-1.238-.848l2.048-2.992a.75.75 0 01.293-.252l1.81-.871zM11.905.42a1.5 1.5 0 012.144.49l1.692 2.93a1.5 1.5 0 01-.649 2.102L2.895 11.815a1.5 1.5 0 01-1.95-.602l-.68-1.176a1.5 1.5 0 01.455-1.99L11.905.422zM3.279 8.119l.835 1.445 1.355-.653-.947-1.64-1.243.848zm7.728-1.874L9.6 3.808l1.243-.848 1.52 2.631-1.356.653z" fill-rule="evenodd"></path></svg> OpenTelemetry Support</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../cloud-nativeness/opentelemetry/"><svg aria-hidden="true" class="sd-octicon sd-octicon-telescope-fill" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M8.531 10.21a.75.75 0 01.944.253l2.644 3.864a.75.75 0 11-1.238.847L9 12.424v2.826a.75.75 0 01-1.5 0v-2.826l-1.881 2.75a.75.75 0 01-1.238-.848l2.048-2.992a.75.75 0 01.293-.252l1.81-.871zM11.905.42a1.5 1.5 0 012.144.49l1.692 2.93a1.5 1.5 0 01-.649 2.102L2.895 11.815a1.5 1.5 0 01-1.95-.602l-.68-1.176a1.5 1.5 0 01.455-1.99L11.905.422zM3.279 8.119l.835 1.445 1.355-.653-.947-1.64-1.243.848zm7.728-1.874L9.6 3.808l1.243-.848 1.52 2.631-1.356.653z" fill-rule="evenodd"></path></svg> OpenTelemetry Support</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../cloud-nativeness/opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../cloud-nativeness/monitoring/">Prometheus/Grafana Support (Legacy)</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../concepts/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/hub-portal/">Portal</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/create-hub-executor/">Create</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/push-executor/">Publish</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/sandbox/">Sandbox</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/executor/hub/debug-executor/">Debug</a></li>
-</ul>
-</li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../concepts/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../concepts/jcloud/configuration/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> Configuration</a></li>
 </ul>
@@ -490,7 +489,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 24, 2023</div>
+                            Last updated on Apr 14, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

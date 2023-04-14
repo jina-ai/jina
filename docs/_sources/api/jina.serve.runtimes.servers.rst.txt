@@ -10,6 +10,7 @@ Submodules
    jina.serve.runtimes.servers.composite
    jina.serve.runtimes.servers.grpc
    jina.serve.runtimes.servers.http
+   jina.serve.runtimes.servers.load_balancer
    jina.serve.runtimes.servers.websocket
 
 Module contents

@@ -6,11 +6,11 @@
 <meta property="og:title" content="Welcome to Jina!" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/" />
-<meta property="og:site_name" content="Jina 3.14.2 Documentation" />
-<meta property="og:description" content="Jina is an MLOps framework to build multimodal AI services and pipelines then serve, scale and deploy them to a production-ready environment like Kubernetes or Jina AI Cloud. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible ..." />
+<meta property="og:site_name" content="Jina 3.15.0 Documentation" />
+<meta property="og:description" content="Jina is an MLOps framework to build multimodal AI microservice-based applications written in Python that can communicate via gRPC, HTTP and WebSocket protocols. It allows developers to build and serve services and pipelines while scaling and deploying them to a production while removing the compl..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.14.2 Documentation" />
-<meta name="description" content="Jina is an MLOps framework to build multimodal AI services and pipelines then serve, scale and deploy them to a production-ready environment like Kubernetes or Jina AI Cloud. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible ..." />
+<meta property="og:image:alt" content="Jina 3.15.0 Documentation" />
+<meta name="description" content="Jina is an MLOps framework to build multimodal AI microservice-based applications written in Python that can communicate via gRPC, HTTP and WebSocket protocols. It allows developers to build and serve services and pipelines while scaling and deploying them to a production while removing the compl..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -32,13 +32,13 @@
 <link rel="index" title="Index" href="genindex/" /><link rel="search" title="Search" href="search/" /><link rel="next" title="Install" href="get-started/install/" />
         <link rel="canonical" href="https://docs.jina.ai/index.html" />
 
-    <link rel="shortcut icon" href="_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.23 -->
-        <title>Jina 3.14.2 documentation</title>
+    <link rel="shortcut icon" href="_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
+        <title>Jina 3.15.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="_static/main.css" />
     <link rel="stylesheet" type="text/css" href="_static/docbot.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="#">
-                <div class="brand">Jina 3.14.2 documentation</div>
+                <div class="brand">Jina 3.15.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -252,51 +252,59 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="get-started/create-app/"><span class="fas fa-folder-plus"></span> Create First Project</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/before-you-start/">Before you start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/deploy-model/">Deploy a model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/gpu-executor/">Build a GPU Executor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="concepts/preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="concepts/preliminaries/coding-in-python-yaml/">Coding in Python/YAML</a></li>
 </ul>
 </li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
-<ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="concepts/executor/"><span class="fas fa-gears"></span> Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="concepts/executor/create/">Create</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/executor/add-endpoints/">Add Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/executor/serve/">Serve</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/executor/dynamic-batching/">Dynamic Batching</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/executor/health-check/">Health Check</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/executor/hot-reload/">Hot Reload</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/executor/file-structure/">File Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/executor/containerize/">Containerize</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/executor/instrumentation/">Instrumentation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/executor/executor-in-flow/">Executors in Flows</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/executor/docarray-v2/">(Beta) DocArray v2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="concepts/serving/"><span class="fas fa-gears"></span> Serving</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="concepts/serving/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="concepts/serving/executor/create/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="concepts/serving/executor/add-endpoints/">Add Endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="concepts/serving/executor/serve/">Serve</a></li>
+<li class="toctree-l3"><a class="reference internal" href="concepts/serving/executor/dynamic-batching/">Dynamic Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="concepts/serving/executor/health-check/">Health Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="concepts/serving/executor/hot-reload/">Hot Reload</a></li>
+<li class="toctree-l3"><a class="reference internal" href="concepts/serving/executor/file-structure/">File Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="concepts/serving/executor/containerize/">Containerize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="concepts/serving/executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="concepts/serving/executor/docarray-v2/">(Beta) DocArray v2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="concepts/serving/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="concepts/flow/"><span class="fas fa-network-wired"></span> Flow</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="concepts/flow/basics/">Basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/flow/add-executors/">Add Executors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/flow/add-conditioning/">Add Conditioning</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/flow/scale-out/">Scale Out</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/flow/hot-reload/">Hot Reload</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/flow/handle-exceptions/">Handle Exceptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/flow/readiness/">Readiness</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/flow/health-check/">Health Check</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/flow/instrumentation/">Instrumentation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/flow/troubleshooting-on-multiprocess/">Troubleshooting on Multiprocessing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="concepts/serving/gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="concepts/serving/gateway/health-check/">Health Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="concepts/serving/gateway/rate-limit/">Rate Limit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="concepts/serving/gateway/customize-http-endpoints/">Customize HTTP endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="concepts/serving/gateway/customization/">Customization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="concepts/serving/gateway/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="concepts/gateway/"><span class="fas fa-door-open"></span> Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="concepts/gateway/health-check/">Health Check</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/gateway/rate-limit/">Rate Limit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/gateway/customize-http-endpoints/">Customize HTTP endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/gateway/customization/">Customization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts/gateway/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="concepts/client/"><span class="fas fa-laptop-code"></span> Client</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="concepts/orchestration/"><span class="fas fa-network-wired"></span> Orchestration layer</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="concepts/orchestration/deployment/">Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts/orchestration/flow/">Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts/orchestration/add-executors/">Add Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts/orchestration/scale-out/">Scale Out</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts/orchestration/hot-reload/">Hot Reload</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts/orchestration/handle-exceptions/">Handle Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts/orchestration/readiness/">Readiness</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts/orchestration/health-check/">Health Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts/orchestration/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts/orchestration/troubleshooting-on-multiprocess/">Troubleshooting on Multiprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts/orchestration/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="concepts/client/"><span class="fas fa-laptop-code"></span> Client</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
@@ -310,27 +318,18 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cloud Native</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="cloud-nativeness/k8s/"><span class="fas fa-dharmachakra"></span> Kubernetes Support</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="cloud-nativeness/k8s/"><span class="fas fa-dharmachakra"></span> Kubernetes Support</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="cloud-nativeness/kubernetes/">Deploy on Kubernetes</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cloud-nativeness/docker-compose/"><span class="fab fa-docker"></span> Docker Compose Support</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="cloud-nativeness/opentelemetry/"><svg aria-hidden="true" class="sd-octicon sd-octicon-telescope-fill" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M8.531 10.21a.75.75 0 01.944.253l2.644 3.864a.75.75 0 11-1.238.847L9 12.424v2.826a.75.75 0 01-1.5 0v-2.826l-1.881 2.75a.75.75 0 01-1.238-.848l2.048-2.992a.75.75 0 01.293-.252l1.81-.871zM11.905.42a1.5 1.5 0 012.144.49l1.692 2.93a1.5 1.5 0 01-.649 2.102L2.895 11.815a1.5 1.5 0 01-1.95-.602l-.68-1.176a1.5 1.5 0 01.455-1.99L11.905.422zM3.279 8.119l.835 1.445 1.355-.653-.947-1.64-1.243.848zm7.728-1.874L9.6 3.808l1.243-.848 1.52 2.631-1.356.653z" fill-rule="evenodd"></path></svg> OpenTelemetry Support</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="cloud-nativeness/opentelemetry/"><svg aria-hidden="true" class="sd-octicon sd-octicon-telescope-fill" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M8.531 10.21a.75.75 0 01.944.253l2.644 3.864a.75.75 0 11-1.238.847L9 12.424v2.826a.75.75 0 01-1.5 0v-2.826l-1.881 2.75a.75.75 0 01-1.238-.848l2.048-2.992a.75.75 0 01.293-.252l1.81-.871zM11.905.42a1.5 1.5 0 012.144.49l1.692 2.93a1.5 1.5 0 01-.649 2.102L2.895 11.815a1.5 1.5 0 01-1.95-.602l-.68-1.176a1.5 1.5 0 01.455-1.99L11.905.422zM3.279 8.119l.835 1.445 1.355-.653-.947-1.64-1.243.848zm7.728-1.874L9.6 3.808l1.243-.848 1.52 2.631-1.356.653z" fill-rule="evenodd"></path></svg> OpenTelemetry Support</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="cloud-nativeness/opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cloud-nativeness/monitoring/">Prometheus/Grafana Support (Legacy)</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="jina-ai-cloud/login/">Login &amp; Token Management</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="concepts/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="concepts/executor/hub/hub-portal/">Portal</a></li>
-<li class="toctree-l3"><a class="reference internal" href="concepts/executor/hub/create-hub-executor/">Create</a></li>
-<li class="toctree-l3"><a class="reference internal" href="concepts/executor/hub/push-executor/">Publish</a></li>
-<li class="toctree-l3"><a class="reference internal" href="concepts/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="concepts/executor/hub/sandbox/">Sandbox</a></li>
-<li class="toctree-l3"><a class="reference internal" href="concepts/executor/hub/debug-executor/">Debug</a></li>
-</ul>
-</li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="concepts/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="concepts/jcloud/configuration/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> Configuration</a></li>
 </ul>
@@ -434,7 +433,11 @@
 <p class="admonition-title">Survey</p>
 <p>Take our <strong><a class="reference external" href="https://10sw1tcpld4.typeform.com/to/EGAEReM7?utm_source=doc&amp;amp;utm_medium=github&amp;amp;utm_campaign=user%20experience&amp;amp;utm_term=feb2023&amp;amp;utm_content=survey">user experience survey</a></strong> to let us know your thoughts and help shape the future of Jina!</p>
 </div>
-<p>Jina is an MLOps framework to build multimodal AI <strong>services</strong> and <strong>pipelines</strong> then <strong>serve</strong>, <strong>scale</strong> and <strong>deploy</strong> them to a production-ready environment like Kubernetes or Jina AI Cloud. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer.</p>
+<p>Jina is an MLOps framework to build multimodal AI microservice-based applications written in Python that can communicate via gRPC, HTTP and WebSocket protocols.
+It allows developers to build and serve <strong>services</strong> and <strong>pipelines</strong> while <strong>scaling</strong> and <strong>deploying</strong> them to a production while removing the complexity, letting them focus on the
+logic/algorithmic part, saving valuable time and resources for engineering teams.</p>
+<p>Jina aims to provide a smooth Pythonic experience transitioning from local deployment to deploying to advanced orchestration frameworks such as Docker-Compose, Kubernetes, or Jina AI Cloud.
+It handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer.</p>
 <p align="center">
 <strong><a href="#build-ai-services">Build and deploy a gRPC microservice</a> • <a href="#build-a-pipeline">Build and deploy a pipeline</a></strong>
 </p>
@@ -462,6 +465,23 @@
 <ul class="simple">
 <li><p>Improved engineering efficiency thanks to the Jina AI ecosystem, so you can focus on innovating with the data applications you build.</p></li>
 <li><p>Free CPU/GPU hosting via <a class="reference external" href="https://cloud.jina.ai">Jina AI Cloud</a>.</p></li>
+</ul>
+<p>Jina’s value proposition may seem quite similar to that of FastAPI. However, there are several fundamental differences:</p>
+<p><strong>Data structure and communication protocols</strong></p>
+<ul class="simple">
+<li><p>FastAPI communication relies on Pydantic and Jina relies on <a class="reference external" href="https://github.com/docarray/docarray">DocArray</a> allowing Jina to support multiple protocols
+to expose its services.</p></li>
+</ul>
+<p><strong>Advanced orchestration and scaling capabilities</strong></p>
+<ul class="simple">
+<li><p>Jina lets you deploy applications formed from multiple microservices that can be containerized and scaled independently.</p></li>
+<li><p>Jina allows you to easily containerize and orchestrate your services, providing concurrency and scalability.</p></li>
+</ul>
+<p><strong>Journey to the cloud</strong></p>
+<ul class="simple">
+<li><p>Jina provides a smooth transition from local development (using <a class="reference external" href="https://github.com/docarray/docarray">DocArray</a>) to local serving using (Jina’s orchestration layer)
+to having production-ready services by using Kubernetes capacity to orchestrate the lifetime of containers.</p></li>
+<li><p>By using <a class="reference external" href="https://cloud.jina.ai">Jina AI Cloud</a> you have access to scalable and serverless deployments of your applications in one command.</p></li>
 </ul>
 <section id="install">
 <h2>Install<a class="headerlink" href="#install" title="Permalink to this heading">#</a></h2>
@@ -543,6 +563,7 @@ Run the <a class="reference external" href="https://colab.research.google.com/gi
 <tr>
 <td>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
+<span class="kn">from</span> <span class="nn">translate_executor</span> <span class="kn">import</span> <span class="n">Translator</span>
 
 <span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">Translator</span><span class="p">,</span> <span class="n">timeout_ready</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
     <span class="n">dep</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
@@ -591,7 +612,7 @@ Run the <a class="reference external" href="https://colab.research.google.com/gi
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">Build Pipelines</label><div class="tab-content docutils">
-<p><a class="reference external" href="https://colab.research.google.com/github/jina-ai/jina/blob/docs-readme-changes/.github/getting-started/notebook.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p><a class="reference external" href="https://colab.research.google.com/github/jina-ai/jina/blob/master/.github/getting-started/notebook.ipynb#scrollTo=YfNm1nScH30U"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <p>Sometimes you want to chain microservices together into a pipeline. That’s where a <a class="reference external" href="https://docs.jina.ai/concepts/flow/">Flow</a> comes in.</p>
 <p>A Flow is a <a class="reference external" href="https://de.wikipedia.org/wiki/DAG">DAG</a> pipeline, composed of a set of steps, It orchestrates a set of <a class="reference external" href="https://docs.jina.ai/concepts/executor/">Executors</a> and a <a class="reference external" href="https://docs.jina.ai/concepts/gateway/">Gateway</a> to offer an end-to-end service.</p>
 <blockquote>
@@ -696,18 +717,36 @@ jina<span class="w"> </span>cloud<span class="w"> </span>deploy<span class="w"> 
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-gear" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M16 12a4 4 0 11-8 0 4 4 0 018 0zm-1.5 0a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path><path fill-rule="evenodd" d="M12 1c-.268 0-.534.01-.797.028-.763.055-1.345.617-1.512 1.304l-.352 1.45c-.02.078-.09.172-.225.22a8.45 8.45 0 00-.728.303c-.13.06-.246.044-.315.002l-1.274-.776c-.604-.368-1.412-.354-1.99.147-.403.348-.78.726-1.129 1.128-.5.579-.515 1.387-.147 1.99l.776 1.275c.042.069.059.185-.002.315-.112.237-.213.48-.302.728-.05.135-.143.206-.221.225l-1.45.352c-.687.167-1.249.749-1.304 1.512a11.149 11.149 0 000 1.594c.055.763.617 1.345 1.304 1.512l1.45.352c.078.02.172.09.22.225.09.248.191.491.303.729.06.129.044.245.002.314l-.776 1.274c-.368.604-.354 1.412.147 1.99.348.403.726.78 1.128 1.129.579.5 1.387.515 1.99.147l1.275-.776c.069-.042.185-.059.315.002.237.112.48.213.728.302.135.05.206.143.225.221l.352 1.45c.167.687.749 1.249 1.512 1.303a11.125 11.125 0 001.594 0c.763-.054 1.345-.616 1.512-1.303l.352-1.45c.02-.078.09-.172.225-.22.248-.09.491-.191.729-.303.129-.06.245-.044.314-.002l1.274.776c.604.368 1.412.354 1.99-.147.403-.348.78-.726 1.129-1.128.5-.579.515-1.387.147-1.99l-.776-1.275c-.042-.069-.059-.185.002-.315.112-.237.213-.48.302-.728.05-.135.143-.206.221-.225l1.45-.352c.687-.167 1.249-.749 1.303-1.512a11.125 11.125 0 000-1.594c-.054-.763-.616-1.345-1.303-1.512l-1.45-.352c-.078-.02-.172-.09-.22-.225a8.469 8.469 0 00-.303-.728c-.06-.13-.044-.246-.002-.315l.776-1.274c.368-.604.354-1.412-.147-1.99-.348-.403-.726-.78-1.128-1.129-.579-.5-1.387-.515-1.99-.147l-1.275.776c-.069.042-.185.059-.315-.002a8.465 8.465 0 00-.728-.302c-.135-.05-.206-.143-.225-.221l-.352-1.45c-.167-.687-.749-1.249-1.512-1.304A11.149 11.149 0 0012 1zm-.69 1.525a9.648 9.648 0 011.38 0c.055.004.135.05.162.16l.351 1.45c.153.628.626 1.08 1.173 1.278.205.074.405.157.6.249a1.832 1.832 0 001.733-.074l1.275-.776c.097-.06.186-.036.228 0 .348.302.674.628.976.976.036.042.06.13 0 .228l-.776 1.274a1.832 1.832 0 00-.074 1.734c.092.195.175.395.248.6.198.547.652 1.02 1.278 1.172l1.45.353c.111.026.157.106.161.161a9.653 9.653 0 010 1.38c-.004.055-.05.135-.16.162l-1.45.351a1.833 1.833 0 00-1.278 1.173 6.926 6.926 0 01-.25.6 1.832 1.832 0 00.075 1.733l.776 1.275c.06.097.036.186 0 .228a9.555 9.555 0 01-.976.976c-.042.036-.13.06-.228 0l-1.275-.776a1.832 1.832 0 00-1.733-.074 6.926 6.926 0 01-.6.248 1.833 1.833 0 00-1.172 1.278l-.353 1.45c-.026.111-.106.157-.161.161a9.653 9.653 0 01-1.38 0c-.055-.004-.135-.05-.162-.16l-.351-1.45a1.833 1.833 0 00-1.173-1.278 6.928 6.928 0 01-.6-.25 1.832 1.832 0 00-1.734.075l-1.274.776c-.097.06-.186.036-.228 0a9.56 9.56 0 01-.976-.976c-.036-.042-.06-.13 0-.228l.776-1.275a1.832 1.832 0 00.074-1.733 6.948 6.948 0 01-.249-.6 1.833 1.833 0 00-1.277-1.172l-1.45-.353c-.111-.026-.157-.106-.161-.161a9.648 9.648 0 010-1.38c.004-.055.05-.135.16-.162l1.45-.351a1.833 1.833 0 001.278-1.173 6.95 6.95 0 01.249-.6 1.832 1.832 0 00-.074-1.734l-.776-1.274c-.06-.097-.036-.186 0-.228.302-.348.628-.674.976-.976.042-.036.13-.06.228 0l1.274.776a1.832 1.832 0 001.734.074 6.95 6.95 0 01.6-.249 1.833 1.833 0 001.172-1.277l.353-1.45c.026-.111.106-.157.161-.161z"></path></svg> Learn Executor</div>
-<p class="sd-card-text"><a class="reference internal" href="concepts/preliminaries/#term-Executor"><span class="xref std std-term">Executor</span></a> is a Python class that can serve logic using <code class="docutils literal notranslate"><span class="pre">Documents</span></code>.</p>
+<p class="sd-card-text"><span class="xref std std-term">Executor</span> is a Python class that can serve logic using <code class="docutils literal notranslate"><span class="pre">Documents</span></code>.</p>
 </div>
-<a class="sd-stretched-link reference internal" href="concepts/executor/"><span class="doc"></span></a></div>
+<a class="sd-stretched-link reference internal" href="concepts/serving/executor/"><span class="doc"></span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-workflow" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M1 3a2 2 0 012-2h6.5a2 2 0 012 2v6.5a2 2 0 01-2 2H7v4.063C7 16.355 7.644 17 8.438 17H12.5v-2.5a2 2 0 012-2H21a2 2 0 012 2V21a2 2 0 01-2 2h-6.5a2 2 0 01-2-2v-2.5H8.437A2.938 2.938 0 015.5 15.562V11.5H3a2 2 0 01-2-2V3zm2-.5a.5.5 0 00-.5.5v6.5a.5.5 0 00.5.5h6.5a.5.5 0 00.5-.5V3a.5.5 0 00-.5-.5H3zM14.5 14a.5.5 0 00-.5.5V21a.5.5 0 00.5.5H21a.5.5 0 00.5-.5v-6.5a.5.5 0 00-.5-.5h-6.5z"></path></svg> Learn Deployment</div>
+<p class="sd-card-text"><span class="xref std std-term">Deployment</span> serves an Executor as a scalable service making it available to receive <code class="docutils literal notranslate"><span class="pre">Documents</span></code> using <code class="docutils literal notranslate"><span class="pre">gRPC</span></code> or <code class="docutils literal notranslate"><span class="pre">HTTP</span></code>.</p>
+</div>
+<a class="sd-stretched-link reference internal" href="concepts/orchestration/deployment/"><span class="doc"></span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-workflow" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M1 3a2 2 0 012-2h6.5a2 2 0 012 2v6.5a2 2 0 01-2 2H7v4.063C7 16.355 7.644 17 8.438 17H12.5v-2.5a2 2 0 012-2H21a2 2 0 012 2V21a2 2 0 01-2 2h-6.5a2 2 0 01-2-2v-2.5H8.437A2.938 2.938 0 015.5 15.562V11.5H3a2 2 0 01-2-2V3zm2-.5a.5.5 0 00-.5.5v6.5a.5.5 0 00.5.5h6.5a.5.5 0 00.5-.5V3a.5.5 0 00-.5-.5H3zM14.5 14a.5.5 0 00-.5.5V21a.5.5 0 00.5.5H21a.5.5 0 00.5-.5v-6.5a.5.5 0 00-.5-.5h-6.5z"></path></svg> Learn Flow</div>
-<p class="sd-card-text"><a class="reference internal" href="concepts/preliminaries/#term-Flow"><span class="xref std std-term">Flow</span></a> orchestrates Executors into a processing pipeline to accomplish a task.</p>
+<p class="sd-card-text"><span class="xref std std-term">Flow</span> orchestrates Executors using different Deployments into a processing pipeline to accomplish a task.</p>
 </div>
-<a class="sd-stretched-link reference internal" href="concepts/flow/"><span class="doc"></span></a></div>
+<a class="sd-stretched-link reference internal" href="concepts/orchestration/flow/"><span class="doc"></span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-cross-reference" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 2.25a.75.75 0 01.75-.75h5.5a.75.75 0 01.75.75v5.5a.75.75 0 01-1.5 0V4.06l-6.22 6.22a.75.75 0 11-1.06-1.06L20.94 3h-3.69a.75.75 0 01-.75-.75z"></path><path d="M3.25 4a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h2.5a.75.75 0 01.75.75v3.19l3.72-3.72a.75.75 0 01.53-.22h10a.25.25 0 00.25-.25v-6a.75.75 0 011.5 0v6a1.75 1.75 0 01-1.75 1.75h-9.69l-3.573 3.573A1.457 1.457 0 015 21.043V18.5H3.25a1.75 1.75 0 01-1.75-1.75V4.25c0-.966.784-1.75 1.75-1.75h11a.75.75 0 010 1.5h-11z"></path></svg> Learn Gateway</div>
+<p class="sd-card-text">The Gateway is a microservice that serves as the entrypoint of a <span class="xref std std-term">Flow</span>. It exposes multiple protocols for external communications and routes all internal traffic.</p>
+</div>
+<a class="sd-stretched-link reference external" href="concepts/serving/gateway/index"></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover color-gradient-card-1 docutils">
@@ -716,7 +755,7 @@ jina<span class="w"> </span>cloud<span class="w"> </span>deploy<span class="w"> 
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-package-dependents" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M9.126.64a1.75 1.75 0 011.75 0l8.25 4.762c.103.06.199.128.286.206a.748.748 0 01.554.96c.023.113.035.23.035.35v3.332a.75.75 0 01-1.5 0V7.64l-7.75 4.474V22.36a.75.75 0 01-1.125.65l-8.75-5.052a1.75 1.75 0 01-.875-1.515V6.917c0-.119.012-.236.035-.35a.748.748 0 01.554-.96 1.75 1.75 0 01.286-.205L9.126.639zM1.501 7.638v8.803c0 .09.048.172.125.216l7.625 4.402v-8.947l-7.75-4.474zm8.5 3.175L2.251 6.34l7.625-4.402a.25.25 0 01.25 0l7.625 4.402-7.75 4.474z"></path><path d="M21.347 17.5l-2.894-2.702a.75.75 0 111.023-1.096l4.286 4a.75.75 0 010 1.096l-4.286 4a.75.75 0 11-1.023-1.096L21.347 19h-6.633a.75.75 0 010-1.5h6.633z"></path></svg> Explore Executor Hub</div>
 <p class="sd-card-text">Executor Hub is a marketplace that allows you to share, explore and test Executors.</p>
 </div>
-<a class="sd-stretched-link reference internal" href="concepts/executor/hub/"><span class="doc"></span></a></div>
+<span class="sd-stretched-link"></span></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover color-gradient-card-2 docutils">
@@ -758,6 +797,8 @@ and <a class="reference external" href="https://youtube.com/c/jina-ai">live stre
 </div>
 <div class="toctree-wrapper compound">
 </div>
+<div class="toctree-wrapper compound">
+</div>
 <hr class="docutils" />
 <p><a class="reference internal" href="genindex/"><span class="std std-ref">Index</span></a> | <a class="reference internal" href="py-modindex/"><span class="std std-ref">Module Index</span></a></p>
 </section>
@@ -784,7 +825,7 @@ and <a class="reference external" href="https://youtube.com/c/jina-ai">live stre
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Mar 24, 2023</div>
+                            Last updated on Apr 14, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
