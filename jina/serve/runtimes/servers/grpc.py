@@ -63,9 +63,26 @@ class GRPCServer(BaseServer):
             jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(
                 self._request_handler, self.server
             )
+        if hasattr(self._request_handler, 'snapshot'):
+            jina_pb2_grpc.add_JinaExecutorSnapshotServicer_to_server(
+                self._request_handler, self.server
+            )
+        if hasattr(self._request_handler, 'snapshot_status'):
+            jina_pb2_grpc.add_JinaExecutorSnapshotProgressServicer_to_server(
+                self._request_handler, self.server
+            )
+        if hasattr(self._request_handler, 'restore'):
+            jina_pb2_grpc.add_JinaExecutorRestoreServicer_to_server(
+                self._request_handler, self.server
+            )
+        if hasattr(self._request_handler, 'restore_status'):
+            jina_pb2_grpc.add_JinaExecutorRestoreProgressServicer_to_server(
+                self._request_handler, self.server
+            )
+
         jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(
-            self._request_handler, self.server
-        )
+                self._request_handler, self.server
+            )
 
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,

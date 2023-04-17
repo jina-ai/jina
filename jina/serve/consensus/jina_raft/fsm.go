@@ -38,8 +38,13 @@ func NewExecutorFSM(target string) *executorFSM {
     conn, _ := executor.newConnection()
     defer conn.Close()
     client := pb.NewJinaDiscoverEndpointsRPCClient(conn)
-    response, _ := client.EndpointDiscovery(context.Background(), &emptypb.Empty{})
+    response, err := client.EndpointDiscovery(context.Background(), &emptypb.Empty{})
+    if err != nil {
+        log.Printf("error %v", err)
+    }
+    log.Printf("response %v", response)
     write_endpoints := response.WriteEndpoints
+    log.Printf("write_endpoints %v", write_endpoints)
     return &executorFSM{
         executor: executor,
         write_endpoints: write_endpoints,

@@ -4,15 +4,15 @@
 // 	protoc        v3.13.0
 // source: jina.proto
 
-package jina
+package jina_go_proto
 
 import (
 	empty "github.com/golang/protobuf/ptypes/empty"
 	_struct "github.com/golang/protobuf/ptypes/struct"
 	timestamp "github.com/golang/protobuf/ptypes/timestamp"
-	docarray "jraft/docarray-go-proto"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	docarray_go_proto "jraft/docarray-go-proto"
 	reflect "reflect"
 	sync "sync"
 )
@@ -1185,7 +1185,7 @@ func (m *DataRequestProto_DataContentProto) GetDocuments() isDataRequestProto_Da
 	return nil
 }
 
-func (x *DataRequestProto_DataContentProto) GetDocs() *docarray.DocumentArrayProto {
+func (x *DataRequestProto_DataContentProto) GetDocs() *docarray_go_proto.DocumentArrayProto {
 	if x, ok := x.GetDocuments().(*DataRequestProto_DataContentProto_Docs); ok {
 		return x.Docs
 	}
@@ -1204,7 +1204,7 @@ type isDataRequestProto_DataContentProto_Documents interface {
 }
 
 type DataRequestProto_DataContentProto_Docs struct {
-	Docs *docarray.DocumentArrayProto `protobuf:"bytes,1,opt,name=docs,proto3,oneof"` // the docs in this request
+	Docs *docarray_go_proto.DocumentArrayProto `protobuf:"bytes,1,opt,name=docs,proto3,oneof"` // the docs in this request
 }
 
 type DataRequestProto_DataContentProto_DocsBytes struct {
@@ -1434,9 +1434,8 @@ var file_jina_proto_rawDesc = []byte{
 	0x6e, 0x61, 0x2e, 0x52, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x49, 0x64, 0x1a, 0x20, 0x2e, 0x6a,
 	0x69, 0x6e, 0x61, 0x2e, 0x52, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x53, 0x6e, 0x61, 0x70, 0x73,
 	0x68, 0x6f, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x00,
-	0x42, 0x23, 0x5a, 0x21, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6a,
-	0x69, 0x6e, 0x61, 0x2d, 0x61, 0x69, 0x2f, 0x6a, 0x69, 0x6e, 0x61, 0x2d, 0x72, 0x61, 0x66, 0x74,
-	0x2f, 0x6a, 0x69, 0x6e, 0x61, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x42, 0x15, 0x5a, 0x13, 0x6a, 0x72, 0x61, 0x66, 0x74, 0x2f, 0x6a, 0x69, 0x6e, 0x61, 0x2d, 0x67,
+	0x6f, 0x2d, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1454,31 +1453,31 @@ func file_jina_proto_rawDescGZIP() []byte {
 var file_jina_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
 var file_jina_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_jina_proto_goTypes = []interface{}{
-	(StatusProto_StatusCode)(0),               // 0: jina.StatusProto.StatusCode
-	(SnapshotStatusProto_Status)(0),           // 1: jina.SnapshotStatusProto.Status
-	(RestoreSnapshotStatusProto_Status)(0),    // 2: jina.RestoreSnapshotStatusProto.Status
-	(*RouteProto)(nil),                        // 3: jina.RouteProto
-	(*JinaInfoProto)(nil),                     // 4: jina.JinaInfoProto
-	(*HeaderProto)(nil),                       // 5: jina.HeaderProto
-	(*EndpointsProto)(nil),                    // 6: jina.EndpointsProto
-	(*StatusProto)(nil),                       // 7: jina.StatusProto
-	(*RelatedEntity)(nil),                     // 8: jina.RelatedEntity
-	(*DataRequestProto)(nil),                  // 9: jina.DataRequestProto
-	(*DataRequestProtoWoData)(nil),            // 10: jina.DataRequestProtoWoData
-	(*DataRequestListProto)(nil),              // 11: jina.DataRequestListProto
-	(*SnapshotId)(nil),                        // 12: jina.SnapshotId
-	(*RestoreId)(nil),                         // 13: jina.RestoreId
-	(*SnapshotStatusProto)(nil),               // 14: jina.SnapshotStatusProto
-	(*RestoreSnapshotStatusProto)(nil),        // 15: jina.RestoreSnapshotStatusProto
-	(*RestoreSnapshotCommand)(nil),            // 16: jina.RestoreSnapshotCommand
-	nil,                                       // 17: jina.JinaInfoProto.JinaEntry
-	nil,                                       // 18: jina.JinaInfoProto.EnvsEntry
-	(*StatusProto_ExceptionProto)(nil),        // 19: jina.StatusProto.ExceptionProto
-	(*DataRequestProto_DataContentProto)(nil), // 20: jina.DataRequestProto.DataContentProto
-	(*timestamp.Timestamp)(nil),               // 21: google.protobuf.Timestamp
-	(*_struct.Struct)(nil),                    // 22: google.protobuf.Struct
-	(*docarray.DocumentArrayProto)(nil),       // 23: docarray.DocumentArrayProto
-	(*empty.Empty)(nil),                       // 24: google.protobuf.Empty
+	(StatusProto_StatusCode)(0),                  // 0: jina.StatusProto.StatusCode
+	(SnapshotStatusProto_Status)(0),              // 1: jina.SnapshotStatusProto.Status
+	(RestoreSnapshotStatusProto_Status)(0),       // 2: jina.RestoreSnapshotStatusProto.Status
+	(*RouteProto)(nil),                           // 3: jina.RouteProto
+	(*JinaInfoProto)(nil),                        // 4: jina.JinaInfoProto
+	(*HeaderProto)(nil),                          // 5: jina.HeaderProto
+	(*EndpointsProto)(nil),                       // 6: jina.EndpointsProto
+	(*StatusProto)(nil),                          // 7: jina.StatusProto
+	(*RelatedEntity)(nil),                        // 8: jina.RelatedEntity
+	(*DataRequestProto)(nil),                     // 9: jina.DataRequestProto
+	(*DataRequestProtoWoData)(nil),               // 10: jina.DataRequestProtoWoData
+	(*DataRequestListProto)(nil),                 // 11: jina.DataRequestListProto
+	(*SnapshotId)(nil),                           // 12: jina.SnapshotId
+	(*RestoreId)(nil),                            // 13: jina.RestoreId
+	(*SnapshotStatusProto)(nil),                  // 14: jina.SnapshotStatusProto
+	(*RestoreSnapshotStatusProto)(nil),           // 15: jina.RestoreSnapshotStatusProto
+	(*RestoreSnapshotCommand)(nil),               // 16: jina.RestoreSnapshotCommand
+	nil,                                          // 17: jina.JinaInfoProto.JinaEntry
+	nil,                                          // 18: jina.JinaInfoProto.EnvsEntry
+	(*StatusProto_ExceptionProto)(nil),           // 19: jina.StatusProto.ExceptionProto
+	(*DataRequestProto_DataContentProto)(nil),    // 20: jina.DataRequestProto.DataContentProto
+	(*timestamp.Timestamp)(nil),                  // 21: google.protobuf.Timestamp
+	(*_struct.Struct)(nil),                       // 22: google.protobuf.Struct
+	(*docarray_go_proto.DocumentArrayProto)(nil), // 23: docarray.DocumentArrayProto
+	(*empty.Empty)(nil),                          // 24: google.protobuf.Empty
 }
 var file_jina_proto_depIdxs = []int32{
 	21, // 0: jina.RouteProto.start_time:type_name -> google.protobuf.Timestamp

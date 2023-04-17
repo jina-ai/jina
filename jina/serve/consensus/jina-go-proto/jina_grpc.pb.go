@@ -4,7 +4,7 @@
 // - protoc             v3.13.0
 // source: jina.proto
 
-package jina
+package jina_go_proto
 
 import (
 	context "context"

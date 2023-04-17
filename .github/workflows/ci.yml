@@ -559,6 +559,9 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '^1.19.5' # The Go version to download (if necessary) and use.
       - name: Prepare environment
         run: |
           docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .

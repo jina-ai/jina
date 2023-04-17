@@ -5,7 +5,9 @@ import "google/protobuf/empty.proto";
 import "docarray.proto";
 
 package jina;
-option go_package = "github.com/jina-ai/jina-raft/jina";
+option go_package = "jraft/jina-go-proto";
+
+//protoc --go_out jina-go-proto --go_opt=paths=source_relative --go_opt=Mjina.proto=jina-go-proto=jraft/jina-go-proto --go-grpc_out jina-go-proto --go-grpc_opt=paths=source_relative --experimental_allow_proto3_optional jina.proto
 
 /**
  * Represents a the route paths of this message as perceived by the Gateway
@@ -162,7 +164,7 @@ service JinaSingleDataRequestRPC {
 }
 
 /**
- * jina Gateway gRPC service.
+ * jina streaming gRPC service.
  */
 service JinaRPC {
     // Pass in a Request and a filled Request with matches will be returned.
@@ -203,6 +205,14 @@ message SnapshotId {
 }
 
 /**
+* An ID representation for the Restore Job
+*/
+message RestoreId {
+    string value = 1;
+}
+
+
+/**
 * Represents the status of a Snapshot.
 */
 message SnapshotStatusProto {
@@ -228,8 +238,8 @@ message SnapshotStatusProto {
     // status code
     Status status = 2;
     
-    // snapshot directory
-    string snapshot_directory = 3;
+    // snapshot file
+    string snapshot_file = 3;
 }
 
 /**
@@ -245,5 +255,52 @@ service JinaExecutorSnapshot {
 */
 service JinaExecutorSnapshotProgress {
     rpc snapshot_status (SnapshotId) returns (SnapshotStatusProto) {
+    }
+}
+
+/**
+* Represents the status of a Restore.
+*/
+message RestoreSnapshotStatusProto {
+
+    RestoreId id = 1; // An ID for the Restore Job.
+
+    enum Status {
+        STATE_UNSPECIFIED = 0;
+
+        RUNNING = 1; // Resource allocation has been successful. Restore Job is RUNNING.
+
+        SUCCEEDED = 2; // Resource Job has finished successfully.
+
+        FAILED = 3; // Resource Job has failed.
+
+        NOT_FOUND = 6; // If the specific restore id is unknown or not found
+    }
+
+    // status code
+    Status status = 2;
+}
+
+/**
+* Commands to restore an Executor from a snapshot file
+*/
+message RestoreSnapshotCommand {
+    // snapshot file
+    string snapshot_file = 1;
+}
+
+/**
+* jina gRPC service to trigger a restore at the Executor Runtime.
+*/
+service JinaExecutorRestore {
+    rpc restore (RestoreSnapshotCommand) returns (RestoreSnapshotStatusProto) {
+    }
+}
+
+/**
+* jina gRPC service to trigger a snapshot at the Executor Runtime.
+*/
+service JinaExecutorRestoreProgress {
+    rpc restore_status (RestoreId) returns (RestoreSnapshotStatusProto) {
     }
 }

@@ -148,6 +148,8 @@ func Run(myAddr string,
     if err != nil {
         log.Fatalf("failed to listen: %v", err)
     }
+    defer sock.Close()
+
     executorFSM := jinaraft.NewExecutorFSM(executorTarget)
 
     r, tm, err := NewRaft(ctx,
@@ -192,7 +194,6 @@ func Run(myAddr string,
         Raft:     r,
     })
 
-
     raftadmin.Register(grpcServer, r)
     reflection.Register(grpcServer)
     sigchnl := make(chan os.Signal, 1)
@@ -201,6 +202,7 @@ func Run(myAddr string,
         sig := <-sigchnl
         log.Printf("Signal %v received", sig)
         grpcServer.Stop()
+        sock.Close()
         shutdownResult := r.Shutdown()
         err := shutdownResult.Error()
         if err != nil {
