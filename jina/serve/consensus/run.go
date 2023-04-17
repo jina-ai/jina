@@ -173,6 +173,7 @@ func Run(myAddr string,
         log.Fatalf("failed to start raft: %v", err)
     }
     grpcServer := grpc.NewServer()
+
     pb.RegisterJinaSingleDataRequestRPCServer(grpcServer, &jinaraft.RpcInterface{
         Executor: executorFSM,
         Raft:     r,
@@ -185,10 +186,12 @@ func Run(myAddr string,
         Executor: executorFSM,
         Raft:     r,
     })
+    pb.RegisterJinaRPCServer(grpcServer, &jinaraft.RpcInterface{
+                                    Executor: executorFSM,
+                                    Raft:     r,
+                              })
     tm.Register(grpcServer)
-    //leaderhealth.Setup(r, grpcServer, []string{"Health"})
 
-    //healthpb.RegisterHealthServer(grpcServer, health.NewServer())
     healthpb.RegisterHealthServer(grpcServer, &jinaraft.RpcInterface{
         Executor: executorFSM,
         Raft:     r,
@@ -201,14 +204,13 @@ func Run(myAddr string,
     go func(){
         sig := <-sigchnl
         log.Printf("Signal %v received", sig)
-        grpcServer.Stop()
+        grpcServer.GracefulStop()
         sock.Close()
         shutdownResult := r.Shutdown()
         err := shutdownResult.Error()
         if err != nil {
             log.Fatalf("Error returned while shutting RAFT down: %v", err)
         }
-        os.Exit(0)
     }()
     if err := grpcServer.Serve(sock); err != nil {
         log.Fatalf("failed to serve: %v", err)
@@ -216,12 +218,12 @@ func Run(myAddr string,
 }
 
 func findServerByID(servers []raft.Server, id raft.ServerID) *raft.Server {
-	for _, server := range servers {
-		if server.ID == id {
-			return &server
-		}
-	}
-	return nil
+    for _, server := range servers {
+        if server.ID == id {
+            return &server
+        }
+    }
+    return nil
 }
 
 func main() {
@@ -410,7 +412,6 @@ func get_configuration(self *C.PyObject, args *C.PyObject) *C.PyObject {
             return C.Py_None;
         }
 
-
         server := findServerByID(conf.Servers, raft.ServerID(C.GoString(raftId)))
         cstr := C.CString(string(server.Address))
         defer C.free(unsafe.Pointer(cstr))
@@ -418,7 +419,6 @@ func get_configuration(self *C.PyObject, args *C.PyObject) *C.PyObject {
         return pyStr
 
     }
-//     C.Py_IncRef(C.Py_None);
     C.raise_exception(C.CString("Error from get_configuration, wrong parameters passed"))
     return nil
 }

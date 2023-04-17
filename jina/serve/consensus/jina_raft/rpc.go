@@ -6,6 +6,7 @@ import (
     "time"
     "sync/atomic"
     "errors"
+    "io"
 
     "github.com/Jille/raft-grpc-leader-rpc/rafterrors"
     "github.com/golang/protobuf/proto"
@@ -22,6 +23,7 @@ type RpcInterface struct {
     pb.UnimplementedJinaSingleDataRequestRPCServer
     pb.UnimplementedJinaDiscoverEndpointsRPCServer
     pb.UnimplementedJinaInfoRPCServer
+    pb.UnimplementedJinaRPCServer
 }
 
 
@@ -29,6 +31,30 @@ func (rpc *RpcInterface) getRaftState() raft.RaftState {
     stateAddr := (uint32)(rpc.Raft.State())
     return raft.RaftState(atomic.LoadUint32(&stateAddr))
 }
+
+
+func (rpc *RpcInterface) Call(stream pb.JinaRPC_CallServer) error {
+  for {
+    req, err := stream.Recv()
+    log.Printf("Receive in streaming")
+    if err == io.EOF {
+      return nil
+    }
+    if err != nil {
+      return err
+    }
+    // process the input message and generate the response message
+    resp, err := rpc.ProcessSingleData(nil, req)
+    if err != nil {
+        return err
+    }
+    // send the response message back to the client
+    if err := stream.Send(resp); err != nil {
+      return err
+    }
+  }
+}
+
 
 /**
  * jina gRPC func for DataRequests.

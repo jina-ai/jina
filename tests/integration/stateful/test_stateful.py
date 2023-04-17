@@ -3,7 +3,7 @@ import time
 import pytest
 import os
 
-from jina import Document, DocumentArray, Executor, Flow, requests
+from jina import Client, Document, DocumentArray, Executor, Flow, requests
 from jina.helper import random_port
 from jina.serve.executors.decorators import write
 
@@ -136,3 +136,63 @@ def test_stateful_restore(executor_cls, tmpdir):
     with flow:
         search_da = DocumentArray([Document(id=f'{i}') for i in range(100)])
         assert_all_replicas_indexed(flow, search_da)
+
+
+@pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
+def test_add_new_replica(executor_cls, tmpdir):
+    from jina.parsers import set_pod_parser
+    from jina.orchestrate.pods.factory import PodFactory
+    gateway_port = random_port()
+
+    flow = Flow(port=gateway_port).add(
+        uses=executor_cls,
+        replicas=3,
+        workspace=tmpdir,
+        stateful=True,
+        raft_configuration={
+            'snapshot_interval': 10,
+            'snapshot_threshold': 5,
+            'trailing_logs': 10,
+            'LogLevel': 'INFO',
+        },
+    )
+    with flow:
+        index_da = DocumentArray(
+            [Document(id=f'{i}', text=f'ID {i}') for i in range(100)]
+        )
+        flow.index(inputs=index_da)
+        # allowing sometime for snapshots
+        time.sleep(30)
+
+        new_replica_port = random_port()
+        args = set_pod_parser().parse_args([])
+        args.host = args.host[0]
+        args.port = [new_replica_port]
+        args.stateful = True
+        args.workspace = str(tmpdir)
+        args.uses = executor_cls.__name__
+        args.replica_id = '4'
+        with PodFactory.build_pod(args) as p:
+            import psutil
+            current_pid = os.getpid()
+            ports = set()
+            for proc in psutil.process_iter(['pid', 'ppid', 'name']):
+                if proc.info['ppid'] == current_pid and proc.info['pid'] != current_pid:
+                    for conn in proc.connections():
+                        if conn.status == 'LISTEN':
+                            ports.add(conn.laddr.port)
+            for port in ports:
+                try:
+                    leader_address = f'0.0.0.0:{port}'  # detect the Pods addresses of the original Flow
+                    voter_address = f'0.0.0.0:{new_replica_port}'
+                    import jraft
+                    jraft.add_voter(
+                        leader_address, '4', voter_address
+                    )
+                    break
+                except:
+                    pass
+            time.sleep(10)
+            search_da = DocumentArray([Document(id=f'{i}') for i in range(100)])
+            client = Client(port=new_replica_port)
+            assert_is_indexed(client, search_da=search_da)

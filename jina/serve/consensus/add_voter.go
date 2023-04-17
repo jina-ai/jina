@@ -41,7 +41,7 @@ func AddVoter(target string, id string, voter_address string) error {
     futurereq := &pb.Future{}
     resp := futurereq.ProtoReflect().New().Interface()
     log.Printf("resp %v", resp)
-    if err := conn.Invoke(ctx, "/RaftAdmin/"+string(m.Name()), req, resp); err != nil {
+    if err := conn.Invoke(ctx, "/RaftAdmin/" + string(m.Name()), req, resp); err != nil {
         return err
     }
     log.Printf("Response: %s", prototext.Format(resp))
