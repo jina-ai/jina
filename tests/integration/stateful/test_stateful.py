@@ -1,6 +1,7 @@
 import time
 
 import pytest
+import os
 
 from jina import Client, Document, DocumentArray, Executor, Flow, requests
 from jina.helper import random_port
@@ -15,16 +16,15 @@ class MyStateExecutor(Executor):
     @requests(on=['/index'])
     @write
     def index(self, docs, **kwargs):
-        time.sleep(0.2)
         for doc in docs:
             self.logger.debug(f' Indexing doc {doc.text}')
             self._docs.append(doc)
 
     @requests(on=['/search'])
     def search(self, docs, **kwargs):
-        time.sleep(0.2)
         for doc in docs:
             doc.text = self._docs[doc.id].text
+            doc.tags['pid'] = os.getpid()
 
     def snapshot(self, snapshot_file: str):
         self.logger.warning(
@@ -50,16 +50,15 @@ class MyStateExecutorNoSnapshot(Executor):
     @requests(on=['/index'])
     @write
     def index(self, docs, **kwargs):
-        time.sleep(0.2)
         for doc in docs:
             self.logger.debug(f' Indexing doc {doc.text}')
             self._docs.append(doc)
 
     @requests(on=['/search'])
     def search(self, docs, **kwargs):
-        time.sleep(0.2)
         for doc in docs:
             doc.text = self._docs[doc.id].text
+            doc.tags['pid'] = os.getpid()
 
 
 def assert_is_indexed(client, search_da):
@@ -68,16 +67,26 @@ def assert_is_indexed(client, search_da):
         assert doc.text == f'ID {doc.id}'
 
 
-@pytest.mark.parametrize('executor_cls', [MyStateExecutor])
+def assert_all_replicas_indexed(client, search_da):
+    for query in search_da:
+        pids = set()
+        for _ in range(10):
+            for resp in client.search(inputs=query):
+                pids.add(resp.tags['pid'])
+                assert resp.text == f'ID {query.id}'
+            if len(pids) == 3:
+                break
+        assert len(pids) == 3
+
+
+@pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
 def test_stateful_index_search(executor_cls, tmpdir):
     gateway_port = random_port()
-    pod_ports = [random_port(), random_port(), random_port()]
 
     flow = Flow(port=gateway_port).add(
         uses=executor_cls,
         replicas=3,
         workspace=tmpdir,
-        pod_ports=pod_ports,
         stateful=True,
         raft_configuration={
             'snapshot_interval': 10,
@@ -98,23 +107,17 @@ def test_stateful_index_search(executor_cls, tmpdir):
         # checking against the main read replica
         assert_is_indexed(flow, search_da)
 
-        # performing manual requests to the underlying replicas
-        executor_ports = [(port + 1) for port in pod_ports]
-        for port in executor_ports:
-            client = Client(port=port)
-            assert_is_indexed(client, search_da)
+        assert_all_replicas_indexed(flow, search_da)
 
 
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
 def test_stateful_restore(executor_cls, tmpdir):
     gateway_port = random_port()
-    pod_ports = [random_port(), random_port(), random_port()]
 
     flow = Flow(port=gateway_port).add(
         uses=executor_cls,
         replicas=3,
         workspace=tmpdir,
-        pod_ports=pod_ports,
         stateful=True,
         raft_configuration={
             'snapshot_interval': 10,
@@ -133,4 +136,4 @@ def test_stateful_restore(executor_cls, tmpdir):
 
     with flow:
         search_da = DocumentArray([Document(id=f'{i}') for i in range(100)])
-        assert_is_indexed(flow, search_da)
+        assert_all_replicas_indexed(flow, search_da)
