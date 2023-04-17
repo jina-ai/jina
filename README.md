@@ -366,7 +366,7 @@ Why not just use standard Python to build that microservice and pipeline? Jina a
 
 ### Easy scalability and concurrency
 
-Jina comes with scalability features out of the box like [replicas](https://docs.jina.ai/concepts/flow/scale-out/#replicate-executors), [shards](https://docs.jina.ai/concepts/flow/scale-out/#customize-polling-behaviors) and [dynamic batching](https://docs.jina.ai/concepts/executor/dynamic-batching/).
+Jina comes with scalability features out of the box like [replicas](https://docs.jina.ai/concepts/orchestration/scale-out/#replicate-executors), [shards](https://docs.jina.ai/concepts/orchestration/scale-out/#customize-polling-behaviors) and [dynamic batching](https://docs.jina.ai/concepts/serving/executor/dynamic-batching/).
 This lets you easily increase your application's throughput.
 
 Let's scale a Stable Diffusion Executor deployment with replicas and dynamic batching:
