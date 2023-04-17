@@ -4,7 +4,7 @@ set -e
 
 # This script is used to generate gRPC client stubs from the proto files.
 
-GO_MODULE="github.com/jina-ai/jina-raft"
+GO_MODULE="jraft"
 DOCARRAY_PROTO="docarray.proto"
 DOCARRAY_DIR="../../docarray"
 DOCARRAY_PACKAGE="$GO_MODULE/docarray"

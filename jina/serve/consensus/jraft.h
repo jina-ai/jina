@@ -5,7 +5,7 @@
 
 #line 1 "cgo-builtin-export-prolog"
 
-#include <stddef.h> /* for ptrdiff_t below */
+#include <stddef.h>
 
 #ifndef GO_CGO_EXPORT_PROLOGUE_H
 #define GO_CGO_EXPORT_PROLOGUE_H
@@ -24,6 +24,7 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
  #include <stdbool.h>
  int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, char **executorTarget, int *HeartbeatTimeout, int *ElectionTimeout, int *CommitTimeout, int *MaxAppendEntries, bool *BatchApplyCh, bool *ShutdownOnRemove, uint64_t *TrailingLogs, int *snapshotInterval, uint64_t *SnapshotThreshold, int *LeaderLeaseTimeout, char **LogLevel, bool *NoSnapshotRestoreOnStart);
  int PyArg_ParseTuple_add_voter(PyObject * args, char **a, char **b, char **c);
+ int PyArg_ParseTuple_get_configuration(PyObject * args, char **a, char **b);
  void raise_exception(char *msg);
 
 #line 1 "cgo-generated-wrapper"
@@ -48,11 +49,17 @@ typedef long long GoInt64;
 typedef unsigned long long GoUint64;
 typedef GoInt64 GoInt;
 typedef GoUint64 GoUint;
-typedef __SIZE_TYPE__ GoUintptr;
+typedef size_t GoUintptr;
 typedef float GoFloat32;
 typedef double GoFloat64;
+#ifdef _MSC_VER
+#include <complex.h>
+typedef _Fcomplex GoComplex64;
+typedef _Dcomplex GoComplex128;
+#else
 typedef float _Complex GoComplex64;
 typedef double _Complex GoComplex128;
+#endif
 
 /*
   static assertion to make sure the file is being used on architecture
@@ -78,6 +85,7 @@ extern "C" {
 
 extern PyObject* run(PyObject* self, PyObject* args, PyObject* kwargs);
 extern PyObject* add_voter(PyObject* self, PyObject* args);
+extern PyObject* get_configuration(PyObject* self, PyObject* args);
 
 #ifdef __cplusplus
 }

@@ -3,7 +3,7 @@ import time
 import pytest
 import os
 
-from jina import Client, Document, DocumentArray, Executor, Flow, requests
+from jina import Document, DocumentArray, Executor, Flow, requests
 from jina.helper import random_port
 from jina.serve.executors.decorators import write
 
@@ -67,16 +67,16 @@ def assert_is_indexed(client, search_da):
         assert doc.text == f'ID {doc.id}'
 
 
-def assert_all_replicas_indexed(client, search_da):
+def assert_all_replicas_indexed(client, search_da, num_replicas=3):
     for query in search_da:
         pids = set()
         for _ in range(10):
             for resp in client.search(inputs=query):
                 pids.add(resp.tags['pid'])
                 assert resp.text == f'ID {query.id}'
-            if len(pids) == 3:
+            if len(pids) == num_replicas:
                 break
-        assert len(pids) == 3
+        assert len(pids) == num_replicas
 
 
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
@@ -106,7 +106,6 @@ def test_stateful_index_search(executor_cls, tmpdir):
         time.sleep(10)
         # checking against the main read replica
         assert_is_indexed(flow, search_da)
-
         assert_all_replicas_indexed(flow, search_da)
 
 
