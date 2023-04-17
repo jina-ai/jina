@@ -2,6 +2,7 @@ syntax = "proto3";
 import "google/protobuf/struct.proto";
 
 package docarray;
+option go_package = "jraft/docarray-go-proto";
 
 /**
  * Represents a (quantized) dense n-dim array

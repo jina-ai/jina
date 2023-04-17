@@ -5,7 +5,9 @@ import "google/protobuf/empty.proto";
 import "docarray.proto";
 
 package jina;
-option go_package = "github.com/jina-ai/jina-raft/jina";
+option go_package = "jraft/jina-go-proto";
+
+//protoc --go_out jina-go-proto --go_opt=paths=source_relative --go_opt=Mjina.proto=jina-go-proto=jraft/jina-go-proto --go-grpc_out jina-go-proto --go-grpc_opt=paths=source_relative --experimental_allow_proto3_optional jina.proto
 
 /**
  * Represents a the route paths of this message as perceived by the Gateway
