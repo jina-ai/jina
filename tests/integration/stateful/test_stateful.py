@@ -3,7 +3,7 @@ import time
 import pytest
 import os
 
-from jina import Client, Document, DocumentArray, Executor, Flow, requests
+from jina import Client, Document, DocumentArray, Executor, Flow, requests, Deployment
 from jina.helper import random_port
 from jina.serve.executors.decorators import write
 
@@ -80,87 +80,128 @@ def assert_all_replicas_indexed(client, search_da, num_replicas=3):
 
 
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
-def test_stateful_index_search(executor_cls, tmpdir):
-    gateway_port = random_port()
+@pytest.mark.parametrize('ctx', ['flow', 'deployment'])
+def test_stateful_index_search(executor_cls, ctx, tmpdir):
 
-    flow = Flow(port=gateway_port).add(
-        uses=executor_cls,
-        replicas=3,
-        workspace=tmpdir,
-        stateful=True,
-        raft_configuration={
-            'snapshot_interval': 10,
-            'snapshot_threshold': 5,
-            'trailing_logs': 10,
-            'LogLevel': 'INFO',
-        },
-    )
-    with flow:
+    if ctx == 'flow':
+        gateway_port = random_port()
+        ctx_mngr = Flow(port=gateway_port).add(
+            uses=executor_cls,
+            replicas=3,
+            workspace=tmpdir,
+            stateful=True,
+            raft_configuration={
+                'snapshot_interval': 10,
+                'snapshot_threshold': 5,
+                'trailing_logs': 10,
+                'LogLevel': 'INFO',
+            },
+        )
+    elif ctx == 'deployment':
+        ctx_mngr = Deployment(
+            uses=executor_cls,
+            replicas=3,
+            workspace=tmpdir,
+            stateful=True,
+            raft_configuration={
+                'snapshot_interval': 10,
+                'snapshot_threshold': 5,
+                'trailing_logs': 10,
+                'LogLevel': 'INFO',
+            },
+        )
+    with ctx_mngr:
         index_da = DocumentArray(
             [Document(id=f'{i}', text=f'ID {i}') for i in range(100)]
         )
         search_da = DocumentArray([Document(id=f'{i}') for i in range(100)])
-        flow.index(inputs=index_da, request_size=1)
+        ctx_mngr.index(inputs=index_da, request_size=1)
 
         # allowing some time for the state to be replicated
         time.sleep(10)
         # checking against the main read replica
-        assert_is_indexed(flow, search_da)
-        assert_all_replicas_indexed(flow, search_da)
+        assert_is_indexed(ctx_mngr, search_da)
+        assert_all_replicas_indexed(ctx_mngr, search_da)
 
 
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
-def test_stateful_restore(executor_cls, tmpdir):
-    gateway_port = random_port()
+@pytest.mark.parametrize('ctx', ['flow', 'deployment'])
+def test_stateful_restore(executor_cls, ctx, tmpdir):
+    if ctx == 'flow':
+        gateway_port = random_port()
 
-    flow = Flow(port=gateway_port).add(
-        uses=executor_cls,
-        replicas=3,
-        workspace=tmpdir,
-        stateful=True,
-        raft_configuration={
-            'snapshot_interval': 10,
-            'snapshot_threshold': 5,
-            'trailing_logs': 10,
-            'LogLevel': 'INFO',
-        },
-    )
-    with flow:
+        ctx_mngr = Flow(port=gateway_port).add(
+            uses=executor_cls,
+            replicas=3,
+            workspace=tmpdir,
+            stateful=True,
+            raft_configuration={
+                'snapshot_interval': 10,
+                'snapshot_threshold': 5,
+                'trailing_logs': 10,
+                'LogLevel': 'INFO',
+            },
+        )
+    elif ctx == 'deployment':
+        ctx_mngr = Deployment(uses=executor_cls,
+                              replicas=3,
+                              workspace=tmpdir,
+                              stateful=True,
+                              raft_configuration={
+                                  'snapshot_interval': 10,
+                                  'snapshot_threshold': 5,
+                                  'trailing_logs': 10,
+                                  'LogLevel': 'INFO',
+                              })
+    with ctx_mngr:
         index_da = DocumentArray(
             [Document(id=f'{i}', text=f'ID {i}') for i in range(100)]
         )
-        flow.index(inputs=index_da, request_size=1)
+        ctx_mngr.index(inputs=index_da, request_size=1)
         # allowing sometime for snapshots
         time.sleep(30)
 
-    with flow:
+    with ctx_mngr:
         search_da = DocumentArray([Document(id=f'{i}') for i in range(100)])
-        assert_all_replicas_indexed(flow, search_da)
+        assert_all_replicas_indexed(ctx_mngr, search_da)
 
 
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
-def test_add_new_replica(executor_cls, tmpdir):
+@pytest.mark.parametrize('ctx', ['flow', 'deployment'])
+def test_add_new_replica(executor_cls, ctx, tmpdir):
     from jina.parsers import set_pod_parser
     from jina.orchestrate.pods.factory import PodFactory
-    gateway_port = random_port()
+    if ctx == 'flow':
+        gateway_port = random_port()
 
-    flow = Flow(port=gateway_port).add(
-        uses=executor_cls,
-        replicas=3,
-        workspace=tmpdir,
-        stateful=True,
-        raft_configuration={
-            'snapshot_interval': 10,
-            'snapshot_threshold': 5,
-            'trailing_logs': 10,
-            'LogLevel': 'INFO',
-        },
-    )
-    with flow:
+        ctx_mngr = Flow(port=gateway_port).add(
+            uses=executor_cls,
+            replicas=3,
+            workspace=tmpdir,
+            stateful=True,
+            raft_configuration={
+                'snapshot_interval': 10,
+                'snapshot_threshold': 5,
+                'trailing_logs': 10,
+                'LogLevel': 'INFO',
+            },
+        )
+    elif ctx == 'deployment':
+        ctx_mngr = Deployment(uses=executor_cls,
+                              replicas=3,
+                              workspace=tmpdir,
+                              stateful=True,
+                              raft_configuration={
+                                  'snapshot_interval': 10,
+                                  'snapshot_threshold': 5,
+                                  'trailing_logs': 10,
+                                  'LogLevel': 'INFO',
+                              })
+    with ctx_mngr:
         index_da = DocumentArray(
             [Document(id=f'{i}', text=f'ID {i}') for i in range(100)]
         )
-        flow.index(inputs=index_da, request_size=1)
+        ctx_mngr.index(inputs=index_da, request_size=1)
         # allowing sometime for snapshots
         time.sleep(30)
 
