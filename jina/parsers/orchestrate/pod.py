@@ -269,12 +269,3 @@ def mixin_stateful_parser(parser):
         help='If set, start consensus module to make sure write operations are properly replicated between all the replicas',
     )
 
-    # TODO: How to pass this with shards
-    gp.add_argument(
-        '--pod-ports',
-        type=str,
-        nargs='+',
-        default=None,
-        action=CastToIntAction,
-        help='When using StatefulExecutors, if they want to restart it is important to keep the RAFT cluster configuration ',
-    )

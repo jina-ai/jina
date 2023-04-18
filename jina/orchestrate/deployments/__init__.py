@@ -1279,14 +1279,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         for shard_id in range(shards):
             replica_args = []
-            pod_ports = self.args.pod_ports or []
-            if len(pod_ports) > 0 and len(pod_ports) != replicas:
-                pod_ports = [random_port() for _ in range(replicas)]
-                self.logger.warning(
-                    f'por-ports argument does not match number of replicas, it will be ignored'
-                )
-            elif len(pod_ports) == 0:
-                pod_ports = [random_port() for _ in range(replicas)]
+            pod_ports = [random_port() for _ in range(replicas)]
 
             for replica_id, pod_port in zip(range(replicas), pod_ports):
                 _args = copy.deepcopy(self.args)
