@@ -32,7 +32,7 @@ You can also run this code interactively in [Colab](https://colab.research.googl
 
 ## Understand: Executors and Deployments
 
-- All data that goes in and out of Jina is in the form of a [DocumentArray](https://docarray.jina.ai/fundamentals/documentarray/) from the [DocArray](https://docarray.org) package.
+- All data that goes in and out of Jina is in the form of a [DocumentArray](https://docarray.org/legacy-docs/fundamentals/documentarray/) from the [DocArray](https://docarray.org/legacy-docs/) package.
 - An {ref}`Executor <executor-cookbook>` is a self-contained gRPC microservice that performs a task on a DocumentArray. This could be very simple (like merely capitalizing the entire text of a Document) or a lot more complex (like generating vector embeddings for a given piece of content).
 - A {ref}`Deployment <deployment>` lets you serve your Executor, scale it up with replicas, and allow users to send and receive requests.
 
@@ -84,7 +84,7 @@ class TextToImage(Executor):
 from docarray import DocumentArray
 ```
 
-[Documents](https://docs.docarray.org/fundamentals/document/) and [DocumentArrays](https://docarray.jina.ai/fundamentals/documentarray/) (from the DocArray package) are Jina's native IO format.
+[Documents](https://docarray.org/legacy-docs/fundamentals/document/) and [DocumentArrays](https://docarray.org/legacy-docs/fundamentals/documentarray/) (from the DocArray package) are Jina's native IO format.
 
 ```python
 from jina import Executor, requests
