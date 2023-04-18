@@ -4,7 +4,7 @@
 ## Introduction
 
 ```{tip}
-Executors use `docarray.DocumentArray` as their input and output data structure. [Read DocArray's docs](https://docs.docarray.org) to see how it works.
+Executors use `docarray.DocumentArray` as their input and output data structure. [Read DocArray's docs](https://docarray.org/legacy-docs/) to see how it works.
 ```
 
 An {class}`~jina.Executor` is a self-contained microservice exposed using a gRPC or HTTP protocol. 
