@@ -86,9 +86,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         def _add_voter_to_leader(self):
             import jraft
 
-            leader_address = f'{self._pods[0].args.host}:{self._pods[0].args.port}'
+            leader_address = f'{self._pods[0].runtime_ctrl_address}'
             for pod in self._pods[1:]:
-                voter_address = f'{pod.args.host}:{pod.args.port}'
+                voter_address = f'{pod.runtime_ctrl_address}'
                 success = False
                 # TODO: we should improve this logic
                 for _ in range(10):

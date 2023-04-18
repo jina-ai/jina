@@ -100,7 +100,7 @@ def test_stateful_index_search(executor_cls, tmpdir):
             [Document(id=f'{i}', text=f'ID {i}') for i in range(100)]
         )
         search_da = DocumentArray([Document(id=f'{i}') for i in range(100)])
-        flow.index(inputs=index_da)
+        flow.index(inputs=index_da, request_size=1)
 
         # allowing some time for the state to be replicated
         time.sleep(10)
@@ -129,7 +129,7 @@ def test_stateful_restore(executor_cls, tmpdir):
         index_da = DocumentArray(
             [Document(id=f'{i}', text=f'ID {i}') for i in range(100)]
         )
-        flow.index(inputs=index_da)
+        flow.index(inputs=index_da, request_size=1)
         # allowing sometime for snapshots
         time.sleep(30)
 
@@ -160,7 +160,7 @@ def test_add_new_replica(executor_cls, tmpdir):
         index_da = DocumentArray(
             [Document(id=f'{i}', text=f'ID {i}') for i in range(100)]
         )
-        flow.index(inputs=index_da)
+        flow.index(inputs=index_da, request_size=1)
         # allowing sometime for snapshots
         time.sleep(30)
 
