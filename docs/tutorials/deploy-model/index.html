@@ -453,7 +453,7 @@
 <section id="understand-executors-and-deployments">
 <h2>Understand: Executors and Deployments<a class="headerlink" href="#understand-executors-and-deployments" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p>All data that goes in and out of Jina is in the form of a <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/">DocumentArray</a> from the <a class="reference external" href="https://docarray.org">DocArray</a> package.</p></li>
+<li><p>All data that goes in and out of Jina is in the form of a <a class="reference external" href="https://docarray.org/legacy-docs/fundamentals/documentarray/">DocumentArray</a> from the <a class="reference external" href="https://docarray.org/legacy-docs/">DocArray</a> package.</p></li>
 <li><p>An <a class="reference internal" href="../../concepts/serving/executor/#executor-cookbook"><span class="std std-ref">Executor</span></a> is a self-contained gRPC microservice that performs a task on a DocumentArray. This could be very simple (like merely capitalizing the entire text of a Document) or a lot more complex (like generating vector embeddings for a given piece of content).</p></li>
 <li><p>A <a class="reference internal" href="../../concepts/serving/executor/serve/#deployment"><span class="std std-ref">Deployment</span></a> lets you serve your Executor, scale it up with replicas, and allow users to send and receive requests.</p></li>
 </ul>
@@ -502,7 +502,7 @@ pip<span class="w"> </span>install<span class="w"> </span>diffusers
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 </pre></div>
 </div>
-<p><a class="reference external" href="https://docs.docarray.org/fundamentals/document/">Documents</a> and <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/">DocumentArrays</a> (from the DocArray package) are Jina’s native IO format.</p>
+<p><a class="reference external" href="https://docarray.org/legacy-docs/fundamentals/document/">Documents</a> and <a class="reference external" href="https://docarray.org/legacy-docs/fundamentals/documentarray/">DocumentArrays</a> (from the DocArray package) are Jina’s native IO format.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 </pre></div>
 </div>

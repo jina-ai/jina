@@ -71,14 +71,14 @@ and contains the following concepts:
 
 **DocArray data structure**
 
-Data structures coming from [DocArray](https://docarray.jina.ai/fundamentals/documentarray/) are the basic fundamental data structure in Jina.
+Data structures coming from [DocArray](https://docarray.org/legacy-docs/) are the basic fundamental data structure in Jina.
 
 
 - **Document**
-    Document is the basic object for representing multimodal data. More information can be found in [DocArray's Docs](https://docs.docarray.org/fundamentals/document/). 
+    Document is the basic object for representing multimodal data. More information can be found in [DocArray's Docs](https://docarray.org/legacy-docs/fundamentals/document/). 
 
 - **DocumentArray**
-    DocumentArray is a list-like container of multiple Documents. It is the essential element of IO in Jina services. More information can be found in [DocArray's Docs](https://docarray.jina.ai/fundamentals/documentarray/). 
+    DocumentArray is a list-like container of multiple Documents. It is the essential element of IO in Jina services. More information can be found in [DocArray's Docs](https://docarray.org/legacy-docs/fundamentals/documentarray/). 
 
 **Serving**
 
