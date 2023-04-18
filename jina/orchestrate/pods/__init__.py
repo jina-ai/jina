@@ -1,10 +1,9 @@
 import argparse
 import copy
 import multiprocessing
-import os
 import time
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Dict, Optional, Type, Union
+from typing import Optional
 
 from jina.constants import __ready_msg__, __stop_msg__, __windows__
 from jina.enums import PodRoleType
@@ -14,159 +13,9 @@ from jina.jaml import JAML
 from jina.logging.logger import JinaLogger
 from jina.orchestrate.pods.helper import ConditionalEvent, _get_event
 from jina.parsers.helper import _update_gateway_args
-from jina.serve.helper import _get_workspace_from_name_and_shards
-from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-
-if TYPE_CHECKING:
-    import threading
+from jina.serve.executors.run import run, run_raft
 
 __all__ = ['BasePod', 'Pod']
-
-
-def run(
-        args: 'argparse.Namespace',
-        name: str,
-        runtime_cls: Type[AsyncNewLoopRuntime],
-        envs: Dict[str, str],
-        is_started: Union['multiprocessing.Event', 'threading.Event'],
-        is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
-        is_ready: Union['multiprocessing.Event', 'threading.Event'],
-        jaml_classes: Optional[Dict] = None,
-):
-    """Method representing the :class:`BaseRuntime` activity.
-
-    This method is the target for the Pod's `thread` or `process`
-
-    .. note::
-        :meth:`run` is running in subprocess/thread, the exception can not be propagated to the main process.
-        Hence, please do not raise any exception here.
-
-    .. note::
-        Please note that env variables are process-specific. Subprocess inherits envs from
-        the main process. But Subprocess's envs do NOT affect the main process. It does NOT
-        mess up user local system envs.
-
-    .. warning::
-        If you are using ``thread`` as backend, envs setting will likely be overidden by others
-
-    .. note::
-        `jaml_classes` contains all the :class:`JAMLCompatible` classes registered in the main process.
-        When using `spawn` as the multiprocessing start method, passing this argument to `run` method re-imports
-        & re-registers all `JAMLCompatible` classes.
-
-    :param args: namespace args from the Pod
-    :param name: name of the Pod to have proper logging
-    :param runtime_cls: the runtime class to instantiate
-    :param envs: a dictionary of environment variables to be set in the new Process
-    :param is_started: concurrency event to communicate runtime is properly started. Used for better logging
-    :param is_shutdown: concurrency event to communicate runtime is terminated
-    :param is_ready: concurrency event to communicate runtime is ready to receive messages
-    :param jaml_classes: all the `JAMLCompatible` classes imported in main process
-    """
-    req_handler_cls = None
-    if runtime_cls == 'GatewayRuntime':
-        from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
-        req_handler_cls = GatewayRequestHandler
-    elif runtime_cls == 'WorkerRuntime':
-        from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
-        req_handler_cls = WorkerRequestHandler
-    elif runtime_cls == 'HeadRuntime':
-        from jina.serve.runtimes.head.request_handling import HeaderRequestHandler
-        req_handler_cls = HeaderRequestHandler
-
-    logger = JinaLogger(name, **vars(args))
-
-    def _unset_envs():
-        if envs:
-            for k in envs.keys():
-                os.environ.pop(k, None)
-
-    def _set_envs():
-        if args.env:
-            os.environ.update({k: str(v) for k, v in envs.items()})
-
-    try:
-        _set_envs()
-
-        runtime = AsyncNewLoopRuntime(
-            args=args,
-            req_handler_cls=req_handler_cls,
-            gateway_load_balancer=getattr(args, 'gateway_load_balancer', False)
-        )
-    except Exception as ex:
-        logger.error(
-            f'{ex!r} during {runtime_cls!r} initialization'
-            + f'\n add "--quiet-error" to suppress the exception details'
-            if not args.quiet_error
-            else '',
-            exc_info=not args.quiet_error,
-        )
-    else:
-        if not is_shutdown.is_set():
-            is_started.set()
-            with runtime:
-                # here the ready event is being set
-                is_ready.set()
-                runtime.run_forever()
-    finally:
-        _unset_envs()
-        is_shutdown.set()
-        logger.debug(f'process terminated')
-
-
-def run_raft(
-    args: 'argparse.Namespace',
-    is_ready: Union['multiprocessing.Event', 'threading.Event'],
-):
-    """Method to run the RAFT
-
-    This method is the target for the Pod's `thread` or `process`
-
-
-    :param args: namespace args from the Pod
-    :param is_ready: concurrency event to communicate Executor runtime is ready to receive messages
-    """
-
-    import jraft
-
-    def pascal_case_dict(d):
-        new_d = {}
-        for key, value in d.items():
-            new_key = key
-            if '_' in key:
-                new_key = ''.join(word.capitalize() for word in key.split('_'))
-            new_d[new_key] = value
-        return new_d
-
-    raft_id = str(args.replica_id)
-    shard_id = args.shard_id if args.shards > 1 else -1
-
-    raft_dir = _get_workspace_from_name_and_shards(
-        workspace=args.workspace, name='raft', shard_id=shard_id
-    )
-
-    port = args.port[0] if isinstance(args.port, list) else args.port
-    address = f'{args.host}:{port}'
-    executor_target = f'{args.host}:{port + 1}'
-
-    # if the Executor was already persisted, retrieve its port and host configuration
-    persisted_address = jraft.get_configuration(raft_id, raft_dir)
-    if persisted_address:
-        address = persisted_address
-        executor_host, port = persisted_address.split(':')
-        executor_target = f'{executor_host}:{int(port) + 1}'
-
-    raft_configuration = pascal_case_dict(args.raft_configuration or {})
-    log_level = raft_configuration.get('LogLevel', os.getenv('JINA_LOG_LEVEL', 'INFO'))
-    raft_configuration['LogLevel'] = log_level
-    is_ready.wait()
-    jraft.run(
-        address,
-        raft_id,
-        raft_dir,
-        executor_target,
-        **raft_configuration,
-    )
 
 
 class BasePod(ABC):

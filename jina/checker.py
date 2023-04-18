@@ -1,6 +1,5 @@
 import argparse
 
-from jina.enums import ProtocolType
 from jina.helper import parse_host_scheme
 from jina.logging.predefined import default_logger
 
