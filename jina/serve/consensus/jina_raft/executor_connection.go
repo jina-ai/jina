@@ -1,9 +1,9 @@
 package server
 
 import (
-    "log"
     "google.golang.org/grpc/credentials/insecure"
     "google.golang.org/grpc"
+    hclog "github.com/hashicorp/go-hclog"
 )
 
 func defaultExecutorDialOptions() []grpc.DialOption {
@@ -16,12 +16,13 @@ func defaultExecutorDialOptions() []grpc.DialOption {
 type executor struct {
     target             string
     connection_options []grpc.DialOption
+    Logger             hclog.Logger
 }
 
 func (executor *executor) newConnection() (*grpc.ClientConn, error) {
     conn, err := grpc.Dial(executor.target, executor.connection_options...)
     if err != nil {
-        log.Printf("dialing failed: %v", err)
+        executor.Logger.Error("Dialing failed", "error", err)
         return nil, err
     }
     return conn, err

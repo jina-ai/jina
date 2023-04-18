@@ -20,24 +20,24 @@ class MyStateExecutor(Executor):
     def index(self, docs, **kwargs):
         time.sleep(0.2)
         for doc in docs:
-            self.logger.debug(f' Indexing doc {doc.text}')
+            self.logger.debug(f'Indexing doc {doc.text}')
             self._docs.append(doc)
 
     @requests(on=['/search'])
     def search(self, docs, **kwargs):
         time.sleep(0.2)
         for doc in docs:
-            self.logger.debug(f' Searching doc {doc.text} against {len(self._docs)} indexed documents')
+            self.logger.debug(f'Searching doc {doc.text} against {len(self._docs)} indexed documents')
 
     def snapshot(self, snapshot_file: str):
-        self.logger.warning(f' Snapshotting to {snapshot_file} with {len(self._docs)} documents')
+        self.logger.warning(f'Snapshotting to {snapshot_file} with {len(self._docs)} documents')
         self.logger.warning(f'Snapshotting with order {[d.text for d in self._docs]}')
         with open(snapshot_file, 'wb') as f:
             self._docs.save_binary(f)
 
     def restore(self, snapshot_file: str):
         self._docs = DocumentArray.load_binary(snapshot_file)
-        self.logger.warning(f' Restoring from {snapshot_file} with {len(self._docs)} documents')
+        self.logger.warning(f'Restoring from {snapshot_file} with {len(self._docs)} documents')
         self.logger.warning(f'Restoring with order {[d.text for d in self._docs]}')
 
 
@@ -52,14 +52,14 @@ class MyStateExecutorNoSpanshot(Executor):
     def index(self, docs, **kwargs):
         time.sleep(0.2)
         for doc in docs:
-            self.logger.debug(f' Indexing doc {doc.text}')
+            self.logger.debug(f'Indexing doc {doc.text}')
             self._docs.append(doc)
 
     @requests(on=['/search'])
     def search(self, docs, **kwargs):
         time.sleep(0.2)
         for doc in docs:
-            self.logger.debug(f' Searching doc {doc.text} against {len(self._docs)} indexed documents')
+            self.logger.debug(f'Searching doc {doc.text} against {len(self._docs)} indexed documents')
 
 
 PORT_FLOW_SNAPSHOT = 12340
@@ -129,7 +129,7 @@ if __name__ == '__main__':
     elif option == 'start_new_replica_snapshot':
         args = set_pod_parser().parse_args([])
         args.host = args.host[0]
-        args.port = PORTS_NEW_REPLICA_SNAPSHOT
+        args.port = [PORTS_NEW_REPLICA_SNAPSHOT]
         args.stateful = True
         args.workspace = FOLDER_WORKSPACE_SNAPSHOT
         args.uses = 'MyStateExecutor'
@@ -139,7 +139,7 @@ if __name__ == '__main__':
     elif option == 'start_new_replica_no_snapshot':
         args = set_pod_parser().parse_args([])
         args.host = args.host[0]
-        args.port = PORTS_NEW_REPLICA_NO_SNAPSHOT
+        args.port = [PORTS_NEW_REPLICA_NO_SNAPSHOT]
         args.stateful = True
         args.workspace = FOLDER_WORKSPACE_NO_SNAPSHOT
         args.uses = 'MyStateExecutorNoSnapshot'
@@ -148,8 +148,8 @@ if __name__ == '__main__':
             p.join()
     elif option == 'add_new_snapshot_replica_to_cluster':
         import jraft
-        leader_address = f'0.0.0.0:{PORTS_REPLICAS_SNAPSHOT[0]}'
-        voter_address = f'0.0.0.0:{PORTS_NEW_REPLICA_SNAPSHOT}'
+        leader_address = f'0.0.0.0:64937'
+        voter_address = f'0.0.0.0:55155'
         jraft.add_voter(
             leader_address, '4', voter_address
         )

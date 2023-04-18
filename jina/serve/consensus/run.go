@@ -21,8 +21,6 @@ import (
     "path/filepath"
     "time"
     "unsafe"
-
-    // "github.com/Jille/raft-grpc-leader-rpc/leaderhealth"
     transport "github.com/Jille/raft-grpc-transport"
     "github.com/Jille/raftadmin"
     "github.com/hashicorp/raft"
@@ -33,6 +31,7 @@ import (
     "google.golang.org/grpc/credentials/insecure"
     "google.golang.org/grpc/reflection"
     healthpb "google.golang.org/grpc/health/grpc_health_v1"
+    hclog "github.com/hashicorp/go-hclog"
 )
 
 func NewRaft(ctx context.Context,
@@ -52,7 +51,6 @@ func NewRaft(ctx context.Context,
             LogLevel string,
             NoSnapshotRestoreOnStart bool,
             fsm raft.FSM) (*raft.Raft, *transport.Manager, error) {
-
     config := raft.DefaultConfig()
     config.LocalID = raft.ServerID(myID)
     config.HeartbeatTimeout         = time.Duration(HeartbeatTimeout) * time.Millisecond
@@ -67,6 +65,10 @@ func NewRaft(ctx context.Context,
     config.LeaderLeaseTimeout       = time.Duration(LeaderLeaseTimeout) * time.Millisecond
     config.LogLevel                 = LogLevel
     config.NoSnapshotRestoreOnStart = NoSnapshotRestoreOnStart
+    config.Logger = hclog.New(&hclog.LoggerOptions{
+                    Name:   "raft-" + myID,
+                    Level:  hclog.LevelFromString(LogLevel),
+                })
 
     baseDir := filepath.Join(raftDir, myID)
     err := os.MkdirAll(baseDir, os.ModePerm)
@@ -109,7 +111,6 @@ func NewRaft(ctx context.Context,
     f := r.BootstrapCluster(cfg)
     // raft bootstrap error can be ignored safely https://github.com/hashicorp/raft/blob/44124c28758b8cfb675e90c75a204a08a84f8d4f/api.go#L220
     if err := f.Error(); err != nil {
-        log.Printf("raft.Raft.BootstrapCluster: %v, raft cluster already bootstrapped", err)
         return r, tm, nil
     }
 
@@ -132,25 +133,29 @@ func Run(myAddr string,
          LeaderLeaseTimeout int,
          LogLevel string,
          NoSnapshotRestoreOnStart bool) {
-
-    log.Printf("Calling Run %s, %s, %s, %s", myAddr, raftId, raftDir, executorTarget)
+    run_logger := hclog.New(&hclog.LoggerOptions{
+                    Name:   "run_raft-" + raftId,
+                    Level:  hclog.LevelFromString(LogLevel),
+                })
     if raftId == "" {
         log.Fatalf("flag --raft_id is required")
     }
-
+    run_logger.Info("Running RAFT node in", "address", myAddr, "with the ID", raftId, "in directory", raftDir, "and connecting to Executor", executorTarget)
     ctx := context.Background()
     _, port, err := net.SplitHostPort(myAddr)
     if err != nil {
+        run_logger.Error("failed to parse", "local address", myAddr, "with error", err)
         log.Fatalf("failed to parse local address (%q): %v", myAddr, err)
     }
-    log.Printf("starting to listen on port %s", port)
+    run_logger.Debug("starting to listen on", "port", port)
     sock, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
     if err != nil {
+        run_logger.Error("failed to listen", "error", err)
         log.Fatalf("failed to listen: %v", err)
     }
     defer sock.Close()
 
-    executorFSM := jinaraft.NewExecutorFSM(executorTarget)
+    executorFSM := jinaraft.NewExecutorFSM(executorTarget, LogLevel, raftId)
 
     r, tm, err := NewRaft(ctx,
                         raftId,
@@ -170,31 +175,41 @@ func Run(myAddr string,
                         NoSnapshotRestoreOnStart,
                         executorFSM)
     if err != nil {
-        log.Fatalf("failed to start raft: %v", err)
+        run_logger.Error("Failed to start RAFT node", "error", err)
+        log.Fatalf("Failed to start RAFT node: %v", err)
     }
     grpcServer := grpc.NewServer()
+    rpc_logger := hclog.New(&hclog.LoggerOptions{
+                    Name:   "rpc-" + raftId,
+                    Level:  hclog.LevelFromString(LogLevel),
+                })
 
     pb.RegisterJinaSingleDataRequestRPCServer(grpcServer, &jinaraft.RpcInterface{
         Executor: executorFSM,
         Raft:     r,
+        Logger:   rpc_logger,
     })
     pb.RegisterJinaDiscoverEndpointsRPCServer(grpcServer, &jinaraft.RpcInterface{
         Executor: executorFSM,
         Raft:     r,
+        Logger:   rpc_logger,
     })
     pb.RegisterJinaInfoRPCServer(grpcServer, &jinaraft.RpcInterface{
         Executor: executorFSM,
         Raft:     r,
+        Logger:   rpc_logger,
     })
     pb.RegisterJinaRPCServer(grpcServer, &jinaraft.RpcInterface{
                                     Executor: executorFSM,
                                     Raft:     r,
+                                    Logger:   rpc_logger,
                               })
     tm.Register(grpcServer)
 
     healthpb.RegisterHealthServer(grpcServer, &jinaraft.RpcInterface{
         Executor: executorFSM,
         Raft:     r,
+        Logger:   rpc_logger,
     })
 
     raftadmin.Register(grpcServer, r)
@@ -203,16 +218,18 @@ func Run(myAddr string,
     signal.Notify(sigchnl, syscall.SIGINT, syscall.SIGTERM)
     go func(){
         sig := <-sigchnl
-        log.Printf("Signal %v received", sig)
+        run_logger.Debug("Received", "signal", sig)
         grpcServer.GracefulStop()
         sock.Close()
         shutdownResult := r.Shutdown()
         err := shutdownResult.Error()
         if err != nil {
+            run_logger.Error("Error returned while shutting RAFT down", "error", err)
             log.Fatalf("Error returned while shutting RAFT down: %v", err)
         }
     }()
     if err := grpcServer.Serve(sock); err != nil {
+        run_logger.Error("failed to serve", "error", err)
         log.Fatalf("failed to serve: %v", err)
     }
 }
@@ -339,13 +356,22 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
 
 //export add_voter
 func add_voter(self *C.PyObject, args *C.PyObject) *C.PyObject {
+    //TODO: Instantiate new logger based on JINA_LOG_LEVEL
+    logLevel := os.Getenv("JINA_LOG_LEVEL")
+    if logLevel == "" {
+        logLevel = "INFO"
+    }
+    logger := hclog.New(&hclog.LoggerOptions{
+                    Name:   "add_voter",
+                    Level:  hclog.LevelFromString(logLevel),
+                })
     var target *C.char
     var raftId *C.char
     var voterAddress *C.char
     if C.PyArg_ParseTuple_add_voter(args, &target, &raftId, &voterAddress) != 0 {
         err := AddVoter(C.GoString(target), C.GoString(raftId), C.GoString(voterAddress))
         if err != nil {
-            log.Printf("Error received calling AddVoter %v, but return None", err)
+            logger.Error("Error received calling AddVoter", "error", err)
             C.raise_exception(C.CString("Error from AddVoter"))
             return nil
         }
@@ -356,6 +382,14 @@ func add_voter(self *C.PyObject, args *C.PyObject) *C.PyObject {
 
 //export get_configuration
 func get_configuration(self *C.PyObject, args *C.PyObject) *C.PyObject {
+    logLevel := os.Getenv("JINA_LOG_LEVEL")
+    if logLevel == "" {
+        logLevel = "INFO"
+    }
+    logger := hclog.New(&hclog.LoggerOptions{
+                    Name:   "get_configuration",
+                    Level:  hclog.LevelFromString(logLevel),
+                })
 
     var raftId *C.char
     var raftDir *C.char
@@ -404,7 +438,7 @@ func get_configuration(self *C.PyObject, args *C.PyObject) *C.PyObject {
             C.Py_IncRef(C.Py_None);
             return C.Py_None;
         } else {
-            fmt.Printf("configuration: %v\n", conf.Servers)
+            logger.Debug("configuration already present in the node:", "configuration", conf.Servers)
         }
 
         if len(conf.Servers) == 0 {

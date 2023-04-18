@@ -157,6 +157,8 @@ def run_raft(
         executor_target = f'{executor_host}:{int(port) + 1}'
 
     raft_configuration = pascal_case_dict(args.raft_configuration or {})
+    log_level = raft_configuration.get('LogLevel', os.getenv('JINA_LOG_LEVEL', 'INFO'))
+    raft_configuration['LogLevel'] = log_level
     is_ready.wait()
     jraft.run(
         address,

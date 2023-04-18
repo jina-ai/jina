@@ -2,16 +2,25 @@ package main
 
 import (
     "context"
-    "log"
+    "os"
     "errors"
 
     pb "github.com/Jille/raftadmin/proto"
     "google.golang.org/grpc"
     "google.golang.org/protobuf/encoding/prototext"
     "google.golang.org/protobuf/reflect/protoreflect"
+    hclog "github.com/hashicorp/go-hclog"
 )
 
 func AddVoter(target string, id string, voter_address string) error {
+    logLevel := os.Getenv("JINA_LOG_LEVEL")
+    if logLevel == "" {
+        logLevel = "INFO"
+    }
+    add_voter_logger := hclog.New(&hclog.LoggerOptions{
+                    Name:  "add_voter",
+                    Level: hclog.LevelFromString(logLevel),
+                })
     ctx := context.Background()
     m := pb.File_raftadmin_proto.Services().ByName("RaftAdmin").Methods().ByName("AddVoter")
     // Sort fields by field number.
@@ -37,31 +46,32 @@ func AddVoter(target string, id string, voter_address string) error {
     }
     defer conn.Close()
 
-    log.Printf("Invoking %s(%s)", m.Name(), prototext.Format(req))
+    add_voter_logger.Debug("Invoking", "method", m.Name(), "with request", prototext.Format(req))
     futurereq := &pb.Future{}
     resp := futurereq.ProtoReflect().New().Interface()
-    log.Printf("resp %v", resp)
     if err := conn.Invoke(ctx, "/RaftAdmin/" + string(m.Name()), req, resp); err != nil {
+        add_voter_logger.Error("Error invoking", "error", err)
         return err
     }
-    log.Printf("Response: %s", prototext.Format(resp))
 
     // This method returned a future. We should call Await to get the result, and then Forget to free up the memory of the server.
     if f, ok := resp.(*pb.Future); ok {
         c := pb.NewRaftAdminClient(conn)
-        log.Printf("Invoking Await(%s)", prototext.Format(f))
+        add_voter_logger.Debug("Awaiting for response")
         resp, err := c.Await(ctx, f)
-        log.Printf("Response: %s", prototext.Format(resp))
+        add_voter_logger.Debug("Response from AddVoter:", "Response", prototext.Format(resp))
 
         if resp.Error != "" {
             // handle error
-            return errors.New("Error from Add Voter, target is not the leader")
+            add_voter_logger.Error("Error in AddVoter Response:", "error", resp.Error)
+            return errors.New("Error in AddVoter Response: target is not the leader")
         }
         if err != nil {
+            add_voter_logger.Error("Error from AddVoter:", "error", err)
             return err
         }
         if _, err := c.Forget(ctx, f); err != nil {
-            log.Printf("Returning error %v", err)
+            add_voter_logger.Error("Returning error", "error", err)
             return err
         }
     }

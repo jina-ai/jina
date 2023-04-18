@@ -17,7 +17,7 @@ class MyStateExecutor(Executor):
     @write
     def index(self, docs, **kwargs):
         for doc in docs:
-            self.logger.debug(f' Indexing doc {doc.text}')
+            self.logger.debug(f'Indexing doc {doc.text}')
             self._docs.append(doc)
 
     @requests(on=['/search'])
@@ -28,7 +28,7 @@ class MyStateExecutor(Executor):
 
     def snapshot(self, snapshot_file: str):
         self.logger.warning(
-            f' Snapshotting to {snapshot_file} with {len(self._docs)} documents'
+            f'Snapshotting to {snapshot_file} with {len(self._docs)} documents'
         )
         self.logger.warning(f'Snapshotting with order {[d.text for d in self._docs]}')
         with open(snapshot_file, 'wb') as f:
@@ -37,7 +37,7 @@ class MyStateExecutor(Executor):
     def restore(self, snapshot_file: str):
         self._docs = DocumentArray.load_binary(snapshot_file)
         self.logger.warning(
-            f' Restoring from {snapshot_file} with {len(self._docs)} documents'
+            f'Restoring from {snapshot_file} with {len(self._docs)} documents'
         )
         self.logger.warning(f'Restoring with order {[d.text for d in self._docs]}')
 

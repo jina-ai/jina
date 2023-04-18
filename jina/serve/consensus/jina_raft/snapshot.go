@@ -3,7 +3,6 @@ package server
 import (
     "context"
     "fmt"
-    "log"
     "sync"
     "time"
     "os"
@@ -11,6 +10,7 @@ import (
 
     "github.com/hashicorp/raft"
     pb "jraft/jina-go-proto"
+    hclog "github.com/hashicorp/go-hclog"
 )
 
 type snapshot struct {
@@ -19,6 +19,7 @@ type snapshot struct {
     mu                sync.RWMutex
     status            *pb.SnapshotStatusProto_Status
     snapshotFile      string
+    Logger            hclog.Logger
 }
 
 func (s *snapshot) Release() {
@@ -39,7 +40,7 @@ func (s *snapshot) get() *pb.SnapshotStatusProto_Status {
 }
 
 func (s *snapshot) Persist(sink raft.SnapshotSink) error {
-    log.Printf("Starting persist operation...")
+    s.Logger.Debug("Start persist operation")
     var err error
     ticker := time.NewTicker(1 * time.Second)
     done := make(chan bool)
@@ -61,17 +62,17 @@ func (s *snapshot) Persist(sink raft.SnapshotSink) error {
         for {
             select {
             case t := <-funcTicker.C:
-                log.Printf("Checking snapshot status at ", t)
+                s.Logger.Debug("Checking snapshot status at", "time", t)
                 conn, err := s.executor.newConnection()
                 if err == nil {
                     defer conn.Close()
                     client := pb.NewJinaExecutorSnapshotProgressClient(conn)
                     response, err := client.SnapshotStatus(context.Background(), s.id)
                     if err != nil {
-                        log.Printf("error fetching snapshot status for id: %s", s.id)
+                        s.Logger.Error("Error fetching snapshot status for", "ID", response.Id, "error", err)
                     } else {
                         s.store(&response.Status)
-                        log.Printf("snapshot status at time %v is %s", t, response.Status)
+                        s.Logger.Debug("Snapshot", "status", response.Status, "at time", t)
                         if response.Status == pb.SnapshotStatusProto_FAILED ||
                             response.Status == pb.SnapshotStatusProto_SUCCEEDED {
                             timeout.Stop()
@@ -81,7 +82,7 @@ func (s *snapshot) Persist(sink raft.SnapshotSink) error {
                     }
                 }
             case <-timeout.C:
-                log.Printf("Timed out waiting for snapshot status.")
+                s.Logger.Error("Timed out waiting for snapshot status.")
                 timeout.Stop()
                 done <- true
                 return
@@ -95,25 +96,25 @@ func (s *snapshot) Persist(sink raft.SnapshotSink) error {
     status = s.get()
     if status != nil && *status != pb.SnapshotStatusProto_SUCCEEDED {
         msg := fmt.Sprintf("persist job %s failed with status %s", s.id.Value, status)
-        log.Printf(msg)
+        s.Logger.Error(msg)
         err = fmt.Errorf(msg)
         return err
     }
     source, err := os.Open(s.snapshotFile)
     if err != nil {
-       log.Printf("Error opening a file where Executor created snapshot")
+       s.Logger.Error("Error opening a file where Executor created snapshot", "error", err)
        return err
     }
     defer source.Close()
 
     _, err = io.Copy(sink, source)
     if err != nil {
-       log.Printf("Error copying temporary Executor snapshot")
+       s.Logger.Error("Error copying temporary Executor snapshot", "error", err)
        return err
     }
     err = os.Remove(s.snapshotFile)
     if err != nil {
-       log.Printf("Error removing Executor shanpshot File")
+       s.Logger.Error("Error removing Executor shanpshot File", "error", err)
     }
     return err
 }

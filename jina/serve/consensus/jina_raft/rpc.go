@@ -2,11 +2,9 @@ package server
 
 import (
     "context"
-    "log"
     "time"
     "sync/atomic"
     "errors"
-    "io"
 
     "github.com/Jille/raft-grpc-leader-rpc/rafterrors"
     "github.com/golang/protobuf/proto"
@@ -15,11 +13,13 @@ import (
     "github.com/hashicorp/raft"
     pb "jraft/jina-go-proto"
     healthpb "google.golang.org/grpc/health/grpc_health_v1"
+    hclog "github.com/hashicorp/go-hclog"
 )
 
 type RpcInterface struct {
     Executor *executorFSM
     Raft     *raft.Raft
+    Logger   hclog.Logger
     pb.UnimplementedJinaSingleDataRequestRPCServer
     pb.UnimplementedJinaDiscoverEndpointsRPCServer
     pb.UnimplementedJinaInfoRPCServer
@@ -36,20 +36,20 @@ func (rpc *RpcInterface) getRaftState() raft.RaftState {
 func (rpc *RpcInterface) Call(stream pb.JinaRPC_CallServer) error {
   for {
     req, err := stream.Recv()
-    log.Printf("Receive in streaming")
-    if err == io.EOF {
-      return nil
-    }
     if err != nil {
+      rpc.Logger.Error("Error receiving request in streaming", "error", err)
       return err
     }
+    rpc.Logger.Debug("Received request in streaming")
     // process the input message and generate the response message
     resp, err := rpc.ProcessSingleData(nil, req)
     if err != nil {
+        rpc.Logger.Error("Error processing single data", "error", err)
         return err
     }
     // send the response message back to the client
     if err := stream.Send(resp); err != nil {
+      rpc.Logger.Error("Error streaming response back", "error", err)
       return err
     }
   }
@@ -63,7 +63,7 @@ func (rpc *RpcInterface) Call(stream pb.JinaRPC_CallServer) error {
 func (rpc *RpcInterface) ProcessSingleData(
     ctx context.Context,
     dataRequestProto *pb.DataRequestProto) (*pb.DataRequestProto, error) {
-    log.Printf("ProcessSingleData")
+    rpc.Logger.Debug("Calling ProcessSingleData")
     endpoint := dataRequestProto.Header.ExecEndpoint
     found := false
 
@@ -76,59 +76,61 @@ func (rpc *RpcInterface) ProcessSingleData(
     }
 
     if found {
-        log.Printf("Calling a Write Endpoint")
-        log.Printf("rpc method process single data to endpoint %s", *endpoint)
+        rpc.Logger.Debug("Calling a Write Endpoint:", "endpoint", *endpoint)
         if rpc.getRaftState() == raft.Leader && rpc.Executor.isSnapshotInProgress() {
             err := errors.New("Leader cannot process write request while Snapshotting")
-            log.Print("Error: %v", err)
+            rpc.Logger.Error("Leader cannot process write request while Snapshotting")
             return nil, err
         }
         bytes, err := proto.Marshal(dataRequestProto)
         if err != nil {
-            log.Print("marshaling error: ", err)
+            rpc.Logger.Error("Error marshalling DataRequestProto into bytes:", "error", err)
             return nil, err
         }
         // replicate logs to the followers and then to itself
-        log.Printf("calling raft.Apply")
+        rpc.Logger.Debug("Call raft.Apply")
         // here we should read the `on=` from dat
         future := rpc.Raft.Apply(bytes, time.Second)
         if err := future.Error(); err != nil {
+            rpc.Logger.Error("Error from calling RAFT apply:", "error", err)
             return nil, rafterrors.MarkRetriable(err)
         }
         response, test := future.Response().(*pb.DataRequestProto)
         if test {
-            log.Printf("Apply FSM returns %s: ", response.String())
+            rpc.Logger.Debug("Return from RAFT Apply:", "Response", response.String())
             return response, nil
         } else {
             err := future.Response().(error)
             return nil, err
         }
     } else {
-        log.Printf("Calling a Read Endpoint")
+        rpc.Logger.Debug("Calling a Read Endpoint:", "endpoint", *endpoint)
         return rpc.Executor.Read(ctx, dataRequestProto)
     }
 }
 
 func (rpc *RpcInterface) EndpointDiscovery(ctx context.Context, empty *empty.Empty) (*pb.EndpointsProto, error) {
-    log.Printf("EndpointDiscovery")
+    rpc.Logger.Debug("Get an Endpoint Discovery Request")
     return rpc.Executor.EndpointDiscovery(ctx, empty)
 }
 
 func (rpc *RpcInterface) XStatus(ctx context.Context, empty *empty.Empty) (*pb.JinaInfoProto, error) {
-    log.Printf("XStatus")
+   rpc.Logger.Debug("Get an XStatus Request")
    return rpc.Executor.XStatus(ctx, empty)
 }
 
 func (rpc *RpcInterface) Check(ctx context.Context, req *healthpb.HealthCheckRequest) (*healthpb.HealthCheckResponse, error) {
-    log.Printf("Check")
+    rpc.Logger.Debug("Get a Check Request")
     return rpc.Executor.Check(ctx, req)
 }
 
 func (rpc *RpcInterface) Watch(req *healthpb.HealthCheckRequest, stream healthpb.Health_WatchServer) error {
+    rpc.Logger.Debug("Get a Watch Request")
     healthCheckStatus := &healthpb.HealthCheckResponse{}
     healthCheckStatus.Status = 1
     err := stream.Send(healthCheckStatus)
     if err != nil {
+        rpc.Logger.Error("Error sending back health Check Status", "error", err)
         return err
     }
     return nil
