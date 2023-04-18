@@ -47,7 +47,7 @@ def executor_native(args: 'Namespace'):
     import multiprocessing
     from jina.jaml import JAML
     envs = {}
-    envs.update(args.env)
+    envs.update(args.env or {})
     if not args.stateful:
         run(name=args.name,
             args=args,
