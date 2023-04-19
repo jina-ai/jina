@@ -445,7 +445,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 f'Deployments with more than one shard'
             )
 
-        if self.args.stateful and (ProtocolType.WEBSOCKET in self.args.protocol or ProtocolType.HTTP in self.args.protocol or len(self.args.protocol) > 1):
+        if self.args.stateful and (
+            ProtocolType.WEBSOCKET in self.args.protocol
+            or ProtocolType.HTTP in self.args.protocol
+            or len(self.args.protocol) > 1
+        ):
             raise RuntimeError(
                 f'Stateful feature is only available for Deployments using a single {ProtocolType.GRPC.to_string()} protocol. {self.args.protocol} were requested'
             )
