@@ -191,6 +191,7 @@ class Flow(
         name: Optional[str] = 'gateway',
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
+        peer_ports: Optional[str] = None,
         port: Optional[int] = None,
         port_monitoring: Optional[int] = None,
         prefetch: Optional[int] = 1000,
@@ -260,6 +261,7 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+        :param peer_ports: When using --stateful option, it may be required to tell the cluster what are the cluster configuration. This is importantwhen the Deployment is restarted. It is expected to be a single list if shards == 1 or a dictionary if shards > 1.
         :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
@@ -451,6 +453,7 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+        :param peer_ports: When using --stateful option, it may be required to tell the cluster what are the cluster configuration. This is importantwhen the Deployment is restarted. It is expected to be a single list if shards == 1 or a dictionary if shards > 1.
         :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
@@ -857,6 +860,7 @@ class Flow(
         native: Optional[bool] = False,
         no_reduce: Optional[bool] = False,
         output_array_type: Optional[str] = None,
+        peer_ports: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
         port_monitoring: Optional[int] = None,
@@ -950,6 +954,7 @@ class Flow(
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
           `here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.
           Defaults to retaining whatever type is returned by the Executor.
+        :param peer_ports: When using --stateful option, it may be required to tell the cluster what are the cluster configuration. This is importantwhen the Deployment is restarted. It is expected to be a single list if shards == 1 or a dictionary if shards > 1.
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
               Can be defined for all endpoints of a Deployment or by endpoint.
               Define per Deployment:
@@ -1113,6 +1118,7 @@ class Flow(
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
           `here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.
           Defaults to retaining whatever type is returned by the Executor.
+        :param peer_ports: When using --stateful option, it may be required to tell the cluster what are the cluster configuration. This is importantwhen the Deployment is restarted. It is expected to be a single list if shards == 1 or a dictionary if shards > 1.
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
               Can be defined for all endpoints of a Deployment or by endpoint.
               Define per Deployment:
@@ -1314,6 +1320,7 @@ class Flow(
         name: Optional[str] = 'gateway',
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
+        peer_ports: Optional[str] = None,
         port: Optional[int] = None,
         port_monitoring: Optional[int] = None,
         prefetch: Optional[int] = 1000,
@@ -1383,6 +1390,7 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+        :param peer_ports: When using --stateful option, it may be required to tell the cluster what are the cluster configuration. This is importantwhen the Deployment is restarted. It is expected to be a single list if shards == 1 or a dictionary if shards > 1.
         :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
@@ -1483,6 +1491,7 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+        :param peer_ports: When using --stateful option, it may be required to tell the cluster what are the cluster configuration. This is importantwhen the Deployment is restarted. It is expected to be a single list if shards == 1 or a dictionary if shards > 1.
         :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.

@@ -685,6 +685,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         native: Optional[bool] = False,
         no_reduce: Optional[bool] = False,
         output_array_type: Optional[str] = None,
+        peer_ports: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
         port_monitoring: Optional[int] = None,
@@ -778,6 +779,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
           `here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.
           Defaults to retaining whatever type is returned by the Executor.
+        :param peer_ports: When using --stateful option, it may be required to tell the cluster what are the cluster configuration. This is importantwhen the Deployment is restarted. It is expected to be a single list if shards == 1 or a dictionary if shards > 1.
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
               Can be defined for all endpoints of a Deployment or by endpoint.
               Define per Deployment:
