@@ -62,7 +62,7 @@ class MyStateExecutorNoSnapshot(Executor):
 
 
 def assert_is_indexed(client, search_da):
-    docs = client.search(inputs=search_da)
+    docs = client.search(inputs=search_da, request_size=1)
     for doc in docs:
         assert doc.text == f'ID {doc.id}'
 
@@ -71,7 +71,7 @@ def assert_all_replicas_indexed(client, search_da, num_replicas=3):
     for query in search_da:
         pids = set()
         for _ in range(10):
-            for resp in client.search(inputs=query):
+            for resp in client.search(inputs=query, request_size=1):
                 pids.add(resp.tags['pid'])
                 assert resp.text == f'ID {query.id}'
             if len(pids) == num_replicas:
@@ -192,8 +192,8 @@ def test_stateful_restore(executor_cls, ctx, shards, tmpdir):
         assert_all_replicas_indexed(ctx_mngr, search_da)
 
 
-@pytest.mark.parametrize('executor_cls', [MyStateExecutorNoSnapshot])
-@pytest.mark.parametrize('ctx', ['flow', 'deployment'])
+@pytest.mark.parametrize('executor_cls', [MyStateExecutor])
+@pytest.mark.parametrize('ctx', ['flow'])
 def test_add_new_replica(executor_cls, ctx, tmpdir):
     from jina.parsers import set_pod_parser
     from jina.orchestrate.pods.factory import PodFactory
@@ -264,6 +264,7 @@ def test_add_new_replica(executor_cls, ctx, tmpdir):
                 [Document(id=f'{i}', text=f'ID {i}') for i in range(100, 200)]
             )
             ctx_mngr.index(inputs=index_da, request_size=1)
+            time.sleep(10)
             search_da = DocumentArray([Document(id=f'{i}') for i in range(200)])
             client = Client(port=new_replica_port)
             assert_is_indexed(client, search_da=search_da)

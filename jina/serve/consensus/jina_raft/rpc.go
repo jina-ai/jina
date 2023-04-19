@@ -5,6 +5,7 @@ import (
     "time"
     "sync/atomic"
     "errors"
+    "io"
 
     "github.com/Jille/raft-grpc-leader-rpc/rafterrors"
     "github.com/golang/protobuf/proto"
@@ -34,15 +35,20 @@ func (rpc *RpcInterface) getRaftState() raft.RaftState {
 
 
 func (rpc *RpcInterface) Call(stream pb.JinaRPC_CallServer) error {
+  ctx := context.Background()
   for {
     req, err := stream.Recv()
+    if err == io.EOF {
+      rpc.Logger.Debug("Streaming received", "EOF", err)
+      return nil
+    }
     if err != nil {
       rpc.Logger.Error("Error receiving request in streaming", "error", err)
       return err
     }
     rpc.Logger.Debug("Received request in streaming")
     // process the input message and generate the response message
-    resp, err := rpc.ProcessSingleData(nil, req)
+    resp, err := rpc.ProcessSingleData(ctx, req)
     if err != nil {
         rpc.Logger.Error("Error processing single data", "error", err)
         return err
