@@ -26,7 +26,7 @@ def test_different_document_schema():
             inputs=DocList[Image]([Image(url='https://via.placeholder.com/150.png')]),
             return_type=DocList[Image],
         )
-        docs = docs.stack()
+        docs = docs.to_doc_vec()
         assert docs.tensor.ndim == 4
 
 
