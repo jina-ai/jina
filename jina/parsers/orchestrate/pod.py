@@ -268,4 +268,11 @@ def mixin_stateful_parser(parser):
         default=False,
         help='If set, start consensus module to make sure write operations are properly replicated between all the replicas',
     )
+    gp.add_argument(
+        '--peer-ports',
+        type=str,
+        default=None,
+        help='When using --stateful option, it may be required to tell the cluster what are the cluster configuration. This is important'
+             'when the Deployment is restarted. It is expected to be a single list if shards == 1 or a dictionary if shards > 1.',
+    )
 

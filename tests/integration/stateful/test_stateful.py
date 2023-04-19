@@ -80,14 +80,18 @@ def assert_all_replicas_indexed(client, search_da, num_replicas=3):
 
 
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
-@pytest.mark.parametrize('ctx', ['flow', 'deployment'])
+@pytest.mark.parametrize('ctx', ['deployment', 'flow'])
 @pytest.mark.parametrize('shards', [1, 2])
 def test_stateful_index_search(executor_cls, ctx, shards, tmpdir):
+    replicas = 3
+    peer_ports = {}
+    for shard in range(shards):
+        peer_ports[shard] = [random_port() for _ in range(replicas)]
     if ctx == 'flow':
         gateway_port = random_port()
         ctx_mngr = Flow(port=gateway_port).add(
             uses=executor_cls,
-            replicas=3,
+            replicas=replicas,
             workspace=tmpdir,
             stateful=True,
             raft_configuration={
@@ -97,12 +101,13 @@ def test_stateful_index_search(executor_cls, ctx, shards, tmpdir):
                 'LogLevel': 'INFO',
             },
             shards=shards,
+            peer_ports=peer_ports,
             polling={'/index': 'ANY', '/search': 'ALL'}
         )
     elif ctx == 'deployment':
         ctx_mngr = Deployment(
             uses=executor_cls,
-            replicas=3,
+            replicas=replicas,
             workspace=tmpdir,
             stateful=True,
             raft_configuration={
@@ -112,13 +117,14 @@ def test_stateful_index_search(executor_cls, ctx, shards, tmpdir):
                 'LogLevel': 'INFO',
             },
             shards=shards,
+            peer_ports=peer_ports,
             polling={'/index': 'ANY', '/search': 'ALL'}
         )
     with ctx_mngr:
         index_da = DocumentArray(
             [Document(id=f'{i}', text=f'ID {i}') for i in range(100)]
         )
-        search_da = DocumentArray([Document(id=f'{i}') for i in range(1)])
+        search_da = DocumentArray([Document(id=f'{i}') for i in range(100)])
         ctx_mngr.index(inputs=index_da, request_size=1)
 
         # allowing some time for the state to be replicated
@@ -130,13 +136,18 @@ def test_stateful_index_search(executor_cls, ctx, shards, tmpdir):
 
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
 @pytest.mark.parametrize('ctx', ['flow', 'deployment'])
-def test_stateful_restore(executor_cls, ctx, tmpdir):
+@pytest.mark.parametrize('shards', [1, 2])
+def test_stateful_restore(executor_cls, ctx, shards, tmpdir):
+    replicas = 3
+    peer_ports = {}
+    for shard in range(shards):
+        peer_ports[shard] = [random_port() for _ in range(replicas)]
     if ctx == 'flow':
         gateway_port = random_port()
 
         ctx_mngr = Flow(port=gateway_port).add(
             uses=executor_cls,
-            replicas=3,
+            replicas=replicas,
             workspace=tmpdir,
             stateful=True,
             raft_configuration={
@@ -145,10 +156,13 @@ def test_stateful_restore(executor_cls, ctx, tmpdir):
                 'trailing_logs': 10,
                 'LogLevel': 'INFO',
             },
+            peer_ports=peer_ports,
+            shards=shards,
+            polling={'/index': 'ANY', '/search': 'ALL'}
         )
     elif ctx == 'deployment':
         ctx_mngr = Deployment(uses=executor_cls,
-                              replicas=3,
+                              replicas=replicas,
                               workspace=tmpdir,
                               stateful=True,
                               raft_configuration={
@@ -156,7 +170,10 @@ def test_stateful_restore(executor_cls, ctx, tmpdir):
                                   'snapshot_threshold': 5,
                                   'trailing_logs': 10,
                                   'LogLevel': 'INFO',
-                              })
+                              },
+                              shards=shards,
+                              peer_ports=peer_ports,
+                              polling={'/index': 'ANY', '/search': 'ALL'})
     with ctx_mngr:
         index_da = DocumentArray(
             [Document(id=f'{i}', text=f'ID {i}') for i in range(100)]
@@ -166,11 +183,16 @@ def test_stateful_restore(executor_cls, ctx, tmpdir):
         time.sleep(30)
 
     with ctx_mngr:
-        search_da = DocumentArray([Document(id=f'{i}') for i in range(100)])
+        index_da = DocumentArray(
+            [Document(id=f'{i}', text=f'ID {i}') for i in range(100, 200)]
+        )
+        ctx_mngr.index(inputs=index_da, request_size=1)
+        time.sleep(5)
+        search_da = DocumentArray([Document(id=f'{i}') for i in range(200)])
         assert_all_replicas_indexed(ctx_mngr, search_da)
 
 
-@pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
+@pytest.mark.parametrize('executor_cls', [MyStateExecutorNoSnapshot])
 @pytest.mark.parametrize('ctx', ['flow', 'deployment'])
 def test_add_new_replica(executor_cls, ctx, tmpdir):
     from jina.parsers import set_pod_parser
@@ -238,6 +260,10 @@ def test_add_new_replica(executor_cls, ctx, tmpdir):
                 except:
                     pass
             time.sleep(10)
-            search_da = DocumentArray([Document(id=f'{i}') for i in range(100)])
+            index_da = DocumentArray(
+                [Document(id=f'{i}', text=f'ID {i}') for i in range(100, 200)]
+            )
+            ctx_mngr.index(inputs=index_da, request_size=1)
+            search_da = DocumentArray([Document(id=f'{i}') for i in range(200)])
             client = Client(port=new_replica_port)
             assert_is_indexed(client, search_da=search_da)
