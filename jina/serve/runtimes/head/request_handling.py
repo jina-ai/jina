@@ -34,7 +34,6 @@ class HeaderRequestHandler(MonitoringRequestMixin):
     """
 
     DEFAULT_POLLING = PollingType.ANY
-    # check ci
 
     def __init__(
         self,

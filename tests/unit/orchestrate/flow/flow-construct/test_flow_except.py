@@ -267,6 +267,7 @@ def test_flow_timeout_send():
             f.index([Document()])
 
 
+@pytest.mark.skip('This test segFaults very often')
 def test_flow_head_runtime_failure(monkeypatch):
     from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 

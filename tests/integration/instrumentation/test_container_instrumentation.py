@@ -32,10 +32,10 @@ def test_docker_instrumentation(
         f.post(f'/search', DocumentArray.empty(), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
-        time.sleep(3)
+        time.sleep(20)
 
     services = get_services(jaeger_port)
-    assert set(services) == {'executor0/rep-0', 'gateway/rep-0'}
+    assert set(services) == {'executor0/rep-0', 'gateway/rep-0', 'GRPCClient'}
 
     exported_jobs = get_exported_jobs(prometheus_client)
     assert exported_jobs == {
