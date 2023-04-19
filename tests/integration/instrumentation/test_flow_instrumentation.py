@@ -53,7 +53,7 @@ def test_gateway_instrumentation(
         f.post(f'/search', DocumentArray.empty(), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
-        time.sleep(8)
+        time.sleep(20)
 
     services = get_services(jaeger_port)
     expected_services = ['executor0/rep-0', 'gateway/rep-0', client_type]
@@ -118,7 +118,7 @@ def test_multiprotocol_gateway_instrumentation(
 
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
-        time.sleep(8)
+        time.sleep(20)
 
     services = get_services(jaeger_port)
     expected_services = [
@@ -152,7 +152,7 @@ def test_executor_instrumentation(jaeger_port, otlp_collector, otlp_receiver_por
         f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
-        time.sleep(8)
+        time.sleep(20)
 
     client_type = 'GRPCClient'
     client_traces = get_traces(jaeger_port, client_type)
@@ -182,7 +182,7 @@ def test_head_instrumentation(jaeger_port, otlp_collector, otlp_receiver_port):
         f.post(f'/search', DocumentArray.empty(), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
-        time.sleep(8)
+        time.sleep(20)
 
     client_type = 'GRPCClient'
     client_traces = get_traces(jaeger_port, client_type)
@@ -235,7 +235,7 @@ def test_flow_metrics(
         f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
-        time.sleep(8)
+        time.sleep(20)
 
     exported_jobs = get_exported_jobs(prometheus_client)
     assert exported_jobs.issubset(instrumented_services_sharded)
