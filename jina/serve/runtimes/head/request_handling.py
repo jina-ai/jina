@@ -247,7 +247,6 @@ class HeaderRequestHandler(MonitoringRequestMixin):
             polling_type=polling_type,
             retries=retries,
         )
-
         if len(worker_results) == 0:
             if exceptions:
                 # raise the underlying error first
@@ -260,6 +259,10 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         worker_results, metadata = zip(*worker_results)
 
         response_request = worker_results[0]
+        for i, worker_result in enumerate(worker_results):
+            if worker_result.header.status.code == jina_pb2.StatusProto.SUCCESS:
+                response_request = worker_result
+
         uses_after_metadata = None
         if uses_after_address:
             result = await connection_pool.send_requests_once(

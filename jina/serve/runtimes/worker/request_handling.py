@@ -728,16 +728,20 @@ class WorkerRequestHandler:
         :param requests: List of DataRequest objects
         :return: the resulting DataRequest
         """
+        req = requests[0]
+        for i, worker_result in enumerate(requests):
+            if worker_result.header.status.code == jina_pb2.StatusProto.SUCCESS:
+                req = worker_result
         docs_matrix, _ = WorkerRequestHandler._get_docs_matrix_from_request(requests)
 
         # Reduction is applied in-place to the first DocumentArray in the matrix
         da = WorkerRequestHandler.reduce(docs_matrix)
-        WorkerRequestHandler.replace_docs(requests[0], da)
+        WorkerRequestHandler.replace_docs(req, da)
 
         params = WorkerRequestHandler.get_parameters_dict_from_request(requests)
-        WorkerRequestHandler.replace_parameters(requests[0], params)
+        WorkerRequestHandler.replace_parameters(req, params)
 
-        return requests[0]
+        return req
 
     # serving part
     async def process_single_data(self, request: DataRequest, context) -> DataRequest:
