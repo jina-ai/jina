@@ -444,6 +444,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 f'It is not supported to have {ProtocolType.WEBSOCKET.to_string()} deployment for '
                 f'Deployments with more than one shard'
             )
+
+        if self.args.stateful and (ProtocolType.WEBSOCKET in self.args.protocol or ProtocolType.HTTP in self.args.protocol or len(self.args.protocol) > 1):
+            raise RuntimeError(
+                f'Stateful feature is only available for Deployments using a single {ProtocolType.GRPC.to_string()} protocol. {self.args.protocol} were requested'
+            )
         self.needs = (
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
