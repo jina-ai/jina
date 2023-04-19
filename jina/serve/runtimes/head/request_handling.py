@@ -262,6 +262,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         for i, worker_result in enumerate(worker_results):
             if worker_result.header.status.code == jina_pb2.StatusProto.SUCCESS:
                 response_request = worker_result
+                break
 
         uses_after_metadata = None
         if uses_after_address:

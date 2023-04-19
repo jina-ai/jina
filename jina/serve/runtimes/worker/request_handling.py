@@ -732,6 +732,7 @@ class WorkerRequestHandler:
         for i, worker_result in enumerate(requests):
             if worker_result.header.status.code == jina_pb2.StatusProto.SUCCESS:
                 req = worker_result
+                break
         docs_matrix, _ = WorkerRequestHandler._get_docs_matrix_from_request(requests)
 
         # Reduction is applied in-place to the first DocumentArray in the matrix
