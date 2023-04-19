@@ -7,58 +7,40 @@ from jina import Client, Document, DocumentArray, Executor, Flow, requests, Depl
 from jina.helper import random_port
 from jina.serve.executors.decorators import write
 
-
-class MyStateExecutor(Executor):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._docs = DocumentArray()
-
-    @requests(on=['/index'])
-    @write
-    def index(self, docs, **kwargs):
-        for doc in docs:
-            self.logger.debug(f'Indexing doc {doc.text}')
-            self._docs.append(doc)
-
-    @requests(on=['/search'])
-    def search(self, docs, **kwargs):
-        for doc in docs:
-            doc.text = self._docs[doc.id].text
-            doc.tags['pid'] = os.getpid()
-
-    def snapshot(self, snapshot_file: str):
-        self.logger.warning(
-            f'Snapshotting to {snapshot_file} with {len(self._docs)} documents'
-        )
-        self.logger.warning(f'Snapshotting with order {[d.text for d in self._docs]}')
-        with open(snapshot_file, 'wb') as f:
-            self._docs.save_binary(f)
-
-    def restore(self, snapshot_file: str):
-        self._docs = DocumentArray.load_binary(snapshot_file)
-        self.logger.warning(
-            f'Restoring from {snapshot_file} with {len(self._docs)} documents'
-        )
-        self.logger.warning(f'Restoring with order {[d.text for d in self._docs]}')
+from tests.integration.stateful.stateful_no_snapshot_exec.executor import MyStateExecutorNoSnapshot
+from tests.integration.stateful.stateful_snapshot_exec.executor import MyStateExecutor
 
 
-class MyStateExecutorNoSnapshot(Executor):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._docs = DocumentArray()
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
-    @requests(on=['/index'])
-    @write
-    def index(self, docs, **kwargs):
-        for doc in docs:
-            self.logger.debug(f' Indexing doc {doc.text}')
-            self._docs.append(doc)
 
-    @requests(on=['/search'])
-    def search(self, docs, **kwargs):
-        for doc in docs:
-            doc.text = self._docs[doc.id].text
-            doc.tags['pid'] = os.getpid()
+@pytest.fixture(scope='module')
+def stateful_exec_docker_image_built():
+    import docker
+
+    client = docker.from_env()
+    client.images.build(
+        path=os.path.join(cur_dir, 'stateful_snapshot_exec/'), tag='stateful-exec'
+    )
+    client.close()
+    yield
+    time.sleep(2)
+    client = docker.from_env()
+    client.containers.prune()
+
+@pytest.fixture(scope='module')
+def stateful_no_snapshot_exec_docker_image_built():
+    import docker
+
+    client = docker.from_env()
+    client.images.build(
+        path=os.path.join(cur_dir, 'stateful_no_snapshot_exec/'), tag='stateful-no-snapshot-exec'
+    )
+    client.close()
+    yield
+    time.sleep(2)
+    client = docker.from_env()
+    client.containers.prune()
 
 
 def assert_is_indexed(client, search_da):
@@ -79,10 +61,10 @@ def assert_all_replicas_indexed(client, search_da, num_replicas=3):
         assert len(pids) == num_replicas
 
 
-@pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
+@pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot, 'docker://stateful-exec', 'docker://stateful-no-snapshot-exec'])
 @pytest.mark.parametrize('ctx', ['deployment', 'flow'])
 @pytest.mark.parametrize('shards', [1, 2])
-def test_stateful_index_search(executor_cls, ctx, shards, tmpdir):
+def test_stateful_index_search(executor_cls, ctx, shards, tmpdir, stateful_exec_docker_image_built, stateful_no_snapshot_exec_docker_image_built):
     replicas = 3
     peer_ports = {}
     for shard in range(shards):
