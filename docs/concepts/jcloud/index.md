@@ -300,7 +300,7 @@ jc restart super-mustang-c6cf06bc5b --executor executor0
 
 ### Recreate a Deleted Flow
 
-To recreate a Deleted Flow:
+To recreate a deleted Flow:
 
 ```bash
 jc recreate profound-rooster-eec4b17c73
