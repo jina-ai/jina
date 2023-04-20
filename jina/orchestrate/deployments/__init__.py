@@ -109,7 +109,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         def __enter__(self):
             for _args in self.args:
                 _args.noblock_on_start = True
-                self._pods.append(PodFactory.build_pod(_args).start())
+                pod = PodFactory.build_pod(_args).start()
+                pod.is_forked.wait()
+                self._pods.append(pod)
             return self
 
         def __exit__(self, exc_type, exc_val, exc_tb):
@@ -991,16 +993,19 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             _args.noblock_on_start = True
             self.uses_before_pod = PodFactory.build_pod(_args)
             self.enter_context(self.uses_before_pod)
+            self.uses_before_pod.is_forked.wait()
         if self.pod_args['uses_after'] is not None:
             _args = self.pod_args['uses_after']
             _args.noblock_on_start = True
             self.uses_after_pod = PodFactory.build_pod(_args)
             self.enter_context(self.uses_after_pod)
+            self.uses_after_pod.is_forked.wait()
         if self.pod_args['head'] is not None:
             _args = self.pod_args['head']
             _args.noblock_on_start = True
             self.head_pod = PodFactory.build_pod(_args)
             self.enter_context(self.head_pod)
+            self.head_pod.is_forked.wait()
         if self._include_gateway:
             _args = self.pod_args['gateway']
             _args.noblock_on_start = True
@@ -1008,6 +1013,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 _args, gateway_load_balancer=self._gateway_load_balancer
             )
             self.enter_context(self.gateway_pod)
+            self.gateway_pod.is_forked.wait()
         for shard_id in self.pod_args['pods']:
             self.shards[shard_id] = self._ReplicaSet(
                 self.args,
