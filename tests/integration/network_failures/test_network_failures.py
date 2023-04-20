@@ -508,7 +508,7 @@ async def test_runtimes_headful_topology(port_generator, protocol, terminate_hea
         gateway_port, graph_description, pod_addresses, protocol
     )
 
-    time.sleep(1.0)
+    time.sleep(5.0)
 
     BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
@@ -614,14 +614,11 @@ def _create_gqlgateway_runtime(graph_description, pod_addresses, port):
 
 
 def _create_gqlgateway(port, graph, pod_addr):
-    # create a single worker runtime
-    # create a single gateway runtime
     p = multiprocessing.Process(
         target=_create_gqlgateway_runtime,
         args=(graph, pod_addr, port),
     )
     p.start()
-    time.sleep(0.1)
     return p
 
 
@@ -637,7 +634,7 @@ async def test_runtimes_graphql(port_generator):
     worker_process = _create_worker(worker_port)
     gateway_process = _create_gqlgateway(gateway_port, graph_description, pod_addresses)
 
-    time.sleep(1.0)
+    time.sleep(5.0)
 
     BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
@@ -697,7 +694,7 @@ async def test_replica_retry(port_generator):
     worker_processes = []
     for p in worker_ports:
         worker_processes.append(_create_worker(p))
-        time.sleep(0.1)
+        time.sleep(3.0)
         BaseServer.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=f'0.0.0.0:{p}',
@@ -707,6 +704,7 @@ async def test_replica_retry(port_generator):
     gateway_process = _create_gateway(
         gateway_port, graph_description, pod_addresses, 'grpc'
     )
+    time.sleep(3.0)
     BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{gateway_port}',
@@ -752,7 +750,7 @@ async def test_replica_retry_all_fail(port_generator):
     worker_processes = []
     for p in worker_ports:
         worker_processes.append(_create_worker(p))
-        time.sleep(0.1)
+        time.sleep(3.0)
         BaseServer.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=f'0.0.0.0:{p}',
@@ -762,6 +760,7 @@ async def test_replica_retry_all_fail(port_generator):
     gateway_process = _create_gateway(
         gateway_port, graph_description, pod_addresses, 'grpc'
     )
+    time.sleep(3.0)
     BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{gateway_port}',
@@ -826,7 +825,7 @@ def test_custom_num_retries(port_generator, retries, capfd):
     worker_processes = []
     for p in worker_ports:
         worker_processes.append(_create_worker(p))
-        time.sleep(0.1)
+        time.sleep(3.0)
         BaseServer.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=f'0.0.0.0:{p}',
@@ -841,6 +840,7 @@ def test_custom_num_retries(port_generator, retries, capfd):
         retries=retries,
         log_config='json',
     )
+    time.sleep(3.0)
     BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{gateway_port}',
@@ -895,7 +895,7 @@ def test_custom_num_retries_headful(port_generator, retries, capfd):
         gateway_port, graph_description, pod_addresses, 'grpc', retries=retries
     )
 
-    time.sleep(1.0)
+    time.sleep(3.0)
 
     BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
@@ -938,8 +938,8 @@ def test_custom_num_retries_headful(port_generator, retries, capfd):
         assert False
     finally:  # clean up runtimes
         gateway_process.terminate()
-        gateway_process.join()
         worker_process.terminate()
-        worker_process.join()
         head_process.terminate()
+        gateway_process.join()
+        worker_process.join()
         head_process.join()
