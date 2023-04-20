@@ -302,7 +302,7 @@ async def test_no_message_lost_during_kill(logger, docker_images, tmpdir):
             daemon=True,
         )
         process.start()
-        time.sleep(1.0)
+        time.sleep(3.0)
         logger.debug('Kill 2 replicas')
 
         pods = core_client.list_namespaced_pod(
@@ -386,7 +386,7 @@ async def test_linear_processing_time_scaling(docker_images, logger, tmpdir):
     with portforward.forward(
         namespace, gateway_pod_name, flow.port, flow.port, config_path
     ):
-        time.sleep(0.1)
+        time.sleep(3.0)
         client_kwargs = dict(
             host='localhost',
             port=flow.port,

@@ -1,5 +1,7 @@
 FROM jinaai/jina:test-pip
 
-ADD executor.py executor.yml ./
+# setup the workspace
+COPY . /workspace
+WORKDIR /workspace
 
-ENTRYPOINT ["jina", "executor", "--uses", "executor.yml"]
+ENTRYPOINT ["jina", "executor", "--uses", "config.yml"]

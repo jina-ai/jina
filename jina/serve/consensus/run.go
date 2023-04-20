@@ -438,7 +438,7 @@ func get_configuration(self *C.PyObject, args *C.PyObject) *C.PyObject {
             C.Py_IncRef(C.Py_None);
             return C.Py_None;
         } else {
-            logger.Debug("configuration already present in the node:", "configuration", conf.Servers)
+            logger.Debug("configuration already present in the node:", "configuration", conf, "with number of servers", len(conf.Servers))
         }
 
         if len(conf.Servers) == 0 {
