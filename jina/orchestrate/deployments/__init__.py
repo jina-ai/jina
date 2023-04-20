@@ -1300,16 +1300,17 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             )
 
         for shard_id in range(shards):
-            pod_ports = peer_ports_all_shards.get(str(shard_id), [])
-            if len(pod_ports) > 0 and len(pod_ports) != replicas:
+            peer_ports = peer_ports_all_shards.get(str(shard_id), [])
+            if len(peer_ports) > 0 and len(peer_ports) != replicas:
                 raise RuntimeError(
                     f'pod-ports argument does not match number of replicas, it will be ignored'
                 )
-            elif len(pod_ports) == 0:
-                pod_ports = [random_port() for _ in range(replicas)]
+            elif len(peer_ports) == 0:
+                peer_ports = [random_port() for _ in range(replicas)]
+
             replica_args = []
 
-            for replica_id, pod_port in zip(range(replicas), pod_ports):
+            for replica_id, peer_port in zip(range(replicas), peer_ports):
                 _args = copy.deepcopy(self.args)
                 if self.args.deployment_role == DeploymentRoleType.GATEWAY:
                     _args.replicas = replicas
@@ -1363,6 +1364,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                         _args.port = [
                             random_port() for _ in range(len(self.args.protocol))
                         ]
+                        _args.port[0] = peer_port
                     elif shards > 1:
                         port_monitoring_index = (
                             replica_id + replicas * shard_id + 1
@@ -1375,9 +1377,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                                 port_monitoring_index
                             ]  # we skip the head port here
                         )
-                        _args.port = [random_port()]
+                        _args.port = [peer_port]
                     else:
-                        _args.port = [random_port()]
+                        _args.port = [peer_port]
                         _args.port_monitoring = random_port()
 
                 else:

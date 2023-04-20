@@ -61,7 +61,8 @@ def test_log_level(monkeypatch):
 
 @pytest.fixture(autouse=True)
 def test_grpc_fork_support_false(monkeypatch):
-    monkeypatch.setenv('GRPC_ENABLE_FORK_SUPPORT', 'false')
+    monkeypatch.setenv('GRPC_ENABLE_FORK_SUPPORT', 'true')
+    monkeypatch.setenv('GRPC_VERBOSITY', 'DEBUG')
 
 
 @pytest.fixture(autouse=True)

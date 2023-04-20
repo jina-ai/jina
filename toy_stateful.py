@@ -63,12 +63,13 @@ class MyStateExecutorNoSpanshot(Executor):
 
 
 PORT_FLOW_SNAPSHOT = 12340
-PORTS_REPLICAS_SNAPSHOT = [12345, 12347, 12349]
+PORTS_REPLICAS_SNAPSHOT = {'0': [12345, 12347, 12349]}
+
 PORTS_NEW_REPLICA_SNAPSHOT = 12351
 FOLDER_WORKSPACE_SNAPSHOT = './toy_workspace_with_snapshots'
 
 PORT_FLOW_NO_SNAPSHOT = 12360
-PORTS_REPLICAS_NO_SNAPSHOT = [12365, 12367, 12369]
+PORTS_REPLICAS_NO_SNAPSHOT = {'0': [12365, 12367, 12369]}
 PORTS_NEW_REPLICA_NO_SNAPSHOT = 12371
 FOLDER_WORKSPACE_NO_SNAPSHOT = './toy_workspace_no_snapshots'
 
@@ -84,9 +85,8 @@ if __name__ == '__main__':
                                               replicas=3,
                                               # shards=2,
                                               workspace=FOLDER_WORKSPACE_SNAPSHOT,
-                                              pod_ports=PORTS_REPLICAS_SNAPSHOT,
+                                              peer_ports=PORTS_REPLICAS_SNAPSHOT,
                                               stateful=True,
-                                              raft_bootstrap=True,
                                               raft_configuration={'snapshot_interval': 10, 'snapshot_threshold': 5, 'trailing_logs': 10,
                                                                   'LogLevel': 'INFO'})
         with f:
@@ -96,20 +96,19 @@ if __name__ == '__main__':
                                                  replicas=3,
                                                  # shards=2,
                                                  workspace=FOLDER_WORKSPACE_NO_SNAPSHOT,
-                                                 pod_ports=PORTS_REPLICAS_NO_SNAPSHOT,
+                                                 peer_ports=PORTS_REPLICAS_NO_SNAPSHOT,
                                                  stateful=True,
-                                                 raft_bootstrap=True,
                                                  raft_configuration={'snapshot_interval': 10, 'snapshot_threshold': 5, 'trailing_logs': 10,
                                                                      'LogLevel': 'INFO'})
-        f.block()
+        with f:
+            f.block()
     elif option == 'restore_snapshot':
         f = Flow(port=PORT_FLOW_SNAPSHOT).add(uses=MyStateExecutor,
                                               replicas=3,
                                               # shards=2,
                                               workspace=FOLDER_WORKSPACE_SNAPSHOT,
-                                              pod_ports=PORTS_REPLICAS_SNAPSHOT,
+                                              peer_ports=PORTS_REPLICAS_SNAPSHOT,
                                               stateful=True,
-                                              raft_bootstrap=False,
                                               raft_configuration={'snapshot_interval': 10, 'snapshot_threshold': 5, 'trailing_logs': 10,
                                                                   'LogLevel': 'INFO'})
         with f:
@@ -119,9 +118,8 @@ if __name__ == '__main__':
                                                  replicas=3,
                                                  # shards=2,
                                                  workspace=FOLDER_WORKSPACE_NO_SNAPSHOT,
-                                                 pod_ports=PORTS_REPLICAS_NO_SNAPSHOT,
+                                                 peer_ports=PORTS_REPLICAS_NO_SNAPSHOT,
                                                  stateful=True,
-                                                 raft_bootstrap=False,
                                                  raft_configuration={'snapshot_interval': 10, 'snapshot_threshold': 5, 'trailing_logs': 10,
                                                                      'LogLevel': 'INFO'})
         with f:
@@ -177,15 +175,15 @@ if __name__ == '__main__':
         search_da = DocumentArray([Document(text='SEARCH') for _ in range(10)])
         if index is True:
             index_da = DocumentArray([Document(text=f'ID {i}') for i in range(1000)])
-            client.index(inputs=index_da[0:10], request_size=1)
+            client.index(inputs=index_da[0:1], request_size=1)
             client.search(inputs=search_da[0:10], request_size=1)
-            time.sleep(30)
+            time.sleep(2)
             client.index(inputs=index_da[10:20], request_size=1)
             client.search(inputs=search_da[0:10], request_size=1)
-            time.sleep(30)
+            time.sleep(2)
             client.index(inputs=index_da[20:30], request_size=1)
             client.search(inputs=search_da[0:10], request_size=1)
-            time.sleep(30)
+            time.sleep(2)
             client.index(inputs=index_da[30:40], request_size=1)
             client.search(inputs=search_da[0:10], request_size=1)
         else:

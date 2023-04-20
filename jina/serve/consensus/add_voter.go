@@ -42,6 +42,7 @@ func AddVoter(target string, id string, voter_address string) error {
     var o grpc.DialOption = grpc.EmptyDialOption{}
     conn, err := grpc.Dial(target, grpc.WithInsecure(), grpc.WithBlock(), o)
     if err != nil {
+        add_voter_logger.Error("Error dialing:", "error", err)
         return err
     }
     defer conn.Close()
