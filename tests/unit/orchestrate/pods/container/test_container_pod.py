@@ -180,9 +180,9 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             def reload(self):
                 pass
 
-            def kill(self, signal, *args):
-                assert signal == 'SIGTERM'
-
+            def stop(self, *args, **kwargs):
+                pass
+        
         def __init__(self):
             pass
 

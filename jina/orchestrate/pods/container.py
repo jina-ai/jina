@@ -219,6 +219,9 @@ def run(
     cancel = threading.Event()
     fail_to_start = threading.Event()
 
+    def _cancel(*args, **kwargs):
+        logger.debug(f' Process observing container receives signal')
+        cancel.set()
     if not __windows__:
         try:
             for signame in {signal.SIGINT, signal.SIGTERM}:
@@ -456,5 +459,5 @@ class ContainerPod(BasePod):
         except docker.errors.NotFound:
             pass
         self.logger.debug(f'joining the process')
-        self.worker.join(*args, **kwargs)
+        self.worker.join(timeout=10, *args, **kwargs)
         self.logger.debug(f'successfully joined the process')
