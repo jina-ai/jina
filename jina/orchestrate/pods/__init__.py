@@ -29,7 +29,6 @@ def run(
         is_started: Union['multiprocessing.Event', 'threading.Event'],
         is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
         is_ready: Union['multiprocessing.Event', 'threading.Event'],
-        is_forked: Union['multiprocessing.Event', 'threading.Event'],
         jaml_classes: Optional[Dict] = None,
 ):
     """Method representing the :class:`BaseRuntime` activity.
@@ -60,10 +59,8 @@ def run(
     :param is_started: concurrency event to communicate runtime is properly started. Used for better logging
     :param is_shutdown: concurrency event to communicate runtime is terminated
     :param is_ready: concurrency event to communicate runtime is ready to receive messages
-    :param is_forked: concurrency event to communicate the pod has forked its process. Important to avoid gRPC issues concurrent requests while forking
     :param jaml_classes: all the `JAMLCompatible` classes imported in main process
     """
-    is_forked.set()
     req_handler_cls = None
     if runtime_cls == 'GatewayRuntime':
         from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
@@ -142,7 +139,6 @@ class BasePod(ABC):
         # or thread.f
         test_worker = multiprocessing.Process()
         self.is_ready = _get_event(test_worker)
-        self.is_forked = _get_event(test_worker)
         self.is_shutdown = _get_event(test_worker)
         self.cancel_event = _get_event(test_worker)
         self.is_started = _get_event(test_worker)
@@ -347,7 +343,6 @@ class Pod(BasePod):
                 'is_started': self.is_started,
                 'is_shutdown': self.is_shutdown,
                 'is_ready': self.is_ready,
-                'is_forked': self.is_forked,
                 'runtime_cls': self.runtime_cls,
                 'jaml_classes': JAML.registered_classes(),
             },

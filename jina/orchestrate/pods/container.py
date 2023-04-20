@@ -186,7 +186,6 @@ def run(
     is_started: Union['multiprocessing.Event', 'threading.Event'],
     is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
     is_ready: Union['multiprocessing.Event', 'threading.Event'],
-    is_forked: Union['multiprocessing.Event', 'threading.Event'],
 ):
     """Method to be run in a process that stream logs from a Container
 
@@ -210,9 +209,7 @@ def run(
     :param is_started: concurrency event to communicate runtime is properly started. Used for better logging
     :param is_shutdown: concurrency event to communicate runtime is terminated
     :param is_ready: concurrency event to communicate runtime is ready to receive messages
-    :param is_forked: concurrency event to communicate the pod has forked its process. Important to avoid gRPC issues concurrent requests while forking
     """
-    is_forked.set()
     import docker
 
     log_kwargs = copy.deepcopy(vars(args))
@@ -419,7 +416,6 @@ class ContainerPod(BasePod):
                 'is_started': self.is_started,
                 'is_shutdown': self.is_shutdown,
                 'is_ready': self.is_ready,
-                'is_forked': self.is_forked,
             },
             daemon=True,
         )
