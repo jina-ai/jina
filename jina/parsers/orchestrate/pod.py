@@ -4,7 +4,7 @@ import argparse
 from dataclasses import dataclass
 from typing import Dict
 
-from jina.enums import PodRoleType
+from jina.enums import PodRoleType, ProtocolType
 from jina.helper import random_port
 from jina.parsers.helper import (
     _SHOW_ALL_ARGS,
@@ -152,7 +152,8 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
             'The port argument can be either 1 single value in case only 1 protocol is used or multiple values when '
             'many protocols are used.'
         )
-        alias.extend(['--port-expose','--port-in'])
+        alias.extend(['--port-expose', '--port-in'])
+
     arg_group.add_argument(
         *alias,
         action=CastToIntAction,
@@ -160,6 +161,17 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         nargs='+',
         default=[random_port()],
         help=port_description,
+    )
+
+    server_name = 'Gateway' if pod_type == 'gateway' else 'Executor'
+    arg_group.add_argument(
+        '--protocol',
+        '--protocols',
+        nargs='+',
+        type=ProtocolType.from_string,
+        choices=list(ProtocolType),
+        default=[ProtocolType.GRPC],
+        help=f'Communication protocol of the server exposed by the {server_name}. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: {[protocol.to_string() for protocol in list(ProtocolType)]}.',
     )
 
     arg_group.add_argument(

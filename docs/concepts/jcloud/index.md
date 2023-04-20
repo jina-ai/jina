@@ -5,7 +5,7 @@
 ```{toctree}
 :hidden:
 
-yaml-spec
+configuration
 ```
 
 ```{figure} https://docs.jina.ai/_images/jcloud-banner.png
@@ -21,7 +21,7 @@ yaml-spec
 After building a Jina project, the next step is to deploy and host it on the cloud. [Jina AI Cloud](https://cloud.jina.ai/) is Jina's reliable, scalable and production-ready cloud-hosting solution that manages your project lifecycle without surprises or hidden development costs.
 
 ```{tip}
-At present, Jina AI Cloud hosts all your Jina projects and offers computational/storage resources **for free**!
+Are you ready to unlock the power of AI with Jina AI Cloud? Take a look at our [pricing options](https://cloud.jina.ai/pricing) now!
 ```
 
 ## Basics
@@ -85,12 +85,12 @@ jina flow --uses flow.yml
 #### Project folder
 
 ````{tip}
-The best practice of creating a JCloud project is to use:
+The best practice for creating a Jina AI Cloud project is to use:
 
 ```bash
 jc new
 ```
-This ensures the correct project structure accepted by JCloud.
+This ensures the correct project structure that is accepted by Jina AI Cloud.
 
 ````
 
@@ -309,16 +309,16 @@ jc scale good-martin-ca6bfdef84 --executor executor0 --replicas 2
 :width: 70%
 ```
 
+## Configuration
+
+Please refer to {ref}`Configuration <jcloud-configuration>` for configuring the Flow on Jina AI Cloud.
+
 ## Restrictions
 
-JCloud scales according to your needs. You can demand different resources (GPU/RAM/CPU/storage/instance-capacity) based on the needs of your Flows and Executors. If you have specific resource requirements, please contact us [on Slack](https://jina.ai/slack) or raise a [GitHub issue](https://github.com/jina-ai/jcloud/issues/new/choose).
+Jina AI Cloud scales according to your needs. You can demand different instance types with GPU/memory/CPU predefined based on the needs of your Flows and Executors. If you have specific resource requirements, please contact us [on Slack](https://jina.ai/slack) or raise a [GitHub issue](https://github.com/jina-ai/jcloud/issues/new/choose).
 
 
 ```{admonition} Restrictions
   
 - Deployments are only supported in the `us-east` region.
-- Each Executor is allocated a maximum of 4GB RAM, 2 CPU cores & 10GB of block storage.
-- Three Flows can be deployed at a time, out of which one Flow can use a GPU.
-- A maximum of two GPUs are allocated per Flow.
-- Flows with Executors using GPU are removed after 12 hours, whereas other Flows are removed after 72 hours.
 ```

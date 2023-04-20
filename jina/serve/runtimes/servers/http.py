@@ -16,19 +16,19 @@ class FastAPIBaseServer(BaseServer):
     a server and serving the application using that server."""
 
     def __init__(
-            self,
-            ssl_keyfile: Optional[str] = None,
-            ssl_certfile: Optional[str] = None,
-            uvicorn_kwargs: Optional[dict] = None,
-            proxy: bool = False,
-            title: Optional[str] = None,
-            description: Optional[str] = None,
-            no_debug_endpoints: Optional[bool] = False,
-            no_crud_endpoints: Optional[bool] = False,
-            expose_endpoints: Optional[str] = None,
-            expose_graphql_endpoint: Optional[bool] = False,
-            cors: Optional[bool] = False,
-            **kwargs
+        self,
+        ssl_keyfile: Optional[str] = None,
+        ssl_certfile: Optional[str] = None,
+        uvicorn_kwargs: Optional[dict] = None,
+        proxy: bool = False,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+        no_debug_endpoints: Optional[bool] = False,
+        no_crud_endpoints: Optional[bool] = False,
+        expose_endpoints: Optional[str] = None,
+        expose_graphql_endpoint: Optional[bool] = False,
+        cors: Optional[bool] = False,
+        **kwargs,
     ):
         """Initialize the FastAPIBaseGateway
         :param ssl_keyfile: the path to the key file
@@ -105,6 +105,7 @@ class FastAPIBaseServer(BaseServer):
                 await self.main_loop()
 
         if 'CICD_JINA_DISABLE_HEALTHCHECK_LOGS' in os.environ:
+
             class _EndpointFilter(logging.Filter):
                 def filter(self, record: logging.LogRecord) -> bool:
                     # NOTE: space is important after `GET /`, else all logs will be disabled.
@@ -142,7 +143,17 @@ class FastAPIBaseServer(BaseServer):
 
     @property
     def _should_exit(self):
+        """Property describing if server is ready to exit
+        :return: boolean indicating if Server ready to exit
+        """
         return self.server.should_exit
+
+    @property
+    def should_exit(self):
+        """Property describing if server is ready to exit
+        :return: boolean indicating if Server ready to exit
+        """
+        return self._should_exit
 
     @staticmethod
     def is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
@@ -155,10 +166,9 @@ class FastAPIBaseServer(BaseServer):
         """
         import urllib
         from http import HTTPStatus
+
         try:
-            conn = urllib.request.urlopen(
-                url=f'http://{ctrl_address}', timeout=timeout
-            )
+            conn = urllib.request.urlopen(url=f'http://{ctrl_address}', timeout=timeout)
             return conn.code == HTTPStatus.OK
         except:
             return False
@@ -179,7 +189,7 @@ def _install_health_check(app: 'FastAPI', logger):
     health_check_exists = False
     for route in app.routes:
         if getattr(route, 'path', None) == '/' and 'GET' in getattr(
-                route, 'methods', None
+            route, 'methods', []
         ):
             health_check_exists = True
             logger.warning(
@@ -201,3 +211,24 @@ def _install_health_check(app: 'FastAPI', logger):
 
             """
             return {}
+
+
+class HTTPServer(FastAPIBaseServer):
+    """
+    :class:`HTTPServer` is a FastAPIBaseServer that uses the default FastAPI app for a given request handler
+    """
+
+    @property
+    def app(self):
+        """Get the default base API app for Server
+        :return: Return a FastAPI app for the default HTTPGateway
+        """
+        return self._request_handler._http_fastapi_default_app(title=self.title,
+                                                               description=self.description,
+                                                               no_crud_endpoints=self.no_crud_endpoints,
+                                                               no_debug_endpoints=self.no_debug_endpoints,
+                                                               expose_endpoints=self.expose_endpoints,
+                                                               expose_graphql_endpoint=self.expose_graphql_endpoint,
+                                                               tracing=self.tracing,
+                                                               tracer_provider=self.tracer_provider,
+                                                               cors=self.cors)

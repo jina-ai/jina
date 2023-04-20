@@ -1,7 +1,7 @@
 (architecture-overview)=
 # {fas}`egg` Preliminaries
 
-This chapter introduces the basic terminology you will encounter in the docs. But first, look at the code below:
+This chapter introduces the basic terminology and concepts you will encounter in the docs. But first, look at the code below:
 
 (dummy-example)=
 ````{tab} Server
@@ -46,46 +46,77 @@ Running it gives you:
 ['hello, world!goodbye!', 'hello, world!goodbye!']
 ```
 
-
-This animation shows what's happening behind the scenes:
+## Architecture
+This animation shows what's happening behind the scenes when running the previous example:
 
 
 ```{figure} arch-overview.svg
 :align: center
 ```
 
+```{hint}
+:class: seealso
+GRPC, WebSocket, HTTP are network protocols for transmitting data. gRPC is always used for communication between {term}`Gateway` and {term}`Executor`.
+```
 
-The following concepts are covered in the user guide:
+```{hint}
+:class: seealso
+TLS is a security protocol to facilitate privacy and data security for communications over the Internet. The communication between {term}`Client` and {term}`Gateway` is protected by TLS.
+```
+
+Jina as an MLOPs framework is structured in two main layers that together with DocArray data structure and Jina Python Client complete the framework, all of them are covered in the user guide
+and contains the following concepts:
 
 ```{glossary}
 
-**Document**
-    Document is the fundamental data structure in Jina for representing multimodal data. It is the essential element of IO in Jina services. More information can be found in [DocArray's Docs](https://docs.docarray.org/fundamentals/document/). 
+**DocArray data structure**
 
-**DocumentArray**
-    DocumentArray is a list-like container of multiple Documents. More information can be found in [DocArray's Docs](https://docarray.jina.ai/fundamentals/documentarray/). 
+Data structures coming from [DocArray](https://docarray.org/legacy-docs/) are the basic fundamental data structure in Jina.
 
-**Executor**
-    {class}`~jina.Executor` is a Python class that can serve logic using {term}`Document`. Loosely speaking, each Executor is a gRPC microservice. 
 
-**Deployment**
-    Deployment is a layer that orchestrates {term}`Executor`. It can be used to serve an Executor as a standalone 
-    service or as part of a {term}`Flow`. It encapsulates and abstracts internal replication details.
+- **Document**
+    Document is the basic object for representing multimodal data. More information can be found in [DocArray's Docs](https://docarray.org/legacy-docs/fundamentals/document/). 
 
-**Flow**
-    {class}`~jina.Flow` ties multiple {class}`~jina.Executor`s together into a logic pipeline to achieve a task. If an Executor is a microservice, then a Flow is the end-to-end service. 
+- **DocumentArray**
+    DocumentArray is a list-like container of multiple Documents. It is the essential element of IO in Jina services. More information can be found in [DocArray's Docs](https://docarray.org/legacy-docs/fundamentals/documentarray/). 
 
-**Gateway**
+**Serving**
+
+This layer contains all the objects and concepts that are used to actually serve the logic and receive and respond to queries. These components are designed to be used
+as microservices ready to be containerized. 
+These components can be orchestrated by Jina's {term}`orchestration` layer or by other container orchestration frameworks such as Kubernetes or Docker Compose.
+ 
+
+- **Executor**
+    {class}`~jina.Executor` is a Python class that can serve logic using {term}`DocumentArray`. Loosely speaking, each Executor is a microservice.
+
+- **Gateway**
     Gateway is the entrypoint of a {term}`Flow`. It exposes multiple protocols for external communications; it routes all internal traffic.
-    
+
+
+**Orchestration**
+
+This layer contains the components making sure that the objects (especially the {term}`Executor`) are deployed and scaled for serving.
+They wrap them to provide them the **scalability** and **serving** capabilities. They also provide easy translation to other orchestration
+frameworks (Kubernetes, Docker compose) to provide more advanced and production-ready settings. They can also be directly deployed to [Jina AI Cloud](https://cloud.jina.ai)
+with a single command line.
+
+
+- **Deployment**
+    Deployment is a layer that orchestrates {term}`Executor`. It can be used to serve an Executor as a standalone 
+    service or as part of a {term}`Flow`. It encapsulates and abstracts internal replication and serving details.
+
+- **Flow**
+    {class}`~jina.Flow` ties multiple {class}`~jina.Deployments`s together into a logic pipeline to achieve a more complex task. It orchestrates both {term}`Executor`s and the {term}`Gateway`.
+
 **Client**
-    {class}`~jina.Client` connects to a {term}`Gateway` and sends/receives data from it.
+{class}`~jina.Client` connects to a {term}`Gateway` or {term}`Executor` and sends/receives/streams data from it.
 
-**gRPC, WebSocket, HTTP**
-    These are network protocols for transmitting data. gRPC is always used for communication between {term}`Gateway` and {term}`Deployment`.
+```
 
-**TLS**
-    TLS is a security protocol to facilitate privacy and data security for communications over the Internet. The communication between {term}`Client` and {term}`Gateway` is protected by TLS.
+```{admonition} Deployments on JCloud
+:class: important
+At present, JCloud is only available for Flows. We are currently working on supporting Deployments.
 ```
 
 ```{toctree}
