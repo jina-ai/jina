@@ -13,7 +13,7 @@ from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 from tests.helper import _generate_pod_args
 
-from .test_runtimes import _create_gateway_runtime, _create_head_runtime
+from tests.integration.runtimes.test_runtimes import _create_gateway_runtime, _create_head_runtime
 
 
 class DummyExec(Executor):
