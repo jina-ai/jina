@@ -64,9 +64,9 @@ class DeploymentType(type(ExitStack), type(JAMLCompatible)):
 
 class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=DeploymentType):
     """A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.
-    Internally, the pods can run with the process/thread backend. They can be also run in their own containers
+    Internally, the pods can run with the process/thread backend. They can also be run in their own containers
     :param args: arguments parsed from the CLI
-    :param needs: deployments names of preceding deployments, the output of these deployments are going into the input of this deployment
+    :param needs: deployments names of preceding deployments, the output of these deployments go into the input of this deployment
     """
 
     class _ReplicaSet:
@@ -441,7 +441,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             ports = self.ports
             hosts = [
                 __docker_host__
-                if host_is_local(host) and in_docker() and self.dockerized_uses
+                if host_is_local(host) and in_docker() and self._is_docker
                 else host
                 for host in self.hosts
             ]
@@ -687,9 +687,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
     @property
     def _is_docker(self) -> bool:
         """
-        Check if this deployment is to be run in docker.
+        Check if this deployment is to be run in Docker.
 
-        :return: True if this deployment is to be run in docker
+        :return: True if this deployment is to be run in Docker
         """
         from hubble.executor.helper import is_valid_docker_uri
 
@@ -709,7 +709,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
     @property
     def tls_enabled(self):
         """
-        Checks whether secure connection via tls is enabled for this Deployment.
+        Check if secure connection via TLS is enabled for this Deployment.
 
         :return: True if tls is enabled, False otherwise
         """
@@ -730,8 +730,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
     @property
     def grpc_metadata(self):
         """
-        Get the gRPC metadata for this deployment.
-        :return: The gRPC metadata for this deployment. If the deployment is a gateway, return None.
+        Get the gRPC metadata for this deployment
+        :return: The gRPC metadata for this deployment. If the deployment is a Gateway, return None.
         """
         return getattr(self.args, 'grpc_metadata', None)
 
@@ -775,7 +775,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
     @property
     def port(self):
         """
-        :return: the port of this deployment
+        :return: The port of this deployment
         """
         return self.first_pod_args.port[0]
 
@@ -784,7 +784,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         """Returns a list of ports exposed by this Deployment.
         Exposed means these are the ports a Client/Gateway is supposed to communicate with.
         For sharded deployments this will be the head_port.
-        For non-sharded deployments it will be all replica ports
+        For non-sharded deployments it will be all replica ports.
         .. # noqa: DAR201
         """
         if self.head_port:
@@ -803,23 +803,13 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         """Returns a list of host addresses exposed by this Deployment.
         Exposed means these are the host a Client/Gateway is supposed to communicate with.
         For sharded deployments this will be the head host.
-        For non-sharded deployments it will be all replica hosts
+        For non-sharded deployments it will be all replica hosts.
         .. # noqa: DAR201
         """
         if self.head_host:
             return [self.head_host]
         else:
             return [replica.host for replica in self.pod_args['pods'][0]]
-
-    @property
-    def dockerized_uses(self) -> bool:
-        """Checks if this Deployment uses a dockerized Executor
-
-        .. # noqa: DAR201
-        """
-        return self.args.uses.startswith('docker://') or self.args.uses.startswith(
-            'jinahub+docker://'
-        )
 
     def _parse_args(
         self, args: Namespace
@@ -923,7 +913,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
     def get_worker_host(pod_args, pod_is_container, head_is_container):
         """
         Check if the current pod and head are both containerized on the same host
-        If so __docker_host__ needs to be advertised as the worker's address to the head
+        If so, __docker_host__ needs to be advertised as the worker's address to the head
 
         :param pod_args: arguments of the worker pod
         :param pod_is_container: boolean specifying if pod is to be run in container
@@ -1041,9 +1031,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         return self
 
     def wait_start_success(self) -> None:
-        """Block until all pods starts successfully.
+        """Block until all pods start successfully.
 
-        If not successful, it will raise an error hoping the outer function to catch it
+        If not successful, it will raise an error hoping the outer function will catch it
         """
         try:
             if self.uses_before_pod is not None:
@@ -1061,9 +1051,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             raise
 
     async def async_wait_start_success(self) -> None:
-        """Block until all pods starts successfully.
+        """Block until all pods start successfully.
 
-        If not successful, it will raise an error hoping the outer function to catch it
+        If unsuccessful, it will raise an error hoping the outer function will catch it
         """
         try:
             coros = []
@@ -1106,7 +1096,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
     @property
     def is_ready(self) -> bool:
-        """Checks if Deployment is ready
+        """Check if Deployment is ready
 
         .. note::
             A Deployment is ready when all the Pods it contains are ready
@@ -1130,9 +1120,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
     @staticmethod
     def _parse_devices(value: str, num_devices: int):
-        """Parses a list of devices from string, like `start:stop:step` or 'num1,num2,num3` or combination of both.
+        """Parse a list of devices from string, like `start:stop:step` or 'num1,num2,num3` or combination of both.
 
-        :param value: a string like
+        :param value: a string-like
         :param num_devices: total number of devices
         :return: slice
         """
@@ -1173,11 +1163,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
     @staticmethod
     def _roundrobin_cuda_device(device_str: Optional[str], replicas: int):
-        """Parse cuda device string with RR prefix
+        """Parse CUDA device string with RR prefix
 
         :param device_str: `RRm:n`, where `RR` is the prefix, m:n is python slice format
         :param replicas: the number of replicas
-        :return: a map from replica id to device id
+        :return: a map from replica ID to device ID
         """
         if (
             device_str
@@ -1506,7 +1496,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
                 with ImportExtensions(
                     required=True,
-                    help_text='''reload requires watchfiles dependency to be installed. You can do `pip install 
+                    help_text='''reload requires watchfiles dependency to be installed. You can run `pip install 
                     watchfiles''',
                 ):
                     from watchfiles import watch
@@ -1636,10 +1626,10 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         """
         Converts a Jina Deployment into a Docker compose YAML file
 
-        If you don't want to rebuild image on Jina Hub,
+        If you don't want to rebuild image on Executor Hub,
         you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.
 
-        :param output_path: The path where to dump the yaml file
+        :param output_path: The path to dump the YAML file to
         :param network_name: The name of the network that will be used by the deployment
         """
         import yaml
@@ -1677,7 +1667,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         )
 
         self.logger.info(
-            f'Docker compose file has been created under [b]{output_path}[/b]. You can use it by running [b]{command}[/b]'
+            f'Docker Compose file has been created under [b]{output_path}[/b]. You can use it by running [b]{command}[/b]'
         )
 
     def _to_kubernetes_yaml(
@@ -1733,12 +1723,12 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         k8s_namespace: Optional[str] = None,
     ):
         """
-        Converts a Jina Deployment into a set of yaml deployments to deploy in Kubernetes.
+        Convert a Jina Deployment into a set of YAML deployments to deploy in Kubernetes.
 
-        If you don't want to rebuild image on Jina Hub,
+        If you don't want to rebuild image on Executor Hub,
         you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.
 
-        :param output_base_path: The base path where to dump all the yaml files
+        :param output_base_path: The base path where to dump all the YAML files
         :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
         """
         k8s_namespace = k8s_namespace or 'default'
@@ -1749,7 +1739,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             k8s_port=k8s_port or GrpcConnectionPool.K8S_PORT,
         )
         self.logger.info(
-            f'K8s yaml files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'
+            f'K8s YAML files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'
         )
 
     to_k8s_yaml = to_kubernetes_yaml

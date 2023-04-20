@@ -24,11 +24,12 @@ def set_pod_parser(parser=None, default_name=None):
 
     from jina.parsers.orchestrate.base import mixin_scalable_deployment_parser
     from jina.parsers.orchestrate.pod import mixin_pod_parser
-    from jina.parsers.orchestrate.runtimes.container import (
-        mixin_container_runtime_parser,
-    )
-    from jina.parsers.orchestrate.runtimes.remote import mixin_remote_runtime_parser
-    from jina.parsers.orchestrate.runtimes.worker import mixin_worker_runtime_parser
+    from jina.parsers.orchestrate.runtimes.container import \
+        mixin_container_runtime_parser
+    from jina.parsers.orchestrate.runtimes.remote import \
+        mixin_remote_runtime_parser
+    from jina.parsers.orchestrate.runtimes.worker import \
+        mixin_worker_runtime_parser
 
     mixin_scalable_deployment_parser(parser, default_name=default_name)
     mixin_worker_runtime_parser(parser)
@@ -54,7 +55,8 @@ def set_deployment_parser(parser=None):
 
     set_pod_parser(parser, default_name='executor')
 
-    from jina.parsers.orchestrate.deployment import mixin_base_deployment_parser
+    from jina.parsers.orchestrate.deployment import \
+        mixin_base_deployment_parser
 
     mixin_base_deployment_parser(parser)
 
@@ -137,14 +139,10 @@ def set_client_cli_parser(parser=None):
 
         parser = set_base_parser()
 
-    from jina.parsers.client import (
-        mixin_client_features_parser,
-        mixin_client_protocol_parser,
-    )
+    from jina.parsers.client import (mixin_client_features_parser,
+                                     mixin_client_protocol_parser)
     from jina.parsers.orchestrate.runtimes.remote import (
-        mixin_client_gateway_parser,
-        mixin_prefetch_parser,
-    )
+        mixin_client_gateway_parser, mixin_prefetch_parser)
 
     mixin_client_gateway_parser(parser)
     mixin_client_features_parser(parser)
@@ -171,7 +169,7 @@ def set_help_parser(parser=None):
     parser.add_argument(
         'query',
         type=str,
-        help='Lookup the usage & mention of the argument name in Jina API. The name can be fuzzy',
+        help='Look up usage & mention of argument name in Jina API. The name can be fuzzy',
     )
     return parser
 
@@ -200,7 +198,7 @@ def get_main_parser():
         sp.add_parser(
             'executor',
             help='Start an Executor',
-            description='Start an Executor. Executor is how Jina processes Document.',
+            description='Start an Executor. Jina uses Executors process Documents',
             formatter_class=_chf,
         )
     )
@@ -208,7 +206,7 @@ def get_main_parser():
     set_flow_parser(
         sp.add_parser(
             'flow',
-            description='Start a Flow. Flow is how Jina streamlines and distributes Executors.',
+            description='Start a Flow. Jina uses Flows to streamline and distribute Executors',
             help='Start a Flow',
             formatter_class=_chf,
         )
@@ -218,7 +216,7 @@ def get_main_parser():
         sp.add_parser(
             'ping',
             help='Ping an Executor/Flow',
-            description='Ping a remote Executor or a Flow.',
+            description='Ping a remote Executor or Flow.',
             formatter_class=_chf,
         )
     )
@@ -227,7 +225,7 @@ def get_main_parser():
         sp.add_parser(
             'export',
             help='Export Jina API/Flow',
-            description='Export Jina API and Flow to JSONSchema, Kubernetes YAML, or SVG flowchart.',
+            description='Export Jina API and Flow to JSONSchema, Kubernetes YAML, or SVG flowchart',
             formatter_class=_chf,
         )
     )
@@ -236,7 +234,7 @@ def get_main_parser():
         sp.add_parser(
             'new',
             help='Create a new Jina project',
-            description='Create a new Jina toy project with the predefined template.',
+            description='Create a new Jina project with a predefined template',
             formatter_class=_chf,
         )
     )
@@ -244,7 +242,7 @@ def get_main_parser():
     set_gateway_parser(
         sp.add_parser(
             'gateway',
-            description='Start a Gateway that receives client Requests via gRPC/REST interface',
+            description='Start a Gateway to receive client Requests via gRPC/RESTful interface',
             **(dict(help='Start a Gateway')) if _SHOW_ALL_ARGS else {},
             formatter_class=_chf,
         )
@@ -256,7 +254,7 @@ def get_main_parser():
     get_auth_parser(
         sp.add_parser(
             'auth',
-            description='Login to Jina AI with your GitHub/Google/Email account',
+            description='Log in to Jina AI with your GitHub/Google/Email account',
             formatter_class=_chf,
             help='Login to Jina AI',
         )
@@ -265,8 +263,8 @@ def get_main_parser():
     get_hub_parser(
         sp.add_parser(
             'hub',
-            help='Manage Executor on Jina Hub',
-            description='Push/Pull an Executor to/from Jina Hub',
+            help='Manage Executor on Executor Hub',
+            description='Push/pull Executor to/from Executor Hub',
             formatter_class=_chf,
         )
     )
