@@ -430,7 +430,7 @@ class ContainerPod(BasePod):
         """
         # terminate the docker
         try:
-            self._container.kill(signal='SIGTERM')
+            self._container.stop()
         finally:
             self.is_shutdown.wait(self.args.timeout_ctrl)
             self.logger.debug(f'terminating the runtime process')
