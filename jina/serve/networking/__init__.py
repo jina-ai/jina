@@ -340,7 +340,7 @@ class GrpcConnectionPool:
         # requests usually gets cancelled when the server shuts down
         # retries for cancelled requests will hit another replica in K8s
         if error.code() == grpc.StatusCode.UNAVAILABLE and 'not the leader' in error.details():
-            self._logger.debug(f'RAFT node of {current_deployment}is not the leader. Trying next replica, if available.')
+            self._logger.debug(f'RAFT node of {current_deployment} is not the leader. Trying next replica, if available.')
         else:
             self._logger.debug(
                 f'gRPC call to {current_deployment} errored, with error {format_grpc_error(error)} and for the {retry_i + 1}th time.'

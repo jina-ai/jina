@@ -54,8 +54,45 @@ def assert_all_replicas_indexed(client, search_da, num_replicas=3, key='pid'):
 
 
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
-@pytest.mark.parametrize('shards', [1, 2])
+@pytest.mark.parametrize('shards', [2, 1])
 def test_stateful_index_search(executor_cls, shards, tmpdir, stateful_exec_docker_image_built):
+    replicas = 3
+    peer_ports = {}
+    for shard in range(shards):
+        peer_ports[shard] = [random_port() for _ in range(replicas)]
+    dep = Deployment(
+        uses=executor_cls,
+        replicas=replicas,
+        workspace=tmpdir,
+        stateful=True,
+        raft_configuration={
+            'snapshot_interval': 10,
+            'snapshot_threshold': 5,
+            'trailing_logs': 10,
+            'LogLevel': 'INFO',
+        },
+        shards=shards,
+        volumes=[str(tmpdir) + ':' + '/workspace'],
+        peer_ports=peer_ports,
+        polling={'/index': 'ANY', '/search': 'ALL'}
+    )
+    with dep:
+        index_da = DocumentArray[TextDocWithId](
+            [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(100)]
+        )
+        search_da = DocumentArray[TextDocWithId]([TextDocWithId(id=f'{i}') for i in range(1)])
+        dep.index(inputs=index_da, request_size=1, return_type=DocumentArray[TextDocWithId])
+
+        # allowing some time for the state to be replicated
+        time.sleep(20)
+        # checking against the main read replica
+        assert_is_indexed(dep, search_da)
+        assert_all_replicas_indexed(dep, search_da)
+
+
+@pytest.mark.parametrize('executor_cls', [MyStateExecutor])
+@pytest.mark.parametrize('shards', [1])
+def test_stateful_index_search_restore(executor_cls, shards, tmpdir, stateful_exec_docker_image_built):
     replicas = 3
     peer_ports = {}
     for shard in range(shards):
@@ -98,7 +135,6 @@ def test_stateful_index_search(executor_cls, shards, tmpdir, stateful_exec_docke
         time.sleep(20)
         search_da = DocumentArray[TextDocWithId]([TextDocWithId(id=f'{i}') for i in range(200)])
         assert_all_replicas_indexed(dep, search_da)
-
 
 @pytest.mark.skip('Not sure how containerization will work with docarray v2')
 @pytest.mark.parametrize('shards', [1, 2])
