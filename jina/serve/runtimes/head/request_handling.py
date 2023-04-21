@@ -16,6 +16,7 @@ from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.monitoring import MonitoringRequestMixin
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from jina.types.request.data import DataRequest, Response
+from jina._docarray import docarray_v2
 
 if TYPE_CHECKING:  # pragma: no cover
     from prometheus_client import CollectorRegistry
@@ -265,26 +266,28 @@ class HeaderRequestHandler(MonitoringRequestMixin):
                 break
 
         uses_after_metadata = None
-        if uses_after_address:
-            result = await connection_pool.send_requests_once(
-                worker_results,
-                deployment='uses_after',
-                timeout=timeout_send,
-                retries=retries,
-            )
-            if issubclass(type(result), BaseException):
-                self._update_end_failed_requests_metrics()
-                raise result
-            else:
-                response_request, uses_after_metadata = result
-        elif len(worker_results) > 1 and reduce:
-            response_request = WorkerRequestHandler.reduce_requests(worker_results)
-        elif len(worker_results) > 1 and not reduce:
-            # worker returned multiple responses, but the head is configured to skip reduction
-            # just concatenate the docs in this case
-            response_request.data.docs = WorkerRequestHandler.get_docs_from_request(
-                requests
-            )
+        if not docarray_v2:
+            # for docaaray v2, we get the first successfull
+            if uses_after_address:
+                result = await connection_pool.send_requests_once(
+                    worker_results,
+                    deployment='uses_after',
+                    timeout=timeout_send,
+                    retries=retries,
+                )
+                if issubclass(type(result), BaseException):
+                    self._update_end_failed_requests_metrics()
+                    raise result
+                else:
+                    response_request, uses_after_metadata = result
+            elif len(worker_results) > 1 and reduce:
+                response_request = WorkerRequestHandler.reduce_requests(worker_results)
+            elif len(worker_results) > 1 and not reduce:
+                # worker returned multiple responses, but the head is configured to skip reduction
+                # just concatenate the docs in this case
+                response_request.data.docs = WorkerRequestHandler.get_docs_from_request(
+                    requests
+                )
 
         merged_metadata = self._merge_metadata(
             metadata,

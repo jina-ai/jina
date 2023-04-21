@@ -215,10 +215,10 @@ func Run(myAddr string,
     raftadmin.Register(grpcServer, r)
     reflection.Register(grpcServer)
     sigchnl := make(chan os.Signal, 1)
-    signal.Notify(sigchnl, syscall.SIGINT, syscall.SIGTERM)
+    signal.Notify(sigchnl, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, os.Interrupt)
     go func(){
         sig := <-sigchnl
-        run_logger.Debug("Received", "signal", sig)
+        run_logger.Info("Received", "signal", sig)
         grpcServer.GracefulStop()
         sock.Close()
         shutdownResult := r.Shutdown()

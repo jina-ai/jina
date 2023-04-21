@@ -398,7 +398,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[common,devel,test]" --no-cache-dir
-          pip install -U "git+https://github.com/docarray/docarray@feat-rewrite-v2#egg=docarray[common]"
+          pip install -U "git+https://github.com/docarray/docarray@main#egg=docarray[common]"
           pip install -U protobuf${{ matrix.protobuf-version }}
           jina
           export JINA_LOG_LEVEL="ERROR"
@@ -406,7 +406,7 @@ jobs:
         id: test
         run: |
           pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/docarray_v2
-
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/stateful
           echo "flag it as jina for codeoverage"
           echo "codecov_flag=jina" >> $GITHUB_OUTPUT
         timeout-minutes: 30
@@ -573,14 +573,12 @@ jobs:
       - name: Test
         id: test
         run: |
-          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/docarray_v2/*' --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/docarray_v2/*' --ignore-glob='tests/integration/stateful/*' --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
           if [[ "${{ matrix.test-path }}" == *"tests/integration/instrumentation/" ]]
           then
             echo "sleeping to let open telemetry export daemon thread expire by itself"
             sleep 2
-          fi 
-
-
+          fi
           echo "flag it as jina for codeoverage"
           echo "codecov_flag=jina" >> $GITHUB_OUTPUT
         timeout-minutes: 30
