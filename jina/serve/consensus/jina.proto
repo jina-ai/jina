@@ -1,3 +1,4 @@
+//protoc --go_out jina-go-proto --go_opt=paths=source_relative --go_opt=Mjina.proto=jina-go-proto=jraft/jina-go-proto --go-grpc_out jina-go-proto --go-grpc_opt=paths=source_relative --experimental_allow_proto3_optional jina.proto
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
@@ -7,7 +8,6 @@ import "docarray.proto";
 package jina;
 option go_package = "jraft/jina-go-proto";
 
-//protoc --go_out jina-go-proto --go_opt=paths=source_relative --go_opt=Mjina.proto=jina-go-proto=jraft/jina-go-proto --go-grpc_out jina-go-proto --go-grpc_opt=paths=source_relative --experimental_allow_proto3_optional jina.proto
 
 /**
  * Represents a the route paths of this message as perceived by the Gateway
@@ -117,7 +117,7 @@ message DataRequestProto {
 
     message DataContentProto {
         oneof documents {
-            docarray.DocumentArrayProto docs = 1; // the docs in this request
+            docarray.DocListProto docs = 1; // the docs in this request
             bytes docs_bytes = 2; // the docs in this request as bytes
         }
     }
@@ -221,15 +221,15 @@ message SnapshotStatusProto {
 
     enum Status {
         STATE_UNSPECIFIED = 0;
-        
+
         QUEUED = 1; // Snapshot Job is admitted (validated and persisted) and waiting for resources.
-        
+
         SCHEDULED = 2; // Snapshot Job is scheduled to run as soon as resource allocation is ready.
-        
+
         RUNNING = 3; // Resource allocation has been successful. Snapshot Job is RUNNING.
-        
+
         SUCCEEDED = 4; // Snapshot Job has finished successfully.
-        
+
         FAILED = 5; // Snapshot Job has failed.
 
         NOT_FOUND = 6; // If the specific snapshot id is unknown or not found
@@ -237,7 +237,7 @@ message SnapshotStatusProto {
 
     // status code
     Status status = 2;
-    
+
     // snapshot file
     string snapshot_file = 3;
 }
