@@ -8,5 +8,5 @@ class FilewriterExec(Executor):
     def foo(self, **kwargs):
         print(self.workspace)
         file = os.path.join(self.workspace, 'out.txt')
-        with open(file, 'w') as f:
+        with open(file, 'w', encoding='utf-8') as f:
             f.write('Filewriter was here')

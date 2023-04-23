@@ -18,7 +18,7 @@ try:
     if 'JINA_VERSION' not in os.environ:
         pkg_name = 'jina'
         libinfo_py = path.join(repo_dir, pkg_name, '__init__.py')
-        libinfo_content = open(libinfo_py, 'r').readlines()
+        libinfo_content = open(libinfo_py, 'r', encoding='utf-8').readlines()
         version_line = [
             l.strip() for l in libinfo_content if l.startswith('__version__')
         ][0]

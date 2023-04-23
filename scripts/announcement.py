@@ -8,7 +8,7 @@ conf_py = 'docs/conf.py'
 
 def rm_announce():
     # remove all announcement
-    with open(readme_md) as fp:
+    with open(readme_md, encoding='utf-8') as fp:
         _old = fp.read()
         _new = re.sub(
             r'(<!--startmsg-->\s*?\n).*(\n\s*?<!--endmsg-->)',
@@ -17,10 +17,10 @@ def rm_announce():
             flags=re.DOTALL,
         )
 
-    with open(readme_md, 'w') as fp:
+    with open(readme_md, 'w', encoding='utf-8') as fp:
         fp.write(_new)
 
-    with open(conf_py) as fp:
+    with open(conf_py, encoding='utf-8') as fp:
         _old = fp.read()
         _new = re.sub(
             r'(# start-announce\s*?\n).*(\n\s*?# end-announce)',
@@ -28,7 +28,7 @@ def rm_announce():
             _old,
             flags=re.DOTALL,
         )
-    with open(conf_py, 'w') as fp:
+    with open(conf_py, 'w', encoding='utf-8') as fp:
         fp.write(_new)
 
 
@@ -49,7 +49,7 @@ else:
         meetup_svg_url = f'<a href="{url}"><img src="https://github.com/jina-ai/jina/blob/master/{meetup_svg}?raw=true"></a>'
 
         # update meetup_svg
-        with open(meetup_svg) as fp:
+        with open(meetup_svg, encoding='utf-8') as fp:
             _old = fp.read()
             _new = re.sub(r'(<a href=").*(")', rf'\g<1>{url}\g<2>', _old)
             _new = re.sub(
@@ -59,11 +59,11 @@ else:
                 flags=re.DOTALL,
             )
 
-        with open(meetup_svg, 'w') as fp:
+        with open(meetup_svg, 'w', encoding='utf-8') as fp:
             fp.write(_new)
 
         # update readme_md
-        with open(readme_md) as fp:
+        with open(readme_md, encoding='utf-8') as fp:
             _old = fp.read()
             _new = re.sub(
                 r'(<!--startmsg-->\s*?\n).*(\n\s*?<!--endmsg-->)',
@@ -72,11 +72,11 @@ else:
                 flags=re.DOTALL,
             )
 
-        with open(readme_md, 'w') as fp:
+        with open(readme_md, 'w', encoding='utf-8') as fp:
             fp.write(_new)
 
         # update conf
-        with open(conf_py) as fp:
+        with open(conf_py, encoding='utf-8') as fp:
             _old = fp.read()
             _new = re.sub(
                 r'(# start-announce\s*?\n).*(\n\s*?# end-announce)',
@@ -85,5 +85,5 @@ else:
                 flags=re.DOTALL,
             )
 
-        with open(conf_py, 'w') as fp:
+        with open(conf_py, 'w', encoding='utf-8') as fp:
             fp.write(_new)

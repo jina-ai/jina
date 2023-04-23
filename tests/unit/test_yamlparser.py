@@ -23,7 +23,7 @@ def test_workspace(tmpdir):
 
 
 def test_yaml_expand():
-    with open(os.path.join(cur_dir, 'yaml/test-expand.yml')) as fp:
+    with open(os.path.join(cur_dir, 'yaml/test-expand.yml'), encoding='utf-8') as fp:
         a = JAML.load(fp)
     b = expand_dict(a)
     assert b['quote_dict'] == {}
@@ -37,7 +37,7 @@ def test_yaml_expand():
 
 
 def test_yaml_expand2():
-    with open(os.path.join(cur_dir, 'yaml/test-expand2.yml')) as fp:
+    with open(os.path.join(cur_dir, 'yaml/test-expand2.yml'), encoding='utf-8') as fp:
         a = JAML.load(fp)
     os.environ['ENV1'] = 'a'
     b = expand_dict(a)
@@ -50,7 +50,7 @@ def test_yaml_expand2():
 
 
 def test_yaml_expand3():
-    with open(os.path.join(cur_dir, 'yaml/test-expand3.yml')) as fp:
+    with open(os.path.join(cur_dir, 'yaml/test-expand3.yml'), encoding='utf-8') as fp:
         a = JAML.load(fp)
 
     b = expand_dict(a)
@@ -61,7 +61,7 @@ def test_yaml_expand4():
     os.environ['ENV1'] = 'a'
     os.environ['ENV2'] = '{"1": "2"}'
 
-    with open(os.path.join(cur_dir, 'yaml/test-expand4.yml')) as fp:
+    with open(os.path.join(cur_dir, 'yaml/test-expand4.yml'), encoding='utf-8') as fp:
         b = JAML.load(
             fp,
             substitute=True,
