@@ -1370,7 +1370,7 @@ def download_mermaid_url(mermaid_url, output) -> None:
 
     try:
         req = Request(mermaid_url, headers={'User-Agent': 'Mozilla/5.0'})
-        with open(output, 'wb', encoding='utf-8') as fp:
+        with open(output, 'wb') as fp:
             fp.write(urlopen(req).read())
     except:
         from jina.logging.predefined import default_logger

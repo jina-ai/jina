@@ -20,5 +20,5 @@ class MWUEncoder(Executor):
 
         os.makedirs(self.workspace, exist_ok=True)
         bin_path = os.path.join(self.workspace, f'{self.metas.name}.bin')
-        with open(bin_path, 'wb', encoding='utf-8') as f:
+        with open(bin_path, 'wb') as f:
             pickle.dump(self._greetings, f)

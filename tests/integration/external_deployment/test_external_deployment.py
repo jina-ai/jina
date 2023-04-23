@@ -430,9 +430,9 @@ def test_external_flow_with_grpc_metadata():
             bind_addr = f'{self.host}:{self.port}'
 
             if self.ssl_keyfile and self.ssl_certfile:
-                with open(self.ssl_keyfile, 'rb', encoding='utf-8') as f:
+                with open(self.ssl_keyfile, 'rb') as f:
                     private_key = f.read()
-                with open(self.ssl_certfile, 'rb', encoding='utf-8') as f:
+                with open(self.ssl_certfile, 'rb') as f:
                     certificate_chain = f.read()
 
                 server_credentials = grpc.ssl_server_credentials(
