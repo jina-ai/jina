@@ -591,7 +591,7 @@ def test_to_k8s_yaml(tmpdir, uses, replicas, shards):
     else:
         shards_iter = [f'-{shard}' for shard in range(shards)]
     for shard in shards_iter:
-        with open(os.path.join(tmpdir, f'executor{shard}.yml')) as f:
+        with open(os.path.join(tmpdir, f'executor{shard}.yml'), encoding='utf-8') as f:
             exec_yaml = list(yaml.safe_load_all(f))[-1]
             assert exec_yaml['spec']['replicas'] == replicas
             assert exec_yaml['spec']['template']['spec']['containers'][0][
@@ -599,7 +599,7 @@ def test_to_k8s_yaml(tmpdir, uses, replicas, shards):
             ].startswith('jinahub/')
 
     if shards != 1:
-        with open(os.path.join(tmpdir, f'executor-head.yml')) as f:
+        with open(os.path.join(tmpdir, f'executor-head.yml'), encoding='utf-8') as f:
             head_yaml = list(yaml.safe_load_all(f))[-1]
             assert head_yaml['metadata']['name'] == 'executor-head'
             assert head_yaml['spec']['replicas'] == 1

@@ -285,7 +285,7 @@ def in_docker():
     if os.path.exists('/.dockerenv'):
         return True
     if os.path.isfile(path):
-        with open(path) as file:
+        with open(path, encoding='utf-8') as file:
             return any('docker' in line for line in file)
     return False
 

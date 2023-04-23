@@ -29,7 +29,7 @@ def test_base_jtype(tmpdir):
 
     g = BaseGateway.load_config('Gateway', runtime_args={'port': [12345]})
     g.save_config(gateway_path)
-    with open(gateway_path, 'r') as file:
+    with open(gateway_path, 'r', encoding='utf-8') as file:
         conf = yaml.safe_load(file)
         assert 'jtype' in conf
         assert conf['jtype'] == 'Gateway'
@@ -46,7 +46,7 @@ def test_custom_jtype(tmpdir):
     e = BaseGateway.load_config('MyDummyGateway', runtime_args={'port': [12345]})
     print(f' e {type(e)} => {e.__dict__}')
     e.save_config(gateway_path)
-    with open(gateway_path, 'r') as file:
+    with open(gateway_path, 'r', encoding='utf-8') as file:
         conf = yaml.safe_load(file)
         assert 'jtype' in conf
         assert conf['jtype'] == 'MyDummyGateway'

@@ -123,7 +123,7 @@ def fill_overload(
             re.DOTALL,
         )
 
-    with open(filepath, 'w') as fp:
+    with open(filepath, 'w', encoding='utf-8') as fp:
         fp.write(final_code)
     return {regex_tag or cli_entrypoint: doc_str}
 
@@ -229,7 +229,7 @@ def fill_implementation_stub(
             re.DOTALL,
         )
 
-    with open(filepath, 'w') as fp:
+    with open(filepath, 'w', encoding='utf-8') as fp:
         fp.write(final_code)
 
 

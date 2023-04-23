@@ -47,5 +47,5 @@ gateway_schema['servers'] = []
 gateway_schema['servers'].append(
     {'url': f'http://localhost:{args.port}', 'description': 'Local Jina gateway'}
 )
-with open(GATEWAY_SCHEMA_FILENAME, 'w') as f:
+with open(GATEWAY_SCHEMA_FILENAME, 'w', encoding='utf-8') as f:
     json.dump(gateway_schema, f)

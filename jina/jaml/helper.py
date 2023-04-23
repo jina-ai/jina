@@ -169,7 +169,7 @@ def parse_config_source(
         return path, None
     elif allow_yaml_file and is_yaml_filepath(path):
         comp_path = complete_path(path, extra_search_paths)
-        return open(comp_path, encoding='utf8'), comp_path
+        return open(comp_path, encoding='utf-8'), comp_path
     elif allow_url and urllib.parse.urlparse(path).scheme in {'http', 'https'}:
         req = urllib.request.Request(path, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(req) as fp:
