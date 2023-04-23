@@ -598,7 +598,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             warnings.warn(
                 f'no "filename" is given, {self!r}\'s config will be saved to: {f}'
             )
-        with open(f, 'w', encoding='utf8') as fp:
+        with open(f, 'w', encoding='utf-8') as fp:
             JAML.dump(self, fp)
 
     @classmethod

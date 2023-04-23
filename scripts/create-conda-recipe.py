@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 def get_extra_requires(path):
     try:
-        with open(path) as fp:
+        with open(path, encoding='utf-8') as fp:
             extra_deps = defaultdict(set)
             for k in fp:
                 if k.strip() and not k.startswith('#'):
@@ -211,5 +211,5 @@ recipe_header = f'''{{% set name = "jina" %}}
 '''
 
 recipe = recipe_header + recipe
-with open('conda/meta.yaml', 'w+') as fp:
+with open('conda/meta.yaml', 'w+', encoding='utf-8') as fp:
     fp.write(recipe)

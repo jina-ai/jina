@@ -54,7 +54,7 @@ def local_hub_executor(tmpdir):
 
     pkg_path = Path(__file__).parent / 'dummyhub'
     stream_data = helper.archive_package(pkg_path)
-    with open(tmpdir / 'dummy_test.zip', 'wb') as temp_zip_file:
+    with open(tmpdir / 'dummy_test.zip', 'wb', encoding='utf-8') as temp_zip_file:
         temp_zip_file.write(stream_data.getvalue())
 
     hubapi.install_local(

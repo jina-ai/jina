@@ -77,7 +77,7 @@ def test_flow_after_plot(tmpdir):
 @pytest.mark.parametrize('vertical_layout', [True, False])
 def test_flow_vertical(tmpdir, vertical_layout):
     def get_image_size(fname):
-        with open(fname, 'rb') as fh:
+        with open(fname, 'rb', encoding='utf-8') as fh:
             head = fh.read(24)
             if len(head) != 24:
                 return

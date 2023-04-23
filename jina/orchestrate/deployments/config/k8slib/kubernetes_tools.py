@@ -42,7 +42,7 @@ def _get_yaml(template: str, params: Dict) -> Dict:
 
     path = os.path.join(DEFAULT_RESOURCE_DIR, f'{template}.yml')
 
-    with open(path) as f:
+    with open(path, encoding='utf-8') as f:
         content = f.read()
         for k, v in params.items():
             content = content.replace(f'{{{k}}}', str(v))
@@ -56,7 +56,7 @@ def _get_configmap_yaml(template: str, params: Dict):
 
     path = os.path.join(DEFAULT_RESOURCE_DIR, f'{template}.yml')
 
-    with open(path) as f:
+    with open(path, encoding='utf-8') as f:
         config_map = yaml.safe_load(f)
 
     config_map['metadata']['name'] = params.get('name') + '-' + 'configmap'

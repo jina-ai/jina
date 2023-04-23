@@ -199,7 +199,7 @@ class JinaLogger:
             if not os.path.exists(config_path):
                 config_path = old_config_path
 
-        with open(config_path) as fp:
+        with open(config_path, encoding='utf-8') as fp:
             config = JAML.load(fp)
 
         for h in config['handlers']:

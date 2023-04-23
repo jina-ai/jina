@@ -17,7 +17,7 @@ class FloatingTestExecutor(Executor):
     @requests
     def foo(self, docs, **kwargs):
         time.sleep(TIME_SLEEP_FLOATING)
-        with open(self.file_name, 'a+') as f:
+        with open(self.file_name, 'a+', encoding='utf-8') as f:
             f.write('here ')
 
         for d in docs:
@@ -53,7 +53,7 @@ def test_floating_executors(tmpdir, protocol):
             assert len(ret) == 1
             assert ret[0].text == ''
 
-    with open(file_name, 'r') as f:
+    with open(file_name, 'r', encoding='utf-8') as f:
         resulted_str = f.read()
 
     assert resulted_str == expected_str
@@ -89,7 +89,7 @@ def test_floating_executors_right_after_gateway(tmpdir, protocol):
             assert len(ret) == 1
             assert ret[0].text == ''
 
-    with open(file_name, 'r') as f:
+    with open(file_name, 'r', encoding='utf-8') as f:
         resulted_str = f.read()
 
     assert resulted_str == expected_str
@@ -130,12 +130,12 @@ def test_multiple_floating_points(tmpdir, protocol):
             assert len(ret) == 1
             assert ret[0].text == ''
 
-    with open(file_name1, 'r') as f:
+    with open(file_name1, 'r', encoding='utf-8') as f:
         resulted_str = f.read()
 
     assert resulted_str == expected_str
 
-    with open(file_name2, 'r') as f:
+    with open(file_name2, 'r', encoding='utf-8') as f:
         resulted_str = f.read()
 
     assert resulted_str == expected_str
@@ -184,12 +184,12 @@ def test_complex_flow(tmpdir, protocol):
             assert len(ret) == 1
             assert ret[0].text == ''
 
-    with open(file_name1, 'r') as f:
+    with open(file_name1, 'r', encoding='utf-8') as f:
         resulted_str = f.read()
 
     assert resulted_str == expected_str
 
-    with open(file_name2, 'r') as f:
+    with open(file_name2, 'r', encoding='utf-8') as f:
         resulted_str = f.read()
 
     assert resulted_str == expected_str
@@ -226,7 +226,7 @@ def test_floating_needs(needs, tmpdir):
             assert (end_time - start_time) < TIME_SLEEP_FLOATING
             assert response.texts == ['Hello World', 'Hello World']
 
-    with open(file_name, 'r') as f:
+    with open(file_name, 'r', encoding='utf-8') as f:
         resulted_str = f.read()
 
     assert resulted_str == expected_str
@@ -247,7 +247,7 @@ def test_floating_needs_more_complex(needs, tmpdir):
         @requests
         def foo(self, docs, **kwargs):
             time.sleep(TIME_SLEEP_FLOATING)
-            with open(self.file_name, 'a+') as f:
+            with open(self.file_name, 'a+', encoding='utf-8') as f:
                 for d in docs:
                     f.write(d.text)
 
@@ -302,12 +302,12 @@ def test_floating_needs_more_complex(needs, tmpdir):
                 'Hello World from FastAddExecutor',
             ]
 
-    with open(file_name1, 'r') as f:
+    with open(file_name1, 'r', encoding='utf-8') as f:
         resulted_str = f.read()
 
     assert resulted_str == expected_str1
 
-    with open(file_name2, 'r') as f:
+    with open(file_name2, 'r', encoding='utf-8') as f:
         resulted_str = f.read()
 
     assert resulted_str == expected_str2
@@ -325,7 +325,7 @@ def test_flow_all_floating(protocol, tmpdir):
         @requests
         def foo(self, docs, **kwargs):
             length_of_docs = len(docs)
-            with open(self.file_name, 'a+') as f:
+            with open(self.file_name, 'a+', encoding='utf-8') as f:
                 f.write(str(len(docs)))
 
     flow = Flow(protocol=protocol).add(name='A', floating=True, uses=FloatingTestExecutorWriteDocs,
@@ -333,7 +333,7 @@ def test_flow_all_floating(protocol, tmpdir):
     with flow:
         flow.post(on='/', inputs=DocumentArray.empty(1))
 
-    with open(file_name, 'r') as f:
+    with open(file_name, 'r', encoding='utf-8') as f:
         resulted_str = f.read()
 
     assert resulted_str == '1'
