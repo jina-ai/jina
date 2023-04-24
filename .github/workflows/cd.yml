@@ -129,7 +129,7 @@ jobs:
           python -m pip install wheel
           pip install -U protobuf==3.20.3
           pip install ".[common,devel,test]" --no-cache-dir
-          pip install -U "git+https://github.com/docarray/docarray@main#egg=docarray[common]"
+          pip install -U "docarray[common]"
           jina
           export JINA_LOG_LEVEL="ERROR"
       - name: Test
@@ -137,6 +137,7 @@ jobs:
         run: |
           pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/docarray_v2
           pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/stateful
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/deployment_http_composite
           echo "flag it as jina for codeoverage"
           echo "codecov_flag=jina" >> $GITHUB_OUTPUT
         timeout-minutes: 30
