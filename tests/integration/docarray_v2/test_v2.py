@@ -130,3 +130,79 @@ def test_deployments():
         )
         assert docs[0].embedding.shape == (100, 1)
         assert docs.__class__.doc_type == OutputDoc
+
+
+def test_deployments_with_shards_one_shard_fails():
+    from docarray.documents import TextDoc
+    from docarray import DocList, BaseDoc
+
+    class TextDocWithId(TextDoc):
+        id: str
+
+    class KVTestIndexer(Executor):
+        """Simulates an indexer where one shard would fail"""
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self._docs_dict = {}
+
+        @requests(on=['/index'])
+        def index(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[TextDocWithId]:
+            for doc in docs:
+                self._docs_dict[doc.id] = doc
+
+        @requests(on=['/search'])
+        def search(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[TextDocWithId]:
+            for doc in docs:
+                doc.text = self._docs_dict[doc.id].text
+
+    with Deployment(uses=KVTestIndexer, shards=2) as dep:
+        index_da = DocList[TextDocWithId](
+            [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(100)]
+        )
+        dep.index(inputs=index_da, request_size=1, return_type=DocList[TextDocWithId])
+        responses = dep.search(inputs=index_da, request_size=1, return_type=DocList[TextDocWithId])
+        for q, r in zip(index_da, responses):
+            assert q.text == r.text
+
+
+def test_deployments_with_shards_all_shards_return():
+    from docarray.documents import TextDoc
+    from docarray import DocList, BaseDoc
+
+    class TextDocWithId(TextDoc):
+        id: str
+
+    class ResultTestDoc(BaseDoc):
+        matches: DocList[TextDocWithId]
+
+    class SimilarityTestIndexer(Executor):
+        """Simulates an indexer where no shard would fail, they all pass results"""
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self._docs = DocList[TextDocWithId]()
+
+        @requests(on=['/index'])
+        def index(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[TextDocWithId]:
+            for doc in docs:
+                self._docs.append(doc)
+
+        @requests(on=['/search'])
+        def search(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[ResultTestDoc]:
+            resp = DocList[ResultTestDoc]()
+            for _ in docs:
+                res = ResultTestDoc(matches=self._docs[0:3])
+                resp.append(res)
+            return resp
+
+    with Deployment(uses=SimilarityTestIndexer, shards=2) as dep:
+        index_da = DocList[TextDocWithId](
+            [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(10)]
+        )
+        dep.index(inputs=index_da, request_size=1, return_type=DocList[TextDocWithId])
+        import time
+        time.sleep(2)
+        responses = dep.search(inputs=index_da[0:1], request_size=1, return_type=DocList[ResultTestDoc])
+        for r in responses:
+            assert len(r.matches) == 6

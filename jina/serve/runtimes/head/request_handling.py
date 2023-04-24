@@ -16,6 +16,7 @@ from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.monitoring import MonitoringRequestMixin
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from jina.types.request.data import DataRequest, Response
+from jina._docarray import docarray_v2
 
 if TYPE_CHECKING:  # pragma: no cover
     from prometheus_client import CollectorRegistry
@@ -260,6 +261,10 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         worker_results, metadata = zip(*worker_results)
 
         response_request = worker_results[0]
+        for i, worker_result in enumerate(worker_results):
+            if worker_result.header.status.code == jina_pb2.StatusProto.SUCCESS:
+                response_request = worker_result
+                break
         uses_after_metadata = None
         if uses_after_address:
             result = await connection_pool.send_requests_once(

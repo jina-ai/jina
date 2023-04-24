@@ -20,6 +20,7 @@ from jina.importer import ImportExtensions
 from jina.proto import jina_pb2
 from jina.serve.instrumentation import MetricsTimer
 from jina.types.request.data import DataRequest
+from jina._docarray import docarray_v2
 
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry.propagate import Context
@@ -701,8 +702,12 @@ class WorkerRequestHandler:
         :return: the resulting DocumentArray
         """
         if docs_matrix:
-            da = docs_matrix[0]
-            da.reduce_all(docs_matrix[1:])
+            if not docarray_v2:
+                da = docs_matrix[0]
+                da.reduce_all(docs_matrix[1:])
+            else:
+                from docarray.utils.reduce import reduce_all
+                da = reduce_all(docs_matrix)
             return da
 
     @staticmethod
