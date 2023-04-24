@@ -2,7 +2,8 @@ import time
 
 import pytest
 
-from jina import Flow
+from jina import Client, Flow
+from jina.helper import random_port
 from tests.integration.instrumentation import (
     ExecutorFailureWithTracing,
     ExecutorTestWithTracing,
@@ -52,7 +53,7 @@ def test_gateway_instrumentation(
         f.post(f'/search', DocumentArray.empty(), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
-        time.sleep(8)
+        time.sleep(20)
 
     services = get_services(jaeger_port)
     expected_services = ['executor0/rep-0', 'gateway/rep-0', client_type]
@@ -71,6 +72,73 @@ def test_gateway_instrumentation(
     assert len(trace_ids) == 1
 
 
+def test_multiprotocol_gateway_instrumentation(
+    jaeger_port,
+    otlp_collector,
+    otlp_receiver_port,
+):
+    grpc_port, http_port, websocket_port = random_port(), random_port(), random_port()
+    f = Flow(
+        protocol=['grpc', 'http', 'websocket'],
+        port=[grpc_port, http_port, websocket_port],
+        tracing=True,
+        traces_exporter_host='http://localhost',
+        traces_exporter_port=otlp_receiver_port,
+    ).add(
+        uses=ExecutorTestWithTracing,
+        tracing=True,
+        traces_exporter_host='http://localhost',
+        traces_exporter_port=otlp_receiver_port,
+    )
+
+    with f:
+        from docarray import DocumentArray
+
+        Client(
+            protocol='grpc',
+            port=grpc_port,
+            tracing=True,
+            traces_exporter_host='http://localhost',
+            traces_exporter_port=otlp_receiver_port,
+        ).post(f'/search', DocumentArray.empty(), continue_on_error=True)
+        Client(
+            protocol='http',
+            port=http_port,
+            tracing=True,
+            traces_exporter_host='http://localhost',
+            traces_exporter_port=otlp_receiver_port,
+        ).post(f'/search', DocumentArray.empty(), continue_on_error=True)
+        Client(
+            protocol='websocket',
+            port=websocket_port,
+            tracing=True,
+            traces_exporter_host='http://localhost',
+            traces_exporter_port=otlp_receiver_port,
+        ).post(f'/search', DocumentArray.empty(), continue_on_error=True)
+
+        # give some time for the tracing and metrics exporters to finish exporting.
+        # the client is slow to export the data
+        time.sleep(20)
+
+    services = get_services(jaeger_port)
+    expected_services = [
+        'executor0/rep-0',
+        'gateway/rep-0',
+        'GRPCClient',
+        'HTTPClient',
+        'WebSocketClient',
+    ]
+    assert len(services) == 5
+    assert set(services).issubset(expected_services)
+
+    gateway_traces = get_traces(jaeger_port, 'gateway/rep-0')
+    (server_spans, client_spans, executor_spans) = partition_spans_by_kind(
+        gateway_traces
+    )
+    assert len(client_spans) == 11
+    assert len(server_spans) == 12
+
+
 def test_executor_instrumentation(jaeger_port, otlp_collector, otlp_receiver_port):
     f = Flow(
         tracing=True,
@@ -84,7 +152,7 @@ def test_executor_instrumentation(jaeger_port, otlp_collector, otlp_receiver_por
         f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
-        time.sleep(8)
+        time.sleep(20)
 
     client_type = 'GRPCClient'
     client_traces = get_traces(jaeger_port, client_type)
@@ -114,7 +182,7 @@ def test_head_instrumentation(jaeger_port, otlp_collector, otlp_receiver_port):
         f.post(f'/search', DocumentArray.empty(), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
-        time.sleep(8)
+        time.sleep(20)
 
     client_type = 'GRPCClient'
     client_traces = get_traces(jaeger_port, client_type)
@@ -167,7 +235,7 @@ def test_flow_metrics(
         f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
-        time.sleep(8)
+        time.sleep(20)
 
     exported_jobs = get_exported_jobs(prometheus_client)
     assert exported_jobs.issubset(instrumented_services_sharded)

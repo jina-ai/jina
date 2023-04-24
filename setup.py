@@ -28,7 +28,7 @@ if (3, 7, 0) <= sys.version_info < (3, 8, 0):
 try:
     pkg_name = 'jina'
     libinfo_py = path.join(pkg_name, '__init__.py')
-    libinfo_content = open(libinfo_py, 'r', encoding='utf8').readlines()
+    libinfo_content = open(libinfo_py, 'r', encoding='utf-8').readlines()
     version_line = [l.strip() for l in libinfo_content if l.startswith('__version__')][
         0
     ]
@@ -37,7 +37,7 @@ except FileNotFoundError:
     __version__ = '0.0.0'
 
 try:
-    with open('README.md', encoding='utf8') as fp:
+    with open('README.md', encoding='utf-8') as fp:
         _long_description = fp.read()
 except FileNotFoundError:
     _long_description = ''
@@ -57,17 +57,17 @@ def register_ac():
         v_fp = os.path.join(home, v)
         if os.path.exists(v_fp) or os.environ.get('SHELL', '').endswith(k):
             try:
-                with open(v_fp) as fp:
+                with open(v_fp, encoding='utf-8') as fp:
                     sh_content = fp.read()
             except FileNotFoundError:
                 sh_content = ''
-            with open(resource_path % k) as fr:
+            with open(resource_path % k, encoding='utf-8') as fr:
                 if re.findall(regex, sh_content, flags=re.S):
                     _sh_content = re.sub(regex, fr.read(), sh_content, flags=re.S)
                 else:
                     _sh_content = sh_content + '\n\n' + fr.read()
             if _sh_content:
-                with open(v_fp, 'w') as fp:
+                with open(v_fp, 'w', encoding='utf-8') as fp:
                     fp.write(_sh_content)
 
     try:
@@ -106,7 +106,7 @@ def get_extra_requires(path, add_all=True):
     from collections import defaultdict
 
     try:
-        with open(path) as fp:
+        with open(path, encoding='utf-8') as fp:
             extra_deps = defaultdict(set)
             for k in fp:
                 if k.strip() and not k.startswith('#'):

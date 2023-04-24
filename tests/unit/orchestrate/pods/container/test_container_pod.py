@@ -6,10 +6,11 @@ import requests
 
 from jina import Flow
 from jina.constants import __cache_path__
-from jina.enums import GatewayProtocolType
+from jina.enums import ProtocolType
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port
 from jina.orchestrate.pods.container import ContainerPod
+from jina.serve.runtimes import servers
 from jina.parsers import set_gateway_parser
 from tests.helper import _generate_pod_args, _validate_dummy_custom_gateway_response
 
@@ -156,9 +157,12 @@ def test_failing_executor(fail_start_docker_image_built):
 def test_pass_arbitrary_kwargs(monkeypatch, mocker):
     import docker
 
-    mocker.patch(
-        'jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.is_ready',
-        return_value=True,
+    def _mock_is_ready(*args, **kwargs):
+        return True
+    monkeypatch.setattr(
+        servers.BaseServer,
+        'is_ready',
+        _mock_is_ready,
     )
 
     class MockContainers:
@@ -176,9 +180,9 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             def reload(self):
                 pass
 
-            def kill(self, signal, *args):
-                assert signal == 'SIGTERM'
-
+            def stop(self, *args, **kwargs):
+                pass
+        
         def __init__(self):
             pass
 
@@ -277,7 +281,7 @@ def test_container_pod_custom_gateway(dummy_custom_gateway_docker_image_built):
 
         # validate protocol inside the gateway
         resp = requests.get(f'http://127.0.0.1:{port}/runtime_info').json()
-        assert resp['protocols'] == [GatewayProtocolType.HTTP]
+        assert resp['protocols'] == [ProtocolType.HTTP]
         assert resp['ports'] == [int(port)]
 
         time.sleep(

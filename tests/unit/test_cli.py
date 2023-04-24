@@ -16,9 +16,9 @@ from tests.helper import _generate_pod_args
 
 
 def test_export_api(tmpdir):
-    with open(tmpdir / 'test.yml', 'w', encoding='utf8') as fp:
+    with open(tmpdir / 'test.yml', 'w', encoding='utf-8') as fp:
         JAML.dump(api_to_dict(), fp)
-    with open(tmpdir / 'test.json', 'w', encoding='utf8') as fp:
+    with open(tmpdir / 'test.json', 'w', encoding='utf-8') as fp:
         json.dump(api_to_dict(), fp)
 
 
@@ -101,10 +101,10 @@ def test_parse_env_map():
 @pytest.mark.slow
 def test_ping():
     a1 = _generate_pod_args()
-    a2 = set_ping_parser().parse_args(['executor', f'0.0.0.0:{a1.port}'])
+    a2 = set_ping_parser().parse_args(['executor', f'0.0.0.0:{a1.port[0]}'])
 
     a3 = set_ping_parser().parse_args(
-        ['executor', f'0.0.0.1:{a1.port}', '--timeout', '1000']
+        ['executor', f'0.0.0.1:{a1.port[0]}', '--timeout', '1000']
     )
 
     with pytest.raises(SystemExit) as cm:
@@ -132,7 +132,7 @@ def test_ping():
 def test_logo_silence(cmd):
     from jina.constants import __resources_path__
 
-    with open(os.path.join(__resources_path__, 'jina.logo')) as fp:
+    with open(os.path.join(__resources_path__, 'jina.logo'), encoding='utf-8') as fp:
         logo_str = fp.read()
 
     s = subprocess.run(

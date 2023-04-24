@@ -24,7 +24,7 @@ def get_docker_network(client) -> Optional[str]:
     except docker.errors.NotFound:
         try:
             # https://stackoverflow.com/a/52988227/15683245
-            with open('/proc/1/cpuset') as f:
+            with open('/proc/1/cpuset', encoding='utf-8') as f:
                 hostname = os.path.basename(f.read().rstrip())
             container = client.containers.get(hostname)
         except Exception:

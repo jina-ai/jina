@@ -72,13 +72,8 @@ def test_use_from_local_hub_deployment_level(
 
     def _mock_fetch(
         name,
-        tag,
-        image_required=True,
-        rebuild_image=True,
-        *,
-        prefer_platform=None,
-        secret=None,
-        force=False,
+        *args,
+        **kwargs,
     ):
         mock(name=name)
         return (
@@ -108,13 +103,8 @@ def test_use_from_local_hub_flow_level(mocker, monkeypatch, local_hub_executor, 
 
     def _mock_fetch(
         name,
-        tag,
-        image_required=True,
-        rebuild_image=True,
-        *,
-        prefer_platform=None,
-        secret=None,
-        force=False,
+        *args,
+        **kwargs,
     ):
         mock(name=name)
         return (

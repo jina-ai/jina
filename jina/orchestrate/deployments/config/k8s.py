@@ -89,7 +89,7 @@ class K8sDeploymentConfig:
                 image_name=image_name,
                 container_cmd='["jina"]',
                 container_args=f'{container_args}',
-                replicas=1,
+                replicas=self.num_replicas,
                 pull_policy='IfNotPresent',
                 jina_deployment_name='gateway',
                 pod_type=self.pod_type,
@@ -202,6 +202,7 @@ class K8sDeploymentConfig:
                 pull_policy='IfNotPresent',
                 jina_deployment_name=self.jina_deployment_name,
                 pod_type=self.pod_type,
+                protocol=self.common_args.protocol,
                 shard_id=self.shard_id,
                 env=cargs.env,
                 env_from_secret=cargs.env_from_secret,
@@ -304,7 +305,7 @@ class K8sDeploymentConfig:
                     )
                     connection_list[
                         str(i)
-                    ] = f'{name}.{self.k8s_namespace}.svc:{GrpcConnectionPool.K8S_PORT}'
+                    ] = f'{name}.{self.k8s_namespace}.svc:{k8s_port}'
 
                 parsed_args['head_deployment'].connection_list = json.dumps(
                     connection_list
@@ -330,10 +331,7 @@ class K8sDeploymentConfig:
             cargs.uses_before = None
             cargs.uses_after = None
             if args.name != 'gateway':
-                if shards > 1:
-                    cargs.port = GrpcConnectionPool.K8S_PORT
-                else:
-                    cargs.port = k8s_port
+                cargs.port = k8s_port
                 cargs.port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
 
             cargs.uses_before_address = None

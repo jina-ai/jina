@@ -5,7 +5,7 @@ import string
 import tempfile
 import warnings
 from types import SimpleNamespace
-from typing import Any, Dict, List, Optional, TextIO, Tuple, Union
+from typing import Any, Dict, List, Optional, Set, TextIO, Tuple, Union
 
 import yaml
 from yaml.constructor import FullConstructor
@@ -598,7 +598,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             warnings.warn(
                 f'no "filename" is given, {self!r}\'s config will be saved to: {f}'
             )
-        with open(f, 'w', encoding='utf8') as fp:
+        with open(f, 'w', encoding='utf-8') as fp:
             JAML.dump(self, fp)
 
     @classmethod
@@ -616,6 +616,9 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         py_modules: Optional[str] = None,
         runtime_args: Optional[Dict[str, Any]] = None,
         uses_dynamic_batching: Optional[Dict] = None,
+        needs: Optional[Set[str]] = None,
+        include_gateway: bool = True,
+        noblock_on_start: bool = False,
         **kwargs,
     ) -> 'JAMLCompatible':
         """A high-level interface for loading configuration with features
@@ -669,7 +672,10 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param py_modules: Optional py_module from which the object need to be loaded
         :param runtime_args: Optional dictionary of parameters runtime_args to be directly passed without being parsed into a yaml config
         :param uses_dynamic_batching: dictionary of parameters to overwrite from the default config's dynamic_batching field
-
+        :param needs: the name of the Deployment(s) that this Deployment receives data from. One can also use "gateway" to indicate the connection with the gateway.
+        :param include_gateway: Defines if the gateway deployment should be included, defaults to True
+        :param noblock_on_start: If set, starting a Pod/Deployment does not block the thread/process. It then relies on '
+            '`wait_start_success` at outer function for the postpone check.
         :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
         """
@@ -740,6 +746,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                     else _extra_search_paths,
                 )
 
+            from jina.enums import DeploymentRoleType
+            from jina.orchestrate.deployments import Deployment
             from jina.orchestrate.flow.base import Flow
 
             if issubclass(cls, Flow):
@@ -758,6 +766,24 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                     JAML.dump(no_tag_yml),
                     include_unknown_tags=False,
                     jtype_whitelist=('Flow',),
+                )
+            elif issubclass(cls, Deployment):
+                no_tag_yml['with']['extra_search_paths'] = (
+                    no_tag_yml['with'].get('extra_search_paths') or []
+                ) + (extra_search_paths or [])
+                no_tag_yml['with']['include_gateway'] = (
+                    no_tag_yml['with'].get('include_gateway') or include_gateway
+                )
+                no_tag_yml['with']['noblock_on_start'] = noblock_on_start
+                no_tag_yml['with']['deployment_role'] = DeploymentRoleType.DEPLOYMENT
+
+                if needs:
+                    no_tag_yml['needs'] = list(needs)
+
+                tag_yml = JAML.unescape(
+                    JAML.dump(no_tag_yml),
+                    include_unknown_tags=False,
+                    jtype_whitelist=('Deployment',),
                 )
             else:
                 # revert yaml's tag and load again, this time with substitution

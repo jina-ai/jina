@@ -1,9 +1,10 @@
 import random
-import pytest
 from pathlib import Path
-from typing import Dict, Tuple, Callable
+from typing import Callable, Dict, Tuple
+
 import opentelemetry.sdk.metrics.export
 import opentelemetry.sdk.metrics.view
+import pytest
 from opentelemetry.sdk.metrics.export import (
     AggregationTemporality,
     MetricExporter,
@@ -59,36 +60,37 @@ class DirMetricExporter(MetricExporter):
 def monkeypatch_metric_exporter(
     tmpdir_factory: pytest.TempdirFactory,
 ) -> Tuple[Callable, Callable]:
-    import opentelemetry.sdk.metrics.export
-    from pathlib import Path
-    import time
-    import os
     import json
+    import os
+    import time
+    from pathlib import Path
+
+    import opentelemetry.sdk.metrics.export
 
     collect_path = Path(tmpdir_factory.mktemp('otel-collector'))
     metrics_path = collect_path / 'metrics'
     os.mkdir(metrics_path)
 
     tick_counter_filename = collect_path / 'tick_counter'
-    with open(tick_counter_filename, 'w') as f:
+    with open(tick_counter_filename, 'w', encoding='utf-8') as f:
         f.write('0')
 
     def collect_metrics():
-        with open(tick_counter_filename, 'r') as f:
+        with open(tick_counter_filename, 'r', encoding='utf-8') as f:
             tick_counter = int(f.read())
-        with open(tick_counter_filename, 'w') as f:
+        with open(tick_counter_filename, 'w', encoding='utf-8') as f:
             f.write(str(tick_counter + 1))
         time.sleep(2)
 
     def _get_service_name(otel_measurement):
-        return otel_measurement[0]['resource_metrics'][0]['resource']['attributes'][
+        return otel_measurement['resource_metrics'][0]['resource']['attributes'][
             'service.name'
         ]
 
     def read_metrics():
         def read_metric_file(filename):
-            with open(filename, 'r') as f:
-                return list(map(json.loads, f.readlines()))
+            with open(filename, 'r', encoding='utf-8') as f:
+                return json.loads(f.read())
 
         return {
             _get_service_name(i): i
@@ -108,7 +110,7 @@ def monkeypatch_metric_exporter(
         def _ticker(self) -> None:
             interval_secs = self._export_interval_millis / 1e3
             while not self._shutdown_event.wait(interval_secs):
-                with open(tick_counter_filename, 'r') as f:
+                with open(tick_counter_filename, 'r', encoding='utf-8') as f:
                     tick_counter = int(f.read())
                 if tick_counter != self.tick_counter:
                     self.tick_counter = tick_counter

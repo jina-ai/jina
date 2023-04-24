@@ -42,7 +42,7 @@ for k, v in all_meth.items():
 doc_md = '../docs/fundamentals/document/fluent-interface.md'
 text = '\n'.join(all_s)
 
-with open(doc_md) as fp:
+with open(doc_md, encoding='utf-8') as fp:
     _old = fp.read()
     _new = re.sub(
         r'(<!-- fluent-interface-start -->\s*?\n).*(\n\s*?<!-- fluent-interface-end -->)',
@@ -51,5 +51,5 @@ with open(doc_md) as fp:
         flags=re.DOTALL,
     )
 
-with open(doc_md, 'w') as fp:
+with open(doc_md, 'w', encoding='utf-8') as fp:
     fp.write(_new)

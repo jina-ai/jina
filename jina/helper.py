@@ -805,7 +805,7 @@ class ArgNamespace:
         """
         args = []
         from jina.serve.executors import BaseExecutor
-        from jina.serve.gateway import BaseGateway
+        from jina.serve.runtimes.gateway.gateway import BaseGateway
 
         for k, v in kwargs.items():
             k = k.replace('_', '-')
@@ -1482,7 +1482,7 @@ def extend_rest_interface(app: 'FastAPI') -> 'FastAPI':
 def get_ci_vendor() -> Optional[str]:
     from jina.constants import __resources_path__
 
-    with open(os.path.join(__resources_path__, 'ci-vendors.json')) as fp:
+    with open(os.path.join(__resources_path__, 'ci-vendors.json'), encoding='utf-8') as fp:
         all_cis = json.load(fp)
         for c in all_cis:
             if isinstance(c['env'], str) and c['env'] in os.environ:
@@ -1644,10 +1644,10 @@ def is_port_free(host: Union[str, List[str]], port: Union[int, List[int]]) -> bo
             return all([_single_port_free(_h, port) for _h in host])
 
 
-def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
+def send_telemetry_event(event: str, obj_cls_name: Any, **kwargs) -> None:
     """Sends in a thread a request with telemetry for a given event
     :param event: Event leading to the telemetry entry
-    :param obj: Object to be tracked
+    :param obj_cls_name: Class name of the object to be tracked
     :param kwargs: Extra kwargs to be passed to the data sent
     """
 
@@ -1662,7 +1662,7 @@ def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
             metas, _ = get_full_version()
             data = base64.urlsafe_b64encode(
                 json.dumps(
-                    {**metas, 'event': f'{obj.__class__.__name__}.{event}', **kwargs}
+                    {**metas, 'event': f'{obj_cls_name}.{event}', **kwargs}
                 ).encode('utf-8')
             )
 

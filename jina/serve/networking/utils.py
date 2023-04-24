@@ -1,6 +1,6 @@
 import ipaddress
 import os
-from typing import TYPE_CHECKING, List, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Union
 
 import grpc
 from grpc_health.v1 import health_pb2, health_pb2_grpc
@@ -8,6 +8,7 @@ from grpc_reflection.v1alpha.reflection_pb2 import ServerReflectionRequest
 from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
 
 from jina.proto import jina_pb2_grpc
+from jina.serve.helper import get_server_side_grpc_options
 from jina.serve.networking.instrumentation import (
     _aio_channel_with_tracing_interceptor,
     _channel_with_tracing_interceptor,
@@ -23,7 +24,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 def get_grpc_channel(
     address: str,
-    options: Optional[list] = None,
+    options: Optional[Union[list, Dict[str, Any]]] = None,
     asyncio: bool = False,
     tls: bool = False,
     root_certificates: Optional[str] = None,
@@ -39,12 +40,11 @@ def get_grpc_channel(
     :param tls: If True, use tls encryption for the grpc channel
     :param root_certificates: The path to the root certificates for tls, only used if tls is True
     :param aio_tracing_client_interceptors: List of async io gprc client tracing interceptors for tracing requests if asycnio is True
-    :param tracing_client_interceptor: A gprc client tracing interceptor for tracing requests if asyncio is False
+    :param tracing_client_interceptor: A grpc client tracing interceptor for tracing requests if asyncio is False
     :return: A grpc channel or an asyncio channel
     """
 
-    if options is None:
-        options = get_default_grpc_options()
+    merged_grpc_options = get_server_side_grpc_options(options)
 
     credentials = None
     if tls:
@@ -52,11 +52,11 @@ def get_grpc_channel(
 
     if asyncio:
         return _aio_channel_with_tracing_interceptor(
-            address, credentials, options, aio_tracing_client_interceptors
+            address, credentials, merged_grpc_options, aio_tracing_client_interceptors
         )
 
     return _channel_with_tracing_interceptor(
-        address, credentials, options, tracing_client_interceptor
+        address, credentials, merged_grpc_options, tracing_client_interceptor
     )
 
 
@@ -67,6 +67,7 @@ def send_request_sync(
     tls=False,
     root_certificates: Optional[str] = None,
     endpoint: Optional[str] = None,
+    channel_options: Optional[list] = None,
 ) -> Request:
     """
     Sends a request synchronously to the target via grpc
@@ -77,7 +78,7 @@ def send_request_sync(
     :param tls: if True, use tls encryption for the grpc channel
     :param root_certificates: the path to the root certificates for tls, only used if tls is True
     :param endpoint: endpoint to target with the request
-
+    :param channel_options: gRPC channel options
     :returns: the response request
     """
 
@@ -87,6 +88,7 @@ def send_request_sync(
                 target,
                 tls=tls,
                 root_certificates=root_certificates,
+                options=channel_options,
             ) as channel:
                 metadata = (('endpoint', endpoint),) if endpoint else None
                 stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -134,6 +136,40 @@ def send_health_check_sync(
                 raise
 
 
+async def send_health_check_async(
+    target: str,
+    timeout=99.0,
+    tls=False,
+    root_certificates: Optional[str] = None,
+) -> health_pb2.HealthCheckResponse:
+    """
+    Sends a request asynchronously to the target via grpc
+    :param target: where to send the request to, like 126.0.0.1:8080
+    :param timeout: timeout for the send
+    :param tls: if True, use tls encryption for the grpc channel
+    :param root_certificates: the path to the root certificates for tls, only used if tls is True
+    :returns: the response health check
+    """
+
+    for i in range(2):
+        try:
+            async with get_grpc_channel(
+                target,
+                tls=tls,
+                asyncio=True,
+                root_certificates=root_certificates,
+            ) as channel:
+                health_check_req = health_pb2.HealthCheckRequest()
+                health_check_req.service = ''
+                stub = health_pb2_grpc.HealthStub(channel)
+                return await stub.Check(health_check_req, timeout=timeout)
+        except grpc.RpcError as e:
+            if e.code() != grpc.StatusCode.UNAVAILABLE or i == 1:
+                raise
+        except Exception as e:
+            raise e
+
+
 def send_requests_sync(
     requests: List[Request],
     target: str,
@@ -141,6 +177,7 @@ def send_requests_sync(
     tls=False,
     root_certificates: Optional[str] = None,
     endpoint: Optional[str] = None,
+    channel_options: Optional[list] = None,
 ) -> Request:
     """
     Sends a list of requests synchronically to the target via grpc
@@ -151,7 +188,7 @@ def send_requests_sync(
     :param tls: if True, use tls for the grpc channel
     :param root_certificates: the path to the root certificates for tls, only used if tls is True
     :param endpoint: endpoint to target with the request
-
+    :param channel_options: gRPC channel options
     :returns: the response request
     """
 
@@ -161,6 +198,7 @@ def send_requests_sync(
                 target,
                 tls=tls,
                 root_certificates=root_certificates,
+                options=channel_options,
             ) as channel:
                 metadata = (('endpoint', endpoint),) if endpoint else None
                 stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
@@ -175,38 +213,13 @@ def send_requests_sync(
                 raise
 
 
-def get_default_grpc_options():
-    """
-    Returns a list of default options used for creating grpc channels.
-    Documentation is here https://github.com/grpc/grpc/blob/master/include/grpc/impl/codegen/grpc_types.h
-    :returns: list of tuples defining grpc parameters
-    """
-
-    return [
-        ('grpc.max_send_message_length', -2),
-        ('grpc.max_receive_message_length', -2),
-        # for the following see this blog post for the choice of default value https://cs.mcgill.ca/~mxia2/2019/02/23/Using-gRPC-in-Production/
-        ('grpc.keepalive_time_ms', 9999),
-        # send keepalive ping every 9 second, default is 2 hours.
-        ('grpc.keepalive_timeout_ms', 4999),
-        # keepalive ping time out after 4 seconds, default is 20 seconds
-        ('grpc.keepalive_permit_without_calls', True),
-        # allow keepalive pings when there's no gRPC calls
-        ('grpc.http1.max_pings_without_data', 0),
-        # allow unlimited amount of keepalive pings without data
-        ('grpc.http1.min_time_between_pings_ms', 10000),
-        # allow grpc pings from client every 9 seconds
-        ('grpc.http1.min_ping_interval_without_data_ms', 5000),
-        # allow grpc pings from client without data every 4 seconds
-    ]
-
-
 async def send_request_async(
     request: Request,
     target: str,
     timeout: float = 0.0,
     tls: bool = False,
     root_certificates: Optional[str] = None,
+    channel_options: Optional[Dict[str, Any]] = None,
 ) -> Request:
     """
     Sends a request asynchronously to the target via grpc
@@ -216,7 +229,7 @@ async def send_request_async(
     :param timeout: timeout for the send
     :param tls: if True, use tls for the grpc channel
     :param root_certificates: the path to the root certificates for tls, only used if tls is True
-
+    :param channel_options: gRPC channel options
     :returns: the response request
     """
 
@@ -225,6 +238,7 @@ async def send_request_async(
         asyncio=True,
         tls=tls,
         root_certificates=root_certificates,
+        options=channel_options,
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
         return await stub.process_single_data(request, timeout=timeout)
@@ -271,7 +285,7 @@ def in_docker():
     if os.path.exists('/.dockerenv'):
         return True
     if os.path.isfile(path):
-        with open(path) as file:
+        with open(path, encoding='utf-8') as file:
             return any('docker' in line for line in file)
     return False
 

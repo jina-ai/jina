@@ -125,11 +125,11 @@ jobs:
       - name: Prepare environment
         run: |
           docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
-          pip install -U "git+https://github.com/docarray/docarray@feat-rewrite-v2#egg=docarray[common]"
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install -U protobuf==3.20.3
           pip install ".[common,devel,test]" --no-cache-dir
+          pip install -U "git+https://github.com/docarray/docarray@feat-rewrite-v2#egg=docarray[common]"
           jina
           export JINA_LOG_LEVEL="ERROR"
       - name: Test
@@ -322,8 +322,6 @@ jobs:
           curl --proto '=https' --tlsv1.2 -sSfL https://run.linkerd.io/install | sh
           pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/k8s/test_k8s_flow.py
         timeout-minutes: 30
-        env:
-          JINA_K8S_USE_TEST_PIP: 1
       - name: Check codecov file
         id: check_files
         uses: andstor/file-existence-action@v1
@@ -361,10 +359,8 @@ jobs:
         run: |
           export LINKERD2_VERSION=stable-2.11.4
           curl --proto '=https' --tlsv1.2 -sSfL https://run.linkerd.io/install | sh
-          pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/k8s/test_k8s_deployment.py ./tests/k8s/test_graceful_request_handling.py
+          pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/k8s/test_k8s_deployment.py ./tests/k8s/test_k8s_graceful_request_handling.py
         timeout-minutes: 30
-        env:
-          JINA_K8S_USE_TEST_PIP: 1
       - name: Check codecov file
         id: check_files
         uses: andstor/file-existence-action@v1
@@ -405,8 +401,6 @@ jobs:
           curl --proto '=https' --tlsv1.2 -sSfL https://linkerd.github.io/linkerd-smi/install | sh
           pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/k8s/test_k8s_failures.py
         timeout-minutes: 30
-        env:
-          JINA_K8S_USE_TEST_PIP: 1
       - name: Check codecov file
         id: check_files
         uses: andstor/file-existence-action@v1

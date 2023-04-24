@@ -18,7 +18,8 @@ from jina.helper import random_port
 from jina.serve.executors.metas import get_default_metas
 from jina.serve.networking.utils import send_request_async
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.worker import WorkerRuntime
+from jina.serve.runtimes.servers import BaseServer
+from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from tests.helper import _generate_pod_args
 
 
@@ -304,7 +305,7 @@ def test_workspace_not_exists(tmpdir):
             super().__init__(*args, **kwargs)
 
         def do(self, *args, **kwargs):
-            with open(os.path.join(self.workspace, 'text.txt'), 'w') as f:
+            with open(os.path.join(self.workspace, 'text.txt'), 'w', encoding='utf-8') as f:
                 f.write('here!')
 
     e = MyExec(metas={'workspace': tmpdir})
@@ -450,7 +451,7 @@ def test_to_k8s_yaml(tmpdir, exec_type, uses):
         executor_type=exec_type,
     )
 
-    with open(os.path.join(tmpdir, 'executor0', 'executor0.yml')) as f:
+    with open(os.path.join(tmpdir, 'executor0', 'executor0.yml'), encoding='utf-8') as f:
         exec_yaml = list(yaml.safe_load_all(f))[-1]
         assert exec_yaml['spec']['template']['spec']['containers'][0][
             'image'
@@ -466,7 +467,7 @@ def test_to_k8s_yaml(tmpdir, exec_type, uses):
             'gateway',
         }
 
-        with open(os.path.join(tmpdir, 'gateway', 'gateway.yml')) as f:
+        with open(os.path.join(tmpdir, 'gateway', 'gateway.yml'), encoding='utf-8') as f:
             gatewayyaml = list(yaml.safe_load_all(f))[-1]
             assert (
                 gatewayyaml['spec']['template']['spec']['containers'][0]['ports'][0][
@@ -497,7 +498,7 @@ def test_to_docker_compose_yaml(tmpdir, exec_type, uses):
         executor_type=exec_type,
     )
 
-    with open(compose_file) as f:
+    with open(compose_file, encoding='utf-8') as f:
         services = list(yaml.safe_load_all(f))[0]['services']
         assert services['executor0']['image'].startswith('jinahub/')
 
@@ -532,7 +533,7 @@ async def test_blocking_sync_exec():
     cancel_event = multiprocessing.Event()
 
     def start_runtime(args, cancel_event):
-        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
+        with AsyncNewLoopRuntime(args, cancel_event=cancel_event, req_handler_cls=WorkerRequestHandler) as runtime:
             runtime.run_forever()
 
     runtime_thread = Process(
@@ -542,9 +543,9 @@ async def test_blocking_sync_exec():
     )
     runtime_thread.start()
 
-    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host}:{args.port}',
+        ctrl_address=f'{args.host}:{args.port[0]}',
         ready_or_shutdown_event=Event(),
     )
 
@@ -555,7 +556,7 @@ async def test_blocking_sync_exec():
             asyncio.create_task(
                 send_request_async(
                     _create_test_data_message(),
-                    target=f'{args.host}:{args.port}',
+                    target=f'{args.host}:{args.port[0]}',
                     timeout=3.0,
                 )
             )

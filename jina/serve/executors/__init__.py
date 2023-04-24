@@ -112,20 +112,42 @@ class _FunctionWithSchema(NamedTuple):
     def get_function_with_schema(fn: Callable) -> T:
 
         docs_annotation = fn.__annotations__.get('docs', None)
-        if type(docs_annotation) is str:
+
+        if docs_annotation is None:
+            pass
+        elif type(docs_annotation) is str:
             warnings.warn(
                 f'`docs` annotation must be a type hint, got {docs_annotation}'
                 ' instead, you should maybe remove the string annotation. Default value'
                 'DocumentArray will be used instead.'
             )
             docs_annotation = None
+        elif not isinstance(docs_annotation, type):
+            warnings.warn(
+                f'`docs` annotation must be a class if you want to use it'
+                f' as schema input, got {docs_annotation}. try to remove the Optional'
+                f'.fallback to default behavior'
+                ''
+            )
+            docs_annotation = None
 
         return_annotation = fn.__annotations__.get('return', None)
-        if type(return_annotation) is str:
+
+        if return_annotation is None:
+            pass
+        elif type(return_annotation) is str:
             warnings.warn(
-                f'`docs` annotation must be a type hint, got {return_annotation}'
-                ' instead, you should maybe remove the string annotation. Default value'
-                'DocumentArray will be used instead.'
+                f'`return` annotation must be a class if you want to use it'
+                f' as schema input, got {docs_annotation}. try to remove the Optional'
+                f'.fallback to default behavior'
+                ''
+            )
+            return_annotation = None
+        elif not isinstance(return_annotation, type):
+            warnings.warn(
+                f'`return` annotation must be a class if you want to use it'
+                f'as schema input, got {docs_annotation}, fallback to default behavior'
+                ''
             )
             return_annotation = None
 
@@ -218,12 +240,40 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 self._dry_run_func
             )
 
+        self._lock = contextlib.AsyncExitStack()
         try:
-            self._lock = (
-                asyncio.Lock()
-            )  # Lock to run in Executor non async methods in a way that does not block the event loop to do health checks without the fear of having race conditions or multithreading issues.
+            if not getattr(self.runtime_args, 'allow_concurrent', False):
+                self._lock = (
+                    asyncio.Lock()
+                )  # Lock to run in Executor non async methods in a way that does not block the event loop to do health checks without the fear of having race conditions or multithreading issues.
         except RuntimeError:
-            self._lock = contextlib.AsyncExitStack()
+            pass
+
+    def _get_endpoint_models_dict(self):
+        from jina._docarray import docarray_v2
+
+        if not docarray_v2:
+            from docarray.document.pydantic_model import PydanticDocument
+
+        endpoint_models = {}
+        for endpoint, function_with_schema in self.requests.items():
+            if docarray_v2:
+                request_schema = function_with_schema.request_schema
+                response_schema = function_with_schema.response_schema
+            else:
+                request_schema = PydanticDocument
+                response_schema = PydanticDocument
+            endpoint_models[endpoint] = {
+                'input': {
+                    'name': request_schema.__name__,
+                    'model': request_schema,
+                },
+                'output': {
+                    'name': response_schema.__name__,
+                    'model': response_schema,
+                },
+            }
+        return endpoint_models
 
     def _dry_run_func(self, *args, **kwargs):
         pass
@@ -586,8 +636,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     def serve(
         self,
         *,
+        allow_concurrent: Optional[bool] = False,
         compression: Optional[str] = None,
         connection_list: Optional[str] = None,
+        cors: Optional[bool] = False,
+        description: Optional[str] = None,
         disable_auto_volume: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
@@ -598,6 +651,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         floating: Optional[bool] = False,
         force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
+        grpc_channel_options: Optional[dict] = None,
         grpc_metadata: Optional[dict] = None,
         grpc_server_options: Optional[dict] = None,
         host: Optional[List[str]] = ['0.0.0.0'],
@@ -615,6 +669,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         port: Optional[int] = None,
         port_monitoring: Optional[int] = None,
         prefer_platform: Optional[str] = None,
+        protocol: Optional[Union[str, List[str]]] = ['GRPC'],
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
@@ -623,9 +678,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'WorkerRuntime',
         shards: Optional[int] = 1,
+        ssl_certfile: Optional[str] = None,
+        ssl_keyfile: Optional[str] = None,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
+        title: Optional[str] = None,
         tls: Optional[bool] = False,
         traces_exporter_host: Optional[str] = None,
         traces_exporter_port: Optional[int] = None,
@@ -639,6 +697,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         uses_metas: Optional[dict] = None,
         uses_requests: Optional[dict] = None,
         uses_with: Optional[dict] = None,
+        uvicorn_kwargs: Optional[dict] = None,
         volumes: Optional[List[str]] = None,
         when: Optional[dict] = None,
         workspace: Optional[str] = None,
@@ -646,8 +705,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     ):
         """Serve this Executor in a temporary Flow. Useful in testing an Executor in remote settings.
 
+        :param allow_concurrent: Allow concurrent requests to be processed by the Executor. This is only recommended if the Executor is thread-safe.
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
+        :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
+        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -668,6 +730,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
               - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param grpc_metadata: The metadata to be passed to the gRPC request.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
@@ -704,6 +767,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
+        :param protocol: Communication protocol of the server exposed by the Executor. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your
@@ -717,9 +781,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
+        :param ssl_certfile: the path to the certificate file
+        :param ssl_keyfile: the path to the key file
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
+        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param tls: If set, connect to deployment using tls encryption
         :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
         :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
@@ -743,6 +810,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
+        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
+
+          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         :param volumes: The path on the host to be mounted inside the container.
 
           Note,
@@ -783,6 +853,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
 
         """
+        warnings.warn(
+            f'Executor.serve() is no more supported and will be deprecated soon. Use Deployment to serve an Executor instead: '
+            f'https://docs.jina.ai/concepts/executor/serve/',
+            DeprecationWarning,
+        )
         from jina.orchestrate.deployments import Deployment
 
         dep = Deployment(
@@ -835,6 +910,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param uses_dynamic_batching: dictionary of parameters to overwrite from the default config's dynamic_batching field
         :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
         """
+        warnings.warn(
+            f'Executor.to_kubernetes_yaml() is no more supported and will be deprecated soon. Use Deployment to export kubernetes YAML files: '
+            f'https://docs.jina.ai/concepts/executor/serve/#serve-via-kubernetes',
+            DeprecationWarning,
+        )
         from jina.orchestrate.flow.base import Flow
 
         Flow(**kwargs).add(
@@ -878,6 +958,13 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param uses_dynamic_batching: dictionary of parameters to overwrite from the default config's requests field
         :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
         """
+
+        warnings.warn(
+            f'Executor.to_docker_compose_yaml() is no more supported and will be deprecated soon. Use Deployment to export docker compose YAML files: '
+            f'https://docs.jina.ai/concepts/executor/serve/#serve-via-docker-compose',
+            DeprecationWarning,
+        )
+
         from jina.orchestrate.flow.base import Flow
 
         f = Flow(**kwargs).add(

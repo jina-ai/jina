@@ -18,7 +18,7 @@ try:
     if 'JINA_VERSION' not in os.environ:
         pkg_name = 'jina'
         libinfo_py = path.join(repo_dir, pkg_name, '__init__.py')
-        libinfo_content = open(libinfo_py, 'r').readlines()
+        libinfo_content = open(libinfo_py, 'r', encoding='utf-8').readlines()
         version_line = [
             l.strip() for l in libinfo_content if l.startswith('__version__')
         ][0]
@@ -79,7 +79,6 @@ html_css_files = [
     'docbot.css',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css',
 ]
-html_js_files = ['https://cdn.jsdelivr.net/npm/qabot@0.4']
 htmlhelp_basename = slug
 html_show_sourcelink = False
 html_favicon = '_static/favicon.ico'
@@ -194,20 +193,6 @@ ogp_custom_meta_tags = [
 ]
 
 
-def configure_qa_bot_ui(app):
-    # This sets the server address to <qa-bot>
-    server_address = app.config['server_address']
-    js_text = (
-        """
-        document.addEventListener('DOMContentLoaded', function() { 
-            document.querySelector('qa-bot').setAttribute('server', '%s');
-        });
-        """
-        % server_address
-    )
-    app.add_js_file(None, body=js_text)
-
-
 def setup(app):
     from sphinx.domains.python import PyField
     from sphinx.locale import _
@@ -234,9 +219,3 @@ def setup(app):
             ),
         ],
     )
-    app.add_config_value(
-        name='server_address',
-        default=os.getenv('JINA_DOCSBOT_SERVER', 'https://jina-ai-jina.docsqa.jina.ai'),
-        rebuild='',
-    )
-    app.connect('builder-inited', configure_qa_bot_ui)

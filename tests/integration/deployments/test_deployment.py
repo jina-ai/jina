@@ -387,6 +387,27 @@ def test_deployment_uses(uses):
         pass
 
 
+@pytest.mark.parametrize(
+    'config_file,expected_replicas,expected_shards,expected_text',
+    [
+        ('deployment-nested-executor-config.yml', 3, 2, 'hello'),
+        ('deployment-embedded-executor-config.yml', 2, 3, 'world'),
+        ('deployment-overridden-executor-config.yml', 3, 3, 'helloworld'),
+    ],
+)
+def test_deployment_load_config(
+    config_file, expected_replicas, expected_shards, expected_text
+):
+    depl = Deployment.load_config(config_file)
+
+    with depl:
+        assert depl.args.replicas == expected_replicas
+        assert depl.args.shards == expected_shards
+        docs = depl.post(on='/', inputs=DocumentArray.empty(5))
+        assert len(docs) == 5
+        assert all(doc.text == expected_text for doc in docs)
+
+
 class MyServeExec(Executor):
     @requests
     def foo(self, docs, **kwargs):
@@ -456,3 +477,25 @@ def test_deployment_client_dynamic_batching(enable_dynamic_batching):
         docs = depl.post(on='/bar', inputs=DocumentArray.empty(5))
 
     assert docs.texts == ['bar' for _ in docs]
+
+
+@pytest.mark.parametrize('shards', [1, 2])
+@pytest.mark.parametrize('replicas', [1, 2, 3])
+def test_deployment_shards_replicas(shards, replicas):
+
+    class PIDExecutor(Executor):
+
+        @requests
+        def foo(self, docs, **kwargs):
+            import os
+            for doc in docs:
+                doc.tags['pid'] = os.getpid()
+
+
+    dep = Deployment(uses=PIDExecutor, shards=shards, replicas=replicas)
+
+    with dep:
+        docs = dep.post(on='/', inputs=DocumentArray.empty(20), request_size=1)
+
+    returned_pids = set([doc.tags['pid'] for doc in docs])
+    assert len(returned_pids) == shards * replicas

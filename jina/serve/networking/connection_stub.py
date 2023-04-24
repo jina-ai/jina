@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import grpc
 
@@ -220,6 +220,7 @@ def create_async_channel_stub(
     tls=False,
     root_certificates: Optional[str] = None,
     aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
+    channel_options: Optional[Union[list, Dict[str, Any]]] = None,
 ) -> Tuple[_ConnectionStubs, grpc.aio.Channel]:
     """
     Creates an async GRPC Channel. This channel has to be closed eventually!
@@ -231,6 +232,7 @@ def create_async_channel_stub(
     :param metrics: NetworkingMetrics object that contain optional metrics
     :param histograms: NetworkingHistograms object that optionally record metrics
     :param aio_tracing_client_interceptors: List of async io gprc client tracing interceptors for tracing requests for asycnio channel
+    :param channel_options: gRPC channel options
     :returns: DataRequest stubs and an async grpc channel
     """
     channel = get_grpc_channel(
@@ -239,6 +241,7 @@ def create_async_channel_stub(
         tls=tls,
         root_certificates=root_certificates,
         aio_tracing_client_interceptors=aio_tracing_client_interceptors,
+        options=channel_options,
     )
 
     return (

@@ -9,7 +9,7 @@ from docarray.document.generators import from_ndarray
 
 from jina import Document, DocumentArray, Executor, Flow, requests
 from jina.constants import __windows__
-from jina.enums import FlowBuildLevel, GatewayProtocolType
+from jina.enums import FlowBuildLevel, ProtocolType
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_identity
 from jina.orchestrate.deployments import Deployment
@@ -73,7 +73,7 @@ def test_simple_flow(protocol):
 
 @pytest.mark.slow
 def test_flow_identical(tmpdir):
-    with open(os.path.join(cur_dir, '../../../yaml/test-flow.yml')) as fp:
+    with open(os.path.join(cur_dir, '../../../yaml/test-flow.yml'), encoding='utf-8') as fp:
         a = Flow.load_config(fp)
 
     b = (
@@ -619,11 +619,11 @@ def test_load_flow_with_custom_gateway(tmpdir):
     f = Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml'))
 
     assert f.port == 12345
-    assert f.protocol == GatewayProtocolType.HTTP
+    assert f.protocol == ProtocolType.HTTP
 
     with Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml')) as f:
         assert f.port == 12345
-        assert f.protocol == GatewayProtocolType.HTTP
+        assert f.protocol == ProtocolType.HTTP
         _validate_flow(f)
 
 
@@ -632,9 +632,9 @@ def test_flow_multi_protocol_aliases():
     f = Flow(ports=[12345, 12345, 12345], protocols=['http', 'grpc', 'websocket'])
     assert f.port == [12345, 12345, 12345]
     assert f.protocol == [
-        GatewayProtocolType.HTTP,
-        GatewayProtocolType.GRPC,
-        GatewayProtocolType.WEBSOCKET,
+        ProtocolType.HTTP,
+        ProtocolType.GRPC,
+        ProtocolType.WEBSOCKET,
     ]
 
 
@@ -645,7 +645,7 @@ def _validate_flow(f):
         if name != 'gateway':
             assert (
                 addresses[name][0]
-                == f'{pod.protocol}://{pod.host}:{pod.head_port if pod.head_port else pod.port}'
+                == f'{pod.protocol.lower()}://{pod.host}:{pod.head_port if pod.head_port else pod.port}'
             )
             for n in pod.needs:
                 assert name in graph_dict[n if n != 'gateway' else 'start-gateway']
@@ -657,7 +657,7 @@ def _validate_flow(f):
 def test_set_port_deployment(port_generator):
     port = port_generator()
     with Flow().add(uses=Executor, port=port) as f:
-        assert int(f._deployment_nodes['executor0'].pod_args['pods'][0][0].port) == port
+        assert int(f._deployment_nodes['executor0'].pod_args['pods'][0][0].port[0]) == port
         f.index(inputs=[])
 
 
@@ -690,9 +690,9 @@ def test_set_deployment_grpc_metadata():
 @pytest.mark.parametrize(
     'protocol,expected_protocol',
     [
-        ('http', GatewayProtocolType.HTTP),
-        (['GRPC'], GatewayProtocolType.GRPC),
-        (['grpc', 'http'], [GatewayProtocolType.GRPC, GatewayProtocolType.HTTP]),
+        ('http', ProtocolType.HTTP),
+        (['GRPC'], ProtocolType.GRPC),
+        (['grpc', 'http'], [ProtocolType.GRPC, ProtocolType.HTTP]),
     ],
 )
 def test_flow_port_protocol_api(port, expected_port, protocol, expected_protocol):
@@ -712,9 +712,9 @@ def test_flow_port_protocol_api(port, expected_port, protocol, expected_protocol
 @pytest.mark.parametrize(
     'protocol,expected_protocol',
     [
-        ('http', GatewayProtocolType.HTTP),
-        (['GRPC'], GatewayProtocolType.GRPC),
-        (['grpc', 'http'], [GatewayProtocolType.GRPC, GatewayProtocolType.HTTP]),
+        ('http', ProtocolType.HTTP),
+        (['GRPC'], ProtocolType.GRPC),
+        (['grpc', 'http'], [ProtocolType.GRPC, ProtocolType.HTTP]),
     ],
 )
 def test_gateway_port_protocol_api(port, expected_port, protocol, expected_protocol):

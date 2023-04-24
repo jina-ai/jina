@@ -1,0 +1,8 @@
+jtype: TextToImage
+py_modules:
+  - executor.py
+metas:
+  name: TextToImage
+  description: Text to Image generation Executor based on StableDiffusion
+  url:
+  keywords: []

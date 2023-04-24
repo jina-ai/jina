@@ -1,11 +1,9 @@
 import os
 
-import pytest
 import yaml
 
-from jina import Gateway
+from jina.serve.runtimes.gateway.gateway import BaseGateway, Gateway
 from jina.jaml import JAML
-from jina.serve.executors import BaseExecutor
 
 
 class MyDummyGateway(Gateway):
@@ -22,23 +20,22 @@ class MyDummyGateway(Gateway):
 def test_cls_from_tag():
     assert JAML.cls_from_tag('MyDummyGateway') == MyDummyGateway
     assert JAML.cls_from_tag('!MyDummyGateway') == MyDummyGateway
-    assert JAML.cls_from_tag('BaseGateway') == Gateway
+    assert JAML.cls_from_tag('BaseGateway') == BaseGateway
     assert JAML.cls_from_tag('Nonexisting') is None
 
 
 def test_base_jtype(tmpdir):
     gateway_path = os.path.join(tmpdir, 'gateway.yml')
-    from jina.serve.runtimes.gateway import BaseGateway
 
-    g = BaseGateway.load_config('BaseGateway', runtime_args={'port': [12345]})
+    g = BaseGateway.load_config('Gateway', runtime_args={'port': [12345]})
     g.save_config(gateway_path)
-    with open(gateway_path, 'r') as file:
+    with open(gateway_path, 'r', encoding='utf-8') as file:
         conf = yaml.safe_load(file)
         assert 'jtype' in conf
-        assert conf['jtype'] == 'BaseGateway'
+        assert conf['jtype'] == 'Gateway'
 
     assert (
-        type(Gateway.load_config(gateway_path, runtime_args={'port': [12345]}))
+        type(BaseGateway.load_config(gateway_path, runtime_args={'port': [12345]}))
         == Gateway
     )
 
@@ -46,14 +43,15 @@ def test_base_jtype(tmpdir):
 def test_custom_jtype(tmpdir):
     gateway_path = os.path.join(tmpdir, 'gateway.yml')
 
-    e = Gateway.load_config('MyDummyGateway', runtime_args={'port': [12345]})
+    e = BaseGateway.load_config('MyDummyGateway', runtime_args={'port': [12345]})
+    print(f' e {type(e)} => {e.__dict__}')
     e.save_config(gateway_path)
-    with open(gateway_path, 'r') as file:
+    with open(gateway_path, 'r', encoding='utf-8') as file:
         conf = yaml.safe_load(file)
         assert 'jtype' in conf
         assert conf['jtype'] == 'MyDummyGateway'
 
     assert (
-        type(Gateway.load_config(gateway_path, runtime_args={'port': [12345]}))
+        type(BaseGateway.load_config(gateway_path, runtime_args={'port': [12345]}))
         == MyDummyGateway
     )

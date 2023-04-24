@@ -1,5 +1,11 @@
 # Welcome to Jina!
 
+```{admonition} Survey
+:class: tip
+
+Take our **[user experience survey](https://10sw1tcpld4.typeform.com/to/EGAEReM7?utm_source=doc&utm_medium=github&utm_campaign=user%20experience&utm_term=feb2023&utm_content=survey)** to let us know your thoughts and help shape the future of Jina!
+```
+
 ```{include} ../README.md
 :start-after: <!-- start jina-description -->
 :end-before: <!-- end jina-description -->
@@ -19,72 +25,24 @@ pip install -U jina
 conda install jina -c conda-forge
 ```
 ````
-````{tab} via Docker
-```shell
-docker pull jinaai/jina:latest
+(build-ai-services)=
+(build-a-pipeline)=
+## Getting Started
+Jina supports developers in building AI services and pipelines:
+
+````{tab} Build AI Services
+```{include} ../README.md
+:start-after: <!-- start build-ai-services -->
+:end-before: <!-- end build-ai-services -->
 ```
 ````
 
-Now that you’re set up, let’s create a project:
-
-````{tab} Natively on the host
-```shell
-jina new hello-jina && jina flow --uses hello-jina/flow.yml
+````{tab} Build Pipelines
+```{include} ../README.md
+:start-after: <!-- start build-pipelines -->
+:end-before: <!-- end build-pipelines -->
 ```
 ````
-````{tab} In a Docker container
-```shell
-docker run jinaai/jina:latest -v "$(pwd)/j:/j" new hello-jina
-docker run -v "$(pwd)/j:/j" -p 54321:54321 jinaai/jina:latest flow --uses /j/hello-jina/flow.yml
-```
-````
-
-Run the client on your machine and observe the results from your terminal.
-
-````{tab} via gRPC in Python
-```python
-from jina import Client, DocumentArray
-
-c = Client(host='grpc://0.0.0.0:54321')
-da = c.post('/', DocumentArray.empty(2))
-print(da.texts)
-```
-````
-````{tab} via HTTP in Python
-```python
-from jina import Client, DocumentArray
-
-c = Client(host='http://0.0.0.0:54322')
-da = c.post('/', DocumentArray.empty(2))
-print(da.texts)
-```
-````
-````{tab} via WebSocket in Python
-```python
-from jina import Client, DocumentArray
-
-c = Client(host='ws://0.0.0.0:54323')
-da = c.post('/', DocumentArray.empty(2))
-print(da.texts)
-```
-````
-````{tab} via HTTP using Javascript
-```javascript
-fetch('http://localhost:54322/post', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: {}
-}).then(response => response.json()).then(data => console.log(data));
-```
-````
-````{tab} via HTTP using curl
-```bash
-curl --request POST 'http://localhost:54323/post' --header 'Content-Type: application/json' -d '{}'
-```
-````
-
 
 
 ## Next steps
@@ -100,19 +58,31 @@ DocArray is the foundational data structure of Jina. Before starting Jina, first
 ::::
 
 ::::{grid-item-card} {octicon}`gear;1.5em` Learn Executor
-:link: concepts/executor/index
+:link: concepts/serving/executor/index
 :link-type: doc
 
-{term}`Executor` is a self-contained logic unit that performs a group of tasks on a `DocumentArray`.
+{term}`Executor` is a Python class that can serve logic using `Documents`.
 
 ::::
 
-::::{grid-item-card} {octicon}`workflow;1.5em` Learn Flow
-:link: concepts/flow/index
+::::{grid-item-card} {octicon}`workflow;1.5em` Learn Deployment
+:link: concepts/orchestration/deployment
 :link-type: doc
 
+{term}`Deployment` serves an Executor as a scalable service making it available to receive `Documents` using `gRPC` or `HTTP`.
+::::
 
-{term}`Flow` orchestrates Executors into a processing pipeline to accomplish a task.
+::::{grid-item-card} {octicon}`workflow;1.5em` Learn Flow
+:link: concepts/orchestration/flow
+:link-type: doc
+
+{term}`Flow` orchestrates Executors using different Deployments into a processing pipeline to accomplish a task.
+::::
+
+::::{grid-item-card} {octicon}`cross-reference;1.5em` Learn Gateway
+:link: concepts/serving/gateway/index
+
+The Gateway is a microservice that serves as the entrypoint of a {term}`Flow`. It exposes multiple protocols for external communications and routes all internal traffic.
 ::::
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Explore Executor Hub
@@ -150,16 +120,25 @@ Jina AI Cloud is the MLOps platform for hosting Jina projects.
 
 get-started/install/index
 get-started/create-app
-concepts/preliminaries/index
+```
+
+```{toctree}
+:caption: Tutorials
+:hidden:
+
+tutorials/before-you-start
+tutorials/deploy-model
+tutorials/deploy-pipeline
+tutorials/gpu-executor
 ```
 
 ```{toctree}
 :caption: Concepts
 :hidden:
 
-concepts/executor/index
-concepts/flow/index
-concepts/gateway/index
+concepts/preliminaries/index
+concepts/serving/index
+concepts/orchestration/index
 concepts/client/index
 ```
 
@@ -187,6 +166,7 @@ yaml-spec
 envs/index
 telemetry
 proto/docs
+developer-reference/clean-code
 ```
 
 ```{toctree}
@@ -201,4 +181,3 @@ Jina 2 Documentation <https://docs2.jina.ai/>
 
 ---
 {ref}`genindex` | {ref}`modindex`
-

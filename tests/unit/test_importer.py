@@ -52,7 +52,7 @@ def test_no_suppress_other_exception():
 
 def test_path_importer(tmpdir):
     tmpmodule = f'package.py'
-    with open(tmpdir / tmpmodule, 'w') as f:
+    with open(tmpdir / tmpmodule, 'w', encoding='utf-8') as f:
         f.write("raise ImportError")
 
     from jina.importer import PathImporter

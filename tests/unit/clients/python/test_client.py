@@ -79,8 +79,7 @@ def test_gateway_index(flow_with_http, test_img_1, test_img_2):
 
 # Timeout is necessary to fail in case of hanging client requests
 @pytest.mark.timeout(60)
-@pytest.mark.parametrize('use_stream', [True, False])
-def test_client_websocket(mocker, flow_with_websocket, use_stream):
+def test_client_websocket(mocker, flow_with_websocket):
     with flow_with_websocket:
         time.sleep(0.5)
         client = Client(
@@ -100,39 +99,6 @@ def test_client_websocket(mocker, flow_with_websocket, use_stream):
             on_error=on_error_mock,
             on_done=on_done_mock,
             return_responses=True,
-            stream=use_stream,
-        )
-        on_always_mock.assert_called_once()
-        on_done_mock.assert_called_once()
-        on_error_mock.assert_not_called()
-
-
-# Timeout is necessary to fail in case of hanging client requests
-@pytest.mark.timeout(60)
-@pytest.mark.parametrize('use_stream', [True, False])
-@pytest.mark.parametrize('flow_or_deployment', ['deployment', 'deployment'])
-def test_client_max_attempts(mocker, use_stream, flow_or_deployment):
-    cntx = Flow() if flow_or_deployment == 'flow' else Deployment(include_gateway=False)
-    with cntx:
-        time.sleep(0.5)
-        client = Client(
-            host='localhost',
-            port=cntx.port,
-        )
-        # Test that a regular index request triggers the correct callbacks
-        on_always_mock = mocker.Mock()
-        on_error_mock = mocker.Mock()
-        on_done_mock = mocker.Mock()
-        client.post(
-            '/',
-            random_docs(1),
-            request_size=1,
-            max_attempts=5,
-            on_always=on_always_mock,
-            on_error=on_error_mock,
-            on_done=on_done_mock,
-            return_responses=True,
-            stream=use_stream,
         )
         on_always_mock.assert_called_once()
         on_done_mock.assert_called_once()
@@ -194,7 +160,7 @@ def test_all_sync_clients(protocol, mocker, use_stream):
 @pytest.mark.slow
 @pytest.mark.parametrize('use_stream', [True, False])
 def test_deployment_sync_client(mocker, use_stream):
-    dep = Deployment(uses=MyExec, include_gateway=False)
+    dep = Deployment(uses=MyExec)
     docs = list(random_docs(1000))
     m1 = mocker.Mock()
     m2 = mocker.Mock()

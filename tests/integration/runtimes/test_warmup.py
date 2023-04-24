@@ -1,4 +1,3 @@
-import threading
 import time
 
 import pytest
@@ -14,16 +13,6 @@ class SlowExecutor(Executor):
         time.sleep(SLOW_EXECUTOR_SLEEP_TIME)
 
 
-@pytest.fixture
-def stop_event():
-    return threading.Event()
-
-
-def flow_run(flow, stop_event):
-    with flow:
-        flow.block(stop_event)
-
-
 @pytest.mark.asyncio
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 async def test_gateway_warmup_fast_executor(protocol, capfd):
@@ -32,8 +21,8 @@ async def test_gateway_warmup_fast_executor(protocol, capfd):
     with flow:
         time.sleep(1)
         out, _ = capfd.readouterr()
-        assert 'recv _status' in out
-        assert out.count('recv _status') == 1
+    assert 'recv _status' in out
+    assert out.count('recv _status') == 1
 
 
 @pytest.mark.asyncio
@@ -48,39 +37,24 @@ async def test_gateway_warmup_with_replicas_and_shards(protocol, capfd):
     with flow:
         time.sleep(1)
         out, _ = capfd.readouterr()
-        assert 'recv _status' in out
-        # 2 calls from gateway runtime to deployments
-        # 2 calls from head to shards
-        # 1 call from the gateway to the head runtime warmup adds an additional call to any shard
-        assert out.count('recv _status') == 5
+    assert 'recv _status' in out
+    # 2 calls from gateway runtime to deployments
+    # 2 calls from head to shards
+    # 1 call from the gateway to the head runtime warmup adds an additional call to any shard
+    assert out.count('recv _status') == 5
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
-@pytest.mark.parametrize('early_teardown', [False, True])
-async def test_gateway_warmup_slow_executor(
-    protocol, capfd, stop_event, early_teardown
-):
+async def test_gateway_warmup_slow_executor(protocol, capfd):
     flow = Flow(protocol=protocol).add(name='slowExecutor', uses='SlowExecutor')
-    t = threading.Thread(target=flow_run, args=(flow, stop_event))
-    t.start()
 
-    try:
-        if early_teardown:
-            time.sleep(1)
-            stop_event.set()
-            out, _ = capfd.readouterr()
-            assert not 'recv _status' in out
-        else:
-            # requires high sleep time to account for Flow readiness and properly capture the output logs
-            time.sleep(SLOW_EXECUTOR_SLEEP_TIME * 3)
-            out, _ = capfd.readouterr()
-            assert 'recv _status' in out
-            assert out.count('recv _status') == 1
-    finally:
-        if not stop_event.is_set():
-            stop_event.set()
-        t.join()
+    with flow:
+        # requires high sleep time to account for Flow readiness and properly capture the output logs
+        time.sleep(SLOW_EXECUTOR_SLEEP_TIME * 3)
+        out, _ = capfd.readouterr()
+    assert 'recv _status' in out
+    assert out.count('recv _status') == 1
 
 
 @pytest.mark.asyncio
@@ -100,15 +74,12 @@ async def test_multi_protocol_gateway_warmup_fast_executor(port_generator, capfd
     with flow:
         time.sleep(1)
         out, _ = capfd.readouterr()
-        assert 'recv _status' in out
-        assert out.count('recv _status') == 1
+    assert 'recv _status' in out
+    assert out.count('recv _status') == 1
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('early_teardown', [False, True])
-async def test_multi_protocol_gateway_warmup_slow_executor(
-    port_generator, capfd, early_teardown, stop_event
-):
+async def test_multi_protocol_gateway_warmup_slow_executor(port_generator, capfd):
     http_port = port_generator()
     grpc_port = port_generator()
     websocket_port = port_generator()
@@ -120,22 +91,10 @@ async def test_multi_protocol_gateway_warmup_slow_executor(
         )
         .add(name='slowExecutor', uses='SlowExecutor')
     )
-    t = threading.Thread(target=flow_run, args=(flow, stop_event))
-    t.start()
 
-    try:
-        if early_teardown:
-            time.sleep(1)
-            stop_event.set()
-            out, _ = capfd.readouterr()
-            assert not 'recv _status' in out
-        else:
-            # requires high sleep time to account for Flow readiness and properly capture the output logs
-            time.sleep(SLOW_EXECUTOR_SLEEP_TIME * 3)
-            out, _ = capfd.readouterr()
-            assert 'recv _status' in out
-            assert out.count('recv _status') == 1
-    finally:
-        if not stop_event.is_set():
-            stop_event.set()
-        t.join()
+    with flow:
+        # requires high sleep time to account for Flow readiness and properly capture the output logs
+        time.sleep(SLOW_EXECUTOR_SLEEP_TIME * 3)
+        out, _ = capfd.readouterr()
+    assert 'recv _status' in out
+    assert out.count('recv _status') == 1

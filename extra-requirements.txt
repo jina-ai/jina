@@ -32,11 +32,12 @@ grpcio-reflection>=1.46.0,<1.48.1:  core
 grpcio-health-checking>=1.46.0,<1.48.1:  core
 pyyaml>=5.3.1:              core
 packaging>=20.0:            core
-docarray>=0.16.4:           core
-jina-hubble-sdk>=0.30.4:   core
+docarray>=0.16.4,<0.30.0:  core
+jina-hubble-sdk>=0.30.4:    core
 jcloud>=0.0.35:             core
 opentelemetry-api>=1.12.0:  core
 opentelemetry-instrumentation-grpc>=0.35b0:  core 
+aiostream:  core
 uvloop:                     perf,standard,devel
 prometheus_client>=0.12.0:          perf,standard,devel
 opentelemetry-sdk>=1.14.0:   perf,standard,devel
@@ -56,7 +57,6 @@ pydantic:                   standard,devel
 python-multipart:           standard,devel
 aiofiles:                   standard,devel
 aiohttp:                    standard,devel
-aiostream:                  standard,devel
 scipy>=1.6.1:               test
 Pillow:                     test
 pytest:                     test
@@ -81,7 +81,7 @@ strawberry-graphql>=0.96.0: cicd,devel
 sgqlc:                      cicd,devel
 bs4:                        cicd
 jsonschema:                 cicd
-portforward>=0.2.4:         cicd
+portforward>=0.2.4,<0.4.3:         cicd
 tensorflow>=2.0:            cicd
 opentelemetry-test-utils>=0.33b0:  test
 prometheus-api-client>=0.5.1:  test

@@ -8,6 +8,7 @@ import threading
 import time
 from argparse import Namespace
 from collections import defaultdict
+from contextlib import ExitStack
 from itertools import cycle
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Type, Union, overload
 
@@ -20,11 +21,12 @@ from jina.clients import Client
 from jina.clients.mixin import PostMixin
 from jina.constants import (
     __default_executor__,
+    __default_grpc_gateway__,
     __default_host__,
     __docker_host__,
     __windows__,
 )
-from jina.enums import DeploymentRoleType, PodRoleType, PollingType
+from jina.enums import DeploymentRoleType, PodRoleType, PollingType, ProtocolType
 from jina.helper import (
     ArgNamespace,
     parse_host_scheme,
@@ -32,6 +34,7 @@ from jina.helper import (
     send_telemetry_event,
 )
 from jina.importer import ImportExtensions
+from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
 from jina.orchestrate.deployments.install_requirements_helper import (
     _get_package_path_from_uses,
@@ -53,11 +56,17 @@ if TYPE_CHECKING:
     from jina.serve.executors import BaseExecutor
 
 
-class Deployment(PostMixin, BaseOrchestrator):
+class DeploymentType(type(ExitStack), type(JAMLCompatible)):
+    """Type of Deployment, metaclass of :class:`Deployment`"""
+
+    pass
+
+
+class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=DeploymentType):
     """A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.
-    Internally, the pods can run with the process/thread backend. They can be also run in their own containers
+    Internally, the pods can run with the process/thread backend. They can also be run in their own containers
     :param args: arguments parsed from the CLI
-    :param needs: deployments names of preceding deployments, the output of these deployments are going into the input of this deployment
+    :param needs: deployments names of preceding deployments, the output of these deployments go into the input of this deployment
     """
 
     class _ReplicaSet:
@@ -99,9 +108,9 @@ class Deployment(PostMixin, BaseOrchestrator):
 
         def __enter__(self):
             for _args in self.args:
-                if getattr(self.deployment_args, 'noblock_on_start', False):
-                    _args.noblock_on_start = True
-                self._pods.append(PodFactory.build_pod(_args).start())
+                _args.noblock_on_start = True
+                pod = PodFactory.build_pod(_args).start()
+                self._pods.append(pod)
             return self
 
         def __exit__(self, exc_type, exc_val, exc_tb):
@@ -120,8 +129,11 @@ class Deployment(PostMixin, BaseOrchestrator):
     def __init__(
         self,
         *,
+        allow_concurrent: Optional[bool] = False,
         compression: Optional[str] = None,
         connection_list: Optional[str] = None,
+        cors: Optional[bool] = False,
+        description: Optional[str] = None,
         disable_auto_volume: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
@@ -132,6 +144,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         floating: Optional[bool] = False,
         force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
+        grpc_channel_options: Optional[dict] = None,
         grpc_metadata: Optional[dict] = None,
         grpc_server_options: Optional[dict] = None,
         host: Optional[List[str]] = ['0.0.0.0'],
@@ -149,6 +162,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         port: Optional[int] = None,
         port_monitoring: Optional[int] = None,
         prefer_platform: Optional[str] = None,
+        protocol: Optional[Union[str, List[str]]] = ['GRPC'],
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
@@ -157,9 +171,12 @@ class Deployment(PostMixin, BaseOrchestrator):
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'WorkerRuntime',
         shards: Optional[int] = 1,
+        ssl_certfile: Optional[str] = None,
+        ssl_keyfile: Optional[str] = None,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
+        title: Optional[str] = None,
         tls: Optional[bool] = False,
         traces_exporter_host: Optional[str] = None,
         traces_exporter_port: Optional[int] = None,
@@ -173,6 +190,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         uses_metas: Optional[dict] = None,
         uses_requests: Optional[dict] = None,
         uses_with: Optional[dict] = None,
+        uvicorn_kwargs: Optional[dict] = None,
         volumes: Optional[List[str]] = None,
         when: Optional[dict] = None,
         workspace: Optional[str] = None,
@@ -180,8 +198,11 @@ class Deployment(PostMixin, BaseOrchestrator):
     ):
         """Create a Deployment to serve or deploy and Executor or Gateway
 
+        :param allow_concurrent: Allow concurrent requests to be processed by the Executor. This is only recommended if the Executor is thread-safe.
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
+        :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
+        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -202,6 +223,7 @@ class Deployment(PostMixin, BaseOrchestrator):
               - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param grpc_metadata: The metadata to be passed to the gRPC request.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
@@ -238,6 +260,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
+        :param protocol: Communication protocol of the server exposed by the Executor. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your
@@ -251,9 +274,12 @@ class Deployment(PostMixin, BaseOrchestrator):
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
+        :param ssl_certfile: the path to the certificate file
+        :param ssl_keyfile: the path to the key file
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
+        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param tls: If set, connect to deployment using tls encryption
         :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
         :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
@@ -277,6 +303,9 @@ class Deployment(PostMixin, BaseOrchestrator):
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
+        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
+
+          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         :param volumes: The path on the host to be mounted inside the container.
 
           Note,
@@ -318,6 +347,9 @@ class Deployment(PostMixin, BaseOrchestrator):
         if args is None:
             args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
         self.args = args
+        self._gateway_load_balancer = False
+        if self._include_gateway and self.args.protocol[0] == ProtocolType.HTTP:
+            self._gateway_load_balancer = True
         log_config = kwargs.get('log_config')
         if log_config:
             self.args.log_config = log_config
@@ -327,6 +359,25 @@ class Deployment(PostMixin, BaseOrchestrator):
         # polling only works for shards, if there are none, polling will be ignored
         if getattr(args, 'shards', 1) == 1:
             self.args.polling = PollingType.ANY
+
+        if (
+            getattr(args, 'shards', 1) > 1
+            and ProtocolType.HTTP in self.args.protocol
+            and self.args.deployment_role != DeploymentRoleType.GATEWAY
+        ):
+            raise RuntimeError(
+                f'It is not supported to have {ProtocolType.HTTP.to_string()} deployment for '
+                f'Deployments with more than one shard'
+            )
+
+        if (
+            ProtocolType.WEBSOCKET in self.args.protocol
+            and self.args.deployment_role != DeploymentRoleType.GATEWAY
+        ):
+            raise RuntimeError(
+                f'It is not supported to have {ProtocolType.WEBSOCKET.to_string()} deployment for '
+                f'Deployments with more than one shard'
+            )
         self.needs = (
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
@@ -348,7 +399,7 @@ class Deployment(PostMixin, BaseOrchestrator):
                 raise ValueError(
                     f'Number of hosts ({len(self.args.host)}) does not match the number of replicas ({self.args.replicas})'
                 )
-            else:
+            elif self.args.external:
                 self.args.replicas = len(self.ext_repl_ports)
 
         self.uses_before_pod = None
@@ -364,8 +415,11 @@ class Deployment(PostMixin, BaseOrchestrator):
             args = ArgNamespace.kwargs2namespace(
                 self._gateway_kwargs, gateway_parser, True
             )
+            args.protocol = self.args.protocol
 
-            args.deployments_addresses = f'{{"executor": ["0.0.0.0:{self.port}"]}}'
+            args.deployments_addresses = json.dumps(
+                {'executor': self._get_connection_list_for_single_executor()}
+            )
             args.graph_description = (
                 '{"start-gateway": ["executor"], "executor": ["end-gateway"]}'
             )
@@ -377,6 +431,54 @@ class Deployment(PostMixin, BaseOrchestrator):
 
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
 
+    def _get_connection_list_for_flow(self) -> List[str]:
+        if self.head_args:
+            # add head information
+            return [f'{self.protocol.lower()}://{self.host}:{self.head_port}']
+        else:
+            # there is no head, add the worker connection information instead
+            ports = self.ports
+            hosts = [
+                __docker_host__
+                if host_is_local(host) and in_docker() and self._is_docker
+                else host
+                for host in self.hosts
+            ]
+            return [
+                f'{self.protocol.lower()}://{host}:{port}'
+                for host, port in zip(hosts, ports)
+            ]
+
+    def _get_connection_list_for_single_executor(
+        self,
+    ) -> Union[List[str], Dict[str, List[str]]]:
+        if self.head_args:
+            # add head information
+            return [f'{self.protocol.lower()}://{self.host}:{self.head_port}']
+        else:
+            # there is no head, add the worker connection information instead
+            ports_dict = defaultdict(list)
+            for replica_pod_arg in self.pod_args['pods'][0]:
+                for protocol, port in zip(
+                    replica_pod_arg.protocol, replica_pod_arg.port
+                ):
+                    ports_dict[str(protocol)].append(port)
+
+            host = (
+                __docker_host__
+                if host_is_local(self.args.host[0])
+                and in_docker()
+                and self.dockerized_uses
+                else self.args.host[0]
+            )
+
+            connection_dict = {}
+            for protocol, ports in ports_dict.items():
+                connection_dict[protocol] = [
+                    f'{protocol.lower()}://{host}:{port}' for port in ports
+                ]
+            return connection_dict
+
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
         self.join()
@@ -384,7 +486,7 @@ class Deployment(PostMixin, BaseOrchestrator):
             self._stop_time = time.time()
             send_telemetry_event(
                 event='stop',
-                obj=self,
+                obj_cls_name=self.__class__.__name__,
                 entity_id=self._entity_id,
                 duration=self._stop_time - self._start_time,
                 exc_type=str(exc_type),
@@ -468,10 +570,10 @@ class Deployment(PostMixin, BaseOrchestrator):
             host, port = HubIO.deploy_public_sandbox(self.args)
             self._sandbox_deployed = True
             self.first_pod_args.host = host
-            self.first_pod_args.port = port
+            self.first_pod_args.port = [port]
             if self.head_args:
                 self.pod_args['head'].host = host
-                self.pod_args['head'].port = port
+                self.pod_args['head'].port = [port]
 
     def update_worker_pod_args(self):
         """Update args of all its worker pods based on Deployment args. Does not touch head and tail"""
@@ -518,7 +620,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         """Get the port of the HeadPod of this deployment
         .. # noqa: DAR201
         """
-        return self.head_args.port if self.head_args else None
+        return self.head_args.port[0] if self.head_args else None
 
     @property
     def head_port_monitoring(self):
@@ -537,6 +639,7 @@ class Deployment(PostMixin, BaseOrchestrator):
             host=self.host,
             port=self.port,
             protocol=self.protocol,
+            grpc_channel_options=self.args.grpc_channel_options,
         )
         kwargs.update(self._gateway_kwargs)
         return Client(**kwargs)
@@ -552,7 +655,7 @@ class Deployment(PostMixin, BaseOrchestrator):
 
         _head_args = copy.deepcopy(args)
         _head_args.polling = args.polling
-        _head_args.port = args.port[0]
+        _head_args.port = args.port
         _head_args.host = args.host[0]
         _head_args.uses = args.uses
         _head_args.pod_role = PodRoleType.HEAD
@@ -583,9 +686,9 @@ class Deployment(PostMixin, BaseOrchestrator):
     @property
     def _is_docker(self) -> bool:
         """
-        Check if this deployment is to be run in docker.
+        Check if this deployment is to be run in Docker.
 
-        :return: True if this deployment is to be run in docker
+        :return: True if this deployment is to be run in Docker
         """
         from hubble.executor.helper import is_valid_docker_uri
 
@@ -605,7 +708,7 @@ class Deployment(PostMixin, BaseOrchestrator):
     @property
     def tls_enabled(self):
         """
-        Checks whether secure connection via tls is enabled for this Deployment.
+        Check if secure connection via TLS is enabled for this Deployment.
 
         :return: True if tls is enabled, False otherwise
         """
@@ -626,8 +729,8 @@ class Deployment(PostMixin, BaseOrchestrator):
     @property
     def grpc_metadata(self):
         """
-        Get the gRPC metadata for this deployment.
-        :return: The gRPC metadata for this deployment. If the deployment is a gateway, return None.
+        Get the gRPC metadata for this deployment
+        :return: The gRPC metadata for this deployment. If the deployment is a Gateway, return None.
         """
         return getattr(self.args, 'grpc_metadata', None)
 
@@ -641,7 +744,9 @@ class Deployment(PostMixin, BaseOrchestrator):
         protocol = getattr(args, 'protocol', ['grpc'])
         if not isinstance(protocol, list):
             protocol = [protocol]
-        protocol = [str(_p) + ('s' if self.tls_enabled else '') for _p in protocol]
+        protocol = [
+            str(_p).lower() + ('s' if self.tls_enabled else '') for _p in protocol
+        ]
         if len(protocol) == 1:
             return protocol[0]
         else:
@@ -669,16 +774,16 @@ class Deployment(PostMixin, BaseOrchestrator):
     @property
     def port(self):
         """
-        :return: the port of this deployment
+        :return: The port of this deployment
         """
-        return self.first_pod_args.port
+        return self.first_pod_args.port[0]
 
     @property
     def ports(self) -> List[int]:
         """Returns a list of ports exposed by this Deployment.
         Exposed means these are the ports a Client/Gateway is supposed to communicate with.
         For sharded deployments this will be the head_port.
-        For non-sharded deployments it will be all replica ports
+        For non-sharded deployments it will be all replica ports.
         .. # noqa: DAR201
         """
         if self.head_port:
@@ -697,23 +802,13 @@ class Deployment(PostMixin, BaseOrchestrator):
         """Returns a list of host addresses exposed by this Deployment.
         Exposed means these are the host a Client/Gateway is supposed to communicate with.
         For sharded deployments this will be the head host.
-        For non-sharded deployments it will be all replica hosts
+        For non-sharded deployments it will be all replica hosts.
         .. # noqa: DAR201
         """
         if self.head_host:
             return [self.head_host]
         else:
             return [replica.host for replica in self.pod_args['pods'][0]]
-
-    @property
-    def dockerized_uses(self) -> bool:
-        """Checks if this Deployment uses a dockerized Executor
-
-        .. # noqa: DAR201
-        """
-        return self.args.uses.startswith('docker://') or self.args.uses.startswith(
-            'jinahub+docker://'
-        )
 
     def _parse_args(
         self, args: Namespace
@@ -817,7 +912,7 @@ class Deployment(PostMixin, BaseOrchestrator):
     def get_worker_host(pod_args, pod_is_container, head_is_container):
         """
         Check if the current pod and head are both containerized on the same host
-        If so __docker_host__ needs to be advertised as the worker's address to the head
+        If so, __docker_host__ needs to be advertised as the worker's address to the head
 
         :param pod_args: arguments of the worker pod
         :param pod_is_container: boolean specifying if pod is to be run in container
@@ -834,6 +929,36 @@ class Deployment(PostMixin, BaseOrchestrator):
         )
         return worker_host
 
+    def _wait_until_all_ready(self):
+        import warnings
+
+        with warnings.catch_warnings():
+            wait_for_ready_coro = self.async_wait_start_success()
+
+            try:
+                _ = asyncio.get_event_loop()
+            except:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+
+            async def _f():
+                pass
+
+            running_in_event_loop = False
+            try:
+                asyncio.get_event_loop().run_until_complete(_f())
+            except:
+                running_in_event_loop = True
+
+            if not running_in_event_loop:
+                asyncio.get_event_loop().run_until_complete(wait_for_ready_coro)
+            else:
+                wait_ready_thread = threading.Thread(
+                    target=self.wait_start_success, daemon=True
+                )
+                wait_ready_thread.start()
+                wait_ready_thread.join()
+
     def start(self) -> 'Deployment':
         """
         Start to run all :class:`Pod` in this Deployment.
@@ -844,6 +969,7 @@ class Deployment(PostMixin, BaseOrchestrator):
             If one of the :class:`Pod` fails to start, make sure that all of them
             are properly closed.
         """
+
         self._start_time = time.time()
         if self.is_sandbox and not self._sandbox_deployed:
             self.update_sandbox_args()
@@ -853,27 +979,25 @@ class Deployment(PostMixin, BaseOrchestrator):
 
         if self.pod_args['uses_before'] is not None:
             _args = self.pod_args['uses_before']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
+            _args.noblock_on_start = True
             self.uses_before_pod = PodFactory.build_pod(_args)
             self.enter_context(self.uses_before_pod)
         if self.pod_args['uses_after'] is not None:
             _args = self.pod_args['uses_after']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
+            _args.noblock_on_start = True
             self.uses_after_pod = PodFactory.build_pod(_args)
             self.enter_context(self.uses_after_pod)
         if self.pod_args['head'] is not None:
             _args = self.pod_args['head']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
+            _args.noblock_on_start = True
             self.head_pod = PodFactory.build_pod(_args)
             self.enter_context(self.head_pod)
         if self._include_gateway:
             _args = self.pod_args['gateway']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
-            self.gateway_pod = PodFactory.build_pod(_args)
+            _args.noblock_on_start = True
+            self.gateway_pod = PodFactory.build_pod(
+                _args, gateway_load_balancer=self._gateway_load_balancer
+            )
             self.enter_context(self.gateway_pod)
         for shard_id in self.pod_args['pods']:
             self.shards[shard_id] = self._ReplicaSet(
@@ -883,6 +1007,8 @@ class Deployment(PostMixin, BaseOrchestrator):
             )
             self.enter_context(self.shards[shard_id])
 
+        if not self.args.noblock_on_start:
+            self._wait_until_all_ready()
         if self._include_gateway:
             all_panels = []
             self._get_summary_table(all_panels)
@@ -891,19 +1017,19 @@ class Deployment(PostMixin, BaseOrchestrator):
 
             print(Rule(':tada: Deployment is ready to serve!'), *all_panels)
 
-            send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
+            send_telemetry_event(
+                event='start',
+                obj_cls_name=self.__class__.__name__,
+                entity_id=self._entity_id,
+            )
 
         return self
 
     def wait_start_success(self) -> None:
-        """Block until all pods starts successfully.
+        """Block until all pods start successfully.
 
-        If not successful, it will raise an error hoping the outer function to catch it
+        If not successful, it will raise an error hoping the outer function will catch it
         """
-        if not self.args.noblock_on_start:
-            raise ValueError(
-                f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True'
-            )
         try:
             if self.uses_before_pod is not None:
                 self.uses_before_pod.wait_start_success()
@@ -920,14 +1046,10 @@ class Deployment(PostMixin, BaseOrchestrator):
             raise
 
     async def async_wait_start_success(self) -> None:
-        """Block until all pods starts successfully.
+        """Block until all pods start successfully.
 
-        If not successful, it will raise an error hoping the outer function to catch it
+        If unsuccessful, it will raise an error hoping the outer function will catch it
         """
-        if not self.args.noblock_on_start:
-            raise ValueError(
-                f'{self.async_wait_start_success!r} should only be called when `noblock_on_start` is set to True'
-            )
         try:
             coros = []
             if self.uses_before_pod is not None:
@@ -969,7 +1091,7 @@ class Deployment(PostMixin, BaseOrchestrator):
 
     @property
     def is_ready(self) -> bool:
-        """Checks if Deployment is ready
+        """Check if Deployment is ready
 
         .. note::
             A Deployment is ready when all the Pods it contains are ready
@@ -993,9 +1115,9 @@ class Deployment(PostMixin, BaseOrchestrator):
 
     @staticmethod
     def _parse_devices(value: str, num_devices: int):
-        """Parses a list of devices from string, like `start:stop:step` or 'num1,num2,num3` or combination of both.
+        """Parse a list of devices from string, like `start:stop:step` or 'num1,num2,num3` or combination of both.
 
-        :param value: a string like
+        :param value: a string-like
         :param num_devices: total number of devices
         :return: slice
         """
@@ -1035,12 +1157,12 @@ class Deployment(PostMixin, BaseOrchestrator):
         return all_devices[slice(*[int(p) if p else None for p in parts])]
 
     @staticmethod
-    def _roundrobin_cuda_device(device_str: str, replicas: int):
-        """Parse cuda device string with RR prefix
+    def _roundrobin_cuda_device(device_str: Optional[str], replicas: int):
+        """Parse CUDA device string with RR prefix
 
         :param device_str: `RRm:n`, where `RR` is the prefix, m:n is python slice format
         :param replicas: the number of replicas
-        :return: a map from replica id to device id
+        :return: a map from replica ID to device ID
         """
         if (
             device_str
@@ -1071,18 +1193,27 @@ class Deployment(PostMixin, BaseOrchestrator):
         result = {}
         shards = getattr(self.args, 'shards', 1)
         replicas = getattr(self.args, 'replicas', 1)
+        if self.args.deployment_role == DeploymentRoleType.GATEWAY:
+            replicas = 1
         sharding_enabled = shards and shards > 1
 
         cuda_device_map = None
-        if self.args.env:
+        if self.args.env or os.environ.get('CUDA_VISIBLE_DEVICES', '').startswith('RR'):
+            args_env = self.args.env or {}
+            cuda_visible_devices = args_env.get(
+                'CUDA_VISIBLE_DEVICES'
+            ) or os.environ.get('CUDA_VISIBLE_DEVICES', None)
+
             cuda_device_map = Deployment._roundrobin_cuda_device(
-                self.args.env.get('CUDA_VISIBLE_DEVICES'), replicas
+                cuda_visible_devices, replicas
             )
 
         for shard_id in range(shards):
             replica_args = []
             for replica_id in range(replicas):
                 _args = copy.deepcopy(self.args)
+                if self.args.deployment_role == DeploymentRoleType.GATEWAY:
+                    _args.replicas = replicas
                 _args.shard_id = shard_id
                 # for gateway pods, the pod role shouldn't be changed
                 if _args.pod_role != PodRoleType.GATEWAY:
@@ -1095,6 +1226,7 @@ class Deployment(PostMixin, BaseOrchestrator):
                     _args.host = self.args.host
 
                 if cuda_device_map:
+                    _args.env = _args.env or {}
                     _args.env['CUDA_VISIBLE_DEVICES'] = str(cuda_device_map[replica_id])
 
                 if _args.name:
@@ -1112,7 +1244,12 @@ class Deployment(PostMixin, BaseOrchestrator):
 
                 elif not self.external:
                     if shards == 1 and replicas == 1:
-                        _args.port = self.args.port[0]
+                        if len(_args.protocol) > 1 and self._include_gateway:
+                            _args.port = [
+                                random_port() for _ in range(len(self.args.protocol))
+                            ]
+                        else:
+                            _args.port = self.args.port
                         _args.port_monitoring = self.args.port_monitoring
 
                     elif shards == 1:
@@ -1123,7 +1260,9 @@ class Deployment(PostMixin, BaseOrchestrator):
                         )
                         # if there are no shards/replicas, we dont need to distribute ports randomly
                         # we should rather use the pre assigned one
-                        _args.port = random_port()
+                        _args.port = [
+                            random_port() for _ in range(len(self.args.protocol))
+                        ]
                     elif shards > 1:
                         port_monitoring_index = (
                             replica_id + replicas * shard_id + 1
@@ -1136,13 +1275,13 @@ class Deployment(PostMixin, BaseOrchestrator):
                                 port_monitoring_index
                             ]  # we skip the head port here
                         )
-                        _args.port = random_port()
+                        _args.port = [random_port()]
                     else:
-                        _args.port = random_port()
+                        _args.port = [random_port()]
                         _args.port_monitoring = random_port()
 
                 else:
-                    _args.port = self.ext_repl_ports[replica_id]
+                    _args.port = [self.ext_repl_ports[replica_id]]
                     _args.host = self.ext_repl_hosts[replica_id]
                     _args.scheme = self.ext_repl_schemes[replica_id]
                     _args.tls = self.ext_repl_tls[replica_id]
@@ -1152,6 +1291,7 @@ class Deployment(PostMixin, BaseOrchestrator):
                     _args.workspace = self.args.workspace
                 replica_args.append(_args)
             result[shard_id] = replica_args
+
         return result
 
     @staticmethod
@@ -1160,7 +1300,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         _args = copy.deepcopy(args)
         _args.pod_role = PodRoleType.WORKER
         _args.host = _args.host[0] or __default_host__
-        _args.port = random_port()
+        _args.port = [random_port()]
 
         if _args.name:
             _args.name += f'/{entity_type}-0'
@@ -1204,7 +1344,7 @@ class Deployment(PostMixin, BaseOrchestrator):
                 )
                 parsed_args['uses_before'] = uses_before_args
                 args.uses_before_address = (
-                    f'{uses_before_args.host}:{uses_before_args.port}'
+                    f'{uses_before_args.host}:{uses_before_args.port[0]}'
                 )
             if (
                 getattr(args, 'uses_after', None)
@@ -1215,7 +1355,7 @@ class Deployment(PostMixin, BaseOrchestrator):
                 )
                 parsed_args['uses_after'] = uses_after_args
                 args.uses_after_address = (
-                    f'{uses_after_args.host}:{uses_after_args.port}'
+                    f'{uses_after_args.host}:{uses_after_args.port[0]}'
                 )
 
             parsed_args['head'] = Deployment._copy_to_head_args(args)
@@ -1228,7 +1368,9 @@ class Deployment(PostMixin, BaseOrchestrator):
             for shard_id in parsed_args['pods']:
                 for pod_idx, pod_args in enumerate(parsed_args['pods'][shard_id]):
                     worker_host = self.get_worker_host(pod_args, self._is_docker, False)
-                    connection_list[shard_id].append(f'{worker_host}:{pod_args.port}')
+                    connection_list[shard_id].append(
+                        f'{worker_host}:{pod_args.port[0]}'
+                    )
             parsed_args['head'].connection_list = json.dumps(connection_list)
 
         return parsed_args
@@ -1349,7 +1491,7 @@ class Deployment(PostMixin, BaseOrchestrator):
 
                 with ImportExtensions(
                     required=True,
-                    help_text='''reload requires watchfiles dependency to be installed. You can do `pip install 
+                    help_text='''reload requires watchfiles dependency to be installed. You can run `pip install 
                     watchfiles''',
                 ):
                     from watchfiles import watch
@@ -1382,10 +1524,10 @@ class Deployment(PostMixin, BaseOrchestrator):
         else:
             _protocols = [str(_p) for _p in self.protocol]
 
-        if not isinstance(self.port, list):
-            _ports = [self.port]
+        if not isinstance(self.first_pod_args.port, list):
+            _ports = [self.first_pod_args.port]
         else:
-            _ports = [str(_p) for _p in self.port]
+            _ports = [str(_p) for _p in self.first_pod_args.port]
 
         for _port, _protocol in zip(_ports, _protocols):
 
@@ -1420,6 +1562,109 @@ class Deployment(PostMixin, BaseOrchestrator):
 
         return all_panels
 
+    @property
+    def _docker_compose_address(self):
+        from jina.orchestrate.deployments.config.docker_compose import port
+        from jina.orchestrate.deployments.config.helper import to_compatible_name
+
+        if self.external:
+            docker_compose_address = [f'{self.protocol}://{self.host}:{self.port}']
+        elif self.head_args:
+            docker_compose_address = [
+                f'{to_compatible_name(self.head_args.name)}:{port}'
+            ]
+        else:
+            if self.args.replicas == 1 or self.name == 'gateway':
+                docker_compose_address = [f'{to_compatible_name(self.name)}:{port}']
+            else:
+                docker_compose_address = []
+                for rep_id in range(self.args.replicas):
+                    node_name = f'{self.name}/rep-{rep_id}'
+                    docker_compose_address.append(
+                        f'{to_compatible_name(node_name)}:{port}'
+                    )
+        return docker_compose_address
+
+    def _to_docker_compose_config(self, deployments_addresses=None):
+        from jina.orchestrate.deployments.config.docker_compose import (
+            DockerComposeConfig,
+        )
+
+        docker_compose_deployment = DockerComposeConfig(
+            args=self.args, deployments_addresses=deployments_addresses
+        )
+        return docker_compose_deployment.to_docker_compose_config()
+
+    def _inner_gateway_to_docker_compose_config(self):
+        from jina.orchestrate.deployments.config.docker_compose import (
+            DockerComposeConfig,
+        )
+
+        self.pod_args['gateway'].port = self.pod_args['gateway'].port or [random_port()]
+        cargs = copy.deepcopy(self.pod_args['gateway'])
+        cargs.uses = __default_grpc_gateway__
+        cargs.graph_description = (
+            f'{{"{self.name}": ["end-gateway"], "start-gateway": ["{self.name}"]}}'
+        )
+
+        docker_compose_deployment = DockerComposeConfig(
+            args=cargs,
+            deployments_addresses={self.name: self._docker_compose_address},
+        )
+        return docker_compose_deployment.to_docker_compose_config()
+
+    def to_docker_compose_yaml(
+        self,
+        output_path: Optional[str] = None,
+        network_name: Optional[str] = None,
+    ):
+        """
+        Converts a Jina Deployment into a Docker compose YAML file
+
+        If you don't want to rebuild image on Executor Hub,
+        you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.
+
+        :param output_path: The path to dump the YAML file to
+        :param network_name: The name of the network that will be used by the deployment
+        """
+        import yaml
+
+        output_path = output_path or 'docker-compose.yml'
+        network_name = network_name or 'jina-network'
+
+        docker_compose_dict = {
+            'version': '3.3',
+            'networks': {network_name: {'driver': 'bridge'}},
+        }
+        services = {}
+
+        service_configs = self._to_docker_compose_config()
+
+        for service_name, service in service_configs:
+            service['networks'] = [network_name]
+            services[service_name] = service
+
+        if self._include_gateway:
+            service_configs = self._inner_gateway_to_docker_compose_config()
+
+            for service_name, service in service_configs:
+                service['networks'] = [network_name]
+                services[service_name] = service
+
+        docker_compose_dict['services'] = services
+        with open(output_path, 'w+', encoding='utf-8') as fp:
+            yaml.dump(docker_compose_dict, fp, sort_keys=False)
+
+        command = (
+            'docker-compose up'
+            if output_path is None
+            else f'docker-compose -f {output_path} up'
+        )
+
+        self.logger.info(
+            f'Docker Compose file has been created under [b]{output_path}[/b]. You can use it by running [b]{command}[/b]'
+        )
+
     def _to_kubernetes_yaml(
         self,
         output_base_path: str,
@@ -1441,8 +1686,8 @@ class Deployment(PostMixin, BaseOrchestrator):
             if self.args.default_port:
                 from jina.serve.networking import GrpcConnectionPool
 
-                self.args.port = GrpcConnectionPool.K8S_PORT
-                self.first_pod_args.port = GrpcConnectionPool.K8S_PORT
+                self.args.port = [GrpcConnectionPool.K8S_PORT]
+                self.first_pod_args.port = [GrpcConnectionPool.K8S_PORT]
 
                 self.args.port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
                 self.first_pod_args.port_monitoring = (
@@ -1452,9 +1697,6 @@ class Deployment(PostMixin, BaseOrchestrator):
                 self.args.default_port = False
 
             self.args.deployments_addresses = k8s_deployments_addresses
-        elif self._include_gateway and self.port:
-            self.args.port = self._gateway_kwargs['port']
-
         k8s_deployment = K8sDeploymentConfig(
             args=self.args, k8s_namespace=k8s_namespace, k8s_port=k8s_port
         )
@@ -1464,7 +1706,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         for name, k8s_objects in configs:
             filename = os.path.join(output_base_path, f'{name}.yml')
             os.makedirs(output_base_path, exist_ok=True)
-            with open(filename, 'w+') as fp:
+            with open(filename, 'w+', encoding='utf-8') as fp:
                 for i, k8s_object in enumerate(k8s_objects):
                     yaml.dump(k8s_object, fp)
                     if i < len(k8s_objects) - 1:
@@ -1476,22 +1718,23 @@ class Deployment(PostMixin, BaseOrchestrator):
         k8s_namespace: Optional[str] = None,
     ):
         """
-        Converts a Jina Deployment into a set of yaml deployments to deploy in Kubernetes.
+        Convert a Jina Deployment into a set of YAML deployments to deploy in Kubernetes.
 
-        If you don't want to rebuild image on Jina Hub,
+        If you don't want to rebuild image on Executor Hub,
         you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.
 
-        :param output_base_path: The base path where to dump all the yaml files
+        :param output_base_path: The base path where to dump all the YAML files
         :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
         """
         k8s_namespace = k8s_namespace or 'default'
+        k8s_port = self.port[0] if isinstance(self.port, list) else self.port
         self._to_kubernetes_yaml(
             output_base_path,
             k8s_namespace=k8s_namespace,
-            k8s_port=self.port or GrpcConnectionPool.K8S_PORT,
+            k8s_port=k8s_port or GrpcConnectionPool.K8S_PORT,
         )
         self.logger.info(
-            f'K8s yaml files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'
+            f'K8s YAML files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'
         )
 
     to_k8s_yaml = to_kubernetes_yaml

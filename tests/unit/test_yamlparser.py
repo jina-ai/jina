@@ -3,11 +3,13 @@ import os
 import pytest
 import yaml
 
-from jina.constants import __default_executor__, __default_host__
+from jina import Deployment
+from jina.constants import __default_executor__
 from jina.helper import expand_dict, expand_env_var
 from jina.jaml import JAML
 from jina.serve.executors import BaseExecutor
-from jina import Gateway
+from jina.serve.runtimes.gateway.gateway import BaseGateway
+from jina.serve.runtimes.gateway.http import HTTPGateway
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -21,7 +23,7 @@ def test_workspace(tmpdir):
 
 
 def test_yaml_expand():
-    with open(os.path.join(cur_dir, 'yaml/test-expand.yml')) as fp:
+    with open(os.path.join(cur_dir, 'yaml/test-expand.yml'), encoding='utf-8') as fp:
         a = JAML.load(fp)
     b = expand_dict(a)
     assert b['quote_dict'] == {}
@@ -35,7 +37,7 @@ def test_yaml_expand():
 
 
 def test_yaml_expand2():
-    with open(os.path.join(cur_dir, 'yaml/test-expand2.yml')) as fp:
+    with open(os.path.join(cur_dir, 'yaml/test-expand2.yml'), encoding='utf-8') as fp:
         a = JAML.load(fp)
     os.environ['ENV1'] = 'a'
     b = expand_dict(a)
@@ -48,7 +50,7 @@ def test_yaml_expand2():
 
 
 def test_yaml_expand3():
-    with open(os.path.join(cur_dir, 'yaml/test-expand3.yml')) as fp:
+    with open(os.path.join(cur_dir, 'yaml/test-expand3.yml'), encoding='utf-8') as fp:
         a = JAML.load(fp)
 
     b = expand_dict(a)
@@ -59,7 +61,7 @@ def test_yaml_expand4():
     os.environ['ENV1'] = 'a'
     os.environ['ENV2'] = '{"1": "2"}'
 
-    with open(os.path.join(cur_dir, 'yaml/test-expand4.yml')) as fp:
+    with open(os.path.join(cur_dir, 'yaml/test-expand4.yml'), encoding='utf-8') as fp:
         b = JAML.load(
             fp,
             substitute=True,
@@ -179,13 +181,28 @@ def test_load_from_dict():
     ],
 )
 def test_load_gateway_external_success(yaml_file, gateway_name):
-    with Gateway.load_config(
+    with BaseGateway.load_config(
         f'yaml/{yaml_file}', runtime_args={'port': [12345]}
     ) as gateway:
         assert gateway.__class__.__name__ == gateway_name
         assert gateway.arg1 == 'hello'
         assert gateway.arg2 == 'world'
         assert gateway.arg3 == 'default-arg3'
+        assert gateway.runtime_args.timeout_send == 10
+        assert gateway.runtime_args.retries == 10
+        assert gateway.runtime_args.compression == 'Deflate'
+        assert gateway.runtime_args.prefetch == 100
+
+
+def test_load_http_gateway_success():
+    gateway: HTTPGateway = HTTPGateway.load_config(
+        f'yaml/test-http-gateway.yml', runtime_args={'port': [12345]}
+    )
+    with gateway:
+        assert isinstance(gateway, HTTPGateway)
+        assert gateway.cors is True
+        assert gateway.title == 'my-gateway-title'
+        assert gateway.description == 'my-gateway-description'
 
 
 @pytest.mark.parametrize(
@@ -196,7 +213,7 @@ def test_load_gateway_external_success(yaml_file, gateway_name):
     ],
 )
 def test_load_gateway_override_with(yaml_file, gateway_name):
-    with Gateway.load_config(
+    with BaseGateway.load_config(
         f'yaml/{yaml_file}',
         uses_with={'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
         runtime_args={'port': [12345]},
@@ -205,3 +222,27 @@ def test_load_gateway_override_with(yaml_file, gateway_name):
         assert gateway.arg1 == 'arg1'
         assert gateway.arg2 == 'arg2'
         assert gateway.arg3 == 'arg3'
+
+
+@pytest.mark.parametrize(
+    'yaml_file,expected_replicas,expected_shards,expected_uses,grpc_options',
+    [
+        (
+            'test-deployment.yml',
+            2,
+            3,
+            'DummyExternalIndexer',
+            {'grpc.max_send_message_length': -1},
+        ),
+        ('test-deployment-exec-config.yml', 3, 2, 'dummy_ext_exec_success.yml', None),
+    ],
+)
+def test_load_deployment(
+    yaml_file, expected_replicas, expected_shards, expected_uses, grpc_options
+):
+    with Deployment.load_config(os.path.join(cur_dir, f'yaml/{yaml_file}')) as dep:
+        assert dep.args.replicas == expected_replicas
+        assert dep.args.shards == expected_shards
+        assert dep.args.uses == expected_uses
+        assert dep.args.grpc_server_options == grpc_options
+        assert dep.args.grpc_channel_options == grpc_options

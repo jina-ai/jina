@@ -1,5 +1,8 @@
 """Argparser module for container runtimes"""
-from jina.parsers.helper import KVAppendAction, add_arg_group
+import argparse
+
+from jina.enums import DockerNetworkMode
+from jina.parsers.helper import _SHOW_ALL_ARGS, KVAppendAction, add_arg_group
 
 
 def mixin_container_runtime_parser(parser, pod_type: str = 'executor'):
@@ -64,4 +67,22 @@ Note,
             action='store_true',
             default=False,
             help=f'Do not automatically mount a volume for dockerized Executors.',
+        )
+
+        gp.add_argument(
+            '--force-network-mode',
+            type=DockerNetworkMode.from_string,
+            choices=list(DockerNetworkMode),
+            default=DockerNetworkMode.AUTO,
+            help=f'''
+    Force the use of the specified docker network mode (default: auto). 
+
+    Valid options are,
+    - {str(DockerNetworkMode.AUTO)}: Automatically detect the docker network.
+    - {str(DockerNetworkMode.HOST)}: Use the host network.
+    - {str(DockerNetworkMode.BRIDGE)}: Use a user-defined bridge network.
+    - {str(DockerNetworkMode.NONE)}: Use no network (equivalent to the --network=none option).
+        '''
+            if _SHOW_ALL_ARGS
+            else argparse.SUPPRESS,
         )

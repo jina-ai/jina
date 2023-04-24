@@ -3,6 +3,7 @@ import asyncio
 import copy
 import multiprocessing
 import os
+import platform
 import re
 import signal
 import threading
@@ -10,7 +11,7 @@ import time
 from typing import TYPE_CHECKING, Dict, Optional, Union
 
 from jina.constants import __docker_host__, __windows__
-from jina.enums import PodRoleType
+from jina.enums import PodRoleType, DockerNetworkMode
 from jina.excepts import BadImageNameError, DockerVersionError
 from jina.helper import random_name, slugify
 from jina.importer import ImportExtensions
@@ -22,8 +23,6 @@ from jina.orchestrate.pods.container_helper import (
     get_gpu_device_requests,
 )
 from jina.parsers import set_gateway_parser
-from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.gateway import GatewayRuntime
 
 if TYPE_CHECKING:  # pragma: no cover
     from docker.client import DockerClient
@@ -99,7 +98,18 @@ def _docker_run(
         client.images.get(uses_img)
     except docker.errors.ImageNotFound:
         logger.error(f'can not find local image: {uses_img}')
-        img_not_found = True
+        # try to pull the image
+        try:
+            logger.debug(f'pulling image: {uses_img}')
+            client.images.pull(uses_img)
+            logger.debug(f'pulled image: {uses_img}')
+            logger.debug(f'getting image: {uses_img}')
+            client.images.get(uses_img)
+            logger.debug(f'successfully got image: {uses_img}')
+            img_not_found = False
+        except docker.errors.ImageNotFound:
+            logger.error(f'can not find remote image: {uses_img}')
+            img_not_found = True
 
     if img_not_found:
         raise BadImageNameError(f'image: {uses_img} can not be found local & remote.')
@@ -138,11 +148,15 @@ def _docker_run(
 
     _args = ArgNamespace.kwargs2list(non_defaults)
 
-    if args.pod_role == PodRoleType.GATEWAY:
-        ports = {f'{_port}/tcp': _port for _port in args.port} if not net_mode else None
-    else:
-        ports = {f'{args.port}/tcp': args.port} if not net_mode else None
+    ports = {f'{_port}/tcp': _port for _port in args.port} if not net_mode else None
 
+    if platform.system() == 'Darwin':
+        image_architecture = client.images.get(uses_img).attrs.get('Architecture', '')
+        if not image_architecture.startswith('arm'):
+            logger.warning(
+                'The pulled image container does not support ARM architecture while the host machine relies on MacOS (Darwin).'
+                'The image may run with poor performance or fail if run via emulation.'
+            )
     docker_kwargs = args.docker_kwargs or {}
     container = client.containers.run(
         uses_img,
@@ -205,6 +219,9 @@ def run(
     cancel = threading.Event()
     fail_to_start = threading.Event()
 
+    def _cancel(*args, **kwargs):
+        logger.debug(f' Process observing container receives signal')
+        cancel.set()
     if not __windows__:
         try:
             for signame in {signal.SIGINT, signal.SIGTERM}:
@@ -239,12 +256,10 @@ def run(
         client.close()
 
         def _is_ready():
-            if args.pod_role == PodRoleType.GATEWAY:
-                return GatewayRuntime.is_ready(
-                    runtime_ctrl_address, protocol=args.protocol[0]
-                )
-            else:
-                return AsyncNewLoopRuntime.is_ready(runtime_ctrl_address)
+            from jina.serve.runtimes.servers import BaseServer
+            return BaseServer.is_ready(
+                ctrl_address=runtime_ctrl_address, protocol=getattr(args, 'protocol', ["grpc"])[0]
+            )
 
         def _is_container_alive(container) -> bool:
             import docker.errors
@@ -337,18 +352,15 @@ class ContainerPod(BasePod):
             else:
                 ctrl_host = self.args.host
 
-            if self.args.pod_role == PodRoleType.GATEWAY:
-                ctrl_address = f'{ctrl_host}:{self.args.port[0]}'
-            else:
-                ctrl_address = f'{ctrl_host}:{self.args.port}'
+            ctrl_address = f'{ctrl_host}:{self.args.port[0]}'
 
-            net_node, runtime_ctrl_address = self._get_network_for_dind_linux(
+            net_mode, runtime_ctrl_address = self._get_network_for_dind_linux(
                 client, ctrl_address
             )
         finally:
             client.close()
 
-        return net_node, runtime_ctrl_address
+        return net_mode, runtime_ctrl_address
 
     def _get_network_for_dind_linux(self, client: 'DockerClient', ctrl_address: str):
         import sys
@@ -357,21 +369,25 @@ class ContainerPod(BasePod):
         # Related to potential docker-in-docker communication. If `Runtime` lives already inside a container.
         # it will need to communicate using the `bridge` network.
         # In WSL, we need to set ports explicitly
-        net_mode, runtime_ctrl_address = None, ctrl_address
+        net_mode, runtime_ctrl_address = getattr(self.args, 'force_network_mode', DockerNetworkMode.AUTO), ctrl_address
         if sys.platform in ('linux', 'linux2') and 'microsoft' not in uname().release:
-            net_mode = 'host'
-            try:
-                bridge_network = client.networks.get('bridge')
-                if bridge_network:
-                    if self.args.pod_role == PodRoleType.GATEWAY:
+            if net_mode == DockerNetworkMode.AUTO:
+                net_mode = DockerNetworkMode.HOST
+            if net_mode != DockerNetworkMode.NONE:
+                try:
+                    bridge_network = client.networks.get('bridge')
+                    if bridge_network:
                         runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port[0]}'
-                    else:
-                        runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port}'
-            except Exception as ex:
-                self.logger.warning(
-                    f'Unable to set control address from "bridge" network: {ex!r}'
-                    f' Control address set to {runtime_ctrl_address}'
-                )
+                except Exception as ex:
+                    self.logger.warning(
+                        f'Unable to set control address from "bridge" network: {ex!r}'
+                        f' Control address set to {runtime_ctrl_address}'
+                    )
+
+        if net_mode in {DockerNetworkMode.AUTO, DockerNetworkMode.NONE}:
+            net_mode = None
+        else:
+            net_mode = net_mode.to_string().lower()
 
         return net_mode, runtime_ctrl_address
 
@@ -417,7 +433,7 @@ class ContainerPod(BasePod):
         """
         # terminate the docker
         try:
-            self._container.kill(signal='SIGTERM')
+            self._container.stop()
         finally:
             self.is_shutdown.wait(self.args.timeout_ctrl)
             self.logger.debug(f'terminating the runtime process')
@@ -443,5 +459,5 @@ class ContainerPod(BasePod):
         except docker.errors.NotFound:
             pass
         self.logger.debug(f'joining the process')
-        self.worker.join(*args, **kwargs)
+        self.worker.join(timeout=10, *args, **kwargs)
         self.logger.debug(f'successfully joined the process')

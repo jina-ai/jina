@@ -1,0 +1,9 @@
+jtype: Deployment
+with:
+  uses: DummyExecutor
+  py_modules:
+      - executor.py
+  uses_with:
+    arg: helloworld
+  replicas: 3
+  shards: 3

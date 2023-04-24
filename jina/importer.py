@@ -43,7 +43,7 @@ class ImportExtensions:
     def __exit__(self, exc_type, exc_val, traceback):
         if exc_type == ModuleNotFoundError:
             missing_module = self._pkg_name or exc_val.name
-            with open(os.path.join(__resources_path__, 'extra-requirements.txt')) as fp:
+            with open(os.path.join(__resources_path__, 'extra-requirements.txt'), encoding='utf-8') as fp:
                 for v in fp:
                     if (
                         v.strip()

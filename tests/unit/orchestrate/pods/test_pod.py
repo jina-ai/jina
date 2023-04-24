@@ -6,7 +6,7 @@ import pytest
 from jina.excepts import RuntimeFailToStart
 from jina.orchestrate.pods import Pod
 from jina.parsers import set_gateway_parser
-from jina.serve import runtimes
+from jina.serve.runtimes import asyncio as runtime_asyncio
 from jina.serve.executors import BaseExecutor
 from tests.helper import _generate_pod_args
 
@@ -29,18 +29,17 @@ class EnvChecker1(BaseExecutor):
 
 
 def test_pod_runtime_env_setting(fake_env):
-    with Pod(
-        _generate_pod_args(
-            [
-                '--uses',
-                'EnvChecker1',
-                '--env',
-                'key1=value1',
-                '--env',
-                'key2=value2',
-            ]
-        )
-    ):
+    args = _generate_pod_args(
+        [
+            '--uses',
+            'EnvChecker1',
+            '--env',
+            'key1=value1',
+            '--env',
+            'key2=value2',
+        ]
+    )
+    with Pod(args):
         pass
 
     # should not affect the main process
@@ -96,22 +95,6 @@ def test_gateway_runtimes(protocol, expected):
         assert p.args.uses == expected
 
 
-@pytest.mark.parametrize(
-    'runtime_cls',
-    ['WorkerRuntime', 'HeadRuntime'],
-)
-def test_non_gateway_runtimes(runtime_cls):
-    args = _generate_pod_args(
-        [
-            '--runtime-cls',
-            runtime_cls,
-        ]
-    )
-
-    with Pod(args) as p:
-        assert p.runtime_cls.__name__ == runtime_cls
-
-
 class RaisingExecutor(BaseExecutor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -156,20 +139,6 @@ def test_failing_gateway_runtimes(protocol, expected):
             pass
 
 
-def test_failing_head():
-    args = _generate_pod_args(
-        [
-            '--runtime-cls',
-            'HeadRuntime',
-        ]
-    )
-    args.port = None
-
-    with pytest.raises(RuntimeFailToStart):
-        with Pod(args):
-            pass
-
-
 @pytest.mark.timeout(4)
 def test_close_before_start(monkeypatch):
     class SlowFakeRuntime:
@@ -186,9 +155,9 @@ def test_close_before_start(monkeypatch):
             pass
 
     monkeypatch.setattr(
-        runtimes,
-        'get_runtime',
-        lambda *args, **kwargs: SlowFakeRuntime,
+        runtime_asyncio,
+        'AsyncNewLoopRuntime',
+        SlowFakeRuntime,
     )
     pod = Pod(_generate_pod_args(['--noblock-on-start']))
     pod.start()
@@ -211,9 +180,9 @@ def test_close_before_start_slow_enter(monkeypatch):
             pass
 
     monkeypatch.setattr(
-        runtimes,
-        'get_runtime',
-        lambda *args, **kwargs: SlowFakeRuntime,
+        runtime_asyncio,
+        'AsyncNewLoopRuntime',
+        SlowFakeRuntime,
     )
     pod = Pod(_generate_pod_args(['--noblock-on-start']))
     pod.start()

@@ -6,6 +6,7 @@ from docarray import DocumentArray
 from pytest_kind import cluster
 
 from jina import Deployment
+from jina.helper import random_port
 from tests.k8s.conftest import shell_portforward
 
 cluster.KIND_VERSION = 'v0.11.1'
@@ -78,8 +79,6 @@ async def create_executor_deployment_and_wait_ready(
             api_response = app_client.read_namespaced_deployment(
                 name=deployment_name, namespace=namespace
             )
-            print('api_response.status:', api_response.status)
-            print('namespaced events:', core_client.list_namespaced_event(namespace))
 
             expected_num_replicas = deployment_replicas_expected[deployment_name]
             if (
@@ -103,29 +102,50 @@ async def create_executor_deployment_and_wait_ready(
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize(
     'docker_images',
-    [['test-executor']],
+    [['test-executor', 'jinaai/jina']],
     indirect=True,
 )
-async def test_deployment_serve_k8s(logger, docker_images, tmpdir, k8s_cluster):
+@pytest.mark.parametrize('shards', [1, 2])
+@pytest.mark.parametrize('replicas', [1, 2])
+@pytest.mark.parametrize('protocol', ['grpc', 'http'])
+async def test_deployment_serve_k8s(
+    logger, docker_images, shards, replicas, protocol, tmpdir, k8s_cluster
+):
+    if protocol == 'http' and (shards > 1 or replicas == 1):
+        # shards larger than 1 are not supported, and replicas limitation is to speed up test
+        return
     from kubernetes import client
 
-    namespace = 'test-deployment-serve-k8s'
+    namespace = f'test-deployment-serve-k8s-{shards}-{replicas}-{protocol}'
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
 
     # test with custom port
-    port = 12345
+    port = random_port()
     try:
         dep = Deployment(
             name='test-executor',
             uses=f'docker://{docker_images[0]}',
-            replicas=3,
+            shards=shards,
+            protocol=protocol,
+            replicas=replicas,
             port=port,
         )
 
-        dump_path = os.path.join(str(tmpdir), 'test-deployment-serve-k8s')
+        dump_path = os.path.join(
+            str(tmpdir), f'test-deployment-serve-k8s-{shards}-{replicas}'
+        )
         dep.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+        deployment_replicas_expected = (
+            {'test-executor': replicas}
+            if shards == 1
+            else {
+                'test-executor-head': 1,
+                **{f'test-executor-{i}': replicas for i in range(shards)},
+            }
+        )
 
         await create_executor_deployment_and_wait_ready(
             dump_path,
@@ -133,38 +153,46 @@ async def test_deployment_serve_k8s(logger, docker_images, tmpdir, k8s_cluster):
             api_client=api_client,
             app_client=app_client,
             core_client=core_client,
-            deployment_replicas_expected={
-                'test-executor': 3,
-            },
+            deployment_replicas_expected=deployment_replicas_expected,
             logger=logger,
         )
         # start port forwarding
         from jina.clients import Client
 
+        service_name = 'svc/test-executor' if shards == 1 else 'svc/test-executor-head'
+
         with shell_portforward(
             k8s_cluster._cluster.kubectl_path,
-            'svc/test-executor',
+            service_name,
             port,
             port,
             namespace,
         ):
-            client = Client(port=port, asyncio=True)
+            client = Client(port=port, asyncio=True, protocol=protocol)
 
             # test with streaming
             async for docs in client.post(
                 '/debug', inputs=DocumentArray.empty(3), stream=True
             ):
                 for doc in docs:
-                    assert doc.tags['shards'] == 1
-                    assert doc.tags['parallel'] == 3
+                    assert doc.tags['shards'] == shards
+                    assert doc.tags['parallel'] == replicas
 
             # test without streaming
+            # without streaming, replicas are properly supported
+            visited = set()
             async for docs in client.post(
-                '/debug', inputs=DocumentArray.empty(3), stream=False
+                '/debug', inputs=DocumentArray.empty(20), stream=False, request_size=1
             ):
                 for doc in docs:
-                    assert doc.tags['shards'] == 1
-                    assert doc.tags['parallel'] == 3
+                    assert doc.tags['shards'] == shards
+                    assert doc.tags['parallel'] == replicas
+                    visited.add(doc.tags['hostname'])
+
+            # port forwarding will always hit the same replica, therefore, with no head, there is no proper
+            # load balancing mechanism with just port forwarding
+            if not (shards == 1 and replicas == 2):
+                assert len(visited) == shards * replicas
 
     except Exception as exc:
         logger.error(f' Exception raised {exc}')

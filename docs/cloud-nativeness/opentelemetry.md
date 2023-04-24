@@ -138,10 +138,13 @@ The Prometheus configuration now only needs to scrape from the OpenTelemetry Col
 
 Run the Flow and a sample request that we want to instrument locally. If the backends are running successfully the Flow has exported data to the Collector which can be queried and viewed.
 
+First start a Flow:
+
 ```python
-from jina import Flow, Document, DocumentArray
+from jina import Flow
 
 with Flow(
+    port=54321,
     tracing=True,
     traces_exporter_host='http://localhost',
     traces_exporter_port=4317,
@@ -149,7 +152,26 @@ with Flow(
     metrics_exporter_host='http://localhost',
     metrics_exporter_port=4317,
 ).add(uses='jinaai://jina-ai/SimpleIndexer') as f:
-    f.post('/', DocumentArray([Document(text='hello')]))
+    f.block()
+```
+
+Second execute requests using the instrumented {class}`jina.Client`:
+
+```python
+from jina import Client, Document, DocumentArray
+
+client = Client(
+    host='grpc://localhost:54321',
+    tracing=True,
+    traces_exporter_host='http://localhost',
+    traces_exporter_port=4317,
+)
+client.post('/', DocumentArray([Document(text='hello')]))
+client.teardown_instrumentation()
+```
+
+```{hint}
+The {class}`jina.Client` currently only supports OpenTelemetry Tracing.
 ```
 
 ## Viewing Traces in Jaeger UI
@@ -176,6 +198,3 @@ A list of available metrics is in the {ref}`Flow Instrumentation <instrumenting-
 To update your existing Prometheus and Grafana configurations, refer to the {ref}`OpenTelemetry migration guide <opentelemetry-migration>`.
 ```
 
-## JCloud Support
-
-JCloud doesn't currently support OpenTelemetry. We'll make these features available soon. Until then, you can use the deprecated Prometheus-based {ref}`monitoring setup <monitoring>`.

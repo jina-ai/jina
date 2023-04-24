@@ -4,7 +4,7 @@ from docarray import Document, DocumentArray
 from pydantic import BaseModel
 
 from jina.clients.request import request_generator
-from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
+from jina.serve.runtimes.gateway.http import FastAPIBaseGateway
 
 
 class DummyResponseModel(BaseModel):
@@ -57,7 +57,7 @@ class DummyFastAPIGateway(FastAPIBaseGateway):
         )
         async def _process(text: str):
             doc = None
-            async for req in self.streamer.stream(
+            async for req in self.streamer.rpc_stream(
                 request_generator(
                     exec_endpoint='/',
                     data=DocumentArray([Document(text=text)]),

@@ -95,7 +95,7 @@ def test_wrong_hostname(runtime_cls):
 
 
 def test_is_ready(pod_args):
-    with Deployment(pod_args, include_gateway=False) as pod:
+    with Deployment(pod_args) as pod:
         assert pod.is_ready is True
 
 
@@ -132,11 +132,11 @@ def test_uses_before_after(pod_args, shards):
         if shards == 2:
             assert (
                 pod.head_args.uses_before_address
-                == f'{pod.uses_before_args.host}:{pod.uses_before_args.port}'
+                == f'{pod.uses_before_args.host}:{pod.uses_before_args.port[0]}'
             )
             assert (
                 pod.head_args.uses_after_address
-                == f'{pod.uses_after_args.host}:{pod.uses_after_args.port}'
+                == f'{pod.uses_after_args.host}:{pod.uses_after_args.port[0]}'
             )
         else:
             assert pod.head_args is None
@@ -187,24 +187,24 @@ def test_pod_context_grpc_metadata(metadata):
         assert bp.grpc_metadata == metadata
 
 
-class AppendNameExecutor(Executor):
+class SetNameExecutor(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = self.runtime_args.name
 
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text=str(self.name)))
-        return docs
+        for doc in docs:
+            doc.text = str(self.name)
 
 
 @pytest.mark.slow
-def test_pod_activates_shards_replicas():
+def test_pod_in_flow_activates_shards_replicas():
     shards = 2
     replicas = 3
     args_list = ['--replicas', str(replicas), '--shards', str(shards), '--no-reduce']
     args = set_deployment_parser().parse_args(args_list)
-    args.uses = 'AppendNameExecutor'
+    args.uses = 'SetNameExecutor'
     with Deployment(args, include_gateway=False) as pod:
         assert pod.num_pods == 7
         response_texts = set()
@@ -212,15 +212,14 @@ def test_pod_activates_shards_replicas():
         for _ in range(6):
             response = send_request_sync(
                 _create_test_data_message(),
-                f'{pod.head_args.host}:{pod.head_args.port}',
+                f'{pod.head_args.host}:{pod.head_args.port[0]}',
             )
             response_texts.update(response.response.docs.texts)
         print(response_texts)
-        assert 7 == len(response_texts)
+        assert 6 == len(response_texts)
         assert all(
             text in response_texts
-            for text in ['client']
-            + [
+            for text in [
                 f'executor/shard-{s}/rep-{r}'
                 for s in range(shards)
                 for r in range(replicas)
@@ -228,6 +227,35 @@ def test_pod_activates_shards_replicas():
         )
 
     Deployment(args, include_gateway=False).start().close()
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize('shards', [1, 2])
+@pytest.mark.parametrize('replicas', [1, 2, 3])
+def test_standalone_deployment_activates_shards_replicas(shards, replicas):
+    with Deployment(
+        shards=shards,
+        replicas=replicas,
+        uses=SetNameExecutor,
+    ) as dep:
+        head_exists = 0 if shards == 1 else 1
+        assert dep.num_pods == shards * replicas + 1 + head_exists
+        response_texts = set()
+        # replicas and shards are used in a round robin fashion, so sending shards * replicas requests should hit each one time
+
+        docs = dep.post(on='/', inputs=DocumentArray.empty(20), request_size=1)
+
+        response_texts.update(docs.texts)
+        print(response_texts)
+        assert shards * replicas == len(response_texts)
+        assert all(
+            text in response_texts
+            for text in [
+                f'executor/shard-{s}/rep-{r}' if shards > 1 else f'executor/rep-{r}'
+                for s in range(shards)
+                for r in range(replicas)
+            ]
+        )
 
 
 class AppendParamExecutor(Executor):
@@ -246,7 +274,7 @@ async def _send_requests(pod):
     for _ in range(3):
         response = send_request_sync(
             _create_test_data_message(),
-            f'{pod.head_args.host}:{pod.head_args.port}',
+            f'{pod.head_args.host}:{pod.head_args.port[0]}',
         )
         response_texts.update(response.response.docs.texts)
     return response_texts
@@ -299,7 +327,7 @@ def test_pod_activates_shards():
         # replicas are used in a round robin fashion, so sending 3 requests should hit each one time
         response = send_request_sync(
             _create_test_data_message(),
-            f'{pod.head_args.host}:{pod.head_args.port}',
+            f'{pod.head_args.host}:{pod.head_args.port[0]}',
         )
         response_texts.update(response.response.docs.texts)
         assert 4 == len(response.response.docs.texts)
@@ -411,14 +439,14 @@ def test_dynamic_polling_with_config(polling):
     with pod:
         response = send_request_sync(
             _create_test_data_message(endpoint='/all'),
-            f'{pod.head_args.host}:{pod.head_args.port}',
+            f'{pod.head_args.host}:{pod.head_args.port[0]}',
             endpoint='/all',
         )
         assert len(response.docs) == 1 + 2  # 1 source doc + 2 docs added by each shard
 
         response = send_request_sync(
             _create_test_data_message(endpoint='/any'),
-            f'{pod.head_args.host}:{pod.head_args.port}',
+            f'{pod.head_args.host}:{pod.head_args.port[0]}',
             endpoint='/any',
         )
         assert (
@@ -427,7 +455,7 @@ def test_dynamic_polling_with_config(polling):
 
         response = send_request_sync(
             _create_test_data_message(endpoint='/no_polling'),
-            f'{pod.head_args.host}:{pod.head_args.port}',
+            f'{pod.head_args.host}:{pod.head_args.port[0]}',
             endpoint='/no_polling',
         )
         if polling == 'any':
@@ -472,14 +500,14 @@ def test_dynamic_polling_default_config(polling):
     with pod:
         response = send_request_sync(
             _create_test_data_message(endpoint='/search'),
-            f'{pod.head_args.host}:{pod.head_args.port}',
+            f'{pod.head_args.host}:{pod.head_args.port[0]}',
             endpoint='/search',
         )
         assert len(response.docs) == 1 + 2
 
         response = send_request_sync(
             _create_test_data_message(endpoint='/index'),
-            f'{pod.head_args.host}:{pod.head_args.port}',
+            f'{pod.head_args.host}:{pod.head_args.port[0]}',
             endpoint='/index',
         )
         assert len(response.docs) == 1 + 1
@@ -503,7 +531,7 @@ def test_dynamic_polling_overwrite_default_config(polling):
     with pod:
         response = send_request_sync(
             _create_test_data_message(endpoint='/search'),
-            f'{pod.head_args.host}:{pod.head_args.port}',
+            f'{pod.head_args.host}:{pod.head_args.port[0]}',
             endpoint='/search',
         )
         assert (
@@ -512,7 +540,7 @@ def test_dynamic_polling_overwrite_default_config(polling):
 
         response = send_request_sync(
             _create_test_data_message(endpoint='/index'),
-            f'{pod.head_args.host}:{pod.head_args.port}',
+            f'{pod.head_args.host}:{pod.head_args.port[0]}',
             endpoint='/index',
         )
         assert (
@@ -563,7 +591,7 @@ def test_to_k8s_yaml(tmpdir, uses, replicas, shards):
     else:
         shards_iter = [f'-{shard}' for shard in range(shards)]
     for shard in shards_iter:
-        with open(os.path.join(tmpdir, f'executor{shard}.yml')) as f:
+        with open(os.path.join(tmpdir, f'executor{shard}.yml'), encoding='utf-8') as f:
             exec_yaml = list(yaml.safe_load_all(f))[-1]
             assert exec_yaml['spec']['replicas'] == replicas
             assert exec_yaml['spec']['template']['spec']['containers'][0][
@@ -571,7 +599,7 @@ def test_to_k8s_yaml(tmpdir, uses, replicas, shards):
             ].startswith('jinahub/')
 
     if shards != 1:
-        with open(os.path.join(tmpdir, f'executor-head.yml')) as f:
+        with open(os.path.join(tmpdir, f'executor-head.yml'), encoding='utf-8') as f:
             head_yaml = list(yaml.safe_load_all(f))[-1]
             assert head_yaml['metadata']['name'] == 'executor-head'
             assert head_yaml['spec']['replicas'] == 1

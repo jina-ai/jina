@@ -1,9 +1,58 @@
 # {fas}`folder-plus` Create First Project
 
-Let's build a toy application with Jina. To start, use Jina CLI to make a new project:
+Let's build a toy application with Jina. To start, use Jina CLI to make a new Deployment or a Flow: 
+
+## Create a Deployment or Flow
+
+A {ref}`Deployment <deployment>` lets you serve and scale a single model or microservice, whereas a {ref}`Flow <flow-cookbook>` lets you connect Deployments into a processing pipeline.
+
+````{tab} Deployment
 
 ```bash
-jina new hello-jina
+jina new hello-jina --type=deployment
+```
+
+This creates a new project folder called `hello-jina` with the following file structure:
+
+```text
+hello-jina/
+    |- client.py
+    |- deployment.yml
+    |- executor1/
+            |- config.yml
+            |- executor.py
+```
+
+- `deployment.yml` is the configuration file for the Deployment`.
+- `executor1/` is where you write your {ref}`Executor <executor-cookbook>` code.
+- `config.yml` is the configuration file for the Executor. It stores metadata for your Executor, as well as dependencies.
+- `client.py` is the entrypoint of your Jina project. You can run it via `python app.py`.
+
+There are some other files like `README.md` and `requirements.txt` to provide extra metadata about that Executor. More information {ref}`can be found here<create-executor>`.
+
+Now run it and observe the output of the server and client:
+
+## Launch Deployment
+
+```shell
+jina deployment --uses deployment.yml
+```
+
+```shell
+
+──── 🎉 Deployment is ready to serve! ────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:54321  │
+│  🔒     Private    192.168.200.56:54321  │
+│  🌍      Public    81.223.121.124:54321  │
+╰──────────────────────────────────────────╯
+```
+````
+
+````{tab} Flow
+```bash
+jina new hello-jina --type=flow
 ```
 
 This creates a new project folder called `hello-jina` with the following file structure:
@@ -17,18 +66,17 @@ hello-jina/
             |- executor.py
 ```
 
-- `flow.yml` is the configuration file for the {class}`~jina.Flow`.
-- `executor1/` is where you write your {class}`~jina.Executor` code.
-- `config.yml` is the configuration file for the {class}`~jina.Executor`. It stores metadata for your Executor, as well as dependencies.
+- `flow.yml` is the configuration file for the Flow`.
+- `executor1/` is where you write your {ref}`Executor <executor-cookbook>` code.
+- `config.yml` is the configuration file for the Executor. It stores metadata for your Executor, as well as dependencies.
 - `client.py` is the entrypoint of your Jina project. You can run it via `python app.py`.
 
-There are some other files like `README.md` and `requirements.txt` to provide extra metadata about that {class}`~jina.Executor`. More information {ref}`can be found here<create-executor>`.
-
+There are some other files like `README.md` and `requirements.txt` to provide extra metadata about that Executor. More information {ref}`can be found here<create-executor>`.
 
 Now run it and observe the output of the server and client:
 
+## Launch Flow
 
-````{tab} Run server
 ```shell
 jina flow --uses flow.yml
 ```
@@ -43,9 +91,15 @@ jina flow --uses flow.yml
 │  🌍      Public    81.223.121.124:54321  │
 ╰──────────────────────────────────────────╯
 ```
+
 ````
 
-````{tab} Run client
+Deployments and Flows share many common ways of doing things. We'll go into those below.
+
+## Connect with Client
+
+The {ref}`client` lets you connect to your Deployment or Flow over gRPC, HTTP or WebSockets. {ref}`Third party clients <third-party-client>` for non-Python languages.
+
 ```bash
 python client.py
 ```
@@ -53,12 +107,10 @@ python client.py
 ```shell
 ['hello, world!', 'goodbye, world!']
 ```
-````
-
 
 ## Add logic
 
-You can use any Python library in {class}`~jina.Executor`. For example, add `pytorch` to `executor1/requirements.txt` and crunch some numbers. 
+You can use any Python library in an Executor. For example, add `pytorch` to `executor1/requirements.txt` and crunch some numbers. 
 
 In `executor.py`, add another endpoint `/get-tensor` as follows:
 
@@ -84,7 +136,7 @@ class MyExecutor(Executor):
             doc.tensor = torch.tensor(np.random.random([10, 2]))
 ```
 
-Kill the last server with `Ctrl-C` and restart the server with `jina flow --uses flow.yml`.
+Kill the last server with `Ctrl-C` and restart the server with `jina flow --uses deployment.yml`.
 
 ## Call `/crunch-number` endpoint
 
@@ -129,15 +181,20 @@ tensor([[[0.9594, 0.9373],
          [0.2457, 0.9189]]], dtype=torch.float64)
 ```
 
-## Deploy to JCloud
+## Deploy to cloud
 
-JCloud offers free CPU and GPU instances to host Jina project. Let's deploy your first project to JCloud:
+JCloud offers free CPU and GPU instances to host Jina projects.
+
+```{admonition} Deployments on JCloud
+:class: important
+At present, JCloud is only available for Flows. We are currently working on supporting Deployments.
+```
 
 ```bash
 jina auth login
 ```
 
-Log in with your GitHub, Google or Email account.
+Log in with your GitHub, Google or Email account:
 
 ```bash
 jina cloud deploy ./
@@ -146,7 +203,7 @@ jina cloud deploy ./
 ```{figure} deploy-jcloud-ongoing.png
 ```
 
-Deployment is fully automatic and takes a few minutes.
+Deploying a Flow to the cloud is fully automatic and takes a few minutes.
 
 After it is done, you should see the following message in the terminal.
 
@@ -159,7 +216,6 @@ After it is done, you should see the following message in the terminal.
 │                                                   │
 ╰───────────────────────────────────────────────────╯
 ```
-
 
 Now change the Client's code to use the deployed endpoint shown above:
 
@@ -210,7 +266,6 @@ Don't forget to delete a Flow if you're not using it any more:
 ```bash
 jina cloud remove 1655d050ad
 ```
-
 
 ```text
 Successfully removed Flow 1655d050ad.

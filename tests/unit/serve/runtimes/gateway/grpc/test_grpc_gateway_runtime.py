@@ -15,7 +15,8 @@ from jina.parsers import set_gateway_parser
 from jina.serve import networking
 from jina.serve.networking.utils import get_available_services
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.gateway import GatewayRuntime
+from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+from jina.serve.runtimes.servers import BaseServer
 
 
 def test_grpc_gateway_runtime_init_close():
@@ -24,7 +25,7 @@ def test_grpc_gateway_runtime_init_close():
     port = random_port()
 
     def _create_runtime():
-        with GatewayRuntime(
+        with AsyncNewLoopRuntime(
             set_gateway_parser().parse_args(
                 [
                     '--port',
@@ -38,14 +39,15 @@ def test_grpc_gateway_runtime_init_close():
                     + f'{deployment1_port}'
                     + '"]}',
                 ]
-            )
+            ),
+            req_handler_cls=GatewayRequestHandler,
         ) as runtime:
             runtime.run_forever()
 
     p = multiprocessing.Process(target=_create_runtime)
     p.start()
     time.sleep(1.0)
-    assert AsyncNewLoopRuntime.is_ready(ctrl_address=f'127.0.0.1:{port}')
+    assert BaseServer.is_ready(ctrl_address=f'127.0.0.1:{port}')
     p.terminate()
     p.join()
 
@@ -162,7 +164,7 @@ async def _test(streamer, stream):
     responses = []
     req = request_generator('/', DocumentArray([Document(text='client0-Request')]))
     if stream:
-        async for resp in streamer.stream(request_iterator=req):
+        async for resp in streamer.rpc_stream(request_iterator=req):
             responses.append(resp)
     else:
         for req in request_generator(
@@ -191,7 +193,7 @@ def test_grpc_gateway_runtime_handle_messages_linear(
         )
         port = random_port()
 
-        with GatewayRuntime(
+        with AsyncNewLoopRuntime(
             set_gateway_parser().parse_args(
                 [
                     '--port',
@@ -201,9 +203,12 @@ def test_grpc_gateway_runtime_handle_messages_linear(
                     '--deployments-addresses',
                     '{}',
                 ]
-            )
+            ),
+            req_handler_cls=GatewayRequestHandler,
         ) as runtime:
-            responses = asyncio.run(_test(runtime.gateway.streamer, stream))
+            responses = asyncio.run(
+                _test(runtime.server._request_handler.streamer, stream)
+            )
 
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
@@ -235,7 +240,7 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
         )
         port = random_port()
 
-        with GatewayRuntime(
+        with AsyncNewLoopRuntime(
             set_gateway_parser().parse_args(
                 [
                     '--port',
@@ -245,9 +250,12 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
                     '--deployments-addresses',
                     '{}',
                 ]
-            )
+            ),
+            req_handler_cls=GatewayRequestHandler,
         ) as runtime:
-            responses = asyncio.run(_test(runtime.gateway.streamer, stream))
+            responses = asyncio.run(
+                _test(runtime.server._request_handler.streamer, stream)
+            )
 
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
@@ -281,7 +289,7 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
         )
         port = random_port()
 
-        with GatewayRuntime(
+        with AsyncNewLoopRuntime(
             set_gateway_parser().parse_args(
                 [
                     '--port',
@@ -291,9 +299,12 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
                     '--deployments-addresses',
                     '{}',
                 ]
-            )
+            ),
+            req_handler_cls=GatewayRequestHandler,
         ) as runtime:
-            responses = asyncio.run(_test(runtime.gateway.streamer, stream))
+            responses = asyncio.run(
+                _test(runtime.server._request_handler.streamer, stream)
+            )
 
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
@@ -330,7 +341,7 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_deployment(
         )
         port = random_port()
 
-        with GatewayRuntime(
+        with AsyncNewLoopRuntime(
             set_gateway_parser().parse_args(
                 [
                     '--port',
@@ -340,9 +351,12 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_deployment(
                     '--deployments-addresses',
                     '{}',
                 ]
-            )
+            ),
+            req_handler_cls=GatewayRequestHandler,
         ) as runtime:
-            responses = asyncio.run(_test(runtime.gateway.streamer, stream))
+            responses = asyncio.run(
+                _test(runtime.server._request_handler.streamer, stream)
+            )
 
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
@@ -379,7 +393,7 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
         )
         port = random_port()
 
-        with GatewayRuntime(
+        with AsyncNewLoopRuntime(
             set_gateway_parser().parse_args(
                 [
                     '--port',
@@ -389,9 +403,12 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
                     '--deployments-addresses',
                     '{}',
                 ]
-            )
+            ),
+            req_handler_cls=GatewayRequestHandler,
         ) as runtime:
-            responses = asyncio.run(_test(runtime.gateway.streamer, stream))
+            responses = asyncio.run(
+                _test(runtime.server._request_handler.streamer, stream)
+            )
 
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
@@ -421,7 +438,7 @@ def test_grpc_gateway_runtime_handle_empty_graph(stream):
     def process_wrapper():
         port = random_port()
 
-        with GatewayRuntime(
+        with AsyncNewLoopRuntime(
             set_gateway_parser().parse_args(
                 [
                     '--port',
@@ -431,9 +448,12 @@ def test_grpc_gateway_runtime_handle_empty_graph(stream):
                     '--deployments-addresses',
                     '{}',
                 ]
-            )
+            ),
+            req_handler_cls=GatewayRequestHandler,
         ) as runtime:
-            responses = asyncio.run(_test(runtime.gateway.streamer, stream))
+            responses = asyncio.run(
+                _test(runtime.server._request_handler.streamer, stream)
+            )
 
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
@@ -452,7 +472,7 @@ async def test_grpc_gateway_runtime_reflection():
     port = random_port()
 
     def _create_runtime():
-        with GatewayRuntime(
+        with AsyncNewLoopRuntime(
             set_gateway_parser().parse_args(
                 [
                     '--port',
@@ -466,14 +486,15 @@ async def test_grpc_gateway_runtime_reflection():
                     + f'{deployment1_port}'
                     + '"]}',
                 ]
-            )
+            ),
+            req_handler_cls=GatewayRequestHandler,
         ) as runtime:
             runtime.run_forever()
 
     p = multiprocessing.Process(target=_create_runtime)
     p.start()
     time.sleep(1.0)
-    assert AsyncNewLoopRuntime.is_ready(ctrl_address=f'127.0.0.1:{port}')
+    assert BaseServer.is_ready(ctrl_address=f'127.0.0.1:{port}')
 
     async with grpc.aio.insecure_channel(f'127.0.0.1:{port}') as channel:
         service_names = await get_available_services(channel)

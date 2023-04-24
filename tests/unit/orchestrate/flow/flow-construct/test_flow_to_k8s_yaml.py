@@ -10,12 +10,17 @@ from jina.serve.networking import GrpcConnectionPool
 
 @pytest.mark.parametrize('protocol', ['http', 'grpc'])
 @pytest.mark.parametrize('flow_port', [1234, None])
-def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
+@pytest.mark.parametrize('gateway_replicas', [1, 2])
+def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port, gateway_replicas):
     flow_kwargs = {'name': 'test-flow', 'protocol': protocol}
+    gateway_kwargs = {'protocol': protocol}
     if flow_port:
         flow_kwargs['port'] = flow_port
+        gateway_kwargs['port'] = flow_port
+    gateway_kwargs['replicas'] = gateway_replicas
+
     flow = (
-        Flow(**flow_kwargs)
+        Flow(**flow_kwargs).config_gateway(**gateway_kwargs)
         .add(name='executor0', uses_with={'param': 0}, timeout_ready=60000)
         .add(
             name='executor1',
@@ -75,7 +80,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     for pod_name in set(os.listdir(dump_path)):
         file_set = set(os.listdir(os.path.join(dump_path, pod_name)))
         for file in file_set:
-            with open(os.path.join(dump_path, pod_name, file)) as f:
+            with open(os.path.join(dump_path, pod_name, file), encoding='utf-8') as f:
                 yml_document_all = list(yaml.safe_load_all(f))
             yaml_dicts_per_deployment[file[:-4]] = yml_document_all
 
@@ -93,7 +98,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     assert gateway_objects[2]['kind'] == 'Deployment'
     assert gateway_objects[2]['metadata']['namespace'] == namespace
     assert gateway_objects[2]['metadata']['name'] == 'gateway'
-    assert gateway_objects[2]['spec']['replicas'] == 1
+    assert gateway_objects[2]['spec']['replicas'] == gateway_replicas
     gateway_args = gateway_objects[2]['spec']['template']['spec']['containers'][0][
         'args'
     ]
@@ -579,7 +584,7 @@ def test_flow_to_k8s_yaml_external_pod(tmpdir, has_external):
     for pod_name in set(os.listdir(dump_path)):
         file_set = set(os.listdir(os.path.join(dump_path, pod_name)))
         for file in file_set:
-            with open(os.path.join(dump_path, pod_name, file)) as f:
+            with open(os.path.join(dump_path, pod_name, file), encoding='utf-8') as f:
                 yml_document_all = list(yaml.safe_load_all(f))
             yaml_dicts_per_deployment[file[:-4]] = yml_document_all
 
@@ -638,7 +643,7 @@ def test_flow_to_k8s_yaml_sandbox(tmpdir, uses):
     for pod_name in set(os.listdir(dump_path)):
         file_set = set(os.listdir(os.path.join(dump_path, pod_name)))
         for file in file_set:
-            with open(os.path.join(dump_path, pod_name, file)) as f:
+            with open(os.path.join(dump_path, pod_name, file), encoding='utf-8') as f:
                 yml_document_all = list(yaml.safe_load_all(f))
             yaml_dicts_per_deployment[file[:-4]] = yml_document_all
 

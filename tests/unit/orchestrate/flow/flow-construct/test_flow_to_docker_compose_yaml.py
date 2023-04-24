@@ -33,7 +33,7 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     )
 
     configuration = None
-    with open(dump_path) as f:
+    with open(dump_path, encoding='utf-8') as f:
         configuration = yaml.safe_load(f)
 
     assert set(configuration.keys()) == {'version', 'services', 'networks'}
@@ -329,7 +329,7 @@ def test_docker_compose_set_volume(tmpdir):
     )
 
     configuration = None
-    with open(dump_path) as f:
+    with open(dump_path, encoding='utf-8') as f:
         configuration = yaml.safe_load(f)
 
     assert set(configuration.keys()) == {'version', 'services', 'networks'}
@@ -377,7 +377,7 @@ def test_disable_auto_volume(tmpdir):
     flow.to_docker_compose_yaml(output_path=dump_path)
 
     configuration = None
-    with open(dump_path) as f:
+    with open(dump_path, encoding='utf-8') as f:
         configuration = yaml.safe_load(f)
 
     assert set(configuration.keys()) == {'version', 'services', 'networks'}
@@ -406,7 +406,7 @@ def test_flow_to_docker_compose_sandbox(tmpdir, uses):
     )
 
     configuration = None
-    with open(dump_path) as f:
+    with open(dump_path, encoding='utf-8') as f:
         configuration = yaml.safe_load(f)
 
     services = configuration['services']
@@ -429,7 +429,7 @@ def test_flow_to_docker_compose_gpus(tmpdir, count):
     )
 
     configuration = None
-    with open(dump_path) as f:
+    with open(dump_path, encoding='utf-8') as f:
         configuration = yaml.safe_load(f)
 
     services = configuration['services']

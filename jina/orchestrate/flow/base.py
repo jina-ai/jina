@@ -38,12 +38,12 @@ from rich.progress import (
 
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin, ProfileMixin
-from jina.constants import __default_host__, __docker_host__, __windows__
+from jina.constants import __default_host__, __windows__
 from jina.enums import (
     DeploymentRoleType,
     FlowBuildLevel,
     FlowInspectType,
-    GatewayProtocolType,
+    ProtocolType,
 )
 from jina.excepts import (
     FlowMissingDeploymentError,
@@ -72,11 +72,10 @@ from jina.parsers import (
     set_gateway_parser,
 )
 from jina.parsers.flow import set_flow_parser
-from jina.serve.networking.utils import host_is_local, in_docker
 
 __all__ = ['Flow']
 GATEWAY_ARGS_BLACKLIST = ['uses', 'uses_with']
-EXECUTOR_ARGS_BLACKLIST = ['port', 'port_monitoring', 'uses', 'uses_with']
+EXECUTOR_ARGS_BLACKLIST = ['port', 'port_monitoring', 'uses', 'uses_with', 'protocol']
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
@@ -116,6 +115,7 @@ class Flow(
         self,
         *,
         asyncio: Optional[bool] = False,
+        grpc_channel_options: Optional[dict] = None,
         host: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
         metrics: Optional[bool] = False,
@@ -135,6 +135,7 @@ class Flow(
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
         :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
@@ -179,6 +180,7 @@ class Flow(
         floating: Optional[bool] = False,
         graph_conditions: Optional[str] = '{}',
         graph_description: Optional[str] = '{}',
+        grpc_channel_options: Optional[dict] = None,
         grpc_server_options: Optional[dict] = None,
         host: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
@@ -198,6 +200,7 @@ class Flow(
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         reload: Optional[bool] = False,
+        replicas: Optional[int] = 1,
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'GatewayRuntime',
         ssl_certfile: Optional[str] = None,
@@ -235,6 +238,7 @@ class Flow(
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
@@ -270,6 +274,7 @@ class Flow(
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Gateway will restart while serving if YAML configuration source is changed.
+        :param replicas: The number of replicas of the Gateway. This replicas will only be applied when converted into Kubernetes YAML
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -388,6 +393,7 @@ class Flow(
         - `port`, `port_monitoring`, `uses` and `uses_with` won't be passed to Executor
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
         :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
@@ -422,6 +428,7 @@ class Flow(
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
@@ -457,6 +464,7 @@ class Flow(
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Gateway will restart while serving if YAML configuration source is changed.
+        :param replicas: The number of replicas of the Gateway. This replicas will only be applied when converted into Kubernetes YAML
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -541,7 +549,7 @@ class Flow(
             )
         self.args = args
         # common args should be the ones that can not be parsed by _flow_parser
-        known_keys = vars(args)
+        known_keys = list(vars(args).keys())
         self._common_kwargs = {k: v for k, v in kwargs.items() if k not in known_keys}
 
         # gateway args inherit from flow args
@@ -665,7 +673,7 @@ class Flow(
         args.deployments_metadata = json.dumps(deployments_metadata)
         args.deployments_no_reduce = json.dumps(deployments_no_reduce)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(
-            args, needs, include_gateway=False
+            args, needs, include_gateway=False, noblock_on_start=True
         )
 
     def _get_deployments_metadata(self) -> Dict[str, Dict[str, str]]:
@@ -684,27 +692,7 @@ class Flow(
         for node, deployment in self._deployment_nodes.items():
             if node == GATEWAY_NAME:
                 continue
-            if deployment.head_args:
-                # add head information
-                graph_dict[node] = [
-                    f'{deployment.protocol}://{deployment.host}:{deployment.head_port}'
-                ]
-            else:
-                # there is no head, add the worker connection information instead
-                ports = deployment.ports
-                hosts = [
-                    __docker_host__
-                    if host_is_local(host)
-                    and in_docker()
-                    and deployment.dockerized_uses
-                    else host
-                    for host in deployment.hosts
-                ]
-                graph_dict[node] = [
-                    f'{deployment.protocol}://{host}:{port}'
-                    for host, port in zip(hosts, ports)
-                ]
-
+            graph_dict[node] = deployment._get_connection_list_for_flow()
         return graph_dict
 
     def _get_k8s_deployments_addresses(
@@ -731,40 +719,19 @@ class Flow(
 
             external_port = v.head_port if v.head_port else v.port
             graph_dict[node] = [
-                f'{v.protocol}://{deployment_k8s_address}:{external_port if v.external else GrpcConnectionPool.K8S_PORT}'
+                f'{v.protocol.lower()}://{deployment_k8s_address}:{external_port if v.external else GrpcConnectionPool.K8S_PORT}'
             ]
 
         return graph_dict if graph_dict else None
 
     def _get_docker_compose_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
-        from jina.orchestrate.deployments.config.docker_compose import port
-        from jina.orchestrate.deployments.config.helper import to_compatible_name
 
         for node, v in self._deployment_nodes.items():
             if node == GATEWAY_NAME:
                 continue
 
-            if v.external:
-                deployment_docker_compose_address = [
-                    f'{v.protocol}://{v.host}:{v.port}'
-                ]
-            elif v.head_args:
-                deployment_docker_compose_address = [
-                    f'{to_compatible_name(v.head_args.name)}:{port}'
-                ]
-            else:
-                if v.args.replicas == 1:
-                    deployment_docker_compose_address = [
-                        f'{to_compatible_name(v.name)}:{port}'
-                    ]
-                else:
-                    deployment_docker_compose_address = []
-                    for rep_id in range(v.args.replicas):
-                        node_name = f'{v.name}/rep-{rep_id}'
-                        deployment_docker_compose_address.append(
-                            f'{to_compatible_name(node_name)}:{port}'
-                        )
+            deployment_docker_compose_address = v._docker_compose_address
             graph_dict[node] = deployment_docker_compose_address
 
         return graph_dict
@@ -858,8 +825,11 @@ class Flow(
     def add(
         self,
         *,
+        allow_concurrent: Optional[bool] = False,
         compression: Optional[str] = None,
         connection_list: Optional[str] = None,
+        cors: Optional[bool] = False,
+        description: Optional[str] = None,
         disable_auto_volume: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
@@ -870,6 +840,7 @@ class Flow(
         floating: Optional[bool] = False,
         force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
+        grpc_channel_options: Optional[dict] = None,
         grpc_metadata: Optional[dict] = None,
         grpc_server_options: Optional[dict] = None,
         host: Optional[List[str]] = ['0.0.0.0'],
@@ -887,6 +858,7 @@ class Flow(
         port: Optional[int] = None,
         port_monitoring: Optional[int] = None,
         prefer_platform: Optional[str] = None,
+        protocol: Optional[Union[str, List[str]]] = ['GRPC'],
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
@@ -895,9 +867,12 @@ class Flow(
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'WorkerRuntime',
         shards: Optional[int] = 1,
+        ssl_certfile: Optional[str] = None,
+        ssl_keyfile: Optional[str] = None,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
+        title: Optional[str] = None,
         tls: Optional[bool] = False,
         traces_exporter_host: Optional[str] = None,
         traces_exporter_port: Optional[int] = None,
@@ -911,6 +886,7 @@ class Flow(
         uses_metas: Optional[dict] = None,
         uses_requests: Optional[dict] = None,
         uses_with: Optional[dict] = None,
+        uvicorn_kwargs: Optional[dict] = None,
         volumes: Optional[List[str]] = None,
         when: Optional[dict] = None,
         workspace: Optional[str] = None,
@@ -918,8 +894,11 @@ class Flow(
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
+        :param allow_concurrent: Allow concurrent requests to be processed by the Executor. This is only recommended if the Executor is thread-safe.
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
+        :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
+        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -940,6 +919,7 @@ class Flow(
               - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param grpc_metadata: The metadata to be passed to the gRPC request.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
@@ -976,6 +956,7 @@ class Flow(
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
+        :param protocol: Communication protocol of the server exposed by the Executor. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your
@@ -989,9 +970,12 @@ class Flow(
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
+        :param ssl_certfile: the path to the certificate file
+        :param ssl_keyfile: the path to the key file
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
+        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param tls: If set, connect to deployment using tls encryption
         :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
         :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
@@ -1015,6 +999,9 @@ class Flow(
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
+        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
+
+          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         :param volumes: The path on the host to be mounted inside the container.
 
           Note,
@@ -1060,6 +1047,7 @@ class Flow(
     @allowed_levels([FlowBuildLevel.EMPTY])
     def add(
         self,
+        deployment: Union[str, Deployment] = None,
         **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         # implementation_stub_inject_start_add
@@ -1067,8 +1055,11 @@ class Flow(
         """Add a Deployment to the current Flow object and return the new modified Flow object.
         The attribute of the Deployment can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`
 
+        :param allow_concurrent: Allow concurrent requests to be processed by the Executor. This is only recommended if the Executor is thread-safe.
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
+        :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
+        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -1089,6 +1080,7 @@ class Flow(
               - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param grpc_metadata: The metadata to be passed to the gRPC request.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
@@ -1125,6 +1117,7 @@ class Flow(
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
+        :param protocol: Communication protocol of the server exposed by the Executor. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your
@@ -1138,9 +1131,12 @@ class Flow(
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
+        :param ssl_certfile: the path to the certificate file
+        :param ssl_keyfile: the path to the key file
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
+        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param tls: If set, connect to deployment using tls encryption
         :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
         :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
@@ -1164,6 +1160,9 @@ class Flow(
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
+        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
+
+          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         :param volumes: The path on the host to be mounted inside the container.
 
           Note,
@@ -1216,49 +1215,61 @@ class Flow(
             op_flow, deployment_name, needs, connect_to_last_deployment=True
         )
 
-        # set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`
-        for key, value in op_flow._common_kwargs.items():
+        if deployment is None:
 
-            # do not inherit from all the argument from the flow and respect EXECUTOR_ARGS_BLACKLIST
-            if key not in kwargs and key not in EXECUTOR_ARGS_BLACKLIST:
-                kwargs[key] = value
+            # set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`
+            for key, value in op_flow._common_kwargs.items():
 
-        # update kwargs of this Deployment
-        kwargs.update(
-            dict(
-                name=deployment_name,
-                deployment_role=deployment_role,
-                log_config=kwargs.get('log_config')
-                if 'log_config' in kwargs
-                else self.args.log_config,
+                # do not inherit from all the argument from the flow and respect EXECUTOR_ARGS_BLACKLIST
+                if key not in kwargs and key not in EXECUTOR_ARGS_BLACKLIST:
+                    kwargs[key] = value
+
+            # update kwargs of this Deployment
+            kwargs.update(
+                dict(
+                    name=deployment_name,
+                    deployment_role=deployment_role,
+                    log_config=kwargs.get('log_config')
+                    if 'log_config' in kwargs
+                    else self.args.log_config,
+                )
             )
-        )
-        parser = set_deployment_parser()
-        if deployment_role == DeploymentRoleType.GATEWAY:
-            parser = set_gateway_parser()
+            parser = set_deployment_parser()
+            if deployment_role == DeploymentRoleType.GATEWAY:
+                parser = set_gateway_parser()
 
-        args = ArgNamespace.kwargs2namespace(
-            kwargs, parser, True, fallback_parsers=FALLBACK_PARSERS
-        )
+            args = ArgNamespace.kwargs2namespace(
+                kwargs, parser, True, fallback_parsers=FALLBACK_PARSERS
+            )
 
-        # deployment workspace if not set then derive from flow workspace
-        if args.workspace:
-            args.workspace = os.path.abspath(args.workspace)
+            # deployment workspace if not set then derive from flow workspace
+            if args.workspace:
+                args.workspace = os.path.abspath(args.workspace)
+            else:
+                args.workspace = self.workspace
+
+            args.noblock_on_start = True
+
+            if len(needs) > 1 and args.external and args.no_reduce:
+                raise ValueError(
+                    'External Executors with multiple needs have to do auto reduce.'
+                )
+            deployment = Deployment(
+                args, needs, include_gateway=False, noblock_on_start=True
+            )
+            floating = args.floating
+        elif isinstance(deployment, str):
+            deployment = Deployment.load_config(
+                deployment, needs=needs, include_gateway=False, noblock_on_start=True
+            )
+            floating = deployment.args.floating
         else:
-            args.workspace = self.workspace
+            deployment.needs = needs
+            floating = deployment.args.floating
 
-        args.noblock_on_start = True
+        op_flow._deployment_nodes[deployment_name] = deployment
 
-        if len(needs) > 1 and args.external and args.no_reduce:
-            raise ValueError(
-                'External Executors with multiple needs have to do auto reduce.'
-            )
-
-        op_flow._deployment_nodes[deployment_name] = Deployment(
-            args, needs, include_gateway=False
-        )
-
-        if not args.floating:
+        if not floating:
             op_flow._last_deployment = deployment_name
 
         return op_flow
@@ -1283,6 +1294,7 @@ class Flow(
         floating: Optional[bool] = False,
         graph_conditions: Optional[str] = '{}',
         graph_description: Optional[str] = '{}',
+        grpc_channel_options: Optional[dict] = None,
         grpc_server_options: Optional[dict] = None,
         host: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
@@ -1302,6 +1314,7 @@ class Flow(
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         reload: Optional[bool] = False,
+        replicas: Optional[int] = 1,
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'GatewayRuntime',
         ssl_certfile: Optional[str] = None,
@@ -1339,6 +1352,7 @@ class Flow(
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
@@ -1374,6 +1388,7 @@ class Flow(
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Gateway will restart while serving if YAML configuration source is changed.
+        :param replicas: The number of replicas of the Gateway. This replicas will only be applied when converted into Kubernetes YAML
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -1436,6 +1451,7 @@ class Flow(
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
+        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {'grpc.max_send_message_length': -1}. When max_attempts > 1, the 'grpc.service_config' option will not be applicable.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
@@ -1471,6 +1487,7 @@ class Flow(
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Gateway will restart while serving if YAML configuration source is changed.
+        :param replicas: The number of replicas of the Gateway. This replicas will only be applied when converted into Kubernetes YAML
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -1769,7 +1786,7 @@ class Flow(
         self._stop_time = time.time()
         send_telemetry_event(
             event='stop',
-            obj=self,
+            obj_cls_name=self.__class__.__name__,
             entity_id=self._entity_id,
             duration=self._stop_time - self._start_time,
             exc_type=str(exc_type),
@@ -1816,150 +1833,163 @@ class Flow(
 
         self._build_level = FlowBuildLevel.RUNNING
 
-        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
+        send_telemetry_event(
+            event='start',
+            obj_cls_name=self.__class__.__name__,
+            entity_id=self._entity_id,
+        )
 
         return self
 
     def _wait_until_all_ready(self):
-        results = {}
-        threads = []
-        results_lock = threading.Lock()
+        import warnings
 
-        async def _async_wait_ready(_deployment_name, _deployment):
-            try:
-                if not _deployment.external:
-                    with results_lock:
-                        results[_deployment_name] = 'pending'
-                    await _deployment.async_wait_start_success()
-                    with results_lock:
-                        results[_deployment_name] = 'done'
-            except Exception as ex:
-                results[_deployment_name] = repr(ex)
+        with warnings.catch_warnings():
 
-        def _wait_ready(_deployment_name, _deployment):
-            try:
-                if not _deployment.external:
-                    with results_lock:
-                        results[_deployment_name] = 'pending'
-                    _deployment.wait_start_success()
-                    with results_lock:
-                        results[_deployment_name] = 'done'
-            except Exception as ex:
-                with results_lock:
+            results = {}
+            results_lock = threading.Lock()
+
+            async def _async_wait_ready(_deployment_name, _deployment):
+                try:
+                    if not _deployment.external:
+                        with results_lock:
+                            results[_deployment_name] = 'pending'
+                        await _deployment.async_wait_start_success()
+                        with results_lock:
+                            results[_deployment_name] = 'done'
+                except Exception as ex:
                     results[_deployment_name] = repr(ex)
 
-        def _polling_status(num_tasks_to_wait):
-            progress = Progress(
-                SpinnerColumn(),
-                TextColumn(
-                    'Waiting [b]{task.fields[pending_str]}[/]...', justify='right'
-                ),
-                BarColumn(),
-                MofNCompleteColumn(),
-                TimeElapsedColumn(),
-                transient=True,
-            )
-            with progress:
-                task = progress.add_task(
-                    'wait', total=num_tasks_to_wait, pending_str='', start=False
-                )
-                with results_lock:
-                    progress.update(task, total=len(results))
-                progress.start_task(task)
-
-                while True:
-                    num_done = 0
-                    pendings = []
+            def _wait_ready(_deployment_name, _deployment):
+                try:
+                    if not _deployment.external:
+                        with results_lock:
+                            results[_deployment_name] = 'pending'
+                        _deployment.wait_start_success()
+                        with results_lock:
+                            results[_deployment_name] = 'done'
+                except Exception as ex:
                     with results_lock:
-                        for _k, _v in results.items():
-                            sys.stdout.flush()
-                            if _v == 'pending':
-                                pendings.append(_k)
-                            elif _v == 'done':
-                                num_done += 1
-                            else:
-                                if 'JINA_EARLY_STOP' in os.environ:
-                                    self.logger.error(
-                                        f'Flow is aborted due to {_k} {_v}.'
-                                    )
-                                    os._exit(1)
+                        results[_deployment_name] = repr(ex)
 
-                    pending_str = ' '.join(pendings)
+            def _polling_status(num_tasks_to_wait):
+                progress = Progress(
+                    SpinnerColumn(),
+                    TextColumn(
+                        'Waiting [b]{task.fields[pending_str]}[/]...', justify='right'
+                    ),
+                    BarColumn(),
+                    MofNCompleteColumn(),
+                    TimeElapsedColumn(),
+                    transient=True,
+                )
+                with progress:
+                    task = progress.add_task(
+                        'wait', total=num_tasks_to_wait, pending_str='', start=False
+                    )
+                    with results_lock:
+                        progress.update(task, total=len(results))
+                    progress.start_task(task)
 
-                    progress.update(task, completed=num_done, pending_str=pending_str)
+                    while True:
+                        num_done = 0
+                        pendings = []
+                        with results_lock:
+                            for _k, _v in results.items():
+                                sys.stdout.flush()
+                                if _v == 'pending':
+                                    pendings.append(_k)
+                                elif _v == 'done':
+                                    num_done += 1
+                                else:
+                                    if 'JINA_EARLY_STOP' in os.environ:
+                                        self.logger.error(
+                                            f'Flow is aborted due to {_k} {_v}.'
+                                        )
+                                        os._exit(1)
 
-                    if not pendings:
-                        break
-                    time.sleep(0.1)
+                        pending_str = ' '.join(pendings)
 
-        wait_for_ready_coros = []
-        for k, v in self:
-            wait_for_ready_coros.append(_async_wait_ready(k, v))
+                        progress.update(
+                            task, completed=num_done, pending_str=pending_str
+                        )
 
-        async def _async_wait_all():
-            await asyncio.gather(*wait_for_ready_coros)
+                        if not pendings:
+                            break
+                        time.sleep(0.1)
 
-        # kick off spinner thread
-        threads.append(
-            threading.Thread(
+            wait_for_ready_coros = []
+            for k, v in self:
+                wait_for_ready_coros.append(_async_wait_ready(k, v))
+
+            async def _async_wait_all():
+                await asyncio.gather(*wait_for_ready_coros)
+
+            # kick off spinner thread
+            polling_status_thread = threading.Thread(
                 target=_polling_status,
                 args=(len(wait_for_ready_coros),),
                 daemon=True,
             )
-        )
 
-        for t in threads:
-            t.start()
+            polling_status_thread.start()
 
-        # kick off all deployments wait-ready tasks
-        try:
-            _ = asyncio.get_event_loop()
-        except:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
+            # kick off all deployments wait-ready tasks
 
-        async def _f():
-            pass
+            try:
+                _ = asyncio.get_event_loop()
+            except:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
 
-        running_in_event_loop = False
-        try:
-            asyncio.get_event_loop().run_until_complete(_f())
-        except:
-            running_in_event_loop = True
+            async def _f():
+                pass
 
-        if not running_in_event_loop:
-            asyncio.get_event_loop().run_until_complete(_async_wait_all())
-        else:
-            new_threads = []
-            for k, v in self:
-                new_threads.append(
-                    threading.Thread(target=_wait_ready, args=(k, v), daemon=True)
+            running_in_event_loop = False
+            try:
+                asyncio.get_event_loop().run_until_complete(_f())
+            except:
+                running_in_event_loop = True
+
+            wait_ready_threads = []
+            if not running_in_event_loop:
+                asyncio.get_event_loop().run_until_complete(_async_wait_all())
+            else:
+                for k, v in self:
+                    wait_ready_threads.append(
+                        threading.Thread(target=_wait_ready, args=(k, v), daemon=True)
+                    )
+                for t in wait_ready_threads:
+                    t.start()
+
+            polling_status_thread.join()
+            for t in wait_ready_threads:
+                t.join()
+
+            error_deployments = [k for k, v in results.items() if v != 'done']
+            if error_deployments:
+                self.logger.error(
+                    f'Flow is aborted due to {error_deployments} can not be started.'
                 )
-            threads.extend(new_threads)
-            for t in new_threads:
-                t.start()
+                self.close()
+                raise RuntimeFailToStart
+            from rich.rule import Rule
 
-        for t in threads:
-            t.join()
+            all_panels = []
+            self._get_summary_table(all_panels)
 
-        error_deployments = [k for k, v in results.items() if v != 'done']
-        if error_deployments:
-            self.logger.error(
-                f'Flow is aborted due to {error_deployments} can not be started.'
+            print(
+                Rule(':tada: Flow is ready to serve!'), *all_panels
+            )  # can't use logger here see : https://github.com/Textualize/rich/discussions/2024
+            self.logger.debug(
+                f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
             )
-            self.close()
-            raise RuntimeFailToStart
-        from rich.rule import Rule
 
-        all_panels = []
-        self._get_summary_table(all_panels)
-
-        print(
-            Rule(':tada: Flow is ready to serve!'), *all_panels
-        )  # can't use logger here see : https://github.com/Textualize/rich/discussions/2024
-        self.logger.debug(
-            f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
-        )
+            if 'JINA_HIDE_SURVEY' not in os.environ:
+                print(
+                    'Do you love open source? Help us improve [link=https://github.com/jina-ai/jina]Jina[/link] in just 1 minute and 30 seconds by taking our survey: https://10sw1tcpld4.typeform.com/jinasurveyfeb23?utm_source=jina'
+                    '(Set environment variable JINA_HIDE_SURVEY=1 to hide this message.)'
+                )
 
     @property
     def num_deployments(self) -> int:
@@ -2187,7 +2217,7 @@ class Flow(
         .. # noqa: DAR201
         """
         if GATEWAY_NAME in self._deployment_nodes:
-            res = self._deployment_nodes[GATEWAY_NAME].port
+            res = self._deployment_nodes[GATEWAY_NAME].first_pod_args.port
         else:
             res = self._gateway_kwargs.get('port', None) or self._gateway_kwargs.get(
                 'ports', None
@@ -2321,7 +2351,7 @@ class Flow(
             )
         )
 
-        if self.protocol == GatewayProtocolType.HTTP:
+        if self.protocol == ProtocolType.HTTP:
 
             http_ext_table = self._init_table()
 
@@ -2523,7 +2553,7 @@ class Flow(
             pass
 
     @property
-    def protocol(self) -> Union[GatewayProtocolType, List[GatewayProtocolType]]:
+    def protocol(self) -> Union[ProtocolType, List[ProtocolType]]:
         """Return the protocol of this Flow
 
         :return: the protocol of this Flow, if only 1 protocol is supported otherwise returns the list of protocols
@@ -2531,11 +2561,11 @@ class Flow(
         v = (
             self._gateway_kwargs.get('protocol', None)
             or self._gateway_kwargs.get('protocols', None)
-            or [GatewayProtocolType.GRPC]
+            or [ProtocolType.GRPC]
         )
         if not isinstance(v, list):
             v = [v]
-        v = GatewayProtocolType.from_string_list(v)
+        v = ProtocolType.from_string_list(v)
         if len(v) == 1:
             return v[0]
         else:
@@ -2544,7 +2574,7 @@ class Flow(
     @protocol.setter
     def protocol(
         self,
-        value: Union[str, GatewayProtocolType, List[str], List[GatewayProtocolType]],
+        value: Union[str, ProtocolType, List[str], List[ProtocolType]],
     ):
         """Set the protocol of this Flow, can only be set before the Flow has been started
 
@@ -2555,16 +2585,14 @@ class Flow(
             raise RuntimeError('Protocol can not be changed after the Flow has started')
 
         if isinstance(value, str):
-            self._gateway_kwargs['protocol'] = [GatewayProtocolType.from_string(value)]
-        elif isinstance(value, GatewayProtocolType):
+            self._gateway_kwargs['protocol'] = [ProtocolType.from_string(value)]
+        elif isinstance(value, ProtocolType):
             self._gateway_kwargs['protocol'] = [value]
         elif isinstance(value, list):
-            self._gateway_kwargs['protocol'] = GatewayProtocolType.from_string_list(
-                value
-            )
+            self._gateway_kwargs['protocol'] = ProtocolType.from_string_list(value)
         else:
             raise TypeError(
-                f'{value} must be either `str` or `GatewayProtocolType` or list of protocols'
+                f'{value} must be either `str` or `ProtocolType` or list of protocols'
             )
 
         # Flow is build to graph already
@@ -2776,10 +2804,6 @@ class Flow(
         output_path = output_path or 'docker-compose.yml'
         network_name = network_name or 'jina-network'
 
-        from jina.orchestrate.deployments.config.docker_compose import (
-            DockerComposeConfig,
-        )
-
         docker_compose_dict = {
             'version': '3.3',
             'networks': {network_name: {'driver': 'bridge'}},
@@ -2791,17 +2815,16 @@ class Flow(
             if v.external or (node == 'gateway' and not include_gateway):
                 continue
 
-            docker_compose_deployment = DockerComposeConfig(
-                args=v.args,
+            service_configs = v._to_docker_compose_config(
                 deployments_addresses=self._get_docker_compose_deployments_addresses(),
             )
-            service_configs = docker_compose_deployment.to_docker_compose_config()
+
             for service_name, service in service_configs:
                 service['networks'] = [network_name]
                 services[service_name] = service
 
         docker_compose_dict['services'] = services
-        with open(output_path, 'w+') as fp:
+        with open(output_path, 'w+', encoding='utf-8') as fp:
             yaml.dump(docker_compose_dict, fp, sort_keys=False)
 
         command = (
