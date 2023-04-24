@@ -80,7 +80,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port, gateway_replicas):
     for pod_name in set(os.listdir(dump_path)):
         file_set = set(os.listdir(os.path.join(dump_path, pod_name)))
         for file in file_set:
-            with open(os.path.join(dump_path, pod_name, file)) as f:
+            with open(os.path.join(dump_path, pod_name, file), encoding='utf-8') as f:
                 yml_document_all = list(yaml.safe_load_all(f))
             yaml_dicts_per_deployment[file[:-4]] = yml_document_all
 
@@ -584,7 +584,7 @@ def test_flow_to_k8s_yaml_external_pod(tmpdir, has_external):
     for pod_name in set(os.listdir(dump_path)):
         file_set = set(os.listdir(os.path.join(dump_path, pod_name)))
         for file in file_set:
-            with open(os.path.join(dump_path, pod_name, file)) as f:
+            with open(os.path.join(dump_path, pod_name, file), encoding='utf-8') as f:
                 yml_document_all = list(yaml.safe_load_all(f))
             yaml_dicts_per_deployment[file[:-4]] = yml_document_all
 
@@ -643,7 +643,7 @@ def test_flow_to_k8s_yaml_sandbox(tmpdir, uses):
     for pod_name in set(os.listdir(dump_path)):
         file_set = set(os.listdir(os.path.join(dump_path, pod_name)))
         for file in file_set:
-            with open(os.path.join(dump_path, pod_name, file)) as f:
+            with open(os.path.join(dump_path, pod_name, file), encoding='utf-8') as f:
                 yml_document_all = list(yaml.safe_load_all(f))
             yaml_dicts_per_deployment[file[:-4]] = yml_document_all
 

@@ -2845,7 +2845,7 @@ class Flow(
                 services[service_name] = service
 
         docker_compose_dict['services'] = services
-        with open(output_path, 'w+') as fp:
+        with open(output_path, 'w+', encoding='utf-8') as fp:
             yaml.dump(docker_compose_dict, fp, sort_keys=False)
 
         command = (

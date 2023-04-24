@@ -1037,7 +1037,7 @@ async def _create_external_deployment(api_client, app_client, docker_images, tmp
     for name, k8s_objects in configs:
         filename = os.path.join(deployment_base, f'{name}.yml')
         os.makedirs(deployment_base, exist_ok=True)
-        with open(filename, 'w+') as fp:
+        with open(filename, 'w+', encoding='utf-8') as fp:
             filenames.append(filename)
             for i, k8s_object in enumerate(k8s_objects):
                 yaml.dump(k8s_object, fp)

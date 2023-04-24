@@ -72,13 +72,13 @@ def monkeypatch_metric_exporter(
     os.mkdir(metrics_path)
 
     tick_counter_filename = collect_path / 'tick_counter'
-    with open(tick_counter_filename, 'w') as f:
+    with open(tick_counter_filename, 'w', encoding='utf-8') as f:
         f.write('0')
 
     def collect_metrics():
-        with open(tick_counter_filename, 'r') as f:
+        with open(tick_counter_filename, 'r', encoding='utf-8') as f:
             tick_counter = int(f.read())
-        with open(tick_counter_filename, 'w') as f:
+        with open(tick_counter_filename, 'w', encoding='utf-8') as f:
             f.write(str(tick_counter + 1))
         time.sleep(2)
 
@@ -89,7 +89,7 @@ def monkeypatch_metric_exporter(
 
     def read_metrics():
         def read_metric_file(filename):
-            with open(filename, 'r') as f:
+            with open(filename, 'r', encoding='utf-8') as f:
                 return json.loads(f.read())
 
         return {
@@ -110,7 +110,7 @@ def monkeypatch_metric_exporter(
         def _ticker(self) -> None:
             interval_secs = self._export_interval_millis / 1e3
             while not self._shutdown_event.wait(interval_secs):
-                with open(tick_counter_filename, 'r') as f:
+                with open(tick_counter_filename, 'r', encoding='utf-8') as f:
                     tick_counter = int(f.read())
                 if tick_counter != self.tick_counter:
                     self.tick_counter = tick_counter

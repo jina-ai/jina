@@ -63,7 +63,7 @@ def export_schema(args):
         dump_api = api_to_dict()
         for yp in args.yaml_path:
             f_name = (yp % __version__) if '%s' in yp else yp
-            with open(f_name, 'w', encoding='utf8') as fp:
+            with open(f_name, 'w', encoding='utf-8') as fp:
                 JAML.dump(dump_api, fp)
             default_logger.info(f'API is exported to {f_name}')
 
@@ -71,7 +71,7 @@ def export_schema(args):
         dump_api = api_to_dict()
         for jp in args.json_path:
             f_name = (jp % __version__) if '%s' in jp else jp
-            with open(f_name, 'w', encoding='utf8') as fp:
+            with open(f_name, 'w', encoding='utf-8') as fp:
                 json.dump(dump_api, fp, sort_keys=True)
             default_logger.info(f'API is exported to {f_name}')
 
@@ -79,6 +79,6 @@ def export_schema(args):
         dump_api = get_full_schema()
         for jp in args.schema_path:
             f_name = (jp % __version__) if '%s' in jp else jp
-            with open(f_name, 'w', encoding='utf8') as fp:
+            with open(f_name, 'w', encoding='utf-8') as fp:
                 json.dump(dump_api, fp, sort_keys=True)
             default_logger.info(f'API is exported to {f_name}')

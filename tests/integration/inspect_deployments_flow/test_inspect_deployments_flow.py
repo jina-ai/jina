@@ -12,7 +12,7 @@ class DummyEvaluator1(Executor):
     @requests(on=['/index'])
     def craft(self, docs, *args, **kwargs):
         tmp_dir = os.environ.get('TEST_EVAL_FLOW_TMPDIR')
-        with open(f'{tmp_dir}/{self.tag}.txt', 'a') as fp:
+        with open(f'{tmp_dir}/{self.tag}.txt', 'a', encoding='utf-8') as fp:
             fp.write(f'{docs[0].id}')
         return None
 
@@ -36,7 +36,7 @@ def validate(ids, expect):
         fname = f'{tmp_dir}/{j}.txt'
         assert os.path.exists(fname) == expect
         if expect:
-            with open(fname) as fp:
+            with open(fname, encoding='utf-8') as fp:
                 assert fp.read() != ''
 
 

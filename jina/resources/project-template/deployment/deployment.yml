@@ -1,8 +1,6 @@
 jtype: Deployment
-version: '1'
-gateway:
-  protocol: [grpc, http, websocket]
-  port: [54321, 54322, 54323]
 with:
-  - uses: executor1/config.yml
-    name: toyExecutor
+  uses: executor1/config.yml
+  name: toyExecutor
+  protocol: [grpc, http]
+  port: [54321, 54322]

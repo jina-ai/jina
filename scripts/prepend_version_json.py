@@ -11,11 +11,11 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-with open("./docs/_versions.json") as f:
+with open("./docs/_versions.json", encoding='utf-8') as f:
     versions: List[dict] = json.load(f)
     element = {k: v for k, v in args._get_kwargs()}
     if element != versions[0]:
         versions.insert(0, element)
 
-with open("./docs/_versions.json", "w") as f:
+with open("./docs/_versions.json", "w", encoding='utf-8') as f:
     json.dump(versions, f)
