@@ -9,7 +9,7 @@ Now that you understand that {class}`~jina.Executor` is a building block in Jina
 
 Basically, something like the following:
 
-```{figure} ../../../../.github/hub-user-journey.svg
+```{figure} ../../../../../.github/hub-user-journey.svg
 :align: center
 ```
 
@@ -32,7 +32,7 @@ with f:
 
 The Hub architecture looks like the following:
 
-```{figure} ../../../../.github/hub-system.svg
+```{figure} ../../../../../.github/hub-system.svg
 :align: center
 ```
 

@@ -330,7 +330,16 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../concepts/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../concepts/serving/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../concepts/serving/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../concepts/serving/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../concepts/serving/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../concepts/serving/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../concepts/serving/executor/hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../concepts/serving/executor/hub/debug-executor/">Debug</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../concepts/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../concepts/jcloud/configuration/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> Configuration</a></li>
 </ul>
 </li>
@@ -456,7 +465,7 @@
 <h2>Sub-commands:<a class="headerlink" href="#Sub-commands:" title="Permalink to this heading">#</a></h2>
 <section id="executor">
 <h3>executor<a class="headerlink" href="#executor" title="Permalink to this heading">#</a></h3>
-<p>Start an Executor. Executor is how Jina processes Document.</p>
+<p>Start an Executor. Jina uses Executors process Documents</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">executor</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
@@ -696,7 +705,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --ports</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [60749]</p>
+<p>Default: [65529]</p>
 </dd>
 <dt><kbd>--protocol, --protocols</kbd></dt>
 <dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
@@ -709,7 +718,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [54039]</p>
+<p>Default: [52371]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -773,7 +782,7 @@ container.</p>
 </section>
 <section id="flow">
 <h3>flow<a class="headerlink" href="#flow" title="Permalink to this heading">#</a></h3>
-<p>Start a Flow. Flow is how Jina streamlines and distributes Executors.</p>
+<p>Start a Flow. Jina uses Flows to streamline and distribute Executors</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">flow</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span>
           <span class="p">[</span><span class="o">--</span><span class="n">suppress</span><span class="o">-</span><span class="n">root</span><span class="o">-</span><span class="n">logging</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reload</span><span class="p">]</span>
           <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
@@ -846,7 +855,7 @@ container.</p>
 </section>
 <section id="ping">
 <h3>ping<a class="headerlink" href="#ping" title="Permalink to this heading">#</a></h3>
-<p>Ping a remote Executor or a Flow.</p>
+<p>Ping a remote Executor or Flow.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">ping</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">attempts</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">min</span><span class="o">-</span><span class="n">successful</span><span class="o">-</span><span class="n">attempts</span><span class="p">]</span>
           <span class="p">{</span><span class="n">flow</span><span class="p">,</span> <span class="n">executor</span><span class="p">,</span> <span class="n">gateway</span><span class="p">}</span> <span class="n">host</span>
 </pre></div>
@@ -885,7 +894,7 @@ Use -1 for waiting forever</p>
 </section>
 <section id="export">
 <h3>export<a class="headerlink" href="#export" title="Permalink to this heading">#</a></h3>
-<p>Export Jina API and Flow to JSONSchema, Kubernetes YAML, or SVG flowchart.</p>
+<p>Export Jina API and Flow to JSONSchema, Kubernetes YAML, or SVG flowchart</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">export</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">flowchart</span><span class="p">,</span> <span class="n">kubernetes</span><span class="p">,</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose</span><span class="p">,</span> <span class="n">schema</span><span class="p">}</span> <span class="o">...</span>
 </pre></div>
 </div>
@@ -1006,7 +1015,7 @@ Use -1 for waiting forever</p>
 </section>
 <section id="new">
 <h3>new<a class="headerlink" href="#new" title="Permalink to this heading">#</a></h3>
-<p>Create a new Jina toy project with the predefined template.</p>
+<p>Create a new Jina project with a predefined template</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">new</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">type</span><span class="p">]</span> <span class="n">name</span>
 </pre></div>
 </div>
@@ -1031,7 +1040,7 @@ Use -1 for waiting forever</p>
 </section>
 <section id="gateway">
 <h3>gateway<a class="headerlink" href="#gateway" title="Permalink to this heading">#</a></h3>
-<p>Start a Gateway that receives client Requests via gRPC/REST interface</p>
+<p>Start a Gateway to receive client Requests via gRPC/RESTful interface</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">gateway</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="p">]</span>
@@ -1280,7 +1289,7 @@ which should be structured as a python package.</p>
 </dd>
 <dt><kbd>--port, --ports, --port-expose, --port-in</kbd></dt>
 <dd><p>The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.</p>
-<p>Default: [60169]</p>
+<p>Default: [58110]</p>
 </dd>
 <dt><kbd>--protocol, --protocols</kbd></dt>
 <dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
@@ -1293,7 +1302,7 @@ which should be structured as a python package.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [60905]</p>
+<p>Default: [61604]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1324,7 +1333,7 @@ which should be structured as a python package.</p>
 </section>
 <section id="auth">
 <h3>auth<a class="headerlink" href="#auth" title="Permalink to this heading">#</a></h3>
-<p>Login to Jina AI with your GitHub/Google/Email account</p>
+<p>Log in to Jina AI with your GitHub/Google/Email account</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">login</span><span class="p">,</span> <span class="n">logout</span><span class="p">,</span> <span class="n">token</span><span class="p">}</span> <span class="o">...</span>
 </pre></div>
 </div>
@@ -1433,7 +1442,7 @@ which should be structured as a python package.</p>
 </section>
 <section id="hub">
 <h3>hub<a class="headerlink" href="#hub" title="Permalink to this heading">#</a></h3>
-<p>Push/Pull an Executor to/from Jina Hub</p>
+<p>Push/pull Executor to/from Executor Hub</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">new</span><span class="p">,</span> <span class="n">push</span><span class="p">,</span> <span class="n">pull</span><span class="p">,</span> <span class="n">status</span> <span class="o">...</span> <span class="mi">1</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}</span> <span class="o">...</span>
 </pre></div>
 </div>
@@ -1943,7 +1952,7 @@ which should be structured as a python package.</p>
 <h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat23" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>query</kbd></dt>
-<dd><p>Lookup the usage &amp; mention of the argument name in Jina API. The name can be fuzzy</p>
+<dd><p>Look up usage &amp; mention of argument name in Jina API. The name can be fuzzy</p>
 </dd>
 </dl>
 </section>
@@ -2187,7 +2196,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --ports</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [49379]</p>
+<p>Default: [54072]</p>
 </dd>
 <dt><kbd>--protocol, --protocols</kbd></dt>
 <dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
@@ -2200,7 +2209,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [65378]</p>
+<p>Default: [59260]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2510,7 +2519,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --ports</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [58634]</p>
+<p>Default: [59544]</p>
 </dd>
 <dt><kbd>--protocol, --protocols</kbd></dt>
 <dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
@@ -2523,7 +2532,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [64147]</p>
+<p>Default: [53018]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2759,7 +2768,7 @@ container.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Apr 18, 2023</div>
+                            Last updated on Apr 24, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

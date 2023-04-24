@@ -303,7 +303,16 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../concepts/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../concepts/serving/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/hub/debug-executor/">Debug</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../concepts/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../concepts/jcloud/configuration/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> Configuration</a></li>
 </ul>
 </li>
@@ -467,9 +476,9 @@
 
 <div class="viewcode-block" id="Deployment"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment">[docs]</a><span class="k">class</span> <span class="nc">Deployment</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">PostMixin</span><span class="p">,</span> <span class="n">BaseOrchestrator</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">DeploymentType</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.</span>
-<span class="sd">    Internally, the pods can run with the process/thread backend. They can be also run in their own containers</span>
+<span class="sd">    Internally, the pods can run with the process/thread backend. They can also be run in their own containers</span>
 <span class="sd">    :param args: arguments parsed from the CLI</span>
-<span class="sd">    :param needs: deployments names of preceding deployments, the output of these deployments are going into the input of this deployment</span>
+<span class="sd">    :param needs: deployments names of preceding deployments, the output of these deployments go into the input of this deployment</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">class</span> <span class="nc">_ReplicaSet</span><span class="p">:</span>
@@ -512,7 +521,8 @@
         <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
                 <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">())</span>
+                <span class="n">pod</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pod</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span>
 
         <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
@@ -842,7 +852,7 @@
             <span class="n">ports</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ports</span>
             <span class="n">hosts</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">__docker_host__</span>
-                <span class="k">if</span> <span class="n">host_is_local</span><span class="p">(</span><span class="n">host</span><span class="p">)</span> <span class="ow">and</span> <span class="n">in_docker</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dockerized_uses</span>
+                <span class="k">if</span> <span class="n">host_is_local</span><span class="p">(</span><span class="n">host</span><span class="p">)</span> <span class="ow">and</span> <span class="n">in_docker</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_docker</span>
                 <span class="k">else</span> <span class="n">host</span>
                 <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hosts</span>
             <span class="p">]</span>
@@ -1088,9 +1098,9 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_is_docker</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Check if this deployment is to be run in docker.</span>
+<span class="sd">        Check if this deployment is to be run in Docker.</span>
 
-<span class="sd">        :return: True if this deployment is to be run in docker</span>
+<span class="sd">        :return: True if this deployment is to be run in Docker</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">hubble.executor.helper</span> <span class="kn">import</span> <span class="n">is_valid_docker_uri</span>
 
@@ -1110,7 +1120,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tls_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Checks whether secure connection via tls is enabled for this Deployment.</span>
+<span class="sd">        Check if secure connection via TLS is enabled for this Deployment.</span>
 
 <span class="sd">        :return: True if tls is enabled, False otherwise</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1131,8 +1141,8 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">grpc_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the gRPC metadata for this deployment.</span>
-<span class="sd">        :return: The gRPC metadata for this deployment. If the deployment is a gateway, return None.</span>
+<span class="sd">        Get the gRPC metadata for this deployment</span>
+<span class="sd">        :return: The gRPC metadata for this deployment. If the deployment is a Gateway, return None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;grpc_metadata&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
@@ -1176,7 +1186,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :return: the port of this deployment</span>
+<span class="sd">        :return: The port of this deployment</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -1185,7 +1195,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of ports exposed by this Deployment.</span>
 <span class="sd">        Exposed means these are the ports a Client/Gateway is supposed to communicate with.</span>
 <span class="sd">        For sharded deployments this will be the head_port.</span>
-<span class="sd">        For non-sharded deployments it will be all replica ports</span>
+<span class="sd">        For non-sharded deployments it will be all replica ports.</span>
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_port</span><span class="p">:</span>
@@ -1204,23 +1214,13 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of host addresses exposed by this Deployment.</span>
 <span class="sd">        Exposed means these are the host a Client/Gateway is supposed to communicate with.</span>
 <span class="sd">        For sharded deployments this will be the head host.</span>
-<span class="sd">        For non-sharded deployments it will be all replica hosts</span>
+<span class="sd">        For non-sharded deployments it will be all replica hosts.</span>
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_host</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">head_host</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">replica</span><span class="o">.</span><span class="n">host</span> <span class="k">for</span> <span class="n">replica</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">dockerized_uses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if this Deployment uses a dockerized Executor</span>
-
-<span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;docker://&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
-            <span class="s1">&#39;jinahub+docker://&#39;</span>
-        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_parse_args</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span>
@@ -1324,7 +1324,7 @@
     <span class="k">def</span> <span class="nf">get_worker_host</span><span class="p">(</span><span class="n">pod_args</span><span class="p">,</span> <span class="n">pod_is_container</span><span class="p">,</span> <span class="n">head_is_container</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the current pod and head are both containerized on the same host</span>
-<span class="sd">        If so __docker_host__ needs to be advertised as the worker&#39;s address to the head</span>
+<span class="sd">        If so, __docker_host__ needs to be advertised as the worker&#39;s address to the head</span>
 
 <span class="sd">        :param pod_args: arguments of the worker pod</span>
 <span class="sd">        :param pod_is_container: boolean specifying if pod is to be run in container</span>
@@ -1438,9 +1438,9 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="Deployment.wait_start_success"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.wait_start_success">[docs]</a>    <span class="k">def</span> <span class="nf">wait_start_success</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Block until all pods starts successfully.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Block until all pods start successfully.</span>
 
-<span class="sd">        If not successful, it will raise an error hoping the outer function to catch it</span>
+<span class="sd">        If not successful, it will raise an error hoping the outer function will catch it</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1458,9 +1458,9 @@
             <span class="k">raise</span></div>
 
 <div class="viewcode-block" id="Deployment.async_wait_start_success"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.async_wait_start_success">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_wait_start_success</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Block until all pods starts successfully.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Block until all pods start successfully.</span>
 
-<span class="sd">        If not successful, it will raise an error hoping the outer function to catch it</span>
+<span class="sd">        If unsuccessful, it will raise an error hoping the outer function will catch it</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">coros</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1503,7 +1503,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if Deployment is ready</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if Deployment is ready</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            A Deployment is ready when all the Pods it contains are ready</span>
@@ -1527,9 +1527,9 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_parse_devices</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">num_devices</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parses a list of devices from string, like `start:stop:step` or &#39;num1,num2,num3` or combination of both.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse a list of devices from string, like `start:stop:step` or &#39;num1,num2,num3` or combination of both.</span>
 
-<span class="sd">        :param value: a string like</span>
+<span class="sd">        :param value: a string-like</span>
 <span class="sd">        :param num_devices: total number of devices</span>
 <span class="sd">        :return: slice</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1570,11 +1570,11 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_roundrobin_cuda_device</span><span class="p">(</span><span class="n">device_str</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse cuda device string with RR prefix</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse CUDA device string with RR prefix</span>
 
 <span class="sd">        :param device_str: `RRm:n`, where `RR` is the prefix, m:n is python slice format</span>
 <span class="sd">        :param replicas: the number of replicas</span>
-<span class="sd">        :return: a map from replica id to device id</span>
+<span class="sd">        :return: a map from replica ID to device ID</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">device_str</span>
@@ -1903,7 +1903,7 @@
 
                 <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
                     <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                    <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;reload requires watchfiles dependency to be installed. You can do `pip install </span>
+                    <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;reload requires watchfiles dependency to be installed. You can run `pip install </span>
 <span class="s1">                    watchfiles&#39;&#39;&#39;</span><span class="p">,</span>
                 <span class="p">):</span>
                     <span class="kn">from</span> <span class="nn">watchfiles</span> <span class="kn">import</span> <span class="n">watch</span>
@@ -2033,10 +2033,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts a Jina Deployment into a Docker compose YAML file</span>
 
-<span class="sd">        If you don&#39;t want to rebuild image on Jina Hub,</span>
+<span class="sd">        If you don&#39;t want to rebuild image on Executor Hub,</span>
 <span class="sd">        you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.</span>
 
-<span class="sd">        :param output_path: The path where to dump the yaml file</span>
+<span class="sd">        :param output_path: The path to dump the YAML file to</span>
 <span class="sd">        :param network_name: The name of the network that will be used by the deployment</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">yaml</span>
@@ -2064,7 +2064,7 @@
                 <span class="n">services</span><span class="p">[</span><span class="n">service_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">service</span>
 
         <span class="n">docker_compose_dict</span><span class="p">[</span><span class="s1">&#39;services&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">services</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">docker_compose_dict</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">command</span> <span class="o">=</span> <span class="p">(</span>
@@ -2074,7 +2074,7 @@
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Docker compose file has been created under [b]</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s1">[/b]. You can use it by running [b]</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1">[/b]&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;Docker Compose file has been created under [b]</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s1">[/b]. You can use it by running [b]</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1">[/b]&#39;</span>
         <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_to_kubernetes_yaml</span><span class="p">(</span>
@@ -2118,7 +2118,7 @@
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">k8s_objects</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">:</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_base_path</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">.yml&#39;</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_base_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k8s_object</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">k8s_objects</span><span class="p">):</span>
                     <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">k8s_object</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">k8s_objects</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
@@ -2130,12 +2130,12 @@
         <span class="n">k8s_namespace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Converts a Jina Deployment into a set of yaml deployments to deploy in Kubernetes.</span>
+<span class="sd">        Convert a Jina Deployment into a set of YAML deployments to deploy in Kubernetes.</span>
 
-<span class="sd">        If you don&#39;t want to rebuild image on Jina Hub,</span>
+<span class="sd">        If you don&#39;t want to rebuild image on Executor Hub,</span>
 <span class="sd">        you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.</span>
 
-<span class="sd">        :param output_base_path: The base path where to dump all the yaml files</span>
+<span class="sd">        :param output_base_path: The base path where to dump all the YAML files</span>
 <span class="sd">        :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">k8s_namespace</span> <span class="o">=</span> <span class="n">k8s_namespace</span> <span class="ow">or</span> <span class="s1">&#39;default&#39;</span>
@@ -2146,7 +2146,7 @@
             <span class="n">k8s_port</span><span class="o">=</span><span class="n">k8s_port</span> <span class="ow">or</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;K8s yaml files have been created under [b]</span><span class="si">{</span><span class="n">output_base_path</span><span class="si">}</span><span class="s1">[/]. You can use it by running [b]kubectl apply -R -f </span><span class="si">{</span><span class="n">output_base_path</span><span class="si">}</span><span class="s1">[/]&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;K8s YAML files have been created under [b]</span><span class="si">{</span><span class="n">output_base_path</span><span class="si">}</span><span class="s1">[/]. You can use it by running [b]kubectl apply -R -f </span><span class="si">{</span><span class="n">output_base_path</span><span class="si">}</span><span class="s1">[/]&#39;</span>
         <span class="p">)</span></div>
 
     <span class="n">to_k8s_yaml</span> <span class="o">=</span> <span class="n">to_kubernetes_yaml</span></div>
@@ -2164,7 +2164,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Apr 18, 2023</div>
+                            Last updated on Apr 24, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

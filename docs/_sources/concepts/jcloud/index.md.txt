@@ -298,6 +298,18 @@ jc restart super-mustang-c6cf06bc5b --executor executor0
 :width: 70%
 ```
 
+### Recreate a Deleted Flow
+
+To recreate a deleted Flow:
+
+```bash
+jc recreate profound-rooster-eec4b17c73
+```
+
+```{figure} img/recreate_flow.png
+:width:  70%
+```
+
 ### Scale an Executor
 You can also manually scale any Executor.
 
