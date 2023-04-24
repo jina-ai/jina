@@ -127,7 +127,6 @@ class BasePod(ABC):
             _update_gateway_args(self.args, gateway_load_balancer=getattr(self.args, 'gateway_load_balancer', False))
         self.args.parallel = getattr(self.args, 'shards', 1)
         self.name = self.args.name or self.__class__.__name__
-        self.is_forked = False
         self.logger = JinaLogger(self.name, **vars(self.args))
 
         self._envs = {'JINA_DEPLOYMENT_NAME': self.name}
@@ -357,7 +356,6 @@ class Pod(BasePod):
         .. #noqa: DAR201
         """
         self.worker.start()
-        self.is_forked = multiprocessing.get_start_method().lower() == 'fork'
 
         if not self.args.noblock_on_start:
             self.wait_start_success()

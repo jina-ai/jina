@@ -109,7 +109,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         def __enter__(self):
             for _args in self.args:
                 _args.noblock_on_start = True
-                self._pods.append(PodFactory.build_pod(_args).start())
+                pod = PodFactory.build_pod(_args).start()
+                self._pods.append(pod)
             return self
 
         def __exit__(self, exc_type, exc_val, exc_tb):
