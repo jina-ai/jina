@@ -1,6 +1,6 @@
 import asyncio
 from contextlib import AsyncExitStack
-from typing import TYPE_CHECKING, Optional, Tuple
+from typing import TYPE_CHECKING, Optional, Tuple, Type
 
 from jina.clients.base import BaseClient
 from jina.clients.base.helper import HTTPClientlet, handle_response_status
@@ -10,6 +10,7 @@ from jina.logging.profile import ProgressBar
 from jina.serve.stream import RequestStreamer
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
+from jina._docarray import DocumentArray
 
 if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
@@ -97,6 +98,7 @@ class HTTPBaseClient(BaseClient):
             results_in_order: bool = False,
             prefetch: Optional[int] = None,
             timeout: Optional[int] = None,
+            return_type: Type[DocumentArray] = DocumentArray,
             **kwargs,
     ):
         """
@@ -111,6 +113,7 @@ class HTTPBaseClient(BaseClient):
         :param results_in_order: return the results in the same order as the inputs
         :param prefetch: How many Requests are processed from the Client at the same time.
         :param timeout: Timeout for the client to remain connected to the server.
+        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.
         :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `HTTPClientlet`
         :yields: generator over results
         """
@@ -186,9 +189,11 @@ class HTTPBaseClient(BaseClient):
 
                 da = None
                 if 'data' in r_str and r_str['data'] is not None:
-                    from jina._docarray import DocumentArray
-
-                    da = DocumentArray.from_dict(r_str['data'])
+                    from jina._docarray import DocumentArray, docarray_v2
+                    if not docarray_v2:
+                        da = DocumentArray.from_dict(r_str['data'])
+                    else:
+                        da = return_type([return_type.doc_type(**v) for v in r_str['data']])
                     del r_str['data']
 
                 resp = DataRequest(r_str)

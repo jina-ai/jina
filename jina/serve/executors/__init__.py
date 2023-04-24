@@ -258,8 +258,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         endpoint_models = {}
         for endpoint, function_with_schema in self.requests.items():
             if docarray_v2:
-                request_schema = function_with_schema.request_schema
-                response_schema = function_with_schema.response_schema
+                request_schema = function_with_schema.request_schema.doc_type
+                response_schema = function_with_schema.response_schema.doc_type
             else:
                 request_schema = PydanticDocument
                 response_schema = PydanticDocument

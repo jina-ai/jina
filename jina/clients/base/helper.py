@@ -13,6 +13,7 @@ from jina.importer import ImportExtensions
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
 from jina.types.request.status import StatusMessage
+from jina._docarray import docarray_v2
 
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry import trace
@@ -141,8 +142,14 @@ class HTTPClientlet(AioHttpClientlet):
             req_dict['target_executor'] = req_dict['header']['target_executor']
         for attempt in range(1, self.max_attempts + 1):
             try:
+                request_kwargs = {'url': self.url}
+                if docarray_v2:
+                    from docarray.base_doc.io.json import orjson_dumps
+                    request_kwargs['data'] = orjson_dumps(req_dict)
+                else:
+                    request_kwargs['json'] = req_dict
                 response = await self.session.post(
-                    url=self.url, json=req_dict
+                    **request_kwargs
                 ).__aenter__()
                 r_str = await response.json()
                 handle_response_status(response.status, r_str, self.url)
