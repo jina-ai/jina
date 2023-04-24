@@ -191,8 +191,8 @@ def test_deployments_with_shards_all_shards_return():
         @requests(on=['/search'])
         def search(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[ResultTestDoc]:
             resp = DocList[ResultTestDoc]()
-            for _ in docs:
-                res = ResultTestDoc(matches=self._docs[0:3])
+            for q in docs:
+                res = ResultTestDoc(id=q.id, matches=self._docs[0:3])
                 resp.append(res)
             return resp
 
