@@ -3,12 +3,12 @@ from datetime import datetime
 from enum import Enum
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Union
-
 from docarray.document.pydantic_model import PydanticDocument, PydanticDocumentArray
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from pydantic import BaseConfig, BaseModel, Field, create_model, root_validator
 
 from jina.proto.jina_pb2 import DataRequestProto, JinaInfoProto, RouteProto, StatusProto
+from jina.serve.runtimes.gateway.health_model import JinaHealthModel
 
 if TYPE_CHECKING:  # pragma: no cover
     from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
@@ -219,12 +219,6 @@ def _to_camel_case(snake_str: str) -> str:
     # We capitalize the first letter of each component except the first one
     # with the 'title' method and join them together.
     return components[0] + ''.join(x.title() for x in components[1:])
-
-
-class JinaHealthModel(BaseModel):
-    """Pydantic BaseModel for Jina health check, used as the response model in REST app."""
-
-    ...
 
 
 class JinaInfoModel(BaseModel):
