@@ -33,6 +33,7 @@ class HTTPBaseClient(BaseClient):
                     paths_by_method[method].append(path.strip('/'))
 
             return paths_by_method
+
         import aiohttp
         import json
 

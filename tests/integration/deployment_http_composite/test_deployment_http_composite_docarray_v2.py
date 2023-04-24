@@ -7,9 +7,9 @@ from typing import Dict
 from jina import Deployment, Executor, requests, Client
 from jina.helper import random_port
 from jina._docarray import docarray_v2
+
 if docarray_v2:
     from docarray import DocList
-
 
     from docarray import BaseDoc
 
@@ -22,7 +22,7 @@ if docarray_v2:
 
     class OutputTestDoc(BaseDoc):
         text: str = ""
-        flag: bool = 'false'
+        flag: bool = False
         tags: Dict[str, str] = {}
 
 
@@ -58,9 +58,9 @@ if docarray_v2:
                 doc.text = parameters['key']
 
 
-@pytest.mark.parametrize('replicas', [1, 2, 3])
+@pytest.mark.parametrize('replicas', [1, 3])
 @pytest.mark.parametrize('include_gateway', [True, False])
-@pytest.mark.parametrize('protocols', [['http']])
+@pytest.mark.parametrize('protocols', [['grpc', 'http']])
 @pytest.mark.parametrize('init_sleep_time', [0, 0.5, 5])
 @pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
 def test_slow_load_executor(replicas, include_gateway, protocols, init_sleep_time):
@@ -72,14 +72,17 @@ def test_slow_load_executor(replicas, include_gateway, protocols, init_sleep_tim
     with d:
         for protocol, port in zip(protocols, ports):
             c = Client(protocol=protocol, port=port)
-            res = c.post(on='/foo', inputs=DocList[InputTestDoc]([InputTestDoc() for _ in range(10)]), request_size=1, return_type=DocList[OutputTestDoc])
+            res = c.post(on='/foo', inputs=DocList[InputTestDoc]([InputTestDoc() for _ in range(10)]), request_size=1,
+                         return_type=DocList[OutputTestDoc])
             assert len(res) == 10
             assert all(['foo' in doc.text for doc in res])
             different_pids = set([doc.tags['pid'] for doc in res])
             assert len(different_pids) == replicas
-            res = c.post(on='/bar', inputs=DocList[InputTestDoc]([InputTestDoc() for _ in range(10)]), request_size=1, return_type=DocList[OutputTestDoc])
+            res = c.post(on='/bar', inputs=DocList[InputTestDoc]([InputTestDoc() for _ in range(10)]), request_size=1,
+                         return_type=DocList[OutputTestDoc])
             assert len(res) == 10
             assert all(['bar' in doc.text for doc in res])
+            assert all([not doc.flag for doc in res])
             different_pids = set([doc.tags['pid'] for doc in res])
             assert len(different_pids) == replicas
 
@@ -95,11 +98,13 @@ def test_post_from_deployment(replicas, include_gateway, protocol, init_sleep_ti
     d = Deployment(uses=SingleExecutorDeployment, uses_with={'init_sleep_time': init_sleep_time}, replicas=replicas,
                    protocol=protocol, include_gateway=include_gateway)
     with d:
-        res = d.post(on='/foo', inputs=DocList[InputTestDoc]([InputTestDoc() for _ in range(10)]), request_size=1, return_type=DocList[OutputTestDoc])
+        res = d.post(on='/foo', inputs=DocList[InputTestDoc]([InputTestDoc() for _ in range(10)]), request_size=1,
+                     return_type=DocList[OutputTestDoc])
         assert all(['foo' in doc.text for doc in res])
         different_pids = set([doc.tags['pid'] for doc in res])
         assert len(different_pids) == replicas
-        res = d.post(on='/bar', inputs=DocList[InputTestDoc]([InputTestDoc() for _ in range(10)]), request_size=1, return_type=DocList[OutputTestDoc])
+        res = d.post(on='/bar', inputs=DocList[InputTestDoc]([InputTestDoc() for _ in range(10)]), request_size=1,
+                     return_type=DocList[OutputTestDoc])
         assert len(res) == 10
         assert all(['bar' in doc.text for doc in res])
         different_pids = set([doc.tags['pid'] for doc in res])
@@ -119,7 +124,8 @@ def test_base_executor(replicas, include_gateway, protocols):
     with d:
         for protocol, port in zip(protocols, ports):
             c = Client(protocol=protocol, port=port)
-            res = c.post(on='/default', inputs=DocList[InputTestDoc]([InputTestDoc() for _ in range(10)]), request_size=1, return_type=DocList[OutputTestDoc])
+            res = c.post(on='/default', inputs=DocList[InputTestDoc]([InputTestDoc() for _ in range(10)]),
+                         request_size=1, return_type=DocList[OutputTestDoc])
             assert len(res) == 10
 
 
@@ -137,12 +143,14 @@ def test_return_parameters(replicas, include_gateway, protocols, init_sleep_time
     with d:
         for protocol, port in zip(protocols, ports):
             c = Client(protocol=protocol, port=port)
-            res = c.post(on='/parameters', inputs=DocList[InputTestDoc]([InputTestDoc() for _ in range(10)]), request_size=1, return_type=DocList[OutputTestDoc], return_responses=True)
+            res = c.post(on='/parameters', inputs=DocList[InputTestDoc]([InputTestDoc() for _ in range(10)]),
+                         request_size=1, return_type=DocList[OutputTestDoc], return_responses=True)
             assert len(res) == 10
             assert all(['__results__' in response.parameters.keys() for response in res])
             different_pids = set([list(response.parameters['__results__'].values())[0]['pid'] for response in res])
             assert len(different_pids) == replicas
-            res = c.post(on='/docsparams', inputs=DocList[InputTestDoc]([InputTestDoc() for _ in range(10)]), parameters={'key': 'value'},
+            res = c.post(on='/docsparams', inputs=DocList[InputTestDoc]([InputTestDoc() for _ in range(10)]),
+                         parameters={'key': 'value'},
                          request_size=1)
             assert len(res) == 10
             assert all([doc.text == 'value' for doc in res])

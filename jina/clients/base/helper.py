@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 import aiohttp
 from aiohttp import WSMsgType
+from aiohttp.payload import BytesPayload
 from starlette import status
 
 from jina.clients.base import retry
@@ -20,20 +21,39 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from jina.logging.logger import JinaLogger
 
+if docarray_v2:
+    from docarray.base_doc.io.json import orjson_dumps
+
+
+    class JinaJsonPayload(BytesPayload):
+        def __init__(
+                self,
+                value,
+                *args,
+                **kwargs,
+        ) -> None:
+            super().__init__(
+                orjson_dumps(value),
+                content_type="application/json",
+                encoding="utf-8",
+                *args,
+                **kwargs,
+            )
+
 
 class AioHttpClientlet(ABC):
     """aiohttp session manager"""
 
     def __init__(
-        self,
-        url: str,
-        logger: 'JinaLogger',
-        max_attempts: int = 1,
-        initial_backoff: float = 0.5,
-        max_backoff: float = 2,
-        backoff_multiplier: float = 1.5,
-        tracer_provider: Optional['trace.TraceProvider'] = None,
-        **kwargs,
+            self,
+            url: str,
+            logger: 'JinaLogger',
+            max_attempts: int = 1,
+            initial_backoff: float = 0.5,
+            max_backoff: float = 2,
+            backoff_multiplier: float = 1.5,
+            tracer_provider: Optional['trace.TraceProvider'] = None,
+            **kwargs,
     ) -> None:
         """HTTP Client to be used with the streamer
 
@@ -143,11 +163,11 @@ class HTTPClientlet(AioHttpClientlet):
         for attempt in range(1, self.max_attempts + 1):
             try:
                 request_kwargs = {'url': self.url}
-                if docarray_v2:
-                    from docarray.base_doc.io.json import orjson_dumps
-                    request_kwargs['data'] = orjson_dumps(req_dict)
-                else:
+                if not docarray_v2:
                     request_kwargs['json'] = req_dict
+                else:
+                    from docarray.base_doc.io.json import orjson_dumps
+                    request_kwargs['data'] = JinaJsonPayload(value=req_dict)
                 response = await self.session.post(
                     **request_kwargs
                 ).__aenter__()
@@ -327,19 +347,19 @@ def handle_response_status(http_status: int, response_string: str, url: str):
     if http_status == status.HTTP_404_NOT_FOUND:
         raise BadClient(f'no such endpoint {url}')
     elif (
-        http_status == status.HTTP_503_SERVICE_UNAVAILABLE
-        or http_status == status.HTTP_504_GATEWAY_TIMEOUT
+            http_status == status.HTTP_503_SERVICE_UNAVAILABLE
+            or http_status == status.HTTP_504_GATEWAY_TIMEOUT
     ):
         if (
-            'header' in response_string
-            and 'status' in response_string['header']
-            and 'description' in response_string['header']['status']
+                'header' in response_string
+                and 'status' in response_string['header']
+                and 'description' in response_string['header']['status']
         ):
             raise ConnectionError(response_string['header']['status']['description'])
         else:
             raise ValueError(response_string)
     elif (
-        http_status < status.HTTP_200_OK
-        or http_status > status.HTTP_300_MULTIPLE_CHOICES
+            http_status < status.HTTP_200_OK
+            or http_status > status.HTTP_300_MULTIPLE_CHOICES
     ):  # failure codes
         raise ValueError(response_string)
