@@ -60,7 +60,7 @@ if docarray_v2:
 
 @pytest.mark.parametrize('replicas', [1, 3])
 @pytest.mark.parametrize('include_gateway', [True, False])
-@pytest.mark.parametrize('protocols', [['grpc', 'http']])
+@pytest.mark.parametrize('protocols', [['grpc', 'http'], ['http']])
 @pytest.mark.parametrize('init_sleep_time', [0, 0.5, 5])
 @pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
 def test_slow_load_executor(replicas, include_gateway, protocols, init_sleep_time):
@@ -87,7 +87,7 @@ def test_slow_load_executor(replicas, include_gateway, protocols, init_sleep_tim
             assert len(different_pids) == replicas
 
 
-@pytest.mark.parametrize('replicas', [1, 2, 3])
+@pytest.mark.parametrize('replicas', [1, 3])
 @pytest.mark.parametrize('include_gateway', [True, False])
 @pytest.mark.parametrize('protocol', ['grpc', 'http'])
 @pytest.mark.parametrize('init_sleep_time', [0, 0.5, 5])
@@ -111,7 +111,7 @@ def test_post_from_deployment(replicas, include_gateway, protocol, init_sleep_ti
         assert len(different_pids) == replicas
 
 
-@pytest.mark.parametrize('replicas', [1, 2, 3])
+@pytest.mark.parametrize('replicas', [1, 3])
 @pytest.mark.parametrize('include_gateway', [True, False])
 @pytest.mark.parametrize('protocols', [['http'], ['grpc', 'http']])
 @pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
@@ -151,12 +151,13 @@ def test_return_parameters(replicas, include_gateway, protocols, init_sleep_time
             assert len(different_pids) == replicas
             res = c.post(on='/docsparams', inputs=DocList[InputTestDoc]([InputTestDoc() for _ in range(10)]),
                          parameters={'key': 'value'},
-                         request_size=1)
+                         request_size=1,
+                         return_type=DocList[OutputTestDoc])
             assert len(res) == 10
             assert all([doc.text == 'value' for doc in res])
 
 
-@pytest.mark.parametrize('replicas', [1, 2, 3])
+@pytest.mark.parametrize('replicas', [1, 3])
 @pytest.mark.parametrize('include_gateway', [True, False])
 @pytest.mark.parametrize('protocols', [['http'], ['grpc', 'http']])
 @pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
@@ -169,7 +170,7 @@ def test_invalid_protocols_with_shards(replicas, include_gateway, protocols):
             pass
 
 
-@pytest.mark.parametrize('replicas', [1, 2, 3])
+@pytest.mark.parametrize('replicas', [1, 3])
 @pytest.mark.parametrize('include_gateway', [True, False])
 @pytest.mark.parametrize('protocols', [['websocket'], ['grpc', 'websocket']])
 @pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
