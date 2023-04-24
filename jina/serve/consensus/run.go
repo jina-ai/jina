@@ -219,6 +219,7 @@ func Run(myAddr string,
     go func(){
         sig := <-sigchnl
         run_logger.Info("Received", "signal", sig)
+        run_logger.Info("gRPCServer stopping")
         grpcServer.GracefulStop()
         sock.Close()
         shutdownResult := r.Shutdown()
@@ -227,6 +228,7 @@ func Run(myAddr string,
             run_logger.Error("Error returned while shutting RAFT down", "error", err)
             log.Fatalf("Error returned while shutting RAFT down: %v", err)
         }
+        run_logger.Info("RAFT shutdown whithout error")
     }()
     if err := grpcServer.Serve(sock); err != nil {
         run_logger.Error("failed to serve", "error", err)

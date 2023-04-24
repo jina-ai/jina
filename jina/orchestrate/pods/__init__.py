@@ -242,6 +242,7 @@ class Pod(BasePod):
         super().__init__(args)
         self.runtime_cls = self._get_runtime_cls()
         cargs = None
+        self.raft_worker = None
         if self.args.stateful and self.args.pod_role == PodRoleType.WORKER:
             cargs_stateful = copy.deepcopy(args)
             self.raft_worker = multiprocessing.Process(
@@ -282,7 +283,7 @@ class Pod(BasePod):
         .. #noqa: DAR201
         """
         self.worker.start()
-        if self.args.stateful and self.args.pod_role == PodRoleType.WORKER:
+        if self.raft_worker is not None:
             self.raft_worker.start()
         if not self.args.noblock_on_start:
             self.wait_start_success()
@@ -297,6 +298,8 @@ class Pod(BasePod):
         """
         self.logger.debug(f'joining the process')
         self.worker.join(*args, **kwargs)
+        if self.raft_worker is not None:
+            self.raft_worker.join(*args, **kwargs)
         self.logger.debug(f'successfully joined the process')
 
     def _terminate(self):
@@ -305,7 +308,7 @@ class Pod(BasePod):
         """
         self.logger.debug(f'terminating the runtime process')
         self.worker.terminate()
-        if self.args.stateful and self.args.pod_role == PodRoleType.WORKER:
+        if self.raft_worker is not None:
             self.raft_worker.terminate()
         self.logger.debug(f'runtime process properly terminated')
 
