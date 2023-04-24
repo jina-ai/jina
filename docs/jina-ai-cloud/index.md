@@ -7,7 +7,7 @@
 
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Explore Executor Hub
-:link: ../concepts/executor/hub/index
+:link: ../concepts/serving/executor/hub/index
 :link-type: doc
 
 
@@ -45,6 +45,6 @@ Are you ready to unlock the power of AI with Jina AI Cloud? Take a look at our [
 :hidden:
 
 login
-../concepts/executor/hub/index
+../concepts/serving/executor/hub/index
 ../concepts/jcloud/index
 ```
