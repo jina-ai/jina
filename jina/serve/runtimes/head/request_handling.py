@@ -23,11 +23,6 @@ if docarray_v2:
     from docarray.base_doc import AnyDoc
 
 
-    class JinaDynamicDoc(AnyDoc):
-        @property
-        def fields(self):
-            return self.dict()
-
 if TYPE_CHECKING:  # pragma: no cover
     from prometheus_client import CollectorRegistry
 
@@ -229,7 +224,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
     ) -> Tuple['DataRequest', Dict]:
         for req in requests:
             if docarray_v2:
-                req.document_array_cls = DocList[JinaDynamicDoc]
+                req.document_array_cls = DocList[AnyDoc]
             self._update_start_request_metrics(req)
 
         WorkerRequestHandler.merge_routes(requests)
@@ -277,7 +272,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         found = False
         for i, worker_result in enumerate(worker_results):
             if docarray_v2:
-                worker_result.document_array_cls = DocList[JinaDynamicDoc]
+                worker_result.document_array_cls = DocList[AnyDoc]
             if not found and worker_result.header.status.code == jina_pb2.StatusProto.SUCCESS:
                 response_request = worker_result
                 found = True
