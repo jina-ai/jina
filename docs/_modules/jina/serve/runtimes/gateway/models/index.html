@@ -263,7 +263,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../concepts/orchestration/"><span class="fas fa-network-wired"></span> Orchestration layer</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../concepts/orchestration/"><span class="fas fa-network-wired"></span> Orchestration</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/orchestration/deployment/">Deployment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/orchestration/flow/">Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/orchestration/add-executors/">Add Executors</a></li>
@@ -415,12 +415,12 @@
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
-
 <span class="kn">from</span> <span class="nn">docarray.document.pydantic_model</span> <span class="kn">import</span> <span class="n">PydanticDocument</span><span class="p">,</span> <span class="n">PydanticDocumentArray</span>
 <span class="kn">from</span> <span class="nn">google.protobuf.descriptor</span> <span class="kn">import</span> <span class="n">Descriptor</span><span class="p">,</span> <span class="n">FieldDescriptor</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseConfig</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">create_model</span><span class="p">,</span> <span class="n">root_validator</span>
 
 <span class="kn">from</span> <span class="nn">jina.proto.jina_pb2</span> <span class="kn">import</span> <span class="n">DataRequestProto</span><span class="p">,</span> <span class="n">JinaInfoProto</span><span class="p">,</span> <span class="n">RouteProto</span><span class="p">,</span> <span class="n">StatusProto</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.health_model</span> <span class="kn">import</span> <span class="n">JinaHealthModel</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">from</span> <span class="nn">google.protobuf.pyext.cpp_message</span> <span class="kn">import</span> <span class="n">GeneratedProtocolMessageType</span>
@@ -633,12 +633,6 @@
     <span class="k">return</span> <span class="n">components</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">title</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">components</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
 
 
-<div class="viewcode-block" id="JinaHealthModel"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaHealthModel">[docs]</a><span class="k">class</span> <span class="nc">JinaHealthModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pydantic BaseModel for Jina health check, used as the response model in REST app.&quot;&quot;&quot;</span>
-
-    <span class="o">...</span></div>
-
-
 <div class="viewcode-block" id="JinaInfoModel"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaInfoModel">[docs]</a><span class="k">class</span> <span class="nc">JinaInfoModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Pydantic BaseModel for Jina status, used as the response model in REST app.&quot;&quot;&quot;</span>
 
@@ -726,7 +720,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Apr 24, 2023</div>
+                            Last updated on Apr 25, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

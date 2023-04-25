@@ -263,7 +263,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../concepts/orchestration/"><span class="fas fa-network-wired"></span> Orchestration layer</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../concepts/orchestration/"><span class="fas fa-network-wired"></span> Orchestration</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/orchestration/deployment/">Deployment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/orchestration/flow/">Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/orchestration/add-executors/">Add Executors</a></li>
@@ -412,7 +412,7 @@
                     <h1>Source code for jina.clients.base.http</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">AsyncExitStack</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Type</span>
 
 <span class="kn">from</span> <span class="nn">jina.clients.base</span> <span class="kn">import</span> <span class="n">BaseClient</span>
 <span class="kn">from</span> <span class="nn">jina.clients.base.helper</span> <span class="kn">import</span> <span class="n">HTTPClientlet</span><span class="p">,</span> <span class="n">handle_response_status</span>
@@ -422,6 +422,7 @@
 <span class="kn">from</span> <span class="nn">jina.serve.stream</span> <span class="kn">import</span> <span class="n">RequestStreamer</span>
 <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
+<span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">from</span> <span class="nn">jina.clients.base</span> <span class="kn">import</span> <span class="n">CallbackFnType</span><span class="p">,</span> <span class="n">InputType</span>
@@ -444,6 +445,7 @@
                     <span class="n">paths_by_method</span><span class="p">[</span><span class="n">method</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">))</span>
 
             <span class="k">return</span> <span class="n">paths_by_method</span>
+
         <span class="kn">import</span> <span class="nn">aiohttp</span>
         <span class="kn">import</span> <span class="nn">json</span>
 
@@ -509,6 +511,7 @@
             <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">return_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">]</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -523,6 +526,7 @@
 <span class="sd">        :param results_in_order: return the results in the same order as the inputs</span>
 <span class="sd">        :param prefetch: How many Requests are processed from the Client at the same time.</span>
 <span class="sd">        :param timeout: Timeout for the client to remain connected to the server.</span>
+<span class="sd">        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.</span>
 <span class="sd">        :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `HTTPClientlet`</span>
 <span class="sd">        :yields: generator over results</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -598,9 +602,11 @@
 
                 <span class="n">da</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">if</span> <span class="s1">&#39;data&#39;</span> <span class="ow">in</span> <span class="n">r_str</span> <span class="ow">and</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
-
-                    <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+                    <span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">docarray_v2</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">docarray_v2</span><span class="p">:</span>
+                        <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">da</span> <span class="o">=</span> <span class="n">return_type</span><span class="p">([</span><span class="n">return_type</span><span class="o">.</span><span class="n">doc_type</span><span class="p">(</span><span class="o">**</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]])</span>
                     <span class="k">del</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
 
                 <span class="n">resp</span> <span class="o">=</span> <span class="n">DataRequest</span><span class="p">(</span><span class="n">r_str</span><span class="p">)</span>
@@ -632,7 +638,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Apr 24, 2023</div>
+                            Last updated on Apr 25, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

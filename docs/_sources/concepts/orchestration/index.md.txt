@@ -1,5 +1,5 @@
 (orchestration)=
-# {fas}`network-wired` Orchestration layer
+# {fas}`network-wired` Orchestration
 
 As seen in the {ref}`architecture overview <architecture-overview>`, Jina is organized in different layers.
 

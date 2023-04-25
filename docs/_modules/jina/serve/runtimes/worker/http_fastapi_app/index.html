@@ -263,7 +263,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../concepts/orchestration/"><span class="fas fa-network-wired"></span> Orchestration layer</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../concepts/orchestration/"><span class="fas fa-network-wired"></span> Orchestration</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/orchestration/deployment/">Deployment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/orchestration/flow/">Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/orchestration/add-executors/">Add Executors</a></li>
@@ -415,6 +415,10 @@
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+<span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">docarray_v2</span>
+
+<span class="k">if</span> <span class="n">docarray_v2</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
 
 
 <div class="viewcode-block" id="get_fastapi_app"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.http_fastapi_app/#jina.serve.runtimes.worker.http_fastapi_app.get_fastapi_app">[docs]</a><span class="k">def</span> <span class="nf">get_fastapi_app</span><span class="p">(</span>
@@ -437,7 +441,7 @@
 
     <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">add_route</span><span class="p">(</span><span class="n">endpoint_path</span><span class="p">,</span> <span class="n">input_model</span><span class="p">,</span> <span class="n">output_model</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_route</span><span class="p">(</span><span class="n">endpoint_path</span><span class="p">,</span> <span class="n">input_model</span><span class="p">,</span> <span class="n">output_model</span><span class="p">,</span> <span class="n">input_doc_list_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_doc_list_model</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nd">@app</span><span class="o">.</span><span class="n">api_route</span><span class="p">(</span>
             <span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;/</span><span class="si">{</span><span class="n">endpoint_path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
             <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">],</span>
@@ -446,7 +450,10 @@
         <span class="p">)</span>
         <span class="k">async</span> <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="n">body</span><span class="p">:</span> <span class="n">input_model</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">):</span>
             <span class="n">req</span> <span class="o">=</span> <span class="n">DataRequest</span><span class="p">()</span>
-            <span class="n">req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_pydantic_model</span><span class="p">(</span><span class="n">body</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">docarray_v2</span><span class="p">:</span>
+                <span class="n">req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_pydantic_model</span><span class="p">(</span><span class="n">body</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">input_doc_list_model</span><span class="p">](</span><span class="n">body</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
             <span class="n">req</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">parameters</span>
             <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span> <span class="o">=</span> <span class="n">endpoint_path</span>
             <span class="n">resp</span> <span class="o">=</span> <span class="k">await</span> <span class="n">caller</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
@@ -454,7 +461,11 @@
             <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">499</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">output_model</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">resp</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="n">parameters</span><span class="o">=</span><span class="n">resp</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">docarray_v2</span><span class="p">:</span>
+                    <span class="n">docs_response</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">docs_response</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">_data</span>
+                <span class="k">return</span> <span class="n">output_model</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">docs_response</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">resp</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">input_output_map</span> <span class="ow">in</span> <span class="n">request_models_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">endpoint</span> <span class="o">!=</span> <span class="s1">&#39;_jina_dry_run_&#39;</span><span class="p">:</span>
@@ -473,9 +484,13 @@
                 <span class="n">parameters</span><span class="o">=</span><span class="p">(</span><span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
             <span class="p">)</span>
 
-            <span class="n">add_route</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">input_model</span><span class="o">=</span><span class="n">endpoint_input_model</span><span class="p">,</span> <span class="n">output_model</span><span class="o">=</span><span class="n">endpoint_output_model</span><span class="p">)</span>
+            <span class="n">add_route</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span>
+                      <span class="n">input_model</span><span class="o">=</span><span class="n">endpoint_input_model</span><span class="p">,</span>
+                      <span class="n">output_model</span><span class="o">=</span><span class="n">endpoint_output_model</span><span class="p">,</span>
+                      <span class="n">input_doc_list_model</span><span class="o">=</span><span class="n">input_doc_model</span><span class="p">,</span>
+                      <span class="n">output_doc_list_model</span><span class="o">=</span><span class="n">output_doc_model</span><span class="p">)</span>
 
-    <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.models</span> <span class="kn">import</span> <span class="n">JinaHealthModel</span>
+    <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.health_model</span> <span class="kn">import</span> <span class="n">JinaHealthModel</span>
     <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
         <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
         <span class="n">summary</span><span class="o">=</span><span class="s1">&#39;Get the health of Jina Executor service&#39;</span><span class="p">,</span>
@@ -504,7 +519,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Apr 24, 2023</div>
+                            Last updated on Apr 25, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
