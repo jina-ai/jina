@@ -30,11 +30,16 @@ def get_fastapi_app(
     app = FastAPI()
 
     def add_route(endpoint_path, input_model, output_model, input_doc_list_model=None, output_doc_list_model=None):
+        app_kwargs = dict(path=f'/{endpoint_path.strip("/")}',
+                          methods=['POST'],
+                          summary=f'Endpoint {endpoint_path}',
+                          response_model=output_model, )
+        if docarray_v2:
+            from docarray.base_doc.docarray_response import DocArrayResponse
+            app_kwargs['response_class'] = DocArrayResponse
+
         @app.api_route(
-            path=f'/{endpoint_path.strip("/")}',
-            methods=['POST'],
-            summary=f'Endpoint {endpoint_path}',
-            response_model=output_model
+            **app_kwargs
         )
         async def post(body: input_model, response: Response):
             req = DataRequest()
@@ -53,7 +58,8 @@ def get_fastapi_app(
                     docs_response = resp.docs.to_dict()
                 else:
                     docs_response = resp.docs._data
-                return output_model(data=docs_response, parameters=resp.parameters)
+                ret = output_model(data=docs_response, parameters=resp.parameters)
+                return ret
 
     for endpoint, input_output_map in request_models_map.items():
         if endpoint != '_jina_dry_run_':
@@ -63,13 +69,15 @@ def get_fastapi_app(
             endpoint_input_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_input_model',
                 data=(List[input_doc_model], []),
-                parameters=(Optional[Dict], None)
+                parameters=(Optional[Dict], None),
+                __config__=input_doc_model.__config__
             )
 
             endpoint_output_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_output_model',
                 data=(List[output_doc_model], []),
-                parameters=(Optional[Dict], None)
+                parameters=(Optional[Dict], None),
+                __config__=output_doc_model.__config__
             )
 
             add_route(endpoint,
