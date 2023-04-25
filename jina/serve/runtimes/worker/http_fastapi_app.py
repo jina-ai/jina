@@ -52,8 +52,11 @@ def get_fastapi_app(
                 if not docarray_v2:
                     docs_response = resp.docs.to_dict()
                 else:
+                    print(f' resp.docs {resp.docs}')
                     docs_response = resp.docs._data
-                return output_model(data=docs_response, parameters=resp.parameters)
+                ret = output_model(data=docs_response, parameters=resp.parameters)
+                print(f' Output returned by FastAPI {ret}')
+                return ret
 
     for endpoint, input_output_map in request_models_map.items():
         if endpoint != '_jina_dry_run_':

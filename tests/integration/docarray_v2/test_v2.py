@@ -1,11 +1,12 @@
 from typing import Optional
-
+import pytest
 import numpy as np
 from docarray import BaseDoc, DocList
 from docarray.documents import ImageDoc
 from docarray.typing import AnyTensor, ImageUrl
+from jina.helper import random_port
 
-from jina import Deployment, Executor, Flow, requests
+from jina import Deployment, Executor, Flow, requests, Client
 
 
 def test_different_document_schema():
@@ -26,8 +27,8 @@ def test_different_document_schema():
             inputs=DocList[Image]([Image(url='https://via.placeholder.com/150.png')]),
             return_type=DocList[Image],
         )
-        docs = docs.to_doc_vec()
-        assert docs.tensor.ndim == 4
+    docs = docs.to_doc_vec()
+    assert docs.tensor.ndim == 4
 
 
 def test_send_custom_doc():
@@ -41,7 +42,7 @@ def test_send_custom_doc():
 
     with Flow().add(uses=MyExec) as f:
         doc = f.post(on='/foo', inputs=MyDoc(text='hello'), return_type=DocList[MyDoc])
-        assert doc[0].text == 'hello world'
+    assert doc[0].text == 'hello world'
 
 
 def test_input_response_schema():
@@ -61,8 +62,8 @@ def test_input_response_schema():
 
     with Flow().add(uses=MyExec) as f:
         docs = f.post(on='/foo', inputs=MyDoc(text='hello'), return_type=DocList[MyDoc])
-        assert docs[0].text == 'hello world'
-        assert docs.__class__.doc_type == MyDoc
+    assert docs[0].text == 'hello world'
+    assert docs.__class__.doc_type == MyDoc
 
 
 def test_input_response_schema_annotation():
@@ -78,11 +79,42 @@ def test_input_response_schema_annotation():
 
     with Flow().add(uses=MyExec) as f:
         docs = f.post(on='/bar', inputs=MyDoc(text='hello'), return_type=DocList[MyDoc])
-        assert docs[0].text == 'hello world'
-        assert docs.__class__.doc_type == MyDoc
+    assert docs[0].text == 'hello world'
+    assert docs.__class__.doc_type == MyDoc
 
 
-def test_different_output_input():
+@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])
+@pytest.mark.parametrize('replicas', [1, 3])
+def test_different_output_input(protocols, replicas):
+    class InputDoc(BaseDoc):
+        img: ImageDoc
+
+    class OutputDoc(BaseDoc):
+        embedding: AnyTensor
+
+    class MyExec(Executor):
+        @requests(on='/bar')
+        def bar(self, docs: DocList[InputDoc], **kwargs) -> DocList[OutputDoc]:
+            docs_return = DocList[OutputDoc](
+                [OutputDoc(embedding=np.zeros((100, 1))) for _ in range(len(docs))]
+            )
+            return docs_return
+    ports = [random_port() for _ in protocols]
+    with Flow(port=ports, protocol=protocols, replicas=replicas).add(uses=MyExec) as f:
+        for port, protocol in zip(ports, protocols):
+            c = Client(port=port, protocol=protocol)
+            docs = c.post(
+                on='/bar',
+                inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
+                return_type=DocList[OutputDoc],
+            )
+            assert docs[0].embedding.shape == (100, 1)
+            assert docs.__class__.doc_type == OutputDoc
+
+
+@pytest.mark.parametrize('protocols', [['http']])
+@pytest.mark.parametrize('replicas', [1, 3])
+def test_deployments(protocols, replicas):
     class InputDoc(BaseDoc):
         img: ImageDoc
 
@@ -97,36 +129,15 @@ def test_different_output_input():
             )
             return docs_return
 
-    with Flow().add(uses=MyExec) as f:
-        docs = f.post(
-            on='/bar',
-            inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
-            return_type=DocList[OutputDoc],
-        )
-        assert docs[0].embedding.shape == (100, 1)
-        assert docs.__class__.doc_type == OutputDoc
+    ports = [random_port() for _ in protocols]
 
-
-def test_deployments():
-    class InputDoc(BaseDoc):
-        img: ImageDoc
-
-    class OutputDoc(BaseDoc):
-        embedding: AnyTensor
-
-    class MyExec(Executor):
-        @requests(on='/bar')
-        def bar(self, docs: DocList[InputDoc], **kwargs) -> DocList[OutputDoc]:
-            docs_return = DocList[OutputDoc](
-                [OutputDoc(embedding=np.zeros((100, 1))) for _ in range(len(docs))]
+    with Deployment(port=ports, protocol=protocols, replicas=replicas, uses=MyExec) as dep:
+        for port, protocol in zip(ports, protocols):
+            c = Client(port=port, protocol=protocol)
+            docs = c.post(
+                on='/bar',
+                inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
+                return_type=DocList[OutputDoc],
             )
-            return docs_return
-
-    with Deployment(uses=MyExec) as dep:
-        docs = dep.post(
-            on='/bar',
-            inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
-            return_type=DocList[OutputDoc],
-        )
-        assert docs[0].embedding.shape == (100, 1)
-        assert docs.__class__.doc_type == OutputDoc
+            assert docs[0].embedding.shape == (100, 1)
+            assert docs.__class__.doc_type == OutputDoc

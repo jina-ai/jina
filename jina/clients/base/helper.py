@@ -172,6 +172,7 @@ class HTTPClientlet(AioHttpClientlet):
                     **request_kwargs
                 ).__aenter__()
                 r_str = await response.json()
+                print(f' JSON Response received in client {r_str}')
                 handle_response_status(response.status, r_str, self.url)
                 return response
             except (ValueError, ConnectionError, BadClient, aiohttp.ClientError) as err:

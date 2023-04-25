@@ -44,6 +44,7 @@ class DataRequest(Request):
                         self._content.docs_bytes
                     )
                 else:
+                    print(f' self.document_array_cls {self.document_array_cls}')
                     self._loaded_doc_array = self.document_array_cls.from_protobuf(
                         self._content.docs
                     )
