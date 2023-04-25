@@ -707,6 +707,11 @@ class WorkerRequestHandler:
                 da.reduce_all(docs_matrix[1:])
             else:
                 from docarray.utils.reduce import reduce_all
+                print(f' type {type(docs_matrix[0])}')
+                for da in docs_matrix:
+                    for d in da:
+                        print(f'{d.fields}')
+                        print(f'{d.__fields__}')
                 da = reduce_all(docs_matrix)
             return da
 

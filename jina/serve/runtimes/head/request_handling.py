@@ -18,6 +18,16 @@ from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from jina.types.request.data import DataRequest, Response
 from jina._docarray import docarray_v2
 
+if docarray_v2:
+    from docarray import DocList
+    from docarray.base_doc import AnyDoc
+
+
+    class JinaDynamicDoc(AnyDoc):
+        @property
+        def fields(self):
+            return self.dict()
+
 if TYPE_CHECKING:  # pragma: no cover
     from prometheus_client import CollectorRegistry
 
@@ -37,15 +47,15 @@ class HeaderRequestHandler(MonitoringRequestMixin):
     DEFAULT_POLLING = PollingType.ANY
 
     def __init__(
-        self,
-        args: 'argparse.Namespace',
-        logger: 'JinaLogger',
-        metrics_registry: Optional['CollectorRegistry'] = None,
-        meter=None,
-        runtime_name: Optional[str] = None,
-        aio_tracing_client_interceptors=None,
-        tracing_client_interceptor=None,
-        **kwargs,
+            self,
+            args: 'argparse.Namespace',
+            logger: 'JinaLogger',
+            metrics_registry: Optional['CollectorRegistry'] = None,
+            meter=None,
+            runtime_name: Optional[str] = None,
+            aio_tracing_client_interceptors=None,
+            tracing_client_interceptor=None,
+            **kwargs,
     ):
         if args.name is None:
             args.name = ''
@@ -149,13 +159,13 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         )
 
     async def _gather_worker_tasks(
-        self,
-        requests,
-        connection_pool,
-        deployment_name,
-        polling_type,
-        timeout_send,
-        retries,
+            self,
+            requests,
+            connection_pool,
+            deployment_name,
+            polling_type,
+            timeout_send,
+            retries,
     ):
         worker_send_tasks = connection_pool.send_requests(
             requests=requests,
@@ -184,11 +194,11 @@ class HeaderRequestHandler(MonitoringRequestMixin):
 
     @staticmethod
     def _merge_metadata(
-        metadata,
-        uses_after_metadata,
-        uses_before_metadata,
-        total_shards,
-        failed_shards,
+            metadata,
+            uses_after_metadata,
+            uses_before_metadata,
+            total_shards,
+            failed_shards,
     ):
         merged_metadata = {}
         if uses_before_metadata:
@@ -206,19 +216,22 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         return merged_metadata
 
     async def _handle_data_request(
-        self,
-        requests,
-        connection_pool,
-        uses_before_address,
-        uses_after_address,
-        timeout_send,
-        retries,
-        reduce,
-        polling_type,
-        deployment_name,
+            self,
+            requests,
+            connection_pool,
+            uses_before_address,
+            uses_after_address,
+            timeout_send,
+            retries,
+            reduce,
+            polling_type,
+            deployment_name,
     ) -> Tuple['DataRequest', Dict]:
         for req in requests:
+            if docarray_v2:
+                req.document_array_cls = DocList[JinaDynamicDoc]
             self._update_start_request_metrics(req)
+
         WorkerRequestHandler.merge_routes(requests)
 
         uses_before_metadata = None
@@ -261,10 +274,14 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         worker_results, metadata = zip(*worker_results)
 
         response_request = worker_results[0]
+        found = False
         for i, worker_result in enumerate(worker_results):
-            if worker_result.header.status.code == jina_pb2.StatusProto.SUCCESS:
+            if docarray_v2:
+                worker_result.document_array_cls = DocList[JinaDynamicDoc]
+            if not found and worker_result.header.status.code == jina_pb2.StatusProto.SUCCESS:
                 response_request = worker_result
-                break
+                found = True
+
         uses_after_metadata = None
         if uses_after_address:
             result = await connection_pool.send_requests_once(
@@ -300,10 +317,10 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         return response_request, merged_metadata
 
     async def warmup(
-        self,
-        connection_pool: GrpcConnectionPool,
-        stop_event: 'threading.Event',
-        deployment: str,
+            self,
+            connection_pool: GrpcConnectionPool,
+            stop_event: 'threading.Event',
+            deployment: str,
     ):
         """Executes warmup task against the deployments from the connection pool.
         :param connection_pool: GrpcConnectionPool that implements the warmup to the connected deployments.
@@ -396,8 +413,8 @@ class HeaderRequestHandler(MonitoringRequestMixin):
                 err=err, context=context, response=Response()
             )
         except (
-            RuntimeError,
-            Exception,
+                RuntimeError,
+                Exception,
         ) as ex:  # some other error, keep streaming going just add error info
             self.logger.error(
                 f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
@@ -465,7 +482,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         return infoProto
 
     async def stream(
-        self, request_iterator, context=None, *args, **kwargs
+            self, request_iterator, context=None, *args, **kwargs
     ) -> AsyncIterator['Request']:
         """
         stream requests from client iterator and stream responses back.
