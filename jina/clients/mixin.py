@@ -404,7 +404,6 @@ class PostMixin:
                         result.append(resp)
                     else:
                         resp.document_array_cls = return_type
-                        print(f' resp {resp.json()}')
                         result.extend(resp.data.docs)
             if return_results:
                 return result
