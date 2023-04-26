@@ -22,7 +22,6 @@ if docarray_v2:
     from docarray import DocList
     from docarray.base_doc import AnyDoc
 
-
 if TYPE_CHECKING:  # pragma: no cover
     from prometheus_client import CollectorRegistry
 
@@ -146,6 +145,18 @@ class HeaderRequestHandler(MonitoringRequestMixin):
                 deployment=self._deployment_name,
             )
         )
+        self._pydantic_models_by_endpoint = None
+        self.endpoints_discovery_stop_event = threading.Event()
+        self.endpoints_discovery_task = None
+        if docarray_v2:
+            self.endpoints_discovery_task = asyncio.create_task(
+                self.get_endpoints_from_workers(
+                    connection_pool=self.connection_pool,
+                    name=self._deployment_name,
+                    retries=self._retries,
+                    stop_event=self.endpoints_discovery_stop_event
+                )
+            )
 
     def _default_polling_dict(self, default_polling):
         return defaultdict(
@@ -221,11 +232,18 @@ class HeaderRequestHandler(MonitoringRequestMixin):
             reduce,
             polling_type,
             deployment_name,
+            endpoint
     ) -> Tuple['DataRequest', Dict]:
         for req in requests:
             if docarray_v2:
                 req.document_array_cls = DocList[AnyDoc]
             self._update_start_request_metrics(req)
+
+        if self._pydantic_models_by_endpoint is None and docarray_v2:
+            try:
+                await self.endpoints_discovery_task
+            except:
+                raise
 
         WorkerRequestHandler.merge_routes(requests)
 
@@ -291,7 +309,10 @@ class HeaderRequestHandler(MonitoringRequestMixin):
             else:
                 response_request, uses_after_metadata = result
         elif len(worker_results) > 1 and reduce:
-            response_request = WorkerRequestHandler.reduce_requests(worker_results)
+            model = None
+            if docarray_v2:
+                model = self._pydantic_models_by_endpoint[endpoint]['output']
+            response_request = WorkerRequestHandler.reduce_requests(worker_results, model)
         elif len(worker_results) > 1 and not reduce:
             # worker returned multiple responses, but the head is configured to skip reduction
             # just concatenate the docs in this case
@@ -310,6 +331,48 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         self._update_end_request_metrics(response_request)
 
         return response_request, merged_metadata
+
+    def get_endpoints_from_workers(self, connection_pool: GrpcConnectionPool, name: str, retries: int,
+                                   stop_event):
+        from google.protobuf import json_format
+        from jina.serve.runtimes.head.reduce import create_pydantic_model_from_schema
+        async def task():
+            self.logger.debug(f'starting get endpoints from workers task for deployment {name}')
+            while not stop_event.is_set():
+                try:
+                    endpoints = await connection_pool.send_discover_endpoint(
+                        name, retries=retries, shard_id=0, head=False
+                    )
+                    if endpoints is not None:
+                        endp, _ = endpoints
+                        schemas = json_format.MessageToDict(endp.schemas)
+                        self._pydantic_models_by_endpoint = {}
+                        models_created_by_name = {}
+                        for endpoint, inner_dict in schemas.items():
+                            input_model_name = inner_dict['input']['name']
+                            input_model_schema = inner_dict['input']['model']
+                            output_model_name = inner_dict['output']['name']
+                            output_model_schema = inner_dict['output']['model']
+                            if input_model_name not in models_created_by_name:
+                                input_model = create_pydantic_model_from_schema(input_model_schema, input_model_name)
+                                models_created_by_name[input_model_name] = input_model
+                            if output_model_name not in models_created_by_name:
+                                output_model = create_pydantic_model_from_schema(output_model_schema, output_model_name)
+                                models_created_by_name[output_model_name] = output_model
+
+                            self._pydantic_models_by_endpoint[endpoint] = {
+                                'input': models_created_by_name[input_model_name],
+                                'output': models_created_by_name[output_model_name]
+                            }
+                        stop_event.set()
+                        return
+                    else:
+                        await asyncio.sleep(0.1)
+                except Exception as exc:
+                    self.logger.debug(f'Exception raised from sending discover endpoint {exc}')
+                    await asyncio.sleep(0.1)
+
+        return task()
 
     async def warmup(
             self,
@@ -344,9 +407,24 @@ class HeaderRequestHandler(MonitoringRequestMixin):
                 self.logger.debug(f'exception during warmup task cancellation: {ex}')
                 pass
 
+    def cancel_endpoint_discovery_from_workers_task(self):
+        """Cancel endpoint_discovery_from_worker task if exists and is not completed. Cancellation is required if the Flow is being terminated before the
+        task is successful or hasn't reached the max timeout.
+        """
+        if self.endpoints_discovery_task:
+            try:
+                if not self.endpoints_discovery_task.done():
+                    self.logger.debug(f'Cancelling endpoint discovery task.')
+                    self.endpoints_discovery_stop_event.set()  # this event is useless if simply cancel
+                    self.endpoints_discovery_task.cancel()
+            except Exception as ex:
+                self.logger.debug(f'exception during endpoint discovery task cancellation: {ex}')
+                pass
+
     async def close(self):
         """Close the data request handler, by closing the executor and the batch queues."""
         self.cancel_warmup_task()
+        self.cancel_endpoint_discovery_from_workers_task()
         await self.connection_pool.close()
 
     async def process_single_data(self, request: DataRequest, context) -> DataRequest:
@@ -400,6 +478,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
                 timeout_send=self.timeout_send,
                 polling_type=self._polling[endpoint],
                 deployment_name=self._deployment_name,
+                endpoint=endpoint
             )
             context.set_trailing_metadata(metadata.items())
             return response
@@ -452,6 +531,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
                 deployment=self._deployment_name, head=False
             )
             response.endpoints.extend(worker_response.endpoints)
+            response.schemas.update(worker_response.schemas)
         except InternalNetworkError as err:  # can't connect, Flow broken, interrupt the streaming through gRPC error mechanism
             return self._handle_internalnetworkerror(
                 err=err, context=context, response=response

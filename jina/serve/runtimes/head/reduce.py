@@ -8,7 +8,54 @@ if docarray_v2:
     from docarray import DocList
 
 
-    def merge(doc1, doc2):
+    def create_pydantic_model_from_schema(schema: Dict[str, any], model_name: str) -> type:
+        from pydantic import create_model
+        fields = {}
+        for field_name, field_schema in schema.get('properties', {}).items():
+            field_type = field_schema.get('type', None)
+            if field_type == 'string':
+                field_type = str
+            elif field_type == 'integer':
+                field_type = int
+            elif field_type == 'number':
+                field_type = float
+            elif field_type == 'boolean':
+                field_type = bool
+            elif field_type == 'array':
+                field_item_type = field_schema.get('items', {}).get('type', None)
+                if field_item_type == 'string':
+                    field_type = List[str]
+                elif field_item_type == 'integer':
+                    field_type = List[int]
+                elif field_item_type == 'number':
+                    field_type = List[float]
+                elif field_item_type == 'boolean':
+                    field_type = List[bool]
+                elif field_item_type == 'object' or field_item_type is None:
+                    # Check if array items are references to definitions
+                    items_ref = field_schema.get('items', {}).get('$ref')
+                    if items_ref:
+                        ref_name = items_ref.split('/')[-1]
+                        field_type = List[create_pydantic_model_from_schema(schema['definitions'][ref_name], ref_name)]
+                    else:
+                        field_type = List[create_pydantic_model_from_schema(field_schema.get('items', {}), field_name)]
+                else:
+                    raise ValueError(f"Unknown array item type: {field_item_type} for field_name {field_name}")
+            elif field_type == 'object' or field_type is None:
+                # Check if object is a reference to definitions
+                obj_ref = field_schema.get('$ref')
+                if obj_ref:
+                    ref_name = obj_ref.split('/')[-1]
+                    field_type = create_pydantic_model_from_schema(schema['definitions'][ref_name], ref_name)
+                else:
+                    field_type = create_pydantic_model_from_schema(field_schema, field_name)
+            else:
+                raise ValueError(f"Unknown field type: {field_type} for field_name {field_name}")
+            fields[field_name] = (field_type, field_schema.get('description'))
+        return create_model(model_name, **fields)
+
+
+    def merge(doc1, doc2, model):
         """
         merge doc1 with the content of doc2. Changes are applied to doc1.
         Updating one Document with another consists in the following:
@@ -66,7 +113,7 @@ if docarray_v2:
             nested_docs_fields: List[str] = []
             nested_docarray_fields: List[str] = []
 
-            for field_name, field in doc.__dict__.items():
+            for field_name, field in model.__fields__.items():
                 if field_name not in FORBIDDEN_FIELDS_TO_UPDATE:
                     field_type = type(field)
 
@@ -147,8 +194,9 @@ if docarray_v2:
                 dict1.update(dict2)
                 setattr(doc1, field, dict1)
 
+
     def reduce(
-            left: DocList, right: DocList, left_id_map: Optional[Dict] = None
+            left: DocList, right: DocList, model, left_id_map: Optional[Dict] = None
     ) -> 'DocList':
         """
         Reduces left and right DocList into one DocList in-place.
@@ -170,14 +218,14 @@ if docarray_v2:
         left_id_map = left_id_map or {doc.id: i for i, doc in enumerate(left)}
         for doc in right:
             if doc.id in left_id_map:
-                merge(left[left_id_map[doc.id]], doc)
+                merge(left[left_id_map[doc.id]], doc, model)
             else:
                 left.append(doc)
 
         return left
 
 
-    def reduce_all(docs: List[DocList]) -> DocList:
+    def reduce_all(docs: List[DocList], model) -> DocList:
         """
         Reduces a list of DocLists into one DocList.
         Changes are applied to the first DocList in-place.
@@ -209,5 +257,5 @@ if docarray_v2:
         others = docs[1:]
         left_id_map = {doc.id: i for i, doc in enumerate(left)}
         for other_docs in others:
-            reduce(left, other_docs, left_id_map)
+            reduce(left, other_docs, model, left_id_map)
         return left

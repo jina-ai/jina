@@ -685,7 +685,7 @@ class WorkerRequestHandler:
         return result
 
     @staticmethod
-    def reduce(docs_matrix: List['DocumentArray']) -> Optional['DocumentArray']:
+    def reduce(docs_matrix: List['DocumentArray'], model=None) -> Optional['DocumentArray']:
         """
         Reduces a list of DocumentArrays into one DocumentArray. Changes are applied to the first
         DocumentArray in-place.
@@ -713,11 +713,11 @@ class WorkerRequestHandler:
                 da.reduce_all(docs_matrix[1:])
             else:
                 from jina.serve.runtimes.head.reduce import reduce_all
-                da = reduce_all(docs_matrix)
+                da = reduce_all(docs_matrix, model)
             return da
 
     @staticmethod
-    def reduce_requests(requests: List['DataRequest']) -> 'DataRequest':
+    def reduce_requests(requests: List['DataRequest'], model=None) -> 'DataRequest':
         """
         Reduces a list of requests containing DocumentArrays into one request object. Changes are applied to the first
         request object in-place.
@@ -732,7 +732,7 @@ class WorkerRequestHandler:
         docs_matrix, _ = WorkerRequestHandler._get_docs_matrix_from_request(requests)
 
         # Reduction is applied in-place to the first DocumentArray in the matrix
-        da = WorkerRequestHandler.reduce(docs_matrix)
+        da = WorkerRequestHandler.reduce(docs_matrix, model)
         WorkerRequestHandler.replace_docs(requests[0], da)
 
         params = WorkerRequestHandler.get_parameters_dict_from_request(requests)
@@ -765,7 +765,6 @@ class WorkerRequestHandler:
         endpoints_proto.endpoints.extend(
             list(self._executor.requests.keys())
         )
-
         schemas = self._executor._get_endpoint_models_dict()
         for endpoint_name, inner_dict in schemas.items():
             inner_dict['input']['model'] = inner_dict['input']['model'].schema()
