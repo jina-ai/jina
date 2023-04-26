@@ -759,12 +759,19 @@ class WorkerRequestHandler:
         :param context: grpc context
         :returns: the response request
         """
+        from google.protobuf import json_format
         self.logger.debug('got an endpoint discovery request')
         endpoints_proto = jina_pb2.EndpointsProto()
         endpoints_proto.endpoints.extend(
             list(self._executor.requests.keys())
         )
 
+        schemas = self._executor._get_endpoint_models_dict()
+        for endpoint_name, inner_dict in schemas.items():
+            inner_dict['input']['model'] = inner_dict['input']['model'].schema()
+            inner_dict['output']['model'] = inner_dict['output']['model'].schema()
+
+        json_format.ParseDict(schemas, endpoints_proto.schemas)
         return endpoints_proto
 
     def _extract_tracing_context(

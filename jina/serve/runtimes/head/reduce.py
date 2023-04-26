@@ -27,9 +27,6 @@ if docarray_v2:
         so they behave as regular types and the value of `self` is updated
         with the value of `other`.
 
-        ```
-
-        ---
         :param doc1: The Document with which to update the contents of this
         :param doc2: The Document with which to update the contents of this
         """
