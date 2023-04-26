@@ -226,12 +226,12 @@ executors:
 
 Below are the defaults and requirements for the configurations:
 
-| Name   | Default     | Allowed                  | Description                                             |
-| ------ | ----------- | ------------------------ | ------------------------------------------------------- |
-| min    | 1           | int                      | Minimum number of replicas (`0` means serverless)       |
-| max    | 2           | int, up to 5             | Maximum number of replicas                              |
-| metric | concurrency | `concurrency`  /   `rps` | Metric for scaling                                      |
-| target | 100         | int                      | Target value of `metric` after which replicas autoscale |
+| Name   | Default     | Allowed                  | Description                                       |
+| ------ | ----------- | ------------------------ | ------------------------------------------------- |
+| min    | 1           | int                      | Minimum number of replicas (`0` means serverless) |
+| max    | 2           | int, up to 5             | Maximum number of replicas                        |
+| metric | concurrency | `concurrency`  /   `rps` | Metric for scaling                                |
+| target | 100         | int                      | Target number the replicas try to maintain        |
 
 After a JCloud deployment using the autoscaling configuration, the Flow serving part is just the same: the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you can deal with the code!
 
