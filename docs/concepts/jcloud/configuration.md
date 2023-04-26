@@ -233,7 +233,7 @@ Below are the defaults and requirements for the configurations:
 | metric | concurrency | `concurrency`  /   `rps` | Metric for scaling                                |
 | target | 100         | int                      | Target number the replicas try to maintain        |
 
-After a JCloud deployment using the autoscaling configuration, the Flow serving part is just the same: the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you can deal with the code!
+After you make a JCloud deployment using the autoscaling configuration, the Flow serving part is just the same: the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you can deal with the code!
 
 ### Pricing
 At present, pricing for autoscaled Executor/Gateway follows the same {ref}`JCloud pricing rules <jcloud-pricing>` for the most part.
