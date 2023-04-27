@@ -150,7 +150,7 @@ class HTTPClientlet(AioHttpClientlet):
                     r_str = response.text
                 handle_response_status(response.status, r_str, self.url)
                 return response
-            except (ValueError, ConnectionError, BadClient, aiohttp.ClientError, aiohttp.ContentTypeError) as err:
+            except (ValueError, ConnectionError, BadClient, aiohttp.ClientError) as err:
                 await retry.wait_or_raise_err(
                     attempt=attempt,
                     err=err,
