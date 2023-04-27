@@ -215,11 +215,15 @@ def test_deployments_with_shards_one_shard_fails():
 def test_deployments_with_shards_all_shards_return():
     from docarray.documents import TextDoc
     from docarray import DocList, BaseDoc
+    from typing import List
 
     class TextDocWithId(TextDoc):
         id: str
+        l: List[int] = []
 
     class ResultTestDoc(BaseDoc):
+        price: int = '2'
+        l: List[int] = [3]
         matches: DocList[TextDocWithId]
 
     class SimilarityTestIndexer(Executor):
@@ -251,4 +255,5 @@ def test_deployments_with_shards_all_shards_return():
         time.sleep(2)
         responses = dep.search(inputs=index_da[0:1], request_size=1, return_type=DocList[ResultTestDoc])
         for r in responses:
+            assert r.l[0] == 3
             assert len(r.matches) == 6

@@ -685,7 +685,7 @@ class WorkerRequestHandler:
         return result
 
     @staticmethod
-    def reduce(docs_matrix: List['DocumentArray'], model=None) -> Optional['DocumentArray']:
+    def reduce(docs_matrix: List['DocumentArray']) -> Optional['DocumentArray']:
         """
         Reduces a list of DocumentArrays into one DocumentArray. Changes are applied to the first
         DocumentArray in-place.
@@ -712,12 +712,12 @@ class WorkerRequestHandler:
                 da = docs_matrix[0]
                 da.reduce_all(docs_matrix[1:])
             else:
-                from jina.serve.runtimes.head.reduce import reduce_all
-                da = reduce_all(docs_matrix, model)
+                from docarray.utils.reduce import reduce_all
+                da = reduce_all(docs_matrix)
             return da
 
     @staticmethod
-    def reduce_requests(requests: List['DataRequest'], model=None) -> 'DataRequest':
+    def reduce_requests(requests: List['DataRequest']) -> 'DataRequest':
         """
         Reduces a list of requests containing DocumentArrays into one request object. Changes are applied to the first
         request object in-place.
@@ -729,16 +729,20 @@ class WorkerRequestHandler:
         :param requests: List of DataRequest objects
         :return: the resulting DataRequest
         """
+        for i, worker_result in enumerate(requests):
+            if worker_result.header.status.code == jina_pb2.StatusProto.SUCCESS:
+                response_request = worker_result
+                break
         docs_matrix, _ = WorkerRequestHandler._get_docs_matrix_from_request(requests)
 
         # Reduction is applied in-place to the first DocumentArray in the matrix
-        da = WorkerRequestHandler.reduce(docs_matrix, model)
-        WorkerRequestHandler.replace_docs(requests[0], da)
+        da = WorkerRequestHandler.reduce(docs_matrix)
+        WorkerRequestHandler.replace_docs(response_request, da)
 
         params = WorkerRequestHandler.get_parameters_dict_from_request(requests)
-        WorkerRequestHandler.replace_parameters(requests[0], params)
+        WorkerRequestHandler.replace_parameters(response_request, params)
 
-        return requests[0]
+        return response_request
 
     # serving part
     async def process_single_data(self, request: DataRequest, context) -> DataRequest:

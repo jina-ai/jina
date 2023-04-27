@@ -288,12 +288,15 @@ class HeaderRequestHandler(MonitoringRequestMixin):
 
         response_request = worker_results[0]
         found = False
+        if docarray_v2:
+            model = self._pydantic_models_by_endpoint[endpoint]['output']
         for i, worker_result in enumerate(worker_results):
-            if docarray_v2:
-                worker_result.document_array_cls = DocList[AnyDoc]
+            worker_result.document_array_cls = DocList[model]
             if not found and worker_result.header.status.code == jina_pb2.StatusProto.SUCCESS:
                 response_request = worker_result
                 found = True
+
+        self.logger.error(f' response_request status {response_request.status}')
 
         uses_after_metadata = None
         if uses_after_address:
@@ -309,9 +312,9 @@ class HeaderRequestHandler(MonitoringRequestMixin):
             else:
                 response_request, uses_after_metadata = result
         elif len(worker_results) > 1 and reduce:
-            model = None
             if docarray_v2:
                 model = self._pydantic_models_by_endpoint[endpoint]['output']
+
             response_request = WorkerRequestHandler.reduce_requests(worker_results, model)
         elif len(worker_results) > 1 and not reduce:
             # worker returned multiple responses, but the head is configured to skip reduction

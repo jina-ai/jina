@@ -3,9 +3,9 @@ from jina._docarray import docarray_v2
 if docarray_v2:
 
     from typing import Dict, List, Optional
-    from typing_inspect import get_origin
+    from typing_inspect import get_origin, get_args
 
-    from docarray import DocList
+    from docarray import DocList, BaseDoc
 
 
     def create_pydantic_model_from_schema(schema: Dict[str, any], model_name: str) -> type:
@@ -36,9 +36,9 @@ if docarray_v2:
                     items_ref = field_schema.get('items', {}).get('$ref')
                     if items_ref:
                         ref_name = items_ref.split('/')[-1]
-                        field_type = List[create_pydantic_model_from_schema(schema['definitions'][ref_name], ref_name)]
+                        field_type = DocList[create_pydantic_model_from_schema(schema['definitions'][ref_name], ref_name)]
                     else:
-                        field_type = List[create_pydantic_model_from_schema(field_schema.get('items', {}), field_name)]
+                        field_type = DocList[create_pydantic_model_from_schema(field_schema.get('items', {}), field_name)]
                 else:
                     raise ValueError(f"Unknown array item type: {field_item_type} for field_name {field_name}")
             elif field_type == 'object' or field_type is None:
@@ -52,7 +52,7 @@ if docarray_v2:
             else:
                 raise ValueError(f"Unknown field type: {field_type} for field_name {field_name}")
             fields[field_name] = (field_type, field_schema.get('description'))
-        return create_model(model_name, **fields)
+        return create_model(model_name, __base__=BaseDoc, **fields)
 
 
     def merge(doc1, doc2, model):
@@ -115,7 +115,9 @@ if docarray_v2:
 
             for field_name, field in model.__fields__.items():
                 if field_name not in FORBIDDEN_FIELDS_TO_UPDATE:
-                    field_type = type(field)
+                    field_type = field.type_
+                    if get_origin(field_type) is type(None):
+                        field_type = get_args(field_type)[0]
 
                     if isinstance(field_type, type) and issubclass(field_type, DocList):
                         nested_docarray_fields.append(field_name)
@@ -130,7 +132,7 @@ if docarray_v2:
                         else:
                             v = getattr(doc, field_name)
                             if v:
-                                if isinstance(v, doc):
+                                if isinstance(v, doc.__class__):
                                     nested_docs_fields.append(field_name)
                                 else:
                                     simple_non_empty_fields.append(field_name)
