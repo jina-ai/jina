@@ -313,10 +313,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
             else:
                 response_request, uses_after_metadata = result
         elif len(worker_results) > 1 and reduce:
-            if docarray_v2:
-                model = self._pydantic_models_by_endpoint[endpoint]['output']
-
-            response_request = WorkerRequestHandler.reduce_requests(worker_results, model)
+            response_request = WorkerRequestHandler.reduce_requests(worker_results)
         elif len(worker_results) > 1 and not reduce:
             # worker returned multiple responses, but the head is configured to skip reduction
             # just concatenate the docs in this case
