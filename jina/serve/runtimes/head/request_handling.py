@@ -150,7 +150,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         self.endpoints_discovery_task = None
         if docarray_v2:
             self.endpoints_discovery_task = asyncio.create_task(
-                self.get_endpoints_from_workers(
+                self._get_endpoints_from_workers(
                     connection_pool=self.connection_pool,
                     name=self._deployment_name,
                     retries=self._retries,
@@ -291,7 +291,8 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         if docarray_v2:
             model = self._pydantic_models_by_endpoint[endpoint]['output']
         for i, worker_result in enumerate(worker_results):
-            worker_result.document_array_cls = DocList[model]
+            if docarray_v2:
+                worker_result.document_array_cls = DocList[model]
             if not found and worker_result.header.status.code == jina_pb2.StatusProto.SUCCESS:
                 response_request = worker_result
                 found = True
@@ -335,8 +336,8 @@ class HeaderRequestHandler(MonitoringRequestMixin):
 
         return response_request, merged_metadata
 
-    def get_endpoints_from_workers(self, connection_pool: GrpcConnectionPool, name: str, retries: int,
-                                   stop_event):
+    def _get_endpoints_from_workers(self, connection_pool: GrpcConnectionPool, name: str, retries: int,
+                                    stop_event):
         from google.protobuf import json_format
         from jina.serve.runtimes.head.reduce import create_pydantic_model_from_schema
         async def task():
