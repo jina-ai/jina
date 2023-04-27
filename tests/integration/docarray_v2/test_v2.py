@@ -212,7 +212,8 @@ def test_deployments_with_shards_one_shard_fails():
             assert q.text == r.text
 
 
-def test_deployments_with_shards_all_shards_return():
+@pytest.mark.parametrize('reduce', [True, False])
+def test_deployments_with_shards_all_shards_return(reduce):
     from docarray.documents import TextDoc
     from docarray import DocList, BaseDoc
     from typing import List
@@ -246,7 +247,7 @@ def test_deployments_with_shards_all_shards_return():
                 resp.append(res)
             return resp
 
-    with Deployment(uses=SimilarityTestIndexer, shards=2) as dep:
+    with Deployment(uses=SimilarityTestIndexer, shards=2, reduce=reduce) as dep:
         index_da = DocList[TextDocWithId](
             [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(10)]
         )
@@ -254,6 +255,7 @@ def test_deployments_with_shards_all_shards_return():
         import time
         time.sleep(2)
         responses = dep.search(inputs=index_da[0:1], request_size=1, return_type=DocList[ResultTestDoc])
+        assert len(responses) == 1 if reduce else 2
         for r in responses:
             assert r.l[0] == 3
             assert len(r.matches) == 6
