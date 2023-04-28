@@ -729,8 +729,9 @@ class WorkerRequestHandler:
         :param requests: List of DataRequest objects
         :return: the resulting DataRequest
         """
+        response_request = requests[0]
         for i, worker_result in enumerate(requests):
-            if worker_result.header.status.code == jina_pb2.StatusProto.SUCCESS:
+            if worker_result.status.code == jina_pb2.StatusProto.SUCCESS:
                 response_request = worker_result
                 break
         docs_matrix, _ = WorkerRequestHandler._get_docs_matrix_from_request(requests)

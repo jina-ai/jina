@@ -341,7 +341,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         for i, worker_result in enumerate(worker_results):
             if docarray_v2:
                 worker_result.document_array_cls = DocList[model]
-            if not found and worker_result.header.status.code == jina_pb2.StatusProto.SUCCESS:
+            if not found and worker_result.status.code == jina_pb2.StatusProto.SUCCESS:
                 response_request = worker_result
                 found = True
 
