@@ -143,7 +143,7 @@ If your Executor needs high IO, you can use `ebs` instead. Note that:
 - Default storage size is 5 GB.
 ````
 
-JCloud also supports retaining the data a Flow was using while active. You can set the `retain` argument to `true` to enable this feature.
+JCloud also supports retaining the data that a Flow was using while it was active. You can set the `retain` argument to `true` to enable this feature.
 
 ```{code-block} yaml
 ---
