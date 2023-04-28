@@ -24,7 +24,7 @@ if docarray_v2:
     from docarray import DocList, BaseDoc
 
 
-    def create_pydantic_model_from_schema(schema: Dict[str, any], model_name: str) -> type:
+    def _create_pydantic_model_from_schema(schema: Dict[str, any], model_name: str) -> type:
         from pydantic import create_model
         fields = {}
         for field_name, field_schema in schema.get('properties', {}).items():
@@ -52,9 +52,9 @@ if docarray_v2:
                     items_ref = field_schema.get('items', {}).get('$ref')
                     if items_ref:
                         ref_name = items_ref.split('/')[-1]
-                        field_type = DocList[create_pydantic_model_from_schema(schema['definitions'][ref_name], ref_name)]
+                        field_type = DocList[_create_pydantic_model_from_schema(schema['definitions'][ref_name], ref_name)]
                     else:
-                        field_type = DocList[create_pydantic_model_from_schema(field_schema.get('items', {}), field_name)]
+                        field_type = DocList[_create_pydantic_model_from_schema(field_schema.get('items', {}), field_name)]
                 else:
                     raise ValueError(f"Unknown array item type: {field_item_type} for field_name {field_name}")
             elif field_type == 'object' or field_type is None:
@@ -62,9 +62,9 @@ if docarray_v2:
                 obj_ref = field_schema.get('$ref')
                 if obj_ref:
                     ref_name = obj_ref.split('/')[-1]
-                    field_type = create_pydantic_model_from_schema(schema['definitions'][ref_name], ref_name)
+                    field_type = _create_pydantic_model_from_schema(schema['definitions'][ref_name], ref_name)
                 else:
-                    field_type = create_pydantic_model_from_schema(field_schema, field_name)
+                    field_type = _create_pydantic_model_from_schema(field_schema, field_name)
             else:
                 raise ValueError(f"Unknown field type: {field_type} for field_name {field_name}")
             fields[field_name] = (field_type, field_schema.get('description'))
@@ -400,10 +400,10 @@ class HeaderRequestHandler(MonitoringRequestMixin):
                             output_model_name = inner_dict['output']['name']
                             output_model_schema = inner_dict['output']['model']
                             if input_model_name not in models_created_by_name:
-                                input_model = create_pydantic_model_from_schema(input_model_schema, input_model_name)
+                                input_model = _create_pydantic_model_from_schema(input_model_schema, input_model_name)
                                 models_created_by_name[input_model_name] = input_model
                             if output_model_name not in models_created_by_name:
-                                output_model = create_pydantic_model_from_schema(output_model_schema, output_model_name)
+                                output_model = _create_pydantic_model_from_schema(output_model_schema, output_model_name)
                                 models_created_by_name[output_model_name] = output_model
 
                             self._pydantic_models_by_endpoint[endpoint] = {
