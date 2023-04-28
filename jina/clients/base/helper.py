@@ -1,9 +1,10 @@
 import asyncio
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Union, Dict
 
 import aiohttp
 from aiohttp import WSMsgType
+from aiohttp.payload import BytesPayload
 from starlette import status
 
 from jina.clients.base import retry
@@ -13,26 +14,46 @@ from jina.importer import ImportExtensions
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
 from jina.types.request.status import StatusMessage
+from jina._docarray import docarray_v2
 
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry import trace
 
     from jina.logging.logger import JinaLogger
 
+if docarray_v2:
+    from docarray.base_doc.io.json import orjson_dumps
+
+
+    class JinaJsonPayload(BytesPayload):
+        def __init__(
+                self,
+                value,
+                *args,
+                **kwargs,
+        ) -> None:
+            super().__init__(
+                orjson_dumps(value),
+                content_type="application/json",
+                encoding="utf-8",
+                *args,
+                **kwargs,
+            )
+
 
 class AioHttpClientlet(ABC):
     """aiohttp session manager"""
 
     def __init__(
-        self,
-        url: str,
-        logger: 'JinaLogger',
-        max_attempts: int = 1,
-        initial_backoff: float = 0.5,
-        max_backoff: float = 2,
-        backoff_multiplier: float = 1.5,
-        tracer_provider: Optional['trace.TraceProvider'] = None,
-        **kwargs,
+            self,
+            url: str,
+            logger: 'JinaLogger',
+            max_attempts: int = 1,
+            initial_backoff: float = 0.5,
+            max_backoff: float = 2,
+            backoff_multiplier: float = 1.5,
+            tracer_provider: Optional['trace.TraceProvider'] = None,
+            **kwargs,
     ) -> None:
         """HTTP Client to be used with the streamer
 
@@ -141,10 +162,19 @@ class HTTPClientlet(AioHttpClientlet):
             req_dict['target_executor'] = req_dict['header']['target_executor']
         for attempt in range(1, self.max_attempts + 1):
             try:
+                request_kwargs = {'url': self.url}
+                if not docarray_v2:
+                    request_kwargs['json'] = req_dict
+                else:
+                    from docarray.base_doc.io.json import orjson_dumps
+                    request_kwargs['data'] = JinaJsonPayload(value=req_dict)
                 response = await self.session.post(
-                    url=self.url, json=req_dict
+                    **request_kwargs
                 ).__aenter__()
-                r_str = await response.json()
+                try:
+                    r_str = await response.json()
+                except aiohttp.ContentTypeError:
+                    r_str = response.text
                 handle_response_status(response.status, r_str, self.url)
                 return response
             except (ValueError, ConnectionError, BadClient, aiohttp.ClientError) as err:
@@ -308,31 +338,32 @@ class WebsocketClientlet(AioHttpClientlet):
         return self.websocket.close_code if self.websocket else None
 
 
-def handle_response_status(http_status: int, response_string: str, url: str):
+def handle_response_status(http_status: int, response_content: Union[Dict, str], url: str):
     """
     Raise BadClient exception for HTTP 404 status.
     Raise ConnectionError for HTTP status codes 504, 504 if header information is available.
     Raise ValueError for everything other non 200 status code.
     :param http_status: http status code
-    :param response_string: response string
+    :param response_content: response content as json dict or string
     :param url: request url string
     """
     if http_status == status.HTTP_404_NOT_FOUND:
         raise BadClient(f'no such endpoint {url}')
     elif (
-        http_status == status.HTTP_503_SERVICE_UNAVAILABLE
-        or http_status == status.HTTP_504_GATEWAY_TIMEOUT
+            http_status == status.HTTP_503_SERVICE_UNAVAILABLE
+            or http_status == status.HTTP_504_GATEWAY_TIMEOUT
     ):
         if (
-            'header' in response_string
-            and 'status' in response_string['header']
-            and 'description' in response_string['header']['status']
+            isinstance(response_content, dict)
+            and 'header' in response_content
+            and 'status' in response_content['header']
+            and 'description' in response_content['header']['status']
         ):
-            raise ConnectionError(response_string['header']['status']['description'])
+            raise ConnectionError(response_content['header']['status']['description'])
         else:
-            raise ValueError(response_string)
+            raise ValueError(response_content)
     elif (
-        http_status < status.HTTP_200_OK
-        or http_status > status.HTTP_300_MULTIPLE_CHOICES
+            http_status < status.HTTP_200_OK
+            or http_status > status.HTTP_300_MULTIPLE_CHOICES
     ):  # failure codes
-        raise ValueError(response_string)
+        raise ValueError(response_content)
