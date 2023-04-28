@@ -39,11 +39,11 @@ class MyStateExecutor(Executor):
             doc.tags['pid'] = os.getpid()
             doc.tags['num'] = random_num
 
-    @requests(on=['/search_similarity'])
+    @requests(on=['/similarity'])
     def search_similarity(self, docs: DocumentArray[TextDocWithId], **kwargs):
         for doc in docs:
             self.logger.debug(f'Searching similarity against {len(self._docs)} documents')
-            doc.text = 'Similarity'
+            doc.text = 'similarity'
             doc.l = [doc.id for doc in self._docs]
 
     def snapshot(self, snapshot_file: str):

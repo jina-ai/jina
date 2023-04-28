@@ -9,6 +9,7 @@ from jina.helper import random_port
 from jina.parsers.helper import (
     _SHOW_ALL_ARGS,
     CastToIntAction,
+    CastPeerPorts,
     KVAppendAction,
     add_arg_group,
 )
@@ -272,7 +273,10 @@ def mixin_stateful_parser(parser):
         '--peer-ports',
         type=str,
         default=None,
-        help='When using --stateful option, it may be required to tell the cluster what are the cluster configuration. This is important'
-             'when the Deployment is restarted. It is expected to be a single list if shards == 1 or a dictionary if shards > 1.',
+        help='When using --stateful option, it is required to tell the cluster what are the cluster configuration. This is important'
+             'when the Deployment is restarted. It indicates the ports to which each replica of the cluster binds.'
+             ' It is expected to be a single list if shards == 1 or a dictionary if shards > 1.',
+        action=CastPeerPorts,
+        nargs='+',
     )
 

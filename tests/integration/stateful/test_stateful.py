@@ -58,9 +58,12 @@ def assert_all_replicas_indexed(client, search_da, num_replicas=3, key='pid'):
 @pytest.mark.parametrize('shards', [2, 1])
 def test_stateful_index_search(executor_cls, shards, tmpdir, stateful_exec_docker_image_built):
     replicas = 3
-    peer_ports = {}
-    for shard in range(shards):
-        peer_ports[shard] = [random_port() for _ in range(replicas)]
+    if shards > 1:
+        peer_ports = {}
+        for shard in range(shards):
+            peer_ports[shard] = [random_port() for _ in range(replicas)]
+    else:
+        peer_ports = [random_port() for _ in range(replicas)]
     dep = Deployment(
         uses=executor_cls,
         replicas=replicas,
@@ -89,12 +92,11 @@ def test_stateful_index_search(executor_cls, shards, tmpdir, stateful_exec_docke
         # checking against the main read replica
         assert_is_indexed(dep, search_da)
         assert_all_replicas_indexed(dep, search_da)
-        docs = dep.post(on='search_similarity', inputs=search_da, request_size=1, return_type=DocumentArray[TextDocWithId])
+        docs = dep.post(on='/similarity', inputs=search_da, request_size=1,
+                        return_type=DocumentArray[TextDocWithId])
         for doc in docs:
-            assert doc.text == 'Similarity'
-            assert len(doc.l) == len(index_da) # good merging of results
-
-
+            assert doc.text == 'similarity'
+            assert len(doc.l) == len(index_da)  # good merging of results
 
 
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor])
@@ -142,6 +144,7 @@ def test_stateful_index_search_restore(executor_cls, shards, tmpdir, stateful_ex
         time.sleep(20)
         search_da = DocumentArray[TextDocWithId]([TextDocWithId(id=f'{i}') for i in range(200)])
         assert_all_replicas_indexed(dep, search_da)
+
 
 @pytest.mark.skip('Not sure how containerization will work with docarray v2')
 @pytest.mark.parametrize('shards', [1, 2])
