@@ -170,7 +170,7 @@ d = Deployment(name='indexer',
                workspace='./raft',
                replicas=3,
                stateful=True,
-               peer_ports={'0': [12345, 12346, 12347]})
+               peer_ports=[12345, 12346, 12347])
 with d:
     d.block()
 ```

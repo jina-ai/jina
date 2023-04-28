@@ -1436,10 +1436,14 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         }
 
         if self.args.stateful and self.args.replicas in [1, 2]:
-            self.logger.debug(f'Stateful Executor is not recommended to be used less than 3 replicas')
+            self.logger.debug(
+                f'Stateful Executor is not recommended to be used less than 3 replicas'
+            )
 
         if self.args.stateful and self.args.workspace is None:
-            raise ValueError(f'Stateful Executors need to be provided `workspace` when used in a Deployment')
+            raise ValueError(
+                f'Stateful Executors need to be provided `workspace` when used in a Deployment'
+            )
 
         # a gateway has no heads and uses
         # also there a no heads created, if there are no shards
