@@ -11,9 +11,9 @@ An {class}`~jina.Executor` is a self-contained microservice exposed using a gRPC
 It contains functions (decorated with `@requests`) that process `DocumentArray`s. Executors follow three principles:
 
 1. An Executor should subclass directly from the `jina.Executor` class.
-2. An Executor class is a bag of functions with shared state or configuration (via `self`); it can contain an arbitrary number of
-functions with arbitrary names.
+2. An Executor is a Python class; it can contain any number of functions.
 3. Functions decorated by {class}`~jina.requests` are exposed as services according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions. This will be explained later in {ref}`Add Endpoints Section<exec-endpoint>`
+4. (Beta) Functions decorated by {class}`~jina.serve.executors.decorators.write` on top of their {class}`~jina.requests` decoration, are considered to update the internal state of the Executor. `__init__` and `close` method are exceptions. Why this can be useful will be explained in {ref}`Stateful-executor<stateful-executor>` 
 
 ## Create an Executor
 
@@ -183,3 +183,22 @@ structure.
 ```{tip}
 In the `jina hub new` wizard you can choose from four Dockerfile templates: `cpu`, `tf-gpu`, `torch-gpu`, and `jax-gpu`.
 ```
+
+## Stateful-Executor (Beta)
+
+Executors sometimes may contain some internal state which changes when some of their methods are called. For instance, an Executor could contain an index of Documents
+to perform vector search.
+
+In these cases, orchestrating these Executors can be tougher than Executors that never change their inner state (Imagine a Machine Learning model served via an Executor that never updates its weights during its lifetime).
+The challenge comes at guaranteeing the consistency between `replicas` of the same Executor inside the same Deployment.
+
+In order to provide this consistency, Executors can mark some of their exposed methods as `write`. This indicates that calls to these endpoints must be consistently replicated between all the replicas
+such that other endpoints can serve independently of the replica that is hit.
+
+````{admonition} Deterministic state update
+:class: note
+
+Another consideration that needs to be there, is that the Executor inner state must evolve in a deterministic manner if we want `replicas` to behave consistently.
+````
+
+By considering this, {ref}`Executors can be scaled in a consistent manner<scale-consensus>`.

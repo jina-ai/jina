@@ -4,7 +4,7 @@
 By default, all Executors in an Orchestration run with a single instance. If an Executor is particularly slow, then it will reduce the overall throughput. To solve this, you can specify the number of `replicas` to scale out an Executor.
 
 (replicate-executors)=
-## Replicate Executors
+## Replicate stateless Executors
 
 Replication creates multiple copies of the same {class}`~jina.Executor`. Each request in the Orchestration is then passed to only one replica (instance) of that Executor. **All replicas compete for a request. The idle replica gets the request first.**
 
@@ -54,6 +54,68 @@ executors:
 :align: center
 Flow with three replicas of `slow_encoder` and one replica of `fast_indexer`
 ```
+
+(scale-consensus)=
+## Replicate stateful Executors with consensus using RAFT (Beta)
+
+````{admonition} docarray 0.30
+:class: note
+
+Since docarray version > 0.30, docarray changed its interface and implementation drastically. We intend to support these new docarray versions
+in the near future, but not every feature is yet available {ref}`Check here <docarray-v2>`. This feature has been added with these new docarray versions support.
+````
+
+Replication is used to scale-out Executors by creating copies of them that can handle requests in parallel providing better RPS.
+However, when an Executor keeps some sort of state, then it is not simple to guarantee that each copy of the Executor keeps the same state,
+which can lead to undesired behavior, since each replica can provide different results, depending on the specific state they hold.
+
+In Jina, you can also have replication while guaranteeing the consensus between Executors. For this, we rely on (RAFT)[https://raft.github.io/] which is
+an algorithm that guarantees eventual consistency between replicas. 
+
+Consensus-based replication using RAFT is a distributed algorithm designed to provide fault tolerance and consistency in a distributed system. In a distributed system, the nodes may fail, and messages may be lost or delayed, which can lead to inconsistencies in the system.
+The problem with traditional replication methods is that they can't guarantee consistency in a distributed system in the presence of failures. This is where consensus-based replication using RAFT comes in.
+In this approach, each Executor can be considered as a Finite State Machine, which means that it has a set of states that it can be in, and a set of transitions that it can make between those states. Each request that is sent to the Executor can be considered as a log entry that needs to be replicated across the cluster.
+
+In order to enable this kind of replication, we need to consider:
+
+- Specify which methods of the Executor {ref}` could be updating its internal state <stateful-executor>`.
+- Tell the deployment to use the RAFT consensus algorithm by setting the `--stateful` argument.
+- Set values of replicas compatible with RAFT. RAFT requires a minimum of 3 replicas to guarantee consistency. 
+- Pass the `--peer-ports` argument so that the RAFT cluster can recover from a previous configuration of replicas if existed.
+- Optionally you can pass `--raft-configuration` parameter to tweak the behavior of the consensus module. You can understand the values to pass from
+[Hashicorp's RAFT library](https://github.com/ongardie/hashicorp-raft/blob/master/config.go).
+
+```python
+from jina import Deployment, Executor, requests
+from jina.serve.executors.decorators import write
+from docarray import DocList
+from docarray.documents import TextDoc
+
+
+class MyStateExecutorNoSnapshot(Executor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._docs_dict = {}
+
+    @requests(on=['/index'])
+    @write
+    def index(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        for doc in docs:
+            self._docs_dict[doc.id] = doc
+
+    @requests(on=['/search'])
+    def search(self,  docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        for doc in docs:
+            self.logger.debug(f'Searching against {len(self._docs_dict)} documents')
+            doc.text = self._docs_dict[doc.id].text
+
+
+
+d = Deployment(name='stateful_executor', replicas=3, stateful=True, peer_ports=[12345, 12346, 12347])
+with d:
+    d.block()
+```
+
 
 ## Replicate on multiple GPUs
 
