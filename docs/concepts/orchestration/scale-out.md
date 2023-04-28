@@ -63,6 +63,14 @@ Flow with three replicas of `slow_encoder` and one replica of `fast_indexer`
 
 Since docarray version > 0.30, docarray changed its interface and implementation drastically. We intend to support these new docarray versions
 in the near future, but not every feature is yet available {ref}`Check here <docarray-v2>`. This feature has been added with these new docarray versions support.
+
+This feature is only available when using `grpc` as the protocol for the Deployment or when the Deployment is part of a Flow
+````
+
+````{admonition} gRPC protocol
+:class: note
+
+This feature is only available when using gRPC as the protocol for the Deployment or when the Deployment is part of a Flow
 ````
 
 Replication is used to scale-out Executors by creating copies of them that can handle requests in parallel providing better RPS.
@@ -92,7 +100,7 @@ from docarray import DocList
 from docarray.documents import TextDoc
 
 
-class MyStateExecutorNoSnapshot(Executor):
+class MyStateStatefulExecutor(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._docs_dict = {}
@@ -111,11 +119,118 @@ class MyStateExecutorNoSnapshot(Executor):
 
 
 
-d = Deployment(name='stateful_executor', replicas=3, stateful=True, peer_ports=[12345, 12346, 12347])
+d = Deployment(name='stateful_executor', 
+               uses=MyStateStatefulExecutor,
+               replicas=3, 
+               stateful=True, 
+               peer_ports=[12345, 12346, 12347])
 with d:
     d.block()
 ```
 
+This capacity allows us not only to have replicas work with robustness and availability, it also can help us to achieve higher throughput in some cases.
+
+Let's imagine we write an Executor that is used to index and query documents from a vector index.
+
+For this, we are going to use an in memory solution from [DocArray](https://docs.docarray.org/user_guide/storing/index_in_memory/) that performs exact vector search.
+
+```python
+from jina import Deployment, Executor, requests
+from jina.serve.executors.decorators import write
+from docarray import DocList
+from docarray.documents import TextDoc
+from docarray.index.backends.in_memory import InMemoryExactNNIndex
+
+
+class QueryDoc(TextDoc):
+    matches: DocList[TextDoc] = DocList[TextDoc]()
+
+
+class ExactNNSearch(Executor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._index = InMemoryExactNNIndex[TextDoc]()
+
+    @requests(on=['/index'])
+    @write # I add write decorator to indicate that calling this endpoint updates the inner state
+    def index(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        self.logger.info(f'Indexing Document in index with {len(self._index)} documents indexed')
+        self._index.index(docs)
+
+    @requests(on=['/search'])
+    def search(self,  docs: DocList[QueryDoc], **kwargs) -> DocList[QueryDoc]:
+        self.logger.info(f'Searching Document in index with {len(self._index)} documents indexed')
+        for query in docs:
+            docs, scores = self._index.find(query, search_field='embedding', limit=10)
+            query.matches = docs
+
+d = Deployment(name='indexer',
+               port=5555,
+               uses=ExactNNSearch,
+               workspace='./raft',
+               replicas=3,
+               stateful=True,
+               peer_ports={'0': [12345, 12346, 12347]})
+with d:
+    d.block()
+```
+
+Then in another terminal, we are going to send index and search requests:
+
+```python
+from jina import Client
+from docarray import DocList
+from docarray.documents import TextDoc
+import time
+import numpy as np
+
+class QueryDoc(TextDoc):
+    matches: DocList[TextDoc] = DocList[TextDoc]()
+
+NUM_DOCS_TO_INDEX = 10000
+NUM_QUERIES = 100
+
+c = Client(port=5555)
+
+index_docs = DocList[TextDoc]([TextDoc(text=f'I am document {i}', embedding=np.random.rand(128)) for i in range(NUM_DOCS_TO_INDEX)])
+start_indexing_time = time.time()
+c.post(on='/index', inputs=index_docs, request_size=100)
+time.sleep(2) # let some time for the data to be replicated
+
+search_da = DocList[QueryDoc]([QueryDoc(text=f'I am document {i}', embedding=np.random.rand(128)) for i in range(NUM_QUERIES)])
+start_querying_time = time.time()
+for query in search_da:
+   responses = c.post(on='/search', inputs=query, request_size=1)
+   for res in responses:
+        print(f'{res.matches}')
+```
+
+In the logs of the `server` you can see how `index` requests reach every replica while `search` requests only reach one replica in a 
+`round robin` fashion.
+
+Eventually every Indexer replica ends up with the same Documents indexed. 
+
+```text
+INFO   indexer/rep-2@923 Indexing Document in index with 99900 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99200 documents indexed                                                                                                                                   
+INFO   indexer/rep-1@910 Indexing Document in index with 99700 documents indexed                                                                                                                                   
+INFO   indexer/rep-1@910 Indexing Document in index with 99800 documents indexed                                                                                                                [04/28/23 16:51:06]
+INFO   indexer/rep-0@902 Indexing Document in index with 99300 documents indexed                                                                                                                [04/28/23 16:51:06]
+INFO   indexer/rep-1@910 Indexing Document in index with 99900 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99400 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99500 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99600 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99700 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99800 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99900 documents indexed 
+```
+
+But at search time, the consensus module does not affect, and only one replica serves the queries.
+```text
+INFO   indexer/rep-0@902 Searching Document in index with 100000 documents indexed                                                                                                              [04/28/23 16:59:21]
+INFO   indexer/rep-1@910 Searching Document in index with 100000 documents indexed                                                                                                              [04/28/23 16:59:21]
+INFO   indexer/rep-2@923 Searching Document in index with 100000 documents indexed 
+```
 
 ## Replicate on multiple GPUs
 

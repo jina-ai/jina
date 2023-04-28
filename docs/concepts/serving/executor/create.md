@@ -202,3 +202,14 @@ Another consideration that needs to be there, is that the Executor inner state m
 ````
 
 By considering this, {ref}`Executors can be scaled in a consistent manner<scale-consensus>`.
+
+### Snapshot and restoring
+
+When having an Stateful Executor, Jina uses RAFT consensus algorithm to guarantee that every replica eventually holds the same inner state. 
+RAFT writes the incoming requests as logs to local storage in every replica to make sure this is achieved. 
+
+This could become problematic if the Executor runs for long time as the logs file could grow indifinitely. However, one can avoid this problem
+by describing the methods `def snapshot(self, snapshot_dir)` and `def restore(self, snapshot_dir)` that are triggered via the RAFT protocol allowing the Executor
+to store its current state or to recover its state from a snapshot. With this mechanism, RAFT can keep cleaning old logs by assuming that the state of the Executor
+at a given time is determined by its latest snapshot and the application of all the requests that arrived since the last snapshot. RAFT algorithm keeps track
+of all these details.
