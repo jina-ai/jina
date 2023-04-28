@@ -14,6 +14,7 @@ from jina.logging.logger import JinaLogger
 from jina.orchestrate.pods.helper import ConditionalEvent, _get_event
 from jina.parsers.helper import _update_gateway_args
 from jina.serve.executors.run import run, run_raft
+from jina.constants import RAFT_TO_EXECUTOR_PORT
 
 __all__ = ['BasePod', 'Pod']
 
@@ -257,9 +258,9 @@ class Pod(BasePod):
             cargs = copy.deepcopy(cargs_stateful)
 
             if isinstance(cargs.port, int):
-                cargs.port += 1
+                cargs.port += RAFT_TO_EXECUTOR_PORT
             elif isinstance(cargs.port, list):
-                cargs.port = [port + 1 for port in cargs.port]
+                cargs.port = [port + RAFT_TO_EXECUTOR_PORT for port in cargs.port]
         # if stateful, have a raft_worker
         self.worker = multiprocessing.Process(
             target=run,

@@ -7,6 +7,7 @@ from typing import Dict, Optional, Type, Union, TYPE_CHECKING
 from jina.logging.logger import JinaLogger
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.helper import _get_workspace_from_name_and_shards
+from jina.constants import RAFT_TO_EXECUTOR_PORT
 
 if TYPE_CHECKING:
     import threading
@@ -45,7 +46,7 @@ def run_raft(
 
     port = args.port[0] if isinstance(args.port, list) else args.port
     address = f'{args.host}:{port}'
-    executor_target = f'{args.host}:{port + 1}'
+    executor_target = f'{args.host}:{port + RAFT_TO_EXECUTOR_PORT}'
 
     # if the Executor was already persisted, retrieve its port and host configuration
     logger = JinaLogger('run_raft', **vars(args))
