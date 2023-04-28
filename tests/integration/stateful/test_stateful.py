@@ -5,7 +5,7 @@ import os
 
 from jina import Client, Document, DocumentArray, Flow, Deployment
 from docarray.documents import TextDoc
-from typing import Dict
+from typing import Dict, List
 
 from jina.helper import random_port
 
@@ -18,6 +18,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 class TextDocWithId(TextDoc):
     id: str
     tags: Dict[str, str] = {}
+    l: List[str] = []
 
 
 @pytest.fixture(scope='module')
@@ -88,6 +89,12 @@ def test_stateful_index_search(executor_cls, shards, tmpdir, stateful_exec_docke
         # checking against the main read replica
         assert_is_indexed(dep, search_da)
         assert_all_replicas_indexed(dep, search_da)
+        docs = dep.post(on='search_similarity', inputs=search_da, request_size=1, return_type=DocumentArray[TextDocWithId])
+        for doc in docs:
+            assert doc.text == 'Similarity'
+            assert len(doc.l) == len(index_da) # good merging of results
+
+
 
 
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor])
