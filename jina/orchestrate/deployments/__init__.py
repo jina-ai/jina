@@ -1296,14 +1296,14 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             peer_ports_all_shards[str(k)] = v
 
         if self.args.stateful and len(peer_ports_all_shards.keys()) < shards:
-            raise RuntimeError(
+            raise ValueError(
                 'The configuration of `peer_ports` does not match the number of shards requested'
             )
 
         for shard_id in range(shards):
             peer_ports = peer_ports_all_shards.get(str(shard_id), [])
             if len(peer_ports) > 0 and len(peer_ports) != replicas:
-                raise RuntimeError(
+                raise ValueError(
                     f'pod-ports argument does not match number of replicas, it will be ignored'
                 )
             elif len(peer_ports) == 0:
@@ -1434,6 +1434,12 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             'gateway': None,
             'pods': {},
         }
+
+        if self.args.stateful and self.args.replicas in [1, 2]:
+            self.logger.debug(f'Stateful Executor is not recommended to be used less than 3 replicas')
+
+        if self.args.stateful and self.args.workspace is None:
+            raise ValueError(f'Stateful Executors need to be provided `workspace` when used in a Deployment')
 
         # a gateway has no heads and uses
         # also there a no heads created, if there are no shards
