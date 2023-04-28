@@ -21,7 +21,7 @@ executors:
     jcloud:
       resources:
         storage: 
-          type: ebs
+          kind: ebs
           size: 10G
 ```
 
@@ -73,16 +73,16 @@ Please visit [Jina AI Cloud Pricing](https://cloud.jina.ai/pricing/) for more in
 
 #### CPU tiers
 
-| Instance | Cores | Memory   | Credits per hour |
-|----------|-------|----------|------------------|
-| C1       | 0.1   | 0.2 GB   | 1                |
-| C2       | 0.5   | 1 GB     | 5                |
-| C3       | 1     | 2 GB     | 10               |
-| C4       | 2     | 4 GB     | 20               |
-| C5       | 4     | 8 GB     | 40               |
-| C6       | 8     | 16 GB    | 80               |
-| C7       | 16    | 32 GB    | 160              |
-| C8       | 32    | 64 GB    | 320              |
+| Instance | Cores | Memory | Credits per hour |
+| -------- | ----- | ------ | ---------------- |
+| C1       | 0.1   | 0.2 GB | 1                |
+| C2       | 0.5   | 1 GB   | 5                |
+| C3       | 1     | 2 GB   | 10               |
+| C4       | 2     | 4 GB   | 20               |
+| C5       | 4     | 8 GB   | 40               |
+| C6       | 8     | 16 GB  | 80               |
+| C7       | 16    | 32 GB  | 160              |
+| C8       | 32    | 64 GB  | 320              |
 
 
 By default, C1 is allocated to each Executor and Gateway.
@@ -99,12 +99,12 @@ If GPU is enabled, JCloud will provide NVIDIA A10G Tensor Core GPUs with 24 GB m
 When using GPU resources, it may take a few extra minutes before all Executors are ready to serve traffic.
 ```
 
-| Instance | GPU    | Memory   | Credits per hour |
-|----------|--------|----------|------------------|
-| G1       | shared | 14 GB    | 100              |
-| G2       | 1      | 14 GB    | 125              |
-| G3       | 2      | 24 GB    | 250              |
-| G4       | 4      | 56 GB    | 500              |
+| Instance | GPU    | Memory | Credits per hour |
+| -------- | ------ | ------ | ---------------- |
+| G1       | shared | 14 GB  | 100              |
+| G2       | 1      | 14 GB  | 125              |
+| G3       | 2      | 24 GB  | 250              |
+| G4       | 4      | 56 GB  | 500              |
 
 ##### Shared GPU
 
@@ -143,14 +143,37 @@ If your Executor needs high IO, you can use `ebs` instead. Note that:
 - Default storage size is 5 GB.
 ````
 
+JCloud also supports retaining the data that a Flow was using while it was active. You can set the `retain` argument to `true` to enable this feature.
+
+```{code-block} yaml
+---
+emphasize-lines: 5-10,12,15
+---
+jtype: Flow
+executors:
+  - name: executor1
+    uses: jinaai+docker://<username>/Executor1
+    jcloud:
+      resources:
+        storage:
+          kind: ebs
+          size: 10G
+          retain: true
+  - name: executor2
+    uses: jinaai+docker://<username>/Executor2
+    jcloud:
+      resources:
+        storage:
+          kind: efs
+```
 #### Pricing
 Here are the numbers in terms of credits per GB per month for the three kinds of storage described above.
 
-| Instance  | Credits per GB per month|
-|-----------|-------------------------|
-| Ephemeral | 0                       |
-| EBS       | 30                      |
-| EFS       | 75                      |
+| Instance  | Credits per GB per month |
+| --------- | ------------------------ |
+| Ephemeral | 0                        |
+| EBS       | 30                       |
+| EFS       | 75                       |
 
 For example, using 10 GB of EBS storage for a month costs `30` credits.
 If shards/replicas are used, we will multiply credits further by the number of storages created.
@@ -208,9 +231,9 @@ Below are the defaults and requirements for the configurations:
 | min    | 1           | int                      | Minimum number of replicas (`0` means serverless) |
 | max    | 2           | int, up to 5             | Maximum number of replicas                        |
 | metric | concurrency | `concurrency`  /   `rps` | Metric for scaling                                |
-| target | 100         | int                      | Target number of replicas to try to maintain     |
+| target | 100         | int                      | Target number the replicas try to maintain        |
 
-After a JCloud deployment using the autoscaling configuration, the Flow serving part is just the same: the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you can deal with the code!
+After you make a JCloud deployment using the autoscaling configuration, the Flow serving part is just the same: the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you can deal with the code!
 
 ### Pricing
 At present, pricing for autoscaled Executor/Gateway follows the same {ref}`JCloud pricing rules <jcloud-pricing>` for the most part.
@@ -230,8 +253,8 @@ If service issues cause disruption of Executors, JCloud lets you specify a toler
 The JCloud parameters `minAvailable` and `maxUnavailable` ensure that Executors will stay up even if a certain number of replicas go down.
 
 | Name             | Default |                                          Allowed                                          | Description                                              |
-|:-----------------|:-------:|:-----------------------------------------------------------------------------------------:|:---------------------------------------------------------|
- | `minAvailable`   |   N/A   | Lower than number of [replicas](https://docs.jina.ai/concepts/flow/scale-out/#scale-out)  | Minimum number of replicas available during disruption   |
+| :--------------- | :-----: | :---------------------------------------------------------------------------------------: | :------------------------------------------------------- |
+| `minAvailable`   |   N/A   | Lower than number of [replicas](https://docs.jina.ai/concepts/flow/scale-out/#scale-out)  | Minimum number of replicas available during disruption   |
 | `maxUnavailable` |   N/A   | Lower than numbers of [replicas](https://docs.jina.ai/concepts/flow/scale-out/#scale-out) | Maximum number of replicas unavailable during disruption |
 
 ```{code-block} yaml
