@@ -133,13 +133,11 @@ core_deps = all_deps['core']
 perf_deps = all_deps['perf'].union(core_deps)
 standard_deps = all_deps['standard'].union(core_deps).union(perf_deps)
 
-if os.name == 'nt':
-    # uvloop is not supported on windows
-    exclude_deps = {i for i in standard_deps if i.startswith('uvloop')}
-    perf_deps.difference_update(exclude_deps)
-    standard_deps.difference_update(exclude_deps)
-    for k in ['all', 'devel', 'cicd']:
-        all_deps[k].difference_update(exclude_deps)
+# uvloop is not supported on windows
+perf_deps = {i+";platform_system!='Windows'" if i.startswith('uvloop') else i for i in perf_deps}
+standard_deps = {i+";platform_system!='Windows'" if i.startswith('uvloop') else i for i in standard_deps}
+for k in ['all', 'devel', 'cicd']:
+    all_deps[k] = {i+";platform_system!='Windows'" if i.startswith('uvloop') else i for i in all_deps[k]}
 
 # by default, final deps is the standard deps, unless specified by env otherwise
 final_deps = standard_deps
