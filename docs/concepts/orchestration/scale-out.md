@@ -58,13 +58,12 @@ Flow with three replicas of `slow_encoder` and one replica of `fast_indexer`
 (scale-consensus)=
 ## Replicate stateful Executors with consensus using RAFT (Beta)
 
-````{admonition} docarray 0.30
+````{admonition} DocArray 0.30
 :class: note
 
-Since docarray version > 0.30, docarray changed its interface and implementation drastically. We intend to support these new docarray versions
-in the near future, but not every feature is yet available {ref}`Check here <docarray-v2>`. This feature has been added with these new docarray versions support.
+Starting from DocArray version 0.30, DocArray changed its interface and implementation drastically. We intend to support these new versions in the near future, but not every feature is yet available Check {ref}`here <docarray-v2>` for more information. This feature has been added with the new DocArray support.
 
-This feature is only available when using `grpc` as the protocol for the Deployment or when the Deployment is part of a Flow
+This feature is only available when using `grpc` as the protocol for the Deployment or when the Deployment is part of a Flow.
 ````
 
 ````{admonition} gRPC protocol
@@ -73,11 +72,11 @@ This feature is only available when using `grpc` as the protocol for the Deploym
 This feature is only available when using gRPC as the protocol for the Deployment or when the Deployment is part of a Flow
 ````
 
-Replication is used to scale-out Executors by creating copies of them that can handle requests in parallel providing better RPS.
-However, when an Executor keeps some sort of state, then it is not simple to guarantee that each copy of the Executor keeps the same state,
-which can lead to undesired behavior, since each replica can provide different results, depending on the specific state they hold.
+Replication is used to scale out Executors by creating copies of them that can handle requests in parallel, providing better RPS.
+However, when an Executor maintains some sort of state, then it is not simple to guarantee that each copy of the Executor maintains the *same* state,
+which can lead to undesired behavior, since each replica can provide different results depending on the specific state they hold.
 
-In Jina, you can also have replication while guaranteeing the consensus between Executors. For this, we rely on (RAFT)[https://raft.github.io/] which is
+In Jina, you can also have replication while guaranteeing the consensus between Executors. For this, we rely on (RAFT)[https://raft.github.io/], which is
 an algorithm that guarantees eventual consistency between replicas. 
 
 Consensus-based replication using RAFT is a distributed algorithm designed to provide fault tolerance and consistency in a distributed system. In a distributed system, the nodes may fail, and messages may be lost or delayed, which can lead to inconsistencies in the system.
