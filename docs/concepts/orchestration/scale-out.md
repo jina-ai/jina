@@ -161,7 +161,7 @@ class ExactNNSearch(Executor):
     def search(self,  docs: DocList[QueryDoc], **kwargs) -> DocList[QueryDoc]:
         self.logger.info(f'Searching Document in index with {len(self._index)} documents indexed')
         for query in docs:
-            docs, scores = self._index.find(query, search_field='embedding', limit=10)
+            docs, scores = self._index.find(query, search_field='embedding', limit=100)
             query.matches = docs
 
 d = Deployment(name='indexer',
@@ -184,25 +184,30 @@ from docarray.documents import TextDoc
 import time
 import numpy as np
 
+
 class QueryDoc(TextDoc):
     matches: DocList[TextDoc] = DocList[TextDoc]()
 
-NUM_DOCS_TO_INDEX = 10000
-NUM_QUERIES = 100
+
+NUM_DOCS_TO_INDEX = 100000
+NUM_QUERIES = 1000
 
 c = Client(port=5555)
 
-index_docs = DocList[TextDoc]([TextDoc(text=f'I am document {i}', embedding=np.random.rand(128)) for i in range(NUM_DOCS_TO_INDEX)])
+index_docs = DocList[TextDoc](
+    [TextDoc(text=f'I am document {i}', embedding=np.random.rand(128)) for i in range(NUM_DOCS_TO_INDEX)])
 start_indexing_time = time.time()
 c.post(on='/index', inputs=index_docs, request_size=100)
-time.sleep(2) # let some time for the data to be replicated
+print(f'Indexing {NUM_DOCS_TO_INDEX} Documents took {time.time() - start_indexing_time}s')
+time.sleep(2)  # let some time for the data to be replicated
 
-search_da = DocList[QueryDoc]([QueryDoc(text=f'I am document {i}', embedding=np.random.rand(128)) for i in range(NUM_QUERIES)])
+search_da = DocList[QueryDoc](
+    [QueryDoc(text=f'I am document {i}', embedding=np.random.rand(128)) for i in range(NUM_QUERIES)])
 start_querying_time = time.time()
-for query in search_da:
-   responses = c.post(on='/search', inputs=query, request_size=1)
-   for res in responses:
-        print(f'{res.matches}')
+responses = c.post(on='/search', inputs=search_da, request_size=1)
+print(f'Searching {NUM_QUERIES} Queries took {time.time() - start_querying_time}s')
+for res in responses:
+    print(f'{res.matches}')
 ```
 
 In the logs of the `server` you can see how `index` requests reach every replica while `search` requests only reach one replica in a 
@@ -231,6 +236,31 @@ INFO   indexer/rep-0@902 Searching Document in index with 100000 documents index
 INFO   indexer/rep-1@910 Searching Document in index with 100000 documents indexed                                                                                                              [04/28/23 16:59:21]
 INFO   indexer/rep-2@923 Searching Document in index with 100000 documents indexed 
 ```
+
+If you run the same example by setting replicas to 1 without the consensus module, you can see the benefits it has in the QPS at search time,
+while there is a little cost on the time used for indexing.
+
+```python
+d = Deployment(name='indexer',
+               port=5555,
+               uses=ExactNNSearch,
+               replicas=1)
+```
+
+With 1 replica:
+
+```text
+Indexing 100000 Documents took 18.93274688720703s
+Searching 1000 Queries took 385.96641397476196s
+```
+
+With 3 replicas and consensus:
+```text
+Indexing 100000 Documents took 35.066415548324585s
+Searching 1000 Queries took 202.07950615882874s
+```
+
+This allows to go from 2.5 to 5 QPS.
 
 ## Replicate on multiple GPUs
 

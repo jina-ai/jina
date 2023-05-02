@@ -1302,7 +1302,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             peer_ports = peer_ports_all_shards.get(str(shard_id), [])
             if len(peer_ports) > 0 and len(peer_ports) != replicas:
                 raise ValueError(
-                    f'pod-ports argument does not match number of replicas, it will be ignored'
+                    f'peer-ports argument does not match number of replicas, it will be ignored'
                 )
             elif len(peer_ports) == 0:
                 peer_ports = [random_port() for _ in range(replicas)]
