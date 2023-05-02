@@ -1,32 +1,30 @@
 (docarray-v2)=
+# (Beta) New DocArray support (docarray>=0.30)
 
-
-# (Beta) DocArray v2
-
-Jina provides early support for [DocArray v2](https://github.com/docarray/docarray/commits/feat-rewrite-v2) which
-is a rewrite of DocArray. DocArray v2 makes the dataclass feature of DocArray v1 a first-class citizen and for this 
-purpose it is built on top of [pydantic](https://pydantic-docs.helpmanual.io/) and . An important shift is that 
-DocArray v2 adapts to users' data, whereas DocArray v1 forces user to adapt to the Document schema.
+Jina provides early support for [DocArray v2](https://github.com/docarray/docarray) which
+is a rewrite of DocArray. This new version makes the dataclass feature of DocArray v1 a first-class citizen and for this 
+purpose it is built on top of [Pydantic](https://pydantic-docs.helpmanual.io/). An important shift is that 
+the new DocArray adapts to users' data, whereas DocArray v1 forces user to adapt to the Document schema.
 
 ```{warning} Beta support
-DocArray v2 is  still in alpha, its support in Jina is still an experimental feature, and the API is subject to 
-change.
+New DocArray syntax is available on DocArray version beyond 0.30. Not every feature in Jina has been adapted to the new DocArray versions, but some of them are.
+So you can consider that the support of this new version is in Beta. The plan is to keep compatibility with 2 sets of versions after the migration 
+is achieved.
 ```
 
-## DocArray v2 schema
+## New DocArray schema
 
-At the heart of DocArray v2 is a new schema that is more flexible and expressive than the original DocArray schema.
+At the heart of DocArray>=0.30 is a new schema that is more flexible and expressive than the original DocArray schema.
 
-You can refer to the [DocArray v2 readme](https://github.com/docarray/docarray/tree/feat-rewrite-v2) for more details. 
+You can refer to the [DocArray README](https://github.com/docarray/docarray) for more details. 
 Please note that also the names of data structure change in the new version of DocArray.
-
 
 On the Jina side, this flexibility extends to every Executor, where you can now customize input and output schemas:
 
-- With DocArray v1 (the version currently used by default in Jina), a Document has a fixed schema and an Executor performs in-place operations on it. 
-- With DocArray v2, an Executor defines its own input and output schemas. It also provides several predefined schemas that you can use out of the box.
+- With DocArray<0.30 (the version currently used by default in Jina), a Document has a fixed schema and an Executor performs in-place operations on it. 
+- With DocArray>=0.30, an Executor defines its own input and output schemas. It also provides several predefined schemas that you can use out of the box.
 
-## (Beta) New Executor API
+## New Executor API
 
 To reflect the change with DocArray v2, the Executor API now supports schema definition. The 
 design is inspired by [FastAPI](https://fastapi.tiangolo.com/). 
@@ -94,7 +92,7 @@ If there is no `request_schema` and `response_schema`, the type hint is used to 
 and `response_schema` will be used.
 
 
-## (Beta) Client API
+## Client API
 
 In the client, you similarly specify the schema that you expect the Flow to return. You can pass the return type by using the `return_type` parameter in the `client.post` method:
 
@@ -115,12 +113,27 @@ with Deployment(uses=MyExec) as dep:
 ```
 
 
+## Compatible Features
+
+Jina is working to offer full compatibility of the Jina framework with the power of the new DocArray version.
+
+At this moment, these are the features supported if the APIs described in the previous sections are used.
+
+- All the features offered by {ref}`Deployment <deployment>` where a single Executor is served and {ref}`scaled <scale-out>`. This support includes the usage of both
+HTTP and gRPC protocols and the usage of both of them at the same type.
+
+- When combining multiple Deployments in a pipeline using a {ref}`Flow <flow-cookbook>`, multiple limitations exist at this moment:
+
+    - Only gRPC protocol is supported.
+    - Only linear Flows are supported, no topologies using bifurcations can be used at the moment.
+    - There must exist compatibility between the output schema of an Executor and the input schema of the next one.
+
 
 ```{note}
 
 ## See also
 
-- [DocArray-v2](https://github.com/docarray/docarray/commits/feat-rewrite-v2) readme
+- [DocArray-v2](https://github.com/docarray/docarray) README
 - [Pydantic](https://pydantic-docs.helpmanual.io/) documentation for more details on the schema definition
 
 ```
