@@ -131,7 +131,14 @@ HTTP and gRPC protocols and the usage of both of them at the same type.
 :class: note
 
 With DocArray 0.30 support, Jina introduced the concept of input/output schema at the Executor level. In order to chain multiple Executor into a Flow you always need to make sure that the output schema of an Executor is the same as the Input of the Executor that follows him in the Flow
+```
 
+````{admonition} Note
+:class: note
+
+For now, Jina Hub will not automatically build your Docker images with the new DocArray version. If this is needed, you need to specifically provide your 
+Dockerfile where the docarray version >=0.30 is specifically installed.
+```
 
 ```{note}
 
