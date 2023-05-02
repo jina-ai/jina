@@ -1,7 +1,7 @@
 (docarray-v2)=
-# (Beta) New DocArray support (docarray>=0.30)
+# (Beta) New DocArray support
 
-Jina provides early support for [DocArray v2](https://github.com/docarray/docarray) which
+Jina provides early support for [DocArray>=0.30](https://github.com/docarray/docarray) which
 is a rewrite of DocArray. This new version makes the dataclass feature of DocArray v1 a first-class citizen and for this 
 purpose it is built on top of [Pydantic](https://pydantic-docs.helpmanual.io/). An important shift is that 
 the new DocArray adapts to users' data, whereas DocArray v1 forces user to adapt to the Document schema.
@@ -126,7 +126,11 @@ HTTP and gRPC protocols and the usage of both of them at the same type.
 
     - Only gRPC protocol is supported.
     - Only linear Flows are supported, no topologies using bifurcations can be used at the moment.
-    - There must exist compatibility between the output schema of an Executor and the input schema of the next one.
+
+````{admonition} Note
+:class: note
+
+With DocArray 0.30 support, Jina introduced the concept of input/output schema at the Executor level. In order to chain multiple Executor into a Flow you always need to make sure that the output schema of an Executor is the same as the Input of the Executor that follows him in the Flow
 
 
 ```{note}

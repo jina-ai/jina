@@ -133,7 +133,7 @@ tutorials/gpu-executor
 ```
 
 ```{toctree}
-:caption: New DocArray version support
+:caption: New DocArray support
 :hidden:
 
 docarray-v2
