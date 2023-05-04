@@ -1,3 +1,4 @@
+# TODO(stateful): remove this file before merging
 name: Jina StatefulExecutor build and release wheels Workflow
 
 on:
@@ -88,8 +89,6 @@ jobs:
         shell: bash
         run: |
           git fetch --depth=200 origin +refs/tags/*:refs/tags/*
-          echo "commits since v3.14.1"
-          git rev-list v3.14.1..HEAD --count
           ./scripts/update-version.sh stateful
 
       - name: Install dependencies

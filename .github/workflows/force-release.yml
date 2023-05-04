@@ -120,6 +120,14 @@ jobs:
           # TODO(stateful): transfer to jina account
           pip install git+https://github.com/alaeddine-13/setuptools-golang.git
           pip install cibuildwheel
+
+      - name: Update version
+        shell: bash
+        run: |
+          git fetch --depth=200 origin +refs/tags/*:refs/tags/*
+          # TODO(stateful): either adapt later to final release versioning (change stateful to final) or probably we just need to remove this whole step
+          ./scripts/update-version.sh
+
       - name: Build wheels with setuptools-golang-build-manylinux-wheel
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
