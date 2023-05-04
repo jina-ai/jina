@@ -124,7 +124,7 @@ jobs:
       - name: Update version
         shell: bash
         run: |
-          git fetch --depth=200 origin +refs/tags/*:refs/tags/*
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
           # TODO(stateful): either adapt later to final release versioning (change stateful to final) or probably we just need to remove this whole step
           ./scripts/update-version.sh
 
