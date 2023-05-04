@@ -18,7 +18,7 @@
 <p align=center>
 <a href="https://pypi.org/project/jina/"><img alt="PyPI" src="https://img.shields.io/pypi/v/jina?label=Release&style=flat-square"></a>
 <a href="https://codecov.io/gh/jina-ai/jina"><img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/jina-ai/jina/master?&logo=Codecov&logoColor=white&style=flat-square"></a>
-<a href="https://jina.ai/slack"><img src="https://img.shields.io/badge/Slack-3.6k-blueviolet?logo=slack&amp;logoColor=white&style=flat-square"></a>
+<a href="https://jina.ai/slack"><img src="https://img.shields.io/badge/Slack-4.8k-blueviolet?logo=slack&amp;logoColor=white&style=flat-square"></a>
 <a href="https://pypistats.org/packages/jina"><img alt="PyPI - Downloads from official pypistats" src="https://img.shields.io/pypi/dm/jina?style=flat-square"></a>
 <a href="https://github.com/jina-ai/jina/actions/workflows/cd.yml"><img alt="Github CD status" src="https://github.com/jina-ai/jina/actions/workflows/cd.yml/badge.svg"></a>
 </p>
@@ -98,8 +98,8 @@ Find more install options on [Apple Silicon](https://docs.jina.ai/get-started/in
 Jina has four fundamental concepts:
 
 - A [**Document**](https://docarray.jina.ai/) (from [DocArray](https://github.com/docarray/docarray)) is the input/output format in Jina.
-- An [**Executor**](https://docs.jina.ai/concepts/executor/) is a Python class that transforms and processes Documents.
-- A [**Deployment**](https://docs.jina.ai/concepts/executor/serve/#serve-directly) serves a single Executor, while a [**Flow**](https://docs.jina.ai/concepts/flow/) serves Executors chained into a pipeline.
+- An [**Executor**](https://docs.jina.ai/concepts/serving/executor/) is a Python class that transforms and processes Documents.
+- A [**Deployment**](https://docs.jina.ai/concepts/orchestration/deployment) serves a single Executor, while a [**Flow**](https://docs.jina.ai/concepts/orchestration/flow/) serves Executors chained into a pipeline.
 
 [The full glossary is explained here](https://docs.jina.ai/concepts/preliminaries/#).
 
