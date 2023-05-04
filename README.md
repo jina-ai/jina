@@ -98,8 +98,8 @@ Find more install options on [Apple Silicon](https://docs.jina.ai/get-started/in
 Jina has four fundamental concepts:
 
 - A [**Document**](https://docarray.jina.ai/) (from [DocArray](https://github.com/docarray/docarray)) is the input/output format in Jina.
-- An [**Executor**](https://docs.jina.ai/concepts/executor/) is a Python class that transforms and processes Documents.
-- A [**Deployment**](https://docs.jina.ai/concepts/executor/serve/#serve-directly) serves a single Executor, while a [**Flow**](https://docs.jina.ai/concepts/flow/) serves Executors chained into a pipeline.
+- An [**Executor**](https://docs.jina.ai/concepts/serving/executor/) is a Python class that transforms and processes Documents.
+- A [**Deployment**](https://docs.jina.ai/concepts/orchestration/deployment) serves a single Executor, while a [**Flow**](https://docs.jina.ai/concepts/orchestration/flow/) serves Executors chained into a pipeline.
 
 [The full glossary is explained here](https://docs.jina.ai/concepts/preliminaries/#).
 
