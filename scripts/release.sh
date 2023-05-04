@@ -32,10 +32,16 @@ function clean_build {
     rm -rf build
 }
 
+function clean_egg {
+    rm -rf *.egg-info
+    rm -rf build
+}
+
 function pub_pypi {
     # publish to pypi
-    clean_build
+    clean_egg
     cp extra-requirements.txt jina/resources/
+    python setup.py sdist
     twine upload dist/*
     clean_build
 }
