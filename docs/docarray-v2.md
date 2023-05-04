@@ -113,16 +113,16 @@ with Deployment(uses=MyExec) as dep:
 ```
 
 
-## Compatible Features
+## Compatible features
 
-Jina is working to offer full compatibility of the Jina framework with the power of the new DocArray version.
+Jina is working to offer full compatibility with the new DocArray version.
 
-At this moment, these are the features supported if the APIs described in the previous sections are used.
+At present, these features are supported if you use the APIs described in the previous sections.
 
-- All the features offered by {ref}`Deployment <deployment>` where a single Executor is served and {ref}`scaled <scale-out>`. This support includes the usage of both
-HTTP and gRPC protocols and the usage of both of them at the same type.
+- All the features offered by {ref}`Deployment <deployment>` where a single Executor is served and {ref}`scaled <scale-out>`. This includes both
+HTTP and gRPC protocols, and both of them at the same type.
 
-- When combining multiple Deployments in a pipeline using a {ref}`Flow <flow-cookbook>`, multiple limitations exist at this moment:
+- When combining multiple Deployments in a pipeline using a {ref}`Flow <flow-cookbook>`, there are currently several limitations:
 
     - Only gRPC protocol is supported.
     - Only linear Flows are supported, no topologies using bifurcations can be used at the moment.
@@ -136,8 +136,8 @@ With DocArray 0.30 support, Jina introduced the concept of input/output schema a
 ````{admonition} Note
 :class: note
 
-For now, Jina Hub will not automatically build your Docker images with the new DocArray version. If this is needed, you need to specifically provide your 
-Dockerfile where the docarray version >=0.30 is specifically installed.
+For now, [Executor Hub](https://cloud.jina.ai/executors] will not automatically build your Docker images with the new DocArray version. If this is needed, you need to specifically provide your 
+Dockerfile where `docarray>=0.30` is specifically installed.
 ```
 
 ```{note}
