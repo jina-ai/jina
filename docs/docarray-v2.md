@@ -136,7 +136,7 @@ With DocArray 0.30 support, Jina introduced the concept of input/output schema a
 ````{admonition} Note
 :class: note
 
-For now, [Executor Hub](https://cloud.jina.ai/executors] will not automatically build your Docker images with the new DocArray version. If this is needed, you need to specifically provide your 
+For now, [Executor Hub](https://cloud.jina.ai/executors] will not automatically build your Docker images with the new DocArray version. If this is needed, you need to provide your 
 Dockerfile where `docarray>=0.30` is specifically installed.
 ```
 
