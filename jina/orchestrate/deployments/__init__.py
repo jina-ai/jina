@@ -466,9 +466,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
             host = (
                 __docker_host__
-                if host_is_local(self.args.host[0])
-                and in_docker()
-                and self._is_docker
+                if host_is_local(self.args.host[0]) and in_docker() and self._is_docker
                 else self.args.host[0]
             )
 
