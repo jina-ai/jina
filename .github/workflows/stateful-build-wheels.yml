@@ -16,6 +16,9 @@ jobs:
         include:
           # linux
           - os: ubuntu-latest
+            python: '3.7'
+            python-manylinux-tag: "cp37-cp37"
+          - os: ubuntu-latest
             python: '3.8'
             python-manylinux-tag: "cp38-cp38"
           - os: ubuntu-latest
@@ -51,6 +54,10 @@ jobs:
             platform_id: macosx_x86_64
 
           # MacOS native
+          - os: macos-latest
+            python: '3.7'
+            python-cibuildwheels: '37'
+            platform_id: macosx_arm64
           - os: macos-latest
             python: '3.8'
             python-cibuildwheels: '38'
