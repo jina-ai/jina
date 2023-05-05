@@ -13,7 +13,7 @@ It contains functions (decorated with `@requests`) that process `DocumentArray`s
 1. An Executor should subclass directly from the `jina.Executor` class.
 2. An Executor is a Python class; it can contain any number of functions.
 3. Functions decorated by {class}`~jina.requests` are exposed as services according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions. This will be explained later in {ref}`Add Endpoints Section<exec-endpoint>`
-4. (Beta) Functions decorated by {class}`~jina.serve.executors.decorators.write` on top of their {class}`~jina.requests` decoration, are considered to update the internal state of the Executor. `__init__` and `close` method are exceptions. Why this can be useful will be explained in {ref}`Stateful-executor<stateful-executor>` 
+4. (Beta) Functions decorated by {class}`~jina.serve.executors.decorators.write` on top of their {class}`~jina.requests` decoration, are considered to update the internal state of the Executor. The `__init__` and `close` methods are exceptions. The reasons this is useful is explained in {ref}`Stateful-executor<stateful-executor>`.
 
 ## Create an Executor
 
@@ -186,30 +186,30 @@ In the `jina hub new` wizard you can choose from four Dockerfile templates: `cpu
 
 ## Stateful-Executor (Beta)
 
-Executors sometimes may contain some internal state which changes when some of their methods are called. For instance, an Executor could contain an index of Documents
+Executors may sometimes contain an internal state which changes when some of their methods are called. For instance, an Executor could contain an index of Documents
 to perform vector search.
 
-In these cases, orchestrating these Executors can be tougher than Executors that never change their inner state (Imagine a Machine Learning model served via an Executor that never updates its weights during its lifetime).
-The challenge comes at guaranteeing the consistency between `replicas` of the same Executor inside the same Deployment.
+In these cases, orchestrating these Executors can be tougher than it would be for Executors that never change their inner state (Imagine a Machine Learning model served via an Executor that never updates its weights during its lifetime).
+The challenge is guaranteeing consistency between `replicas` of the same Executor inside the same Deployment.
 
-In order to provide this consistency, Executors can mark some of their exposed methods as `write`. This indicates that calls to these endpoints must be consistently replicated between all the replicas
+To provide this consistency, Executors can mark some of their exposed methods as `write`. This indicates that calls to these endpoints must be consistently replicated between all the replicas
 such that other endpoints can serve independently of the replica that is hit.
 
 ````{admonition} Deterministic state update
 :class: note
 
-Another consideration that needs to be there, is that the Executor inner state must evolve in a deterministic manner if we want `replicas` to behave consistently.
+Another factor to consider is that the Executor's inner state must evolve in a deterministic manner if we want `replicas` to behave consistently.
 ````
 
 By considering this, {ref}`Executors can be scaled in a consistent manner<scale-consensus>`.
 
-### Snapshot and restoring
+### Snapshots and restoring
 
-When having an Stateful Executor, Jina uses RAFT consensus algorithm to guarantee that every replica eventually holds the same inner state. 
-RAFT writes the incoming requests as logs to local storage in every replica to make sure this is achieved. 
+In a Stateful Executor Jina uses the RAFT consensus algorithm to guarantee that every replica eventually holds the same inner state. 
+RAFT writes the incoming requests as logs to local storage in every replica to ensure this is achieved. 
 
-This could become problematic if the Executor runs for long time as the logs file could grow indifinitely. However, one can avoid this problem
-by describing the methods `def snapshot(self, snapshot_dir)` and `def restore(self, snapshot_dir)` that are triggered via the RAFT protocol allowing the Executor
+This could become problematic if the Executor runs for a long time as log files could grow indefinitely. However, you can avoid this problem
+by describing the methods `def snapshot(self, snapshot_dir)` and `def restore(self, snapshot_dir)` that are triggered via the RAFT protocol, allowing the Executor
 to store its current state or to recover its state from a snapshot. With this mechanism, RAFT can keep cleaning old logs by assuming that the state of the Executor
-at a given time is determined by its latest snapshot and the application of all the requests that arrived since the last snapshot. RAFT algorithm keeps track
+at a given time is determined by its latest snapshot and the application of all requests that arrived since the last snapshot. The RAFT algorithm keeps track
 of all these details.

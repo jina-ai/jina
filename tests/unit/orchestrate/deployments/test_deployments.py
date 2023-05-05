@@ -596,7 +596,7 @@ def test_to_k8s_yaml(tmpdir, uses, replicas, shards):
             assert exec_yaml['spec']['replicas'] == replicas
             assert exec_yaml['spec']['template']['spec']['containers'][0][
                 'image'
-            ].startswith('jinahub/')
+            ].startswith('registry')
 
     if shards != 1:
         with open(os.path.join(tmpdir, f'executor-head.yml'), encoding='utf-8') as f:
