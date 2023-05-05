@@ -85,7 +85,7 @@ With this approach, each Executor can be considered as a Finite State Machine, m
 To enable this kind of replication, we need to consider:
 
 - Specify which methods of the Executor {ref}` can update its internal state <stateful-executor>`.
-- Tell the deployment to use the RAFT consensus algorithm by setting the `--stateful` argument.
+- Tell the Deployment to use the RAFT consensus algorithm by setting the `--stateful` argument.
 - Set values of replicas compatible with RAFT. RAFT requires at least three replicas to guarantee consistency.
 - Pass the `--peer-ports` argument so that the RAFT cluster can recover from a previous configuration of replicas if existed.
 - Optionally you can pass `--raft-configuration` parameter to tweak the behavior of the consensus module. You can understand the values to pass from
