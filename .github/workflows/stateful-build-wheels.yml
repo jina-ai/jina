@@ -18,7 +18,7 @@ jobs:
           # linux
           - os: ubuntu-latest
             python: '3.7'
-            python-manylinux-tag: "cp37-cp37"
+            python-manylinux-tag: "cp37-cp37m"
           - os: ubuntu-latest
             python: '3.8'
             python-manylinux-tag: "cp38-cp38"
@@ -102,7 +102,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install setuptools wheel
-          pip install git+https://github.com/alaeddine-13/setuptools-golang.git
+          pip install git+https://github.com/jina-ai/setuptools-golang.git@feat-align-with-alaeddine-code
           pip install cibuildwheel
 
       - name: Build wheels with setuptools-golang-build-manylinux-wheel

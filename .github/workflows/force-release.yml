@@ -45,6 +45,9 @@ jobs:
         include:
           # linux
           - os: ubuntu-latest
+            python: '3.7'
+            python-manylinux-tag: "cp37-cp37m"
+          - os: ubuntu-latest
             python: '3.8'
             python-manylinux-tag: "cp38-cp38"
           - os: ubuntu-latest
@@ -80,6 +83,10 @@ jobs:
             platform_id: macosx_x86_64
 
           # MacOS native
+          - os: macos-latest
+            python: '3.7'
+            python-cibuildwheels: '37'
+            platform_id: macosx_arm64
           - os: macos-latest
             python: '3.8'
             python-cibuildwheels: '38'
@@ -118,7 +125,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install setuptools wheel
           # TODO(stateful): transfer to jina account
-          pip install git+https://github.com/alaeddine-13/setuptools-golang.git
+          pip install git+https://github.com/jina-ai/setuptools-golang.git@feat-align-with-alaeddine-code
           pip install cibuildwheel
 
       - name: Update version
