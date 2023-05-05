@@ -455,7 +455,7 @@ def test_to_k8s_yaml(tmpdir, exec_type, uses):
         exec_yaml = list(yaml.safe_load_all(f))[-1]
         assert exec_yaml['spec']['template']['spec']['containers'][0][
             'image'
-        ].startswith('jinahub/')
+        ].startswith('registry')
 
     if exec_type == Executor.StandaloneExecutorType.SHARED:
         assert set(os.listdir(tmpdir)) == {
@@ -500,7 +500,7 @@ def test_to_docker_compose_yaml(tmpdir, exec_type, uses):
 
     with open(compose_file, encoding='utf-8') as f:
         services = list(yaml.safe_load_all(f))[0]['services']
-        assert services['executor0']['image'].startswith('jinahub/')
+        assert services['executor0']['image'].startswith('registry')
 
         if exec_type == Executor.StandaloneExecutorType.SHARED:
             assert len(services) == 1
