@@ -243,6 +243,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -15742,4 +15743,55 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```abed9e34```](https://github.com/jina-ai/jina/commit/abed9e344ea2ff00056067798b7739b72bac9f12)] __-__ Update README.md (#5715) (*nikitashrivastava29*)
  - [[```899fd3ac```](https://github.com/jina-ai/jina/commit/899fd3ace82f5446878ceb13bd23b101915de247)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```eb7e414c```](https://github.com/jina-ai/jina/commit/eb7e414c508518f6fd36cba04d09ecd764a74bb6)] __-__ __version__: the next version will be 3.14.2 (*Jina Dev Bot*)
+
+<a name=release-note-3-15-2></a>
+## Release Note (`3.15.2`)
+
+> Release time: 2023-05-05 06:35:58
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  notandor,  Deepankar Mahapatro,  Nikolas Pitsillos,  Tanguy Abel,  Florian Hönicke,  Alex Cureton-Griffiths,  Felix Mönckemeyer,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```6ba33fe0```](https://github.com/jina-ai/jina/commit/6ba33fe038b238afff6760ceeb53301a55923b3c)] __-__ catch ContentTypeError for retry in POST requests (#5825) (*Tanguy Abel*)
+ - [[```9f317c58```](https://github.com/jina-ai/jina/commit/9f317c5817779a8980f4c3d555c9e7ec540e11db)] __-__ add support to HTTP and Composite Deployment with docarray v2 (#5826) (*Joan Fontanals*)
+
+### 🐞 Bug fixes
+
+ - [[```bf536eb8```](https://github.com/jina-ai/jina/commit/bf536eb8e840cfffb4d456578921c929a97185c0)] __-__ set platform specific dependency to uvloop in a better way. (#5841) (*notandor*)
+ - [[```9b784b9e```](https://github.com/jina-ai/jina/commit/9b784b9e553db38b3ff30009c66a4edc11d7b99d)] __-__ fix HTTP support for Deployment and docarray v2 (#5830) (*Joan Fontanals*)
+ - [[```d57679a0```](https://github.com/jina-ai/jina/commit/d57679a0514fcd2509087c8db8610f6e0f0e9cb3)] __-__ use always utf-8 encoding when opening files(#5821) (*Florian Hönicke*)
+ - [[```779bff28```](https://github.com/jina-ai/jina/commit/779bff28f23d608474e194b057ab6fad494c13f4)] __-__ fix new CLI for Deployment (#5819) (*Joan Fontanals*)
+ - [[```034ee847```](https://github.com/jina-ai/jina/commit/034ee8477a49f207eae11311971a08136c64205c)] __-__ use container STOP so that containers running CUDA can be killed (#5816) (*Joan Fontanals*)
+ - [[```90b46ade```](https://github.com/jina-ai/jina/commit/90b46adeeccfb522b0b790e659a133a583173709)] __-__ docstrings-english (#5718) (*Alex Cureton-Griffiths*)
+ - [[```d6636eb9```](https://github.com/jina-ai/jina/commit/d6636eb9cffe6bccb29ba8f3048090a3ebd31034)] __-__ link issues in scalability chapter (#5809) (*Felix Mönckemeyer*)
+
+### 📗 Documentation
+
+ - [[```8fda71bf```](https://github.com/jina-ai/jina/commit/8fda71bf7a68898e5192081dcdb1443ddfcfd543)] __-__ update slack count (#5842) (*Deepankar Mahapatro*)
+ - [[```ecd86056```](https://github.com/jina-ai/jina/commit/ecd860566df29724e2316a7d3b14a232ac94463a)] __-__ __jcloud__: add storage section (#5831) (*Nikolas Pitsillos*)
+ - [[```5080dacc```](https://github.com/jina-ai/jina/commit/5080dacc34a464c6a952c2fbdc59a566d692ee90)] __-__ remove layer from orchestration layer title (#5829) (*Joan Fontanals*)
+ - [[```d45f4b3d```](https://github.com/jina-ai/jina/commit/d45f4b3d5ab1408500e38213b690fcf93d1bb582)] __-__ fix broken links (#5822) (*Joan Fontanals*)
+ - [[```b3590006```](https://github.com/jina-ai/jina/commit/b3590006e71e29168fbb6744cb9456560807c4ff)] __-__ add docs for jc recreate (#5815) (*Nikolas Pitsillos*)
+ - [[```12948a86```](https://github.com/jina-ai/jina/commit/12948a864a86ed23dfda66c6b9dc3a2698e0faf1)] __-__ point to legacy documentarray docs (#5810) (*Joan Fontanals*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```c2d52cdd```](https://github.com/jina-ai/jina/commit/c2d52cdde0883837c17bb571e22fe517193afb32)] __-__ fix some tests in CI (#5812) (*Joan Fontanals*)
+ - [[```892a2825```](https://github.com/jina-ai/jina/commit/892a2825262dae1424d6fb40bc8c651c541045fa)] __-__ fix docarray v2 comp tests (#5811) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```3adc08eb```](https://github.com/jina-ai/jina/commit/3adc08ebcfe53b14e38f5305f59ba7f457945810)] __-__ bump jina version (#5849) (*Joan Fontanals*)
+ - [[```a5d3403d```](https://github.com/jina-ai/jina/commit/a5d3403d6df9e62c8c39b2496f98a1f2681039d9)] __-__ pin urllib3 (#5848) (*Joan Fontanals*)
+ - [[```de9fcc92```](https://github.com/jina-ai/jina/commit/de9fcc9277f60c93f822e2f0141185651afc459e)] __-__ fix links in README (#5846) (*Joan Fontanals*)
+ - [[```729d4d49```](https://github.com/jina-ai/jina/commit/729d4d49528ca3068508c72ac94d2272dbaf0b3f)] __-__ fix link to survey (#5844) (*Joan Fontanals*)
+ - [[```75f0269e```](https://github.com/jina-ai/jina/commit/75f0269e99cd87321a67a08718994d4e335aab99)] __-__ try to fix CI (#5814) (*Joan Fontanals*)
+ - [[```c596452c```](https://github.com/jina-ai/jina/commit/c596452ca5208e9ca66a5ff1396b28e6130e73ec)] __-__ ignore dynamically generated protobuf docs (#5726) (*Alex Cureton-Griffiths*)
+ - [[```7a1c1e4a```](https://github.com/jina-ai/jina/commit/7a1c1e4a81a5d0dc2f651c31702fdb250a96d208)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```b3493635```](https://github.com/jina-ai/jina/commit/b3493635b3114a70a144734b6dfa0d3b85e81e7d)] __-__ __version__: the next version will be 3.15.1 (*Jina Dev Bot*)
 
