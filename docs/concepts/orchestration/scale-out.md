@@ -61,9 +61,8 @@ Flow with three replicas of `slow_encoder` and one replica of `fast_indexer`
 ````{admonition} DocArray 0.30
 :class: note
 
-Starting from DocArray version 0.30, DocArray changed its interface and implementation drastically. We intend to support these new versions in the near future, but not every feature is yet available Check {ref}`here <docarray-v2>` for more information. This feature has been added with the new DocArray support.
+Starting from DocArray version 0.30, DocArray changed its interface and implementation drastically. We intend to support these new versions in the near future, but not every feature is yet available. Check {ref}`here <docarray-v2>` for more information. This feature has been added with the new DocArray support.
 
-This feature is only available when using `grpc` as the protocol for the Deployment or when the Deployment is part of a Flow.
 ````
 
 ````{admonition} gRPC protocol
@@ -81,13 +80,13 @@ an algorithm that guarantees eventual consistency between replicas.
 
 Consensus-based replication using RAFT is a distributed algorithm designed to provide fault tolerance and consistency in a distributed system. In a distributed system, the nodes may fail, and messages may be lost or delayed, which can lead to inconsistencies in the system.
 The problem with traditional replication methods is that they can't guarantee consistency in a distributed system in the presence of failures. This is where consensus-based replication using RAFT comes in.
-In this approach, each Executor can be considered as a Finite State Machine, which means that it has a set of states that it can be in, and a set of transitions that it can make between those states. Each request that is sent to the Executor can be considered as a log entry that needs to be replicated across the cluster.
+With this approach, each Executor can be considered as a Finite State Machine, meaning it has a set of potential states and a set of transitions that it can make between those states. Each request that is sent to the Executor can be considered as a log entry that needs to be replicated across the cluster.
 
-In order to enable this kind of replication, we need to consider:
+To enable this kind of replication, we need to consider:
 
-- Specify which methods of the Executor {ref}` could be updating its internal state <stateful-executor>`.
+- Specify which methods of the Executor {ref}` can update its internal state <stateful-executor>`.
 - Tell the deployment to use the RAFT consensus algorithm by setting the `--stateful` argument.
-- Set values of replicas compatible with RAFT. RAFT requires a minimum of 3 replicas to guarantee consistency. 
+- Set values of replicas compatible with RAFT. RAFT requires at least three replicas to guarantee consistency.
 - Pass the `--peer-ports` argument so that the RAFT cluster can recover from a previous configuration of replicas if existed.
 - Optionally you can pass `--raft-configuration` parameter to tweak the behavior of the consensus module. You can understand the values to pass from
 [Hashicorp's RAFT library](https://github.com/ongardie/hashicorp-raft/blob/master/config.go).
@@ -127,11 +126,11 @@ with d:
     d.block()
 ```
 
-This capacity allows us not only to have replicas work with robustness and availability, it also can help us to achieve higher throughput in some cases.
+This capacity allows you not only to have replicas that work with robustness and availability, it also can help achieve higher throughput in some cases.
 
 Let's imagine we write an Executor that is used to index and query documents from a vector index.
 
-For this, we are going to use an in memory solution from [DocArray](https://docs.docarray.org/user_guide/storing/index_in_memory/) that performs exact vector search.
+For this, we are going to use an in-memory solution from [DocArray](https://docs.docarray.org/user_guide/storing/index_in_memory/) that performs exact vector search.
 
 ```python
 from jina import Deployment, Executor, requests
@@ -236,7 +235,7 @@ INFO   indexer/rep-1@910 Searching Document in index with 100000 documents index
 INFO   indexer/rep-2@923 Searching Document in index with 100000 documents indexed 
 ```
 
-If you run the same example by setting replicas to 1 without the consensus module, you can see the benefits it has in the QPS at search time,
+If you run the same example by setting `replicas` to `1` without the consensus module, you can see the benefits it has in the QPS at search time,
 while there is a little cost on the time used for indexing.
 
 ```python
@@ -246,20 +245,20 @@ d = Deployment(name='indexer',
                replicas=1)
 ```
 
-With 1 replica:
+With one replica:
 
 ```text
 Indexing 100000 Documents took 18.93274688720703s
 Searching 1000 Queries took 385.96641397476196s
 ```
 
-With 3 replicas and consensus:
+With three replicas and consensus:
 ```text
 Indexing 100000 Documents took 35.066415548324585s
 Searching 1000 Queries took 202.07950615882874s
 ```
 
-This allows to go from 2.5 to 5 QPS.
+This increases QPS from 2.5 to 5.
 
 ## Replicate on multiple GPUs
 
