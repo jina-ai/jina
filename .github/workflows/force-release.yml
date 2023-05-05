@@ -35,8 +35,126 @@ jobs:
       extended_github_token: ${{ secrets.JINA_DEV_BOT }}
       jina_auth_token: ${{ secrets.JINA_AUTH_TOKEN }}
 
+  # Build the wheels for Linux, Windows and macOS for Python 3.8 and newer
+  build-wheels:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # Ensure that a wheel builder finishes even if another fails
+      fail-fast: false
+      matrix:
+        include:
+          # linux
+          - os: ubuntu-latest
+            python: '3.8'
+            python-manylinux-tag: "cp38-cp38"
+          - os: ubuntu-latest
+            python: '3.9'
+            python-manylinux-tag: "cp39-cp39"
+          - os: ubuntu-latest
+            python: '3.10'
+            python-manylinux-tag: "cp310-cp310"
+          - os: ubuntu-latest
+            python: '3.11'
+            python-manylinux-tag: "cp311-cp311"
+
+          # MacOS emulated
+          - os: macos-latest
+            python: '3.7'
+            python-cibuildwheels: '37'
+            platform_id: macosx_x86_64
+          - os: macos-latest
+            python: '3.8'
+            python-cibuildwheels: '38'
+            platform_id: macosx_x86_64
+          - os: macos-latest
+            python: '3.9'
+            python-cibuildwheels: '39'
+            platform_id: macosx_x86_64
+          - os: macos-latest
+            python: '3.10'
+            python-cibuildwheels: '310'
+            platform_id: macosx_x86_64
+          - os: macos-latest
+            python: '3.11'
+            python-cibuildwheels: '311'
+            platform_id: macosx_x86_64
+
+          # MacOS native
+          - os: macos-latest
+            python: '3.8'
+            python-cibuildwheels: '38'
+            platform_id: macosx_arm64
+          - os: macos-latest
+            python: '3.9'
+            python-cibuildwheels: '39'
+            platform_id: macosx_arm64
+          - os: macos-latest
+            python: '3.10'
+            python-cibuildwheels: '310'
+            platform_id: macosx_arm64
+          - os: macos-latest
+            python: '3.11'
+            python-cibuildwheels: '311'
+            platform_id: macosx_arm64
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 200
+
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Set up Golang
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.19.5
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel
+          # TODO(stateful): transfer to jina account
+          pip install git+https://github.com/alaeddine-13/setuptools-golang.git
+          pip install cibuildwheel
+
+      - name: Update version
+        shell: bash
+        run: |
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+          # TODO(stateful): either adapt later to final release versioning (change stateful to final) or probably we just need to remove this whole step
+          ./scripts/update-version.sh
+
+      - name: Build wheels with setuptools-golang-build-manylinux-wheel
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          setuptools-golang-build-manylinux-wheels --pythons ${{ matrix.python-manylinux-tag }}
+      - name: Build wheels with cibuildwheels on macos
+        env:
+          CIBW_BUILD: cp${{ matrix.python-cibuildwheels }}-${{ matrix.platform_id }}
+          CIBW_ARCHS: all
+          CIBW_TEST_COMMAND: python -c "import jina; import jraft"
+          CIBW_BUILD_VERBOSITY: 1
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          python -m cibuildwheel --output-dir dist
+      - name: Test wheels
+        run: |
+          WHEEL_FILE=$(ls dist/*.whl)
+          python -m pip install $WHEEL_FILE
+          python -c "import jraft"
+        if: ${{ matrix.os != 'macos-latest' || matrix.platform_id != 'macosx_arm64' }} # runners do not necessarily have macos ARM, so cannot run this test for it
+
+      - name: Upload wheels as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: dist/*.whl
+
   regular-release:
-    needs: [token-check]
+    needs: [token-check, build-wheels]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.5.0
@@ -48,11 +166,17 @@ jobs:
         with:
           python-version: 3.7
         # https://github.com/actions/checkout#fetch-all-tags
+      - uses: actions/download-artifact@v3
+        with:
+          name: artifact
+          path: dist
       - run: |
           git fetch --depth=1 origin +refs/tags/*:refs/tags/*
           npm install git-release-notes
           pip install twine wheel
-          ./scripts/release.sh final "${{ github.event.inputs.release_reason }}" "${{github.actor}}"
+          # TODO(stateful): revert back later before merging
+          # ./scripts/release.sh final "${{ github.event.inputs.release_reason }}" "${{github.actor}}"
+           ./scripts/release.sh
         env:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
