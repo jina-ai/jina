@@ -32,13 +32,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Include external Executors in a Flow" href="../external-executor/" /><link rel="prev" title="Run on Google Colab with GPU/TPU" href="../google-colab/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/gpu-executor.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>Build a GPU Executor - Jina 3.9.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -427,7 +427,7 @@ reducing response latency by anything from 5 to 100 times, depending on the mode
 <section id="jina-gpus-in-a-nutshell">
 <h2>Jina &amp; GPUs in a nutshell<a class="headerlink" href="#jina-gpus-in-a-nutshell" title="Permalink to this heading">#</a></h2>
 <p>If you want a thorough walk-through of how to use GPU resources in your code, the full tutorial in the
-<span class="xref myst">next section</span> is exactly what you are looking for.</p>
+<a class="reference internal" href="#Prerequisites"><span class="xref myst">next section</span></a> is exactly what you are looking for.</p>
 <p>But if you already know how to use your GPU and have come here just to find out how to make it play nice with Jina,
 then we have good news for you:</p>
 <p>You just use your GPU like you usually would in your machine learning framework of choice, and you are off to the races.
@@ -456,7 +456,7 @@ container - it does not impose any additional requirements or configuration.</p>
 </pre></div>
 </div>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Use it with CPU </label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Use it with CPU</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -615,10 +615,10 @@ CPU-only versions of your requirements. This translates into faster start-up tim
 when using Docker containers.</p>
 <p>In our case, we could change the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file to install a CPU-only version
 of PyTorch like this</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>-f https://download.pytorch.org/whl/torch_stable.html
+<div class="text docutils">
+<p>-f https://download.pytorch.org/whl/torch_stable.html
 sentence-transformers
-torch==1.9.0+cpu
-</pre></div>
+torch==1.9.0+cpu</p>
 </div>
 </div>
 <p>Now let’s fill the <code class="docutils literal notranslate"><span class="pre">executor.py</span></code> file with the actual code of our Executor</p>
@@ -783,14 +783,14 @@ If you haven’t installed that already, you can find an installation guide <a c
 <h2>Using GPU with Hub Executors<a class="headerlink" href="#using-gpu-with-hub-executors" title="Permalink to this heading">#</a></h2>
 <p>We now saw how to use GPU with our Executor locally, and when using it in a Docker container. What about when we use Executors from Jina Hub, is there any difference?</p>
 <p>Nope! Not only that, many of the Executors on Jina Hub already come with a GPU-enabled version pre-built, usually under the <code class="docutils literal notranslate"><span class="pre">gpu</span></code> tag (see <a class="reference internal" href="../../fundamentals/executor/hub/push-executor/#hub-tags"><span class="std std-ref">Jina Hub tags</span></a>). Let’s modify our example to use the pre-built <code class="docutils literal notranslate"><span class="pre">TransformerTorchEncoder</span></code> from Jina Hub</p>
-<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w">f = Flow().add(</span>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>f = Flow().add(
 <span class="gd">-   uses=&#39;docker://sentence-encoder&#39;,</span>
 <span class="gi">+   uses=&#39;jinahub+docker://TransformerTorchEncoder/latest-gpu&#39;,</span>
 <span class="w"> </span>   uses_with={&#39;device&#39;: &#39;cuda&#39;},
 <span class="w"> </span>   gpus=&#39;all&#39;,
 <span class="w"> </span>   # This has to be an absolute path, replace /home/ubuntu with your home directory
 <span class="w"> </span>   volumes=&quot;/home/ubuntu/.cache:/root/.cache&quot;
-<span class="w">)</span>
+)
 </pre></div>
 </div>
 <p>You’ll see that the first time you run the script, downloading the Docker image will take some time - GPU images are large! But after that, everything will work just as it did with your local Docker image, out of the box.</p>
@@ -847,7 +847,7 @@ If you haven’t installed that already, you can find an installation guide <a c
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Feb 24, 2023</div>
+                            Last updated on May 05, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

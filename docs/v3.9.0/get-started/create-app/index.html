@@ -32,13 +32,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Basic Concepts" href="../../fundamentals/architecture-overview/" /><link rel="prev" title="Troubleshooting" href="../install/troubleshooting/" />
         <link rel="canonical" href="https://docs.jina.ai/get-started/create-app.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>Create First Project - Jina 3.9.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -413,8 +413,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section id="svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-milestone-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m7-75-0a-75-75-0-01-75-75v3h3-634c-414-0-814-147-1-13-414l2-07-1-75a1-75-1-75-0-010-2-672l-2-07-1-75a1-75-1-75-0-01-1-13-414h8-5v5-25a-75-75-0-11-1-5-0v10h2-75a1-75-1-75-0-011-8-25v-3-5c1-3-784-1-784-3-2-75-3h7v-75a-75-75-0-017-75-0zm0-8-5h4-384a-25-25-0-00-161-06l2-07-1-75a-25-25-0-000-38l-2-07-1-75a-25-25-0-00-161-06h2-75a-25-25-0-00-25-25v3-5c0-138-112-25-25-25h5z-path-svg-create-first-project">
-<h1><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-milestone" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M7.75 0a.75.75 0 01.75.75V3h3.634c.414 0 .814.147 1.13.414l2.07 1.75a1.75 1.75 0 010 2.672l-2.07 1.75a1.75 1.75 0 01-1.13.414H8.5v5.25a.75.75 0 11-1.5 0V10H2.75A1.75 1.75 0 011 8.25v-3.5C1 3.784 1.784 3 2.75 3H7V.75A.75.75 0 017.75 0zm0 8.5h4.384a.25.25 0 00.161-.06l2.07-1.75a.25.25 0 000-.38l-2.07-1.75a.25.25 0 00-.161-.06H2.75a.25.25 0 00-.25.25v3.5c0 .138.112.25.25.25h5z"></path></svg> Create First Project<a class="headerlink" href="#svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-milestone-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m7-75-0a-75-75-0-01-75-75v3h3-634c-414-0-814-147-1-13-414l2-07-1-75a1-75-1-75-0-010-2-672l-2-07-1-75a1-75-1-75-0-01-1-13-414h8-5v5-25a-75-75-0-11-1-5-0v10h2-75a1-75-1-75-0-011-8-25v-3-5c1-3-784-1-784-3-2-75-3h7v-75a-75-75-0-017-75-0zm0-8-5h4-384a-25-25-0-00-161-06l2-07-1-75a-25-25-0-000-38l-2-07-1-75a-25-25-0-00-161-06h2-75a-25-25-0-00-25-25v3-5c0-138-112-25-25-25h5z-path-svg-create-first-project" title="Permalink to this heading">#</a></h1>
+                    <section id="create-first-project">
+<h1><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-milestone" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M7.75 0a.75.75 0 01.75.75V3h3.634c.414 0 .814.147 1.13.414l2.07 1.75a1.75 1.75 0 010 2.672l-2.07 1.75a1.75 1.75 0 01-1.13.414H8.5v5.25a.75.75 0 11-1.5 0V10H2.75A1.75 1.75 0 011 8.25v-3.5C1 3.784 1.784 3 2.75 3H7V.75A.75.75 0 017.75 0zm0 8.5h4.384a.25.25 0 00.161-.06l2.07-1.75a.25.25 0 000-.38l-2.07-1.75a.25.25 0 00-.161-.06H2.75a.25.25 0 00-.25.25v3.5c0 .138.112.25.25.25h5z"></path></svg> Create First Project<a class="headerlink" href="#create-first-project" title="Permalink to this heading">#</a></h1>
 <p>Let’s build a toy application with Jina. To start, we use Jina CLI to make a new project for us:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>new<span class="w"> </span>hello-jina
 </pre></div>
@@ -631,7 +631,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Feb 24, 2023</div>
+                            Last updated on May 05, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

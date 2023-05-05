@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve.stream/" />
 <meta property="og:site_name" content="Jina 3.4.6 Documentation" />
-<meta property="og:description" content="Submodules: jina.serve.stream.helper module- AsyncRequestsIterator- AsyncRequestsIterator.iterator__next__()... Module contents:" />
+<meta property="og:description" content="Submodules: jina.serve.stream.helper module. Module contents:" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.4.6 Documentation" />
-<meta name="description" content="Submodules: jina.serve.stream.helper module- AsyncRequestsIterator- AsyncRequestsIterator.iterator__next__()... Module contents:" />
+<meta name="description" content="Submodules: jina.serve.stream.helper module. Module contents:" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -32,13 +32,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.serve.stream.helper module" href="../jina.serve.stream.helper/" /><link rel="prev" title="jina.serve.runtimes.monitoring module" href="../jina.serve.runtimes.monitoring/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.stream.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.serve.stream package - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -610,57 +610,12 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.serve.stream.helper/">jina.serve.stream.helper module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../jina.serve.stream.helper/#jina.serve.stream.helper.AsyncRequestsIterator"><code class="docutils literal notranslate"><span class="pre">AsyncRequestsIterator</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.stream.helper/#jina.serve.stream.helper.AsyncRequestsIterator.iterator__next__"><code class="docutils literal notranslate"><span class="pre">AsyncRequestsIterator.iterator__next__()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.serve.stream.helper/">jina.serve.stream.helper module</a></li>
 </ul>
 </div>
 </section>
-<section id="module-jina.serve.stream">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.serve.stream" title="Permalink to this heading">#</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.stream.RequestStreamer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.stream.</span></span><span class="sig-name descname"><span class="pre">RequestStreamer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_handler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_handler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_of_iter_handler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/stream/#RequestStreamer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.stream.RequestStreamer" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A base async request/response streamer.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – args from CLI</p></li>
-<li><p><strong>request_handler</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – The callable responsible for handling the request. It should handle a request as input and return a Future to be awaited</p></li>
-<li><p><strong>result_handler</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]]) – The callable responsible for handling the response.</p></li>
-<li><p><strong>end_of_iter_handler</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]]) – Optional callable to handle the end of iteration if some special action needs to be taken.</p></li>
-<li><p><strong>logger</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – Optional logger that can be used for logging</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.stream.RequestStreamer.stream">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_iterator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/stream/#RequestStreamer.stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.stream.RequestStreamer.stream" title="Permalink to this definition">#</a></dt>
-<dd><p>stream requests from client iterator and stream responses back.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request_iterator</strong> – iterator of requests</p></li>
-<li><p><strong>context</strong> – context of the grpc call</p></li>
-<li><p><strong>args</strong> – positional arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Yield</dt>
-<dd class="field-even"><p>responses from Executors</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncIterator</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 </section>
 </section>
 
@@ -696,7 +651,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -723,13 +678,7 @@
                         <ul>
 <li><a class="reference internal" href="#">jina.serve.stream package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.serve.stream">Module contents</a><ul>
-<li><a class="reference internal" href="#jina.serve.stream.RequestStreamer"><code class="docutils literal notranslate"><span class="pre">RequestStreamer</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.stream.RequestStreamer.stream"><code class="docutils literal notranslate"><span class="pre">RequestStreamer.stream()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>

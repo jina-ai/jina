@@ -7,10 +7,8 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.hubble.hubio/" />
 <meta property="og:site_name" content="Jina 3.4.6 Documentation" />
-<meta property="og:description" content="Module for wrapping Jina Hub API calls." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.4.6 Documentation" />
-<meta name="description" content="Module for wrapping Jina Hub API calls." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -32,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.hubble.requirements module" href="../jina.hubble.requirements/" /><link rel="prev" title="jina.hubble.hubapi module" href="../jina.hubble.hubapi/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.hubble.hubio.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.hubble.hubio module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -180,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -604,118 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.hubble.hubio">
-<span id="jina-hubble-hubio-module"></span><h1>jina.hubble.hubio module<a class="headerlink" href="#module-jina.hubble.hubio" title="Permalink to this heading">#</a></h1>
-<p>Module for wrapping Jina Hub API calls.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.hubble.hubio.HubIO">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.hubble.hubio.</span></span><span class="sig-name descname"><span class="pre">HubIO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubio/#HubIO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubio.HubIO" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p><a class="reference internal" href="#jina.hubble.hubio.HubIO" title="jina.hubble.hubio.HubIO"><code class="xref py py-class docutils literal notranslate"><span class="pre">HubIO</span></code></a> provides the way to interact with Jina Hub registry.
-You can use it with CLI to package a directory into a Jina Hub and publish it to the world.
-Examples:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><strong class="command">jina hub push my_executor/</strong> to push the executor package to Jina Hub</p></li>
-<li><p><strong class="command">jina hub pull UUID8</strong> to download the executor identified by UUID8</p></li>
-</ul>
-</div></blockquote>
-<p>To create a <a class="reference internal" href="#jina.hubble.hubio.HubIO" title="jina.hubble.hubio.HubIO"><code class="xref py py-class docutils literal notranslate"><span class="pre">HubIO</span></code></a> object, simply:</p>
-<blockquote>
-<div></div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>args</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>]) – arguments</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.hubble.hubio.HubIO.new">
-<span class="sig-name descname"><span class="pre">new</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubio/#HubIO.new"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubio.HubIO.new" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a new executor folder interactively.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.hubble.hubio.HubIO.push">
-<span class="sig-name descname"><span class="pre">push</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubio/#HubIO.push"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubio.HubIO.push" title="Permalink to this definition">#</a></dt>
-<dd><p>Push the executor package to Jina Hub.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.hubble.hubio.HubIO.fetch_meta">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rebuild_image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubio/#HubIO.fetch_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubio.HubIO.fetch_meta" title="Permalink to this definition">#</a></dt>
-<dd><p>Fetch the executor meta info from Jina Hub.
-:type name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param name: the UUID/Name of the executor
-:type tag: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param tag: the tag of the executor if available, otherwise, use <cite>None</cite> as the value
-:type secret: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
-:param secret: the access secret of the executor
-:type image_required: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
-:param image_required: it indicates whether a Docker image is required or not
-:type rebuild_image: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
-:param rebuild_image: it indicates whether Jina Hub need to rebuild image or not
-:type force: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
-:param force: if set to True, access to fetch_meta will always pull latest Executor metas, otherwise, default</p>
-<blockquote>
-<div><p>to local cache</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../jina.hubble/#jina.hubble.HubExecutor" title="jina.hubble.HubExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">HubExecutor</span></code></a></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>meta of executor</p>
-</dd>
-</dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The <cite>name</cite> and <cite>tag</cite> should be passed via <code class="docutils literal notranslate"><span class="pre">args</span></code> and <cite>force</cite> and <cite>secret</cite> as <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>, otherwise,
-cache does not work.</p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.hubble.hubio.HubIO.deploy_public_sandbox">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">deploy_public_sandbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubio/#HubIO.deploy_public_sandbox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubio.HubIO.deploy_public_sandbox" title="Permalink to this definition">#</a></dt>
-<dd><p>Deploy a public sandbox to Jina Hub.
-:type args: <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]
-:param args: arguments parsed from the CLI</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the host and port of the sandbox</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.hubble.hubio.HubIO.pull">
-<span class="sig-name descname"><span class="pre">pull</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubio/#HubIO.pull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubio.HubIO.pull" title="Permalink to this definition">#</a></dt>
-<dd><p>Pull the executor package from Jina Hub.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the <cite>uses</cite> string</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+                <section id="jina-hubble-hubio-module">
+<h1>jina.hubble.hubio module<a class="headerlink" href="#jina-hubble-hubio-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -750,7 +638,7 @@ cache does not work.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -766,30 +654,6 @@ cache does not work.</p>
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.hubble.hubio module</a><ul>
-<li><a class="reference internal" href="#jina.hubble.hubio.HubIO"><code class="docutils literal notranslate"><span class="pre">HubIO</span></code></a><ul>
-<li><a class="reference internal" href="#jina.hubble.hubio.HubIO.new"><code class="docutils literal notranslate"><span class="pre">HubIO.new()</span></code></a></li>
-<li><a class="reference internal" href="#jina.hubble.hubio.HubIO.push"><code class="docutils literal notranslate"><span class="pre">HubIO.push()</span></code></a></li>
-<li><a class="reference internal" href="#jina.hubble.hubio.HubIO.fetch_meta"><code class="docutils literal notranslate"><span class="pre">HubIO.fetch_meta()</span></code></a></li>
-<li><a class="reference internal" href="#jina.hubble.hubio.HubIO.deploy_public_sandbox"><code class="docutils literal notranslate"><span class="pre">HubIO.deploy_public_sandbox()</span></code></a></li>
-<li><a class="reference internal" href="#jina.hubble.hubio.HubIO.pull"><code class="docutils literal notranslate"><span class="pre">HubIO.pull()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

@@ -7,10 +7,8 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.proto.jina_pb2_grpc/" />
 <meta property="og:site_name" content="Jina 3.4.6 Documentation" />
-<meta property="og:description" content="Client and server classes corresponding to protobuf-defined services." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.4.6 Documentation" />
-<meta name="description" content="Client and server classes corresponding to protobuf-defined services." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -32,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.proto.serializer module" href="../jina.proto.serializer/" /><link rel="prev" title="jina.proto.jina_pb2 module" href="../jina.proto.jina_pb2/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.proto.jina_pb2_grpc.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.proto.jina_pb2_grpc module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -180,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -604,267 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.proto.jina_pb2_grpc">
-<span id="jina-proto-jina-pb2-grpc-module"></span><h1>jina.proto.jina_pb2_grpc module<a class="headerlink" href="#module-jina.proto.jina_pb2_grpc" title="Permalink to this heading">#</a></h1>
-<p>Client and server classes corresponding to protobuf-defined services.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaControlRequestRPCStub">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaControlRequestRPCStub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaControlRequestRPCStub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaControlRequestRPCStub" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<ul class="simple">
-<li></li>
-</ul>
-<p>jina gRPC service for ControlRequests.</p>
-<p>Constructor.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>channel: A grpc.Channel.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaControlRequestRPCServicer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaControlRequestRPCServicer</span></span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaControlRequestRPCServicer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaControlRequestRPCServicer" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<ul class="simple">
-<li></li>
-</ul>
-<p>jina gRPC service for ControlRequests.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaControlRequestRPCServicer.process_control">
-<span class="sig-name descname"><span class="pre">process_control</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaControlRequestRPCServicer.process_control"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaControlRequestRPCServicer.process_control" title="Permalink to this definition">#</a></dt>
-<dd><p>Used for passing ControlRequests to the Executors</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server">
-<span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">add_JinaControlRequestRPCServicer_to_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">servicer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#add_JinaControlRequestRPCServicer_to_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaControlRequestRPC">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaControlRequestRPC</span></span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaControlRequestRPC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaControlRequestRPC" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<ul class="simple">
-<li></li>
-</ul>
-<p>jina gRPC service for ControlRequests.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaControlRequestRPC.process_control">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_control</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">call_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insecure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_for_ready</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaControlRequestRPC.process_control"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaControlRequestRPC.process_control" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaDataRequestRPCStub">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaDataRequestRPCStub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaDataRequestRPCStub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaDataRequestRPCStub" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<ul class="simple">
-<li></li>
-</ul>
-<p>jina gRPC service for DataRequests.</p>
-<p>Constructor.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>channel: A grpc.Channel.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaDataRequestRPCServicer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaDataRequestRPCServicer</span></span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaDataRequestRPCServicer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaDataRequestRPCServicer" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<ul class="simple">
-<li></li>
-</ul>
-<p>jina gRPC service for DataRequests.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaDataRequestRPCServicer.process_data">
-<span class="sig-name descname"><span class="pre">process_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaDataRequestRPCServicer.process_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaDataRequestRPCServicer.process_data" title="Permalink to this definition">#</a></dt>
-<dd><p>Used for passing DataRequests to the Executors</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server">
-<span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">add_JinaDataRequestRPCServicer_to_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">servicer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#add_JinaDataRequestRPCServicer_to_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaDataRequestRPC">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaDataRequestRPC</span></span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaDataRequestRPC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaDataRequestRPC" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<ul class="simple">
-<li></li>
-</ul>
-<p>jina gRPC service for DataRequests.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaDataRequestRPC.process_data">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">call_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insecure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_for_ready</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaDataRequestRPC.process_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaDataRequestRPC.process_data" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPCStub">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaSingleDataRequestRPCStub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaSingleDataRequestRPCStub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPCStub" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<ul class="simple">
-<li></li>
-</ul>
-<p>jina gRPC service for DataRequests.
-This is used to send requests to Executors when a list of requests is not needed</p>
-<p>Constructor.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>channel: A grpc.Channel.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPCServicer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaSingleDataRequestRPCServicer</span></span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaSingleDataRequestRPCServicer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPCServicer" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<ul class="simple">
-<li></li>
-</ul>
-<p>jina gRPC service for DataRequests.
-This is used to send requests to Executors when a list of requests is not needed</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPCServicer.process_single_data">
-<span class="sig-name descname"><span class="pre">process_single_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaSingleDataRequestRPCServicer.process_single_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPCServicer.process_single_data" title="Permalink to this definition">#</a></dt>
-<dd><p>Used for passing DataRequests to the Executors</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server">
-<span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">add_JinaSingleDataRequestRPCServicer_to_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">servicer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#add_JinaSingleDataRequestRPCServicer_to_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPC">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaSingleDataRequestRPC</span></span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaSingleDataRequestRPC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPC" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<ul class="simple">
-<li></li>
-</ul>
-<p>jina gRPC service for DataRequests.
-This is used to send requests to Executors when a list of requests is not needed</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPC.process_single_data">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_single_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">call_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insecure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_for_ready</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaSingleDataRequestRPC.process_single_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPC.process_single_data" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaRPCStub">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaRPCStub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaRPCStub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaRPCStub" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<ul class="simple">
-<li></li>
-</ul>
-<p>jina Gateway gRPC service.</p>
-<p>Constructor.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>channel: A grpc.Channel.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaRPCServicer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaRPCServicer</span></span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaRPCServicer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaRPCServicer" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<ul class="simple">
-<li></li>
-</ul>
-<p>jina Gateway gRPC service.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaRPCServicer.Call">
-<span class="sig-name descname"><span class="pre">Call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_iterator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaRPCServicer.Call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaRPCServicer.Call" title="Permalink to this definition">#</a></dt>
-<dd><p>Pass in a Request and a filled Request with matches will be returned.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.add_JinaRPCServicer_to_server">
-<span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">add_JinaRPCServicer_to_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">servicer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#add_JinaRPCServicer_to_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.add_JinaRPCServicer_to_server" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaRPC">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaRPC</span></span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaRPC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaRPC" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<ul class="simple">
-<li></li>
-</ul>
-<p>jina Gateway gRPC service.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaRPC.Call">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_iterator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">call_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insecure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_for_ready</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaRPC.Call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaRPC.Call" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPCStub">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaDiscoverEndpointsRPCStub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaDiscoverEndpointsRPCStub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPCStub" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<ul class="simple">
-<li></li>
-</ul>
-<p>jina gRPC service for DataRequests.</p>
-<p>Constructor.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>channel: A grpc.Channel.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPCServicer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaDiscoverEndpointsRPCServicer</span></span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaDiscoverEndpointsRPCServicer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPCServicer" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<ul class="simple">
-<li></li>
-</ul>
-<p>jina gRPC service for DataRequests.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPCServicer.endpoint_discovery">
-<span class="sig-name descname"><span class="pre">endpoint_discovery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaDiscoverEndpointsRPCServicer.endpoint_discovery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPCServicer.endpoint_discovery" title="Permalink to this definition">#</a></dt>
-<dd><p>Missing associated documentation comment in .proto file.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server">
-<span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">add_JinaDiscoverEndpointsRPCServicer_to_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">servicer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#add_JinaDiscoverEndpointsRPCServicer_to_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPC">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaDiscoverEndpointsRPC</span></span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaDiscoverEndpointsRPC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPC" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<ul class="simple">
-<li></li>
-</ul>
-<p>jina gRPC service for DataRequests.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPC.endpoint_discovery">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">endpoint_discovery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">call_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insecure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_for_ready</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaDiscoverEndpointsRPC.endpoint_discovery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPC.endpoint_discovery" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+                <section id="jina-proto-jina-pb2-grpc-module">
+<h1>jina.proto.jina_pb2_grpc module<a class="headerlink" href="#jina-proto-jina-pb2-grpc-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -899,7 +638,7 @@ This is used to send requests to Executors when a list of requests is not needed
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -915,72 +654,6 @@ This is used to send requests to Executors when a list of requests is not needed
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.proto.jina_pb2_grpc module</a><ul>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaControlRequestRPCStub"><code class="docutils literal notranslate"><span class="pre">JinaControlRequestRPCStub</span></code></a></li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaControlRequestRPCServicer"><code class="docutils literal notranslate"><span class="pre">JinaControlRequestRPCServicer</span></code></a><ul>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaControlRequestRPCServicer.process_control"><code class="docutils literal notranslate"><span class="pre">JinaControlRequestRPCServicer.process_control()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server"><code class="docutils literal notranslate"><span class="pre">add_JinaControlRequestRPCServicer_to_server()</span></code></a></li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaControlRequestRPC"><code class="docutils literal notranslate"><span class="pre">JinaControlRequestRPC</span></code></a><ul>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaControlRequestRPC.process_control"><code class="docutils literal notranslate"><span class="pre">JinaControlRequestRPC.process_control()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaDataRequestRPCStub"><code class="docutils literal notranslate"><span class="pre">JinaDataRequestRPCStub</span></code></a></li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaDataRequestRPCServicer"><code class="docutils literal notranslate"><span class="pre">JinaDataRequestRPCServicer</span></code></a><ul>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaDataRequestRPCServicer.process_data"><code class="docutils literal notranslate"><span class="pre">JinaDataRequestRPCServicer.process_data()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server"><code class="docutils literal notranslate"><span class="pre">add_JinaDataRequestRPCServicer_to_server()</span></code></a></li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaDataRequestRPC"><code class="docutils literal notranslate"><span class="pre">JinaDataRequestRPC</span></code></a><ul>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaDataRequestRPC.process_data"><code class="docutils literal notranslate"><span class="pre">JinaDataRequestRPC.process_data()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPCStub"><code class="docutils literal notranslate"><span class="pre">JinaSingleDataRequestRPCStub</span></code></a></li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPCServicer"><code class="docutils literal notranslate"><span class="pre">JinaSingleDataRequestRPCServicer</span></code></a><ul>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPCServicer.process_single_data"><code class="docutils literal notranslate"><span class="pre">JinaSingleDataRequestRPCServicer.process_single_data()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server"><code class="docutils literal notranslate"><span class="pre">add_JinaSingleDataRequestRPCServicer_to_server()</span></code></a></li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPC"><code class="docutils literal notranslate"><span class="pre">JinaSingleDataRequestRPC</span></code></a><ul>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPC.process_single_data"><code class="docutils literal notranslate"><span class="pre">JinaSingleDataRequestRPC.process_single_data()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaRPCStub"><code class="docutils literal notranslate"><span class="pre">JinaRPCStub</span></code></a></li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaRPCServicer"><code class="docutils literal notranslate"><span class="pre">JinaRPCServicer</span></code></a><ul>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaRPCServicer.Call"><code class="docutils literal notranslate"><span class="pre">JinaRPCServicer.Call()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.add_JinaRPCServicer_to_server"><code class="docutils literal notranslate"><span class="pre">add_JinaRPCServicer_to_server()</span></code></a></li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaRPC"><code class="docutils literal notranslate"><span class="pre">JinaRPC</span></code></a><ul>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaRPC.Call"><code class="docutils literal notranslate"><span class="pre">JinaRPC.Call()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPCStub"><code class="docutils literal notranslate"><span class="pre">JinaDiscoverEndpointsRPCStub</span></code></a></li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPCServicer"><code class="docutils literal notranslate"><span class="pre">JinaDiscoverEndpointsRPCServicer</span></code></a><ul>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPCServicer.endpoint_discovery"><code class="docutils literal notranslate"><span class="pre">JinaDiscoverEndpointsRPCServicer.endpoint_discovery()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server"><code class="docutils literal notranslate"><span class="pre">add_JinaDiscoverEndpointsRPCServicer_to_server()</span></code></a></li>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPC"><code class="docutils literal notranslate"><span class="pre">JinaDiscoverEndpointsRPC</span></code></a><ul>
-<li><a class="reference internal" href="#jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPC.endpoint_discovery"><code class="docutils literal notranslate"><span class="pre">JinaDiscoverEndpointsRPC.endpoint_discovery()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

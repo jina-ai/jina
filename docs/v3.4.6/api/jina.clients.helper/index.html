@@ -7,10 +7,8 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.clients.helper/" />
 <meta property="og:site_name" content="Jina 3.4.6 Documentation" />
-<meta property="og:description" content="Helper functions for clients in Jina." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.4.6 Documentation" />
-<meta name="description" content="Helper functions for clients in Jina." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -32,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.clients.http module" href="../jina.clients.http/" /><link rel="prev" title="jina.clients.grpc module" href="../jina.clients.grpc/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.clients.helper.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.clients.helper module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -180,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -604,54 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.clients.helper">
-<span id="jina-clients-helper-module"></span><h1>jina.clients.helper module<a class="headerlink" href="#module-jina.clients.helper" title="Permalink to this heading">#</a></h1>
-<p>Helper functions for clients in Jina.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.clients.helper.pprint_routes">
-<span class="sig-prename descclassname"><span class="pre">jina.clients.helper.</span></span><span class="sig-name descname"><span class="pre">pprint_routes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/helper/#pprint_routes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.helper.pprint_routes" title="Permalink to this definition">#</a></dt>
-<dd><p>Pretty print routes with <code class="xref py py-mod docutils literal notranslate"><span class="pre">prettytable</span></code>, fallback to <code class="xref py py-func docutils literal notranslate"><span class="pre">print()</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>resp</strong> (<a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a>) – the <code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code> object</p></li>
-<li><p><strong>stack_limit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – traceback limit</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.clients.helper.callback_exec">
-<span class="sig-prename descclassname"><span class="pre">jina.clients.helper.</span></span><span class="sig-name descname"><span class="pre">callback_exec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/helper/#callback_exec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.helper.callback_exec" title="Permalink to this definition">#</a></dt>
-<dd><p>Execute the callback with the response.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>response</strong> – the response</p></li>
-<li><p><strong>on_done</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>) – the on_done callback</p></li>
-<li><p><strong>on_error</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>) – the on_error callback</p></li>
-<li><p><strong>on_always</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>) – the on_always callback</p></li>
-<li><p><strong>continue_on_error</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – whether to continue on error</p></li>
-<li><p><strong>logger</strong> (<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaLogger</span></code></a>) – a logger instance</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.clients.helper.callback_exec_on_error">
-<span class="sig-prename descclassname"><span class="pre">jina.clients.helper.</span></span><span class="sig-name descname"><span class="pre">callback_exec_on_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on_error</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exception</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/helper/#callback_exec_on_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.helper.callback_exec_on_error" title="Permalink to this definition">#</a></dt>
-<dd><p>Execute the on_error callback with the response, Use when an error outside the response status was thrown.
-:param on_error: the on_error callback
-:param exception: the exception with was thrown and led to the call of on_error
-:param logger: a logger instance
-:param response: the response</p>
-</dd></dl>
-
+                <section id="jina-clients-helper-module">
+<h1>jina.clients.helper module<a class="headerlink" href="#jina-clients-helper-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -686,7 +638,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -702,25 +654,6 @@
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.clients.helper module</a><ul>
-<li><a class="reference internal" href="#jina.clients.helper.pprint_routes"><code class="docutils literal notranslate"><span class="pre">pprint_routes()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.helper.callback_exec"><code class="docutils literal notranslate"><span class="pre">callback_exec()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.helper.callback_exec_on_error"><code class="docutils literal notranslate"><span class="pre">callback_exec_on_error()</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.logging.predefined module" href="../jina.logging.predefined/" /><link rel="prev" title="jina.logging.formatter module" href="../jina.logging.formatter/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.logging.logger.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.logging.logger module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -602,96 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.logging.logger">
-<span id="jina-logging-logger-module"></span><h1>jina.logging.logger module<a class="headerlink" href="#module-jina.logging.logger" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.logging.logger.RichHandler">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.logging.logger.</span></span><span class="sig-name descname"><span class="pre">RichHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/logger/#RichHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.logger.RichHandler" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RichHandler</span></code></p>
-<p>Override the original rich handler for more compact layout.</p>
-<p>Initializes the instance - basically setting the formatter to None
-and the filter list to empty.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.logging.logger.</span></span><span class="sig-name descname"><span class="pre">SysLogHandlerWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('localhost',</span> <span class="pre">514)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facility</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">socktype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/logger/#SysLogHandlerWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SysLogHandler</span></code></p>
-<p>Override the priority_map <code class="xref py py-class docutils literal notranslate"><span class="pre">SysLogHandler</span></code>.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This messages at DEBUG and INFO are therefore not stored by ASL, (ASL = Apple System Log)
-which in turn means they can’t be printed by syslog after the fact. You can confirm it via <strong class="command">syslog</strong> or
-<strong class="command">tail -f /var/log/system.log</strong>.</p>
-</div>
-<p>Initialize a handler.</p>
-<p>If address is specified as a string, a UNIX socket is used. To log to a
-local syslogd, “SysLogHandler(address=”/dev/log”)” can be used.
-If facility is not specified, LOG_USER is used. If socktype is
-specified as socket.SOCK_DGRAM or socket.SOCK_STREAM, that specific
-socket type will be used. For Unix sockets, you can also specify a
-socktype of None, in which case socket.SOCK_DGRAM will be used, falling
-back to socket.SOCK_STREAM.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.priority_map">
-<span class="sig-name descname"><span class="pre">priority_map</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'CRITICAL':</span> <span class="pre">'critical',</span> <span class="pre">'DEBUG':</span> <span class="pre">'debug',</span> <span class="pre">'ERROR':</span> <span class="pre">'error',</span> <span class="pre">'INFO':</span> <span class="pre">'info',</span> <span class="pre">'WARNING':</span> <span class="pre">'warning'}</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.priority_map" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.logging.logger.JinaLogger">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.logging.logger.</span></span><span class="sig-name descname"><span class="pre">JinaLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/logger/#JinaLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.logger.JinaLogger" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Build a logger for a context.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>context</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The context identifier of the class, module or method.</p></li>
-<li><p><strong>log_config</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The configuration file for the logger.</p></li>
-</ul>
-</dd>
-</dl>
-<p>configuration to group logs by deployment.
-:return:: an executor object.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.logging.logger.JinaLogger.supported">
-<span class="sig-name descname"><span class="pre">supported</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'FileHandler',</span> <span class="pre">'RichHandler',</span> <span class="pre">'StreamHandler',</span> <span class="pre">'SysLogHandler'}</span></em><a class="headerlink" href="#jina.logging.logger.JinaLogger.supported" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.logging.logger.JinaLogger.handlers">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handlers</span></span><a class="headerlink" href="#jina.logging.logger.JinaLogger.handlers" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the handlers of the logger.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return:</dt>
-<dd class="field-odd"><p>Handlers of logger.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.logging.logger.JinaLogger.close">
-<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/logger/#JinaLogger.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.logger.JinaLogger.close" title="Permalink to this definition">#</a></dt>
-<dd><p>Close all the handlers.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.logging.logger.JinaLogger.add_handlers">
-<span class="sig-name descname"><span class="pre">add_handlers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/logger/#JinaLogger.add_handlers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.logger.JinaLogger.add_handlers" title="Permalink to this definition">#</a></dt>
-<dd><p>Add handlers from config file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>config_path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Path of config file.</p></li>
-<li><p><strong>kwargs</strong> – Extra parameters.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+                <section id="jina-logging-logger-module">
+<h1>jina.logging.logger module<a class="headerlink" href="#jina-logging-logger-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -726,7 +638,7 @@ back to socket.SOCK_STREAM.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -742,34 +654,6 @@ back to socket.SOCK_STREAM.</p>
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.logging.logger module</a><ul>
-<li><a class="reference internal" href="#jina.logging.logger.RichHandler"><code class="docutils literal notranslate"><span class="pre">RichHandler</span></code></a></li>
-<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper</span></code></a><ul>
-<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.priority_map"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.priority_map</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.logging.logger.JinaLogger"><code class="docutils literal notranslate"><span class="pre">JinaLogger</span></code></a><ul>
-<li><a class="reference internal" href="#jina.logging.logger.JinaLogger.supported"><code class="docutils literal notranslate"><span class="pre">JinaLogger.supported</span></code></a></li>
-<li><a class="reference internal" href="#jina.logging.logger.JinaLogger.handlers"><code class="docutils literal notranslate"><span class="pre">JinaLogger.handlers</span></code></a></li>
-<li><a class="reference internal" href="#jina.logging.logger.JinaLogger.close"><code class="docutils literal notranslate"><span class="pre">JinaLogger.close()</span></code></a></li>
-<li><a class="reference internal" href="#jina.logging.logger.JinaLogger.add_handlers"><code class="docutils literal notranslate"><span class="pre">JinaLogger.add_handlers()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

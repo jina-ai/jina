@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.clients.helper module" href="../jina.clients.helper/" /><link rel="prev" title="jina.clients.request.helper module" href="../jina.clients.request.helper/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.clients.grpc.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.clients.grpc module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -602,30 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.clients.grpc">
-<span id="jina-clients-grpc-module"></span><h1>jina.clients.grpc module<a class="headerlink" href="#module-jina.clients.grpc" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.clients.grpc.GRPCClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.grpc.</span></span><span class="sig-name descname"><span class="pre">GRPCClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/grpc/#GRPCClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.grpc.GRPCClient" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient" title="jina.clients.base.grpc.GRPCBaseClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">GRPCBaseClient</span></code></a>, <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.PostMixin" title="jina.clients.mixin.PostMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">PostMixin</span></code></a></p>
-<p>A client communicates the server with GRPC protocol.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.clients.grpc.AsyncGRPCClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.grpc.</span></span><span class="sig-name descname"><span class="pre">AsyncGRPCClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/grpc/#AsyncGRPCClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.grpc.AsyncGRPCClient" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient" title="jina.clients.base.grpc.GRPCBaseClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">GRPCBaseClient</span></code></a>, <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin" title="jina.clients.mixin.AsyncPostMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncPostMixin</span></code></a></p>
-<p>A client communicates the server with GRPC protocol.</p>
-<p>Unlike <a class="reference internal" href="#jina.clients.grpc.GRPCClient" title="jina.clients.grpc.GRPCClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">GRPCClient</span></code></a>, here <code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code> is a coroutine (i.e. declared with the async/await syntax),
-simply calling them will not schedule them to be executed.</p>
-<p>To actually run a coroutine, user need to put them in an event loop, e.g. via <code class="docutils literal notranslate"><span class="pre">asyncio.run()</span></code>,
-<code class="docutils literal notranslate"><span class="pre">asyncio.create_task()</span></code>.</p>
-<p><a class="reference internal" href="#jina.clients.grpc.AsyncGRPCClient" title="jina.clients.grpc.AsyncGRPCClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncGRPCClient</span></code></a> can be very useful in
-the integration settings, where Jina/Flow/Client is NOT the main logic, but rather served as a part of other program.
-In this case, users often do <strong>NOT</strong> want to let Jina control the <code class="docutils literal notranslate"><span class="pre">asyncio.eventloop</span></code>. On contrary, <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code>
-is controlling and wrapping the event loop internally, making the Client looks synchronous from outside.</p>
-</dd></dl>
-
+                <section id="jina-clients-grpc-module">
+<h1>jina.clients.grpc module<a class="headerlink" href="#jina-clients-grpc-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -660,7 +638,7 @@ is controlling and wrapping the event loop internally, making the Client looks s
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -676,24 +654,6 @@ is controlling and wrapping the event loop internally, making the Client looks s
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.clients.grpc module</a><ul>
-<li><a class="reference internal" href="#jina.clients.grpc.GRPCClient"><code class="docutils literal notranslate"><span class="pre">GRPCClient</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.grpc.AsyncGRPCClient"><code class="docutils literal notranslate"><span class="pre">AsyncGRPCClient</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

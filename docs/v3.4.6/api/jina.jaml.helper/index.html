@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.logging package" href="../jina.logging/" /><link rel="prev" title="jina.jaml.parsers.base module" href="../jina.jaml.parsers.base/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.jaml.helper.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.jaml.helper module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -602,152 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.jaml.helper">
-<span id="jina-jaml-helper-module"></span><h1>jina.jaml.helper module<a class="headerlink" href="#module-jina.jaml.helper" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.jaml.helper.JinaConstructor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.jaml.helper.</span></span><span class="sig-name descname"><span class="pre">JinaConstructor</span></span><a class="reference internal" href="../../_modules/jina/jaml/helper/#JinaConstructor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.helper.JinaConstructor" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FullConstructor</span></code></p>
-<p>Convert List into tuple when doing hashing.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.jaml.helper.JinaConstructor.get_hashable_key">
-<span class="sig-name descname"><span class="pre">get_hashable_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/jaml/helper/#JinaConstructor.get_hashable_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.helper.JinaConstructor.get_hashable_key" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the hash value of key.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>key</strong> – key value to be hashed.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Hash value of key.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.jaml.helper.JinaConstructor.construct_mapping">
-<span class="sig-name descname"><span class="pre">construct_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/jaml/helper/#JinaConstructor.construct_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.helper.JinaConstructor.construct_mapping" title="Permalink to this definition">#</a></dt>
-<dd><p>Build the mapping from node.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>node</strong> – the node to traverse</p></li>
-<li><p><strong>deep</strong> – required param from YAML constructor</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Mapped data</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.jaml.helper.JinaResolver">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.jaml.helper.</span></span><span class="sig-name descname"><span class="pre">JinaResolver</span></span><a class="reference internal" href="../../_modules/jina/jaml/helper/#JinaResolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.helper.JinaResolver" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Resolver</span></code></p>
-<p>Remove <cite>on|On|ON</cite> as bool resolver.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.jaml.helper.JinaLoader">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.jaml.helper.</span></span><span class="sig-name descname"><span class="pre">JinaLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stream</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/jaml/helper/#JinaLoader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.helper.JinaLoader" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Reader</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Scanner</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Parser</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Composer</span></code>, <a class="reference internal" href="#jina.jaml.helper.JinaConstructor" title="jina.jaml.helper.JinaConstructor"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaConstructor</span></code></a>, <a class="reference internal" href="#jina.jaml.helper.JinaResolver" title="jina.jaml.helper.JinaResolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaResolver</span></code></a></p>
-<p>The Jina loader which should be able to load YAML safely.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>stream</strong> – the stream to load.</p>
-</dd>
-</dl>
-<p>Initialize the scanner.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.jaml.helper.JinaLoader.yaml_constructors">
-<span class="sig-name descname"><span class="pre">yaml_constructors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'tag:yaml.org,2002:null':</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_yaml_null&gt;,</span> <span class="pre">'tag:yaml.org,2002:bool':</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_yaml_bool&gt;,</span> <span class="pre">'tag:yaml.org,2002:int':</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_yaml_int&gt;,</span> <span class="pre">'tag:yaml.org,2002:float':</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_yaml_float&gt;,</span> <span class="pre">'tag:yaml.org,2002:binary':</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_yaml_binary&gt;,</span> <span class="pre">'tag:yaml.org,2002:timestamp':</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_yaml_timestamp&gt;,</span> <span class="pre">'tag:yaml.org,2002:omap':</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_yaml_omap&gt;,</span> <span class="pre">'tag:yaml.org,2002:pairs':</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_yaml_pairs&gt;,</span> <span class="pre">'tag:yaml.org,2002:set':</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_yaml_set&gt;,</span> <span class="pre">'tag:yaml.org,2002:str':</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_yaml_str&gt;,</span> <span class="pre">'tag:yaml.org,2002:seq':</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_yaml_seq&gt;,</span> <span class="pre">'tag:yaml.org,2002:map':</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_yaml_map&gt;,</span> <span class="pre">None:</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_undefined&gt;,</span> <span class="pre">'tag:yaml.org,2002:python/none':</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_yaml_null&gt;,</span> <span class="pre">'tag:yaml.org,2002:python/bool':</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_yaml_bool&gt;,</span> <span class="pre">'tag:yaml.org,2002:python/str':</span> <span class="pre">&lt;function</span> <span class="pre">FullConstructor.construct_python_str&gt;,</span> <span class="pre">'tag:yaml.org,2002:python/unicode':</span> <span class="pre">&lt;function</span> <span class="pre">FullConstructor.construct_python_unicode&gt;,</span> <span class="pre">'tag:yaml.org,2002:python/bytes':</span> <span class="pre">&lt;function</span> <span class="pre">FullConstructor.construct_python_bytes&gt;,</span> <span class="pre">'tag:yaml.org,2002:python/int':</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_yaml_int&gt;,</span> <span class="pre">'tag:yaml.org,2002:python/long':</span> <span class="pre">&lt;function</span> <span class="pre">FullConstructor.construct_python_long&gt;,</span> <span class="pre">'tag:yaml.org,2002:python/float':</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_yaml_float&gt;,</span> <span class="pre">'tag:yaml.org,2002:python/complex':</span> <span class="pre">&lt;function</span> <span class="pre">FullConstructor.construct_python_complex&gt;,</span> <span class="pre">'tag:yaml.org,2002:python/list':</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_yaml_seq&gt;,</span> <span class="pre">'tag:yaml.org,2002:python/tuple':</span> <span class="pre">&lt;function</span> <span class="pre">FullConstructor.construct_python_tuple&gt;,</span> <span class="pre">'tag:yaml.org,2002:python/dict':</span> <span class="pre">&lt;function</span> <span class="pre">SafeConstructor.construct_yaml_map&gt;,</span> <span class="pre">'!JAMLCompatible':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">JAMLCompatible._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;class</span> <span class="pre">'jina.jaml.JAMLCompatible'&gt;&gt;,</span> <span class="pre">'!BetterEnum':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">BetterEnum._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;enum</span> <span class="pre">'BetterEnum'&gt;&gt;,</span> <span class="pre">'!PollingType':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">BetterEnum._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;enum</span> <span class="pre">'PollingType'&gt;&gt;,</span> <span class="pre">'!LogVerbosity':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">BetterEnum._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;enum</span> <span class="pre">'LogVerbosity'&gt;&gt;,</span> <span class="pre">'!FlowBuildLevel':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">BetterEnum._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;enum</span> <span class="pre">'FlowBuildLevel'&gt;&gt;,</span> <span class="pre">'!GatewayProtocolType':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">BetterEnum._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;enum</span> <span class="pre">'GatewayProtocolType'&gt;&gt;,</span> <span class="pre">'!PodRoleType':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">BetterEnum._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;enum</span> <span class="pre">'PodRoleType'&gt;&gt;,</span> <span class="pre">'!DeploymentRoleType':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">BetterEnum._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;enum</span> <span class="pre">'DeploymentRoleType'&gt;&gt;,</span> <span class="pre">'!RequestType':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">BetterEnum._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;enum</span> <span class="pre">'RequestType'&gt;&gt;,</span> <span class="pre">'!CompressAlgo':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">BetterEnum._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;enum</span> <span class="pre">'CompressAlgo'&gt;&gt;,</span> <span class="pre">'!OnErrorStrategy':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">BetterEnum._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;enum</span> <span class="pre">'OnErrorStrategy'&gt;&gt;,</span> <span class="pre">'!FlowInspectType':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">BetterEnum._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;enum</span> <span class="pre">'FlowInspectType'&gt;&gt;,</span> <span class="pre">'!DataInputType':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">BetterEnum._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;enum</span> <span class="pre">'DataInputType'&gt;&gt;,</span> <span class="pre">'!HubbleReturnStatus':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">BetterEnum._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;enum</span> <span class="pre">'HubbleReturnStatus'&gt;&gt;,</span> <span class="pre">'!NormalizerErrorCode':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">BetterEnum._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;enum</span> <span class="pre">'NormalizerErrorCode'&gt;&gt;,</span> <span class="pre">'!StandaloneExecutorType':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">BetterEnum._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;enum</span> <span class="pre">'StandaloneExecutorType'&gt;&gt;,</span> <span class="pre">'!BaseExecutor':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">JAMLCompatible._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;class</span> <span class="pre">'jina.serve.executors.BaseExecutor'&gt;&gt;,</span> <span class="pre">'!ReducerExecutor':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">JAMLCompatible._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;class</span> <span class="pre">'jina.serve.executors.ReducerExecutor'&gt;&gt;,</span> <span class="pre">'!Flow':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">JAMLCompatible._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;class</span> <span class="pre">'jina.orchestrate.flow.base.Flow'&gt;&gt;,</span> <span class="pre">'!AsyncFlow':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">JAMLCompatible._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;class</span> <span class="pre">'jina.orchestrate.flow.asyncio.AsyncFlow'&gt;&gt;,</span> <span class="pre">'!MyIndexer':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">JAMLCompatible._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;class</span> <span class="pre">'jina.helloworld.fashion.my_executors.MyIndexer'&gt;&gt;,</span> <span class="pre">'!MyEncoder':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">JAMLCompatible._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;class</span> <span class="pre">'jina.helloworld.fashion.my_executors.MyEncoder'&gt;&gt;,</span> <span class="pre">'!MyConverter':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">JAMLCompatible._from_yaml</span> <span class="pre">of</span> <span class="pre">&lt;class</span> <span class="pre">'jina.helloworld.fashion.my_executors.MyConverter'&gt;&gt;}</span></em><a class="headerlink" href="#jina.jaml.helper.JinaLoader.yaml_constructors" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.jaml.helper.get_jina_loader_with_runtime">
-<span class="sig-prename descclassname"><span class="pre">jina.jaml.helper.</span></span><span class="sig-name descname"><span class="pre">get_jina_loader_with_runtime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">runtime_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/jaml/helper/#get_jina_loader_with_runtime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.helper.get_jina_loader_with_runtime" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a JinaLoader init function which already stored the runtime_args in the init function, usefully for
-<cite>yaml.load(stream,loader=JinaLoader)</cite> which needs a class with a init function with only one parameter</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>runtime_args</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – Optional runtime_args to be directly passed without being parsed into a yaml config</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A function that initialize a JinaLoader with the runtime_args stored within the function</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.jaml.helper.parse_config_source">
-<span class="sig-prename descclassname"><span class="pre">jina.jaml.helper.</span></span><span class="sig-name descname"><span class="pre">parse_config_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_stream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_yaml_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_raw_yaml_content</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_class_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_json</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_search_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/jaml/helper/#parse_config_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.helper.parse_config_source" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if the text or text stream is valid.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TextIO</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – the multi-kind source of the configs.</p></li>
-<li><p><strong>allow_stream</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – flag</p></li>
-<li><p><strong>allow_yaml_file</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – flag</p></li>
-<li><p><strong>allow_raw_yaml_content</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – flag</p></li>
-<li><p><strong>allow_class_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – flag</p></li>
-<li><p><strong>allow_dict</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – flag</p></li>
-<li><p><strong>allow_json</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – flag</p></li>
-<li><p><strong>extra_search_paths</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – extra paths to search for</p></li>
-<li><p><strong>args</strong> – unused</p></li>
-<li><p><strong>kwargs</strong> – unused</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TextIO</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>a tuple, the first element is the text stream, the second element is the file path associate to it
-if available.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.jaml.helper.complete_path">
-<span class="sig-prename descclassname"><span class="pre">jina.jaml.helper.</span></span><span class="sig-name descname"><span class="pre">complete_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_search_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/jaml/helper/#complete_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.helper.complete_path" title="Permalink to this definition">#</a></dt>
-<dd><p>Complete the path of file via searching in abs and relative paths.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – path of file.</p></li>
-<li><p><strong>extra_search_paths</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – extra paths to conduct search</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Completed file path.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.jaml.helper.load_py_modules">
-<span class="sig-prename descclassname"><span class="pre">jina.jaml.helper.</span></span><span class="sig-name descname"><span class="pre">load_py_modules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_search_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/jaml/helper/#load_py_modules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.helper.load_py_modules" title="Permalink to this definition">#</a></dt>
-<dd><p>Find ‘py_modules’ in the dict recursively and then load them.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>d</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – the dictionary to traverse</p></li>
-<li><p><strong>extra_search_paths</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – any extra paths to search</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
+                <section id="jina-jaml-helper-module">
+<h1>jina.jaml.helper module<a class="headerlink" href="#jina-jaml-helper-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -782,7 +638,7 @@ if available.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -798,36 +654,6 @@ if available.</p>
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.jaml.helper module</a><ul>
-<li><a class="reference internal" href="#jina.jaml.helper.JinaConstructor"><code class="docutils literal notranslate"><span class="pre">JinaConstructor</span></code></a><ul>
-<li><a class="reference internal" href="#jina.jaml.helper.JinaConstructor.get_hashable_key"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.get_hashable_key()</span></code></a></li>
-<li><a class="reference internal" href="#jina.jaml.helper.JinaConstructor.construct_mapping"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_mapping()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.jaml.helper.JinaResolver"><code class="docutils literal notranslate"><span class="pre">JinaResolver</span></code></a></li>
-<li><a class="reference internal" href="#jina.jaml.helper.JinaLoader"><code class="docutils literal notranslate"><span class="pre">JinaLoader</span></code></a><ul>
-<li><a class="reference internal" href="#jina.jaml.helper.JinaLoader.yaml_constructors"><code class="docutils literal notranslate"><span class="pre">JinaLoader.yaml_constructors</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.jaml.helper.get_jina_loader_with_runtime"><code class="docutils literal notranslate"><span class="pre">get_jina_loader_with_runtime()</span></code></a></li>
-<li><a class="reference internal" href="#jina.jaml.helper.parse_config_source"><code class="docutils literal notranslate"><span class="pre">parse_config_source()</span></code></a></li>
-<li><a class="reference internal" href="#jina.jaml.helper.complete_path"><code class="docutils literal notranslate"><span class="pre">complete_path()</span></code></a></li>
-<li><a class="reference internal" href="#jina.jaml.helper.load_py_modules"><code class="docutils literal notranslate"><span class="pre">load_py_modules()</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

@@ -32,13 +32,13 @@
 <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Instrumentation" href="../instrumentation/" /><link rel="prev" title="File Structure" href="../file-structure/" />
         <link rel="canonical" href="https://docs.jina.ai/concepts/executor/containerize.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>Containerize - Jina 3.13.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/docbot.css" />
@@ -473,7 +473,7 @@ or by including the <code class="docutils literal notranslate"><span class="pre"
 <p>When a containerized Executor is run inside a Flow,
 Jina executes <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> with extra arguments under the hood.</p>
 <p>This means that Jina assumes that whatever runs inside the container also runs like it would in a regular OS process. Therefore, ensure that
-the basic entrypoint of the image calls <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">executor</span></code> <a class="reference internal" href="../../../api/jina_cli/"><span class="doc std std-doc">CLI</span></a> command.</p>
+the basic entrypoint of the image calls <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">executor</span></code> <a class="reference internal" href="../../../api/jina_cli/"><span class="std std-doc">CLI</span></a> command.</p>
 <div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;jina&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;executor&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--uses&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;config.yml&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -618,7 +618,7 @@ Document<span class="w"> </span>embedding<span class="w"> </span>of<span class="
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Feb 24, 2023</div>
+                            Last updated on May 05, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

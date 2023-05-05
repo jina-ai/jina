@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.jaml.helper module" href="../jina.jaml.helper/" /><link rel="prev" title="jina.jaml.parsers.flow.v1 module" href="../jina.jaml.parsers.flow.v1/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.jaml.parsers.base.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.jaml.parsers.base module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -602,61 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.jaml.parsers.base">
-<span id="jina-jaml-parsers-base-module"></span><h1>jina.jaml.parsers.base module<a class="headerlink" href="#module-jina.jaml.parsers.base" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.jaml.parsers.base.VersionedYAMLParser">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.jaml.parsers.base.</span></span><span class="sig-name descname"><span class="pre">VersionedYAMLParser</span></span><a class="reference internal" href="../../_modules/jina/jaml/parsers/base/#VersionedYAMLParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.parsers.base.VersionedYAMLParser" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Flow YAML parser for specific version</p>
-<dl class="simple">
-<dt>Every <a class="reference internal" href="#jina.jaml.parsers.base.VersionedYAMLParser" title="jina.jaml.parsers.base.VersionedYAMLParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionedYAMLParser</span></code></a> must implement two methods and one class attribute:</dt><dd><ul class="simple">
-<li><p><a class="reference internal" href="#jina.jaml.parsers.base.VersionedYAMLParser.parse" title="jina.jaml.parsers.base.VersionedYAMLParser.parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">parse()</span></code></a>: to load data (in <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) into a <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFlow</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code> object</p></li>
-<li><p><a class="reference internal" href="#jina.jaml.parsers.base.VersionedYAMLParser.dump" title="jina.jaml.parsers.base.VersionedYAMLParser.dump"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dump()</span></code></a>: to dump a <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFlow</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code> object into a <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p></li>
-<li><p><a class="reference internal" href="#jina.jaml.parsers.base.VersionedYAMLParser.version" title="jina.jaml.parsers.base.VersionedYAMLParser.version"><code class="xref py py-attr docutils literal notranslate"><span class="pre">version</span></code></a>: version number in <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> in format <code class="docutils literal notranslate"><span class="pre">MAJOR.[MINOR]</span></code></p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.jaml.parsers.base.VersionedYAMLParser.version">
-<span class="sig-name descname"><span class="pre">version</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'legacy'</span></em><a class="headerlink" href="#jina.jaml.parsers.base.VersionedYAMLParser.version" title="Permalink to this definition">#</a></dt>
-<dd><p>the version number this parser designed for</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.jaml.parsers.base.VersionedYAMLParser.parse">
-<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime_args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/jaml/parsers/base/#VersionedYAMLParser.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.parsers.base.VersionedYAMLParser.parse" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the Flow YAML parser given the syntax version number</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>cls</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code>) – target class type to parse into, must be a <code class="xref py py-class docutils literal notranslate"><span class="pre">JAMLCompatible</span></code> type</p></li>
-<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – flow yaml file loaded as python dict</p></li>
-<li><p><strong>runtime_args</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – Optional runtime_args to be directly passed without being parsed into a yaml config</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.jaml.parsers.base.VersionedYAMLParser.dump">
-<span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/jaml/parsers/base/#VersionedYAMLParser.dump"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.parsers.base.VersionedYAMLParser.dump" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the dictionary given a versioned flow object</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – versioned flow object</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+                <section id="jina-jaml-parsers-base-module">
+<h1>jina.jaml.parsers.base module<a class="headerlink" href="#jina-jaml-parsers-base-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -691,7 +638,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -707,28 +654,6 @@
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.jaml.parsers.base module</a><ul>
-<li><a class="reference internal" href="#jina.jaml.parsers.base.VersionedYAMLParser"><code class="docutils literal notranslate"><span class="pre">VersionedYAMLParser</span></code></a><ul>
-<li><a class="reference internal" href="#jina.jaml.parsers.base.VersionedYAMLParser.version"><code class="docutils literal notranslate"><span class="pre">VersionedYAMLParser.version</span></code></a></li>
-<li><a class="reference internal" href="#jina.jaml.parsers.base.VersionedYAMLParser.parse"><code class="docutils literal notranslate"><span class="pre">VersionedYAMLParser.parse()</span></code></a></li>
-<li><a class="reference internal" href="#jina.jaml.parsers.base.VersionedYAMLParser.dump"><code class="docutils literal notranslate"><span class="pre">VersionedYAMLParser.dump()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

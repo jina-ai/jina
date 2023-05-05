@@ -32,13 +32,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.serve.runtimes.request_handlers package" href="../jina.serve.runtimes.request_handlers/" /><link rel="prev" title="jina.serve.runtimes.gateway.request_handling module" href="../jina.serve.runtimes.gateway.request_handling/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.runtimes.head.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.serve.runtimes.head package - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -606,128 +606,8 @@
                 </div>
                 <section id="jina-serve-runtimes-head-package">
 <h1>jina.serve.runtimes.head package<a class="headerlink" href="#jina-serve-runtimes-head-package" title="Permalink to this heading">#</a></h1>
-<section id="module-jina.serve.runtimes.head">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.serve.runtimes.head" title="Permalink to this heading">#</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.head.HeadRuntime">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.head.</span></span><span class="sig-name descname"><span class="pre">HeadRuntime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/head/#HeadRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.head.HeadRuntime" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime" title="jina.serve.runtimes.asyncio.AsyncNewLoopRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
-<p>Runtime is used in head pods. It responds to Gateway requests and sends to uses_before/uses_after and its workers</p>
-<p>Initialize grpc server for the head runtime.
-:type args: <code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>
-:param args: args from CLI
-:param kwargs: keyword args</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.head.HeadRuntime.DEFAULT_POLLING">
-<span class="sig-name descname"><span class="pre">DEFAULT_POLLING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.serve.runtimes.head.HeadRuntime.DEFAULT_POLLING" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.head.HeadRuntime.async_setup">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/head/#HeadRuntime.async_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.head.HeadRuntime.async_setup" title="Permalink to this definition">#</a></dt>
-<dd><p>Wait for the GRPC server to start</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.head.HeadRuntime.async_run_forever">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_run_forever</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/head/#HeadRuntime.async_run_forever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.head.HeadRuntime.async_run_forever" title="Permalink to this definition">#</a></dt>
-<dd><p>Block until the GRPC server is terminated</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.head.HeadRuntime.async_cancel">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/head/#HeadRuntime.async_cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.head.HeadRuntime.async_cancel" title="Permalink to this definition">#</a></dt>
-<dd><p>Stop the GRPC server</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.head.HeadRuntime.async_teardown">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_teardown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/head/#HeadRuntime.async_teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.head.HeadRuntime.async_teardown" title="Permalink to this definition">#</a></dt>
-<dd><p>Close the connection pool</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.head.HeadRuntime.process_single_data">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_single_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/head/#HeadRuntime.process_single_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.head.HeadRuntime.process_single_data" title="Permalink to this definition">#</a></dt>
-<dd><p>Process the received requests and return the result as a new request</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> (<a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a>) – the data request to process</p></li>
-<li><p><strong>context</strong> – grpc context</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the response request</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.head.HeadRuntime.process_data">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/head/#HeadRuntime.process_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.head.HeadRuntime.process_data" title="Permalink to this definition">#</a></dt>
-<dd><p>Process the received data request and return the result as a new request</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>requests</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a>]) – the data requests to process</p></li>
-<li><p><strong>context</strong> – grpc context</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the response request</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.head.HeadRuntime.process_control">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_control</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/head/#HeadRuntime.process_control"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.head.HeadRuntime.process_control" title="Permalink to this definition">#</a></dt>
-<dd><p>Process the received control request and return the input request</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> (<a class="reference internal" href="../jina.types.request.control/#jina.types.request.control.ControlRequest" title="jina.types.request.control.ControlRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlRequest</span></code></a>) – the data request to process</p></li>
-<li><p><strong>args</strong> – additional arguments in the grpc call, ignored</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="../jina.types.request.control/#jina.types.request.control.ControlRequest" title="jina.types.request.control.ControlRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlRequest</span></code></a></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the input request</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.head.HeadRuntime.endpoint_discovery">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">endpoint_discovery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">empty</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/head/#HeadRuntime.endpoint_discovery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.head.HeadRuntime.endpoint_discovery" title="Permalink to this definition">#</a></dt>
-<dd><p>Uses the connection pool to send a discover endpoint call to the workers</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>empty</strong> – The service expects an empty protobuf message</p></li>
-<li><p><strong>context</strong> – grpc context</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">EndpointsProto</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the response request</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 </section>
 </section>
 
@@ -763,7 +643,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -789,21 +669,7 @@
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">jina.serve.runtimes.head package</a><ul>
-<li><a class="reference internal" href="#module-jina.serve.runtimes.head">Module contents</a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.head.HeadRuntime"><code class="docutils literal notranslate"><span class="pre">HeadRuntime</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.head.HeadRuntime.DEFAULT_POLLING"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.DEFAULT_POLLING</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.head.HeadRuntime.async_setup"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.async_setup()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.head.HeadRuntime.async_run_forever"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.async_run_forever()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.head.HeadRuntime.async_cancel"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.async_cancel()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.head.HeadRuntime.async_teardown"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.async_teardown()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.head.HeadRuntime.process_single_data"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.process_single_data()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.head.HeadRuntime.process_data"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.process_data()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.head.HeadRuntime.process_control"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.process_control()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.head.HeadRuntime.endpoint_discovery"><code class="docutils literal notranslate"><span class="pre">HeadRuntime.endpoint_discovery()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>

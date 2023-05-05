@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="cli package" href="../cli/" /><link rel="prev" title="jina.helper module" href="../jina.helper/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.importer.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.importer module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -602,43 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.importer">
-<span id="jina-importer-module"></span><h1>jina.importer module<a class="headerlink" href="#module-jina.importer" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.importer.ImportExtensions">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.importer.</span></span><span class="sig-name descname"><span class="pre">ImportExtensions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">required</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help_text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pkg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/importer/#ImportExtensions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.importer.ImportExtensions" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A context manager for wrapping extension import and fallback. It guides the user to pip install correct package by looking up extra-requirements.txt.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>required</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – set to True if you want to raise the ModuleNotFound error</p></li>
-<li><p><strong>logger</strong> – when not given, built-in warnings.warn will be used</p></li>
-<li><p><strong>help_text</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the help text followed after</p></li>
-<li><p><strong>pkg_name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the package name to find in extra_requirements.txt, when not given the ModuleNotFound exec_val will be used as the best guess</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.importer.PathImporter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.importer.</span></span><span class="sig-name descname"><span class="pre">PathImporter</span></span><a class="reference internal" href="../../_modules/jina/importer/#PathImporter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.importer.PathImporter" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>The class to import modules from paths.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.importer.PathImporter.add_modules">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_modules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/importer/#PathImporter.add_modules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.importer.PathImporter.add_modules" title="Permalink to this definition">#</a></dt>
-<dd><p>Import modules from paths.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>paths</strong> – Paths of the modules.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+                <section id="jina-importer-module">
+<h1>jina.importer module<a class="headerlink" href="#jina-importer-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -673,7 +638,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -689,27 +654,6 @@
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.importer module</a><ul>
-<li><a class="reference internal" href="#jina.importer.ImportExtensions"><code class="docutils literal notranslate"><span class="pre">ImportExtensions</span></code></a></li>
-<li><a class="reference internal" href="#jina.importer.PathImporter"><code class="docutils literal notranslate"><span class="pre">PathImporter</span></code></a><ul>
-<li><a class="reference internal" href="#jina.importer.PathImporter.add_modules"><code class="docutils literal notranslate"><span class="pre">PathImporter.add_modules()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

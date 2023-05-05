@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.types.mixin module" href="../jina.types.mixin/" /><link rel="prev" title="jina.types.request.control module" href="../jina.types.request.control/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.types.request.data.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.types.request.data module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -602,138 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.types.request.data">
-<span id="jina-types-request-data-module"></span><h1>jina.types.request.data module<a class="headerlink" href="#module-jina.types.request.data" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.types.request.data.DataRequest">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.types.request.data.</span></span><span class="sig-name descname"><span class="pre">DataRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/data/#DataRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.data.DataRequest" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a></p>
-<p>Represents a DataRequest used for exchanging DocumentArrays to and within a Flow</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.request.data.DataRequest.is_decompressed">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_decompressed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.types.request.data.DataRequest.is_decompressed" title="Permalink to this definition">#</a></dt>
-<dd><p>Checks if the underlying proto object was already deserialized</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True if the proto was deserialized before</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.request.data.DataRequest.proto">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataRequestProto</span></em><a class="headerlink" href="#jina.types.request.data.DataRequest.proto" title="Permalink to this definition">#</a></dt>
-<dd><p>Cast <code class="docutils literal notranslate"><span class="pre">self</span></code> to a <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.DataRequestProto</span></code>. Laziness will be broken and serialization will be recomputed when calling
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">SerializeToString()</span></code>.
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequestProto</span></code>
-:return: protobuf instance</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.data.DataRequest.to_dict">
-<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/data/#DataRequest.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.data.DataRequest.to_dict" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the object in Python dictionary.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Array like object such as <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> (i.e. anything described as <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.NdArrayProto</span></code>)
-will be converted to Python list.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>dict representation of the object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.request.data.DataRequest.docs">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">docs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><span class="pre">DocumentArray</span></a></em><a class="headerlink" href="#jina.types.request.data.DataRequest.docs" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the :class: <cite>DocumentArray</cite> with sequence <cite>data.docs</cite> as content.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.types.request.data.DataRequest.data">
-<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#jina.types.request.data.DataRequest.data" title="Permalink to this definition">#</a></dt>
-<dd><p>The decorator to cache property of a class.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.request.data.DataRequest.parameters">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span></em><a class="headerlink" href="#jina.types.request.data.DataRequest.parameters" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the <cite>parameters</cite> field of this DataRequest as a Python dict
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>
-:return: a Python dict view of the parameters.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.request.data.DataRequest.response">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">response</span></span><a class="headerlink" href="#jina.types.request.data.DataRequest.response" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns the response of this request.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the response of this request (self) as an instance of Response</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.request.data.DataRequest.status">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#jina.types.request.data.DataRequest.status" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns the status from the header field</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the status object of this request</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.request.data.DataRequest.request_id">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">request_id</span></span><a class="headerlink" href="#jina.types.request.data.DataRequest.request_id" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns the request_id from the header field</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the request_id object of this request</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.data.DataRequest.from_proto">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_proto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/data/#DataRequest.from_proto"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.data.DataRequest.from_proto" title="Permalink to this definition">#</a></dt>
-<dd><p>Creates a new DataRequest object from a given <code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequestProto</span></code> object.
-:type request: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequestProto</span></code>
-:param request: the to-be-copied data request
-:return: the new message object</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.types.request.data.Response">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.types.request.data.</span></span><span class="sig-name descname"><span class="pre">Response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/data/#Response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.data.Response" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a></p>
-<p>Response is the <code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> object returns from the flow. Right now it shares the same representation as
-<code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code>. At 0.8.12, <a class="reference internal" href="#jina.types.request.data.Response" title="jina.types.request.data.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a> is a simple alias. But it does give a more consistent semantic on
-the client API: send a <code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> and receive a <a class="reference internal" href="#jina.types.request.data.Response" title="jina.types.request.data.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>For now it only exposes <cite>Docs</cite> and <cite>GroundTruth</cite>. Users should very rarely access <cite>Control</cite> commands, so preferably
-not confuse the user by adding <cite>CommandMixin</cite>.</p>
-</div>
-</dd></dl>
-
+                <section id="jina-types-request-data-module">
+<h1>jina.types.request.data module<a class="headerlink" href="#jina-types-request-data-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -768,7 +638,7 @@ not confuse the user by adding <cite>CommandMixin</cite>.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -784,36 +654,6 @@ not confuse the user by adding <cite>CommandMixin</cite>.</p>
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.types.request.data module</a><ul>
-<li><a class="reference internal" href="#jina.types.request.data.DataRequest"><code class="docutils literal notranslate"><span class="pre">DataRequest</span></code></a><ul>
-<li><a class="reference internal" href="#jina.types.request.data.DataRequest.is_decompressed"><code class="docutils literal notranslate"><span class="pre">DataRequest.is_decompressed</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.data.DataRequest.proto"><code class="docutils literal notranslate"><span class="pre">DataRequest.proto</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.data.DataRequest.to_dict"><code class="docutils literal notranslate"><span class="pre">DataRequest.to_dict()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.data.DataRequest.docs"><code class="docutils literal notranslate"><span class="pre">DataRequest.docs</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.data.DataRequest.data"><code class="docutils literal notranslate"><span class="pre">DataRequest.data</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.data.DataRequest.parameters"><code class="docutils literal notranslate"><span class="pre">DataRequest.parameters</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.data.DataRequest.response"><code class="docutils literal notranslate"><span class="pre">DataRequest.response</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.data.DataRequest.status"><code class="docutils literal notranslate"><span class="pre">DataRequest.status</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.data.DataRequest.request_id"><code class="docutils literal notranslate"><span class="pre">DataRequest.request_id</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.data.DataRequest.from_proto"><code class="docutils literal notranslate"><span class="pre">DataRequest.from_proto()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.types.request.data.Response"><code class="docutils literal notranslate"><span class="pre">Response</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

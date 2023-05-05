@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.orchestrate.helper module" href="../jina.orchestrate.helper/" /><link rel="prev" title="jina.orchestrate.pods.factory module" href="../jina.orchestrate.pods.factory/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.orchestrate.pods.helper.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.orchestrate.pods.helper module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -602,52 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.orchestrate.pods.helper">
-<span id="jina-orchestrate-pods-helper-module"></span><h1>jina.orchestrate.pods.helper module<a class="headerlink" href="#module-jina.orchestrate.pods.helper" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.orchestrate.pods.helper.ConditionalEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.orchestrate.pods.helper.</span></span><span class="sig-name descname"><span class="pre">ConditionalEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">events_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/pods/helper/#ConditionalEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.pods.helper.ConditionalEvent" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p><a class="reference internal" href="#jina.orchestrate.pods.helper.ConditionalEvent" title="jina.orchestrate.pods.helper.ConditionalEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConditionalEvent</span></code></a> provides a common interface to an event (multiprocessing or threading event)
-that gets triggered when any of the events provided in input is triggered (OR logic)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>events_list</strong> – The list of events that compose this composable event</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.orchestrate.pods.helper.update_runtime_cls">
-<span class="sig-prename descclassname"><span class="pre">jina.orchestrate.pods.helper.</span></span><span class="sig-name descname"><span class="pre">update_runtime_cls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/pods/helper/#update_runtime_cls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.pods.helper.update_runtime_cls" title="Permalink to this definition">#</a></dt>
-<dd><p>Get runtime_cls as a string from args</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>args</strong> – pod/deployment namespace args</p></li>
-<li><p><strong>copy</strong> – True if args shouldn’t be modified in-place</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Namespace</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>runtime class as a string</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.orchestrate.pods.helper.is_ready">
-<span class="sig-prename descclassname"><span class="pre">jina.orchestrate.pods.helper.</span></span><span class="sig-name descname"><span class="pre">is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/pods/helper/#is_ready"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.pods.helper.is_ready" title="Permalink to this definition">#</a></dt>
-<dd><p>TODO: make this async
-Check if status is ready.
-:type address: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param address: the address where the control message needs to be sent
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
-:return: True if status is ready else False.</p>
-</dd></dl>
-
+                <section id="jina-orchestrate-pods-helper-module">
+<h1>jina.orchestrate.pods.helper module<a class="headerlink" href="#jina-orchestrate-pods-helper-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -682,7 +638,7 @@ Check if status is ready.
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -698,25 +654,6 @@ Check if status is ready.
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.orchestrate.pods.helper module</a><ul>
-<li><a class="reference internal" href="#jina.orchestrate.pods.helper.ConditionalEvent"><code class="docutils literal notranslate"><span class="pre">ConditionalEvent</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.pods.helper.update_runtime_cls"><code class="docutils literal notranslate"><span class="pre">update_runtime_cls()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.pods.helper.is_ready"><code class="docutils literal notranslate"><span class="pre">is_ready()</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

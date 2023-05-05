@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="daemon.stores.mixin module" href="../daemon.stores.mixin/" /><link rel="prev" title="daemon.stores.deployments module" href="../daemon.stores.deployments/" />
         <link rel="canonical" href="https://docs.jina.ai/api/daemon.stores.flows.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>daemon.stores.flows module - Jina 3.2.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -640,68 +640,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-daemon.stores.flows">
-<span id="daemon-stores-flows-module"></span><h1>daemon.stores.flows module<a class="headerlink" href="#module-daemon.stores.flows" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.stores.flows.FlowStore">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.stores.flows.</span></span><span class="sig-name descname"><span class="pre">FlowStore</span></span><a class="reference internal" href="../../_modules/daemon/stores/flows/#FlowStore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.flows.FlowStore" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../daemon.stores.containers/#daemon.stores.containers.ContainerStore" title="daemon.stores.containers.ContainerStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContainerStore</span></code></a>, <a class="reference internal" href="../daemon.stores.mixin/#daemon.stores.mixin.AiohttpMixin" title="daemon.stores.mixin.AiohttpMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AiohttpMixin</span></code></a></p>
-<p>A Store of Flows spawned as Containers by Daemon</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.stores.flows.FlowStore.add_in_partial">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_in_partial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">envs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/flows/#FlowStore.add_in_partial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.flows.FlowStore.add_in_partial" title="Permalink to this definition">#</a></dt>
-<dd><p>Sends <cite>POST</cite> request to <cite>partial-daemon</cite> to create a Flow.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>uri</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – uri of partial-daemon</p></li>
-<li><p><strong>params</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – Flow params</p></li>
-<li><p><strong>envs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – environment variables to be passed into partial flow</p></li>
-<li><p><strong>kwargs</strong> – keyword args</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>response from POST request</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.stores.flows.FlowStore.delete_in_partial">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_in_partial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/flows/#FlowStore.delete_in_partial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.flows.FlowStore.delete_in_partial" title="Permalink to this definition">#</a></dt>
-<dd><p>Sends a <cite>DELETE</cite> request to <cite>partial-daemon</cite> to terminate the Flow
-and, remove the container.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>uri</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – uri of partial-daemon</p></li>
-<li><p><strong>kwargs</strong> – keyword args</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>response from DELETE request</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.stores.flows.FlowStore.rolling_update">
-<span class="sig-name descname"><span class="pre">rolling_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#daemon.stores.flows.FlowStore.rolling_update" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.stores.flows.FlowStore.scale">
-<span class="sig-name descname"><span class="pre">scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#daemon.stores.flows.FlowStore.scale" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+                <section id="daemon-stores-flows-module">
+<h1>daemon.stores.flows module<a class="headerlink" href="#daemon-stores-flows-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -736,7 +676,7 @@ and, remove the container.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -752,29 +692,6 @@ and, remove the container.</p>
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">daemon.stores.flows module</a><ul>
-<li><a class="reference internal" href="#daemon.stores.flows.FlowStore"><code class="docutils literal notranslate"><span class="pre">FlowStore</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.stores.flows.FlowStore.add_in_partial"><code class="docutils literal notranslate"><span class="pre">FlowStore.add_in_partial()</span></code></a></li>
-<li><a class="reference internal" href="#daemon.stores.flows.FlowStore.delete_in_partial"><code class="docutils literal notranslate"><span class="pre">FlowStore.delete_in_partial()</span></code></a></li>
-<li><a class="reference internal" href="#daemon.stores.flows.FlowStore.rolling_update"><code class="docutils literal notranslate"><span class="pre">FlowStore.rolling_update()</span></code></a></li>
-<li><a class="reference internal" href="#daemon.stores.flows.FlowStore.scale"><code class="docutils literal notranslate"><span class="pre">FlowStore.scale()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="daemon.stores.deployments module" href="../daemon.stores.deployments/" /><link rel="prev" title="daemon.stores.base module" href="../daemon.stores.base/" />
         <link rel="canonical" href="https://docs.jina.ai/api/daemon.stores.containers.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>daemon.stores.containers module - Jina 3.2.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -640,70 +640,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-daemon.stores.containers">
-<span id="daemon-stores-containers-module"></span><h1>daemon.stores.containers module<a class="headerlink" href="#module-daemon.stores.containers" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.stores.containers.ContainerStore">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.stores.containers.</span></span><span class="sig-name descname"><span class="pre">ContainerStore</span></span><a class="reference internal" href="../../_modules/daemon/stores/containers/#ContainerStore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.containers.ContainerStore" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../daemon.stores.base/#daemon.stores.base.BaseStore" title="daemon.stores.base.BaseStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseStore</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
-<p>A Store of Containers spawned by daemon</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.stores.containers.ContainerStore.add_in_partial">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_in_partial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">envs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/containers/#ContainerStore.add_in_partial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.containers.ContainerStore.add_in_partial" title="Permalink to this definition">#</a></dt>
-<dd><p>Implements jina object creation in <cite>partial-daemon</cite></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.stores.containers.ContainerStore.delete_in_partial">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_in_partial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/containers/#ContainerStore.delete_in_partial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.containers.ContainerStore.delete_in_partial" title="Permalink to this definition">#</a></dt>
-<dd><p>Implements jina object termination in <cite>partial-daemon</cite></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.stores.containers.ContainerStore.ready">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/containers/#ContainerStore.ready"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.containers.ContainerStore.ready" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if the container with partial-daemon is alive</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>uri</strong> – uri of partial-daemon</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>True if partial-daemon is ready</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.stores.containers.ContainerStore.add">
-<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#daemon.stores.containers.ContainerStore.add" title="Permalink to this definition">#</a></dt>
-<dd><p>Add a new element to the store. This method needs to be overridden by the subclass</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.stores.containers.ContainerStore.delete">
-<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#daemon.stores.containers.ContainerStore.delete" title="Permalink to this definition">#</a></dt>
-<dd><p>Deletes an element from the store. This method needs to be overridden by the subclass</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.stores.containers.ContainerStore.clear">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/containers/#ContainerStore.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.containers.ContainerStore.clear" title="Permalink to this definition">#</a></dt>
-<dd><p>Delete all the objects in the store</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>kwargs</strong> – keyward args</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+                <section id="daemon-stores-containers-module">
+<h1>daemon.stores.containers module<a class="headerlink" href="#daemon-stores-containers-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -738,7 +676,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -754,31 +692,6 @@
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">daemon.stores.containers module</a><ul>
-<li><a class="reference internal" href="#daemon.stores.containers.ContainerStore"><code class="docutils literal notranslate"><span class="pre">ContainerStore</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.stores.containers.ContainerStore.add_in_partial"><code class="docutils literal notranslate"><span class="pre">ContainerStore.add_in_partial()</span></code></a></li>
-<li><a class="reference internal" href="#daemon.stores.containers.ContainerStore.delete_in_partial"><code class="docutils literal notranslate"><span class="pre">ContainerStore.delete_in_partial()</span></code></a></li>
-<li><a class="reference internal" href="#daemon.stores.containers.ContainerStore.ready"><code class="docutils literal notranslate"><span class="pre">ContainerStore.ready()</span></code></a></li>
-<li><a class="reference internal" href="#daemon.stores.containers.ContainerStore.add"><code class="docutils literal notranslate"><span class="pre">ContainerStore.add()</span></code></a></li>
-<li><a class="reference internal" href="#daemon.stores.containers.ContainerStore.delete"><code class="docutils literal notranslate"><span class="pre">ContainerStore.delete()</span></code></a></li>
-<li><a class="reference internal" href="#daemon.stores.containers.ContainerStore.clear"><code class="docutils literal notranslate"><span class="pre">ContainerStore.clear()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

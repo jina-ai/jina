@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.jaml.parsers.base module" href="../jina.jaml.parsers.base/" /><link rel="prev" title="jina.jaml.parsers.flow package" href="../jina.jaml.parsers.flow/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.jaml.parsers.flow.v1.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.jaml.parsers.flow.v1 module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -602,90 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.jaml.parsers.flow.v1">
-<span id="jina-jaml-parsers-flow-v1-module"></span><h1>jina.jaml.parsers.flow.v1 module<a class="headerlink" href="#module-jina.jaml.parsers.flow.v1" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.jaml.parsers.flow.v1.V1Parser">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.jaml.parsers.flow.v1.</span></span><span class="sig-name descname"><span class="pre">V1Parser</span></span><a class="reference internal" href="../../_modules/jina/jaml/parsers/flow/v1/#V1Parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.parsers.flow.v1.V1Parser" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.jaml.parsers.base/#jina.jaml.parsers.base.VersionedYAMLParser" title="jina.jaml.parsers.base.VersionedYAMLParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionedYAMLParser</span></code></a></p>
-<p>V1Parser introduces new syntax and features:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>It has a top-level field <code class="docutils literal notranslate"><span class="pre">version</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">deployments</span></code> is now a List of Dict (rather than a Dict as prev.)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> is now optional</p></li>
-<li><dl class="simple">
-<dt>new field <code class="docutils literal notranslate"><span class="pre">method</span></code> can be used to specify how to add this Deployment into the Flow, availables are:</dt><dd><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">add</span></code>: (default) equal to <cite>Flow.add(…)</cite></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">needs</span></code>: (default) equal to <cite>Flow.needs(…)</cite></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">inspect</span></code>: (default) equal to <cite>Flow.inspect(…)</cite></p></li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
-</div></blockquote>
-<dl>
-<dt>An example V1 YAML config can be found below:</dt><dd><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!Flow</span>
-<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1.0&#39;</span>
-<span class="nt">deployments</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor0</span><span class="w">  </span><span class="c1"># notice the change here, name is now an attribute</span>
-<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">add</span><span class="w">  </span><span class="c1"># by default method is always add, available: add, needs, inspect</span>
-<span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gateway</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w">  </span><span class="c1"># notice the change here, name is now an attribute</span>
-<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">add</span><span class="w">  </span><span class="c1"># by default method is always add, available: add, needs, inspect</span>
-<span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gateway</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inspect</span><span class="w">  </span><span class="c1"># add an inspect node on executor1</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">needs</span><span class="w">  </span><span class="c1"># let&#39;s try something new in Flow YAML v1: needs</span>
-<span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">executor1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">executor0</span><span class="p p-Indicator">]</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.jaml.parsers.flow.v1.V1Parser.version">
-<span class="sig-name descname"><span class="pre">version</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'1'</span></em><a class="headerlink" href="#jina.jaml.parsers.flow.v1.V1Parser.version" title="Permalink to this definition">#</a></dt>
-<dd><p>the version number this parser designed for</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.jaml.parsers.flow.v1.V1Parser.parse">
-<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/jaml/parsers/flow/v1/#V1Parser.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.parsers.flow.v1.V1Parser.parse" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>cls</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code>) – the class registered for dumping/loading</p></li>
-<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – flow yaml file loaded as python dict</p></li>
-<li><p><strong>runtime_args</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – Optional runtime_args to be directly passed without being parsed into a yaml config</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow" title="jina.orchestrate.flow.base.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the Flow YAML parser given the syntax version number</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.jaml.parsers.flow.v1.V1Parser.dump">
-<span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/jaml/parsers/flow/v1/#V1Parser.dump"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.parsers.flow.v1.V1Parser.dump" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow" title="jina.orchestrate.flow.base.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>) – versioned flow object</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the dictionary given a versioned flow object</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+                <section id="jina-jaml-parsers-flow-v1-module">
+<h1>jina.jaml.parsers.flow.v1 module<a class="headerlink" href="#jina-jaml-parsers-flow-v1-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -720,7 +638,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -736,28 +654,6 @@
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.jaml.parsers.flow.v1 module</a><ul>
-<li><a class="reference internal" href="#jina.jaml.parsers.flow.v1.V1Parser"><code class="docutils literal notranslate"><span class="pre">V1Parser</span></code></a><ul>
-<li><a class="reference internal" href="#jina.jaml.parsers.flow.v1.V1Parser.version"><code class="docutils literal notranslate"><span class="pre">V1Parser.version</span></code></a></li>
-<li><a class="reference internal" href="#jina.jaml.parsers.flow.v1.V1Parser.parse"><code class="docutils literal notranslate"><span class="pre">V1Parser.parse()</span></code></a></li>
-<li><a class="reference internal" href="#jina.jaml.parsers.flow.v1.V1Parser.dump"><code class="docutils literal notranslate"><span class="pre">V1Parser.dump()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

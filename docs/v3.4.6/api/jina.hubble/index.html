@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.hubble/" />
 <meta property="og:site_name" content="Jina 3.4.6 Documentation" />
-<meta property="og:description" content="Submodules: jina.hubble.helper module- get_hub_packages_dir(), get_cache_db(), get_download_cache_dir(), get_request_header(), get_hubble_url_v1(), get_hubble_url_v2(), parse_hub_uri(), replace_secret_of_hub_uri(), is_valid_huburi(), md5file(), unpack_package(), archive_package(), download_with_r..." />
+<meta property="og:description" content="Submodules: jina.hubble.helper module, jina.hubble.hubapi module, jina.hubble.hubio module, jina.hubble.requirements module. Module contents:" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.4.6 Documentation" />
-<meta name="description" content="Submodules: jina.hubble.helper module- get_hub_packages_dir(), get_cache_db(), get_download_cache_dir(), get_request_header(), get_hubble_url_v1(), get_hubble_url_v2(), parse_hub_uri(), replace_secret_of_hub_uri(), is_valid_huburi(), md5file(), unpack_package(), archive_package(), download_with_r..." />
+<meta name="description" content="Submodules: jina.hubble.helper module, jina.hubble.hubapi module, jina.hubble.hubio module, jina.hubble.requirements module. Module contents:" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -32,13 +32,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.hubble.helper module" href="../jina.hubble.helper/" /><link rel="prev" title="jina.helloworld.fork module" href="../jina.helloworld.fork/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.hubble.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.hubble package - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -610,148 +610,15 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.hubble.helper/">jina.hubble.helper module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.get_hub_packages_dir"><code class="docutils literal notranslate"><span class="pre">get_hub_packages_dir()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.get_cache_db"><code class="docutils literal notranslate"><span class="pre">get_cache_db()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.get_download_cache_dir"><code class="docutils literal notranslate"><span class="pre">get_download_cache_dir()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.get_request_header"><code class="docutils literal notranslate"><span class="pre">get_request_header()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.get_hubble_url_v1"><code class="docutils literal notranslate"><span class="pre">get_hubble_url_v1()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.get_hubble_url_v2"><code class="docutils literal notranslate"><span class="pre">get_hubble_url_v2()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.parse_hub_uri"><code class="docutils literal notranslate"><span class="pre">parse_hub_uri()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.replace_secret_of_hub_uri"><code class="docutils literal notranslate"><span class="pre">replace_secret_of_hub_uri()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.is_valid_huburi"><code class="docutils literal notranslate"><span class="pre">is_valid_huburi()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.md5file"><code class="docutils literal notranslate"><span class="pre">md5file()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.unpack_package"><code class="docutils literal notranslate"><span class="pre">unpack_package()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.archive_package"><code class="docutils literal notranslate"><span class="pre">archive_package()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.download_with_resume"><code class="docutils literal notranslate"><span class="pre">download_with_resume()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.upload_file"><code class="docutils literal notranslate"><span class="pre">upload_file()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.disk_cache_offline"><code class="docutils literal notranslate"><span class="pre">disk_cache_offline()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.is_requirements_installed"><code class="docutils literal notranslate"><span class="pre">is_requirements_installed()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.install_requirements"><code class="docutils literal notranslate"><span class="pre">install_requirements()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.UNKNOWN_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.UNKNOWN_ERROR</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.OK"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.OK</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.PARAM_VALIDATION_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.PARAM_VALIDATION_ERROR</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.SQL_CREATION_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.SQL_CREATION_ERROR</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.DATA_STREAM_BROKEN_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.DATA_STREAM_BROKEN_ERROR</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.UNEXPECTED_MIME_TYPE_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.UNEXPECTED_MIME_TYPE_ERROR</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.SSO_LOGIN_REQUIRED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.SSO_LOGIN_REQUIRED</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.AUTHENTICATION_FAILED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.AUTHENTICATION_FAILED</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.AUTHENTICATION_REQUIRED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.AUTHENTICATION_REQUIRED</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.OPERATION_NOT_ALLOWED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.OPERATION_NOT_ALLOWED</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.INTERNAL_RESOURCE_NOT_FOUND"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.INTERNAL_RESOURCE_NOT_FOUND</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.RPC_METHOD_NOT_FOUND"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.RPC_METHOD_NOT_FOUND</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.REQUESTED_ENTITY_NOT_FOUND"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.REQUESTED_ENTITY_NOT_FOUND</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.INTERNAL_RESOURCE_METHOD_NOT_ALLOWED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.INTERNAL_RESOURCE_METHOD_NOT_ALLOWED</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.INCOMPATIBLE_METHOD_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.INCOMPATIBLE_METHOD_ERROR</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.INTERNAL_RESOURCE_ID_CONFLICT"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.INTERNAL_RESOURCE_ID_CONFLICT</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.RESOURCE_POLICY_DENY"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.RESOURCE_POLICY_DENY</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.TOO_LARGE_FILE"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.TOO_LARGE_FILE</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.INTERNAL_DATA_CORRUPTION"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.INTERNAL_DATA_CORRUPTION</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.IDENTIFIER_NAMESPACE_OCCUPIED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.IDENTIFIER_NAMESPACE_OCCUPIED</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.SUBMITTED_DATA_MALFORMED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.SUBMITTED_DATA_MALFORMED</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.EXTERNAL_SERVICE_FAILURE"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.EXTERNAL_SERVICE_FAILURE</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.DOWNSTREAM_SERVICE_FAILURE"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.DOWNSTREAM_SERVICE_FAILURE</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.SERVER_INTERNAL_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.SERVER_INTERNAL_ERROR</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.DOWNSTREAM_SERVICE_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.DOWNSTREAM_SERVICE_ERROR</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.SERVER_SUBPROCESS_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.SERVER_SUBPROCESS_ERROR</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.SANDBOX_BUILD_NOT_FOUND"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.SANDBOX_BUILD_NOT_FOUND</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.NOT_IMPLEMENTED_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.NOT_IMPLEMENTED_ERROR</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.RESPONSE_STREAM_CLOSED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.RESPONSE_STREAM_CLOSED</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.NormalizerErrorCode"><code class="docutils literal notranslate"><span class="pre">NormalizerErrorCode</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.NormalizerErrorCode.ExecutorNotFound"><code class="docutils literal notranslate"><span class="pre">NormalizerErrorCode.ExecutorNotFound</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.NormalizerErrorCode.ExecutorExists"><code class="docutils literal notranslate"><span class="pre">NormalizerErrorCode.ExecutorExists</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.NormalizerErrorCode.IllegalExecutor"><code class="docutils literal notranslate"><span class="pre">NormalizerErrorCode.IllegalExecutor</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.NormalizerErrorCode.BrokenDependency"><code class="docutils literal notranslate"><span class="pre">NormalizerErrorCode.BrokenDependency</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.NormalizerErrorCode.Others"><code class="docutils literal notranslate"><span class="pre">NormalizerErrorCode.Others</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.get_hubble_error_message"><code class="docutils literal notranslate"><span class="pre">get_hubble_error_message()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.hubble.hubapi/">jina.hubble.hubapi module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.get_dist_path"><code class="docutils literal notranslate"><span class="pre">get_dist_path()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.get_dist_path_of_executor"><code class="docutils literal notranslate"><span class="pre">get_dist_path_of_executor()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.get_config_path"><code class="docutils literal notranslate"><span class="pre">get_config_path()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.get_lockfile"><code class="docutils literal notranslate"><span class="pre">get_lockfile()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.load_secret"><code class="docutils literal notranslate"><span class="pre">load_secret()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.dump_secret"><code class="docutils literal notranslate"><span class="pre">dump_secret()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.install_local"><code class="docutils literal notranslate"><span class="pre">install_local()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.install_package_dependencies"><code class="docutils literal notranslate"><span class="pre">install_package_dependencies()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.uninstall_local"><code class="docutils literal notranslate"><span class="pre">uninstall_local()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.list_local"><code class="docutils literal notranslate"><span class="pre">list_local()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.exist_local"><code class="docutils literal notranslate"><span class="pre">exist_local()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.hubble.hubio/">jina.hubble.hubio module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubio/#jina.hubble.hubio.HubIO"><code class="docutils literal notranslate"><span class="pre">HubIO</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubio/#jina.hubble.hubio.HubIO.new"><code class="docutils literal notranslate"><span class="pre">HubIO.new()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubio/#jina.hubble.hubio.HubIO.push"><code class="docutils literal notranslate"><span class="pre">HubIO.push()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubio/#jina.hubble.hubio.HubIO.fetch_meta"><code class="docutils literal notranslate"><span class="pre">HubIO.fetch_meta()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubio/#jina.hubble.hubio.HubIO.deploy_public_sandbox"><code class="docutils literal notranslate"><span class="pre">HubIO.deploy_public_sandbox()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubio/#jina.hubble.hubio.HubIO.pull"><code class="docutils literal notranslate"><span class="pre">HubIO.pull()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.hubble.requirements/">jina.hubble.requirements module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.requirements/#jina.hubble.requirements.parse_requirement"><code class="docutils literal notranslate"><span class="pre">parse_requirement()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.hubble.helper/">jina.hubble.helper module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.hubble.hubio/">jina.hubble.hubio module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.hubble.requirements/">jina.hubble.requirements module</a></li>
 </ul>
 </div>
 </section>
-<section id="module-jina.hubble">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.hubble" title="Permalink to this heading">#</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.hubble.HubExecutor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.hubble.</span></span><span class="sig-name descname"><span class="pre">HubExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commit_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visibility</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md5sum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/#HubExecutor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.HubExecutor" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Basic Executor Data Class from Hubble</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.hubble.HubExecutor.uuid">
-<span class="sig-name descname"><span class="pre">uuid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#jina.hubble.HubExecutor.uuid" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.hubble.HubExecutor.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#jina.hubble.HubExecutor.name" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.hubble.HubExecutor.commit_id">
-<span class="sig-name descname"><span class="pre">commit_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#jina.hubble.HubExecutor.commit_id" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.hubble.HubExecutor.tag">
-<span class="sig-name descname"><span class="pre">tag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#jina.hubble.HubExecutor.tag" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.hubble.HubExecutor.visibility">
-<span class="sig-name descname"><span class="pre">visibility</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#jina.hubble.HubExecutor.visibility" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.hubble.HubExecutor.image_name">
-<span class="sig-name descname"><span class="pre">image_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#jina.hubble.HubExecutor.image_name" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.hubble.HubExecutor.archive_url">
-<span class="sig-name descname"><span class="pre">archive_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#jina.hubble.HubExecutor.archive_url" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.hubble.HubExecutor.md5sum">
-<span class="sig-name descname"><span class="pre">md5sum</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#jina.hubble.HubExecutor.md5sum" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 </section>
 </section>
 
@@ -787,7 +654,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -814,20 +681,7 @@
                         <ul>
 <li><a class="reference internal" href="#">jina.hubble package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.hubble">Module contents</a><ul>
-<li><a class="reference internal" href="#jina.hubble.HubExecutor"><code class="docutils literal notranslate"><span class="pre">HubExecutor</span></code></a><ul>
-<li><a class="reference internal" href="#jina.hubble.HubExecutor.uuid"><code class="docutils literal notranslate"><span class="pre">HubExecutor.uuid</span></code></a></li>
-<li><a class="reference internal" href="#jina.hubble.HubExecutor.name"><code class="docutils literal notranslate"><span class="pre">HubExecutor.name</span></code></a></li>
-<li><a class="reference internal" href="#jina.hubble.HubExecutor.commit_id"><code class="docutils literal notranslate"><span class="pre">HubExecutor.commit_id</span></code></a></li>
-<li><a class="reference internal" href="#jina.hubble.HubExecutor.tag"><code class="docutils literal notranslate"><span class="pre">HubExecutor.tag</span></code></a></li>
-<li><a class="reference internal" href="#jina.hubble.HubExecutor.visibility"><code class="docutils literal notranslate"><span class="pre">HubExecutor.visibility</span></code></a></li>
-<li><a class="reference internal" href="#jina.hubble.HubExecutor.image_name"><code class="docutils literal notranslate"><span class="pre">HubExecutor.image_name</span></code></a></li>
-<li><a class="reference internal" href="#jina.hubble.HubExecutor.archive_url"><code class="docutils literal notranslate"><span class="pre">HubExecutor.archive_url</span></code></a></li>
-<li><a class="reference internal" href="#jina.hubble.HubExecutor.md5sum"><code class="docutils literal notranslate"><span class="pre">HubExecutor.md5sum</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>

@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.orchestrate.pods.container_helper module" href="../jina.orchestrate.pods.container_helper/" /><link rel="prev" title="jina.orchestrate.pods package" href="../jina.orchestrate.pods/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.orchestrate.pods.container.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.orchestrate.pods.container module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -602,72 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.orchestrate.pods.container">
-<span id="jina-orchestrate-pods-container-module"></span><h1>jina.orchestrate.pods.container module<a class="headerlink" href="#module-jina.orchestrate.pods.container" title="Permalink to this heading">#</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.orchestrate.pods.container.run">
-<span class="sig-prename descclassname"><span class="pre">jina.orchestrate.pods.container.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime_ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">envs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_started</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_shutdown</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_ready</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/pods/container/#run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.pods.container.run" title="Permalink to this definition">#</a></dt>
-<dd><p>Method to be run in a process that stream logs from a Container</p>
-<p>This method is the target for the Pod’s <cite>thread</cite> or <cite>process</cite></p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><a class="reference internal" href="#jina.orchestrate.pods.container.run" title="jina.orchestrate.pods.container.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> is running in subprocess/thread, the exception can not be propagated to the main process.
-Hence, please do not raise any exception here.</p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Please note that env variables are process-specific. Subprocess inherits envs from
-the main process. But Subprocess’s envs do NOT affect the main process. It does NOT
-mess up user local system envs.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – namespace args from the Pod</p></li>
-<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – name of the Pod to have proper logging</p></li>
-<li><p><strong>container_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – name to set the Container to</p></li>
-<li><p><strong>net_mode</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The network mode where to run the container</p></li>
-<li><p><strong>runtime_ctrl_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The control address of the runtime in the container</p></li>
-<li><p><strong>envs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – Dictionary of environment variables to be set in the docker image</p></li>
-<li><p><strong>is_started</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>]) – concurrency event to communicate runtime is properly started. Used for better logging</p></li>
-<li><p><strong>is_shutdown</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>]) – concurrency event to communicate runtime is terminated</p></li>
-<li><p><strong>is_ready</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>]) – concurrency event to communicate runtime is ready to receive messages</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.orchestrate.pods.container.ContainerPod">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.orchestrate.pods.container.</span></span><span class="sig-name descname"><span class="pre">ContainerPod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/pods/container/#ContainerPod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.pods.container.ContainerPod" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.orchestrate.pods/#jina.orchestrate.pods.BasePod" title="jina.orchestrate.pods.BasePod"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePod</span></code></a></p>
-<p><a class="reference internal" href="#jina.orchestrate.pods.container.ContainerPod" title="jina.orchestrate.pods.container.ContainerPod"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContainerPod</span></code></a> starts a runtime of <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRuntime</span></code> inside a container. It leverages <code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code>
-or <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Process</span></code> to manage the logs and the lifecycle of docker container object in a robust way.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.pods.container.ContainerPod.start">
-<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/pods/container/#ContainerPod.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.pods.container.ContainerPod.start" title="Permalink to this definition">#</a></dt>
-<dd><p>Start the ContainerPod.
-This method calls <a class="reference internal" href="#jina.orchestrate.pods.container.ContainerPod.start" title="jina.orchestrate.pods.container.ContainerPod.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></a> in <code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocesssing.Process</span></code>.
-.. #noqa: DAR201</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.pods.container.ContainerPod.join">
-<span class="sig-name descname"><span class="pre">join</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/pods/container/#ContainerPod.join"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.pods.container.ContainerPod.join" title="Permalink to this definition">#</a></dt>
-<dd><p>Joins the Pod.
-This method calls <a class="reference internal" href="#jina.orchestrate.pods.container.ContainerPod.join" title="jina.orchestrate.pods.container.ContainerPod.join"><code class="xref py py-meth docutils literal notranslate"><span class="pre">join()</span></code></a> in <code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocesssing.Process</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>args</strong> – extra positional arguments to pass to join</p></li>
-<li><p><strong>kwargs</strong> – extra keyword arguments to pass to join</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+                <section id="jina-orchestrate-pods-container-module">
+<h1>jina.orchestrate.pods.container module<a class="headerlink" href="#jina-orchestrate-pods-container-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -702,7 +638,7 @@ This method calls <a class="reference internal" href="#jina.orchestrate.pods.con
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -718,28 +654,6 @@ This method calls <a class="reference internal" href="#jina.orchestrate.pods.con
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.orchestrate.pods.container module</a><ul>
-<li><a class="reference internal" href="#jina.orchestrate.pods.container.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.pods.container.ContainerPod"><code class="docutils literal notranslate"><span class="pre">ContainerPod</span></code></a><ul>
-<li><a class="reference internal" href="#jina.orchestrate.pods.container.ContainerPod.start"><code class="docutils literal notranslate"><span class="pre">ContainerPod.start()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.pods.container.ContainerPod.join"><code class="docutils literal notranslate"><span class="pre">ContainerPod.join()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

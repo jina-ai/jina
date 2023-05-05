@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.helloworld.multimodal package" href="../jina.helloworld.multimodal/" /><link rel="prev" title="jina.helloworld.fashion.helper module" href="../jina.helloworld.fashion.helper/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.helloworld.fashion.my_executors.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.helloworld.fashion.my_executors module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -602,135 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.helloworld.fashion.my_executors">
-<span id="jina-helloworld-fashion-my-executors-module"></span><h1>jina.helloworld.fashion.my_executors module<a class="headerlink" href="#module-jina.helloworld.fashion.my_executors" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.helloworld.fashion.my_executors.MyIndexer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.helloworld.fashion.my_executors.</span></span><span class="sig-name descname"><span class="pre">MyIndexer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helloworld/fashion/my_executors/#MyIndexer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helloworld.fashion.my_executors.MyIndexer" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.serve.executors/#jina.serve.executors.BaseExecutor" title="jina.serve.executors.BaseExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code></a></p>
-<p>Executor with basic exact search using cosine distance</p>
-<p><cite>metas</cite> and <cite>requests</cite> are always auto-filled with values from YAML config.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>metas</strong> – a dict of metas fields</p></li>
-<li><p><strong>requests</strong> – a dict of endpoint-function mapping</p></li>
-<li><p><strong>runtime_args</strong> – a dict of arguments injected from <code class="xref py py-class docutils literal notranslate"><span class="pre">Runtime</span></code> during runtime</p></li>
-<li><p><strong>kwargs</strong> – additional extra keyword arguments to avoid failing when extra params ara passed that are not expected</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.helloworld.fashion.my_executors.MyIndexer.index">
-<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helloworld/fashion/my_executors/#MyIndexer.index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helloworld.fashion.my_executors.MyIndexer.index" title="Permalink to this definition">#</a></dt>
-<dd><p>Extend self._docs</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>docs</strong> (<a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>) – DocumentArray containing Documents</p></li>
-<li><p><strong>kwargs</strong> – other keyword arguments</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.helloworld.fashion.my_executors.MyIndexer.search">
-<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helloworld/fashion/my_executors/#MyIndexer.search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helloworld.fashion.my_executors.MyIndexer.search" title="Permalink to this definition">#</a></dt>
-<dd><p>Append best matches to each document in docs</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>docs</strong> (<a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>) – documents that are searched</p></li>
-<li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – dictionary of pairs (parameter,value)</p></li>
-<li><p><strong>kwargs</strong> – other keyword arguments</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.helloworld.fashion.my_executors.MyIndexer.close">
-<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helloworld/fashion/my_executors/#MyIndexer.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helloworld.fashion.my_executors.MyIndexer.close" title="Permalink to this definition">#</a></dt>
-<dd><p>Stores the DocumentArray to disk</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.helloworld.fashion.my_executors.MyIndexer.requests">
-<span class="sig-name descname"><span class="pre">requests</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'/eval':</span> <span class="pre">&lt;function</span> <span class="pre">MyIndexer.search&gt;,</span> <span class="pre">'/index':</span> <span class="pre">&lt;function</span> <span class="pre">MyIndexer.index&gt;,</span> <span class="pre">'/search':</span> <span class="pre">&lt;function</span> <span class="pre">MyIndexer.search&gt;}</span></em><a class="headerlink" href="#jina.helloworld.fashion.my_executors.MyIndexer.requests" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.helloworld.fashion.my_executors.MyEncoder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.helloworld.fashion.my_executors.</span></span><span class="sig-name descname"><span class="pre">MyEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helloworld/fashion/my_executors/#MyEncoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helloworld.fashion.my_executors.MyEncoder" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.serve.executors/#jina.serve.executors.BaseExecutor" title="jina.serve.executors.BaseExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code></a></p>
-<p>Encode data using SVD decomposition</p>
-<p><cite>metas</cite> and <cite>requests</cite> are always auto-filled with values from YAML config.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>metas</strong> – a dict of metas fields</p></li>
-<li><p><strong>requests</strong> – a dict of endpoint-function mapping</p></li>
-<li><p><strong>runtime_args</strong> – a dict of arguments injected from <code class="xref py py-class docutils literal notranslate"><span class="pre">Runtime</span></code> during runtime</p></li>
-<li><p><strong>kwargs</strong> – additional extra keyword arguments to avoid failing when extra params ara passed that are not expected</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.helloworld.fashion.my_executors.MyEncoder.encode">
-<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helloworld/fashion/my_executors/#MyEncoder.encode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helloworld.fashion.my_executors.MyEncoder.encode" title="Permalink to this definition">#</a></dt>
-<dd><p>Encode the data using an SVD decomposition</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>docs</strong> (<a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>) – input documents to update with an embedding</p></li>
-<li><p><strong>kwargs</strong> – other keyword arguments</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.helloworld.fashion.my_executors.MyEncoder.requests">
-<span class="sig-name descname"><span class="pre">requests</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'/default':</span> <span class="pre">&lt;function</span> <span class="pre">MyEncoder.encode&gt;}</span></em><a class="headerlink" href="#jina.helloworld.fashion.my_executors.MyEncoder.requests" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.helloworld.fashion.my_executors.MyConverter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.helloworld.fashion.my_executors.</span></span><span class="sig-name descname"><span class="pre">MyConverter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helloworld/fashion/my_executors/#MyConverter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helloworld.fashion.my_executors.MyConverter" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.serve.executors/#jina.serve.executors.BaseExecutor" title="jina.serve.executors.BaseExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code></a></p>
-<p>Convert DocumentArrays removing tensor and reshaping tensor as image</p>
-<p><cite>metas</cite> and <cite>requests</cite> are always auto-filled with values from YAML config.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>metas</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a dict of metas fields</p></li>
-<li><p><strong>requests</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a dict of endpoint-function mapping</p></li>
-<li><p><strong>runtime_args</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a dict of arguments injected from <code class="xref py py-class docutils literal notranslate"><span class="pre">Runtime</span></code> during runtime</p></li>
-<li><p><strong>kwargs</strong> – additional extra keyword arguments to avoid failing when extra params ara passed that are not expected</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.helloworld.fashion.my_executors.MyConverter.convert">
-<span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helloworld/fashion/my_executors/#MyConverter.convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helloworld.fashion.my_executors.MyConverter.convert" title="Permalink to this definition">#</a></dt>
-<dd><p>Remove tensor and reshape documents as squared images
-:type docs: <a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>
-:param docs: documents to modify
-:param kwargs: other keyword arguments</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.helloworld.fashion.my_executors.MyConverter.requests">
-<span class="sig-name descname"><span class="pre">requests</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'/default':</span> <span class="pre">&lt;function</span> <span class="pre">MyConverter.convert&gt;}</span></em><a class="headerlink" href="#jina.helloworld.fashion.my_executors.MyConverter.requests" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+                <section id="jina-helloworld-fashion-my-executors-module">
+<h1>jina.helloworld.fashion.my_executors module<a class="headerlink" href="#jina-helloworld-fashion-my-executors-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -765,7 +638,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -781,39 +654,6 @@
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.helloworld.fashion.my_executors module</a><ul>
-<li><a class="reference internal" href="#jina.helloworld.fashion.my_executors.MyIndexer"><code class="docutils literal notranslate"><span class="pre">MyIndexer</span></code></a><ul>
-<li><a class="reference internal" href="#jina.helloworld.fashion.my_executors.MyIndexer.index"><code class="docutils literal notranslate"><span class="pre">MyIndexer.index()</span></code></a></li>
-<li><a class="reference internal" href="#jina.helloworld.fashion.my_executors.MyIndexer.search"><code class="docutils literal notranslate"><span class="pre">MyIndexer.search()</span></code></a></li>
-<li><a class="reference internal" href="#jina.helloworld.fashion.my_executors.MyIndexer.close"><code class="docutils literal notranslate"><span class="pre">MyIndexer.close()</span></code></a></li>
-<li><a class="reference internal" href="#jina.helloworld.fashion.my_executors.MyIndexer.requests"><code class="docutils literal notranslate"><span class="pre">MyIndexer.requests</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.helloworld.fashion.my_executors.MyEncoder"><code class="docutils literal notranslate"><span class="pre">MyEncoder</span></code></a><ul>
-<li><a class="reference internal" href="#jina.helloworld.fashion.my_executors.MyEncoder.encode"><code class="docutils literal notranslate"><span class="pre">MyEncoder.encode()</span></code></a></li>
-<li><a class="reference internal" href="#jina.helloworld.fashion.my_executors.MyEncoder.requests"><code class="docutils literal notranslate"><span class="pre">MyEncoder.requests</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.helloworld.fashion.my_executors.MyConverter"><code class="docutils literal notranslate"><span class="pre">MyConverter</span></code></a><ul>
-<li><a class="reference internal" href="#jina.helloworld.fashion.my_executors.MyConverter.convert"><code class="docutils literal notranslate"><span class="pre">MyConverter.convert()</span></code></a></li>
-<li><a class="reference internal" href="#jina.helloworld.fashion.my_executors.MyConverter.requests"><code class="docutils literal notranslate"><span class="pre">MyConverter.requests</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

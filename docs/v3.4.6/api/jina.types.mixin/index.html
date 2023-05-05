@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.checker module" href="../jina.checker/" /><link rel="prev" title="jina.types.request.data module" href="../jina.types.request.data/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.types.mixin.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.types.mixin module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -602,176 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.types.mixin">
-<span id="jina-types-mixin-module"></span><h1>jina.types.mixin module<a class="headerlink" href="#module-jina.types.mixin" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.types.mixin.</span></span><span class="sig-name descname"><span class="pre">ProtoTypeMixin</span></span><a class="reference internal" href="../../_modules/jina/types/mixin/#ProtoTypeMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>The base mixin class of all Jina types.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul>
-<li><p>All Jina types should inherit from this class.</p></li>
-<li><p>All subclass should have <code class="docutils literal notranslate"><span class="pre">self._pb_body</span></code></p></li>
-<li><p>All subclass should implement <code class="docutils literal notranslate"><span class="pre">__init__</span></code> with the possibility of initializing from <code class="docutils literal notranslate"><span class="pre">None</span></code>, e.g.:</p>
-<blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyJinaType</span><span class="p">(</span><span class="n">ProtoTypeMixin</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">SomePbMsg</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">proto</span> <span class="ow">or</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">SomePbMsg</span><span class="p">()</span>
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-</ul>
-</div>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.to_json">
-<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/mixin/#ProtoTypeMixin.to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.to_json" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the object in JSON string</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>JSON string of the object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.to_dict">
-<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/mixin/#ProtoTypeMixin.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.to_dict" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the object in Python dictionary.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Array like object such as <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> (i.e. anything described as <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.NdArrayProto</span></code>)
-will be converted to Python list.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>dict representation of the object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.proto">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">jina_pb2._reflection.GeneratedProtocolMessageType</span></em><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.proto" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the underlying Protobuf object</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>jina_pb2._reflection.GeneratedProtocolMessageType</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Protobuf representation of the object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.to_bytes">
-<span class="sig-name descname"><span class="pre">to_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/mixin/#ProtoTypeMixin.to_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.to_bytes" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the serialized the message to a string.</p>
-<p>For more Pythonic code, please use <code class="docutils literal notranslate"><span class="pre">bytes(...)</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>binary string representation of the object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.nbytes">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nbytes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.nbytes" title="Permalink to this definition">#</a></dt>
-<dd><p>Return total bytes consumed by protobuf.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>number of bytes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.MergeFrom">
-<span class="sig-name descname"><span class="pre">MergeFrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/mixin/#ProtoTypeMixin.MergeFrom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.MergeFrom" title="Permalink to this definition">#</a></dt>
-<dd><p>Merge the content of target</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>other</strong> (<em>~T</em>) – the document to merge from</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.CopyFrom">
-<span class="sig-name descname"><span class="pre">CopyFrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/mixin/#ProtoTypeMixin.CopyFrom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.CopyFrom" title="Permalink to this definition">#</a></dt>
-<dd><p>Copy the content of target</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>other</strong> (<em>~T</em>) – the document to copy from</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.clear">
-<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/mixin/#ProtoTypeMixin.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.clear" title="Permalink to this definition">#</a></dt>
-<dd><p>Remove all values from all fields of this Document.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.pop">
-<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/mixin/#ProtoTypeMixin.pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.pop" title="Permalink to this definition">#</a></dt>
-<dd><p>Remove the values from the given fields of this Document.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fields</strong> – field names</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.dict">
-<span class="sig-name descname"><span class="pre">dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.dict" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.json">
-<span class="sig-name descname"><span class="pre">json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.json" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.binary_str">
-<span class="sig-name descname"><span class="pre">binary_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.binary_str" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+                <section id="jina-types-mixin-module">
+<h1>jina.types.mixin module<a class="headerlink" href="#jina-types-mixin-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -806,7 +638,7 @@ will be converted to Python list.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -822,37 +654,6 @@ will be converted to Python list.</p>
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.types.mixin module</a><ul>
-<li><a class="reference internal" href="#jina.types.mixin.ProtoTypeMixin"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin</span></code></a><ul>
-<li><a class="reference internal" href="#jina.types.mixin.ProtoTypeMixin.to_json"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.to_json()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.mixin.ProtoTypeMixin.to_dict"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.to_dict()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.mixin.ProtoTypeMixin.proto"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.proto</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.mixin.ProtoTypeMixin.to_bytes"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.to_bytes()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.mixin.ProtoTypeMixin.nbytes"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.nbytes</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.mixin.ProtoTypeMixin.MergeFrom"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.MergeFrom()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.mixin.ProtoTypeMixin.CopyFrom"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.CopyFrom()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.mixin.ProtoTypeMixin.clear"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.clear()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.mixin.ProtoTypeMixin.pop"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.pop()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.mixin.ProtoTypeMixin.dict"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.dict()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.mixin.ProtoTypeMixin.json"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.json()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.mixin.ProtoTypeMixin.binary_str"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.binary_str()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

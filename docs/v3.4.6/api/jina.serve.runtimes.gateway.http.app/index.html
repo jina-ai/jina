@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.serve.runtimes.gateway.http.models module" href="../jina.serve.runtimes.gateway.http.models/" /><link rel="prev" title="jina.serve.runtimes.gateway.http package" href="../jina.serve.runtimes.gateway.http/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.runtimes.gateway.http.app.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.serve.runtimes.gateway.http.app module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -602,28 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.serve.runtimes.gateway.http.app">
-<span id="jina-serve-runtimes-gateway-http-app-module"></span><h1>jina.serve.runtimes.gateway.http.app module<a class="headerlink" href="#module-jina.serve.runtimes.gateway.http.app" title="Permalink to this heading">#</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.app.get_fastapi_app">
-<span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.http.app.</span></span><span class="sig-name descname"><span class="pre">get_fastapi_app</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topology_graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_pool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics_registry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/app/#get_fastapi_app"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.app.get_fastapi_app" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the app from FastAPI as the REST interface.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>args</strong> (<em>argparse.Namespace</em>) – passed arguments.</p></li>
-<li><p><strong>topology_graph</strong> (<a class="reference internal" href="../jina.serve.runtimes.gateway.graph.topology_graph/#jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph" title="jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph"><em>TopologyGraph</em></a>) – topology graph that manages the logic of sending to the proper executors.</p></li>
-<li><p><strong>connection_pool</strong> (<a class="reference internal" href="../jina.serve.networking/#jina.serve.networking.GrpcConnectionPool" title="jina.serve.networking.GrpcConnectionPool"><em>GrpcConnectionPool</em></a>) – Connection Pool to handle multiple replicas and sending to different of them</p></li>
-<li><p><strong>logger</strong> (<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><em>JinaLogger</em></a>) – Jina logger.</p></li>
-<li><p><strong>metrics_registry</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>fastapi app</p>
-</dd>
-</dl>
-</dd></dl>
-
+                <section id="jina-serve-runtimes-gateway-http-app-module">
+<h1>jina.serve.runtimes.gateway.http.app module<a class="headerlink" href="#jina-serve-runtimes-gateway-http-app-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -658,7 +638,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -674,23 +654,6 @@
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.serve.runtimes.gateway.http.app module</a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.app.get_fastapi_app"><code class="docutils literal notranslate"><span class="pre">get_fastapi_app()</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

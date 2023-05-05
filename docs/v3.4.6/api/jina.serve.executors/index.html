@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve.executors/" />
 <meta property="og:site_name" content="Jina 3.4.6 Documentation" />
-<meta property="og:description" content="Submodules: jina.serve.executors.decorators module- wrap_func(), store_init_kwargs(), requests(), monitor()., jina.serve.executors.metas module- get_default_metas().. Module contents:" />
+<meta property="og:description" content="Submodules: jina.serve.executors.decorators module, jina.serve.executors.metas module. Module contents:" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.4.6 Documentation" />
-<meta name="description" content="Submodules: jina.serve.executors.decorators module- wrap_func(), store_init_kwargs(), requests(), monitor()., jina.serve.executors.metas module- get_default_metas().. Module contents:" />
+<meta name="description" content="Submodules: jina.serve.executors.decorators module, jina.serve.executors.metas module. Module contents:" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -32,13 +32,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.serve.executors.decorators module" href="../jina.serve.executors.decorators/" /><link rel="prev" title="jina.serve package" href="../jina.serve/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.executors.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.serve.executors package - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -610,243 +610,13 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.serve.executors.decorators/">jina.serve.executors.decorators module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../jina.serve.executors.decorators/#jina.serve.executors.decorators.wrap_func"><code class="docutils literal notranslate"><span class="pre">wrap_func()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.serve.executors.decorators/#jina.serve.executors.decorators.store_init_kwargs"><code class="docutils literal notranslate"><span class="pre">store_init_kwargs()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.serve.executors.decorators/#jina.serve.executors.decorators.requests"><code class="docutils literal notranslate"><span class="pre">requests()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.serve.executors.decorators/#jina.serve.executors.decorators.monitor"><code class="docutils literal notranslate"><span class="pre">monitor()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.serve.executors.metas/">jina.serve.executors.metas module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../jina.serve.executors.metas/#jina.serve.executors.metas.get_default_metas"><code class="docutils literal notranslate"><span class="pre">get_default_metas()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.serve.executors.decorators/">jina.serve.executors.decorators module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.serve.executors.metas/">jina.serve.executors.metas module</a></li>
 </ul>
 </div>
 </section>
-<section id="module-jina.serve.executors">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.serve.executors" title="Permalink to this heading">#</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.executors.BaseExecutor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.executors.</span></span><span class="sig-name descname"><span class="pre">BaseExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/executors/#BaseExecutor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.executors.BaseExecutor" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.jaml/#jina.jaml.JAMLCompatible" title="jina.jaml.JAMLCompatible"><code class="xref py py-class docutils literal notranslate"><span class="pre">JAMLCompatible</span></code></a></p>
-<p>The base class of the executor, can be used to build encoder, indexer, etc.</p>
-<p>Any executor inherited from <a class="reference internal" href="#jina.serve.executors.BaseExecutor" title="jina.serve.executors.BaseExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code></a> always has the <strong>meta</strong> defined in <code class="xref py py-mod docutils literal notranslate"><span class="pre">jina.executors.metas.defaults</span></code>.</p>
-<p>All arguments in the <code class="xref py py-func docutils literal notranslate"><span class="pre">__init__()</span></code> can be specified with a <code class="docutils literal notranslate"><span class="pre">with</span></code> map in the YAML config. Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyAwesomeExecutor</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">awesomeness</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
-        <span class="k">pass</span>
-</pre></div>
-</div>
-<p>is equal to</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyAwesomeExecutor</span>
-<span class="nt">with</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">awesomeness</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
-</pre></div>
-</div>
-<p><cite>metas</cite> and <cite>requests</cite> are always auto-filled with values from YAML config.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>metas</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a dict of metas fields</p></li>
-<li><p><strong>requests</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a dict of endpoint-function mapping</p></li>
-<li><p><strong>runtime_args</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a dict of arguments injected from <code class="xref py py-class docutils literal notranslate"><span class="pre">Runtime</span></code> during runtime</p></li>
-<li><p><strong>kwargs</strong> – additional extra keyword arguments to avoid failing when extra params ara passed that are not expected</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.executors.BaseExecutor.close">
-<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/executors/#BaseExecutor.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.executors.BaseExecutor.close" title="Permalink to this definition">#</a></dt>
-<dd><p>Always invoked as executor is destroyed.</p>
-<p>You can write destructor &amp; saving logic here.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.serve.executors.BaseExecutor.workspace">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">workspace</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.serve.executors.BaseExecutor.workspace" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the workspace directory of the Executor.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>returns the workspace of the current shard of this Executor.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.executors.BaseExecutor.from_hub">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_hub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_metas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_requests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/executors/#BaseExecutor.from_hub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.executors.BaseExecutor.from_hub" title="Permalink to this definition">#</a></dt>
-<dd><p>Construct an Executor from Hub.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>uri</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a hub Executor scheme starts with <cite>jinahub://</cite></p></li>
-<li><p><strong>context</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – context replacement variables in a dict, the value of the dict is the replacement.</p></li>
-<li><p><strong>uses_with</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – dictionary of parameters to overwrite from the default config’s with field</p></li>
-<li><p><strong>uses_metas</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – dictionary of parameters to overwrite from the default config’s metas field</p></li>
-<li><p><strong>uses_requests</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – dictionary of parameters to overwrite from the default config’s requests field</p></li>
-<li><p><strong>kwargs</strong> – other kwargs accepted by the CLI <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span> <span class="pre">pull</span></code></p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>~T</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the Hub Executor object.</p>
-</dd>
-</dl>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
-<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
-
-<span class="n">executor</span> <span class="o">=</span> <span class="n">Executor</span><span class="o">.</span><span class="n">from_hub</span><span class="p">(</span>
-    <span class="n">uri</span><span class="o">=</span><span class="s1">&#39;jinahub://CLIPImageEncoder&#39;</span><span class="p">,</span> <span class="n">install_requirements</span><span class="o">=</span><span class="kc">True</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.executors.BaseExecutor.serve">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">serve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uses_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_metas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_requests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/executors/#BaseExecutor.serve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.executors.BaseExecutor.serve" title="Permalink to this definition">#</a></dt>
-<dd><p>Serve this Executor in a temporary Flow. Useful in testing an Executor in remote settings.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>uses_with</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – dictionary of parameters to overwrite from the default config’s with field</p></li>
-<li><p><strong>uses_metas</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – dictionary of parameters to overwrite from the default config’s metas field</p></li>
-<li><p><strong>uses_requests</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – dictionary of parameters to overwrite from the default config’s requests field</p></li>
-<li><p><strong>stop_event</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – a threading event or a multiprocessing event that once set will resume the control Flow
-to main thread.</p></li>
-<li><p><strong>kwargs</strong> – other kwargs accepted by the Flow, full list can be found <cite>here &lt;https://docs.jina.ai/api/jina.orchestrate.flow.base/&gt;</cite></p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.executors.BaseExecutor.StandaloneExecutorType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">StandaloneExecutorType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/executors/#BaseExecutor.StandaloneExecutorType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.executors.BaseExecutor.StandaloneExecutorType" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.enums/#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
-<p>Type of standalone Executors</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.executors.BaseExecutor.StandaloneExecutorType.EXTERNAL">
-<span class="sig-name descname"><span class="pre">EXTERNAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.serve.executors.BaseExecutor.StandaloneExecutorType.EXTERNAL" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.executors.BaseExecutor.StandaloneExecutorType.SHARED">
-<span class="sig-name descname"><span class="pre">SHARED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.serve.executors.BaseExecutor.StandaloneExecutorType.SHARED" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.executors.BaseExecutor.to_k8s_yaml">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">to_k8s_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_base_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k8s_namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executor_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">StandaloneExecutorType.EXTERNAL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_metas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_requests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/executors/#BaseExecutor.to_k8s_yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.executors.BaseExecutor.to_k8s_yaml" title="Permalink to this definition">#</a></dt>
-<dd><p>Converts the Executor into a set of yaml deployments to deploy in Kubernetes.</p>
-<p>If you don’t want to rebuild image on Jina Hub,
-you can set <cite>JINA_HUB_NO_IMAGE_REBUILD</cite> environment variable.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>uses</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the Executor to use. Has to be containerized and accessible from K8s</p></li>
-<li><p><strong>output_base_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The base path where to dump all the yaml files</p></li>
-<li><p><strong>k8s_namespace</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.</p></li>
-<li><p><strong>executor_type</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="#jina.serve.executors.BaseExecutor.StandaloneExecutorType" title="jina.serve.executors.BaseExecutor.StandaloneExecutorType"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandaloneExecutorType</span></code></a>]) – The type of Executor. Can be external or shared. External Executors include the Gateway. Shared Executors don’t. Defaults to External</p></li>
-<li><p><strong>uses_with</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – dictionary of parameters to overwrite from the default config’s with field</p></li>
-<li><p><strong>uses_metas</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – dictionary of parameters to overwrite from the default config’s metas field</p></li>
-<li><p><strong>uses_requests</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – dictionary of parameters to overwrite from the default config’s requests field</p></li>
-<li><p><strong>kwargs</strong> – other kwargs accepted by the Flow, full list can be found <cite>here &lt;https://docs.jina.ai/api/jina.orchestrate.flow.base/&gt;</cite></p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.executors.BaseExecutor.to_docker_compose_yaml">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">to_docker_compose_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executor_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">StandaloneExecutorType.EXTERNAL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_metas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_requests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/executors/#BaseExecutor.to_docker_compose_yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.executors.BaseExecutor.to_docker_compose_yaml" title="Permalink to this definition">#</a></dt>
-<dd><p>Converts the Executor into a yaml file to run with <cite>docker-compose up</cite>
-:type uses: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param uses: the Executor to use. Has to be containerized
-:type output_path: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
-:param output_path: The output path for the yaml file
-:type network_name: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
-:param network_name: The name of the network that will be used by the deployment name
-:type executor_type: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="#jina.serve.executors.BaseExecutor.StandaloneExecutorType" title="jina.serve.executors.BaseExecutor.StandaloneExecutorType"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandaloneExecutorType</span></code></a>]
-:param executor_type: The type of Executor. Can be external or shared. External Executors include the Gateway. Shared Executors don’t. Defaults to External
-:type uses_with: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]
-:param uses_with: dictionary of parameters to overwrite from the default config’s with field
-:type uses_metas: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]
-:param uses_metas: dictionary of parameters to overwrite from the default config’s metas field
-:type uses_requests: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]
-:param uses_requests: dictionary of parameters to overwrite from the default config’s requests field
-:param kwargs: other kwargs accepted by the Flow, full list can be found <cite>here &lt;https://docs.jina.ai/api/jina.orchestrate.flow.base/&gt;</cite></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.executors.BaseExecutor.get_metrics">
-<span class="sig-name descname"><span class="pre">get_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documentation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/executors/#BaseExecutor.get_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.executors.BaseExecutor.get_metrics" title="Permalink to this definition">#</a></dt>
-<dd><p>Get a given prometheus metric, if it does not exist yet, it will create it and store it in a buffer.
-:type name: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
-:param name: the name of the metrics
-:type documentation: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
-:param documentation:  the description of the metrics</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the given prometheus metrics or None if monitoring is not enable.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.executors.ReducerExecutor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.executors.</span></span><span class="sig-name descname"><span class="pre">ReducerExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/executors/#ReducerExecutor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.executors.ReducerExecutor" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.serve.executors.BaseExecutor" title="jina.serve.executors.BaseExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code></a></p>
-<p>ReducerExecutor is an Executor that performs a reduce operation on a matrix of DocumentArrays coming from shards.
-ReducerExecutor relies on DocumentArray.reduce_all to merge all DocumentArray into one DocumentArray which will be
-sent to the next deployment.</p>
-<p>This Executor only adds a reduce endpoint to the BaseExecutor.</p>
-<p><cite>metas</cite> and <cite>requests</cite> are always auto-filled with values from YAML config.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>metas</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a dict of metas fields</p></li>
-<li><p><strong>requests</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a dict of endpoint-function mapping</p></li>
-<li><p><strong>runtime_args</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a dict of arguments injected from <code class="xref py py-class docutils literal notranslate"><span class="pre">Runtime</span></code> during runtime</p></li>
-<li><p><strong>kwargs</strong> – additional extra keyword arguments to avoid failing when extra params ara passed that are not expected</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.executors.ReducerExecutor.reduce">
-<span class="sig-name descname"><span class="pre">reduce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/executors/#ReducerExecutor.reduce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.executors.ReducerExecutor.reduce" title="Permalink to this definition">#</a></dt>
-<dd><p>Reduce docs_matrix into one <cite>DocumentArray</cite> using <cite>DocumentArray.reduce_all</cite>
-:type docs_matrix: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]
-:param docs_matrix: a List of DocumentArrays to be reduced
-:param kwargs: extra keyword arguments
-:return: the reduced DocumentArray</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.executors.ReducerExecutor.requests">
-<span class="sig-name descname"><span class="pre">requests</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'/default':</span> <span class="pre">&lt;function</span> <span class="pre">ReducerExecutor.reduce&gt;}</span></em><a class="headerlink" href="#jina.serve.executors.ReducerExecutor.requests" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 </section>
 </section>
 
@@ -882,7 +652,7 @@ sent to the next deployment.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -909,29 +679,7 @@ sent to the next deployment.</p>
                         <ul>
 <li><a class="reference internal" href="#">jina.serve.executors package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.serve.executors">Module contents</a><ul>
-<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor"><code class="docutils literal notranslate"><span class="pre">BaseExecutor</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.close"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.close()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.workspace"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.workspace</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.from_hub"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.from_hub()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.serve"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.serve()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.StandaloneExecutorType"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.StandaloneExecutorType</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.StandaloneExecutorType.EXTERNAL"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.StandaloneExecutorType.EXTERNAL</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.StandaloneExecutorType.SHARED"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.StandaloneExecutorType.SHARED</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.to_k8s_yaml"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.to_k8s_yaml()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.to_docker_compose_yaml"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.to_docker_compose_yaml()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.get_metrics"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.get_metrics()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.serve.executors.ReducerExecutor"><code class="docutils literal notranslate"><span class="pre">ReducerExecutor</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.executors.ReducerExecutor.reduce"><code class="docutils literal notranslate"><span class="pre">ReducerExecutor.reduce()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.executors.ReducerExecutor.requests"><code class="docutils literal notranslate"><span class="pre">ReducerExecutor.requests</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>

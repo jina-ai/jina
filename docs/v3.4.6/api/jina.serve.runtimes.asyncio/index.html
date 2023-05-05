@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.serve.runtimes.base module" href="../jina.serve.runtimes.base/" /><link rel="prev" title="jina.serve.runtimes.worker package" href="../jina.serve.runtimes.worker/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.runtimes.asyncio.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.serve.runtimes.asyncio module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -602,103 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.serve.runtimes.asyncio">
-<span id="jina-serve-runtimes-asyncio-module"></span><h1>jina.serve.runtimes.asyncio module<a class="headerlink" href="#module-jina.serve.runtimes.asyncio" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.asyncio.AsyncNewLoopRuntime">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.asyncio.</span></span><span class="sig-name descname"><span class="pre">AsyncNewLoopRuntime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/asyncio/#AsyncNewLoopRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.serve.runtimes.base/#jina.serve.runtimes.base.BaseRuntime" title="jina.serve.runtimes.base.BaseRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRuntime</span></code></a>, <a class="reference internal" href="../jina.serve.runtimes.monitoring/#jina.serve.runtimes.monitoring.MonitoringMixin" title="jina.serve.runtimes.monitoring.MonitoringMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MonitoringMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
-<p>The async runtime to start a new event loop.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.run_forever">
-<span class="sig-name descname"><span class="pre">run_forever</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/asyncio/#AsyncNewLoopRuntime.run_forever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.run_forever" title="Permalink to this definition">#</a></dt>
-<dd><p>Running method to block the main thread.</p>
-<p>Run the event loop until a Future is done.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.teardown">
-<span class="sig-name descname"><span class="pre">teardown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/asyncio/#AsyncNewLoopRuntime.teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.teardown" title="Permalink to this definition">#</a></dt>
-<dd><p>Call async_teardown() and stop and close the event loop.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_setup">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/asyncio/#AsyncNewLoopRuntime.async_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_setup" title="Permalink to this definition">#</a></dt>
-<dd><p>The async method to setup.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_teardown">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_teardown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/asyncio/#AsyncNewLoopRuntime.async_teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_teardown" title="Permalink to this definition">#</a></dt>
-<dd><p>The async method to clean up resources during teardown. This method should free all resources allocated
-during async_setup</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_cancel">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/asyncio/#AsyncNewLoopRuntime.async_cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_cancel" title="Permalink to this definition">#</a></dt>
-<dd><p>An async method to cancel async_run_forever.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_run_forever">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_run_forever</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/asyncio/#AsyncNewLoopRuntime.async_run_forever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_run_forever" title="Permalink to this definition">#</a></dt>
-<dd><p>The async method to run until it is stopped.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.activate">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">activate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/asyncio/#AsyncNewLoopRuntime.activate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.activate" title="Permalink to this definition">#</a></dt>
-<dd><p>Activate the runtime, does not apply to these runtimes</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>kwargs</strong> – extra keyword arguments</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.is_ready">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/asyncio/#AsyncNewLoopRuntime.is_ready"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.is_ready" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if status is ready.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ctrl_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the address where the control request needs to be sent</p></li>
-<li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>True if status is ready else False.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.wait_for_ready_or_shutdown">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wait_for_ready_or_shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ready_or_shutdown_event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/asyncio/#AsyncNewLoopRuntime.wait_for_ready_or_shutdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.wait_for_ready_or_shutdown" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if the runtime has successfully started</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>timeout</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – The time to wait before readiness or failure is determined</p></li>
-<li><p><strong>ctrl_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the address where the control message needs to be sent</p></li>
-<li><p><strong>ready_or_shutdown_event</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>]) – the multiprocessing event to detect if the process failed or is ready</p></li>
-<li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True if is ready or it needs to be shutdown</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+                <section id="jina-serve-runtimes-asyncio-module">
+<h1>jina.serve.runtimes.asyncio module<a class="headerlink" href="#jina-serve-runtimes-asyncio-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -733,7 +638,7 @@ during async_setup</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -749,34 +654,6 @@ during async_setup</p>
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.serve.runtimes.asyncio module</a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.run_forever"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.run_forever()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.teardown"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.teardown()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_setup"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.async_setup()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_teardown"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.async_teardown()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_cancel"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.async_cancel()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_run_forever"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.async_run_forever()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.activate"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.activate()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.is_ready"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.is_ready()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.wait_for_ready_or_shutdown"><code class="docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime.wait_for_ready_or_shutdown()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

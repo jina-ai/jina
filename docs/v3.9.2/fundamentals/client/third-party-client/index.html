@@ -32,13 +32,13 @@
 <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Hub" href="../../executor/hub/" /><link rel="prev" title="Client" href="../client/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/client/third-party-client.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>Third-party clients - Jina 3.9.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/docbot.css" />
@@ -642,7 +642,7 @@ You can again use the <a class="reference external" href="https://api.jina.ai/re
 <h3>Use Postman<a class="headerlink" href="#use-postman" title="Permalink to this heading">#</a></h3>
 <p><a class="reference external" href="https://www.postman.com/">Postman</a> is an application that allows the testing of web APIs from a graphical interface. You can store all the templates for your REST APIs in it, using Collections.</p>
 <p>We provide a suite of templates for the Jina Flow, in this <a class="reference external" href="https://github.com/jina-ai/jina/tree/master/.github/Jina.postman_collection.json">collection</a>. You can import it in Postman in <strong>Collections</strong>, with the <strong>Import</strong> button. It provides templates for the main operations. You need to create an Environment to define the <code class="docutils literal notranslate"><span class="pre">{{url}}</span></code> and <code class="docutils literal notranslate"><span class="pre">{{port}}</span></code> environment variables. These would be the hostname and the port where the Flow is listening.</p>
-<p>This contribution was made by <a class="reference external" href="https://jina-ai.slack.com/archives/C0169V26ATY/p1649689443888779?thread_ts=1649428823.420879&amp;cid=C0169V26ATY">Jonathan Rowley</a>, in our <span class="xref myst">community Slack</span>.</p>
+<p>This contribution was made by <a class="reference external" href="https://jina-ai.slack.com/archives/C0169V26ATY/p1649689443888779?thread_ts=1649428823.420879&amp;amp;cid=C0169V26ATY">Jonathan Rowley</a>, in our <a class="reference internal" href="#slack.jina.ai"><span class="xref myst">community Slack</span></a>.</p>
 </section>
 </section>
 <section id="grpc">
@@ -654,7 +654,7 @@ You can again use the <a class="reference external" href="https://api.jina.ai/re
 <li><p>Add the generated files to your project and import them in your code.</p></li>
 </ul>
 <p>You should finally be able to communicate with your Flow using the gRPC protocol. You can find more information on the gRPC
-<code class="docutils literal notranslate"><span class="pre">message</span></code> and <code class="docutils literal notranslate"><span class="pre">service</span></code> that you can use to communicate in the  <a class="reference internal" href="../../../proto/docs/"><span class="doc std std-doc">Protobuf documentation</span></a>.</p>
+<code class="docutils literal notranslate"><span class="pre">message</span></code> and <code class="docutils literal notranslate"><span class="pre">service</span></code> that you can use to communicate in the  <a class="reference internal" href="../../../proto/docs/"><span class="std std-doc">Protobuf documentation</span></a>.</p>
 </section>
 <section id="graphql">
 <span id="flow-graphql"></span><h2>GraphQL<a class="headerlink" href="#graphql" title="Permalink to this heading">#</a></h2>
@@ -690,7 +690,7 @@ This is especially useful when the user does not need potentially large fields, 
 <h3>Mutations and arguments<a class="headerlink" href="#mutations-and-arguments" title="Permalink to this heading">#</a></h3>
 <p>The Flow GraphQL API exposes the mutation <code class="docutils literal notranslate"><span class="pre">docs</span></code>, which sends its inputs to the Flow’s Executors,
 just like HTTP <code class="docutils literal notranslate"><span class="pre">post</span></code> as described <span class="xref std std-ref">above</span>.</p>
-<p>A GraphQL mutation takes same set of arguments used in <span class="xref myst">HTTP</span>.</p>
+<p>A GraphQL mutation takes same set of arguments used in <a class="reference internal" href="#arguments"><span class="xref myst">HTTP</span></a>.</p>
 <p>The response from GraphQL can include all fields available on a DocumentArray.</p>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
@@ -709,9 +709,9 @@ and more.</p>
 <h2>Websocket<a class="headerlink" href="#websocket" title="Permalink to this heading">#</a></h2>
 <p>Websocket uses persistent connections between the client &amp; Flow, hence allowing streaming use cases.
 While you can always use the Python client to stream requests like any other protocol, websocket allows streaming JSON from anywhere (CLI / Postman / any other programming language).
-The same set of arguments as <span class="xref myst">HTTP</span> can be used in the payload.</p>
+The same set of arguments as <a class="reference internal" href="#arguments"><span class="xref myst">HTTP</span></a> can be used in the payload.</p>
 <p>We use <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers#subprotocols">subprotocols</a> to separate streaming JSON vs bytes.
-The Flow defaults to <code class="docutils literal notranslate"><span class="pre">json</span></code> when a subprotocol is not passed during connection establishment (Our Python client uses <code class="docutils literal notranslate"><span class="pre">bytes</span></code> streaming by using <a class="reference internal" href="../../../proto/docs/"><span class="doc std std-doc">jina.proto</span></a> definition).</p>
+The Flow defaults to <code class="docutils literal notranslate"><span class="pre">json</span></code> when a subprotocol is not passed during connection establishment (Our Python client uses <code class="docutils literal notranslate"><span class="pre">bytes</span></code> streaming by using <a class="reference internal" href="../../../proto/docs/"><span class="std std-doc">jina.proto</span></a> definition).</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <ul class="simple">
@@ -720,7 +720,7 @@ The Flow defaults to <code class="docutils literal notranslate"><span class="pre
 <ul>
 <li><p>you want to stream using JSON, not bytes</p></li>
 <li><p>your client language doesn’t support gRPC</p></li>
-<li><p>you don’t want to compile the <a class="reference internal" href="../../../proto/docs/"><span class="doc std std-doc">Protobuf definitions</span></a> for your gRPC client</p></li>
+<li><p>you don’t want to compile the <a class="reference internal" href="../../../proto/docs/"><span class="std std-doc">Protobuf definitions</span></a> for your gRPC client</p></li>
 </ul>
 </li>
 </ul>
@@ -771,7 +771,7 @@ The Flow defaults to <code class="docutils literal notranslate"><span class="pre
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Feb 24, 2023</div>
+                            Last updated on May 05, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

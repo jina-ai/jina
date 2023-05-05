@@ -32,13 +32,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/gpu-executor.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>Build a GPU Executor - Jina 3.14.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -435,7 +435,7 @@ Docker container. You will also learn how to use a GPU with pre-built Hub execut
 reducing response latency by anything from 5 to 100 times, depending on the model and inputs used.</p>
 <div class="caution admonition">
 <p class="admonition-title">Important</p>
-<p>This tutorial assumes familiarity with basic Jina concepts, such as Document, <a class="reference internal" href="../../concepts/executor/"><span class="doc std std-doc">Executor</span></a>, and <span class="xref myst">Deployment</span>. Some knowledge of <a class="reference internal" href="../../concepts/executor/hub/"><span class="doc std std-doc">Executor Hub</span></a> is also needed for the last part of the tutorial.</p>
+<p>This tutorial assumes familiarity with basic Jina concepts, such as Document, <a class="reference internal" href="../../concepts/executor/"><span class="doc std std-doc">Executor</span></a>, and <a class="reference internal" href="#../concepts/deployment/index"><span class="xref myst">Deployment</span></a>. Some knowledge of <a class="reference internal" href="../../concepts/executor/hub/"><span class="doc std std-doc">Executor Hub</span></a> is also needed for the last part of the tutorial.</p>
 </div>
 <section id="jina-and-gpus-in-a-nutshell">
 <h2>Jina and GPUs in a nutshell<a class="headerlink" href="#jina-and-gpus-in-a-nutshell" title="Permalink to this heading">#</a></h2>
@@ -466,7 +466,7 @@ container, without imposing additional requirements or configuration.</p>
 </pre></div>
 </div>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Use with CPU </label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Use with CPU</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
 
@@ -631,10 +631,10 @@ CPU-only versions of your requirements. This translates into faster startup time
 when using Docker containers.</p>
 <p>In our case, we could change the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file to install a CPU-only version
 of PyTorch:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>-f https://download.pytorch.org/whl/torch_stable.html
+<div class="text docutils">
+<p>-f https://download.pytorch.org/whl/torch_stable.html
 sentence-transformers
-torch==1.9.0+cpu
-</pre></div>
+torch==1.9.0+cpu</p>
 </div>
 </div>
 <p>Now let’s fill the <code class="docutils literal notranslate"><span class="pre">executor.py</span></code> file with the actual Executor code:</p>
@@ -798,14 +798,14 @@ so for most use cases we don’t need to worry about it.</p>
 <h2>Using GPU with Hub Executors<a class="headerlink" href="#using-gpu-with-hub-executors" title="Permalink to this heading">#</a></h2>
 <p>We now saw how to use GPU with our Executor locally, and when using it in a Docker container. What about when we use Executors from Executor Hub - is there any difference?</p>
 <p>Nope! Not only that, many Executors on Executor Hub already come with a GPU-enabled version pre-built, usually under the <code class="docutils literal notranslate"><span class="pre">gpu</span></code> tag (see <a class="reference internal" href="../../concepts/executor/hub/push-executor/#hub-tags"><span class="std std-ref">Executor Hub tags</span></a>). Let’s modify our example to use the pre-built <code class="docutils literal notranslate"><span class="pre">TransformerTorchEncoder</span></code> from Executor Hub:</p>
-<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w">dep = Deployment(</span>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>dep = Deployment(
 <span class="gd">-   uses=&#39;docker://sentence-encoder&#39;,</span>
 <span class="gi">+   uses=&#39;jinaai+docker://jina-ai/TransformerTorchEncoder:latest-gpu&#39;,</span>
 <span class="w"> </span>   uses_with={&#39;device&#39;: &#39;cuda&#39;},
 <span class="w"> </span>   gpus=&#39;all&#39;,
 <span class="w"> </span>   # This has to be an absolute path, replace /home/ubuntu with your home directory
 <span class="w"> </span>   volumes=&quot;/home/ubuntu/.cache:/root/.cache&quot;
-<span class="w">)</span>
+)
 </pre></div>
 </div>
 <p>The first time you run the script, downloading the Docker image takes some time - GPU images are large! But after that, everything works just as it did with the local Docker image, out of the box.</p>
@@ -840,7 +840,7 @@ so for most use cases we don’t need to worry about it.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Feb 24, 2023</div>
+                            Last updated on May 05, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

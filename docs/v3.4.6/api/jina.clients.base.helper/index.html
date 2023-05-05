@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.clients.base.http module" href="../jina.clients.base.http/" /><link rel="prev" title="jina.clients.base.grpc module" href="../jina.clients.base.grpc/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.clients.base.helper.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.clients.base.helper module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -602,190 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.clients.base.helper">
-<span id="jina-clients-base-helper-module"></span><h1>jina.clients.base.helper module<a class="headerlink" href="#module-jina.clients.base.helper" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.clients.base.helper.AioHttpClientlet">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">AioHttpClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
-<p>aiohttp session manager</p>
-<p>HTTP Client to be used with the streamer</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>url</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – url to send http/websocket request to</p></li>
-<li><p><strong>logger</strong> (<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><em>JinaLogger</em></a>) – jina logger</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.base.helper.AioHttpClientlet.send_message">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet.send_message" title="Permalink to this definition">#</a></dt>
-<dd><p>Send message to Gateway</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.base.helper.AioHttpClientlet.recv_message">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">recv_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet.recv_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet.recv_message" title="Permalink to this definition">#</a></dt>
-<dd><p>Receive message from Gateway</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.base.helper.AioHttpClientlet.start">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet.start" title="Permalink to this definition">#</a></dt>
-<dd><p>Create ClientSession and enter context</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>self</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.base.helper.AioHttpClientlet.close">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet.close" title="Permalink to this definition">#</a></dt>
-<dd><p>Close ClientSession</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>args</strong> – positional args</p></li>
-<li><p><strong>kwargs</strong> – keyword args</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.clients.base.helper.HTTPClientlet">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">HTTPClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#HTTPClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.HTTPClientlet" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.clients.base.helper.AioHttpClientlet" title="jina.clients.base.helper.AioHttpClientlet"><code class="xref py py-class docutils literal notranslate"><span class="pre">AioHttpClientlet</span></code></a></p>
-<p>HTTP Client to be used with the streamer</p>
-<p>HTTP Client to be used with the streamer</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>url</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – url to send http/websocket request to</p></li>
-<li><p><strong>logger</strong> (<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><em>JinaLogger</em></a>) – jina logger</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.base.helper.HTTPClientlet.send_message">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#HTTPClientlet.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.HTTPClientlet.send_message" title="Permalink to this definition">#</a></dt>
-<dd><p>Sends a POST request to the server</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>request</strong> (<a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a>) – request as dict</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>send post message</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.base.helper.HTTPClientlet.recv_message">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">recv_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#HTTPClientlet.recv_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.HTTPClientlet.recv_message" title="Permalink to this definition">#</a></dt>
-<dd><p>Receive message for HTTP (sleep)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>await sleep</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.clients.base.helper.WsResponseIter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">WsResponseIter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">websocket</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#WsResponseIter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.WsResponseIter" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Iterates over all the responses that come in over the websocket connection.
-In contrast to the iterator built into AioHTTP, this also records the message that was sent at closing-time.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.clients.base.helper.WebsocketClientlet">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">WebsocketClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#WebsocketClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.clients.base.helper.AioHttpClientlet" title="jina.clients.base.helper.AioHttpClientlet"><code class="xref py py-class docutils literal notranslate"><span class="pre">AioHttpClientlet</span></code></a></p>
-<p>Websocket Client to be used with the streamer</p>
-<p>HTTP Client to be used with the streamer</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>url</strong> – url to send http/websocket request to</p></li>
-<li><p><strong>logger</strong> – jina logger</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.base.helper.WebsocketClientlet.send_message">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#WebsocketClientlet.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet.send_message" title="Permalink to this definition">#</a></dt>
-<dd><p>Send request in bytes to the server.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>request</strong> (<a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a>) – request object</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>send request as bytes awaitable</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.base.helper.WebsocketClientlet.send_eoi">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_eoi</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#WebsocketClientlet.send_eoi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet.send_eoi" title="Permalink to this definition">#</a></dt>
-<dd><p>To confirm end of iteration, we send <cite>bytes(True)</cite> to the server.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>send <cite>bytes(True)</cite> awaitable</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.base.helper.WebsocketClientlet.recv_message">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">recv_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#WebsocketClientlet.recv_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet.recv_message" title="Permalink to this definition">#</a></dt>
-<dd><p>Receive messages in bytes from server and convert to <cite>DataRequest</cite></p>
-<dl class="simple">
-<dt>..note::</dt><dd><p>aiohttp allows only one task which can <cite>receive</cite> concurrently.
-we need to make sure we don’t create multiple tasks with <cite>recv_message</cite></p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Yield</dt>
-<dd class="field-odd"><p>response objects received from server</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.clients.base.helper.WebsocketClientlet.close_message">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close_message</span></span><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet.close_message" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the close message (reason) of the ws closing response</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.clients.base.helper.WebsocketClientlet.close_code">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close_code</span></span><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet.close_code" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the close code of the ws closing response</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+                <section id="jina-clients-base-helper-module">
+<h1>jina.clients.base.helper module<a class="headerlink" href="#jina-clients-base-helper-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -820,7 +638,7 @@ we need to make sure we don’t create multiple tasks with <cite>recv_message</c
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -836,43 +654,6 @@ we need to make sure we don’t create multiple tasks with <cite>recv_message</c
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.clients.base.helper module</a><ul>
-<li><a class="reference internal" href="#jina.clients.base.helper.AioHttpClientlet"><code class="docutils literal notranslate"><span class="pre">AioHttpClientlet</span></code></a><ul>
-<li><a class="reference internal" href="#jina.clients.base.helper.AioHttpClientlet.send_message"><code class="docutils literal notranslate"><span class="pre">AioHttpClientlet.send_message()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.base.helper.AioHttpClientlet.recv_message"><code class="docutils literal notranslate"><span class="pre">AioHttpClientlet.recv_message()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.base.helper.AioHttpClientlet.start"><code class="docutils literal notranslate"><span class="pre">AioHttpClientlet.start()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.base.helper.AioHttpClientlet.close"><code class="docutils literal notranslate"><span class="pre">AioHttpClientlet.close()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.clients.base.helper.HTTPClientlet"><code class="docutils literal notranslate"><span class="pre">HTTPClientlet</span></code></a><ul>
-<li><a class="reference internal" href="#jina.clients.base.helper.HTTPClientlet.send_message"><code class="docutils literal notranslate"><span class="pre">HTTPClientlet.send_message()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.base.helper.HTTPClientlet.recv_message"><code class="docutils literal notranslate"><span class="pre">HTTPClientlet.recv_message()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.clients.base.helper.WsResponseIter"><code class="docutils literal notranslate"><span class="pre">WsResponseIter</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.base.helper.WebsocketClientlet"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet</span></code></a><ul>
-<li><a class="reference internal" href="#jina.clients.base.helper.WebsocketClientlet.send_message"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.send_message()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.base.helper.WebsocketClientlet.send_eoi"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.send_eoi()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.base.helper.WebsocketClientlet.recv_message"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.recv_message()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.base.helper.WebsocketClientlet.close_message"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.close_message</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.base.helper.WebsocketClientlet.close_code"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.close_code</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

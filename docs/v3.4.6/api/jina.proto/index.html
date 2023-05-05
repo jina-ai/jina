@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.proto/" />
 <meta property="og:site_name" content="Jina 3.4.6 Documentation" />
-<meta property="og:description" content="Submodules: jina.proto.jina_pb2 module, jina.proto.jina_pb2_grpc module- JinaControlRequestRPCStub, JinaControlRequestRPCServicer- JinaControlRequestRPCServicer.process_control()., add_JinaControlRequestRPCServicer_to_server(), JinaControlRequestRPC- JinaControlRequestRPC.process_control()., Jina..." />
+<meta property="og:description" content="Submodules: jina.proto.jina_pb2 module, jina.proto.jina_pb2_grpc module, jina.proto.serializer module. Module contents:" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.4.6 Documentation" />
-<meta name="description" content="Submodules: jina.proto.jina_pb2 module, jina.proto.jina_pb2_grpc module- JinaControlRequestRPCStub, JinaControlRequestRPCServicer- JinaControlRequestRPCServicer.process_control()., add_JinaControlRequestRPCServicer_to_server(), JinaControlRequestRPC- JinaControlRequestRPC.process_control()., Jina..." />
+<meta name="description" content="Submodules: jina.proto.jina_pb2 module, jina.proto.jina_pb2_grpc module, jina.proto.serializer module. Module contents:" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -32,13 +32,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.proto.jina_pb2 module" href="../jina.proto.jina_pb2/" /><link rel="prev" title="jina.parsers.ping module" href="../jina.parsers.ping/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.proto.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.proto package - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -611,88 +611,13 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../jina.proto.jina_pb2/">jina.proto.jina_pb2 module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/">jina.proto.jina_pb2_grpc module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaControlRequestRPCStub"><code class="docutils literal notranslate"><span class="pre">JinaControlRequestRPCStub</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaControlRequestRPCServicer"><code class="docutils literal notranslate"><span class="pre">JinaControlRequestRPCServicer</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaControlRequestRPCServicer.process_control"><code class="docutils literal notranslate"><span class="pre">JinaControlRequestRPCServicer.process_control()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server"><code class="docutils literal notranslate"><span class="pre">add_JinaControlRequestRPCServicer_to_server()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaControlRequestRPC"><code class="docutils literal notranslate"><span class="pre">JinaControlRequestRPC</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaControlRequestRPC.process_control"><code class="docutils literal notranslate"><span class="pre">JinaControlRequestRPC.process_control()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDataRequestRPCStub"><code class="docutils literal notranslate"><span class="pre">JinaDataRequestRPCStub</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDataRequestRPCServicer"><code class="docutils literal notranslate"><span class="pre">JinaDataRequestRPCServicer</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDataRequestRPCServicer.process_data"><code class="docutils literal notranslate"><span class="pre">JinaDataRequestRPCServicer.process_data()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server"><code class="docutils literal notranslate"><span class="pre">add_JinaDataRequestRPCServicer_to_server()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDataRequestRPC"><code class="docutils literal notranslate"><span class="pre">JinaDataRequestRPC</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDataRequestRPC.process_data"><code class="docutils literal notranslate"><span class="pre">JinaDataRequestRPC.process_data()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPCStub"><code class="docutils literal notranslate"><span class="pre">JinaSingleDataRequestRPCStub</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPCServicer"><code class="docutils literal notranslate"><span class="pre">JinaSingleDataRequestRPCServicer</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPCServicer.process_single_data"><code class="docutils literal notranslate"><span class="pre">JinaSingleDataRequestRPCServicer.process_single_data()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server"><code class="docutils literal notranslate"><span class="pre">add_JinaSingleDataRequestRPCServicer_to_server()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPC"><code class="docutils literal notranslate"><span class="pre">JinaSingleDataRequestRPC</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPC.process_single_data"><code class="docutils literal notranslate"><span class="pre">JinaSingleDataRequestRPC.process_single_data()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaRPCStub"><code class="docutils literal notranslate"><span class="pre">JinaRPCStub</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaRPCServicer"><code class="docutils literal notranslate"><span class="pre">JinaRPCServicer</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaRPCServicer.Call"><code class="docutils literal notranslate"><span class="pre">JinaRPCServicer.Call()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.add_JinaRPCServicer_to_server"><code class="docutils literal notranslate"><span class="pre">add_JinaRPCServicer_to_server()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaRPC"><code class="docutils literal notranslate"><span class="pre">JinaRPC</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaRPC.Call"><code class="docutils literal notranslate"><span class="pre">JinaRPC.Call()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPCStub"><code class="docutils literal notranslate"><span class="pre">JinaDiscoverEndpointsRPCStub</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPCServicer"><code class="docutils literal notranslate"><span class="pre">JinaDiscoverEndpointsRPCServicer</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPCServicer.endpoint_discovery"><code class="docutils literal notranslate"><span class="pre">JinaDiscoverEndpointsRPCServicer.endpoint_discovery()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server"><code class="docutils literal notranslate"><span class="pre">add_JinaDiscoverEndpointsRPCServicer_to_server()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPC"><code class="docutils literal notranslate"><span class="pre">JinaDiscoverEndpointsRPC</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPC.endpoint_discovery"><code class="docutils literal notranslate"><span class="pre">JinaDiscoverEndpointsRPC.endpoint_discovery()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.proto.serializer/">jina.proto.serializer module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.serializer/#jina.proto.serializer.ControlRequestProto"><code class="docutils literal notranslate"><span class="pre">ControlRequestProto</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.serializer/#jina.proto.serializer.ControlRequestProto.SerializeToString"><code class="docutils literal notranslate"><span class="pre">ControlRequestProto.SerializeToString()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.serializer/#jina.proto.serializer.ControlRequestProto.FromString"><code class="docutils literal notranslate"><span class="pre">ControlRequestProto.FromString()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.serializer/#jina.proto.serializer.DataRequestProto"><code class="docutils literal notranslate"><span class="pre">DataRequestProto</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.serializer/#jina.proto.serializer.DataRequestProto.SerializeToString"><code class="docutils literal notranslate"><span class="pre">DataRequestProto.SerializeToString()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.serializer/#jina.proto.serializer.DataRequestProto.FromString"><code class="docutils literal notranslate"><span class="pre">DataRequestProto.FromString()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.serializer/#jina.proto.serializer.DataRequestListProto"><code class="docutils literal notranslate"><span class="pre">DataRequestListProto</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.serializer/#jina.proto.serializer.DataRequestListProto.SerializeToString"><code class="docutils literal notranslate"><span class="pre">DataRequestListProto.SerializeToString()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.serializer/#jina.proto.serializer.DataRequestListProto.FromString"><code class="docutils literal notranslate"><span class="pre">DataRequestListProto.FromString()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.proto.serializer/#jina.proto.serializer.EndpointsProto"><code class="docutils literal notranslate"><span class="pre">EndpointsProto</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.serializer/#jina.proto.serializer.EndpointsProto.SerializeToString"><code class="docutils literal notranslate"><span class="pre">EndpointsProto.SerializeToString()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.serializer/#jina.proto.serializer.EndpointsProto.FromString"><code class="docutils literal notranslate"><span class="pre">EndpointsProto.FromString()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/">jina.proto.jina_pb2_grpc module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.proto.serializer/">jina.proto.serializer module</a></li>
 </ul>
 </div>
 </section>
-<section id="module-jina.proto">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.proto" title="Permalink to this heading">#</a></h2>
-<p>The <a class="reference internal" href="#module-jina.proto" title="jina.proto"><code class="xref py py-mod docutils literal notranslate"><span class="pre">jina.proto</span></code></a> defines the protobuf used in jina. It is the core message protocol used in communicating between <a class="reference internal" href="../jina.orchestrate.deployments/#jina.orchestrate.deployments.BaseDeployment" title="jina.orchestrate.deployments.BaseDeployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.orchestrate.deployments.BaseDeployment</span></code></a>. It also defines the interface of a gRPC service.</p>
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 </section>
 </section>
 
@@ -728,7 +653,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -755,7 +680,7 @@
                         <ul>
 <li><a class="reference internal" href="#">jina.proto package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.proto">Module contents</a></li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>

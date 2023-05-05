@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.serve.runtimes.gateway.grpc package" href="../jina.serve.runtimes.gateway.grpc/" /><link rel="prev" title="jina.serve.runtimes.gateway.graph package" href="../jina.serve.runtimes.gateway.graph/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.runtimes.gateway.graph.topology_graph.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.serve.runtimes.gateway.graph.topology_graph module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -602,55 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.serve.runtimes.gateway.graph.topology_graph">
-<span id="jina-serve-runtimes-gateway-graph-topology-graph-module"></span><h1>jina.serve.runtimes.gateway.graph.topology_graph module<a class="headerlink" href="#module-jina.serve.runtimes.gateway.graph.topology_graph" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.graph.topology_graph.</span></span><span class="sig-name descname"><span class="pre">TopologyGraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph_representation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployments_disable_reduce</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_send</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/graph/topology_graph/#TopologyGraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="simple">
-<dt>:class TopologyGraph is a class that describes a computational graph of nodes, where each node represents</dt><dd><p>a Deployment that needs to be sent requests in the order respecting the path traversal.</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>graph_description</strong> – A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name <cite>start-gateway</cite> and <cite>end-gateway</cite> to
-determine the nodes that receive the very first request and the ones whose response needs to be sent back to the client. All the nodes with no outgoing nodes
-will be considered to be hanging, and they will be “flagged” so that the user can ignore their tasks and not await them.</p></li>
-<li><p><strong>conditions</strong> – A dictionary describing which Executors have special conditions to be fullfilled by the <cite>Documents</cite> to be sent to them.</p></li>
-<li><p><strong>reduce</strong> – Reduce requests arriving from multiple needed predecessors, True by default</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph.add_routes">
-<span class="sig-name descname"><span class="pre">add_routes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/graph/topology_graph/#TopologyGraph.add_routes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph.add_routes" title="Permalink to this definition">#</a></dt>
-<dd><p>Add routes to the DataRequest based on the state of request processing</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>request</strong> (<a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a>) – the request to add the routes to</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>modified request with added routes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph.origin_nodes">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">origin_nodes</span></span><a class="headerlink" href="#jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph.origin_nodes" title="Permalink to this definition">#</a></dt>
-<dd><p>The list of origin nodes, the one that depend only on the gateway, so all the subgraphs will be born from them and they will
-send to their deployments the request as received by the client.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A list of nodes</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+                <section id="jina-serve-runtimes-gateway-graph-topology-graph-module">
+<h1>jina.serve.runtimes.gateway.graph.topology_graph module<a class="headerlink" href="#jina-serve-runtimes-gateway-graph-topology-graph-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -685,7 +638,7 @@ send to their deployments the request as received by the client.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -701,27 +654,6 @@ send to their deployments the request as received by the client.</p>
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.serve.runtimes.gateway.graph.topology_graph module</a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph"><code class="docutils literal notranslate"><span class="pre">TopologyGraph</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph.add_routes"><code class="docutils literal notranslate"><span class="pre">TopologyGraph.add_routes()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph.origin_nodes"><code class="docutils literal notranslate"><span class="pre">TopologyGraph.origin_nodes</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

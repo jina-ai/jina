@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.types.request.data module" href="../jina.types.request.data/" /><link rel="prev" title="jina.types.request package" href="../jina.types.request/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.types.request.control.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>jina.types.request.control module - Jina 3.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -602,65 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.types.request.control">
-<span id="jina-types-request-control-module"></span><h1>jina.types.request.control module<a class="headerlink" href="#module-jina.types.request.control" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.types.request.control.ControlRequest">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.types.request.control.</span></span><span class="sig-name descname"><span class="pre">ControlRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/control/#ControlRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.control.ControlRequest" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a></p>
-<p><a class="reference internal" href="#jina.types.request.control.ControlRequest" title="jina.types.request.control.ControlRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlRequest</span></code></a> is one of the <strong>primitive data type</strong> in Jina.</p>
-<p>It offers a Pythonic interface to allow users access and manipulate
-<code class="xref py py-class docutils literal notranslate"><span class="pre">jina.jina_pb2.ControlRequestProto</span></code> object without working with Protobuf itself.</p>
-<p>A container for serialized <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.ControlRequestProto</span></code> that only triggers deserialization
-and decompression when receives the first read access to its member.</p>
-<p>It overrides <code class="xref py py-meth docutils literal notranslate"><span class="pre">__getattr__()</span></code> to provide the same get/set interface as an
-<code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.ControlRequestProtoProto</span></code> object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>command</strong> – the command for this request, can be STATUS, ACTIVATE or DEACTIVATE</p></li>
-<li><p><strong>request</strong> – The request.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.control.ControlRequest.add_related_entity">
-<span class="sig-name descname"><span class="pre">add_related_entity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shard_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/control/#ControlRequest.add_related_entity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.control.ControlRequest.add_related_entity" title="Permalink to this definition">#</a></dt>
-<dd><p>Add a related entity to this ControlMessage</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – jina id of the entity</p></li>
-<li><p><strong>address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – address of the entity</p></li>
-<li><p><strong>port</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Port of the entity</p></li>
-<li><p><strong>shard_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Optional id of the shard this entity belongs to</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.request.control.ControlRequest.proto">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ControlRequestProto</span></em><a class="headerlink" href="#jina.types.request.control.ControlRequest.proto" title="Permalink to this definition">#</a></dt>
-<dd><p>Cast <code class="docutils literal notranslate"><span class="pre">self</span></code> to a <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.ControlRequestProto</span></code>. Laziness will be broken and serialization will be recomputed when calling
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">SerializeToString()</span></code>.
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">ControlRequestProto</span></code>
-:return: protobuf instance</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.request.control.ControlRequest.command">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">command</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.types.request.control.ControlRequest.command" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the command.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+                <section id="jina-types-request-control-module">
+<h1>jina.types.request.control module<a class="headerlink" href="#jina-types-request-control-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -695,7 +638,7 @@ and decompression when receives the first read access to its member.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -711,28 +654,6 @@ and decompression when receives the first read access to its member.</p>
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.types.request.control module</a><ul>
-<li><a class="reference internal" href="#jina.types.request.control.ControlRequest"><code class="docutils literal notranslate"><span class="pre">ControlRequest</span></code></a><ul>
-<li><a class="reference internal" href="#jina.types.request.control.ControlRequest.add_related_entity"><code class="docutils literal notranslate"><span class="pre">ControlRequest.add_related_entity()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.control.ControlRequest.proto"><code class="docutils literal notranslate"><span class="pre">ControlRequest.proto</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.control.ControlRequest.command"><code class="docutils literal notranslate"><span class="pre">ControlRequest.command</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

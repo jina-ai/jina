@@ -30,13 +30,13 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="cli package" href="../cli/" /><link rel="prev" title="daemon.parser module" href="../daemon.parser/" />
         <link rel="canonical" href="https://docs.jina.ai/api/daemon.tasks.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>daemon.tasks module - Jina 3.2.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -640,132 +640,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-daemon.tasks">
-<span id="daemon-tasks-module"></span><h1>daemon.tasks module<a class="headerlink" href="#module-daemon.tasks" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.tasks.DaemonWorker">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.tasks.</span></span><span class="sig-name descname"><span class="pre">DaemonWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/tasks/#DaemonWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.tasks.DaemonWorker" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Thread</span></code></p>
-<p>Worker Thread for JinaD</p>
-<p>This constructor should always be called with keyword arguments. Arguments are:</p>
-<p><em>group</em> should be None; reserved for future extension when a ThreadGroup
-class is implemented.</p>
-<p><em>target</em> is the callable object to be invoked by the run()
-method. Defaults to None, meaning nothing is called.</p>
-<p><em>name</em> is the thread name. By default, a unique name is constructed of
-the form “Thread-N” where N is a small decimal number.</p>
-<p><em>args</em> is the argument tuple for the target invocation. Defaults to ().</p>
-<p><em>kwargs</em> is a dictionary of keyword arguments for the target
-invocation. Defaults to {}.</p>
-<p>If a subclass overrides the constructor, it must make sure to invoke
-the base class constructor (Thread.__init__()) before doing anything
-else to the thread.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.tasks.DaemonWorker.arguments">
-<span class="sig-name descname"><span class="pre">arguments</span></span><a class="headerlink" href="#daemon.tasks.DaemonWorker.arguments" title="Permalink to this definition">#</a></dt>
-<dd><p>The decorator to cache property of a class.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.tasks.DaemonWorker.metadata">
-<span class="sig-name descname"><span class="pre">metadata</span></span><a class="headerlink" href="#daemon.tasks.DaemonWorker.metadata" title="Permalink to this definition">#</a></dt>
-<dd><p>The decorator to cache property of a class.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.tasks.DaemonWorker.workdir">
-<span class="sig-name descname"><span class="pre">workdir</span></span><a class="headerlink" href="#daemon.tasks.DaemonWorker.workdir" title="Permalink to this definition">#</a></dt>
-<dd><p>The decorator to cache property of a class.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.tasks.DaemonWorker.daemon_file">
-<span class="sig-name descname"><span class="pre">daemon_file</span></span><a class="headerlink" href="#daemon.tasks.DaemonWorker.daemon_file" title="Permalink to this definition">#</a></dt>
-<dd><p>The decorator to cache property of a class.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.tasks.DaemonWorker.network_id">
-<span class="sig-name descname"><span class="pre">network_id</span></span><a class="headerlink" href="#daemon.tasks.DaemonWorker.network_id" title="Permalink to this definition">#</a></dt>
-<dd><p>The decorator to cache property of a class.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.tasks.DaemonWorker.generate_image">
-<span class="sig-name descname"><span class="pre">generate_image</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/tasks/#DaemonWorker.generate_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.tasks.DaemonWorker.generate_image" title="Permalink to this definition">#</a></dt>
-<dd><p>build and create a docker image</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>image id</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.tasks.DaemonWorker.container_id">
-<span class="sig-name descname"><span class="pre">container_id</span></span><a class="headerlink" href="#daemon.tasks.DaemonWorker.container_id" title="Permalink to this definition">#</a></dt>
-<dd><p>The decorator to cache property of a class.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.tasks.DaemonWorker.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/tasks/#DaemonWorker.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.tasks.DaemonWorker.run" title="Permalink to this definition">#</a></dt>
-<dd><p>Method representing the worker thread’s activity
-DaemonWorker is a daemon thread responsible for the following tasks:
-During create:
-- store uploaded files in a local workspace
-- create a docker network for the workspace which would be used by all child containers
-- build a docker image to be used by all child containers
-- create a container if <cite>run</cite> command is passed
-During update:
-- update files in the local workspace
-- removes the workspace container, if any
-- recreate workspace container, if <cite>run</cite> command is passed</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.tasks.ConsumerThread">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.tasks.</span></span><span class="sig-name descname"><span class="pre">ConsumerThread</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/tasks/#ConsumerThread"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.tasks.ConsumerThread" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Thread</span></code></p>
-<p>Consumer Thread for JinaD</p>
-<p>This constructor should always be called with keyword arguments. Arguments are:</p>
-<p><em>group</em> should be None; reserved for future extension when a ThreadGroup
-class is implemented.</p>
-<p><em>target</em> is the callable object to be invoked by the run()
-method. Defaults to None, meaning nothing is called.</p>
-<p><em>name</em> is the thread name. By default, a unique name is constructed of
-the form “Thread-N” where N is a small decimal number.</p>
-<p><em>args</em> is the argument tuple for the target invocation. Defaults to ().</p>
-<p><em>kwargs</em> is a dictionary of keyword arguments for the target
-invocation. Defaults to {}.</p>
-<p>If a subclass overrides the constructor, it must make sure to invoke
-the base class constructor (Thread.__init__()) before doing anything
-else to the thread.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.tasks.ConsumerThread.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/tasks/#ConsumerThread.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.tasks.ConsumerThread.run" title="Permalink to this definition">#</a></dt>
-<dd><p>Method representing the ConsumerThread’s activity
-ConsumerThread is a daemon thread that waits for messages from the <cite>__task_queue__</cite>
-and starts a <cite>DaemonWorker</cite> for each message.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+                <section id="daemon-tasks-module">
+<h1>daemon.tasks module<a class="headerlink" href="#daemon-tasks-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -800,7 +676,7 @@ and starts a <cite>DaemonWorker</cite> for each message.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 24, 2023.
+                    Last updated on May 05, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -816,37 +692,6 @@ and starts a <cite>DaemonWorker</cite> for each message.</p>
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">daemon.tasks module</a><ul>
-<li><a class="reference internal" href="#daemon.tasks.DaemonWorker"><code class="docutils literal notranslate"><span class="pre">DaemonWorker</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.tasks.DaemonWorker.arguments"><code class="docutils literal notranslate"><span class="pre">DaemonWorker.arguments</span></code></a></li>
-<li><a class="reference internal" href="#daemon.tasks.DaemonWorker.metadata"><code class="docutils literal notranslate"><span class="pre">DaemonWorker.metadata</span></code></a></li>
-<li><a class="reference internal" href="#daemon.tasks.DaemonWorker.workdir"><code class="docutils literal notranslate"><span class="pre">DaemonWorker.workdir</span></code></a></li>
-<li><a class="reference internal" href="#daemon.tasks.DaemonWorker.daemon_file"><code class="docutils literal notranslate"><span class="pre">DaemonWorker.daemon_file</span></code></a></li>
-<li><a class="reference internal" href="#daemon.tasks.DaemonWorker.network_id"><code class="docutils literal notranslate"><span class="pre">DaemonWorker.network_id</span></code></a></li>
-<li><a class="reference internal" href="#daemon.tasks.DaemonWorker.generate_image"><code class="docutils literal notranslate"><span class="pre">DaemonWorker.generate_image()</span></code></a></li>
-<li><a class="reference internal" href="#daemon.tasks.DaemonWorker.container_id"><code class="docutils literal notranslate"><span class="pre">DaemonWorker.container_id</span></code></a></li>
-<li><a class="reference internal" href="#daemon.tasks.DaemonWorker.run"><code class="docutils literal notranslate"><span class="pre">DaemonWorker.run()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#daemon.tasks.ConsumerThread"><code class="docutils literal notranslate"><span class="pre">ConsumerThread</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.tasks.ConsumerThread.run"><code class="docutils literal notranslate"><span class="pre">ConsumerThread.run()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 
