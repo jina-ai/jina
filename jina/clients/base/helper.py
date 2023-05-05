@@ -174,7 +174,7 @@ class HTTPClientlet(AioHttpClientlet):
                 try:
                     r_str = await response.json()
                 except aiohttp.ContentTypeError:
-                    r_str = response.text()
+                    r_str = await response.text()
                 handle_response_status(response.status, r_str, self.url)
                 return response
             except (ValueError, ConnectionError, BadClient, aiohttp.ClientError) as err:
