@@ -1558,6 +1558,53 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             )
         )
 
+        if ProtocolType.HTTP.to_string().lower() in [p.lower() for p in _protocols]:
+
+            http_ext_table = self._init_table()
+
+            _protocol = ProtocolType.HTTP.to_string()
+
+            http_ext_table.add_row(
+                ':speech_balloon:',
+                'Swagger UI',
+                f'[link={_protocol}://{self.host}:{self.port}/docs]{self.host}:{self.port}/docs',
+            )
+
+            http_ext_table.add_row(
+                ':books:',
+                'Redoc',
+                f'[link={_protocol}://{self.host}:{self.port}/redoc]{self.host}:{self.port}/redoc',
+            )
+
+            all_panels.append(
+                Panel(
+                    http_ext_table,
+                    title=':gem: [b]HTTP extension[/]',
+                    expand=False,
+                )
+            )
+
+        if self.args.monitoring:
+            monitor_ext_table = self._init_table()
+
+            for replica in self.pod_args['pods'][0]:
+
+                monitor_ext_table.add_row(
+                    ':flashlight:',  # upstream issue: they dont have :torch: emoji, so we use :flashlight:
+                    # to represent observability of Prometheus (even they have :torch: it will be a war
+                    # between AI community and Cloud-native community fighting on this emoji)
+                    replica.name,
+                    f'...[b]:{replica.port_monitoring}[/]',
+                )
+
+                all_panels.append(
+                    Panel(
+                        monitor_ext_table,
+                        title=':gem: [b]Prometheus extension[/]',
+                        expand=False,
+                    )
+                )
+
         return all_panels
 
     @property
