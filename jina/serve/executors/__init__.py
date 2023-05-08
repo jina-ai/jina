@@ -43,6 +43,10 @@ from jina.serve.executors.decorators import (
 from jina.serve.executors.metas import get_executor_taboo
 from jina.serve.helper import store_init_kwargs, wrap_func
 from jina.serve.instrumentation import MetricsTimer
+from jina._docarray import docarray_v2
+
+if docarray_v2:
+    from docarray.documents.legacy import LegacyDocument
 
 if TYPE_CHECKING:  # pragma: no cover
     import threading
@@ -150,9 +154,12 @@ class _FunctionWithSchema(NamedTuple):
                 ''
             )
             return_annotation = None
-
-        request_schema = docs_annotation or DocumentArray
-        response_schema = return_annotation or DocumentArray
+        if not docarray_v2:
+            request_schema = docs_annotation or DocumentArray
+            response_schema = return_annotation or DocumentArray
+        else:
+            request_schema = docs_annotation or DocumentArray[LegacyDocument]
+            response_schema = return_annotation or DocumentArray[LegacyDocument]
 
         return _FunctionWithSchema(fn, request_schema, response_schema)
 
@@ -227,7 +234,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._init_workspace = workspace
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.runtime_args))
         if __dry_run_endpoint__ not in self.requests:
-            self.requests[__dry_run_endpoint__] = _FunctionWithSchema(
+            self.requests[__dry_run_endpoint__] = _FunctionWithSchema.get_function_with_schema(
                 self._dry_run_func
             )
         else:
@@ -236,7 +243,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 f' So it is recommended not to expose this endpoint. '
             )
         if type(self) == BaseExecutor:
-            self.requests[__default_endpoint__] = _FunctionWithSchema(
+            self.requests[__default_endpoint__] = _FunctionWithSchema.get_function_with_schema(
                 self._dry_run_func
             )
 
