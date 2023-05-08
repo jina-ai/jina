@@ -739,21 +739,21 @@ class WorkerRequestHandler:
         :param requests: List of DataRequest objects
         :return: the resulting DataRequest
         """
-        req = requests[0]
+        response_request = requests[0]
         for i, worker_result in enumerate(requests):
-            if worker_result.header.status.code == jina_pb2.StatusProto.SUCCESS:
-                req = worker_result
+            if worker_result.status.code == jina_pb2.StatusProto.SUCCESS:
+                response_request = worker_result
                 break
         docs_matrix, _ = WorkerRequestHandler._get_docs_matrix_from_request(requests)
 
         # Reduction is applied in-place to the first DocumentArray in the matrix
         da = WorkerRequestHandler.reduce(docs_matrix)
-        WorkerRequestHandler.replace_docs(req, da)
+        WorkerRequestHandler.replace_docs(response_request, da)
 
         params = WorkerRequestHandler.get_parameters_dict_from_request(requests)
-        WorkerRequestHandler.replace_parameters(req, params)
+        WorkerRequestHandler.replace_parameters(response_request, params)
 
-        return req
+        return response_request
 
     # serving part
     async def process_single_data(self, request: DataRequest, context) -> DataRequest:
@@ -774,6 +774,7 @@ class WorkerRequestHandler:
         :param context: grpc context
         :returns: the response request
         """
+        from google.protobuf import json_format
         self.logger.debug('got an endpoint discovery request')
         endpoints_proto = jina_pb2.EndpointsProto()
         endpoints_proto.endpoints.extend(
@@ -782,6 +783,12 @@ class WorkerRequestHandler:
         endpoints_proto.write_endpoints.extend(
             list(self._executor.write_endpoints)
         )
+        schemas = self._executor._get_endpoint_models_dict()
+        for endpoint_name, inner_dict in schemas.items():
+            inner_dict['input']['model'] = inner_dict['input']['model'].schema()
+            inner_dict['output']['model'] = inner_dict['output']['model'].schema()
+
+        json_format.ParseDict(schemas, endpoints_proto.schemas)
         return endpoints_proto
 
     def _extract_tracing_context(

@@ -57,7 +57,7 @@ def get_fastapi_app(
                 if not docarray_v2:
                     docs_response = resp.docs.to_dict()
                 else:
-                    docs_response = resp.docs._data
+                    docs_response = resp.docs
                 ret = output_model(data=docs_response, parameters=resp.parameters)
                 return ret
 

@@ -12,6 +12,7 @@ if docarray_v2:
     from docarray import DocList
 
     from docarray import BaseDoc
+    from docarray.documents.legacy import LegacyDocument
 
 
     class InputTestDoc(BaseDoc):
@@ -124,8 +125,8 @@ def test_base_executor(replicas, include_gateway, protocols):
     with d:
         for protocol, port in zip(protocols, ports):
             c = Client(protocol=protocol, port=port)
-            res = c.post(on='/default', inputs=DocList[InputTestDoc]([InputTestDoc() for _ in range(10)]),
-                         request_size=1, return_type=DocList[OutputTestDoc])
+            res = c.post(on='/default', inputs=DocList[LegacyDocument]([LegacyDocument() for _ in range(10)]),
+                         request_size=1, return_type=DocList[LegacyDocument])
             assert len(res) == 10
 
 
