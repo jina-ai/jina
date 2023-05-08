@@ -234,18 +234,18 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._init_workspace = workspace
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.runtime_args))
         if __dry_run_endpoint__ not in self.requests:
-            self.requests[__dry_run_endpoint__] = _FunctionWithSchema.get_function_with_schema(
-                self._dry_run_func
-            )
+            self.requests[
+                __dry_run_endpoint__
+            ] = _FunctionWithSchema.get_function_with_schema(self._dry_run_func)
         else:
             self.logger.warning(
                 f' Endpoint {__dry_run_endpoint__} is defined by the Executor. Be aware that this endpoint is usually reserved to enable health checks from the Client through the gateway.'
                 f' So it is recommended not to expose this endpoint. '
             )
         if type(self) == BaseExecutor:
-            self.requests[__default_endpoint__] = _FunctionWithSchema.get_function_with_schema(
-                self._dry_run_func
-            )
+            self.requests[
+                __default_endpoint__
+            ] = _FunctionWithSchema.get_function_with_schema(self._dry_run_func)
 
         self._lock = contextlib.AsyncExitStack()
         try:
