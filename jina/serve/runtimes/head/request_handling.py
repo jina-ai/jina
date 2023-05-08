@@ -69,7 +69,7 @@ if docarray_v2:
                 raise ValueError(f"Unknown field type: {field_type} for field_name {field_name}")
             fields[field_name] = (field_type, field_schema.get('description'))
         return create_model(model_name, __base__=BaseDoc, **fields)
->>>>>>> 87fa2db67c25d2ce1100a4348af93163aca48a95
+
 
 if TYPE_CHECKING:  # pragma: no cover
     from prometheus_client import CollectorRegistry
