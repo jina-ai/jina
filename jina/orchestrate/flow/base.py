@@ -2350,56 +2350,31 @@ class Flow(
                 expand=False,
             )
         )
-
-        if self.protocol == ProtocolType.HTTP:
+        print(f'_protocol {_protocols}')
+        if ProtocolType.HTTP.to_string().lower() in [p.lower() for p in _protocols]:
 
             http_ext_table = self._init_table()
 
-            _address = [
-                f'[link={_protocol}://localhost:{self.port}/docs]Local[/]',
-                f'[link={_protocol}://{self.address_private}:{self.port}/docs]Private[/]',
-            ]
-            if self.address_public:
-                _address.append(
-                    f'[link={_protocol}://{self.address_public}:{self.port}/docs]Public[/]'
-                )
+            _protocol = ProtocolType.HTTP.to_string()
+
             http_ext_table.add_row(
                 ':speech_balloon:',
                 'Swagger UI',
-                '.../docs',
+                f'[link={_protocol}://{self.host}:{self.port}/docs]{self.host}:{self.port}/docs',
             )
-
-            _address = [
-                f'[link={_protocol}://localhost:{self.port}/redoc]Local[/]',
-                f'[link={_protocol}://{self.address_private}:{self.port}/redoc]Private[/]',
-            ]
-
-            if self.address_public:
-                _address.append(
-                    f'[link={_protocol}://{self.address_public}:{self.port}/redoc]Public[/]'
-                )
 
             http_ext_table.add_row(
                 ':books:',
                 'Redoc',
-                '.../redoc',
+                f'[link={_protocol}://{self.host}:{self.port}/redoc]{self.host}:{self.port}/redoc',
             )
 
             if self.gateway_args.expose_graphql_endpoint:
-                _address = [
-                    f'[link={_protocol}://localhost:{self.port}/graphql]Local[/]',
-                    f'[link={_protocol}://{self.address_private}:{self.port}/graphql]Private[/]',
-                ]
-
-                if self.address_public:
-                    _address.append(
-                        f'[link={_protocol}://{self.address_public}:{self.port}/graphql]Public[/]'
-                    )
 
                 http_ext_table.add_row(
                     ':strawberry:',
                     'GraphQL UI',
-                    '.../graphql',
+                    f'[link={_protocol}://{self.host}:{self.port}/graphql]{self.host}:{self.port}/graphql',
                 )
 
             all_panels.append(
