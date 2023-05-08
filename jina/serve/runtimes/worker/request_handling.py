@@ -20,6 +20,7 @@ from jina.importer import ImportExtensions
 from jina.proto import jina_pb2
 from jina.serve.instrumentation import MetricsTimer
 from jina.types.request.data import DataRequest
+from jina._docarray import docarray_v2
 
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry.propagate import Context
@@ -707,8 +708,12 @@ class WorkerRequestHandler:
         :return: the resulting DocumentArray
         """
         if docs_matrix:
-            da = docs_matrix[0]
-            da.reduce_all(docs_matrix[1:])
+            if not docarray_v2:
+                da = docs_matrix[0]
+                da.reduce_all(docs_matrix[1:])
+            else:
+                from docarray.utils.reduce import reduce_all
+                da = reduce_all(docs_matrix)
             return da
 
     @staticmethod
@@ -724,16 +729,21 @@ class WorkerRequestHandler:
         :param requests: List of DataRequest objects
         :return: the resulting DataRequest
         """
+        response_request = requests[0]
+        for i, worker_result in enumerate(requests):
+            if worker_result.status.code == jina_pb2.StatusProto.SUCCESS:
+                response_request = worker_result
+                break
         docs_matrix, _ = WorkerRequestHandler._get_docs_matrix_from_request(requests)
 
         # Reduction is applied in-place to the first DocumentArray in the matrix
         da = WorkerRequestHandler.reduce(docs_matrix)
-        WorkerRequestHandler.replace_docs(requests[0], da)
+        WorkerRequestHandler.replace_docs(response_request, da)
 
         params = WorkerRequestHandler.get_parameters_dict_from_request(requests)
-        WorkerRequestHandler.replace_parameters(requests[0], params)
+        WorkerRequestHandler.replace_parameters(response_request, params)
 
-        return requests[0]
+        return response_request
 
     # serving part
     async def process_single_data(self, request: DataRequest, context) -> DataRequest:
@@ -754,12 +764,18 @@ class WorkerRequestHandler:
         :param context: grpc context
         :returns: the response request
         """
+        from google.protobuf import json_format
         self.logger.debug('got an endpoint discovery request')
         endpoints_proto = jina_pb2.EndpointsProto()
         endpoints_proto.endpoints.extend(
             list(self._executor.requests.keys())
         )
+        schemas = self._executor._get_endpoint_models_dict()
+        for endpoint_name, inner_dict in schemas.items():
+            inner_dict['input']['model'] = inner_dict['input']['model'].schema()
+            inner_dict['output']['model'] = inner_dict['output']['model'].schema()
 
+        json_format.ParseDict(schemas, endpoints_proto.schemas)
         return endpoints_proto
 
     def _extract_tracing_context(

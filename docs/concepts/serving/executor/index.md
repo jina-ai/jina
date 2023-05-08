@@ -59,6 +59,5 @@ hot-reload
 file-structure
 containerize
 instrumentation
-docarray-v2
 yaml-spec
 ```

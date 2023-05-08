@@ -164,9 +164,8 @@ def test_deployments(protocols, replicas):
                 [OutputDoc(embedding=np.zeros((100, 1))) for _ in range(len(docs))]
             )
             return docs_return
-
+   
     ports = [random_port() for _ in protocols]
-
     with Deployment(port=ports, protocol=protocols, replicas=replicas, uses=MyExec) as dep:
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
@@ -177,3 +176,86 @@ def test_deployments(protocols, replicas):
             )
             assert docs[0].embedding.shape == (100, 1)
             assert docs.__class__.doc_type == OutputDoc
+
+
+def test_deployments_with_shards_one_shard_fails():
+    from docarray.documents import TextDoc
+    from docarray import DocList, BaseDoc
+
+    class TextDocWithId(TextDoc):
+        id: str
+
+    class KVTestIndexer(Executor):
+        """Simulates an indexer where one shard would fail"""
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self._docs_dict = {}
+
+        @requests(on=['/index'])
+        def index(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[TextDocWithId]:
+            for doc in docs:
+                self._docs_dict[doc.id] = doc
+
+        @requests(on=['/search'])
+        def search(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[TextDocWithId]:
+            for doc in docs:
+                doc.text = self._docs_dict[doc.id].text
+
+    with Deployment(uses=KVTestIndexer, shards=2) as dep:
+        index_da = DocList[TextDocWithId](
+            [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(100)]
+        )
+        dep.index(inputs=index_da, request_size=1, return_type=DocList[TextDocWithId])
+        responses = dep.search(inputs=index_da, request_size=1, return_type=DocList[TextDocWithId])
+        for q, r in zip(index_da, responses):
+            assert q.text == r.text
+
+
+@pytest.mark.parametrize('reduce', [True, False])
+def test_deployments_with_shards_all_shards_return(reduce):
+    from docarray.documents import TextDoc
+    from docarray import DocList, BaseDoc
+    from typing import List
+
+    class TextDocWithId(TextDoc):
+        id: str
+        l: List[int] = []
+
+    class ResultTestDoc(BaseDoc):
+        price: int = '2'
+        l: List[int] = [3]
+        matches: DocList[TextDocWithId]
+
+    class SimilarityTestIndexer(Executor):
+        """Simulates an indexer where no shard would fail, they all pass results"""
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self._docs = DocList[TextDocWithId]()
+
+        @requests(on=['/index'])
+        def index(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[TextDocWithId]:
+            for doc in docs:
+                self._docs.append(doc)
+
+        @requests(on=['/search'])
+        def search(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[ResultTestDoc]:
+            resp = DocList[ResultTestDoc]()
+            for q in docs:
+                res = ResultTestDoc(id=q.id, matches=self._docs[0:3])
+                resp.append(res)
+            return resp
+
+    with Deployment(uses=SimilarityTestIndexer, shards=2, reduce=reduce) as dep:
+        index_da = DocList[TextDocWithId](
+            [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(10)]
+        )
+        dep.index(inputs=index_da, request_size=1, return_type=DocList[TextDocWithId])
+        import time
+        time.sleep(2)
+        responses = dep.search(inputs=index_da[0:1], request_size=1, return_type=DocList[ResultTestDoc])
+        assert len(responses) == 1 if reduce else 2
+        for r in responses:
+            assert r.l[0] == 3
+            assert len(r.matches) == 6

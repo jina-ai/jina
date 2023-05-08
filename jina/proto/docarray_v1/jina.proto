@@ -52,6 +52,9 @@ message EndpointsProto {
 
     // list of endpoints exposed by an Executor
     repeated string endpoints = 1;
+
+    // Dictionary containing input and output schema per endpoint
+    google.protobuf.Struct schemas = 2; // extra kwargs that will be used in executor
 }
 
 /**
