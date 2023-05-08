@@ -572,9 +572,10 @@ jobs:
           docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
-          py_version=${{ matrix.test-path }}
+          py_version=${{ matrix.python-version }}
           wheel_finding=$(echo "$py_version" | tr -d '.')
-          pip install "dist/*${wheel_finding}*whl[all]" --no-cache-dir
+          WHEEL_FILE=$(ls dist/*${wheel_finding}*whl)
+          pip install "$WHEEL_FILE[all]" --no-cache-dir
           jina
           export JINA_LOG_LEVEL="ERROR"
       - name: Test
@@ -631,8 +632,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install wheel
+          py_version=${{ matrix.python-env }}
           wheel_finding=$(echo "$py_version" | tr -d '.')
-          pip install "dist/*${wheel_finding}*whl"
+          WHEEL_FILE=$(ls dist/*${wheel_finding}*whl)
+          pip install "$WHEEL_FILE[all]" --no-cache-dir
         env:
           JINA_PIP_INSTALL_CORE: ${{ matrix.core }}
           JINA_PIP_INSTALL_PERF: ${{ matrix.perf }}
