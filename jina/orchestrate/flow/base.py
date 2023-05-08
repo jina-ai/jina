@@ -2350,7 +2350,6 @@ class Flow(
                 expand=False,
             )
         )
-        print(f'_protocol {_protocols}')
         if ProtocolType.HTTP.to_string().lower() in [p.lower() for p in _protocols]:
 
             http_ext_table = self._init_table()
