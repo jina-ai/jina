@@ -68,7 +68,9 @@ def _call_add_voters(leader, voters, replica_ids):
 
     import jraft
 
-    logger = JinaLogger('add_voter', )
+    logger = JinaLogger(
+        'add_voter',
+    )
 
     for voter_address, replica_id in zip(voters, replica_ids):
         success = False
