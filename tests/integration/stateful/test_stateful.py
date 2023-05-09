@@ -4,13 +4,16 @@ import pytest
 import os
 
 from jina import Client, Document, DocumentArray, Flow, Deployment
-from docarray.documents import TextDoc
 from typing import Dict, List
 
 from jina.helper import random_port
 
 from tests.integration.stateful.stateful_no_snapshot_exec.executor import MyStateExecutorNoSnapshot
 from tests.integration.stateful.stateful_snapshot_exec.executor import MyStateExecutor
+from jina._docarray import docarray_v2
+
+if docarray_v2:
+    from docarray.documents import TextDoc
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -56,6 +59,7 @@ def assert_all_replicas_indexed(client, search_da, num_replicas=3, key='pid'):
 
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
 @pytest.mark.parametrize('shards', [2, 1])
+@pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
 def test_stateful_index_search(executor_cls, shards, tmpdir, stateful_exec_docker_image_built):
     replicas = 3
     if shards > 1:
@@ -101,6 +105,7 @@ def test_stateful_index_search(executor_cls, shards, tmpdir, stateful_exec_docke
 
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor])
 @pytest.mark.parametrize('shards', [1])
+@pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
 def test_stateful_index_search_restore(executor_cls, shards, tmpdir, stateful_exec_docker_image_built):
     replicas = 3
     peer_ports = {}
