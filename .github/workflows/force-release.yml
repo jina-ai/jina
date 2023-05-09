@@ -124,16 +124,8 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install setuptools wheel
-          # TODO(stateful): transfer to jina account
           pip install git+https://github.com/jina-ai/setuptools-golang.git@feat-align-with-alaeddine-code
           pip install cibuildwheel
-
-      - name: Update version
-        shell: bash
-        run: |
-          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
-          # TODO(stateful): either adapt later to final release versioning (change stateful to final) or probably we just need to remove this whole step
-          ./scripts/update-version.sh
 
       - name: Build wheels with setuptools-golang-build-manylinux-wheel
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -181,9 +173,7 @@ jobs:
           git fetch --depth=1 origin +refs/tags/*:refs/tags/*
           npm install git-release-notes
           pip install twine wheel
-          # TODO(stateful): revert back later before merging
-          # ./scripts/release.sh final "${{ github.event.inputs.release_reason }}" "${{github.actor}}"
-           ./scripts/release.sh
+          ./scripts/release.sh final "${{ github.event.inputs.release_reason }}" "${{github.actor}}"
         env:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}

@@ -68,16 +68,6 @@ elif [[ $1 == 'rc' ]]; then
   VER_TAG_NEXT=$VER_TAG\'${NEXT_VER}\'
   update_ver_line "$VER_TAG" "$VER_TAG_NEXT" "$INIT_FILE"
 
-# TODO(stateful): will not be needed anymore
-elif [[ $1 == 'stateful' ]]; then
-  # as a prerelease, pypi update only, no back commit etc.
-  COMMITS_SINCE_LAST_VER=$(git rev-list $LAST_VER..HEAD --count)
-  NEXT_VER=$RELEASE_VER"a"$COMMITS_SINCE_LAST_VER
-  printf "this will be a stateful executor release: \e[1;33m$NEXT_VER\e[0m\n"
-
-  VER_TAG_NEXT=$VER_TAG\'${NEXT_VER}\'
-  update_ver_line "$VER_TAG" "$VER_TAG_NEXT" "$INIT_FILE"
-
 else
   # as a prerelease, pypi update only, no back commit etc.
   COMMITS_SINCE_LAST_VER=$(git rev-list $LAST_VER..HEAD --count)

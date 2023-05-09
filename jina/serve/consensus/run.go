@@ -222,8 +222,9 @@ func Run(myAddr string,
         run_logger.Info("gRPCServer stopping")
         grpcServer.GracefulStop()
         sock.Close()
-        shutdownResult := r.Shutdown()
-        err := shutdownResult.Error()
+        run_logger.Info("call RAFT shutdown")
+        shutdownResultFuture := r.Shutdown()
+        err := shutdownResultFuture.Error()
         if err != nil {
             run_logger.Error("Error returned while shutting RAFT down", "error", err)
             log.Fatalf("Error returned while shutting RAFT down: %v", err)
