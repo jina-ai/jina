@@ -68,9 +68,11 @@ def _call_add_voters(leader, voters, replica_ids):
 
     import jraft
 
+    logger = JinaLogger('add_voter', )
+
     for voter_address, replica_id in zip(voters, replica_ids):
         success = False
-        for _ in range(3):
+        for _ in range(10):
             try:
                 jraft.add_voter(leader, str(replica_id), voter_address)
                 success = True
@@ -79,7 +81,7 @@ def _call_add_voters(leader, voters, replica_ids):
                 time.sleep(2.0)
 
         if not success:
-            warnings.warn(
+            logger.error(
                 f'Failed to add {str(replica_id)} as voter with address {voter_address} to leader at {leader}'
             )
 
