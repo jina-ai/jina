@@ -130,7 +130,7 @@ This capacity allows you not only to have replicas that work with robustness and
 
 Let's imagine we write an Executor that is used to index and query documents from a vector index.
 
-For this, we are going to use an in-memory solution from [DocArray](https://docs.docarray.org/user_guide/storing/index_in_memory/) that performs exact vector search.
+For this, we will use an in-memory solution from [DocArray](https://docs.docarray.org/user_guide/storing/index_in_memory/) that performs exact vector search.
 
 ```python
 from jina import Deployment, Executor, requests
@@ -173,7 +173,7 @@ with d:
     d.block()
 ```
 
-Then in another terminal, we are going to send index and search requests:
+Then in another terminal, we will send index and search requests:
 
 ```python
 from jina import Client

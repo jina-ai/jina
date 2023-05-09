@@ -13,7 +13,7 @@ It contains functions (decorated with `@requests`) that process `DocumentArray`s
 1. An Executor should subclass directly from the `jina.Executor` class.
 2. An Executor is a Python class; it can contain any number of functions.
 3. Functions decorated by {class}`~jina.requests` are exposed as services according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions. This will be explained later in {ref}`Add Endpoints Section<exec-endpoint>`
-4. (Beta) Functions decorated by {class}`~jina.serve.executors.decorators.write` on top of their {class}`~jina.requests` decoration, are considered to update the internal state of the Executor. The `__init__` and `close` methods are exceptions. The reasons this is useful is explained in {ref}`Stateful-executor<stateful-executor>`.
+4. (Beta) Functions decorated by {class}`~jina.serve.executors.decorators.write` above their {class}`~jina.requests` decoration, are considered to update the internal state of the Executor. The `__init__` and `close` methods are exceptions. The reasons this is useful is explained in {ref}`Stateful-executor<stateful-executor>`.
 
 ## Create an Executor
 

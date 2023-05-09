@@ -24,6 +24,15 @@ class TextDocWithId(TextDoc):
     l: List[str] = []
 
 
+@pytest.fixture(scope='function')
+def kill_all_children():
+    yield
+    from multiprocessing import active_children
+    children = active_children()
+    for p in children:
+        print(f' Child process {p.pid} is still active')
+        p.kill()
+
 @pytest.fixture(scope='module')
 def stateful_exec_docker_image_built():
     import docker
@@ -60,7 +69,7 @@ def assert_all_replicas_indexed(client, search_da, num_replicas=3, key='pid'):
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
 @pytest.mark.parametrize('shards', [2, 1])
 @pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
-def test_stateful_index_search(executor_cls, shards, tmpdir, stateful_exec_docker_image_built):
+def test_stateful_index_search(executor_cls, shards, tmpdir, stateful_exec_docker_image_built, kill_all_children):
     replicas = 3
     if shards > 1:
         peer_ports = {}
@@ -106,7 +115,7 @@ def test_stateful_index_search(executor_cls, shards, tmpdir, stateful_exec_docke
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor])
 @pytest.mark.parametrize('shards', [1])
 @pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
-def test_stateful_index_search_restore(executor_cls, shards, tmpdir, stateful_exec_docker_image_built):
+def test_stateful_index_search_restore(executor_cls, shards, tmpdir, stateful_exec_docker_image_built, kill_all_children):
     replicas = 3
     peer_ports = {}
     for shard in range(shards):
