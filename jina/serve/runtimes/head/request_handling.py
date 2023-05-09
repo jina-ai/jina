@@ -4,7 +4,7 @@ import json
 import os
 import threading
 from collections import defaultdict
-from typing import TYPE_CHECKING, AsyncIterator, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, AsyncIterator, Dict, List, Optional, Tuple, Any
 
 import grpc
 
@@ -22,7 +22,6 @@ if docarray_v2:
     from docarray.base_doc import AnyDoc
     from jina._docarray import docarray_v2
     from docarray import DocList, BaseDoc
-
 
     def _create_pydantic_model_from_schema(schema: Dict[str, any], model_name: str) -> type:
         from pydantic import create_model
@@ -59,12 +58,19 @@ if docarray_v2:
                     raise ValueError(f"Unknown array item type: {field_item_type} for field_name {field_name}")
             elif field_type == 'object' or field_type is None:
                 # Check if object is a reference to definitions
-                obj_ref = field_schema.get('$ref')
-                if obj_ref:
-                    ref_name = obj_ref.split('/')[-1]
-                    field_type = _create_pydantic_model_from_schema(schema['definitions'][ref_name], ref_name)
+                if 'additionalProperties' in field_schema:
+                    additional_props = field_schema['additionalProperties']
+                    if additional_props.get('type') == 'object':
+                        field_type = Dict[str, _create_pydantic_model_from_schema(additional_props, field_name)]
+                    else:
+                        field_type = Dict[str, Any]
                 else:
-                    field_type = _create_pydantic_model_from_schema(field_schema, field_name)
+                    obj_ref = field_schema.get('$ref')
+                    if obj_ref:
+                        ref_name = obj_ref.split('/')[-1]
+                        field_type = _create_pydantic_model_from_schema(schema['definitions'][ref_name], ref_name)
+                    else:
+                        field_type = _create_pydantic_model_from_schema(field_schema, field_name)
             else:
                 raise ValueError(f"Unknown field type: {field_type} for field_name {field_name}")
             fields[field_name] = (field_type, field_schema.get('description'))
@@ -376,7 +382,6 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         )
 
         self._update_end_request_metrics(response_request)
-
         return response_request, merged_metadata
 
     def _get_endpoints_from_workers(self, connection_pool: GrpcConnectionPool, name: str, retries: int,

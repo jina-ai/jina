@@ -34,7 +34,7 @@ def stateful_exec_docker_image_built():
     )
     client.close()
     yield
-    time.sleep(2)
+    time.sleep(3)
     client = docker.from_env()
     client.containers.prune()
 
@@ -82,7 +82,7 @@ def test_stateful_index_search(executor_cls, shards, tmpdir, stateful_exec_docke
         shards=shards,
         volumes=[str(tmpdir) + ':' + '/workspace'],
         peer_ports=peer_ports,
-        polling={'/index': 'ANY', '/search': 'ALL'}
+        polling={'/index': 'ANY', '/search': 'ALL', '/similarity': 'ALL'}
     )
     with dep:
         index_da = DocumentArray[TextDocWithId](
@@ -125,7 +125,7 @@ def test_stateful_index_search_restore(executor_cls, shards, tmpdir, stateful_ex
         shards=shards,
         volumes=[str(tmpdir) + ':' + '/workspace'],
         peer_ports=peer_ports,
-        polling={'/index': 'ANY', '/search': 'ALL'}
+        polling={'/index': 'ANY', '/search': 'ALL', '/similarity': 'ALL'}
     )
     with dep:
         index_da = DocumentArray[TextDocWithId](
@@ -173,7 +173,7 @@ def test_stateful_index_search_container(shards, tmpdir, stateful_exec_docker_im
         workspace='/workspace/tmp',
         volumes=[str(tmpdir) + ':' + '/workspace/tmp'],
         peer_ports=peer_ports,
-        polling={'/index': 'ANY', '/search': 'ALL'}
+        polling={'/index': 'ANY', '/search': 'ALL', '/similarity': 'ALL'}
     )
     with dep:
         index_da = DocumentArray[TextDocWithId](
