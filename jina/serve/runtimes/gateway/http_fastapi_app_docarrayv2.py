@@ -44,6 +44,9 @@ def get_fastapi_app(
         from fastapi import FastAPI, Response, status
         from fastapi.middleware.cors import CORSMiddleware
         import pydantic
+    from docarray.base_doc.docarray_response import DocArrayResponse
+    from docarray import DocList, BaseDoc
+    from jina.types.request.data import DataRequest
 
     from jina import __version__
 
@@ -74,71 +77,68 @@ def get_fastapi_app(
     async def _shutdown():
         await streamer.close()
 
-    # TODO: Separate properly the StatusProto so that it can be imported with docarray v2
-    # from jina._docarray import DocumentArray
-    # from jina.proto import jina_pb2
-    # from jina.serve.executors import __dry_run_endpoint__
-    # from jina.serve.runtimes.gateway.models import (
-    #     PROTO_TO_PYDANTIC_MODELS,
-    #     JinaInfoModel,
-    # )
-    # from jina.types.request.status import StatusMessage
-    #
-    # @app.get(
-    #     path='/dry_run',
-    #     summary='Get the readiness of Jina Flow service, sends an empty DocumentArray to the complete Flow to '
-    #             'validate connectivity',
-    #     response_model=PROTO_TO_PYDANTIC_MODELS.StatusProto,
-    # )
-    # async def _flow_health():
-    #     """
-    #     Get the health of the complete Flow service.
-    #     .. # noqa: DAR201
-    #
-    #     """
-    #
-    #     da = DocumentArray([])
-    #
-    #     try:
-    #         _ = await _get_singleton_result(
-    #             request_generator(
-    #                 exec_endpoint=__dry_run_endpoint__,
-    #                 data=da,
-    #                 data_type=DataInputType.DOCUMENT,
-    #             )
-    #         )
-    #         status_message = StatusMessage()
-    #         status_message.set_code(jina_pb2.StatusProto.SUCCESS)
-    #         return status_message.to_dict()
-    #     except Exception as ex:
-    #         status_message = StatusMessage()
-    #         status_message.set_exception(ex)
-    #         return status_message.to_dict(use_integers_for_enums=True)
+    from jina.proto import jina_pb2
+    from jina.serve.executors import __dry_run_endpoint__
+    from jina.types.request.status import StatusMessage
+    from jina.serve.runtimes.gateway.models import (
+        PROTO_TO_PYDANTIC_MODELS,
+    )
+    @app.get(
+        path='/dry_run',
+        summary='Get the readiness of Jina Flow service, sends an empty DocumentArray to the complete Flow to '
+                'validate connectivity',
+        response_model=PROTO_TO_PYDANTIC_MODELS.StatusProto,
+    )
+    async def _flow_health():
+        """
+        Get the health of the complete Flow service.
+        .. # noqa: DAR201
+
+        """
+
+        req = DataRequest()
+        req.data.docs = DocList[BaseDoc]([])
+        req.header.exec_endpoint = __dry_run_endpoint__
+
+        def gen():
+            yield req
+
+        try:
+            _ = await _get_singleton_result(
+                gen()
+            )
+            status_message = StatusMessage()
+            status_message.set_code(jina_pb2.StatusProto.SUCCESS)
+            return status_message.to_dict()
+        except Exception as ex:
+            status_message = StatusMessage()
+            status_message.set_exception(ex)
+            return status_message.to_dict(use_integers_for_enums=True)
 
     request_models_map = streamer.get_endpoints_input_output_models()
 
-    # TODO: Separate properly the JinaInfoModel so that it can be imported with docarray v2
-    # if '/status' not in request_models_map:
-    #     @app.get(
-    #         path='/status',
-    #         summary='Get the status of Jina service',
-    #         response_model=JinaInfoModel,
-    #         tags=['Debug'],
-    #     )
-    #     async def _status():
-    #         """
-    #         Get the status of this Jina service.
-    #
-    #         This is equivalent to running `jina -vf` from command line.
-    #
-    #         .. # noqa: DAR201
-    #         """
-    #         version, env_info = get_full_version()
-    #         for k, v in version.items():
-    #             version[k] = str(v)
-    #         for k, v in env_info.items():
-    #             env_info[k] = str(v)
-    #         return {'jina': version, 'envs': env_info}
+    if '/status' not in request_models_map:
+        from jina.serve.runtimes.gateway.health_model import JinaInfoModel
+        @app.get(
+            path='/status',
+            summary='Get the status of Jina service',
+            response_model=JinaInfoModel,
+            tags=['Debug'],
+        )
+        async def _status():
+            """
+            Get the status of this Jina service.
+
+            This is equivalent to running `jina -vf` from command line.
+
+            .. # noqa: DAR201
+            """
+            version, env_info = get_full_version()
+            for k, v in version.items():
+                version[k] = str(v)
+            for k, v in env_info.items():
+                env_info[k] = str(v)
+            return {'jina': version, 'envs': env_info}
 
     def _generate_exception_header(error: InternalNetworkError):
         import traceback
@@ -165,9 +165,6 @@ def get_fastapi_app(
                           methods=['POST'],
                           summary=f'Endpoint {endpoint_path}',
                           response_model=output_model, )
-        from docarray.base_doc.docarray_response import DocArrayResponse
-        from docarray import DocList
-        from jina.types.request.data import DataRequest
         app_kwargs['response_class'] = DocArrayResponse
 
         @app.api_route(
@@ -178,9 +175,12 @@ def get_fastapi_app(
             req.data.docs = DocList[input_doc_list_model](body.data)
             req.parameters = body.parameters
             req.header.exec_endpoint = endpoint_path
-            req_it = [req]
+
+            def gen():
+                yield req
+
             try:
-                result = await _get_singleton_result(request_iterator=req_it)
+                result = await _get_singleton_result(request_iterator=gen())
             except InternalNetworkError as err:
                 import grpc
 
