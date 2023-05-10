@@ -1090,7 +1090,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 deployment_args=self.args,
                 args=self.pod_args['pods'][shard_id],
                 head_pod=self.head_pod,
-                name=f'{self.name}-replica-set-{shard_id}' if num_shards > 1 else f'{self.name}-replica-set',
+                name=f'{self.name}-replica-set-{shard_id}'
+                if num_shards > 1
+                else f'{self.name}-replica-set',
             )
             self.enter_context(self.shards[shard_id])
 
