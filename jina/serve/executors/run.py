@@ -21,7 +21,6 @@ def run_raft(
 
     This method is the target for the Pod's `thread` or `process`
 
-
     :param args: namespace args from the Pod
     :param is_ready: concurrency event to communicate Executor runtime is ready to receive messages
     """
@@ -169,6 +168,10 @@ def run_stateful(args: 'argparse.Namespace',
     """
     Method to be called in Docker containers when Stateful Executor is required. This will start
     2 processes in the Docker container.
+    :param args: namespace args from the Pod
+    :param name: name of the Pod to have proper logging
+    :param runtime_cls: the runtime class to instantiate
+    :param envs: a dictionary of environment variables to be set in the new Process
     """
     import signal
     from jina.jaml import JAML
