@@ -1,0 +1,308 @@
+//protoc --go_out jina-go-proto --go_opt=paths=source_relative --go_opt=Mjina.proto=jina-go-proto=jraft/jina-go-proto --go-grpc_out jina-go-proto --go-grpc_opt=paths=source_relative --experimental_allow_proto3_optional jina.proto
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/empty.proto";
+import "docarray.proto";
+
+package jina;
+option go_package = "jraft/jina-go-proto";
+
+
+/**
+ * Represents a the route paths of this message as perceived by the Gateway
+ * start_time is set when the Gateway sends a message to a Pod
+ * end_time is set when the Gateway receives a message from a Pod
+ * thus end_time - start_time includes Executor computation, runtime overhead, serialization and network
+ */
+message RouteProto {
+    string executor = 1; // the name of the BasePod
+    google.protobuf.Timestamp start_time = 2; // time when the Gateway starts sending to the Pod
+    google.protobuf.Timestamp end_time = 3; // time when the Gateway received it from the Pod
+    StatusProto status = 4; // the status of the execution
+}
+
+message JinaInfoProto {
+    map<string, string> jina = 1; // information about the system running and package version information including jina
+    map<string, string> envs = 2; // the environment variable setting
+}
+
+
+/**
+ * Represents a Header.
+ * - The header's content will be defined by the user request.
+ * - It will be copied to the envelope.header
+ * - In-flow operations will modify the envelope.header
+ * - While returning, copy envelope.header back to request.header
+ */
+message HeaderProto {
+    string request_id = 1; // the unique ID of this request. Multiple requests with the same ID will be gathered
+
+    StatusProto status = 2; // status info
+
+    optional string exec_endpoint = 3;  // the endpoint specified by `@requests(on='/abc')`
+
+    optional string target_executor = 4; // if set, the request is targeted to certain executor, regex strings
+
+    optional uint32 timeout = 5; // epoch time in seconds after which the request should be dropped
+}
+
+
+/**
+ * Represents the set of Endpoints exposed by an Executor
+ */
+message EndpointsProto {
+
+    // list of endpoints exposed by an Executor
+    repeated string endpoints = 1;
+    repeated string write_endpoints = 2;
+    // Dictionary containing input and output schema per endpoint
+    google.protobuf.Struct schemas = 3; // extra kwargs that will be used in executor
+}
+
+/**
+ * Represents a Status
+ */
+message StatusProto {
+
+    enum StatusCode {
+        SUCCESS = 0; // success
+        ERROR = 1; // error
+    }
+
+    // status code
+    StatusCode code = 1;
+
+    // error description of the very first exception
+    string description = 2;
+
+    message ExceptionProto {
+        // the class name of the exception
+        string name = 1;
+
+        // the list of arguments given to the exception constructor.
+        repeated string args = 2;
+
+        // the exception traceback stacks
+        repeated string stacks = 3;
+
+        // the name of the executor bind to that Executor (if applicable)
+        string executor = 4;
+    }
+
+    // the details of the error
+    ExceptionProto exception = 3;
+}
+
+
+/**
+ * Represents an entity (like an ExecutorRuntime)
+ */
+message RelatedEntity {
+    string id = 1; // unique id of the entity, like the name of a pod
+    string address = 2; // address of the entity, could be an IP address, domain name etc, does not include port
+    uint32 port = 3; // port this entity is listening on
+    optional uint32 shard_id = 4; // the id of the shard it belongs to, if it is a shard
+}
+
+
+/**
+ * Represents a DataRequest
+ */
+message DataRequestProto {
+
+    HeaderProto header = 1; // header contains meta info defined by the user
+
+    google.protobuf.Struct parameters = 2; // extra kwargs that will be used in executor
+
+    repeated RouteProto routes = 3; // status info on every routes
+
+    message DataContentProto {
+        oneof documents {
+            docarray.DocListProto docs = 1; // the docs in this request
+            bytes docs_bytes = 2; // the docs in this request as bytes
+        }
+    }
+
+    DataContentProto data = 4; // container for docs and groundtruths
+}
+
+message DataRequestProtoWoData {
+
+    HeaderProto header = 1; // header contains meta info defined by the user
+
+    google.protobuf.Struct parameters = 2; // extra kwargs that will be used in executor
+
+    repeated RouteProto routes = 3; // status info on every routes
+
+}
+
+
+/**
+ * Represents a list of data requests
+ * This should be replaced by streaming
+ */
+message DataRequestListProto {
+    repeated DataRequestProto requests = 1; // requests in this list
+}
+
+/**
+ * jina gRPC service for DataRequests.
+ */
+service JinaDataRequestRPC {
+    // Used for passing DataRequests to the Executors
+    rpc process_data (DataRequestListProto) returns (DataRequestProto) {
+    }
+}
+
+/**
+ * jina gRPC service for DataRequests.
+ * This is used to send requests to Executors when a list of requests is not needed
+ */
+service JinaSingleDataRequestRPC {
+    // Used for passing DataRequests to the Executors
+    rpc process_single_data (DataRequestProto) returns (DataRequestProto) {
+    }
+}
+
+/**
+ * jina streaming gRPC service.
+ */
+service JinaRPC {
+    // Pass in a Request and a filled Request with matches will be returned.
+    rpc Call (stream DataRequestProto) returns (stream DataRequestProto) {
+    }
+}
+
+/**
+ * jina gRPC service to expose Endpoints from Executors.
+ */
+service JinaDiscoverEndpointsRPC {
+    rpc endpoint_discovery (google.protobuf.Empty) returns (EndpointsProto) {
+    }
+}
+
+
+/**
+ * jina gRPC service to expose Endpoints from Executors.
+ */
+service JinaGatewayDryRunRPC {
+    rpc dry_run (google.protobuf.Empty) returns (StatusProto) {
+    }
+}
+
+/**
+ * jina gRPC service to expose information about running jina version and environment.
+ */
+service JinaInfoRPC {
+    rpc _status (google.protobuf.Empty) returns (JinaInfoProto) {
+    }
+}
+
+/**
+* An ID representation for the Snapshot Job
+*/
+message SnapshotId {
+    string value = 1;
+}
+
+/**
+* An ID representation for the Restore Job
+*/
+message RestoreId {
+    string value = 1;
+}
+
+
+/**
+* Represents the status of a Snapshot.
+*/
+message SnapshotStatusProto {
+
+    SnapshotId id = 1; // An ID for the Snapshot Job.
+
+    enum Status {
+        STATE_UNSPECIFIED = 0;
+
+        QUEUED = 1; // Snapshot Job is admitted (validated and persisted) and waiting for resources.
+
+        SCHEDULED = 2; // Snapshot Job is scheduled to run as soon as resource allocation is ready.
+
+        RUNNING = 3; // Resource allocation has been successful. Snapshot Job is RUNNING.
+
+        SUCCEEDED = 4; // Snapshot Job has finished successfully.
+
+        FAILED = 5; // Snapshot Job has failed.
+
+        NOT_FOUND = 6; // If the specific snapshot id is unknown or not found
+    }
+
+    // status code
+    Status status = 2;
+
+    // snapshot file
+    string snapshot_file = 3;
+}
+
+/**
+* jina gRPC service to trigger a snapshot at the Executor Runtime.
+*/
+service JinaExecutorSnapshot {
+    rpc snapshot (google.protobuf.Empty) returns (SnapshotStatusProto) {
+    }
+}
+
+/**
+* jina gRPC service to trigger a snapshot at the Executor Runtime.
+*/
+service JinaExecutorSnapshotProgress {
+    rpc snapshot_status (SnapshotId) returns (SnapshotStatusProto) {
+    }
+}
+
+/**
+* Represents the status of a Restore.
+*/
+message RestoreSnapshotStatusProto {
+
+    RestoreId id = 1; // An ID for the Restore Job.
+
+    enum Status {
+        STATE_UNSPECIFIED = 0;
+
+        RUNNING = 1; // Resource allocation has been successful. Restore Job is RUNNING.
+
+        SUCCEEDED = 2; // Resource Job has finished successfully.
+
+        FAILED = 3; // Resource Job has failed.
+
+        NOT_FOUND = 6; // If the specific restore id is unknown or not found
+    }
+
+    // status code
+    Status status = 2;
+}
+
+/**
+* Commands to restore an Executor from a snapshot file
+*/
+message RestoreSnapshotCommand {
+    // snapshot file
+    string snapshot_file = 1;
+}
+
+/**
+* jina gRPC service to trigger a restore at the Executor Runtime.
+*/
+service JinaExecutorRestore {
+    rpc restore (RestoreSnapshotCommand) returns (RestoreSnapshotStatusProto) {
+    }
+}
+
+/**
+* jina gRPC service to trigger a snapshot at the Executor Runtime.
+*/
+service JinaExecutorRestoreProgress {
+    rpc restore_status (RestoreId) returns (RestoreSnapshotStatusProto) {
+    }
+}

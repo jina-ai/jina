@@ -1,9 +1,9 @@
 import argparse
+import copy
 import multiprocessing
-import os
 import time
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Dict, Optional, Type, Union
+from typing import Optional
 
 from jina.constants import __ready_msg__, __stop_msg__, __windows__
 from jina.enums import PodRoleType
@@ -13,102 +13,10 @@ from jina.jaml import JAML
 from jina.logging.logger import JinaLogger
 from jina.orchestrate.pods.helper import ConditionalEvent, _get_event
 from jina.parsers.helper import _update_gateway_args
-from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-
-if TYPE_CHECKING:
-    import threading
+from jina.serve.executors.run import run, run_raft
+from jina.constants import RAFT_TO_EXECUTOR_PORT
 
 __all__ = ['BasePod', 'Pod']
-
-
-def run(
-        args: 'argparse.Namespace',
-        name: str,
-        runtime_cls: Type[AsyncNewLoopRuntime],
-        envs: Dict[str, str],
-        is_started: Union['multiprocessing.Event', 'threading.Event'],
-        is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
-        is_ready: Union['multiprocessing.Event', 'threading.Event'],
-        jaml_classes: Optional[Dict] = None,
-):
-    """Method representing the :class:`BaseRuntime` activity.
-
-    This method is the target for the Pod's `thread` or `process`
-
-    .. note::
-        :meth:`run` is running in subprocess/thread, the exception can not be propagated to the main process.
-        Hence, please do not raise any exception here.
-
-    .. note::
-        Please note that env variables are process-specific. Subprocess inherits envs from
-        the main process. But Subprocess's envs do NOT affect the main process. It does NOT
-        mess up user local system envs.
-
-    .. warning::
-        If you are using ``thread`` as backend, envs setting will likely be overidden by others
-
-    .. note::
-        `jaml_classes` contains all the :class:`JAMLCompatible` classes registered in the main process.
-        When using `spawn` as the multiprocessing start method, passing this argument to `run` method re-imports
-        & re-registers all `JAMLCompatible` classes.
-
-    :param args: namespace args from the Pod
-    :param name: name of the Pod to have proper logging
-    :param runtime_cls: the runtime class to instantiate
-    :param envs: a dictionary of environment variables to be set in the new Process
-    :param is_started: concurrency event to communicate runtime is properly started. Used for better logging
-    :param is_shutdown: concurrency event to communicate runtime is terminated
-    :param is_ready: concurrency event to communicate runtime is ready to receive messages
-    :param jaml_classes: all the `JAMLCompatible` classes imported in main process
-    """
-    req_handler_cls = None
-    if runtime_cls == 'GatewayRuntime':
-        from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
-        req_handler_cls = GatewayRequestHandler
-    elif runtime_cls == 'WorkerRuntime':
-        from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
-        req_handler_cls = WorkerRequestHandler
-    elif runtime_cls == 'HeadRuntime':
-        from jina.serve.runtimes.head.request_handling import HeaderRequestHandler
-        req_handler_cls = HeaderRequestHandler
-
-    logger = JinaLogger(name, **vars(args))
-
-    def _unset_envs():
-        if envs:
-            for k in envs.keys():
-                os.environ.pop(k, None)
-
-    def _set_envs():
-        if args.env:
-            os.environ.update({k: str(v) for k, v in envs.items()})
-
-    try:
-        _set_envs()
-
-        runtime = AsyncNewLoopRuntime(
-            args=args,
-            req_handler_cls=req_handler_cls,
-            gateway_load_balancer=getattr(args, 'gateway_load_balancer', False)
-        )
-    except Exception as ex:
-        logger.error(
-            f'{ex!r} during {runtime_cls!r} initialization'
-            + f'\n add "--quiet-error" to suppress the exception details'
-            if not args.quiet_error
-            else '',
-            exc_info=not args.quiet_error,
-        )
-    else:
-        if not is_shutdown.is_set():
-            is_started.set()
-            with runtime:
-                is_ready.set()
-                runtime.run_forever()
-    finally:
-        _unset_envs()
-        is_shutdown.set()
-        logger.debug(f'process terminated')
 
 
 class BasePod(ABC):
@@ -334,10 +242,30 @@ class Pod(BasePod):
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
         self.runtime_cls = self._get_runtime_cls()
+        cargs = None
+        self.raft_worker = None
+        if self.args.stateful and self.args.pod_role == PodRoleType.WORKER:
+            cargs_stateful = copy.deepcopy(args)
+            self.raft_worker = multiprocessing.Process(
+                target=run_raft,
+                kwargs={
+                    'args': cargs_stateful,
+                    'is_ready': self.is_ready,
+                },
+                name=self.name,
+                daemon=True,
+            )
+            cargs = copy.deepcopy(cargs_stateful)
+
+            if isinstance(cargs.port, int):
+                cargs.port += RAFT_TO_EXECUTOR_PORT
+            elif isinstance(cargs.port, list):
+                cargs.port = [port + RAFT_TO_EXECUTOR_PORT for port in cargs.port]
+        # if stateful, have a raft_worker
         self.worker = multiprocessing.Process(
             target=run,
             kwargs={
-                'args': args,
+                'args': cargs or args,
                 'name': self.name,
                 'envs': self._envs,
                 'is_started': self.is_started,
@@ -356,7 +284,8 @@ class Pod(BasePod):
         .. #noqa: DAR201
         """
         self.worker.start()
-
+        if self.raft_worker is not None:
+            self.raft_worker.start()
         if not self.args.noblock_on_start:
             self.wait_start_success()
         return self
@@ -370,6 +299,8 @@ class Pod(BasePod):
         """
         self.logger.debug(f'joining the process')
         self.worker.join(*args, **kwargs)
+        if self.raft_worker is not None:
+            self.raft_worker.join(*args, **kwargs)
         self.logger.debug(f'successfully joined the process')
 
     def _terminate(self):
@@ -378,6 +309,8 @@ class Pod(BasePod):
         """
         self.logger.debug(f'terminating the runtime process')
         self.worker.terminate()
+        if self.raft_worker is not None:
+            self.raft_worker.terminate()
         self.logger.debug(f'runtime process properly terminated')
 
     def _get_runtime_cls(self):

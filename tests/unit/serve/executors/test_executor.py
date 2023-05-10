@@ -15,6 +15,7 @@ from jina.clients.request import request_generator
 from jina.constants import __cache_path__
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port
+from jina.serve.executors.decorators import write
 from jina.serve.executors.metas import get_default_metas
 from jina.serve.networking.utils import send_request_async
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
@@ -663,3 +664,27 @@ def test_combined_decorators(inputs, expected_values):
 
     exec = MyExecutor2()
     assert exec.dynamic_batching['foo'] == expected_values
+
+
+def test_write_decorator():
+    class WriteExecutor(Executor):
+        @requests(on='/index')
+        @write()
+        def index(self, **kwargs):
+            pass
+
+        @write()
+        @requests(on='/update')
+        def update(self, **kwargs):
+            pass
+
+        @requests(on='/search')
+        def search(self, **kwargs):
+            pass
+
+        @requests
+        def foo(self, **kwargs):
+            pass
+
+    exec = WriteExecutor()
+    assert set(exec.write_endpoints) == {'/index', '/update'}

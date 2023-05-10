@@ -42,9 +42,9 @@ def avoid_concurrent_lock_cls(cls):
 
             if self.__class__ == cls:
                 with ImportExtensions(
-                    required=False,
-                    help_text=f'FileLock is needed to guarantee non-concurrent initialization of replicas in the '
-                    f'same machine.',
+                        required=False,
+                        help_text=f'FileLock is needed to guarantee non-concurrent initialization of replicas in the '
+                                  f'same machine.',
                 ):
                     import filelock
 
@@ -88,6 +88,122 @@ def _init_requests_by_class(cls):
         # assume that `requests` is called when importing class, so parent classes will be processed before
         # inherit all the requests from parents
         _inherit_from_parent_class_inner(cls)
+
+
+def write(
+        func: Optional[
+            Callable[
+                [
+                    'DocumentArray',
+                    Dict,
+                    'DocumentArray',
+                    List['DocumentArray'],
+                    List['DocumentArray'],
+                ],
+                Optional[Union['DocumentArray', Dict]],
+            ]
+        ] = None
+):
+    """
+    `@write` is a decorator indicating that the function decorated will change the Executor finite state machine
+
+    Calls to methods decorated with `write` will be handled by `RAFT` consensus algorithm to guarantee the consensus of the Executor between replicas when used as a `StatefulDeployment`
+
+    EXAMPLE USAGE
+
+    .. code-block:: python
+
+        from jina import Executor, requests, Flow, write
+        from docarray import Document
+
+
+        # define Executor with custom `@requests` endpoints
+        class MyExecutor(Executor):
+
+            @requests(on='/index')
+            @write
+            def index(self, docs, **kwargs):
+                print(docs)  # index docs here
+
+            @requests(on=['/search', '/query'])
+            def search(self, docs, **kwargs):
+                print(docs)  # perform search here
+
+            @requests  # default/fallback endpoint
+            def foo(self, docs, **kwargs):
+                print(docs)  # process docs here
+
+
+        f = Flow().add(uses=MyExecutor, stateful=True, replicas=3)  # add your Executor to a Flow
+        with f:
+            f.post(
+                on='/index', inputs=Document(text='I am here!')
+            )  # send doc to `index` method which will be replicated using RAFT
+            f.post(
+                on='/search', inputs=Document(text='Who is there?')
+            )  # send doc to `search` method, that will bypass the RAFT apply
+            f.post(
+                on='/query', inputs=Document(text='Who is there?')
+            )  # send doc to `search` method
+            f.post(on='/bar', inputs=Document(text='Who is there?'))  # send doc to `foo` method
+
+    :param func: the method to decorate
+    :return: decorated function
+    """
+
+    class WriteMethodDecorator:
+        def __init__(self, fn):
+            self._requests_decorator = None
+            fn = self._unwrap_requests_decorator(fn)
+            if iscoroutinefunction(fn):
+
+                @functools.wraps(fn)
+                async def arg_wrapper(
+                        executor_instance, *args, **kwargs
+                ):  # we need to get the summary from the executor, so we need to access the self
+                    with executor_instance._write_lock:
+                        return await fn(executor_instance, *args, **kwargs)
+
+                self.fn = arg_wrapper
+            else:
+
+                @functools.wraps(fn)
+                def arg_wrapper(
+                        executor_instance, *args, **kwargs
+                ):  # we need to get the summary from the executor, so we need to access the self
+                    with executor_instance._write_lock:
+                        return fn(executor_instance, *args, **kwargs)
+
+                self.fn = arg_wrapper
+
+        def _unwrap_requests_decorator(self, fn):
+            if type(fn).__name__ == 'FunctionMapper':
+                self._requests_decorator = fn
+                return fn.fn
+            else:
+                return fn
+
+        def _inject_owner_attrs(self, owner, name):
+            if not hasattr(owner, '_write_methods'):
+                owner._write_methods = []
+
+            owner._write_methods.append(self.fn.__name__)
+
+        def __set_name__(self, owner, name):
+            if self._requests_decorator:
+                self._requests_decorator._inject_owner_attrs(owner, name, None, None)
+            self._inject_owner_attrs(owner, name)
+
+            setattr(owner, name, self.fn)
+
+        def __call__(self, *args, **kwargs):
+            # this is needed to make this decorator work in combination with `@requests`
+            return self.fn(*args, **kwargs)
+
+    if func:
+        return WriteMethodDecorator(func)
+    else:
+        return WriteMethodDecorator
 
 
 def requests(
@@ -163,10 +279,12 @@ def requests(
     class FunctionMapper:
         def __init__(self, fn):
             self._batching_decorator = None
+            self._write_decorator = None
             fn = self._unwrap_batching_decorator(fn)
+            fn = self._unwrap_write_decorator(fn)
             arg_spec = inspect.getfullargspec(fn)
             if not arg_spec.varkw and not __args_executor_func__.issubset(
-                arg_spec.args
+                    arg_spec.args
             ):
                 raise TypeError(
                     f'{fn} accepts only {arg_spec.args} which is fewer than expected, '
@@ -177,7 +295,7 @@ def requests(
 
                 @functools.wraps(fn)
                 async def arg_wrapper(
-                    executor_instance, *args, **kwargs
+                        executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
                     return await fn(executor_instance, *args, **kwargs)
 
@@ -186,7 +304,7 @@ def requests(
 
                 @functools.wraps(fn)
                 def arg_wrapper(
-                    executor_instance, *args, **kwargs
+                        executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
                     return fn(executor_instance, *args, **kwargs)
 
@@ -195,6 +313,13 @@ def requests(
         def _unwrap_batching_decorator(self, fn):
             if type(fn).__name__ == 'DynamicBatchingDecorator':
                 self._batching_decorator = fn
+                return fn.fn
+            else:
+                return fn
+
+        def _unwrap_write_decorator(self, fn):
+            if type(fn).__name__ == 'WriteMethodDecorator':
+                self._write_decorator = fn
                 return fn.fn
             else:
                 return fn
@@ -238,6 +363,8 @@ def requests(
             _init_requests_by_class(owner)
             if self._batching_decorator:
                 self._batching_decorator._inject_owner_attrs(owner, name)
+            if self._write_decorator:
+                self._write_decorator._inject_owner_attrs(owner, name)
             self.fn.class_name = owner.__name__
             self._inject_owner_attrs(owner, name, request_schema, response_schema)
 
@@ -252,19 +379,19 @@ def requests(
 
 
 def dynamic_batching(
-    func: Callable[
-        [
-            'DocumentArray',
-            Dict,
-            'DocumentArray',
-            List['DocumentArray'],
-            List['DocumentArray'],
-        ],
-        Optional[Union['DocumentArray', Dict]],
-    ] = None,
-    *,
-    preferred_batch_size: Optional[int] = None,
-    timeout: Optional[float] = 10_000,
+        func: Callable[
+            [
+                'DocumentArray',
+                Dict,
+                'DocumentArray',
+                List['DocumentArray'],
+                List['DocumentArray'],
+            ],
+            Optional[Union['DocumentArray', Dict]],
+        ] = None,
+        *,
+        preferred_batch_size: Optional[int] = None,
+        timeout: Optional[float] = 10_000,
 ):
     """
     `@dynamic_batching` defines the dynamic batching behavior of an Executor.
@@ -291,7 +418,7 @@ def dynamic_batching(
 
                 @functools.wraps(fn)
                 async def arg_wrapper(
-                    executor_instance, *args, **kwargs
+                        executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
                     return await fn(executor_instance, *args, **kwargs)
 
@@ -300,7 +427,7 @@ def dynamic_batching(
 
                 @functools.wraps(fn)
                 def arg_wrapper(
-                    executor_instance, *args, **kwargs
+                        executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
                     return fn(executor_instance, *args, **kwargs)
 
@@ -345,9 +472,9 @@ def dynamic_batching(
 
 
 def monitor(
-    *,
-    name: Optional[str] = None,
-    documentation: Optional[str] = None,
+        *,
+        name: Optional[str] = None,
+        documentation: Optional[str] = None,
 ):
     """
     Decorator and context manager that allows monitoring of an Executor.

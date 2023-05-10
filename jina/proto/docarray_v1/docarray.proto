@@ -3,7 +3,7 @@ syntax = "proto3";
 package docarray;
 
 /*
- this file is just a placeholder for the DA coming from jina._docarray dependency
+ this file is just a placeholder for the DA coming from docarray dependency
  */
 message DocumentArrayProto {
 

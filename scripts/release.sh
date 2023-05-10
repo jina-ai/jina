@@ -32,9 +32,14 @@ function clean_build {
     rm -rf build
 }
 
+function clean_egg {
+    rm -rf *.egg-info
+    rm -rf build
+}
+
 function pub_pypi {
     # publish to pypi
-    clean_build
+    clean_egg
     cp extra-requirements.txt jina/resources/
     python setup.py sdist
     twine upload dist/*
@@ -114,12 +119,6 @@ elif [[ $1 == 'rc' ]]; then
   slack_notif
 else
   # as a prerelease, pypi update only, no back commit etc.
-  COMMITS_SINCE_LAST_VER=$(git rev-list $LAST_VER..HEAD --count)
-  NEXT_VER=$RELEASE_VER".dev"$COMMITS_SINCE_LAST_VER
-  printf "this will be a developmental release: \e[1;33m$NEXT_VER\e[0m\n"
-
-  VER_TAG_NEXT=$VER_TAG\'${NEXT_VER}\'
-  update_ver_line "$VER_TAG" "$VER_TAG_NEXT" "$INIT_FILE"
-
+  # previously the INIT_FILE must have been updated
   pub_pypi
 fi

@@ -43,26 +43,25 @@ def executor_native(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-    if args.runtime_cls == 'WorkerRuntime':
-        from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
-        req_handler_cls = WorkerRequestHandler
-    elif args.runtime_cls == 'HeadRuntime':
-        from jina.serve.runtimes.head.request_handling import HeaderRequestHandler
-        req_handler_cls = HeaderRequestHandler
+    from jina.serve.executors.run import run, run_stateful
+    import multiprocessing
+    from jina.jaml import JAML
+    envs = {}
+    envs.update(args.env or {})
+    if not args.stateful:
+        run(name=args.name,
+            args=args,
+            runtime_cls=args.runtime_cls,
+            envs=envs,
+            is_started=multiprocessing.Event(),
+            is_shutdown=multiprocessing.Event(),
+            is_ready=multiprocessing.Event(),
+            jaml_classes=JAML.registered_classes())
     else:
-        raise RuntimeError(
-            f' runtime_cls {args.runtime_cls} is not supported with `--native` argument. `WorkerRuntime` is supported'
-        )
-
-    with AsyncNewLoopRuntime(args, req_handler_cls=req_handler_cls) as rt:
-        name = (
-            rt.server._request_handler._executor.metas.name
-            if hasattr(rt.server, '_request_handler') and hasattr(rt.server._request_handler, '_executor')
-            else args.runtime_cls
-        )
-        rt.logger.info(f'Executor {name} started')
-        rt.run_forever()
+        run_stateful(name=args.name,
+                     args=args,
+                     runtime_cls=args.runtime_cls,
+                     envs=envs)
 
 
 def executor(args: 'Namespace'):
@@ -178,7 +177,7 @@ def new(args: 'Namespace'):
     import shutil
 
     from jina.constants import __resources_path__
-    
+
     if args.type == 'deployment':
         shutil.copytree(
             os.path.join(__resources_path__, 'project-template', 'deployment'), os.path.abspath(args.name)
