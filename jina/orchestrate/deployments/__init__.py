@@ -7,7 +7,6 @@ import subprocess
 import threading
 import multiprocessing
 import time
-import warnings
 from argparse import Namespace
 from collections import defaultdict
 from contextlib import ExitStack
@@ -105,17 +104,20 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             deployment_args: Namespace,
             args: List[Namespace],
             head_pod,
+            name,
         ):
             self.deployment_args = copy.copy(deployment_args)
             self.args = args
             self.shard_id = args[0].shard_id
             self._pods = []
             self.head_pod = head_pod
+            self.logger = JinaLogger(name, **vars(self.deployment_args))
 
         def _add_voter_to_leader(self):
             leader_address = f'{self._pods[0].runtime_ctrl_address}'
             voter_addresses = [pod.runtime_ctrl_address for pod in self._pods[1:]]
             replica_ids = [pod.args.replica_id for pod in self._pods[1:]]
+            self.logger.debug(f'Starting process to call Add Voters')
             process = multiprocessing.Process(
                 target=_call_add_voters,
                 kwargs={
@@ -126,6 +128,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             )
             process.start()
             process.join()
+            self.logger.debug(f'Add Voters process finished')
 
         async def _async_add_voter_to_leader(self):
             from concurrent.futures import ProcessPoolExecutor
@@ -134,6 +137,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             voter_addresses = [pod.runtime_ctrl_address for pod in self._pods[1:]]
             replica_ids = [pod.args.replica_id for pod in self._pods[1:]]
             loop = asyncio.get_running_loop()
+            self.logger.debug(f'Starting process to call Add Voters')
             await loop.run_in_executor(
                 ProcessPoolExecutor(max_workers=1),
                 _call_add_voters,
@@ -141,6 +145,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 voter_addresses,
                 replica_ids,
             )
+            self.logger.debug(f'Add Voters process finished')
 
         @property
         def is_ready(self):
@@ -160,20 +165,19 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         def wait_start_success(self):
             for pod in self._pods:
                 pod.wait_start_success()
-            # TODO: is this the right behavior ?
             # should this be done only when the cluster is started ?
             if self._pods[0].args.stateful:
                 self._add_voter_to_leader()
+            self.logger.debug(f'ReplicaSet started successfully')
 
         async def async_wait_start_success(self):
             await asyncio.gather(
                 *[pod.async_wait_start_success() for pod in self._pods]
             )
-
-            # TODO: is this the right behavior ?
             # should this be done only when the cluster is started ?
             if self._pods[0].args.stateful:
                 await self._async_add_voter_to_leader()
+            self.logger.debug(f'ReplicaSet started successfully')
 
         def __enter__(self):
             for _args in self.args:
@@ -1079,11 +1083,14 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 _args, gateway_load_balancer=self._gateway_load_balancer
             )
             self.enter_context(self.gateway_pod)
+
+        num_shards = len(self.pod_args['pods'])
         for shard_id in self.pod_args['pods']:
             self.shards[shard_id] = self._ReplicaSet(
-                self.args,
-                self.pod_args['pods'][shard_id],
-                self.head_pod,
+                deployment_args=self.args,
+                args=self.pod_args['pods'][shard_id],
+                head_pod=self.head_pod,
+                name=f'{self.name}-replica-set-{shard_id}' if num_shards > 1 else f'{self.name}-replica-set',
             )
             self.enter_context(self.shards[shard_id])
 
@@ -1143,6 +1150,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             for shard_id in self.shards:
                 coros.append(self.shards[shard_id].async_wait_start_success())
             await asyncio.gather(*coros)
+            self.logger.debug(f'Deployment started successfully')
         except:
             self.close()
             raise
