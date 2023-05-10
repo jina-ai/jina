@@ -143,7 +143,11 @@ class GatewayRequestHandler:
         tracer_provider,
     ):
         from jina.helper import extend_rest_interface
-        from jina.serve.runtimes.gateway.http_fastapi_app import get_fastapi_app
+        from jina._docarray import docarray_v2
+        if not docarray_v2:
+            from jina.serve.runtimes.gateway.http_fastapi_app import get_fastapi_app
+        else:
+            from jina.serve.runtimes.gateway.http_fastapi_app_docarrayv2 import get_fastapi_app
 
         return extend_rest_interface(
             get_fastapi_app(

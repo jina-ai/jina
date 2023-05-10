@@ -43,23 +43,23 @@ class GatewayStreamer:
     """
 
     def __init__(
-        self,
-        graph_representation: Dict,
-        executor_addresses: Dict[str, Union[str, List[str]]],
-        graph_conditions: Dict = {},
-        deployments_metadata: Dict[str, Dict[str, str]] = {},
-        deployments_no_reduce: List[str] = [],
-        timeout_send: Optional[float] = None,
-        retries: int = 0,
-        compression: Optional[str] = None,
-        runtime_name: str = 'custom gateway',
-        prefetch: int = 0,
-        logger: Optional['JinaLogger'] = None,
-        metrics_registry: Optional['CollectorRegistry'] = None,
-        meter: Optional['Meter'] = None,
-        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
-        tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
-        grpc_channel_options: Optional[list] = None,
+            self,
+            graph_representation: Dict,
+            executor_addresses: Dict[str, Union[str, List[str]]],
+            graph_conditions: Dict = {},
+            deployments_metadata: Dict[str, Dict[str, str]] = {},
+            deployments_no_reduce: List[str] = [],
+            timeout_send: Optional[float] = None,
+            retries: int = 0,
+            compression: Optional[str] = None,
+            runtime_name: str = 'custom gateway',
+            prefetch: int = 0,
+            logger: Optional['JinaLogger'] = None,
+            metrics_registry: Optional['CollectorRegistry'] = None,
+            meter: Optional['Meter'] = None,
+            aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
+            tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
+            grpc_channel_options: Optional[list] = None,
     ):
         """
         :param graph_representation: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to
@@ -123,15 +123,15 @@ class GatewayStreamer:
         self._streamer.Call = self._streamer.stream
 
     def _create_connection_pool(
-        self,
-        deployments_addresses,
-        compression,
-        metrics_registry,
-        meter,
-        logger,
-        aio_tracing_client_interceptors,
-        tracing_client_interceptor,
-        grpc_channel_options=None,
+            self,
+            deployments_addresses,
+            compression,
+            metrics_registry,
+            meter,
+            logger,
+            aio_tracing_client_interceptors,
+            tracing_client_interceptor,
+            grpc_channel_options=None,
     ):
         # add the connections needed
         connection_pool = GrpcConnectionPool(
@@ -162,15 +162,32 @@ class GatewayStreamer:
         """
         return self._streamer.stream(*args, **kwargs)
 
+    def get_endpoints_input_output_models(self):
+        """
+        Return a Dictionary with endpoints as keys and values as a dictionary of input and output schemas and names
+        taken from the endpoints proto endpoint of Executors
+
+        :return: a Dictionary with endpoints as keys and values as a dictionary of input and output schemas and names
+        taken from the endpoints proto endpoint of Executors
+        """
+        # The logic should be to get the response of all the endpoints protos schemas from all the nodes.
+        # Then do a logic that for every endpoint fom every Executor computes what is the input and output schema seen by the Flow.
+        from docarray.documents import TextDoc
+        class ATextDoc(TextDoc):
+            a: str
+
+        return {'/index': {'input': {'model': ATextDoc, 'name': 'ATextDoc'},
+                           'output': {'model': ATextDoc, 'name': 'ATextDoc'}}}
+
     async def stream(
-        self,
-        docs: DocumentArray,
-        request_size: int = 100,
-        return_results: bool = False,
-        exec_endpoint: Optional[str] = None,
-        target_executor: Optional[str] = None,
-        parameters: Optional[Dict] = None,
-        results_in_order: bool = False,
+            self,
+            docs: DocumentArray,
+            request_size: int = 100,
+            return_results: bool = False,
+            exec_endpoint: Optional[str] = None,
+            target_executor: Optional[str] = None,
+            parameters: Optional[Dict] = None,
+            results_in_order: bool = False,
     ) -> AsyncIterator[Tuple[Union[DocumentArray, 'Request'], 'ExecutorError']]:
         """
         stream Documents and yield Documents or Responses and unpacked Executor error if any.
@@ -185,13 +202,13 @@ class GatewayStreamer:
         :yield: tuple of Documents or Responses and unpacked error from Executors if any
         """
         async for result in self.stream_docs(
-            docs=docs,
-            request_size=request_size,
-            return_results=True,  # force return Responses
-            exec_endpoint=exec_endpoint,
-            target_executor=target_executor,
-            parameters=parameters,
-            results_in_order=results_in_order,
+                docs=docs,
+                request_size=request_size,
+                return_results=True,  # force return Responses
+                exec_endpoint=exec_endpoint,
+                target_executor=target_executor,
+                parameters=parameters,
+                results_in_order=results_in_order,
         ):
             error = None
             if jina_pb2.StatusProto.ERROR == result.status.code:
@@ -209,14 +226,14 @@ class GatewayStreamer:
                 yield result.data.docs, error
 
     async def stream_docs(
-        self,
-        docs: DocumentArray,
-        request_size: int = 100,
-        return_results: bool = False,
-        exec_endpoint: Optional[str] = None,
-        target_executor: Optional[str] = None,
-        parameters: Optional[Dict] = None,
-        results_in_order: bool = False,
+            self,
+            docs: DocumentArray,
+            request_size: int = 100,
+            return_results: bool = False,
+            exec_endpoint: Optional[str] = None,
+            target_executor: Optional[str] = None,
+            parameters: Optional[Dict] = None,
+            results_in_order: bool = False,
     ):
         """
         stream documents and stream responses back.
@@ -245,7 +262,7 @@ class GatewayStreamer:
                 yield req
 
         async for resp in self.rpc_stream(
-            request_iterator=_req_generator(), results_in_order=results_in_order
+                request_iterator=_req_generator(), results_in_order=results_in_order
         ):
             if return_results:
                 yield resp
@@ -262,7 +279,7 @@ class GatewayStreamer:
     Call = rpc_stream
 
     async def process_single_data(
-        self, request: DataRequest, context=None
+            self, request: DataRequest, context=None
     ) -> DataRequest:
         """Implements request and response handling of a single DataRequest
         :param request: DataRequest from Client
@@ -330,12 +347,12 @@ class _ExecutorStreamer:
         self.executor_name = executor_name
 
     async def post(
-        self,
-        inputs: DocumentArray,
-        request_size: int = 100,
-        on: Optional[str] = None,
-        parameters: Optional[Dict] = None,
-        **kwargs,
+            self,
+            inputs: DocumentArray,
+            request_size: int = 100,
+            on: Optional[str] = None,
+            parameters: Optional[Dict] = None,
+            **kwargs,
     ):
         reqs = []
         for docs_batch in inputs.batch(batch_size=request_size, shuffle=False):

@@ -196,21 +196,22 @@ def _install_health_check(app: 'FastAPI', logger):
                 'endpoint GET on "/" is used for health checks, make sure it\'s still accessible'
             )
 
-    if not health_check_exists:
-        from jina.serve.runtimes.gateway.models import JinaHealthModel
-
-        @app.get(
-            path='/',
-            summary='Get the health of Jina Gateway service',
-            response_model=JinaHealthModel,
-        )
-        async def _gateway_health():
-            """
-            Get the health of this Gateway service.
-            .. # noqa: DAR201
-
-            """
-            return {}
+    # TODO: Recover and separate properly JinaHealthModel so that it can be imported with docarray v2
+    # if not health_check_exists:
+    #     from jina.serve.runtimes.gateway.models import JinaHealthModel
+    #
+    #     @app.get(
+    #         path='/',
+    #         summary='Get the health of Jina Gateway service',
+    #         response_model=JinaHealthModel,
+    #     )
+    #     async def _gateway_health():
+    #         """
+    #         Get the health of this Gateway service.
+    #         .. # noqa: DAR201
+    #
+    #         """
+    #         return {}
 
 
 class HTTPServer(FastAPIBaseServer):
