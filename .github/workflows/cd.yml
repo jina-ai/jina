@@ -187,8 +187,8 @@ jobs:
           LAST_VER=$(git tag -l | sort -V | tail -n1)
           COMMITS_SINCE_LAST_VER=$(git rev-list $LAST_VER..HEAD --count)
           echo "devdelta=$COMMITS_SINCE_LAST_VER" >> $GITHUB_OUTPUT
-          export INIT_FILE='jina/__init__.py'
-          export RELEASE_VER=$(sed -n '/^__version__/p' $INIT_FILE | cut -d \' -f2)
+          INIT_FILE='jina/__init__.py'
+          RELEASE_VER=$(sed -n '/^__version__/p' $INIT_FILE | cut -d \' -f2)
           echo "devdelta=$COMMITS_SINCE_LAST_VER" >> $GITHUB_OUTPUT
           echo "releasever=$RELEASE_VER" >> $GITHUB_OUTPUT
     outputs:
@@ -287,8 +287,8 @@ jobs:
         run: |
           DEVDELTA=${{needs.mark-dev-N.outputs.devdelta}}
           RELEASE_VER=${{needs.mark-dev-N.outputs.releasever}}
-          export INIT_FILE='jina/__init__.py'
-          export DEV_VER=$RELEASE_VER".dev"$devdelta
+          INIT_FILE='jina/__init__.py'
+          DEV_VER=$RELEASE_VER".dev"$devdelta
           sed -i '/'"${$RELEASE_VER}"'/s/.*/'"${DEV_VER}"'/' "${INIT_FILE}"
 
       - name: Build wheels with setuptools-golang-build-manylinux-wheel
@@ -337,8 +337,8 @@ jobs:
         run: |
           DEVDELTA=${{needs.mark-dev-N.outputs.devdelta}}
           RELEASE_VER=${{needs.mark-dev-N.outputs.releasever}}
-          export INIT_FILE='jina/__init__.py'
-          export DEV_VER=$RELEASE_VER".dev"$devdelta
+          INIT_FILE='jina/__init__.py'
+          DEV_VER=$RELEASE_VER".dev"$devdelta
           sed -i '/'"${$RELEASE_VER}"'/s/.*/'"${DEV_VER}"'/' "${INIT_FILE}"
       - name: Pre-release (.devN)
         run: |
