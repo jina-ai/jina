@@ -390,8 +390,8 @@ func get_configuration(self *C.PyObject, args *C.PyObject) *C.PyObject {
         logLevel = "INFO"
     }
     logger := hclog.New(&hclog.LoggerOptions{
-                    Name:   "get_configuration",
-                    Level:  hclog.LevelFromString(logLevel),
+                    Name: "get_configuration",
+                    Level: hclog.LevelFromString(logLevel),
                 })
 
     var raftId *C.char

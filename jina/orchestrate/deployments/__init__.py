@@ -86,6 +86,8 @@ def _call_add_voters(leader, voters, replica_ids):
             logger.error(
                 f'Failed to add {str(replica_id)} as voter with address {voter_address} to leader at {leader}'
             )
+        else:
+            logger.success(f'{str(replica_id)} successfully added as voter with address {voter_address} to leader at {leader}')
 
 
 class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=DeploymentType):

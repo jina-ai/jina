@@ -18,7 +18,7 @@ func AddVoter(target string, id string, voter_address string) error {
         logLevel = "INFO"
     }
     add_voter_logger := hclog.New(&hclog.LoggerOptions{
-                    Name:  "add_voter",
+                    Name:  "add_voter-" + id,
                     Level: hclog.LevelFromString(logLevel),
                 })
     ctx := context.Background()
