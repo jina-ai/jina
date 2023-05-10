@@ -33,6 +33,7 @@ def kill_all_children():
         print(f' Child process {p.pid} is still active')
         p.kill()
 
+
 @pytest.fixture(scope='module')
 def stateful_exec_docker_image_built():
     import docker
@@ -66,6 +67,7 @@ def assert_all_replicas_indexed(client, search_da, num_replicas=3, key='pid'):
         assert len(pids) == num_replicas
 
 
+@pytest.mark.timeout(240)
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
 @pytest.mark.parametrize('shards', [2, 1])
 @pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
@@ -112,10 +114,12 @@ def test_stateful_index_search(executor_cls, shards, tmpdir, stateful_exec_docke
             assert len(doc.l) == len(index_da)  # good merging of results
 
 
+@pytest.mark.timeout(240)
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor])
 @pytest.mark.parametrize('shards', [1])
 @pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
-def test_stateful_index_search_restore(executor_cls, shards, tmpdir, stateful_exec_docker_image_built, kill_all_children):
+def test_stateful_index_search_restore(executor_cls, shards, tmpdir, stateful_exec_docker_image_built,
+                                       kill_all_children):
     replicas = 3
     peer_ports = {}
     for shard in range(shards):
