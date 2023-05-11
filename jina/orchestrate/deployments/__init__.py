@@ -111,6 +111,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             self.shard_id = args[0].shard_id
             self._pods = []
             self.head_pod = head_pod
+            self.name = name
             self.logger = JinaLogger(name, **vars(self.deployment_args))
 
         def _add_voter_to_leader(self):
@@ -127,7 +128,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 },
             )
             process.start()
-            process.join()
+            process.join(timeout=20)
             self.logger.debug(f'Add Voters process finished')
 
         async def _async_add_voter_to_leader(self):
@@ -138,13 +139,14 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             replica_ids = [pod.args.replica_id for pod in self._pods[1:]]
             loop = asyncio.get_running_loop()
             self.logger.debug(f'Starting process to call Add Voters')
-            await loop.run_in_executor(
+            future = loop.run_in_executor(
                 ProcessPoolExecutor(max_workers=1),
                 _call_add_voters,
                 leader_address,
                 voter_addresses,
                 replica_ids,
             )
+            await asyncio.wait_for(future, 20, loop=loop)
             self.logger.debug(f'Add Voters process finished')
 
         @property
@@ -168,7 +170,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             # should this be done only when the cluster is started ?
             if self._pods[0].args.stateful:
                 self._add_voter_to_leader()
-            self.logger.debug(f'ReplicaSet started successfully')
+            self.logger.debug(f'ReplicaSet {self.name} started successfully')
 
         async def async_wait_start_success(self):
             await asyncio.gather(
@@ -177,7 +179,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             # should this be done only when the cluster is started ?
             if self._pods[0].args.stateful:
                 await self._async_add_voter_to_leader()
-            self.logger.debug(f'ReplicaSet started successfully')
+            self.logger.debug(f'ReplicaSet {self.name} started successfully')
 
         def __enter__(self):
             for _args in self.args:
