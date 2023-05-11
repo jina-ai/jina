@@ -501,9 +501,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         if self.args.stateful and (is_windows_os or (is_mac_os and is_37)):
             if is_windows_os:
-                raise RuntimeError(
-                    f'Stateful feature is not available on Windows'
-                )
+                raise RuntimeError(f'Stateful feature is not available on Windows')
             if is_mac_os:
                 raise RuntimeError(
                     f'Stateful feature when running on MacOS requires Python3.8 or newer version'
