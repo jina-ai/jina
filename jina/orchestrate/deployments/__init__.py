@@ -61,7 +61,7 @@ class DeploymentType(type(ExitStack), type(JAMLCompatible)):
     pass
 
 
-def _call_add_voters(leader, voters, replica_ids):
+def _call_add_voters(leader, voters, replica_ids, event_signal=None):
     # this method needs to be run in multiprocess, importing jraft in main process
     # makes it impossible to do tests sequentially
 
@@ -72,13 +72,19 @@ def _call_add_voters(leader, voters, replica_ids):
     )
 
     for voter_address, replica_id in zip(voters, replica_ids):
+        logger.debug(
+            f'Trying to add {str(replica_id)} as voter with address {voter_address} to leader at {leader}'
+        )
         success = False
-        for _ in range(10):
+        for i in range(10):
             try:
+                logger.debug(f'Trying {i}th time')
                 jraft.add_voter(leader, str(replica_id), voter_address)
+                logger.debug(f'Trying {i}th time succeeded')
                 success = True
                 break
             except ValueError:
+                logger.debug(f'Trying {i}th failed. Wait 2 seconds for next try')
                 time.sleep(2.0)
 
         if not success:
@@ -89,6 +95,8 @@ def _call_add_voters(leader, voters, replica_ids):
             logger.success(
                 f'{str(replica_id)} successfully added as voter with address {voter_address} to leader at {leader}'
             )
+    if event_signal:
+        event_signal.set()
 
 
 class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=DeploymentType):
@@ -111,12 +119,14 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             self.shard_id = args[0].shard_id
             self._pods = []
             self.head_pod = head_pod
+            self.name = name
             self.logger = JinaLogger(name, **vars(self.deployment_args))
 
         def _add_voter_to_leader(self):
             leader_address = f'{self._pods[0].runtime_ctrl_address}'
             voter_addresses = [pod.runtime_ctrl_address for pod in self._pods[1:]]
             replica_ids = [pod.args.replica_id for pod in self._pods[1:]]
+            event_signal = multiprocessing.Event()
             self.logger.debug(f'Starting process to call Add Voters')
             process = multiprocessing.Process(
                 target=_call_add_voters,
@@ -124,28 +134,56 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     'leader': leader_address,
                     'voters': voter_addresses,
                     'replica_ids': replica_ids,
+                    'event_signal': event_signal,
                 },
+                daemon=True,
             )
             process.start()
-            process.join()
+            start = time.time()
+            properly_closed = False
+            while time.time() - start < 20 * len(replica_ids):
+                if event_signal.is_set():
+                    properly_closed = True
+                    break
+                else:
+                    time.sleep(1.0)
+            if properly_closed:
+                self.logger.debug(f'Add Voters process finished')
+            else:
+                self.logger.error(f' Add Voters process did not finish successfully')
+                process.kill()
             self.logger.debug(f'Add Voters process finished')
 
         async def _async_add_voter_to_leader(self):
-            from concurrent.futures import ProcessPoolExecutor
-
             leader_address = f'{self._pods[0].runtime_ctrl_address}'
             voter_addresses = [pod.runtime_ctrl_address for pod in self._pods[1:]]
             replica_ids = [pod.args.replica_id for pod in self._pods[1:]]
-            loop = asyncio.get_running_loop()
+            event_signal = multiprocessing.Event()
             self.logger.debug(f'Starting process to call Add Voters')
-            await loop.run_in_executor(
-                ProcessPoolExecutor(max_workers=1),
-                _call_add_voters,
-                leader_address,
-                voter_addresses,
-                replica_ids,
+            process = multiprocessing.Process(
+                target=_call_add_voters,
+                kwargs={
+                    'leader': leader_address,
+                    'voters': voter_addresses,
+                    'replica_ids': replica_ids,
+                    'event_signal': event_signal,
+                },
+                daemon=True,
             )
-            self.logger.debug(f'Add Voters process finished')
+            process.start()
+            start = time.time()
+            properly_closed = False
+            while time.time() - start < 20 * len(replica_ids):
+                if event_signal.is_set():
+                    properly_closed = True
+                    break
+                else:
+                    await asyncio.sleep(1.0)
+            if properly_closed:
+                self.logger.debug(f'Add Voters process finished')
+            else:
+                self.logger.error(f' Add Voters process did not finish successfully')
+                process.kill()
 
         @property
         def is_ready(self):
@@ -168,7 +206,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             # should this be done only when the cluster is started ?
             if self._pods[0].args.stateful:
                 self._add_voter_to_leader()
-            self.logger.debug(f'ReplicaSet started successfully')
+            self.logger.debug(f'ReplicaSet {self.name} started successfully')
 
         async def async_wait_start_success(self):
             await asyncio.gather(
@@ -177,7 +215,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             # should this be done only when the cluster is started ?
             if self._pods[0].args.stateful:
                 await self._async_add_voter_to_leader()
-            self.logger.debug(f'ReplicaSet started successfully')
+            self.logger.debug(f'ReplicaSet {self.name} started successfully')
 
         def __enter__(self):
             for _args in self.args:
