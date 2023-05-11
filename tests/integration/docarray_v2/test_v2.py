@@ -23,7 +23,7 @@ def test_different_document_schema(protocols, replicas):
         @requests(on='/foo')
         def foo(self, docs: DocList[Image], **kwargs) -> DocList[Image]:
             for doc in docs:
-                doc.tensor = doc.url.load()
+                doc.tensor = np.zeros((10, 10, 10))
             return docs
 
     ports = [random_port() for _ in protocols]
