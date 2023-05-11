@@ -176,6 +176,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 200
 
       - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v2
@@ -197,7 +199,6 @@ jobs:
     outputs:
       devdelta: ${{ steps.computedevdelta.outputs.devdelta }}
       releasever: ${{ steps.computedevdelta.outputs.releasever }}
-
 
   # Build the wheels for Linux and macOS for Python 3.8 and newer
   build-wheels:
@@ -373,8 +374,6 @@ jobs:
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v2.5.0
-#        with:
-#          submodules: true
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -675,16 +674,14 @@ jobs:
 
   benchmark-pre-release:
     runs-on: ubuntu-latest
-    needs: update-schema
+    needs: [update-schema, mark-dev-N]
     steps:
       - uses: actions/checkout@v2.5.0
         with:
-          fetch-depth: 0
+          fetch-depth: 200
       - run: |
-          INIT_FILE='jina/__init__.py'
-          RELEASE_VER=$(sed -n '/^__version__/p' $INIT_FILE | cut -d \' -f2)
-          LAST_VER=$(git tag -l | sort -V | tail -n1)
-          COMMITS_SINCE_LAST_VER=$(git rev-list $LAST_VER..HEAD --count)
+          DEVDELTA=${{needs.mark-dev-N.outputs.devdelta}}
+          RELEASE_VER=${{needs.mark-dev-N.outputs.releasever}}
           NEXT_VER=$RELEASE_VER".dev"$COMMITS_SINCE_LAST_VER
           echo "NEXT_VER=$NEXT_VER" >> $GITHUB_ENV
       - uses: benc-uk/workflow-dispatch@v1
