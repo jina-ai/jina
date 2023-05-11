@@ -295,7 +295,7 @@ jobs:
           echo "DEVDELTA $DEVDELTA"
           echo "RELEASE_VER $RELEASE_VER"
           echo "DEV_VER $DEV_VER"
-          sed -i '/'"${RELEASE_VER}"'/s/.*/'"${DEV_VER}"'/' "${INIT_FILE}"
+          sed -i '/'"${RELEASE_VER}"'/s/.*/'"__version__ = '${DEV_VER}'"'/' "${INIT_FILE}"
 
       - name: Build wheels with setuptools-golang-build-manylinux-wheel
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -348,7 +348,7 @@ jobs:
           echo "DEVDELTA $DEVDELTA"
           echo "RELEASE_VER $RELEASE_VER"
           echo "DEV_VER $DEV_VER"
-          sed -i '/'"${RELEASE_VER}"'/s/.*/'"${DEV_VER}"'/' "${INIT_FILE}"
+          sed -i '/'"${RELEASE_VER}"'/s/.*/'"__version__ = '${DEV_VER}'"'/' "${INIT_FILE}"
       - name: Pre-release (.devN)
         run: |
           pip install twine wheel
