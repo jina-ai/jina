@@ -84,10 +84,6 @@ jobs:
 
           # MacOS native
           - os: macos-latest
-            python: '3.7'
-            python-cibuildwheels: '37'
-            platform_id: macosx_arm64
-          - os: macos-latest
             python: '3.8'
             python-cibuildwheels: '38'
             platform_id: macosx_arm64
@@ -170,7 +166,6 @@ jobs:
           name: artifact
           path: dist
       - run: |
-          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
           npm install git-release-notes
           pip install twine wheel
           ./scripts/release.sh final "${{ github.event.inputs.release_reason }}" "${{github.actor}}"
