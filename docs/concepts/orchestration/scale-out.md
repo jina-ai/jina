@@ -58,6 +58,13 @@ Flow with three replicas of `slow_encoder` and one replica of `fast_indexer`
 (scale-consensus)=
 ## Replicate stateful Executors with consensus using RAFT (Beta)
 
+````{admonition} Python3.8 or newer version required on MacOS
+:class: note
+
+This feature requires at least Python3.8 version when working on MacOS.
+
+````
+
 ````{admonition} DocArray 0.30
 :class: note
 

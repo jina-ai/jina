@@ -229,10 +229,6 @@ jobs:
 
           # MacOS emulated
           - os: macos-latest
-            python: '3.7'
-            python-cibuildwheels: '37'
-            platform_id: macosx_x86_64
-          - os: macos-latest
             python: '3.8'
             python-cibuildwheels: '38'
             platform_id: macosx_x86_64
@@ -345,6 +341,10 @@ jobs:
           fetch-depth: 100
       - run: |
           truncate --size=24KB README.md > README-trunc.md
+      - uses: actions/download-artifact@v3
+        with:
+          name: artifact
+          path: dist
 
       - name: Update version
         run: |

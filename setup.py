@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+import platform
 from os import path
 
 from setuptools import Extension, find_packages, setup
@@ -169,7 +170,10 @@ try:
 except Exception:
     pass
 
-if ret_code == 0:
+is_mac_os = platform.system() == 'Darwin'
+is_37 = sys.version_info.major == 3 and sys.version_info.minor == 7
+
+if ret_code == 0 and (not is_mac_os or not is_37):
     extra_golang_kw = {
         'build_golang': {'root': 'jraft', 'strip': False},
         'ext_modules': [
