@@ -186,6 +186,7 @@ jobs:
 
       - id: computedevdelta
         run: |
+          git fetch --depth=200
           LAST_VER=$(git tag -l | sort -V | tail -n1)
           COMMITS_SINCE_LAST_VER=$(git rev-list $LAST_VER..HEAD --count)
           echo "devdelta=$COMMITS_SINCE_LAST_VER" >> $GITHUB_OUTPUT
