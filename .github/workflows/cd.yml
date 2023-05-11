@@ -289,7 +289,7 @@ jobs:
           RELEASE_VER=${{needs.mark-dev-N.outputs.releasever}}
           INIT_FILE='jina/__init__.py'
           DEV_VER=$RELEASE_VER".dev"$devdelta
-          sed -i '/'"${$RELEASE_VER}"'/s/.*/'"${DEV_VER}"'/' "${INIT_FILE}"
+          sed -i '/'"${RELEASE_VER}"'/s/.*/'"${DEV_VER}"'/' "${INIT_FILE}"
 
       - name: Build wheels with setuptools-golang-build-manylinux-wheel
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -339,7 +339,7 @@ jobs:
           RELEASE_VER=${{needs.mark-dev-N.outputs.releasever}}
           INIT_FILE='jina/__init__.py'
           DEV_VER=$RELEASE_VER".dev"$devdelta
-          sed -i '/'"${$RELEASE_VER}"'/s/.*/'"${DEV_VER}"'/' "${INIT_FILE}"
+          sed -i '/'"${RELEASE_VER}"'/s/.*/'"${DEV_VER}"'/' "${INIT_FILE}"
       - name: Pre-release (.devN)
         run: |
           pip install twine wheel
