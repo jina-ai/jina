@@ -291,7 +291,7 @@ jobs:
           DEVDELTA=${{needs.mark-dev-N.outputs.devdelta}}
           RELEASE_VER=${{needs.mark-dev-N.outputs.releasever}}
           INIT_FILE='jina/__init__.py'
-          DEV_VER=$RELEASE_VER".dev"$devdelta
+          DEV_VER=$RELEASE_VER".dev"$DEVDELTA
           echo "DEVDELTA $DEVDELTA"
           echo "RELEASE_VER $RELEASE_VER"
           echo "DEV_VER $DEV_VER"
@@ -344,7 +344,7 @@ jobs:
           DEVDELTA=${{needs.mark-dev-N.outputs.devdelta}}
           RELEASE_VER=${{needs.mark-dev-N.outputs.releasever}}
           INIT_FILE='jina/__init__.py'
-          DEV_VER=$RELEASE_VER".dev"$devdelta
+          DEV_VER=$RELEASE_VER".dev"$DEVDELTA
           echo "DEVDELTA $DEVDELTA"
           echo "RELEASE_VER $RELEASE_VER"
           echo "DEV_VER $DEV_VER"
