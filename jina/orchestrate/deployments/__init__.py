@@ -78,19 +78,13 @@ def _call_add_voters(leader, voters, replica_ids, event_signal=None):
         success = False
         for i in range(10):
             try:
-                logger.debug(
-                    f'Trying {i}th time'
-                )
+                logger.debug(f'Trying {i}th time')
                 jraft.add_voter(leader, str(replica_id), voter_address)
-                logger.debug(
-                    f'Trying {i}th time succeeded'
-                )
+                logger.debug(f'Trying {i}th time succeeded')
                 success = True
                 break
             except ValueError:
-                logger.debug(
-                    f'Trying {i}th failed. Wait 2 seconds for next try'
-                )
+                logger.debug(f'Trying {i}th failed. Wait 2 seconds for next try')
                 time.sleep(2.0)
 
         if not success:
@@ -142,12 +136,12 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     'replica_ids': replica_ids,
                     'event_signal': event_signal,
                 },
-                daemon=True
+                daemon=True,
             )
             process.start()
             start = time.time()
             properly_closed = False
-            while time.time() - start < 20*len(replica_ids):
+            while time.time() - start < 20 * len(replica_ids):
                 if event_signal.is_set():
                     properly_closed = True
                     break
@@ -174,12 +168,12 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     'replica_ids': replica_ids,
                     'event_signal': event_signal,
                 },
-                daemon=True
+                daemon=True,
             )
             process.start()
             start = time.time()
             properly_closed = False
-            while time.time() - start < 20*len(replica_ids):
+            while time.time() - start < 20 * len(replica_ids):
                 if event_signal.is_set():
                     properly_closed = True
                     break
