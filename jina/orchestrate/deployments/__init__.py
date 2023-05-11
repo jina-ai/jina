@@ -6,6 +6,8 @@ import re
 import subprocess
 import threading
 import multiprocessing
+import platform
+import sys
 import time
 from argparse import Namespace
 from collections import defaultdict
@@ -493,7 +495,17 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 f'It is not supported to have {ProtocolType.WEBSOCKET.to_string()} deployment for '
                 f'Deployments with more than one shard'
             )
+        is_mac_os = platform.system() == 'Darwin'
+        is_windows_os = platform.system() == 'Windows'
+        is_37 = sys.version_info.major == 3 and sys.version_info.minor == 7
 
+        if self.args.stateful and (is_windows_os or (is_mac_os and is_37)):
+            if is_windows_os:
+                raise RuntimeError(f'Stateful feature is not available on Windows')
+            if is_mac_os:
+                raise RuntimeError(
+                    f'Stateful feature when running on MacOS requires Python3.8 or newer version'
+                )
         if self.args.stateful and (
             ProtocolType.WEBSOCKET in self.args.protocol
             or ProtocolType.HTTP in self.args.protocol

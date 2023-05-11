@@ -171,9 +171,10 @@ except Exception:
     pass
 
 is_mac_os = platform.system() == 'Darwin'
+is_windows_os = platform.system() == 'Windows'
 is_37 = sys.version_info.major == 3 and sys.version_info.minor == 7
 
-if ret_code == 0 and (not is_mac_os or not is_37):
+if ret_code == 0 and not is_windows_os and (not is_mac_os or not is_37):
     extra_golang_kw = {
         'build_golang': {'root': 'jraft', 'strip': False},
         'ext_modules': [
