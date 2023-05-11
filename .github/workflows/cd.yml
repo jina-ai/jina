@@ -189,6 +189,9 @@ jobs:
           echo "devdelta=$COMMITS_SINCE_LAST_VER" >> $GITHUB_OUTPUT
           INIT_FILE='jina/__init__.py'
           RELEASE_VER=$(sed -n '/^__version__/p' $INIT_FILE | cut -d \' -f2)
+          echo "LAST_VER $LAST_VER"
+          echo "COMMITS_SINCE_LAST_VER $COMMITS_SINCE_LAST_VER"
+          echo "RELEASE_VER $RELEASE_VER"
           echo "devdelta=$COMMITS_SINCE_LAST_VER" >> $GITHUB_OUTPUT
           echo "releasever=$RELEASE_VER" >> $GITHUB_OUTPUT
     outputs:
@@ -288,8 +291,11 @@ jobs:
           DEVDELTA=${{needs.mark-dev-N.outputs.devdelta}}
           RELEASE_VER=${{needs.mark-dev-N.outputs.releasever}}
           INIT_FILE='jina/__init__.py'
-          DEV_VER=$RELEASE_VER".dev"$devdelta
-          sed -i '/'"${$RELEASE_VER}"'/s/.*/'"${DEV_VER}"'/' "${INIT_FILE}"
+          DEV_VER=$RELEASE_VER".dev"$DEVDELTA
+          echo "DEVDELTA $DEVDELTA"
+          echo "RELEASE_VER $RELEASE_VER"
+          echo "DEV_VER $DEV_VER"
+          sed -i '/'"${RELEASE_VER}"'/s/.*/'"__version__ = '${DEV_VER}'"'/' "${INIT_FILE}"
 
       - name: Build wheels with setuptools-golang-build-manylinux-wheel
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -338,8 +344,11 @@ jobs:
           DEVDELTA=${{needs.mark-dev-N.outputs.devdelta}}
           RELEASE_VER=${{needs.mark-dev-N.outputs.releasever}}
           INIT_FILE='jina/__init__.py'
-          DEV_VER=$RELEASE_VER".dev"$devdelta
-          sed -i '/'"${$RELEASE_VER}"'/s/.*/'"${DEV_VER}"'/' "${INIT_FILE}"
+          DEV_VER=$RELEASE_VER".dev"$DEVDELTA
+          echo "DEVDELTA $DEVDELTA"
+          echo "RELEASE_VER $RELEASE_VER"
+          echo "DEV_VER $DEV_VER"
+          sed -i '/'"${RELEASE_VER}"'/s/.*/'"__version__ = '${DEV_VER}'"'/' "${INIT_FILE}"
       - name: Pre-release (.devN)
         run: |
           pip install twine wheel
