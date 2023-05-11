@@ -481,36 +481,44 @@ jobs:
             python: '3.8'
             python-cibuildwheels: '38'
             platform_id: macosx_x86_64
+            arch: x86_64
           - os: macos-latest
             python: '3.9'
             python-cibuildwheels: '39'
             platform_id: macosx_x86_64
+            arch: x86_64
           - os: macos-latest
             python: '3.10'
             python-cibuildwheels: '310'
             platform_id: macosx_x86_64
+            arch: x86_64
           - os: macos-latest
             python: '3.11'
             python-cibuildwheels: '311'
             platform_id: macosx_x86_64
+            arch: x86_64
 
           # MacOS native
           - os: macos-latest
             python: '3.8'
             python-cibuildwheels: '38'
             platform_id: macosx_arm64
+            arch: arm64
           - os: macos-latest
             python: '3.9'
             python-cibuildwheels: '39'
             platform_id: macosx_arm64
+            arch: arm64
           - os: macos-latest
             python: '3.10'
             python-cibuildwheels: '310'
             platform_id: macosx_arm64
+            arch: arm64
           - os: macos-latest
             python: '3.11'
             python-cibuildwheels: '311'
             platform_id: macosx_arm64
+            arch: arm64
 
     steps:
       - name: Check out repository
@@ -541,7 +549,7 @@ jobs:
       - name: Build wheels with cibuildwheels on macos
         env:
           CIBW_BUILD: cp${{ matrix.python-cibuildwheels }}-${{ matrix.platform_id }}
-          CIBW_ARCHS: all
+          CIBW_ARCHS: ${{ matrix.arch }}
           CIBW_TEST_COMMAND: python -c "import jina; import jraft"
           CIBW_BUILD_VERBOSITY: 1
         if: ${{ matrix.os == 'macos-latest' }}
