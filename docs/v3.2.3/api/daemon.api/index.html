@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/daemon.api/" />
 <meta property="og:site_name" content="Jina 3.2.3 Documentation" />
-<meta property="og:description" content="Subpackages: daemon.api.endpoints package- Subpackages- daemon.api.endpoints.partial package- Submodules, Module contents.., Submodules- daemon.api.endpoints.deployments module, daemon.api.endpoints.flows module, daemon.api.endpoints.logs module, daemon.api.endpoints.pods module, daemon.api.endpo..." />
+<meta property="og:description" content="Subpackages: daemon.api.endpoints package- Subpackages- daemon.api.endpoints.partial package- Submodules, Module contents.., Submodules- daemon.api.endpoints.deployments module, daemon.api.endpoints.flows module, daemon.api.endpoints.logs module- ConnectionManager., daemon.api.endpoints.pods modu..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.2.3 Documentation" />
-<meta name="description" content="Subpackages: daemon.api.endpoints package- Subpackages- daemon.api.endpoints.partial package- Submodules, Module contents.., Submodules- daemon.api.endpoints.deployments module, daemon.api.endpoints.flows module, daemon.api.endpoints.logs module, daemon.api.endpoints.pods module, daemon.api.endpo..." />
+<meta name="description" content="Subpackages: daemon.api.endpoints package- Subpackages- daemon.api.endpoints.partial package- Submodules, Module contents.., Submodules- daemon.api.endpoints.deployments module, daemon.api.endpoints.flows module, daemon.api.endpoints.logs module- ConnectionManager., daemon.api.endpoints.pods modu..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -652,7 +652,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../daemon.api.endpoints/#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../daemon.api.endpoints.partial/">daemon.api.endpoints.partial package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../daemon.api.endpoints.partial/#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../daemon.api.endpoints.partial/#module-contents">Module contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.api.endpoints.partial/#module-daemon.api.endpoints.partial">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -660,12 +660,18 @@
 <li class="toctree-l2"><a class="reference internal" href="../daemon.api.endpoints/#submodules">Submodules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../daemon.api.endpoints.deployments/">daemon.api.endpoints.deployments module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../daemon.api.endpoints.flows/">daemon.api.endpoints.flows module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.api.endpoints.logs/">daemon.api.endpoints.logs module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.api.endpoints.logs/">daemon.api.endpoints.logs module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.api.endpoints.logs/#daemon.api.endpoints.logs.ConnectionManager"><code class="docutils literal notranslate"><span class="pre">ConnectionManager</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../daemon.api.endpoints.pods/">daemon.api.endpoints.pods module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../daemon.api.endpoints.workspaces/">daemon.api.endpoints.workspaces module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../daemon.api.endpoints/#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../daemon.api.endpoints/#module-daemon.api.endpoints">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.api.endpoints/#daemon.api.endpoints.startup"><code class="docutils literal notranslate"><span class="pre">startup()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -675,7 +681,28 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../daemon.api.dependencies/">daemon.api.dependencies module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daemon.api.dependencies/">daemon.api.dependencies module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../daemon.api.dependencies/#daemon.api.dependencies.Environment"><code class="docutils literal notranslate"><span class="pre">Environment</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.api.dependencies/#daemon.api.dependencies.Environment.validate"><code class="docutils literal notranslate"><span class="pre">Environment.validate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../daemon.api.dependencies/#daemon.api.dependencies.FlowDepends"><code class="docutils literal notranslate"><span class="pre">FlowDepends</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.api.dependencies/#daemon.api.dependencies.FlowDepends.localpath"><code class="docutils literal notranslate"><span class="pre">FlowDepends.localpath()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.api.dependencies/#daemon.api.dependencies.FlowDepends.newname"><code class="docutils literal notranslate"><span class="pre">FlowDepends.newname</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.api.dependencies/#daemon.api.dependencies.FlowDepends.newfile"><code class="docutils literal notranslate"><span class="pre">FlowDepends.newfile</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.api.dependencies/#daemon.api.dependencies.FlowDepends.load_and_dump"><code class="docutils literal notranslate"><span class="pre">FlowDepends.load_and_dump()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.api.dependencies/#daemon.api.dependencies.FlowDepends.ports"><code class="docutils literal notranslate"><span class="pre">FlowDepends.ports</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../daemon.api.dependencies/#daemon.api.dependencies.PodDepends"><code class="docutils literal notranslate"><span class="pre">PodDepends</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.api.dependencies/#daemon.api.dependencies.PodDepends.ports"><code class="docutils literal notranslate"><span class="pre">PodDepends.ports</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.api.dependencies/#daemon.api.dependencies.PodDepends.update_args"><code class="docutils literal notranslate"><span class="pre">PodDepends.update_args()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../daemon.api.dependencies/#daemon.api.dependencies.DeploymentDepends"><code class="docutils literal notranslate"><span class="pre">DeploymentDepends</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../daemon.api.dependencies/#daemon.api.dependencies.WorkspaceDepends"><code class="docutils literal notranslate"><span class="pre">WorkspaceDepends</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -716,7 +743,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 05, 2023.
+                    Last updated on May 11, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
