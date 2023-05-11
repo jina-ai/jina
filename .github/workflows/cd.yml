@@ -345,6 +345,10 @@ jobs:
           fetch-depth: 100
       - run: |
           truncate --size=24KB README.md > README-trunc.md
+      - uses: actions/download-artifact@v3
+        with:
+          name: artifact
+          path: dist
 
       - name: Update version
         run: |
