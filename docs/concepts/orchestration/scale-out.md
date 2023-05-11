@@ -65,6 +65,13 @@ This feature requires at least Python3.8 version when working on MacOS.
 
 ````
 
+````{admonition} Feature not supported on Windows
+:class: note
+
+This feature is not supported when using Windows
+
+````
+
 ````{admonition} DocArray 0.30
 :class: note
 
