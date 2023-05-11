@@ -287,6 +287,7 @@ jobs:
           pip install cibuildwheel
 
       - name: Update version
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           DEVDELTA=${{needs.mark-dev-N.outputs.devdelta}}
           RELEASE_VER=${{needs.mark-dev-N.outputs.releasever}}
@@ -295,7 +296,11 @@ jobs:
           echo "DEVDELTA $DEVDELTA"
           echo "RELEASE_VER $RELEASE_VER"
           echo "DEV_VER $DEV_VER"
-          sed -i '/'"${RELEASE_VER}"'/s/.*/'"__version__ = '${DEV_VER}'"'/' "${INIT_FILE}"
+          if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+            sed -i '' '/'"${RELEASE_VER}"'/s/.*/'"__version__ = '${DEV_VER}'"'/' "${INIT_FILE}"
+          else
+            sed -i '/'"${RELEASE_VER}"'/s/.*/'"__version__ = '${DEV_VER}'"'/' "${INIT_FILE}"
+          fi
 
       - name: Build wheels with setuptools-golang-build-manylinux-wheel
         if: ${{ matrix.os == 'ubuntu-latest' }}
