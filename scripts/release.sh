@@ -42,7 +42,8 @@ function pub_pypi {
     clean_egg
     cp extra-requirements.txt jina/resources/
     python setup.py sdist
-    twine upload dist/*
+    ls dist/
+    #twine upload dist/*
     clean_build
 }
 
@@ -90,16 +91,16 @@ if [[ $1 == "final" ]]; then
   NEXT_VER=$(echo $RELEASE_VER | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{$NF=sprintf("%0*d", length($NF), ($NF+1)); print}')
   printf "bump master version to: \e[1;32m$NEXT_VER\e[0m\n"
 
-  make_release_note
+  #make_release_note
 
   pub_pypi
 
   VER_TAG_NEXT=$VER_TAG\'${NEXT_VER}\'
-  update_ver_line "$VER_TAG" "$VER_TAG_NEXT" "$INIT_FILE"
+  #update_ver_line "$VER_TAG" "$VER_TAG_NEXT" "$INIT_FILE"
   RELEASE_REASON="$2"
   RELEASE_ACTOR="$3"
-  git_commit
-  slack_notif
+  #git_commit
+  #slack_notif
 elif [[ $1 == 'rc' ]]; then
   printf "this will be a release candidate: \e[1;33m$RELEASE_VER\e[0m\n"
   DOT_RELEASE_VER=$(echo $RELEASE_VER | sed "s/rc/\./")

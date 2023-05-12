@@ -189,9 +189,9 @@ jobs:
           JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
       - if: failure()
         run: echo "nothing to release"
-      - name: bumping master version
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.JINA_DEV_BOT }}
-          tags: true
-          branch: ${{ github.ref }}
+#      - name: bumping master version
+#        uses: ad-m/github-push-action@v0.6.0
+#        with:
+#          github_token: ${{ secrets.JINA_DEV_BOT }}
+#          tags: true
+#          branch: ${{ github.ref }}
