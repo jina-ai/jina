@@ -113,39 +113,43 @@ def write(
 
     .. code-block:: python
 
-        from jina import Executor, requests, Flow, write
-        from docarray import Document
+        from jina import Deployment, Executor, requests
+        from jina.serve.executors.decorators import write
+        from docarray import DocList
+        from docarray.documents import TextDoc
 
 
-        # define Executor with custom `@requests` endpoints
-        class MyExecutor(Executor):
+        class MyStateStatefulExecutor(Executor):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self._docs_dict = {}
 
-            @requests(on='/index')
+            @requests(on=['/index'])
             @write
-            def index(self, docs, **kwargs):
-                print(docs)  # index docs here
+            def index(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+                for doc in docs:
+                    self._docs_dict[doc.id] = doc
 
-            @requests(on=['/search', '/query'])
-            def search(self, docs, **kwargs):
-                print(docs)  # perform search here
+            @requests(on=['/search'])
+            def search(self,  docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+                for doc in docs:
+                    self.logger.debug(f'Searching against {len(self._docs_dict)} documents')
+                    doc.text = self._docs_dict[doc.id].text
 
-            @requests  # default/fallback endpoint
-            def foo(self, docs, **kwargs):
-                print(docs)  # process docs here
-
-
-        f = Flow().add(uses=MyExecutor, stateful=True, replicas=3)  # add your Executor to a Flow
-        with f:
-            f.post(
-                on='/index', inputs=Document(text='I am here!')
+        d = Deployment(name='stateful_executor',
+                       uses=MyStateStatefulExecutor,
+                       replicas=3,
+                       stateful=True,
+                       workspace='./raft',
+                       peer_ports=[12345, 12346, 12347])
+        with d:
+            d.post(
+                on='/index', inputs=TextDoc(text='I am here!')
             )  # send doc to `index` method which will be replicated using RAFT
-            f.post(
-                on='/search', inputs=Document(text='Who is there?')
+            d.post(
+                on='/search', inputs=TextDoc(text='Who is there?')
             )  # send doc to `search` method, that will bypass the RAFT apply
-            f.post(
-                on='/query', inputs=Document(text='Who is there?')
-            )  # send doc to `search` method
-            f.post(on='/bar', inputs=Document(text='Who is there?'))  # send doc to `foo` method
+
 
     :param func: the method to decorate
     :return: decorated function

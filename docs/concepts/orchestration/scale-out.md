@@ -134,7 +134,8 @@ class MyStateStatefulExecutor(Executor):
 d = Deployment(name='stateful_executor', 
                uses=MyStateStatefulExecutor,
                replicas=3, 
-               stateful=True, 
+               stateful=True,
+               workspace='./raft',
                peer_ports=[12345, 12346, 12347])
 with d:
     d.block()
@@ -256,6 +257,7 @@ while there is a little cost on the time used for indexing.
 d = Deployment(name='indexer',
                port=5555,
                uses=ExactNNSearch,
+               workspace='./raft',
                replicas=1)
 ```
 
