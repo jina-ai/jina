@@ -14,6 +14,10 @@ from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.helper import _parse_specific_params
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from jina.types.request.data import DataRequest
+from jina._docarray import docarray_v2
+
+if docarray_v2:
+    from jina.serve.runtimes.helper import _create_pydantic_model_from_schema
 
 
 class TopologyGraph:
@@ -31,16 +35,16 @@ class TopologyGraph:
 
     class _ReqReplyNode:
         def __init__(
-            self,
-            name: str,
-            number_of_parts: int = 1,
-            floating: bool = False,
-            filter_condition: dict = None,
-            metadata: Optional[Dict] = None,
-            reduce: bool = True,
-            timeout_send: Optional[float] = None,
-            retries: Optional[int] = -1,
-            logger: Optional[JinaLogger] = None,
+                self,
+                name: str,
+                number_of_parts: int = 1,
+                floating: bool = False,
+                filter_condition: dict = None,
+                metadata: Optional[Dict] = None,
+                reduce: bool = True,
+                timeout_send: Optional[float] = None,
+                retries: Optional[int] = -1,
+                logger: Optional[JinaLogger] = None,
         ):
             self.name = name
             self.outgoing_nodes = []
@@ -57,6 +61,8 @@ class TopologyGraph:
             self._retries = retries
             self.result_in_params_returned = None
             self.logger = logger or JinaLogger(self.__class__.__name__)
+            self.endpoints = None
+            self._pydantic_models_by_endpoint = None
 
         @property
         def leaf(self):
@@ -74,7 +80,7 @@ class TopologyGraph:
                 self.parts_to_send[i] = req
 
         def _update_request_by_params(
-            self, deployment_name: str, request_input_parameters: Dict
+                self, deployment_name: str, request_input_parameters: Dict
         ):
             specific_parameters = _parse_specific_params(
                 request_input_parameters, deployment_name
@@ -86,44 +92,72 @@ class TopologyGraph:
             err_code = err.code()
             if err_code == grpc.StatusCode.UNAVAILABLE:
                 err._details = (
-                    err.details()
-                    + f' |Gateway: Communication error with deployment {self.name} at address(es) {err.dest_addr}. '
-                    f'Head or worker(s) may be down.'
+                        err.details()
+                        + f' |Gateway: Communication error with deployment {self.name} at address(es) {err.dest_addr}. '
+                          f'Head or worker(s) may be down.'
                 )
                 raise err
             elif err_code == grpc.StatusCode.DEADLINE_EXCEEDED:
                 err._details = (
-                    err.details()
-                    + f'|Gateway: Connection with deployment {self.name} at address(es) {err.dest_addr} could be established, but timed out.'
-                    f' You can increase the allowed time by setting `timeout_send` in your Flow YAML `with` block or Flow `__init__()` method.'
+                        err.details()
+                        + f'|Gateway: Connection with deployment {self.name} at address(es) {err.dest_addr} could be established, but timed out.'
+                          f' You can increase the allowed time by setting `timeout_send` in your Flow YAML `with` block or Flow `__init__()` method.'
                 )
                 raise err
             elif err_code == grpc.StatusCode.NOT_FOUND:
                 err._details = (
-                    err.details()
-                    + f'\n|Gateway: Connection error with deployment `{self.name}` at address(es) {err.dest_addr}.'
-                    f' Connection with {err.dest_addr} succeeded, but `{self.name}` was not found.'
-                    f' Possibly `{self.name}` is behind an API gateway but not reachable.'
+                        err.details()
+                        + f'\n|Gateway: Connection error with deployment `{self.name}` at address(es) {err.dest_addr}.'
+                          f' Connection with {err.dest_addr} succeeded, but `{self.name}` was not found.'
+                          f' Possibly `{self.name}` is behind an API gateway but not reachable.'
                 )
                 raise err
             else:
                 raise
 
         def get_endpoints(self, connection_pool: GrpcConnectionPool) -> asyncio.Task:
-            return connection_pool.send_discover_endpoint(
-                self.name, retries=self._retries
-            )
+            from google.protobuf import json_format
+            async def task():
+                endpoints_proto = await connection_pool.send_discover_endpoint(
+                    self.name, retries=self._retries
+                )
+                if endpoints_proto is not None:
+                    endp, _ = endpoints_proto
+                    self.endpoints = endp.endpoints
+                    if docarray_v2:
+                        schemas = json_format.MessageToDict(endp.schemas)
+                        self._pydantic_models_by_endpoint = {}
+                        models_created_by_name = {}
+                        for endpoint, inner_dict in schemas.items():
+                            input_model_name = inner_dict['input']['name']
+                            input_model_schema = inner_dict['input']['model']
+                            output_model_name = inner_dict['output']['name']
+                            output_model_schema = inner_dict['output']['model']
+                            if input_model_name not in models_created_by_name:
+                                input_model = _create_pydantic_model_from_schema(input_model_schema, input_model_name)
+                                models_created_by_name[input_model_name] = input_model
+                            if output_model_name not in models_created_by_name:
+                                output_model = _create_pydantic_model_from_schema(output_model_schema,
+                                                                                  output_model_name)
+                                models_created_by_name[output_model_name] = output_model
+
+                            self._pydantic_models_by_endpoint[endpoint] = {
+                                'input': models_created_by_name[input_model_name],
+                                'output': models_created_by_name[output_model_name]
+                            }
+                return endpoints_proto
+
+            return asyncio.create_task(task())
 
         async def _wait_previous_and_send(
-            self,
-            request: Optional[DataRequest],
-            previous_task: Optional[asyncio.Task],
-            connection_pool: GrpcConnectionPool,
-            endpoint: Optional[str],
-            executor_endpoint_mapping: Optional[Dict] = None,
-            target_executor_pattern: Optional[str] = None,
-            request_input_parameters: Dict = {},
-            copy_request_at_send: bool = False,
+                self,
+                request: Optional[DataRequest],
+                previous_task: Optional[asyncio.Task],
+                connection_pool: GrpcConnectionPool,
+                endpoint: Optional[str],
+                target_executor_pattern: Optional[str] = None,
+                request_input_parameters: Dict = {},
+                copy_request_at_send: bool = False,
         ):
             # Check my condition and send request with the condition
             metadata = {}
@@ -154,17 +188,16 @@ class TopologyGraph:
                         ]
 
                     # avoid sending to executor which does not bind to this endpoint
-                    if endpoint is not None and executor_endpoint_mapping is not None:
+                    if endpoint is not None and self.endpoints is not None:
                         if (
-                            self.name in executor_endpoint_mapping
-                            and endpoint not in executor_endpoint_mapping[self.name]
-                            and __default_endpoint__
-                            not in executor_endpoint_mapping[self.name]
+                                endpoint not in self.endpoints
+                                and __default_endpoint__
+                                not in self.endpoints
                         ):
                             return request, metadata
 
                     if target_executor_pattern is not None and not re.match(
-                        target_executor_pattern, self.name
+                            target_executor_pattern, self.name
                     ):
                         return request, metadata
                     # otherwise, send to executor and get response
@@ -207,16 +240,15 @@ class TopologyGraph:
             return None, {}
 
         def get_leaf_tasks(
-            self,
-            connection_pool: GrpcConnectionPool,
-            request_to_send: Optional[DataRequest],
-            previous_task: Optional[asyncio.Task],
-            endpoint: Optional[str] = None,
-            executor_endpoint_mapping: Optional[Dict] = None,
-            target_executor_pattern: Optional[str] = None,
-            request_input_parameters: Dict = {},
-            request_input_has_specific_params: bool = False,
-            copy_request_at_send: bool = False,
+                self,
+                connection_pool: GrpcConnectionPool,
+                request_to_send: Optional[DataRequest],
+                previous_task: Optional[asyncio.Task],
+                endpoint: Optional[str] = None,
+                target_executor_pattern: Optional[str] = None,
+                request_input_parameters: Dict = {},
+                request_input_has_specific_params: bool = False,
+                copy_request_at_send: bool = False,
         ) -> List[Tuple[bool, asyncio.Task]]:
             """
             Gets all the tasks corresponding from all the subgraphs born from this node
@@ -225,7 +257,6 @@ class TopologyGraph:
             :param request_to_send: Optional request to be sent when the node is an origin of a graph
             :param previous_task: Optional task coming from the predecessor of the Node
             :param endpoint: Optional string defining the endpoint of this request
-            :param executor_endpoint_mapping: Optional map that maps the name of a Deployment with the endpoints that it binds to so that they can be skipped if needed
             :param target_executor_pattern: Optional regex pattern for the target executor to decide whether or not the Executor should receive the request
             :param request_input_parameters: The parameters coming from the Request as they arrive to the gateway
             :param request_input_has_specific_params: Parameter added for optimization. If this is False, there is no need to copy at all the request
@@ -259,7 +290,6 @@ class TopologyGraph:
                     previous_task=previous_task,
                     connection_pool=connection_pool,
                     endpoint=endpoint,
-                    executor_endpoint_mapping=executor_endpoint_mapping,
                     target_executor_pattern=target_executor_pattern,
                     request_input_parameters=request_input_parameters,
                     copy_request_at_send=copy_request_at_send,
@@ -277,12 +307,11 @@ class TopologyGraph:
                     request_to_send=None,
                     previous_task=wait_previous_and_send_task,
                     endpoint=endpoint,
-                    executor_endpoint_mapping=executor_endpoint_mapping,
                     target_executor_pattern=target_executor_pattern,
                     request_input_parameters=request_input_parameters,
                     request_input_has_specific_params=request_input_has_specific_params,
                     copy_request_at_send=num_outgoing_nodes > 1
-                    and request_input_has_specific_params,
+                                         and request_input_has_specific_params,
                 )
                 # We are interested in the last one, that will be the task that awaits all the previous
                 hanging_tasks_tuples.extend(t)
@@ -335,21 +364,21 @@ class TopologyGraph:
             return asyncio.create_task(task_wrapper())
 
         def get_leaf_tasks(
-            self, previous_task: Optional[asyncio.Task], *args, **kwargs
+                self, previous_task: Optional[asyncio.Task], *args, **kwargs
         ) -> List[Tuple[bool, asyncio.Task]]:
             return [(True, previous_task)]
 
     def __init__(
-        self,
-        graph_representation: Dict,
-        graph_conditions: Dict = {},
-        deployments_metadata: Dict = {},
-        deployments_no_reduce: List[str] = [],
-        timeout_send: Optional[float] = 1.0,
-        retries: Optional[int] = -1,
-        logger: Optional[JinaLogger] = None,
-        *args,
-        **kwargs,
+            self,
+            graph_representation: Dict,
+            graph_conditions: Dict = {},
+            deployments_metadata: Dict = {},
+            deployments_no_reduce: List[str] = [],
+            timeout_send: Optional[float] = 1.0,
+            retries: Optional[int] = -1,
+            logger: Optional[JinaLogger] = None,
+            *args,
+            **kwargs,
     ):
         self.logger = logger or JinaLogger(self.__class__.__name__)
         num_parts_per_node = defaultdict(int)

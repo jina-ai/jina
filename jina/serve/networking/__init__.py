@@ -203,7 +203,7 @@ class GrpcConnectionPool:
             shard_id: Optional[int] = None,
             timeout: Optional[float] = None,
             retries: Optional[int] = -1,
-    ) -> Optional[asyncio.Task]:
+    ):
         """Sends a discover Endpoint call to target.
 
         :param deployment: name of the Jina deployment to send the request to
@@ -211,7 +211,7 @@ class GrpcConnectionPool:
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param timeout: timeout for sending the requests
         :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
-        :return: asyncio.Task items to send call
+        :return: coroutine items to send call
         """
         connection_list = self._connections.get_replicas(
             deployment, head, shard_id, True
@@ -460,11 +460,10 @@ class GrpcConnectionPool:
             connection_list: _ReplicaList,
             timeout: Optional[float] = None,
             retries: Optional[int] = -1,
-    ) -> asyncio.Task:
+    ):
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
-        async def task_wrapper():
-
+        async def task_coroutine():
             tried_addresses = set()
             if retries is None or retries < 0:
                 total_num_tries = (
@@ -500,7 +499,7 @@ class GrpcConnectionPool:
                 except AttributeError:
                     return default_endpoints_proto, None
 
-        return asyncio.create_task(task_wrapper())
+        return task_coroutine()
 
     async def warmup(
             self,

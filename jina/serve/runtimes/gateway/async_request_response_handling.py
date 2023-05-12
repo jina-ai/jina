@@ -39,7 +39,7 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
         logger: Optional[JinaLogger] = None,
     ):
         super().__init__(metrics_registry, meter, runtime_name)
-        self._executor_endpoint_mapping = None
+        self._endpoint_discovery_finished = False
         self._gathering_endpoints = False
         self.logger = logger or JinaLogger(self.__class__.__name__)
 
@@ -74,10 +74,7 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
             except Exception as exc:
                 self.logger.error(f' Error gathering endpoints: {exc}')
                 raise exc
-
-            self._executor_endpoint_mapping = {}
-            for node, (endp, _) in zip(nodes, endpoints):
-                self._executor_endpoint_mapping[node.name] = endp.endpoints
+            self._endpoint_discovery_finished = True
 
         def _handle_request(request: 'Request') -> 'Tuple[Future, Optional[Future]]':
             self._update_start_request_metrics(request)
@@ -115,7 +112,6 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
                     request_to_send=request,
                     previous_task=None,
                     endpoint=endpoint,
-                    executor_endpoint_mapping=self._executor_endpoint_mapping,
                     target_executor_pattern=target_executor or None,
                     request_input_parameters=request_input_parameters,
                     request_input_has_specific_params=has_specific_params,
@@ -143,7 +139,7 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
             ) -> asyncio.Future:
                 try:
                     if (
-                        self._executor_endpoint_mapping is None
+                        not self._endpoint_discovery_finished
                         and not self._gathering_endpoints
                     ):
                         self._gathering_endpoints = True
