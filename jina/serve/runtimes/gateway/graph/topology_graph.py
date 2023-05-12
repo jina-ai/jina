@@ -18,6 +18,7 @@ from jina._docarray import docarray_v2
 
 if docarray_v2:
     from jina.serve.runtimes.helper import _create_pydantic_model_from_schema
+    from docarray import DocList
 
 
 class TopologyGraph:
@@ -75,7 +76,11 @@ class TopologyGraph:
                     if not need_copy
                     else copy.deepcopy(self.parts_to_send[i])
                 )
-                filtered_docs = req.docs.find(self._filter_condition)
+                if not docarray_v2:
+                    filtered_docs = req.docs.find(self._filter_condition)
+                else:
+                    from docarray.utils.filter import filter_docs
+                    filtered_docs = filter_docs(req.docs, self._filter_condition)
                 req.data.docs = filtered_docs
                 self.parts_to_send[i] = req
 
@@ -167,12 +172,17 @@ class TopologyGraph:
             if metadata and 'is-error' in metadata:
                 return request, metadata
             elif request is not None:
+
                 request.parameters = _parse_specific_params(
                     request.parameters, self.name
                 )
                 req_to_send = (
                     copy.deepcopy(request) if copy_request_at_send else request
                 )
+                if docarray_v2:
+                    if self.endpoints and endpoint in self.endpoints:
+                        req_to_send.document_array_cls = DocList[self._pydantic_models_by_endpoint['input']]
+
                 self.parts_to_send.append(req_to_send)
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
@@ -182,10 +192,6 @@ class TopologyGraph:
                         self._update_requests_with_filter_condition(
                             need_copy=not copy_request_at_send
                         )
-                    if self._reduce and len(self.parts_to_send) > 1:
-                        self.parts_to_send = [
-                            WorkerRequestHandler.reduce_requests(self.parts_to_send)
-                        ]
 
                     # avoid sending to executor which does not bind to this endpoint
                     if endpoint is not None and self.endpoints is not None:
@@ -195,6 +201,11 @@ class TopologyGraph:
                                 not in self.endpoints
                         ):
                             return request, metadata
+
+                    if self._reduce and len(self.parts_to_send) > 1:
+                        self.parts_to_send = [
+                            WorkerRequestHandler.reduce_requests(self.parts_to_send)
+                        ]
 
                     if target_executor_pattern is not None and not re.match(
                             target_executor_pattern, self.name
@@ -215,6 +226,10 @@ class TopologyGraph:
                             raise result
                         else:
                             resp, metadata = result
+
+                        if docarray_v2:
+                            if self.endpoints and endpoint in self.endpoints:
+                                resp.document_array_cls = DocList[self._pydantic_models_by_endpoint['output']]
 
                         if WorkerRequestHandler._KEY_RESULT in resp.parameters:
                             # Accumulate results from each Node and then add them to the original
