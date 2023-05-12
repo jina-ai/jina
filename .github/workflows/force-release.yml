@@ -66,21 +66,25 @@ jobs:
             python-cibuildwheels: '38'
             platform_id: macosx_x86_64
             arch: x86_64
+            goarch: amd64
           - os: macos-latest
             python: '3.9'
             python-cibuildwheels: '39'
             platform_id: macosx_x86_64
             arch: x86_64
+            goarch: amd64
           - os: macos-latest
             python: '3.10'
             python-cibuildwheels: '310'
             platform_id: macosx_x86_64
             arch: x86_64
+            goarch: amd64
           - os: macos-latest
             python: '3.11'
             python-cibuildwheels: '311'
             platform_id: macosx_x86_64
             arch: x86_64
+            goarch: amd64
 
           # MacOS native
           - os: macos-latest
@@ -88,21 +92,25 @@ jobs:
             python-cibuildwheels: '38'
             platform_id: macosx_arm64
             arch: arm64
+            goarch: arm64
           - os: macos-latest
             python: '3.9'
             python-cibuildwheels: '39'
             platform_id: macosx_arm64
             arch: arm64
+            goarch: arm64
           - os: macos-latest
             python: '3.10'
             python-cibuildwheels: '310'
             platform_id: macosx_arm64
             arch: arm64
+            goarch: arm64
           - os: macos-latest
             python: '3.11'
             python-cibuildwheels: '311'
             platform_id: macosx_arm64
             arch: arm64
+            goarch: arm64
 
     steps:
       - name: Check out repository
@@ -137,6 +145,8 @@ jobs:
           CIBW_ARCHS: ${{ matrix.arch }}
           CIBW_TEST_COMMAND: python -c "import jina; import jraft"
           CIBW_BUILD_VERBOSITY: 1
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 1
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
           python -m cibuildwheel --output-dir dist
