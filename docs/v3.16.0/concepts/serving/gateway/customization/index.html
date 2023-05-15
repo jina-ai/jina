@@ -1,0 +1,1106 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<meta property="og:title" content="Customization" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://docs.jina.ai/concepts/serving/gateway/customization/" />
+<meta property="og:site_name" content="Jina 3.16.0 Documentation" />
+<meta property="og:description" content="Gateways are customizable in Jina. You can implement them in much the same way as an Executor. With customized Gateways, Jina gives you more power by letting you implement any server, protocol and interface at the Gateway level. This means you have more freedom to: Define and expose your own API ..." />
+<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+<meta property="og:image:alt" content="Jina 3.16.0 Documentation" />
+<meta name="description" content="Gateways are customizable in Jina. You can implement them in much the same way as an Executor. With customized Gateways, Jina gives you more power by letting you implement any server, protocol and interface at the Gateway level. This means you have more freedom to: Define and expose your own API ..." />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@JinaAI_">
+<meta name="twitter:creator" content="@JinaAI_">
+<meta name="description" content="Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · Cloud Native · MLOps">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-48ZDWC8GT6');
+</script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+    
+<link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" /><link rel="next" title="YAML specification" href="../yaml-spec/" /><link rel="prev" title="Customize HTTP endpoints" href="../customize-http-endpoints/" />
+        <link rel="canonical" href="https://docs.jina.ai/concepts/serving/gateway/customization.html" />
+
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
+        <title>Customization - Jina 3.16.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/main.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/docbot.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  --color-brand-primary: #009191;
+  --color-brand-content: #009191;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+    <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+    <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+    <header class="mobile-header">
+        <div class="header-left">
+            <label class="nav-overlay-icon" for="__navigation">
+                <div class="visually-hidden">Toggle site navigation sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-menu"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+        <div class="header-center">
+            <a href="../../../../">
+                <div class="brand">Jina 3.16.0 documentation</div>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle-container theme-toggle-header">
+                <button class="theme-toggle">
+                    <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                    <svg class="theme-icon-when-auto">
+                        <use href="#svg-sun-half"></use>
+                    </svg>
+                    <svg class="theme-icon-when-dark">
+                        <use href="#svg-moon"></use>
+                    </svg>
+                    <svg class="theme-icon-when-light">
+                        <use href="#svg-sun"></use>
+                    </svg>
+                </button>
+            </div>
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+                <div class="visually-hidden">Toggle table of contents sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-toc"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+    </header>
+    <aside class="sidebar-drawer">
+        <div class="sidebar-container">
+            
+            <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../../../../_static/logo-dark.svg" alt="Dark Logo" />
+  </div>
+  
+  
+</a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../../../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../get-started/install/"><svg aria-hidden="true" class="sd-octicon sd-octicon-desktop-download" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4.927 5.427l2.896 2.896a.25.25 0 00.354 0l2.896-2.896A.25.25 0 0010.896 5H8.75V.75a.75.75 0 10-1.5 0V5H5.104a.25.25 0 00-.177.427z"></path><path d="M1.573 2.573a.25.25 0 00-.073.177v7.5a.25.25 0 00.25.25h12.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-3a.75.75 0 110-1.5h3A1.75 1.75 0 0116 2.75v7.5A1.75 1.75 0 0114.25 12h-3.727c.099 1.041.52 1.872 1.292 2.757A.75.75 0 0111.25 16h-6.5a.75.75 0 01-.565-1.243c.772-.885 1.192-1.716 1.292-2.757H1.75A1.75 1.75 0 010 10.25v-7.5A1.75 1.75 0 011.75 1h3a.75.75 0 010 1.5h-3a.25.25 0 00-.177.073zM6.982 12a5.72 5.72 0 01-.765 2.5h3.566a5.72 5.72 0 01-.765-2.5H6.982z"></path></svg> Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../get-started/install/docker/">Via Docker Image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../get-started/install/apple-silicon-m1-m2/">On Apple Silicon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../get-started/install/windows/">On Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../get-started/install/troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../get-started/create-app/"><span class="fas fa-folder-plus"></span> Create First Project</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/before-you-start/">Before you start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/deploy-model/">Deploy a model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">New DocArray support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docarray-v2/">(Beta) New DocArray support</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
+<ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../preliminaries/coding-in-python-yaml/">Coding in Python/YAML</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../"><span class="fas fa-gears"></span> Serving</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/create/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/add-endpoints/">Add Endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/serve/">Serve</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/dynamic-batching/">Dynamic Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/health-check/">Health Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/hot-reload/">Hot Reload</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/file-structure/">File Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/containerize/">Containerize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../">Gateway</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../health-check/">Health Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rate-limit/">Rate Limit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../customize-http-endpoints/">Customize HTTP endpoints</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Customization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../orchestration/"><span class="fas fa-network-wired"></span> Orchestration</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../orchestration/deployment/">Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../orchestration/flow/">Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../orchestration/add-executors/">Add Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../orchestration/scale-out/">Scale Out</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../orchestration/hot-reload/">Hot Reload</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../orchestration/handle-exceptions/">Handle Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../orchestration/readiness/">Readiness</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../orchestration/health-check/">Health Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../orchestration/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../orchestration/troubleshooting-on-multiprocess/">Troubleshooting on Multiprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../orchestration/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../client/"><span class="fas fa-laptop-code"></span> Client</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../client/send-receive-data/">Send &amp; Receive Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../client/send-parameters/">Send Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../client/transient-errors/">Transient Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../client/callbacks/">Callbacks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../client/rate-limit/">Rate Limit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../client/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../client/third-party-clients/">Third-party clients</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cloud Native</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../cloud-nativeness/k8s/"><span class="fas fa-dharmachakra"></span> Kubernetes Support</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../cloud-nativeness/kubernetes/">Deploy on Kubernetes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cloud-nativeness/docker-compose/"><span class="fab fa-docker"></span> Docker Compose Support</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../cloud-nativeness/opentelemetry/"><svg aria-hidden="true" class="sd-octicon sd-octicon-telescope-fill" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M8.531 10.21a.75.75 0 01.944.253l2.644 3.864a.75.75 0 11-1.238.847L9 12.424v2.826a.75.75 0 01-1.5 0v-2.826l-1.881 2.75a.75.75 0 01-1.238-.848l2.048-2.992a.75.75 0 01.293-.252l1.81-.871zM11.905.42a1.5 1.5 0 012.144.49l1.692 2.93a1.5 1.5 0 01-.649 2.102L2.895 11.815a1.5 1.5 0 01-1.95-.602l-.68-1.176a1.5 1.5 0 01.455-1.99L11.905.422zM3.279 8.119l.835 1.445 1.355-.653-.947-1.64-1.243.848zm7.728-1.874L9.6 3.808l1.243-.848 1.52 2.631-1.356.653z" fill-rule="evenodd"></path></svg> OpenTelemetry Support</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../cloud-nativeness/opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../cloud-nativeness/monitoring/">Prometheus/Grafana Support (Legacy)</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../executor/hub/debug-executor/">Debug</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../jcloud/configuration/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> Configuration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML Specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
+</ul>
+
+    <p class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+    <ul>
+        <li class="toctree-l1">
+            <a class="reference internal" href="#">
+                <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/search-light.svg">
+                <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/search-dark.svg">
+                Jina</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://cloud.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/hub-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/hub-dark.svg">
+            Jina Hub</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://finetuner.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/finetuner-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/finetuner-dark.svg">
+            Finetuner</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/docarray-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/docarray-dark.svg">
+            DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jcloud">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/JCloud-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/JCloud-dark.svg">
+            JCloud</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://now.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/now-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/now-dark.svg">
+            NOW</a></li>
+    </ul>
+</div>
+
+</div>
+
+            </div>
+            
+        </div>
+    </aside>
+    <div class="main">
+        <div class="content">
+            <div class="article-container">
+                <a href="#" class="back-to-top muted-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+                    </svg>
+                    <span>Back to top</span>
+                </a>
+                <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+                        <button class="theme-toggle">
+                            <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                            <svg class="theme-icon-when-auto">
+                                <use href="#svg-sun-half"></use>
+                            </svg>
+                            <svg class="theme-icon-when-dark">
+                                <use href="#svg-moon"></use>
+                            </svg>
+                            <svg class="theme-icon-when-light">
+                                <use href="#svg-sun"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <label class="toc-overlay-icon toc-content-icon"
+                           for="__toc">
+                        <div class="visually-hidden">Toggle table of contents sidebar</div>
+                        <i class="icon">
+                            <svg>
+                                <use href="#svg-toc"></use>
+                            </svg>
+                        </i>
+                    </label>
+                </div>
+                <article role="main">
+                    <section id="customization">
+<span id="custom-gateway"></span><h1>Customization<a class="headerlink" href="#customization" title="Permalink to this heading">#</a></h1>
+<p>Gateways are customizable in Jina. You can implement them in much the same way as an Executor.
+With customized Gateways, Jina gives you more power by letting you implement any server, protocol and
+interface at the Gateway level. This means you have more freedom to:</p>
+<ul class="simple">
+<li><p>Define and expose your own API Gateway interface to clients. You can define your JSON schema or protos etc.</p></li>
+<li><p>Use your favorite server framework.</p></li>
+<li><p>Choose the protocol used to serve your app.</p></li>
+</ul>
+<p>The next sections detail the steps to implement and use a custom Gateway.</p>
+<section id="implementing-the-custom-gateway">
+<h2>Implementing the custom Gateway<a class="headerlink" href="#implementing-the-custom-gateway" title="Permalink to this heading">#</a></h2>
+<p>Just like for Executors, you can implement a custom Gateway by inheriting from a base <code class="docutils literal notranslate"><span class="pre">Gateway</span></code> class.
+Jina will instantiate your implemented class, inject runtime arguments and user-defined arguments into it,
+run it, orchestrate it, and send it health-checks.</p>
+<p>There are two Gateway base classes for implementing a custom Gateway:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a>: Use this abstract class to implement a custom Gateway using FastAPI.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code>: Use this abstract class to implement a custom Gateway of any type.</p></li>
+</ul>
+<p>Whether your custom Gateway is based on a FastAPI app using <a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a>
+or based on a general server using <code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code>, you will need to implement your server behavior in almost
+the same way.
+In the next section we will discuss the implementation steps, and then we will discuss how to use both base Gateway classes.</p>
+<section id="server-implementation">
+<span id="custom-gateway-server-implementation"></span><h3>Server implementation<a class="headerlink" href="#server-implementation" title="Permalink to this heading">#</a></h3>
+<p>When implementing the server to your custom Gateway:</p>
+<ol class="arabic simple">
+<li><p>Create an app/server and define the endpoints you want to expose as a service.</p></li>
+<li><p>In each of your endpoints’ implementation, convert server requests to your endpoint into <code class="docutils literal notranslate"><span class="pre">Document</span></code> objects.</p></li>
+<li><p>Send <code class="docutils literal notranslate"><span class="pre">Documents</span></code> to Executors in the Flow using <a class="reference internal" href="#gateway-streamer"><span class="std std-ref">a GatewayStreamer object</span></a>. This lets you
+use Executors as a service and receive response Documents back.</p></li>
+<li><p>Convert response <code class="docutils literal notranslate"><span class="pre">Documents</span></code> to a server response and return it.</p></li>
+<li><p>Implement  <a class="reference internal" href="#custom-gateway-health-check"><span class="std std-ref">the required health-checks</span></a> for the Gateway.
+(This is not required when using <a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a>.)</p></li>
+<li><p>Bind your Gateway server to <a class="reference internal" href="#gateway-runtime-arguments"><span class="std std-ref">parameters injected by the runtime</span></a>, i.e, <code class="docutils literal notranslate"><span class="pre">self.port</span></code>, <code class="docutils literal notranslate"><span class="pre">self.host</span></code>,…
+(Also not required for <a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a>.)</p></li>
+</ol>
+<p>Let’s suppose you want to implement a ‘/service’ GET endpoint in an HTTP server. Following the steps above, the server
+implementation might look like the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+<span class="kn">from</span> <span class="nn">uvicorn</span> <span class="kn">import</span> <span class="n">Server</span><span class="p">,</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Gateway</span>
+
+
+<span class="k">class</span> <span class="nc">MyGateway</span><span class="p">(</span><span class="n">Gateway</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">setup_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># step 1: create an app and define the service endpoint</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Custom Gateway&#39;</span><span class="p">)</span>
+
+        <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/service&#39;</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">my_service</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># step 2: convert input request to Documents</span>
+            <span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="nb">input</span><span class="p">)])</span>
+
+            <span class="c1"># step 3: send Documents to Executors using GatewayStreamer</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">response_docs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">stream_docs</span><span class="p">(</span>
+                <span class="n">docs</span><span class="o">=</span><span class="n">docs</span><span class="p">,</span>
+                <span class="n">exec_endpoint</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
+            <span class="p">):</span>
+                <span class="c1"># step 4: convert response docs to server response and return it</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">response_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="n">result</span><span class="p">}</span>
+
+        <span class="c1"># step 5: implement health-check</span>
+
+        <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">health_check</span><span class="p">():</span>
+            <span class="k">return</span> <span class="p">{}</span>
+
+        <span class="c1"># step 6: bind the gateway server to the right port and host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">Server</span><span class="p">(</span><span class="n">Config</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="subclass-from-fastapibasegateway">
+<h3>Subclass from <a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a><a class="headerlink" href="#subclass-from-fastapibasegateway" title="Permalink to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a> offers a simple API to implement custom
+Gateways, but is restricted to FastAPI apps.</p>
+<p>To implement a custom gateway using <a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a>,
+simply implement the <a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.app" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.app"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app()</span></code></a> property:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http.fastapi</span> <span class="kn">import</span> <span class="n">FastAPIBaseGateway</span>
+
+
+<span class="k">class</span> <span class="nc">MyGateway</span><span class="p">(</span><span class="n">FastAPIBaseGateway</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+
+        <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Custom FastAPI Gateway&#39;</span><span class="p">)</span>
+
+        <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/endpoint&#39;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">custom_endpoint</span><span class="p">():</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;custom-fastapi-gateway&#39;</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">app</span>
+</pre></div>
+</div>
+<p>As an example, you can refer to <a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGateway" title="jina.serve.runtimes.gateway.http.HTTPGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPGateway</span></code></a>.</p>
+<p><a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a> is a subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code>.</p>
+</section>
+<section id="subclass-from-gateway">
+<h3>Subclass from <code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code><a class="headerlink" href="#subclass-from-gateway" title="Permalink to this heading">#</a></h3>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code> allows implementing more general cases of Gateways. You can use this class as long as your gateway
+server is runnable in an <code class="docutils literal notranslate"><span class="pre">asyncio</span></code> loop.</p>
+<p>To implement a custom gateway class using <code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code>:</p>
+<ul class="simple">
+<li><p>Create a class that inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code></p></li>
+<li><p>Implement a constructor <code class="docutils literal notranslate"><span class="pre">__init__</span></code>:
+(This is optional. You don’t need a constructor if your Gateway does not need user-defined attributes.)
+If your Gateway has <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, it needs to carry <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in the signature and call <code class="docutils literal notranslate"><span class="pre">super().__init__(**kwargs)</span></code> in the body:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Gateway</span>
+
+
+<span class="k">class</span> <span class="nc">MyGateway</span><span class="p">(</span><span class="n">Gateway</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">foo</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="n">foo</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Implement <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span> <span class="pre">setup_server():</span></code>. This should set up a server runnable on an asyncio loop (and other resources
+needed for setting up the server). For instance:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Gateway</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+<span class="kn">from</span> <span class="nn">uvicorn</span> <span class="kn">import</span> <span class="n">Server</span><span class="p">,</span> <span class="n">Config</span>
+
+
+<span class="k">class</span> <span class="nc">MyGateway</span><span class="p">(</span><span class="n">Gateway</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">setup_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;My Custom Gateway&#39;</span><span class="p">)</span>
+
+        <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/endpoint&#39;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">custom_endpoint</span><span class="p">():</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;custom-gateway&#39;</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">Server</span><span class="p">(</span><span class="n">Config</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Please refer to <a class="reference internal" href="#custom-gateway-server-implementation"><span class="std std-ref">the Server Implementation section</span></a> for details on how to implement
+the server.</p>
+<ul class="simple">
+<li><p>Implement <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span> <span class="pre">run_server():</span></code>. This should run the server and <code class="docutils literal notranslate"><span class="pre">await</span></code> for it while serving:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Gateway</span>
+
+
+<span class="k">class</span> <span class="nc">MyGateway</span><span class="p">(</span><span class="n">Gateway</span><span class="p">):</span>
+    <span class="o">...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">serve</span><span class="p">()</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Implement <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span> <span class="pre">shutdown():</span></code>. This should stop the server and free all resources associated with it:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Gateway</span>
+
+
+<span class="k">class</span> <span class="nc">MyGateway</span><span class="p">(</span><span class="n">Gateway</span><span class="p">):</span>
+    <span class="o">...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">should_exit</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>As an example, you can refer to <a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGateway" title="jina.serve.runtimes.gateway.grpc.GRPCGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">GRPCGateway</span></code></a> and
+<a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.websocket/#jina.serve.runtimes.gateway.websocket.WebSocketGateway" title="jina.serve.runtimes.gateway.websocket.WebSocketGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketGateway</span></code></a>.</p>
+</section>
+</section>
+<section id="calling-executors-with-gatewaystreamer">
+<span id="gateway-streamer"></span><h2>Calling Executors with <code class="xref py py-class docutils literal notranslate"><span class="pre">GatewayStreamer</span></code><a class="headerlink" href="#calling-executors-with-gatewaystreamer" title="Permalink to this heading">#</a></h2>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">GatewayStreamer</span></code> allows you to interface with Executors within the Gateway. An instance of
+this class knows about the Flow topology and where each Executor lives.</p>
+<p>Use this object to send Documents to Executors in the Flow. A <code class="xref py py-class docutils literal notranslate"><span class="pre">GatewayStreamer</span></code> object
+connects the custom Gateway with the rest of the Flow.</p>
+<p>You can get this object in 2 different ways:</p>
+<ul class="simple">
+<li><p>A <code class="docutils literal notranslate"><span class="pre">streamer</span></code> object (instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">GatewayStreamer</span></code>) is injected by Jina to your <code class="docutils literal notranslate"><span class="pre">Gateway</span></code> class.</p></li>
+<li><p>If your server logic cannot access the <code class="docutils literal notranslate"><span class="pre">Gateway</span></code> class (for instance separate script), you can still get a <code class="docutils literal notranslate"><span class="pre">streamer</span></code>
+object using <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_streamer()</span></code>:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.serve.streamer</span> <span class="kn">import</span> <span class="n">GatewayStreamer</span>
+
+<span class="n">streamer</span> <span class="o">=</span> <span class="n">GatewayStreamer</span><span class="o">.</span><span class="n">get_streamer</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>After transforming requests that arrive to the Gateway server into Documents, you can send them to Executors in the Flow
+using <code class="xref py py-meth docutils literal notranslate"><span class="pre">stream_docs()</span></code>.</p>
+<p>This method expects a DocumentArray object and an endpoint exposed by the Flow Executors (similar to <a class="reference internal" href="../../../client/#client"><span class="std std-ref">Jina Client</span></a>).
+It returns an <code class="docutils literal notranslate"><span class="pre">AsyncGenerator</span></code> of DocumentArrays:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http.fastapi</span> <span class="kn">import</span> <span class="n">FastAPIBaseGateway</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+
+
+<span class="k">class</span> <span class="nc">MyGateway</span><span class="p">(</span><span class="n">FastAPIBaseGateway</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+        <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/endpoint&quot;</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="hll">            <span class="k">async</span> <span class="k">for</span> <span class="n">docs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">stream_docs</span><span class="p">(</span>
+</span><span class="hll">                <span class="n">docs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span>
+</span><span class="hll">                <span class="n">exec_endpoint</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
+</span><span class="hll">            <span class="p">):</span>
+</span><span class="hll">                <span class="n">result</span> <span class="o">=</span> <span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+</span>            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="n">result</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">app</span>
+</pre></div>
+</div>
+<section id="recovering-executor-errors">
+<h3>Recovering Executor errors<a class="headerlink" href="#recovering-executor-errors" title="Permalink to this heading">#</a></h3>
+<p>Exceptions raised by an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> are captured in the server object which can be extracted by using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">jina.serve.streamer.stream()</span></code> method. The <code class="docutils literal notranslate"><span class="pre">stream</span></code> method
+returns an <code class="docutils literal notranslate"><span class="pre">AsyncGenerator</span></code> of a tuple of <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> and an optional <a class="reference internal" href="../../../../api/jina.excepts/#jina.excepts.ExecutorError" title="jina.excepts.ExecutorError"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.ExecutorError</span></code></a> class that be used to check if the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> has issues processing the input request.
+The error can be utilized for retries, handling partial responses or returning default responses.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/endpoint&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="hll">    <span class="k">async</span> <span class="k">for</span> <span class="n">docs</span><span class="p">,</span> <span class="n">error</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span>
+</span><span class="hll">        <span class="n">docs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span>
+</span><span class="hll">        <span class="n">exec_endpoint</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
+</span><span class="hll">    <span class="p">):</span>
+</span><span class="hll">        <span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+</span><span class="hll">            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+</span><span class="hll">        <span class="k">else</span><span class="p">:</span>
+</span><span class="hll">            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</span>    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;results&#39;</span><span class="p">:</span> <span class="n">results</span><span class="p">,</span> <span class="s1">&#39;errors&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">error</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">]}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="calling-an-individual-executor">
+<span id="executor-streamer"></span><h2>Calling an individual Executor<a class="headerlink" href="#calling-an-individual-executor" title="Permalink to this heading">#</a></h2>
+<p>Jina injects an <code class="docutils literal notranslate"><span class="pre">executor</span></code> object into your Gateway class which lets you call individual Executors from the Gateway.</p>
+<p>After transforming requests that arrive to the Gateway server into Documents, you can call the Executor in your Python code using <code class="docutils literal notranslate"><span class="pre">self.executor['executor_name'].post(args)</span></code>.
+This method expects a DocumentArray object and an endpoint exposed by the Executor (similar to <a class="reference internal" href="../../../client/#client"><span class="std std-ref">Jina Client</span></a>).
+It returns a ‘coroutine’ which returns a DocumentArray.
+Check the method documentation for more information: <code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></p>
+<p>In this example, we have a Flow with two Executors (<code class="docutils literal notranslate"><span class="pre">executor1</span></code> and <code class="docutils literal notranslate"><span class="pre">executor2</span></code>). We can call them individually using <code class="docutils literal notranslate"><span class="pre">self.executor['executor_name'].post</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http.fastapi</span> <span class="kn">import</span> <span class="n">FastAPIBaseGateway</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+
+<span class="k">class</span> <span class="nc">MyGateway</span><span class="p">(</span><span class="n">FastAPIBaseGateway</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+        <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/endpoint&quot;</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">toc</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="hll">            <span class="n">doc1</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="p">[</span><span class="s1">&#39;executor1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="s1">&#39;v&#39;</span><span class="p">})</span>
+</span><span class="hll">            <span class="n">doc2</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="p">[</span><span class="s1">&#39;executor2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="s1">&#39;v&#39;</span><span class="p">})</span>
+</span>            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="n">doc1</span><span class="o">.</span><span class="n">texts</span> <span class="o">+</span> <span class="n">doc2</span><span class="o">.</span><span class="n">texts</span><span class="p">,</span> <span class="s1">&#39;time_taken&#39;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">toc</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">app</span>
+
+<span class="k">class</span> <span class="nc">FirstExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39; saw the first executor&#39;</span>
+
+<span class="k">class</span> <span class="nc">SecondExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39; saw the second executor&#39;</span>
+
+<span class="k">with</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">config_gateway</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyGateway</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">FirstExec</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;executor1&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">SecondExec</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;executor2&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">flow</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">requests</span> <span class="k">as</span> <span class="nn">reqlib</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">reqlib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;http://localhost:</span><span class="si">{</span><span class="n">flow</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">/endpoint?text=hello&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+    <span class="k">assert</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;result&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;hello saw the first executor&#39;</span><span class="p">,</span> <span class="s1">&#39;hello saw the second executor&#39;</span><span class="p">]</span>
+<span class="hll">    <span class="k">assert</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;time_taken&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">4</span>
+</span></pre></div>
+</div>
+<p>You can also call two Executors in parallel using asyncio. This will overlap their execution times – speeding up the response time of the endpoint.
+Here is one way to do it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http.fastapi</span> <span class="kn">import</span> <span class="n">FastAPIBaseGateway</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+
+<span class="k">class</span> <span class="nc">MyGateway</span><span class="p">(</span><span class="n">FastAPIBaseGateway</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+        <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/endpoint&quot;</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">toc</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="hll">            <span class="n">call1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="p">[</span><span class="s1">&#39;executor1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="s1">&#39;v&#39;</span><span class="p">})</span>
+</span><span class="hll">            <span class="n">call2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="p">[</span><span class="s1">&#39;executor2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="s1">&#39;v&#39;</span><span class="p">})</span>
+</span><span class="hll">            <span class="n">doc1</span><span class="p">,</span> <span class="n">doc2</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">call1</span><span class="p">,</span> <span class="n">call2</span><span class="p">)</span>
+</span>            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="n">doc1</span><span class="o">.</span><span class="n">texts</span> <span class="o">+</span> <span class="n">doc2</span><span class="o">.</span><span class="n">texts</span><span class="p">,</span> <span class="s1">&#39;time_taken&#39;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">toc</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">app</span>
+
+<span class="k">class</span> <span class="nc">FirstExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39; saw the first executor&#39;</span>
+
+<span class="k">class</span> <span class="nc">SecondExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39; saw the second executor&#39;</span>
+
+<span class="k">with</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">config_gateway</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyGateway</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">FirstExec</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;executor1&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">SecondExec</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;executor2&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">flow</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">requests</span> <span class="k">as</span> <span class="nn">reqlib</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">reqlib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;http://localhost:</span><span class="si">{</span><span class="n">flow</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">/endpoint?text=hello&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+    <span class="k">assert</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;result&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;hello saw the first executor&#39;</span><span class="p">,</span> <span class="s1">&#39;hello saw the second executor&#39;</span><span class="p">]</span>
+<span class="hll">    <span class="k">assert</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;time_taken&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">2.5</span>
+</span></pre></div>
+</div>
+</section>
+<section id="gateway-arguments">
+<h2>Gateway arguments<a class="headerlink" href="#gateway-arguments" title="Permalink to this heading">#</a></h2>
+<section id="runtime-attributes">
+<span id="gateway-runtime-arguments"></span><h3>Runtime attributes<a class="headerlink" href="#runtime-attributes" title="Permalink to this heading">#</a></h3>
+<p>Jina injects runtime attributes into the Gateway classes. You can use them to set up your custom gateway:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">logger</span></code>: Jina logger object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">streamer</span></code>: <code class="xref py py-class docutils literal notranslate"><span class="pre">GatewayStreamer</span></code>. Use this object to send Documents from the Gateway to Executors. Refer to <a class="reference internal" href="#gateway-streamer"><span class="std std-ref">this section</span></a> for more information.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">runtime_args</span></code>: <code class="docutils literal notranslate"><span class="pre">argparse.Namespace</span></code> object containing runtime arguments.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">port</span></code>: main port exposed by the Gateway.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ports</span></code>: list of all ports exposed by the Gateway.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">protocols</span></code>: list of all protocols supported by the Gateway.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">host</span></code>: Host address to which the Gateway server should be bound.</p></li>
+</ul>
+<p>Use these attributes to implement your Gateway logic. For instance, binding the server to the runtime provided <code class="docutils literal notranslate"><span class="pre">port</span></code> and
+<code class="docutils literal notranslate"><span class="pre">host</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Gateway</span>
+
+<span class="k">class</span> <span class="nc">MyGateway</span><span class="p">(</span><span class="n">Gateway</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">setup_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+<span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">Server</span><span class="p">(</span><span class="n">Config</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">))</span>
+</span></pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">Nonte</p>
+<p>Jina provides the Gateway with a list of ports and protocols to expose. Therefore, a custom Gateway can handle requests
+on multiple ports using different protocols.</p>
+</div>
+</section>
+<section id="user-defined-parameters">
+<span id="user-defined-arguments"></span><h3>User-defined parameters<a class="headerlink" href="#user-defined-parameters" title="Permalink to this heading">#</a></h3>
+<p>You can also set other parameters by implementing a custom constructor <code class="docutils literal notranslate"><span class="pre">__init__</span></code>.You can override constructor
+parameters in the Flow Python API (using <code class="docutils literal notranslate"><span class="pre">uses_with</span></code> parameter) or in the YAML configuration when including the Gateway.
+Refer to the <a class="reference internal" href="#use-custom-gateway"><span class="std std-ref">Use Custom Gateway section</span></a> for more information.</p>
+</section>
+</section>
+<section id="required-health-checks">
+<span id="custom-gateway-health-check"></span><h2>Required health-checks<a class="headerlink" href="#required-health-checks" title="Permalink to this heading">#</a></h2>
+<p>Jina relies on health-checks to determine the health of the Gateway. In environments like Kubernetes,
+Docker Compose and Jina Cloud, this information is crucial for orchestrating the Gateway.
+Since you have full control over your custom gateways, you are always responsible for implementing health-check endpoints:</p>
+<ul class="simple">
+<li><p>If the protocol used is gRPC, a health servicer (for instance <code class="docutils literal notranslate"><span class="pre">health.aio.HealthServicer()</span></code>) from <code class="docutils literal notranslate"><span class="pre">grpcio-health-checking</span></code>
+is expected to be added to the gRPC server. Refer to <code class="xref py py-class docutils literal notranslate"><span class="pre">GRPCGateway</span></code> as
+an example.</p></li>
+<li><p>Otherwise, an HTTP GET request to the root path is expected to return a <code class="docutils literal notranslate"><span class="pre">200</span></code> status code.</p></li>
+</ul>
+<p>To test whether your server properly implements health-checks, you can use the command <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">ping</span> <span class="pre">&lt;protocol&gt;://host:port</span></code></p>
+<div class="important admonition">
+<p class="admonition-title">Important</p>
+<p>Although a Jina Gateway can expose multiple ports and protocols, the runtime only cares about the first exposed port
+and protocol. Health checks will be sent only to the first port.</p>
+</div>
+</section>
+<section id="gateway-yaml-file">
+<h2>Gateway YAML file<a class="headerlink" href="#gateway-yaml-file" title="Permalink to this heading">#</a></h2>
+<p>Like Executor <code class="docutils literal notranslate"><span class="pre">config</span></code> files, a custom Gateway implementation can be associated with a YAML configuration file.
+Such a configuration can override user-defined parameters and define other runtime arguments (<code class="docutils literal notranslate"><span class="pre">port</span></code>, <code class="docutils literal notranslate"><span class="pre">protocol</span></code>, <code class="docutils literal notranslate"><span class="pre">py_modules</span></code>, etc).</p>
+<p>You can define such a configuration in <code class="docutils literal notranslate"><span class="pre">config.yml</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!MyGateway</span>
+<span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_gateway.py</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">arg1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello</span>
+<span class="w">  </span><span class="nt">arg2</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">world</span>
+<span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345</span>
+</pre></div>
+</div>
+<p>For more information, please refer to the <a class="reference internal" href="../yaml-spec/#gateway-yaml-spec"><span class="std std-ref">Gateway YAML Specifications</span></a></p>
+</section>
+<section id="containerize-the-custom-gateway">
+<h2>Containerize the Custom Gateway<a class="headerlink" href="#containerize-the-custom-gateway" title="Permalink to this heading">#</a></h2>
+<p>You may want to dockerize your custom Gateway so you can isolate its dependencies and make it ready to run in the cloud
+or Kubernetes.</p>
+<p>This assumes that you’ve already implemented a custom Gateway class and have defined a <code class="docutils literal notranslate"><span class="pre">config.yml</span></code> for it.
+In this case, dockerizing the Gateway is straighforward:</p>
+<ul class="simple">
+<li><p>If you need dependencies other than Jina, make sure to add a <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file (for instance, you use a server library).</p></li>
+<li><p>Create a <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> as follows:</p></li>
+</ul>
+<ol class="arabic simple">
+<li><p>Use a <a class="reference external" href="https://hub.docker.com/r/jinaai/jina">Jina based image</a> with the <code class="docutils literal notranslate"><span class="pre">standard</span></code> tag as the base image in your Dockerfile.
+This ensures that everything needed for Jina to run the Gateway is installed. Make sure the Jina version supports
+custom Gateways:</p></li>
+</ol>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">jinaai/jina:latest-py37-standard</span>
+</pre></div>
+</div>
+<p>Alternatively, you can just install jina using <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>jina
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Install everything from <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> if you included it:</p></li>
+</ol>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Copy source code under the <code class="docutils literal notranslate"><span class="pre">workdir</span></code> folder:</p></li>
+</ol>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">COPY</span><span class="w"> </span>.<span class="w"> </span>/workdir/
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/workdir</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">gateway</span> <span class="pre">--uses</span> <span class="pre">config.yml</span></code> command as your image’s entrypoint:</p></li>
+</ol>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;jina&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;gateway&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--uses&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;config.yml&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Once you finish the <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> you should end up with the following file structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
+├── my_gateway.py
+└── requirements.txt
+└── config.yml
+└── Dockerfile
+</pre></div>
+</div>
+<p>You can now build the Docker image:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>my_gateway
+docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>gateway-image
+</pre></div>
+</div>
+</section>
+<section id="use-the-custom-gateway">
+<span id="use-custom-gateway"></span><h2>Use the Custom Gateway<a class="headerlink" href="#use-the-custom-gateway" title="Permalink to this heading">#</a></h2>
+<p>You can include the Custom Gateway in a Jina Flow in different formats: Python class, configuration YAML and Docker image:</p>
+<section id="flow-python-api">
+<h3>Flow python API<a class="headerlink" href="#flow-python-api" title="Permalink to this heading">#</a></h3>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Python Class</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Gateway</span><span class="p">,</span> <span class="n">Flow</span>
+
+
+<span class="k">class</span> <span class="nc">MyGateway</span><span class="p">(</span><span class="n">Gateway</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg</span> <span class="o">=</span> <span class="n">arg</span>
+
+    <span class="o">...</span>
+
+
+<span class="n">flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">config_gateway</span><span class="p">(</span>
+    <span class="n">uses</span><span class="o">=</span><span class="n">MyGateway</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;arg&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">YAML configuration</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">config_gateway</span><span class="p">(</span>
+    <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;config.yml&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;arg&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--3">Docker Image</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">config_gateway</span><span class="p">(</span>
+    <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;docker://gateway-image&#39;</span><span class="p">,</span>
+    <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span>
+    <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span>
+    <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;arg&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="flow-yaml-configuration">
+<h3>Flow YAML configuration<a class="headerlink" href="#flow-yaml-configuration" title="Permalink to this heading">#</a></h3>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Python Class</label><div class="tab-content docutils">
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!Flow</span>
+<span class="nt">gateway</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_gateway/my_gateway.py</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyGateway</span>
+<span class="w">  </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">arg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">value</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">YAML configuration</label><div class="tab-content docutils">
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!Flow</span>
+<span class="nt">gateway</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_gateway/config.yml</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--3" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--3">Docker Image</label><div class="tab-content docutils">
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!Flow</span>
+<span class="nt">gateway</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker://gateway-image</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="important admonition">
+<p class="admonition-title">Important</p>
+<p>When you include a custom Gateway in a Jina Flow, since Jina needs to know about the port and protocol to which
+health checks will be sent, it is important to specify them when including the Gateway.</p>
+</div>
+</section>
+</section>
+</section>
+
+                </article>
+            </div>
+            <footer>
+                
+                <div class="related-pages">
+                    <a class="next-page" href="../yaml-spec/">
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Next</span>
+                            </div>
+                            <div class="title"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-file-code" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z"></path></svg> YAML specification</div>
+                        </div>
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+                    </a>
+                    <a class="prev-page" href="../customize-http-endpoints/">
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Previous</span>
+                            </div>
+                            
+                            <div class="title">Customize HTTP endpoints</div>
+                            
+                        </div>
+                    </a>
+                </div>
+                <div class="bottom-of-page">
+                    <div class="left-details">
+                        <div class="copyright">
+                            Copyright &#169; Jina AI Limited. All rights reserved.
+                        </div><div class="last-updated">
+                            Last updated on May 15, 2023</div>
+                    </div>
+                    <div class="right-details">
+                        <div class="social-btns">
+                            <a class='social-btn' href="https://github.com/jina-ai/jina" aria-label="GitHub"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                            <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-slack"></i></a>
+                            <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                            <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                            <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+        <aside class="toc-drawer">
+            
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">Customization</a><ul>
+<li><a class="reference internal" href="#implementing-the-custom-gateway">Implementing the custom Gateway</a><ul>
+<li><a class="reference internal" href="#server-implementation">Server implementation</a></li>
+<li><a class="reference internal" href="#subclass-from-fastapibasegateway">Subclass from <code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a></li>
+<li><a class="reference internal" href="#subclass-from-gateway">Subclass from <code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#calling-executors-with-gatewaystreamer">Calling Executors with <code class="xref py py-class docutils literal notranslate"><span class="pre">GatewayStreamer</span></code></a><ul>
+<li><a class="reference internal" href="#recovering-executor-errors">Recovering Executor errors</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#calling-an-individual-executor">Calling an individual Executor</a></li>
+<li><a class="reference internal" href="#gateway-arguments">Gateway arguments</a><ul>
+<li><a class="reference internal" href="#runtime-attributes">Runtime attributes</a></li>
+<li><a class="reference internal" href="#user-defined-parameters">User-defined parameters</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#required-health-checks">Required health-checks</a></li>
+<li><a class="reference internal" href="#gateway-yaml-file">Gateway YAML file</a></li>
+<li><a class="reference internal" href="#containerize-the-custom-gateway">Containerize the Custom Gateway</a></li>
+<li><a class="reference internal" href="#use-the-custom-gateway">Use the Custom Gateway</a><ul>
+<li><a class="reference internal" href="#flow-python-api">Flow python API</a></li>
+<li><a class="reference internal" href="#flow-yaml-configuration">Flow YAML configuration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
+            
+            
+        </aside>
+    </div>
+</div>
+<img referrerpolicy="no-referrer-when-downgrade"
+     src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/scripts/furo.js"></script>
+    <script src="../../../../_static/clipboard.min.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script src="../../../../_static/tabs.js"></script>
+    <script src="../../../../_static/design-tabs.js"></script>
+    </body>
+</html>
