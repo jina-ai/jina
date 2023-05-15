@@ -78,7 +78,7 @@ def _call_add_voters(leader, voters, replica_ids, event_signal=None):
             f'Trying to add {str(replica_id)} as voter with address {voter_address} to leader at {leader}'
         )
         success = False
-        for i in range(10):
+        for i in range(5):
             try:
                 logger.debug(f'Trying {i}th time')
                 jraft.add_voter(leader, str(replica_id), voter_address)
@@ -90,8 +90,9 @@ def _call_add_voters(leader, voters, replica_ids, event_signal=None):
                 time.sleep(2.0)
 
         if not success:
-            logger.error(
-                f'Failed to add {str(replica_id)} as voter with address {voter_address} to leader at {leader}'
+            logger.warning(
+                f'Failed to add {str(replica_id)} as voter with address {voter_address} to leader at {leader}. This could be because {leader} is not the leader, '
+                f'and maybe the cluster is restoring from a previous cluster state'
             )
         else:
             logger.success(
