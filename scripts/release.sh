@@ -90,7 +90,7 @@ if [[ $1 == "final" ]]; then
   NEXT_VER=$(echo $RELEASE_VER | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{$NF=sprintf("%0*d", length($NF), ($NF+1)); print}')
   printf "bump master version to: \e[1;32m$NEXT_VER\e[0m\n"
 
-  make_release_note
+  #make_release_note
 
   pub_pypi
 
