@@ -6,10 +6,10 @@
 <meta property="og:title" content="Scale Out" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/orchestration/scale-out/" />
-<meta property="og:site_name" content="Jina 3.16.0 Documentation" />
+<meta property="og:site_name" content="Jina 3.16.1 Documentation" />
 <meta property="og:description" content="By default, all Executors in an Orchestration run with a single instance. If an Executor is particularly slow, then it will reduce the overall throughput. To solve this, you can specify the number of replicas to scale out an Executor. Replicate stateless Executors: Replication creates multiple co..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.16.0 Documentation" />
+<meta property="og:image:alt" content="Jina 3.16.1 Documentation" />
 <meta name="description" content="By default, all Executors in an Orchestration run with a single instance. If an Executor is particularly slow, then it will reduce the overall throughput. To solve this, you can specify the number of replicas to scale out an Executor. Replicate stateless Executors: Replication creates multiple co..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/orchestration/scale-out.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Scale Out - Jina 3.16.0 documentation</title>
+        <title>Scale Out - Jina 3.16.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.16.0 documentation</div>
+                <div class="brand">Jina 3.16.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -519,7 +519,7 @@
 <p>Replication is used to scale out Executors by creating copies of them that can handle requests in parallel, providing better RPS.
 However, when an Executor maintains some sort of state, then it is not simple to guarantee that each copy of the Executor maintains the <em>same</em> state,
 which can lead to undesired behavior, since each replica can provide different results depending on the specific state they hold.</p>
-<p>In Jina, you can also have replication while guaranteeing the consensus between Executors. For this, we rely on (RAFT)[https://raft.github.io/], which is
+<p>In Jina, you can also have replication while guaranteeing the consensus between Executors. For this, we rely on <a class="reference external" href="https://raft.github.io/">RAFT</a>, which is
 an algorithm that guarantees eventual consistency between replicas.</p>
 <p>Consensus-based replication using RAFT is a distributed algorithm designed to provide fault tolerance and consistency in a distributed system. In a distributed system, the nodes may fail, and messages may be lost or delayed, which can lead to inconsistencies in the system.
 The problem with traditional replication methods is that they can’t guarantee consistency in a distributed system in the presence of failures. This is where consensus-based replication using RAFT comes in.
