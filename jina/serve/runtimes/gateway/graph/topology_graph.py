@@ -181,7 +181,7 @@ class TopologyGraph:
                 )
                 if docarray_v2:
                     if self.endpoints and endpoint in self.endpoints:
-                        req_to_send.document_array_cls = DocList[self._pydantic_models_by_endpoint['input']]
+                        req_to_send.document_array_cls = DocList[self._pydantic_models_by_endpoint[endpoint]['input']]
 
                 self.parts_to_send.append(req_to_send)
                 # this is a specific needs
@@ -229,7 +229,7 @@ class TopologyGraph:
 
                         if docarray_v2:
                             if self.endpoints and endpoint in self.endpoints:
-                                resp.document_array_cls = DocList[self._pydantic_models_by_endpoint['output']]
+                                resp.document_array_cls = DocList[self._pydantic_models_by_endpoint[endpoint]['output']]
 
                         if WorkerRequestHandler._KEY_RESULT in resp.parameters:
                             # Accumulate results from each Node and then add them to the original
