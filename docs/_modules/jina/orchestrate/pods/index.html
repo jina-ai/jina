@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/orchestrate/pods.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.orchestrate.pods - Jina 3.15.4 documentation</title>
+        <title>jina.orchestrate.pods - Jina 3.16.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.15.4 documentation</div>
+                <div class="brand">Jina 3.16.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -232,6 +232,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/deploy-model/">Deploy a model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">New DocArray support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docarray-v2/">(Beta) New DocArray support</a></li>
+</ul>
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../concepts/preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -249,7 +253,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/file-structure/">File Structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/containerize/">Containerize</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/instrumentation/">Instrumentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -411,11 +414,11 @@
                 <article role="main">
                     <h1>Source code for jina.orchestrate.pods</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">jina.constants</span> <span class="kn">import</span> <span class="n">__ready_msg__</span><span class="p">,</span> <span class="n">__stop_msg__</span><span class="p">,</span> <span class="n">__windows__</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PodRoleType</span>
@@ -425,102 +428,10 @@
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina.orchestrate.pods.helper</span> <span class="kn">import</span> <span class="n">ConditionalEvent</span><span class="p">,</span> <span class="n">_get_event</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">_update_gateway_args</span>
-<span class="kn">from</span> <span class="nn">jina.serve.runtimes.asyncio</span> <span class="kn">import</span> <span class="n">AsyncNewLoopRuntime</span>
-
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">jina.serve.executors.run</span> <span class="kn">import</span> <span class="n">run</span><span class="p">,</span> <span class="n">run_raft</span>
+<span class="kn">from</span> <span class="nn">jina.constants</span> <span class="kn">import</span> <span class="n">RAFT_TO_EXECUTOR_PORT</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;BasePod&#39;</span><span class="p">,</span> <span class="s1">&#39;Pod&#39;</span><span class="p">]</span>
-
-
-<span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
-        <span class="n">args</span><span class="p">:</span> <span class="s1">&#39;argparse.Namespace&#39;</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">runtime_cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">AsyncNewLoopRuntime</span><span class="p">],</span>
-        <span class="n">envs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-        <span class="n">is_started</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">],</span>
-        <span class="n">is_shutdown</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">],</span>
-        <span class="n">is_ready</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">],</span>
-        <span class="n">jaml_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Method representing the :class:`BaseRuntime` activity.</span>
-
-<span class="sd">    This method is the target for the Pod&#39;s `thread` or `process`</span>
-
-<span class="sd">    .. note::</span>
-<span class="sd">        :meth:`run` is running in subprocess/thread, the exception can not be propagated to the main process.</span>
-<span class="sd">        Hence, please do not raise any exception here.</span>
-
-<span class="sd">    .. note::</span>
-<span class="sd">        Please note that env variables are process-specific. Subprocess inherits envs from</span>
-<span class="sd">        the main process. But Subprocess&#39;s envs do NOT affect the main process. It does NOT</span>
-<span class="sd">        mess up user local system envs.</span>
-
-<span class="sd">    .. warning::</span>
-<span class="sd">        If you are using ``thread`` as backend, envs setting will likely be overidden by others</span>
-
-<span class="sd">    .. note::</span>
-<span class="sd">        `jaml_classes` contains all the :class:`JAMLCompatible` classes registered in the main process.</span>
-<span class="sd">        When using `spawn` as the multiprocessing start method, passing this argument to `run` method re-imports</span>
-<span class="sd">        &amp; re-registers all `JAMLCompatible` classes.</span>
-
-<span class="sd">    :param args: namespace args from the Pod</span>
-<span class="sd">    :param name: name of the Pod to have proper logging</span>
-<span class="sd">    :param runtime_cls: the runtime class to instantiate</span>
-<span class="sd">    :param envs: a dictionary of environment variables to be set in the new Process</span>
-<span class="sd">    :param is_started: concurrency event to communicate runtime is properly started. Used for better logging</span>
-<span class="sd">    :param is_shutdown: concurrency event to communicate runtime is terminated</span>
-<span class="sd">    :param is_ready: concurrency event to communicate runtime is ready to receive messages</span>
-<span class="sd">    :param jaml_classes: all the `JAMLCompatible` classes imported in main process</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">req_handler_cls</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">&#39;GatewayRuntime&#39;</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.request_handling</span> <span class="kn">import</span> <span class="n">GatewayRequestHandler</span>
-        <span class="n">req_handler_cls</span> <span class="o">=</span> <span class="n">GatewayRequestHandler</span>
-    <span class="k">elif</span> <span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">&#39;WorkerRuntime&#39;</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.worker.request_handling</span> <span class="kn">import</span> <span class="n">WorkerRequestHandler</span>
-        <span class="n">req_handler_cls</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span>
-    <span class="k">elif</span> <span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">&#39;HeadRuntime&#39;</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.head.request_handling</span> <span class="kn">import</span> <span class="n">HeaderRequestHandler</span>
-        <span class="n">req_handler_cls</span> <span class="o">=</span> <span class="n">HeaderRequestHandler</span>
-
-    <span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">_unset_envs</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">envs</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">envs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_set_envs</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">envs</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">_set_envs</span><span class="p">()</span>
-
-        <span class="n">runtime</span> <span class="o">=</span> <span class="n">AsyncNewLoopRuntime</span><span class="p">(</span>
-            <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
-            <span class="n">req_handler_cls</span><span class="o">=</span><span class="n">req_handler_cls</span><span class="p">,</span>
-            <span class="n">gateway_load_balancer</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;gateway_load_balancer&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-        <span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1"> during </span><span class="si">{</span><span class="n">runtime_cls</span><span class="si">!r}</span><span class="s1"> initialization&#39;</span>
-            <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> add &quot;--quiet-error&quot; to suppress the exception details&#39;</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span>
-            <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_shutdown</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
-            <span class="n">is_started</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-            <span class="k">with</span> <span class="n">runtime</span><span class="p">:</span>
-                <span class="n">is_ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-                <span class="n">runtime</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="n">_unset_envs</span><span class="p">()</span>
-        <span class="n">is_shutdown</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;process terminated&#39;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="BasePod"><a class="viewcode-back" href="../../../../api/jina.orchestrate.pods/#jina.orchestrate.pods.BasePod">[docs]</a><span class="k">class</span> <span class="nc">BasePod</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
@@ -746,10 +657,30 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">&#39;argparse.Namespace&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_runtime_cls</span><span class="p">()</span>
+        <span class="n">cargs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raft_worker</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">stateful</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">==</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">WORKER</span><span class="p">:</span>
+            <span class="n">cargs_stateful</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">raft_worker</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span>
+                <span class="n">target</span><span class="o">=</span><span class="n">run_raft</span><span class="p">,</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s1">&#39;args&#39;</span><span class="p">:</span> <span class="n">cargs_stateful</span><span class="p">,</span>
+                    <span class="s1">&#39;is_ready&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">cargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">cargs_stateful</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cargs</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="n">cargs</span><span class="o">.</span><span class="n">port</span> <span class="o">+=</span> <span class="n">RAFT_TO_EXECUTOR_PORT</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cargs</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">cargs</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="p">[</span><span class="n">port</span> <span class="o">+</span> <span class="n">RAFT_TO_EXECUTOR_PORT</span> <span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="n">cargs</span><span class="o">.</span><span class="n">port</span><span class="p">]</span>
+        <span class="c1"># if stateful, have a raft_worker</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">worker</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span>
             <span class="n">target</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
             <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
-                <span class="s1">&#39;args&#39;</span><span class="p">:</span> <span class="n">args</span><span class="p">,</span>
+                <span class="s1">&#39;args&#39;</span><span class="p">:</span> <span class="n">cargs</span> <span class="ow">or</span> <span class="n">args</span><span class="p">,</span>
                 <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="s1">&#39;envs&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_envs</span><span class="p">,</span>
                 <span class="s1">&#39;is_started&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_started</span><span class="p">,</span>
@@ -768,7 +699,8 @@
 <span class="sd">        .. #noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">raft_worker</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">raft_worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">noblock_on_start</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span></div>
@@ -782,6 +714,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;joining the process&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">raft_worker</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">raft_worker</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;successfully joined the process&#39;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_terminate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -790,6 +724,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;terminating the runtime process&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">raft_worker</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">raft_worker</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;runtime process properly terminated&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_runtime_cls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -811,7 +747,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 11, 2023</div>
+                            Last updated on May 15, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -6,10 +6,10 @@
 <meta property="og:title" content="jina.proto.docarray_v2.pb2.jina_pb2_grpc module" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.proto.docarray_v2.pb2.jina_pb2_grpc/" />
-<meta property="og:site_name" content="Jina 3.15.4 Documentation" />
+<meta property="og:site_name" content="Jina 3.16.0 Documentation" />
 <meta property="og:description" content="Client and server classes corresponding to protobuf-defined services." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.15.4 Documentation" />
+<meta property="og:image:alt" content="Jina 3.16.0 Documentation" />
 <meta name="description" content="Client and server classes corresponding to protobuf-defined services." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.proto.docarray_v2.pb2.jina_pb2_grpc.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.proto.docarray_v2.pb2.jina_pb2_grpc module - Jina 3.15.4 documentation</title>
+        <title>jina.proto.docarray_v2.pb2.jina_pb2_grpc module - Jina 3.16.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.15.4 documentation</div>
+                <div class="brand">Jina 3.16.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -259,6 +259,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/deploy-model/">Deploy a model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">New DocArray support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../docarray-v2/">(Beta) New DocArray support</a></li>
+</ul>
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../concepts/preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -276,7 +280,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/serving/executor/file-structure/">File Structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/serving/executor/containerize/">Containerize</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/serving/executor/instrumentation/">Instrumentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../concepts/serving/executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/serving/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -737,6 +740,210 @@ This is used to send requests to Executors when a list of requests is not needed
 <p>jina gRPC service to expose information about running jina version and environment.</p>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotStub">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.docarray_v2.pb2.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaExecutorSnapshotStub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorSnapshotStub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotStub" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>jina gRPC service to trigger a snapshot at the Executor Runtime.</p>
+<p>Constructor.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>channel: A grpc.Channel.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotServicer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.docarray_v2.pb2.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaExecutorSnapshotServicer</span></span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorSnapshotServicer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotServicer" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>jina gRPC service to trigger a snapshot at the Executor Runtime.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotServicer.snapshot">
+<span class="sig-name descname"><span class="pre">snapshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorSnapshotServicer.snapshot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotServicer.snapshot" title="Permalink to this definition">#</a></dt>
+<dd><p>Missing associated documentation comment in .proto file.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.add_JinaExecutorSnapshotServicer_to_server">
+<span class="sig-prename descclassname"><span class="pre">jina.proto.docarray_v2.pb2.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">add_JinaExecutorSnapshotServicer_to_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">servicer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#add_JinaExecutorSnapshotServicer_to_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.add_JinaExecutorSnapshotServicer_to_server" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.docarray_v2.pb2.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaExecutorSnapshot</span></span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorSnapshot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshot" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>jina gRPC service to trigger a snapshot at the Executor Runtime.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshot.snapshot">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">snapshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">call_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insecure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_for_ready</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorSnapshot.snapshot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshot.snapshot" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotProgressStub">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.docarray_v2.pb2.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaExecutorSnapshotProgressStub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorSnapshotProgressStub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotProgressStub" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>jina gRPC service to trigger a snapshot at the Executor Runtime.</p>
+<p>Constructor.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>channel: A grpc.Channel.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotProgressServicer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.docarray_v2.pb2.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaExecutorSnapshotProgressServicer</span></span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorSnapshotProgressServicer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotProgressServicer" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>jina gRPC service to trigger a snapshot at the Executor Runtime.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotProgressServicer.snapshot_status">
+<span class="sig-name descname"><span class="pre">snapshot_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorSnapshotProgressServicer.snapshot_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotProgressServicer.snapshot_status" title="Permalink to this definition">#</a></dt>
+<dd><p>Missing associated documentation comment in .proto file.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.add_JinaExecutorSnapshotProgressServicer_to_server">
+<span class="sig-prename descclassname"><span class="pre">jina.proto.docarray_v2.pb2.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">add_JinaExecutorSnapshotProgressServicer_to_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">servicer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#add_JinaExecutorSnapshotProgressServicer_to_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.add_JinaExecutorSnapshotProgressServicer_to_server" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotProgress">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.docarray_v2.pb2.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaExecutorSnapshotProgress</span></span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorSnapshotProgress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotProgress" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>jina gRPC service to trigger a snapshot at the Executor Runtime.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotProgress.snapshot_status">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">snapshot_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">call_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insecure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_for_ready</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorSnapshotProgress.snapshot_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotProgress.snapshot_status" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreStub">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.docarray_v2.pb2.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaExecutorRestoreStub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorRestoreStub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreStub" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>jina gRPC service to trigger a restore at the Executor Runtime.</p>
+<p>Constructor.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>channel: A grpc.Channel.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreServicer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.docarray_v2.pb2.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaExecutorRestoreServicer</span></span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorRestoreServicer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreServicer" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>jina gRPC service to trigger a restore at the Executor Runtime.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreServicer.restore">
+<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorRestoreServicer.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreServicer.restore" title="Permalink to this definition">#</a></dt>
+<dd><p>Missing associated documentation comment in .proto file.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.add_JinaExecutorRestoreServicer_to_server">
+<span class="sig-prename descclassname"><span class="pre">jina.proto.docarray_v2.pb2.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">add_JinaExecutorRestoreServicer_to_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">servicer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#add_JinaExecutorRestoreServicer_to_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.add_JinaExecutorRestoreServicer_to_server" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestore">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.docarray_v2.pb2.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaExecutorRestore</span></span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorRestore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestore" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>jina gRPC service to trigger a restore at the Executor Runtime.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestore.restore">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">call_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insecure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_for_ready</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorRestore.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestore.restore" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreProgressStub">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.docarray_v2.pb2.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaExecutorRestoreProgressStub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorRestoreProgressStub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreProgressStub" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>jina gRPC service to trigger a snapshot at the Executor Runtime.</p>
+<p>Constructor.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>channel: A grpc.Channel.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreProgressServicer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.docarray_v2.pb2.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaExecutorRestoreProgressServicer</span></span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorRestoreProgressServicer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreProgressServicer" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>jina gRPC service to trigger a snapshot at the Executor Runtime.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreProgressServicer.restore_status">
+<span class="sig-name descname"><span class="pre">restore_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorRestoreProgressServicer.restore_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreProgressServicer.restore_status" title="Permalink to this definition">#</a></dt>
+<dd><p>Missing associated documentation comment in .proto file.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.add_JinaExecutorRestoreProgressServicer_to_server">
+<span class="sig-prename descclassname"><span class="pre">jina.proto.docarray_v2.pb2.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">add_JinaExecutorRestoreProgressServicer_to_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">servicer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#add_JinaExecutorRestoreProgressServicer_to_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.add_JinaExecutorRestoreProgressServicer_to_server" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreProgress">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.docarray_v2.pb2.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaExecutorRestoreProgress</span></span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorRestoreProgress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreProgress" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>jina gRPC service to trigger a snapshot at the Executor Runtime.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreProgress.restore_status">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">restore_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">call_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insecure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_for_ready</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/docarray_v2/pb2/jina_pb2_grpc/#JinaExecutorRestoreProgress.restore_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreProgress.restore_status" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
                 </article>
@@ -752,7 +959,7 @@ This is used to send requests to Executors when a list of requests is not needed
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 11, 2023</div>
+                            Last updated on May 15, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -839,6 +1046,46 @@ This is used to send requests to Executors when a list of requests is not needed
 <li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaInfoRPCServicer"><code class="docutils literal notranslate"><span class="pre">JinaInfoRPCServicer</span></code></a></li>
 <li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.add_JinaInfoRPCServicer_to_server"><code class="docutils literal notranslate"><span class="pre">add_JinaInfoRPCServicer_to_server()</span></code></a></li>
 <li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaInfoRPC"><code class="docutils literal notranslate"><span class="pre">JinaInfoRPC</span></code></a></li>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotStub"><code class="docutils literal notranslate"><span class="pre">JinaExecutorSnapshotStub</span></code></a></li>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotServicer"><code class="docutils literal notranslate"><span class="pre">JinaExecutorSnapshotServicer</span></code></a><ul>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotServicer.snapshot"><code class="docutils literal notranslate"><span class="pre">JinaExecutorSnapshotServicer.snapshot()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.add_JinaExecutorSnapshotServicer_to_server"><code class="docutils literal notranslate"><span class="pre">add_JinaExecutorSnapshotServicer_to_server()</span></code></a></li>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshot"><code class="docutils literal notranslate"><span class="pre">JinaExecutorSnapshot</span></code></a><ul>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshot.snapshot"><code class="docutils literal notranslate"><span class="pre">JinaExecutorSnapshot.snapshot()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotProgressStub"><code class="docutils literal notranslate"><span class="pre">JinaExecutorSnapshotProgressStub</span></code></a></li>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotProgressServicer"><code class="docutils literal notranslate"><span class="pre">JinaExecutorSnapshotProgressServicer</span></code></a><ul>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotProgressServicer.snapshot_status"><code class="docutils literal notranslate"><span class="pre">JinaExecutorSnapshotProgressServicer.snapshot_status()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.add_JinaExecutorSnapshotProgressServicer_to_server"><code class="docutils literal notranslate"><span class="pre">add_JinaExecutorSnapshotProgressServicer_to_server()</span></code></a></li>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotProgress"><code class="docutils literal notranslate"><span class="pre">JinaExecutorSnapshotProgress</span></code></a><ul>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorSnapshotProgress.snapshot_status"><code class="docutils literal notranslate"><span class="pre">JinaExecutorSnapshotProgress.snapshot_status()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreStub"><code class="docutils literal notranslate"><span class="pre">JinaExecutorRestoreStub</span></code></a></li>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreServicer"><code class="docutils literal notranslate"><span class="pre">JinaExecutorRestoreServicer</span></code></a><ul>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreServicer.restore"><code class="docutils literal notranslate"><span class="pre">JinaExecutorRestoreServicer.restore()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.add_JinaExecutorRestoreServicer_to_server"><code class="docutils literal notranslate"><span class="pre">add_JinaExecutorRestoreServicer_to_server()</span></code></a></li>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestore"><code class="docutils literal notranslate"><span class="pre">JinaExecutorRestore</span></code></a><ul>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestore.restore"><code class="docutils literal notranslate"><span class="pre">JinaExecutorRestore.restore()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreProgressStub"><code class="docutils literal notranslate"><span class="pre">JinaExecutorRestoreProgressStub</span></code></a></li>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreProgressServicer"><code class="docutils literal notranslate"><span class="pre">JinaExecutorRestoreProgressServicer</span></code></a><ul>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreProgressServicer.restore_status"><code class="docutils literal notranslate"><span class="pre">JinaExecutorRestoreProgressServicer.restore_status()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.add_JinaExecutorRestoreProgressServicer_to_server"><code class="docutils literal notranslate"><span class="pre">add_JinaExecutorRestoreProgressServicer_to_server()</span></code></a></li>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreProgress"><code class="docutils literal notranslate"><span class="pre">JinaExecutorRestoreProgress</span></code></a><ul>
+<li><a class="reference internal" href="#jina.proto.docarray_v2.pb2.jina_pb2_grpc.JinaExecutorRestoreProgress.restore_status"><code class="docutils literal notranslate"><span class="pre">JinaExecutorRestoreProgress.restore_status()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

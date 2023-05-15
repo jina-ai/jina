@@ -6,9 +6,9 @@
 <meta property="og:title" content="jina.proto.serializer module" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.proto.serializer/" />
-<meta property="og:site_name" content="Jina 3.15.4 Documentation" />
+<meta property="og:site_name" content="Jina 3.16.0 Documentation" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.15.4 Documentation" />
+<meta property="og:image:alt" content="Jina 3.16.0 Documentation" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -31,7 +31,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.proto.serializer.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.proto.serializer module - Jina 3.15.4 documentation</title>
+        <title>jina.proto.serializer module - Jina 3.16.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.15.4 documentation</div>
+                <div class="brand">Jina 3.16.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -257,6 +257,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/deploy-model/">Deploy a model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">New DocArray support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../docarray-v2/">(Beta) New DocArray support</a></li>
+</ul>
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../concepts/preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -274,7 +278,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/serving/executor/file-structure/">File Structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/serving/executor/containerize/">Containerize</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/serving/executor/instrumentation/">Instrumentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../concepts/serving/executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/serving/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -558,6 +561,121 @@ delegates the serializing and deserializing to the internal protobuf structure w
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.serializer.SnapshotId">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.serializer.</span></span><span class="sig-name descname"><span class="pre">SnapshotId</span></span><a class="reference internal" href="../../_modules/jina/proto/serializer/#SnapshotId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.SnapshotId" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Placeholder that delegates the serialization and deserialization to the internal protobuf</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.serializer.SnapshotId.SerializeToString">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SerializeToString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/serializer/#SnapshotId.SerializeToString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.SnapshotId.SerializeToString" title="Permalink to this definition">#</a></dt>
+<dd><p># noqa: DAR101
+# noqa: DAR102
+# noqa: DAR201</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.serializer.SnapshotId.FromString">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FromString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/serializer/#SnapshotId.FromString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.SnapshotId.FromString" title="Permalink to this definition">#</a></dt>
+<dd><p># noqa: DAR101
+# noqa: DAR102
+# noqa: DAR201</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.serializer.SnapshotStatusProto">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.serializer.</span></span><span class="sig-name descname"><span class="pre">SnapshotStatusProto</span></span><a class="reference internal" href="../../_modules/jina/proto/serializer/#SnapshotStatusProto"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.SnapshotStatusProto" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Placeholder that delegates the serialization and deserialization to the internal protobuf</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.serializer.SnapshotStatusProto.SerializeToString">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SerializeToString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/serializer/#SnapshotStatusProto.SerializeToString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.SnapshotStatusProto.SerializeToString" title="Permalink to this definition">#</a></dt>
+<dd><p># noqa: DAR101
+# noqa: DAR102
+# noqa: DAR201</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.serializer.SnapshotStatusProto.FromString">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FromString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/serializer/#SnapshotStatusProto.FromString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.SnapshotStatusProto.FromString" title="Permalink to this definition">#</a></dt>
+<dd><p># noqa: DAR101
+# noqa: DAR102
+# noqa: DAR201</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.serializer.RestoreSnapshotCommand">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.serializer.</span></span><span class="sig-name descname"><span class="pre">RestoreSnapshotCommand</span></span><a class="reference internal" href="../../_modules/jina/proto/serializer/#RestoreSnapshotCommand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.RestoreSnapshotCommand" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Placeholder that delegates the serialization and deserialization to the internal protobuf</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.serializer.RestoreSnapshotCommand.SerializeToString">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SerializeToString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/serializer/#RestoreSnapshotCommand.SerializeToString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.RestoreSnapshotCommand.SerializeToString" title="Permalink to this definition">#</a></dt>
+<dd><p># noqa: DAR101
+# noqa: DAR102
+# noqa: DAR201</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.serializer.RestoreSnapshotCommand.FromString">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FromString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/serializer/#RestoreSnapshotCommand.FromString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.RestoreSnapshotCommand.FromString" title="Permalink to this definition">#</a></dt>
+<dd><p># noqa: DAR101
+# noqa: DAR102
+# noqa: DAR201</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.serializer.RestoreId">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.serializer.</span></span><span class="sig-name descname"><span class="pre">RestoreId</span></span><a class="reference internal" href="../../_modules/jina/proto/serializer/#RestoreId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.RestoreId" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Placeholder that delegates the serialization and deserialization to the internal protobuf</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.serializer.RestoreId.SerializeToString">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SerializeToString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/serializer/#RestoreId.SerializeToString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.RestoreId.SerializeToString" title="Permalink to this definition">#</a></dt>
+<dd><p># noqa: DAR101
+# noqa: DAR102
+# noqa: DAR201</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.serializer.RestoreId.FromString">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FromString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/serializer/#RestoreId.FromString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.RestoreId.FromString" title="Permalink to this definition">#</a></dt>
+<dd><p># noqa: DAR101
+# noqa: DAR102
+# noqa: DAR201</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.serializer.RestoreSnapshotStatusProto">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.serializer.</span></span><span class="sig-name descname"><span class="pre">RestoreSnapshotStatusProto</span></span><a class="reference internal" href="../../_modules/jina/proto/serializer/#RestoreSnapshotStatusProto"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.RestoreSnapshotStatusProto" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Placeholder that delegates the serialization and deserialization to the internal protobuf</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.serializer.RestoreSnapshotStatusProto.SerializeToString">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SerializeToString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/serializer/#RestoreSnapshotStatusProto.SerializeToString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.RestoreSnapshotStatusProto.SerializeToString" title="Permalink to this definition">#</a></dt>
+<dd><p># noqa: DAR101
+# noqa: DAR102
+# noqa: DAR201</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.serializer.RestoreSnapshotStatusProto.FromString">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FromString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/serializer/#RestoreSnapshotStatusProto.FromString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.RestoreSnapshotStatusProto.FromString" title="Permalink to this definition">#</a></dt>
+<dd><p># noqa: DAR101
+# noqa: DAR102
+# noqa: DAR201</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
                 </article>
@@ -573,7 +691,7 @@ delegates the serializing and deserializing to the internal protobuf structure w
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 11, 2023</div>
+                            Last updated on May 15, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -629,6 +747,31 @@ delegates the serializing and deserializing to the internal protobuf structure w
 <li><a class="reference internal" href="#jina.proto.serializer.JinaInfoProto"><code class="docutils literal notranslate"><span class="pre">JinaInfoProto</span></code></a><ul>
 <li><a class="reference internal" href="#jina.proto.serializer.JinaInfoProto.SerializeToString"><code class="docutils literal notranslate"><span class="pre">JinaInfoProto.SerializeToString()</span></code></a></li>
 <li><a class="reference internal" href="#jina.proto.serializer.JinaInfoProto.FromString"><code class="docutils literal notranslate"><span class="pre">JinaInfoProto.FromString()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.proto.serializer.SnapshotId"><code class="docutils literal notranslate"><span class="pre">SnapshotId</span></code></a><ul>
+<li><a class="reference internal" href="#jina.proto.serializer.SnapshotId.SerializeToString"><code class="docutils literal notranslate"><span class="pre">SnapshotId.SerializeToString()</span></code></a></li>
+<li><a class="reference internal" href="#jina.proto.serializer.SnapshotId.FromString"><code class="docutils literal notranslate"><span class="pre">SnapshotId.FromString()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.proto.serializer.SnapshotStatusProto"><code class="docutils literal notranslate"><span class="pre">SnapshotStatusProto</span></code></a><ul>
+<li><a class="reference internal" href="#jina.proto.serializer.SnapshotStatusProto.SerializeToString"><code class="docutils literal notranslate"><span class="pre">SnapshotStatusProto.SerializeToString()</span></code></a></li>
+<li><a class="reference internal" href="#jina.proto.serializer.SnapshotStatusProto.FromString"><code class="docutils literal notranslate"><span class="pre">SnapshotStatusProto.FromString()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.proto.serializer.RestoreSnapshotCommand"><code class="docutils literal notranslate"><span class="pre">RestoreSnapshotCommand</span></code></a><ul>
+<li><a class="reference internal" href="#jina.proto.serializer.RestoreSnapshotCommand.SerializeToString"><code class="docutils literal notranslate"><span class="pre">RestoreSnapshotCommand.SerializeToString()</span></code></a></li>
+<li><a class="reference internal" href="#jina.proto.serializer.RestoreSnapshotCommand.FromString"><code class="docutils literal notranslate"><span class="pre">RestoreSnapshotCommand.FromString()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.proto.serializer.RestoreId"><code class="docutils literal notranslate"><span class="pre">RestoreId</span></code></a><ul>
+<li><a class="reference internal" href="#jina.proto.serializer.RestoreId.SerializeToString"><code class="docutils literal notranslate"><span class="pre">RestoreId.SerializeToString()</span></code></a></li>
+<li><a class="reference internal" href="#jina.proto.serializer.RestoreId.FromString"><code class="docutils literal notranslate"><span class="pre">RestoreId.FromString()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.proto.serializer.RestoreSnapshotStatusProto"><code class="docutils literal notranslate"><span class="pre">RestoreSnapshotStatusProto</span></code></a><ul>
+<li><a class="reference internal" href="#jina.proto.serializer.RestoreSnapshotStatusProto.SerializeToString"><code class="docutils literal notranslate"><span class="pre">RestoreSnapshotStatusProto.SerializeToString()</span></code></a></li>
+<li><a class="reference internal" href="#jina.proto.serializer.RestoreSnapshotStatusProto.FromString"><code class="docutils literal notranslate"><span class="pre">RestoreSnapshotStatusProto.FromString()</span></code></a></li>
 </ul>
 </li>
 </ul>

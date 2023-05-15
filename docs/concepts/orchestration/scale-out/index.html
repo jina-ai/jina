@@ -6,11 +6,11 @@
 <meta property="og:title" content="Scale Out" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/orchestration/scale-out/" />
-<meta property="og:site_name" content="Jina 3.15.4 Documentation" />
-<meta property="og:description" content="By default, all Executors in an Orchestration run with a single instance. If an Executor is particularly slow, then it will reduce the overall throughput. To solve this, you can specify the number of replicas to scale out an Executor. Replicate Executors: Replication creates multiple copies of th..." />
+<meta property="og:site_name" content="Jina 3.16.0 Documentation" />
+<meta property="og:description" content="By default, all Executors in an Orchestration run with a single instance. If an Executor is particularly slow, then it will reduce the overall throughput. To solve this, you can specify the number of replicas to scale out an Executor. Replicate stateless Executors: Replication creates multiple co..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.15.4 Documentation" />
-<meta name="description" content="By default, all Executors in an Orchestration run with a single instance. If an Executor is particularly slow, then it will reduce the overall throughput. To solve this, you can specify the number of replicas to scale out an Executor. Replicate Executors: Replication creates multiple copies of th..." />
+<meta property="og:image:alt" content="Jina 3.16.0 Documentation" />
+<meta name="description" content="By default, all Executors in an Orchestration run with a single instance. If an Executor is particularly slow, then it will reduce the overall throughput. To solve this, you can specify the number of replicas to scale out an Executor. Replicate stateless Executors: Replication creates multiple co..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/orchestration/scale-out.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Scale Out - Jina 3.15.4 documentation</title>
+        <title>Scale Out - Jina 3.16.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.15.4 documentation</div>
+                <div class="brand">Jina 3.16.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -259,6 +259,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/deploy-model/">Deploy a model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">New DocArray support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../docarray-v2/">(Beta) New DocArray support</a></li>
+</ul>
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -276,7 +280,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../serving/executor/file-structure/">File Structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../serving/executor/containerize/">Containerize</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../serving/executor/instrumentation/">Instrumentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../serving/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -439,8 +442,8 @@
                     <section id="scale-out">
 <span id="id1"></span><h1>Scale Out<a class="headerlink" href="#scale-out" title="Permalink to this heading">#</a></h1>
 <p>By default, all Executors in an Orchestration run with a single instance. If an Executor is particularly slow, then it will reduce the overall throughput. To solve this, you can specify the number of <code class="docutils literal notranslate"><span class="pre">replicas</span></code> to scale out an Executor.</p>
-<section id="replicate-executors">
-<span id="id2"></span><h2>Replicate Executors<a class="headerlink" href="#replicate-executors" title="Permalink to this heading">#</a></h2>
+<section id="replicate-stateless-executors">
+<span id="replicate-executors"></span><h2>Replicate stateless Executors<a class="headerlink" href="#replicate-stateless-executors" title="Permalink to this heading">#</a></h2>
 <p>Replication creates multiple copies of the same <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>. Each request in the Orchestration is then passed to only one replica (instance) of that Executor. <strong>All replicas compete for a request. The idle replica gets the request first.</strong></p>
 <p>This is useful for improving performance and availability:</p>
 <ul class="simple">
@@ -487,13 +490,203 @@
 </div>
 </div>
 </div>
-<figure class="align-center" id="id3">
+<figure class="align-center" id="id2">
 <a class="reference internal image-reference" href="../../../_images/replicas-flow.svg"><img alt="../../../_images/replicas-flow.svg" src="../../../_images/replicas-flow.svg" width="70%" /></a>
 <figcaption>
-<p><span class="caption-text">Flow with three replicas of <code class="docutils literal notranslate"><span class="pre">slow_encoder</span></code> and one replica of <code class="docutils literal notranslate"><span class="pre">fast_indexer</span></code></span><a class="headerlink" href="#id3" title="Permalink to this image">#</a></p>
+<p><span class="caption-text">Flow with three replicas of <code class="docutils literal notranslate"><span class="pre">slow_encoder</span></code> and one replica of <code class="docutils literal notranslate"><span class="pre">fast_indexer</span></code></span><a class="headerlink" href="#id2" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
+</section>
+<section id="replicate-stateful-executors-with-consensus-using-raft-beta">
+<span id="scale-consensus"></span><h2>Replicate stateful Executors with consensus using RAFT (Beta)<a class="headerlink" href="#replicate-stateful-executors-with-consensus-using-raft-beta" title="Permalink to this heading">#</a></h2>
+<div class="note admonition">
+<p class="admonition-title">Python3.8 or newer version required on MacOS</p>
+<p>This feature requires at least Python3.8 version when working on MacOS.</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">Feature not supported on Windows</p>
+<p>This feature is not supported when using Windows</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">DocArray 0.30</p>
+<p>Starting from DocArray version 0.30, DocArray changed its interface and implementation drastically. We intend to support these new versions in the near future, but not every feature is yet available. Check <a class="reference internal" href="../../../docarray-v2/#docarray-v2"><span class="std std-ref">here</span></a> for more information. This feature has been added with the new DocArray support.</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">gRPC protocol</p>
+<p>This feature is only available when using gRPC as the protocol for the Deployment or when the Deployment is part of a Flow</p>
+</div>
+<p>Replication is used to scale out Executors by creating copies of them that can handle requests in parallel, providing better RPS.
+However, when an Executor maintains some sort of state, then it is not simple to guarantee that each copy of the Executor maintains the <em>same</em> state,
+which can lead to undesired behavior, since each replica can provide different results depending on the specific state they hold.</p>
+<p>In Jina, you can also have replication while guaranteeing the consensus between Executors. For this, we rely on (RAFT)[https://raft.github.io/], which is
+an algorithm that guarantees eventual consistency between replicas.</p>
+<p>Consensus-based replication using RAFT is a distributed algorithm designed to provide fault tolerance and consistency in a distributed system. In a distributed system, the nodes may fail, and messages may be lost or delayed, which can lead to inconsistencies in the system.
+The problem with traditional replication methods is that they can’t guarantee consistency in a distributed system in the presence of failures. This is where consensus-based replication using RAFT comes in.
+With this approach, each Executor can be considered as a Finite State Machine, meaning it has a set of potential states and a set of transitions that it can make between those states. Each request that is sent to the Executor can be considered as a log entry that needs to be replicated across the cluster.</p>
+<p>To enable this kind of replication, we need to consider:</p>
+<ul class="simple">
+<li><p>Specify which methods of the Executor <span class="xref std std-ref"> can update its internal state</span>.</p></li>
+<li><p>Tell the Deployment to use the RAFT consensus algorithm by setting the <code class="docutils literal notranslate"><span class="pre">--stateful</span></code> argument.</p></li>
+<li><p>Set values of replicas compatible with RAFT. RAFT requires at least three replicas to guarantee consistency.</p></li>
+<li><p>Pass the <code class="docutils literal notranslate"><span class="pre">--peer-ports</span></code> argument so that the RAFT cluster can recover from a previous configuration of replicas if existed.</p></li>
+<li><p>Optionally you can pass <code class="docutils literal notranslate"><span class="pre">--raft-configuration</span></code> parameter to tweak the behavior of the consensus module. You can understand the values to pass from
+<a class="reference external" href="https://github.com/ongardie/hashicorp-raft/blob/master/config.go">Hashicorp’s RAFT library</a>.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">jina.serve.executors.decorators</span> <span class="kn">import</span> <span class="n">write</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
+
+
+<span class="k">class</span> <span class="nc">MyStateStatefulExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_docs_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/index&#39;</span><span class="p">])</span>
+    <span class="nd">@write</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_docs_dict</span><span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/search&#39;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Searching against </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs_dict</span><span class="p">)</span><span class="si">}</span><span class="s1"> documents&#39;</span><span class="p">)</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs_dict</span><span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+
+
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;stateful_executor&#39;</span><span class="p">,</span> 
+               <span class="n">uses</span><span class="o">=</span><span class="n">MyStateStatefulExecutor</span><span class="p">,</span>
+               <span class="n">replicas</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> 
+               <span class="n">stateful</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+               <span class="n">workspace</span><span class="o">=</span><span class="s1">&#39;./raft&#39;</span><span class="p">,</span>
+               <span class="n">peer_ports</span><span class="o">=</span><span class="p">[</span><span class="mi">12345</span><span class="p">,</span> <span class="mi">12346</span><span class="p">,</span> <span class="mi">12347</span><span class="p">])</span>
+<span class="k">with</span> <span class="n">d</span><span class="p">:</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This capacity allows you not only to have replicas that work with robustness and availability, it also can help achieve higher throughput in some cases.</p>
+<p>Let’s imagine we write an Executor that is used to index and query documents from a vector index.</p>
+<p>For this, we will use an in-memory solution from <a class="reference external" href="https://docs.docarray.org/user_guide/storing/index_in_memory/">DocArray</a> that performs exact vector search.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">jina.serve.executors.decorators</span> <span class="kn">import</span> <span class="n">write</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
+<span class="kn">from</span> <span class="nn">docarray.index.backends.in_memory</span> <span class="kn">import</span> <span class="n">InMemoryExactNNIndex</span>
+
+
+<span class="k">class</span> <span class="nc">QueryDoc</span><span class="p">(</span><span class="n">TextDoc</span><span class="p">):</span>
+    <span class="n">matches</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]()</span>
+
+
+<span class="k">class</span> <span class="nc">ExactNNSearch</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">InMemoryExactNNIndex</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]()</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/index&#39;</span><span class="p">])</span>
+    <span class="nd">@write</span> <span class="c1"># I add write decorator to indicate that calling this endpoint updates the inner state</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Indexing Document in index with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">)</span><span class="si">}</span><span class="s1"> documents indexed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/search&#39;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">QueryDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">QueryDoc</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Searching Document in index with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">)</span><span class="si">}</span><span class="s1"> documents indexed&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">query</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">docs</span><span class="p">,</span> <span class="n">scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">search_field</span><span class="o">=</span><span class="s1">&#39;embedding&#39;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+            <span class="n">query</span><span class="o">.</span><span class="n">matches</span> <span class="o">=</span> <span class="n">docs</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;indexer&#39;</span><span class="p">,</span>
+               <span class="n">port</span><span class="o">=</span><span class="mi">5555</span><span class="p">,</span>
+               <span class="n">uses</span><span class="o">=</span><span class="n">ExactNNSearch</span><span class="p">,</span>
+               <span class="n">workspace</span><span class="o">=</span><span class="s1">&#39;./raft&#39;</span><span class="p">,</span>
+               <span class="n">replicas</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+               <span class="n">stateful</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+               <span class="n">peer_ports</span><span class="o">=</span><span class="p">[</span><span class="mi">12345</span><span class="p">,</span> <span class="mi">12346</span><span class="p">,</span> <span class="mi">12347</span><span class="p">])</span>
+<span class="k">with</span> <span class="n">d</span><span class="p">:</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Then in another terminal, we will send index and search requests:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="k">class</span> <span class="nc">QueryDoc</span><span class="p">(</span><span class="n">TextDoc</span><span class="p">):</span>
+    <span class="n">matches</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]()</span>
+
+
+<span class="n">NUM_DOCS_TO_INDEX</span> <span class="o">=</span> <span class="mi">100000</span>
+<span class="n">NUM_QUERIES</span> <span class="o">=</span> <span class="mi">1000</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">5555</span><span class="p">)</span>
+
+<span class="n">index_docs</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">](</span>
+    <span class="p">[</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;I am document </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">128</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NUM_DOCS_TO_INDEX</span><span class="p">)])</span>
+<span class="n">start_indexing_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/index&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">index_docs</span><span class="p">,</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Indexing </span><span class="si">{</span><span class="n">NUM_DOCS_TO_INDEX</span><span class="si">}</span><span class="s1"> Documents took </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_indexing_time</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># let some time for the data to be replicated</span>
+
+<span class="n">search_da</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">QueryDoc</span><span class="p">](</span>
+    <span class="p">[</span><span class="n">QueryDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;I am document </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">128</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NUM_QUERIES</span><span class="p">)])</span>
+<span class="n">start_querying_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">responses</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/search&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">search_da</span><span class="p">,</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Searching </span><span class="si">{</span><span class="n">NUM_QUERIES</span><span class="si">}</span><span class="s1"> Queries took </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_querying_time</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">responses</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">matches</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the logs of the <code class="docutils literal notranslate"><span class="pre">server</span></code> you can see how <code class="docutils literal notranslate"><span class="pre">index</span></code> requests reach every replica while <code class="docutils literal notranslate"><span class="pre">search</span></code> requests only reach one replica in a
+<code class="docutils literal notranslate"><span class="pre">round</span> <span class="pre">robin</span></code> fashion.</p>
+<p>Eventually every Indexer replica ends up with the same Documents indexed.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO   indexer/rep-2@923 Indexing Document in index with 99900 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99200 documents indexed                                                                                                                                   
+INFO   indexer/rep-1@910 Indexing Document in index with 99700 documents indexed                                                                                                                                   
+INFO   indexer/rep-1@910 Indexing Document in index with 99800 documents indexed                                                                                                                [04/28/23 16:51:06]
+INFO   indexer/rep-0@902 Indexing Document in index with 99300 documents indexed                                                                                                                [04/28/23 16:51:06]
+INFO   indexer/rep-1@910 Indexing Document in index with 99900 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99400 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99500 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99600 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99700 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99800 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99900 documents indexed 
+</pre></div>
+</div>
+<p>But at search time, the consensus module does not affect, and only one replica serves the queries.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO   indexer/rep-0@902 Searching Document in index with 100000 documents indexed                                                                                                              [04/28/23 16:59:21]
+INFO   indexer/rep-1@910 Searching Document in index with 100000 documents indexed                                                                                                              [04/28/23 16:59:21]
+INFO   indexer/rep-2@923 Searching Document in index with 100000 documents indexed 
+</pre></div>
+</div>
+<p>If you run the same example by setting <code class="docutils literal notranslate"><span class="pre">replicas</span></code> to <code class="docutils literal notranslate"><span class="pre">1</span></code> without the consensus module, you can see the benefits it has in the QPS at search time,
+while there is a little cost on the time used for indexing.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;indexer&#39;</span><span class="p">,</span>
+               <span class="n">port</span><span class="o">=</span><span class="mi">5555</span><span class="p">,</span>
+               <span class="n">uses</span><span class="o">=</span><span class="n">ExactNNSearch</span><span class="p">,</span>
+               <span class="n">workspace</span><span class="o">=</span><span class="s1">&#39;./raft&#39;</span><span class="p">,</span>
+               <span class="n">replicas</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With one replica:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Indexing 100000 Documents took 18.93274688720703s
+Searching 1000 Queries took 385.96641397476196s
+</pre></div>
+</div>
+<p>With three replicas and consensus:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Indexing 100000 Documents took 35.066415548324585s
+Searching 1000 Queries took 202.07950615882874s
+</pre></div>
+</div>
+<p>This increases QPS from 2.5 to 5.</p>
 </section>
 <section id="replicate-on-multiple-gpus">
 <h2>Replicate on multiple GPUs<a class="headerlink" href="#replicate-on-multiple-gpus" title="Permalink to this heading">#</a></h2>
@@ -852,7 +1045,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 11, 2023</div>
+                            Last updated on May 15, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -885,11 +1078,12 @@
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Scale Out</a><ul>
-<li><a class="reference internal" href="#replicate-executors">Replicate Executors</a><ul>
+<li><a class="reference internal" href="#replicate-stateless-executors">Replicate stateless Executors</a><ul>
 <li><a class="reference internal" href="#replicate-executors-in-a-deployment">Replicate Executors in a Deployment</a></li>
 <li><a class="reference internal" href="#replicate-executors-in-a-flow">Replicate Executors in a Flow</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#replicate-stateful-executors-with-consensus-using-raft-beta">Replicate stateful Executors with consensus using RAFT (Beta)</a></li>
 <li><a class="reference internal" href="#replicate-on-multiple-gpus">Replicate on multiple GPUs</a><ul>
 <li><a class="reference internal" href="#gpu-replicas-in-a-deployment">GPU replicas in a Deployment</a></li>
 <li><a class="reference internal" href="#gpu-replicas-in-a-flow">GPU replicas in a Flow</a></li>

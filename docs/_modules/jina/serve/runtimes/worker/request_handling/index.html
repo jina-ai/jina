@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/worker/request_handling.html" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.runtimes.worker.request_handling - Jina 3.15.4 documentation</title>
+        <title>jina.serve.runtimes.worker.request_handling - Jina 3.16.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.15.4 documentation</div>
+                <div class="brand">Jina 3.16.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -232,6 +232,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../tutorials/deploy-model/">Deploy a model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">New DocArray support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../docarray-v2/">(Beta) New DocArray support</a></li>
+</ul>
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../concepts/preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -249,7 +253,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/file-structure/">File Structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/containerize/">Containerize</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/instrumentation/">Instrumentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -413,25 +416,27 @@
 <span></span><span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">grpc</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">threading</span>
 
 <span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 <span class="kn">from</span> <span class="nn">jina.constants</span> <span class="kn">import</span> <span class="n">__default_endpoint__</span>
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">BadConfigSource</span>
 <span class="kn">from</span> <span class="nn">jina.serve.executors</span> <span class="kn">import</span> <span class="n">BaseExecutor</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.worker.batch_queue</span> <span class="kn">import</span> <span class="n">BatchQueue</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
-
-<span class="kn">import</span> <span class="nn">grpc</span>
-
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">RuntimeTerminated</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_full_version</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 <span class="kn">from</span> <span class="nn">jina.serve.instrumentation</span> <span class="kn">import</span> <span class="n">MetricsTimer</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
+<span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">docarray_v2</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">from</span> <span class="nn">opentelemetry.propagate</span> <span class="kn">import</span> <span class="n">Context</span>
@@ -440,9 +445,11 @@
 
     <span class="kn">from</span> <span class="nn">opentelemetry</span> <span class="kn">import</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">trace</span>
     <span class="kn">from</span> <span class="nn">opentelemetry.context.context</span> <span class="kn">import</span> <span class="n">Context</span>
+    <span class="kn">from</span> <span class="nn">opentelemetry.propagate</span> <span class="kn">import</span> <span class="n">Context</span>
     <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">CollectorRegistry</span>
 
     <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+    <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 
 
 <div class="viewcode-block" id="WorkerRequestHandler"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler">[docs]</a><span class="k">class</span> <span class="nc">WorkerRequestHandler</span><span class="p">:</span>
@@ -554,6 +561,13 @@
         <span class="c1"># the below is of &quot;shape&quot; exec_endpoint_name -&gt; parameters_key -&gt; batch_queue</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_batchqueue_instances</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BatchQueue</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_batchqueue_dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_did_snapshot_raise_exception</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_restore</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_did_restore_raise_exception</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot_thread</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_restore_thread</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot_parent_directory</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hot_reload_task</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">reload</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_hot_reload_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hot_reload</span><span class="p">())</span>
@@ -1119,8 +1133,12 @@
 <span class="sd">        :return: the resulting DocumentArray</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">docs_matrix</span><span class="p">:</span>
-            <span class="n">da</span> <span class="o">=</span> <span class="n">docs_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">da</span><span class="o">.</span><span class="n">reduce_all</span><span class="p">(</span><span class="n">docs_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">docarray_v2</span><span class="p">:</span>
+                <span class="n">da</span> <span class="o">=</span> <span class="n">docs_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">da</span><span class="o">.</span><span class="n">reduce_all</span><span class="p">(</span><span class="n">docs_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">docarray.utils.reduce</span> <span class="kn">import</span> <span class="n">reduce_all</span>
+                <span class="n">da</span> <span class="o">=</span> <span class="n">reduce_all</span><span class="p">(</span><span class="n">docs_matrix</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">da</span></div>
 
 <div class="viewcode-block" id="WorkerRequestHandler.reduce_requests"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.reduce_requests">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -1136,16 +1154,21 @@
 <span class="sd">        :param requests: List of DataRequest objects</span>
 <span class="sd">        :return: the resulting DataRequest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response_request</span> <span class="o">=</span> <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">worker_result</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">worker_result</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">:</span>
+                <span class="n">response_request</span> <span class="o">=</span> <span class="n">worker_result</span>
+                <span class="k">break</span>
         <span class="n">docs_matrix</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">_get_docs_matrix_from_request</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 
         <span class="c1"># Reduction is applied in-place to the first DocumentArray in the matrix</span>
         <span class="n">da</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">docs_matrix</span><span class="p">)</span>
-        <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">replace_docs</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">da</span><span class="p">)</span>
+        <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">replace_docs</span><span class="p">(</span><span class="n">response_request</span><span class="p">,</span> <span class="n">da</span><span class="p">)</span>
 
         <span class="n">params</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">get_parameters_dict_from_request</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
-        <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">replace_parameters</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">params</span><span class="p">)</span>
+        <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">replace_parameters</span><span class="p">(</span><span class="n">response_request</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">response_request</span></div>
 
     <span class="c1"># serving part</span>
 <div class="viewcode-block" id="WorkerRequestHandler.process_single_data"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.process_single_data">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_single_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataRequest</span><span class="p">:</span>
@@ -1166,12 +1189,21 @@
 <span class="sd">        :param context: grpc context</span>
 <span class="sd">        :returns: the response request</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">google.protobuf</span> <span class="kn">import</span> <span class="n">json_format</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;got an endpoint discovery request&#39;</span><span class="p">)</span>
         <span class="n">endpoints_proto</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">EndpointsProto</span><span class="p">()</span>
         <span class="n">endpoints_proto</span><span class="o">.</span><span class="n">endpoints</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
             <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="p">)</span>
+        <span class="n">endpoints_proto</span><span class="o">.</span><span class="n">write_endpoints</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">write_endpoints</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">schemas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">_get_endpoint_models_dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">endpoint_name</span><span class="p">,</span> <span class="n">inner_dict</span> <span class="ow">in</span> <span class="n">schemas</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">inner_dict</span><span class="p">[</span><span class="s1">&#39;input&#39;</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inner_dict</span><span class="p">[</span><span class="s1">&#39;input&#39;</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span>
+            <span class="n">inner_dict</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inner_dict</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span>
 
+        <span class="n">json_format</span><span class="o">.</span><span class="n">ParseDict</span><span class="p">(</span><span class="n">schemas</span><span class="p">,</span> <span class="n">endpoints_proto</span><span class="o">.</span><span class="n">schemas</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">endpoints_proto</span></div>
 
     <span class="k">def</span> <span class="nf">_extract_tracing_context</span><span class="p">(</span>
@@ -1277,7 +1309,160 @@
         <span class="k">async</span> <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="n">request_iterator</span><span class="p">:</span>
             <span class="k">yield</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_data</span><span class="p">([</span><span class="n">request</span><span class="p">],</span> <span class="n">context</span><span class="p">)</span></div>
 
-    <span class="n">Call</span> <span class="o">=</span> <span class="n">stream</span></div>
+    <span class="n">Call</span> <span class="o">=</span> <span class="n">stream</span>
+
+    <span class="k">def</span> <span class="nf">_create_snapshot_status</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">snapshot_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;jina_pb2.SnapshotStatusProto&#39;</span><span class="p">:</span>
+        <span class="n">_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Generated snapshot id: </span><span class="si">{</span><span class="n">_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">SnapshotStatusProto</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">SnapshotId</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">_id</span><span class="p">),</span>
+            <span class="n">status</span><span class="o">=</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">SnapshotStatusProto</span><span class="o">.</span><span class="n">Status</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">,</span>
+            <span class="n">snapshot_file</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">snapshot_directory</span><span class="p">,</span> <span class="n">_id</span><span class="p">),</span> <span class="s1">&#39;state.bin&#39;</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_restore_status</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;jina_pb2.SnapshotStatusProto&#39;</span><span class="p">:</span>
+        <span class="n">_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Generated restore id: </span><span class="si">{</span><span class="n">_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">RestoreSnapshotStatusProto</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">RestoreId</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">_id</span><span class="p">),</span>
+            <span class="n">status</span><span class="o">=</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">RestoreSnapshotStatusProto</span><span class="o">.</span><span class="n">Status</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="WorkerRequestHandler.snapshot"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.snapshot">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;jina_pb2.SnapshotStatusProto&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        method to start a snapshot process of the Executor</span>
+<span class="sd">        :param request: the empty request</span>
+<span class="sd">        :param context: grpc context</span>
+
+<span class="sd">        :return: the status of the snapshot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; Calling snapshot&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot_thread</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot_thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;A snapshot with id </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1"> is currently in progress. Cannot start another.&#39;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_snapshot_status</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot_parent_directory</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_did_snapshot_raise_exception</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+                <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">_run_snapshot</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span><span class="o">.</span><span class="n">snapshot_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_did_snapshot_raise_exception</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span></div>
+
+<div class="viewcode-block" id="WorkerRequestHandler.snapshot_status"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.snapshot_status">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">snapshot_status</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">&#39;jina_pb2.SnapshotId&#39;</span><span class="p">,</span> <span class="n">context</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;jina_pb2.SnapshotStatusProto&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        method to start a snapshot process of the Executor</span>
+<span class="sd">        :param request: the snapshot Id to get the status from</span>
+<span class="sd">        :param context: grpc context</span>
+
+<span class="sd">        :return: the status of the snapshot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Checking status of snapshot with ID of request </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1"> and current snapshot </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;DOES NOT EXIST&quot;</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">value</span> <span class="o">!=</span> <span class="n">request</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">SnapshotStatusProto</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">SnapshotId</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                <span class="n">status</span><span class="o">=</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">SnapshotStatusProto</span><span class="o">.</span><span class="n">Status</span><span class="o">.</span><span class="n">NOT_FOUND</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot_thread</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot_thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">SnapshotStatusProto</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">SnapshotId</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                <span class="n">status</span><span class="o">=</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">SnapshotStatusProto</span><span class="o">.</span><span class="n">Status</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot_thread</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot_thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">SnapshotStatusProto</span><span class="o">.</span><span class="n">Status</span><span class="o">.</span><span class="n">SUCCEEDED</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_did_snapshot_raise_exception</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">SnapshotStatusProto</span><span class="o">.</span><span class="n">Status</span><span class="o">.</span><span class="n">FAILED</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_did_snapshot_raise_exception</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">SnapshotStatusProto</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">SnapshotId</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">SnapshotStatusProto</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">SnapshotId</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+            <span class="n">status</span><span class="o">=</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">SnapshotStatusProto</span><span class="o">.</span><span class="n">Status</span><span class="o">.</span><span class="n">NOT_FOUND</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="WorkerRequestHandler.restore"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.restore">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">&#39;jina_pb2.RestoreSnapshotCommand&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        method to start a restore process of the Executor</span>
+<span class="sd">        :param request: the command request with the path from where to restore the Executor</span>
+<span class="sd">        :param context: grpc context</span>
+
+<span class="sd">        :return: the status of the snapshot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; Calling restore&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_restore</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restore_thread</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restore_thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;A restore with id </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_restore</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1"> is currently in progress. Cannot start another.&#39;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_restore</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_restore_status</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_did_restore_raise_exception</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_restore_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+                <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">_run_restore</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">snapshot_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_did_restore_raise_exception</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_restore_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restore</span></div>
+
+<div class="viewcode-block" id="WorkerRequestHandler.restore_status"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.restore_status">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">restore_status</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;jina_pb2.RestoreSnapshotStatusProto&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        method to start a snapshot process of the Executor</span>
+<span class="sd">        :param request: the request with the Restore ID from which to get status</span>
+<span class="sd">        :param context: grpc context</span>
+
+<span class="sd">        :return: the status of the snapshot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Checking status of restore with ID of request </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1"> and current restore </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_restore</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_restore</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;DOES NOT EXIST&quot;</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restore</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_restore</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">value</span> <span class="o">!=</span> <span class="n">request</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">RestoreSnapshotStatusProto</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">RestoreId</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                <span class="n">status</span><span class="o">=</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">RestoreSnapshotStatusProto</span><span class="o">.</span><span class="n">Status</span><span class="o">.</span><span class="n">NOT_FOUND</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restore_thread</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restore_thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">RestoreSnapshotStatusProto</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">RestoreId</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                <span class="n">status</span><span class="o">=</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">RestoreSnapshotStatusProto</span><span class="o">.</span><span class="n">Status</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restore_thread</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restore_thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">RestoreSnapshotStatusProto</span><span class="o">.</span><span class="n">Status</span><span class="o">.</span><span class="n">SUCCEEDED</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_did_restore_raise_exception</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">RestoreSnapshotStatusProto</span><span class="o">.</span><span class="n">Status</span><span class="o">.</span><span class="n">FAILED</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_did_restore_raise_exception</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">RestoreSnapshotStatusProto</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">RestoreId</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">RestoreSnapshotStatusProto</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">RestoreId</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+            <span class="n">status</span><span class="o">=</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">RestoreSnapshotStatusProto</span><span class="o">.</span><span class="n">Status</span><span class="o">.</span><span class="n">NOT_FOUND</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
 </pre></div>
                 </article>
             </div>
@@ -1292,7 +1477,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 11, 2023</div>
+                            Last updated on May 15, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

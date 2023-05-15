@@ -9,6 +9,7 @@ Submodules
 
    jina.serve.executors.decorators
    jina.serve.executors.metas
+   jina.serve.executors.run
 
 Module contents
 ---------------

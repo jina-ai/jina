@@ -6,11 +6,11 @@
 <meta property="og:title" content="Create" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/serving/executor/create/" />
-<meta property="og:site_name" content="Jina 3.15.4 Documentation" />
-<meta property="og:description" content="Introduction: An Executor is a self-contained microservice exposed using a gRPC or HTTP protocol. It contains functions (decorated with@requests) that process DocumentArray s. Executors follow three principles: An Executor should subclass directly from the jina.Executor class., An Executor class ..." />
+<meta property="og:site_name" content="Jina 3.16.0 Documentation" />
+<meta property="og:description" content="Introduction: An Executor is a self-contained microservice exposed using a gRPC or HTTP protocol. It contains functions (decorated with@requests) that process DocumentArray s. Executors follow three principles: An Executor should subclass directly from the jina.Executor class., An Executor is a P..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.15.4 Documentation" />
-<meta name="description" content="Introduction: An Executor is a self-contained microservice exposed using a gRPC or HTTP protocol. It contains functions (decorated with@requests) that process DocumentArray s. Executors follow three principles: An Executor should subclass directly from the jina.Executor class., An Executor class ..." />
+<meta property="og:image:alt" content="Jina 3.16.0 Documentation" />
+<meta name="description" content="Introduction: An Executor is a self-contained microservice exposed using a gRPC or HTTP protocol. It contains functions (decorated with@requests) that process DocumentArray s. Executors follow three principles: An Executor should subclass directly from the jina.Executor class., An Executor is a P..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/serving/executor/create.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Create - Jina 3.15.4 documentation</title>
+        <title>Create - Jina 3.16.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.15.4 documentation</div>
+                <div class="brand">Jina 3.16.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -259,6 +259,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/deploy-model/">Deploy a model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">New DocArray support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docarray-v2/">(Beta) New DocArray support</a></li>
+</ul>
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -276,7 +280,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../file-structure/">File Structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../containerize/">Containerize</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../instrumentation/">Instrumentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -448,9 +451,9 @@
 It contains functions (decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code>) that process <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>s. Executors follow three principles:</p>
 <ol class="arabic simple">
 <li><p>An Executor should subclass directly from the <code class="docutils literal notranslate"><span class="pre">jina.Executor</span></code> class.</p></li>
-<li><p>An Executor class is a bag of functions with shared state or configuration (via <code class="docutils literal notranslate"><span class="pre">self</span></code>); it can contain an arbitrary number of
-functions with arbitrary names.</p></li>
+<li><p>An Executor is a Python class; it can contain any number of functions.</p></li>
 <li><p>Functions decorated by <code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code> are exposed as services according to their <code class="docutils literal notranslate"><span class="pre">on=</span></code> endpoint. These functions can be coroutines (<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code>) or regular functions. This will be explained later in <a class="reference internal" href="../add-endpoints/#exec-endpoint"><span class="std std-ref">Add Endpoints Section</span></a></p></li>
+<li><p>(Beta) Functions decorated by <a class="reference internal" href="../../../../api/jina.serve.executors.decorators/#jina.serve.executors.decorators.write" title="jina.serve.executors.decorators.write"><code class="xref py py-class docutils literal notranslate"><span class="pre">write</span></code></a> above their <code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code> decoration, are considered to update the internal state of the Executor. The <code class="docutils literal notranslate"><span class="pre">__init__</span></code> and <code class="docutils literal notranslate"><span class="pre">close</span></code> methods are exceptions. The reasons this is useful is explained in <span class="xref std std-ref">Stateful-executor</span>.</p></li>
 </ol>
 </section>
 <section id="create-an-executor">
@@ -598,6 +601,30 @@ structure.</p></li>
 <p>In the <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span> <span class="pre">new</span></code> wizard you can choose from four Dockerfile templates: <code class="docutils literal notranslate"><span class="pre">cpu</span></code>, <code class="docutils literal notranslate"><span class="pre">tf-gpu</span></code>, <code class="docutils literal notranslate"><span class="pre">torch-gpu</span></code>, and <code class="docutils literal notranslate"><span class="pre">jax-gpu</span></code>.</p>
 </div>
 </section>
+<section id="stateful-executor-beta">
+<h2>Stateful-Executor (Beta)<a class="headerlink" href="#stateful-executor-beta" title="Permalink to this heading">#</a></h2>
+<p>Executors may sometimes contain an internal state which changes when some of their methods are called. For instance, an Executor could contain an index of Documents
+to perform vector search.</p>
+<p>In these cases, orchestrating these Executors can be tougher than it would be for Executors that never change their inner state (Imagine a Machine Learning model served via an Executor that never updates its weights during its lifetime).
+The challenge is guaranteeing consistency between <code class="docutils literal notranslate"><span class="pre">replicas</span></code> of the same Executor inside the same Deployment.</p>
+<p>To provide this consistency, Executors can mark some of their exposed methods as <code class="docutils literal notranslate"><span class="pre">write</span></code>. This indicates that calls to these endpoints must be consistently replicated between all the replicas
+such that other endpoints can serve independently of the replica that is hit.</p>
+<div class="note admonition">
+<p class="admonition-title">Deterministic state update</p>
+<p>Another factor to consider is that the Executor’s inner state must evolve in a deterministic manner if we want <code class="docutils literal notranslate"><span class="pre">replicas</span></code> to behave consistently.</p>
+</div>
+<p>By considering this, <a class="reference internal" href="../../../orchestration/scale-out/#scale-consensus"><span class="std std-ref">Executors can be scaled in a consistent manner</span></a>.</p>
+<section id="snapshots-and-restoring">
+<h3>Snapshots and restoring<a class="headerlink" href="#snapshots-and-restoring" title="Permalink to this heading">#</a></h3>
+<p>In a Stateful Executor Jina uses the RAFT consensus algorithm to guarantee that every replica eventually holds the same inner state.
+RAFT writes the incoming requests as logs to local storage in every replica to ensure this is achieved.</p>
+<p>This could become problematic if the Executor runs for a long time as log files could grow indefinitely. However, you can avoid this problem
+by describing the methods <code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">snapshot(self,</span> <span class="pre">snapshot_dir)</span></code> and <code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">restore(self,</span> <span class="pre">snapshot_dir)</span></code> that are triggered via the RAFT protocol, allowing the Executor
+to store its current state or to recover its state from a snapshot. With this mechanism, RAFT can keep cleaning old logs by assuming that the state of the Executor
+at a given time is determined by its latest snapshot and the application of all requests that arrived since the last snapshot. The RAFT algorithm keeps track
+of all these details.</p>
+</section>
+</section>
 </section>
 
                 </article>
@@ -631,7 +658,7 @@ structure.</p></li>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 11, 2023</div>
+                            Last updated on May 15, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -676,6 +703,10 @@ structure.</p></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#tips">Tips</a></li>
+<li><a class="reference internal" href="#stateful-executor-beta">Stateful-Executor (Beta)</a><ul>
+<li><a class="reference internal" href="#snapshots-and-restoring">Snapshots and restoring</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

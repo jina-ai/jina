@@ -17,14 +17,25 @@
     - [JinaInfoProto.EnvsEntry](#jina-JinaInfoProto-EnvsEntry)
     - [JinaInfoProto.JinaEntry](#jina-JinaInfoProto-JinaEntry)
     - [RelatedEntity](#jina-RelatedEntity)
+    - [RestoreId](#jina-RestoreId)
+    - [RestoreSnapshotCommand](#jina-RestoreSnapshotCommand)
+    - [RestoreSnapshotStatusProto](#jina-RestoreSnapshotStatusProto)
     - [RouteProto](#jina-RouteProto)
+    - [SnapshotId](#jina-SnapshotId)
+    - [SnapshotStatusProto](#jina-SnapshotStatusProto)
     - [StatusProto](#jina-StatusProto)
     - [StatusProto.ExceptionProto](#jina-StatusProto-ExceptionProto)
   
+    - [RestoreSnapshotStatusProto.Status](#jina-RestoreSnapshotStatusProto-Status)
+    - [SnapshotStatusProto.Status](#jina-SnapshotStatusProto-Status)
     - [StatusProto.StatusCode](#jina-StatusProto-StatusCode)
   
     - [JinaDataRequestRPC](#jina-JinaDataRequestRPC)
     - [JinaDiscoverEndpointsRPC](#jina-JinaDiscoverEndpointsRPC)
+    - [JinaExecutorRestore](#jina-JinaExecutorRestore)
+    - [JinaExecutorRestoreProgress](#jina-JinaExecutorRestoreProgress)
+    - [JinaExecutorSnapshot](#jina-JinaExecutorSnapshot)
+    - [JinaExecutorSnapshotProgress](#jina-JinaExecutorSnapshotProgress)
     - [JinaGatewayDryRunRPC](#jina-JinaGatewayDryRunRPC)
     - [JinaInfoRPC](#jina-JinaInfoRPC)
     - [JinaRPC](#jina-JinaRPC)
@@ -44,7 +55,7 @@
 <a name="docarray-DocumentArrayProto"></a>
 
 ### DocumentArrayProto
-this file is just a placeholder for the DA coming from jina._docarray dependency
+this file is just a placeholder for the DA coming from docarray dependency
 
 
 
@@ -143,6 +154,10 @@ Represents the set of Endpoints exposed by an Executor
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | endpoints | [string](#string) | repeated | list of endpoints exposed by an Executor |
+| write_endpoints | [string](#string) | repeated |  |
+| schemas | [google.protobuf.Struct](#google-protobuf-Struct) |  | Dictionary containing input and output schema per endpoint
+
+extra kwargs that will be used in executor |
 
 
 
@@ -238,6 +253,52 @@ Represents an entity (like an ExecutorRuntime)
 
 
 
+<a name="jina-RestoreId"></a>
+
+### RestoreId
+An ID representation for the Restore Job
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| value | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="jina-RestoreSnapshotCommand"></a>
+
+### RestoreSnapshotCommand
+Commands to restore an Executor from a snapshot file
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| snapshot_file | [string](#string) |  | snapshot file |
+
+
+
+
+
+
+<a name="jina-RestoreSnapshotStatusProto"></a>
+
+### RestoreSnapshotStatusProto
+Represents the status of a Restore.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [RestoreId](#jina-RestoreId) |  | An ID for the Restore Job. |
+| status | [RestoreSnapshotStatusProto.Status](#jina-RestoreSnapshotStatusProto-Status) |  | status code |
+
+
+
+
+
+
 <a name="jina-RouteProto"></a>
 
 ### RouteProto
@@ -253,6 +314,38 @@ thus end_time - start_time includes Executor computation, runtime overhead, seri
 | start_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | time when the Gateway starts sending to the Pod |
 | end_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | time when the Gateway received it from the Pod |
 | status | [StatusProto](#jina-StatusProto) |  | the status of the execution |
+
+
+
+
+
+
+<a name="jina-SnapshotId"></a>
+
+### SnapshotId
+An ID representation for the Snapshot Job
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| value | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="jina-SnapshotStatusProto"></a>
+
+### SnapshotStatusProto
+Represents the status of a Snapshot.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [SnapshotId](#jina-SnapshotId) |  | An ID for the Snapshot Job. |
+| status | [SnapshotStatusProto.Status](#jina-SnapshotStatusProto-Status) |  | status code |
+| snapshot_file | [string](#string) |  | snapshot file |
 
 
 
@@ -296,6 +389,38 @@ Represents a Status
  
 
 
+<a name="jina-RestoreSnapshotStatusProto-Status"></a>
+
+### RestoreSnapshotStatusProto.Status
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| STATE_UNSPECIFIED | 0 |  |
+| RUNNING | 1 | Resource allocation has been successful. Restore Job is RUNNING. |
+| SUCCEEDED | 2 | Resource Job has finished successfully. |
+| FAILED | 3 | Resource Job has failed. |
+| NOT_FOUND | 6 | If the specific restore id is unknown or not found |
+
+
+
+<a name="jina-SnapshotStatusProto-Status"></a>
+
+### SnapshotStatusProto.Status
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| STATE_UNSPECIFIED | 0 |  |
+| QUEUED | 1 | Snapshot Job is admitted (validated and persisted) and waiting for resources. |
+| SCHEDULED | 2 | Snapshot Job is scheduled to run as soon as resource allocation is ready. |
+| RUNNING | 3 | Resource allocation has been successful. Snapshot Job is RUNNING. |
+| SUCCEEDED | 4 | Snapshot Job has finished successfully. |
+| FAILED | 5 | Snapshot Job has failed. |
+| NOT_FOUND | 6 | If the specific snapshot id is unknown or not found |
+
+
+
 <a name="jina-StatusProto-StatusCode"></a>
 
 ### StatusProto.StatusCode
@@ -330,6 +455,46 @@ jina gRPC service to expose Endpoints from Executors.
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | endpoint_discovery | [.google.protobuf.Empty](#google-protobuf-Empty) | [EndpointsProto](#jina-EndpointsProto) |  |
+
+
+<a name="jina-JinaExecutorRestore"></a>
+
+### JinaExecutorRestore
+jina gRPC service to trigger a restore at the Executor Runtime.
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| restore | [RestoreSnapshotCommand](#jina-RestoreSnapshotCommand) | [RestoreSnapshotStatusProto](#jina-RestoreSnapshotStatusProto) |  |
+
+
+<a name="jina-JinaExecutorRestoreProgress"></a>
+
+### JinaExecutorRestoreProgress
+jina gRPC service to trigger a snapshot at the Executor Runtime.
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| restore_status | [RestoreId](#jina-RestoreId) | [RestoreSnapshotStatusProto](#jina-RestoreSnapshotStatusProto) |  |
+
+
+<a name="jina-JinaExecutorSnapshot"></a>
+
+### JinaExecutorSnapshot
+jina gRPC service to trigger a snapshot at the Executor Runtime.
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| snapshot | [.google.protobuf.Empty](#google-protobuf-Empty) | [SnapshotStatusProto](#jina-SnapshotStatusProto) |  |
+
+
+<a name="jina-JinaExecutorSnapshotProgress"></a>
+
+### JinaExecutorSnapshotProgress
+jina gRPC service to trigger a snapshot at the Executor Runtime.
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| snapshot_status | [SnapshotId](#jina-SnapshotId) | [SnapshotStatusProto](#jina-SnapshotStatusProto) |  |
 
 
 <a name="jina-JinaGatewayDryRunRPC"></a>

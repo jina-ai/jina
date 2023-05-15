@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/head/request_handling.html" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.runtimes.head.request_handling - Jina 3.15.4 documentation</title>
+        <title>jina.serve.runtimes.head.request_handling - Jina 3.16.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.15.4 documentation</div>
+                <div class="brand">Jina 3.16.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -232,6 +232,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../tutorials/deploy-model/">Deploy a model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">New DocArray support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../docarray-v2/">(Beta) New DocArray support</a></li>
+</ul>
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../concepts/preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -249,7 +253,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/file-structure/">File Structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/containerize/">Containerize</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/instrumentation/">Instrumentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -416,7 +419,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">import</span> <span class="nn">grpc</span>
 
@@ -428,6 +431,66 @@
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.monitoring</span> <span class="kn">import</span> <span class="n">MonitoringRequestMixin</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.worker.request_handling</span> <span class="kn">import</span> <span class="n">WorkerRequestHandler</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">Response</span>
+<span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">docarray_v2</span>
+
+<span class="k">if</span> <span class="n">docarray_v2</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">docarray.base_doc</span> <span class="kn">import</span> <span class="n">AnyDoc</span>
+    <span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">docarray_v2</span>
+    <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
+
+    <span class="k">def</span> <span class="nf">_create_pydantic_model_from_schema</span><span class="p">(</span><span class="n">schema</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">],</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">create_model</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">field_schema</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;properties&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">field_type</span> <span class="o">=</span> <span class="n">field_schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">field_type</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span><span class="p">:</span>
+                <span class="n">field_type</span> <span class="o">=</span> <span class="nb">str</span>
+            <span class="k">elif</span> <span class="n">field_type</span> <span class="o">==</span> <span class="s1">&#39;integer&#39;</span><span class="p">:</span>
+                <span class="n">field_type</span> <span class="o">=</span> <span class="nb">int</span>
+            <span class="k">elif</span> <span class="n">field_type</span> <span class="o">==</span> <span class="s1">&#39;number&#39;</span><span class="p">:</span>
+                <span class="n">field_type</span> <span class="o">=</span> <span class="nb">float</span>
+            <span class="k">elif</span> <span class="n">field_type</span> <span class="o">==</span> <span class="s1">&#39;boolean&#39;</span><span class="p">:</span>
+                <span class="n">field_type</span> <span class="o">=</span> <span class="nb">bool</span>
+            <span class="k">elif</span> <span class="n">field_type</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span><span class="p">:</span>
+                <span class="n">field_item_type</span> <span class="o">=</span> <span class="n">field_schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;items&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">field_item_type</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span><span class="p">:</span>
+                    <span class="n">field_type</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">field_item_type</span> <span class="o">==</span> <span class="s1">&#39;integer&#39;</span><span class="p">:</span>
+                    <span class="n">field_type</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">field_item_type</span> <span class="o">==</span> <span class="s1">&#39;number&#39;</span><span class="p">:</span>
+                    <span class="n">field_type</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">field_item_type</span> <span class="o">==</span> <span class="s1">&#39;boolean&#39;</span><span class="p">:</span>
+                    <span class="n">field_type</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">field_item_type</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span> <span class="ow">or</span> <span class="n">field_item_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># Check if array items are references to definitions</span>
+                    <span class="n">items_ref</span> <span class="o">=</span> <span class="n">field_schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;items&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;$ref&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">items_ref</span><span class="p">:</span>
+                        <span class="n">ref_name</span> <span class="o">=</span> <span class="n">items_ref</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="n">field_type</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">_create_pydantic_model_from_schema</span><span class="p">(</span><span class="n">schema</span><span class="p">[</span><span class="s1">&#39;definitions&#39;</span><span class="p">][</span><span class="n">ref_name</span><span class="p">],</span> <span class="n">ref_name</span><span class="p">)]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">field_type</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">_create_pydantic_model_from_schema</span><span class="p">(</span><span class="n">field_schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;items&#39;</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">field_name</span><span class="p">)]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown array item type: </span><span class="si">{</span><span class="n">field_item_type</span><span class="si">}</span><span class="s2"> for field_name </span><span class="si">{</span><span class="n">field_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">field_type</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span> <span class="ow">or</span> <span class="n">field_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Check if object is a reference to definitions</span>
+                <span class="k">if</span> <span class="s1">&#39;additionalProperties&#39;</span> <span class="ow">in</span> <span class="n">field_schema</span><span class="p">:</span>
+                    <span class="n">additional_props</span> <span class="o">=</span> <span class="n">field_schema</span><span class="p">[</span><span class="s1">&#39;additionalProperties&#39;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">additional_props</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span><span class="p">:</span>
+                        <span class="n">field_type</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_create_pydantic_model_from_schema</span><span class="p">(</span><span class="n">additional_props</span><span class="p">,</span> <span class="n">field_name</span><span class="p">)]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">field_type</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">obj_ref</span> <span class="o">=</span> <span class="n">field_schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;$ref&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">obj_ref</span><span class="p">:</span>
+                        <span class="n">ref_name</span> <span class="o">=</span> <span class="n">obj_ref</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="n">field_type</span> <span class="o">=</span> <span class="n">_create_pydantic_model_from_schema</span><span class="p">(</span><span class="n">schema</span><span class="p">[</span><span class="s1">&#39;definitions&#39;</span><span class="p">][</span><span class="n">ref_name</span><span class="p">],</span> <span class="n">ref_name</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">field_type</span> <span class="o">=</span> <span class="n">_create_pydantic_model_from_schema</span><span class="p">(</span><span class="n">field_schema</span><span class="p">,</span> <span class="n">field_name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown field type: </span><span class="si">{</span><span class="n">field_type</span><span class="si">}</span><span class="s2"> for field_name </span><span class="si">{</span><span class="n">field_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">fields</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">field_type</span><span class="p">,</span> <span class="n">field_schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">create_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">__base__</span><span class="o">=</span><span class="n">BaseDoc</span><span class="p">,</span> <span class="o">**</span><span class="n">fields</span><span class="p">)</span>
+
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">CollectorRegistry</span>
@@ -448,15 +511,15 @@
     <span class="n">DEFAULT_POLLING</span> <span class="o">=</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">args</span><span class="p">:</span> <span class="s1">&#39;argparse.Namespace&#39;</span><span class="p">,</span>
-        <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">,</span>
-        <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CollectorRegistry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">meter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">runtime_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">aio_tracing_client_interceptors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">tracing_client_interceptor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">args</span><span class="p">:</span> <span class="s1">&#39;argparse.Namespace&#39;</span><span class="p">,</span>
+            <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">,</span>
+            <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CollectorRegistry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">meter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">runtime_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">aio_tracing_client_interceptors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">tracing_client_interceptor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
@@ -552,6 +615,18 @@
                 <span class="n">deployment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployment_name</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pydantic_models_by_endpoint</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endpoints_discovery_stop_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endpoints_discovery_task</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">docarray_v2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">endpoints_discovery_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_get_endpoints_from_workers</span><span class="p">(</span>
+                    <span class="n">connection_pool</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="p">,</span>
+                    <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployment_name</span><span class="p">,</span>
+                    <span class="n">retries</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_retries</span><span class="p">,</span>
+                    <span class="n">stop_event</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoints_discovery_stop_event</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_default_polling_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_polling</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">defaultdict</span><span class="p">(</span>
@@ -560,13 +635,13 @@
         <span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_gather_worker_tasks</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">requests</span><span class="p">,</span>
-        <span class="n">connection_pool</span><span class="p">,</span>
-        <span class="n">deployment_name</span><span class="p">,</span>
-        <span class="n">polling_type</span><span class="p">,</span>
-        <span class="n">timeout_send</span><span class="p">,</span>
-        <span class="n">retries</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">requests</span><span class="p">,</span>
+            <span class="n">connection_pool</span><span class="p">,</span>
+            <span class="n">deployment_name</span><span class="p">,</span>
+            <span class="n">polling_type</span><span class="p">,</span>
+            <span class="n">timeout_send</span><span class="p">,</span>
+            <span class="n">retries</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="n">worker_send_tasks</span> <span class="o">=</span> <span class="n">connection_pool</span><span class="o">.</span><span class="n">send_requests</span><span class="p">(</span>
             <span class="n">requests</span><span class="o">=</span><span class="n">requests</span><span class="p">,</span>
@@ -595,11 +670,11 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_merge_metadata</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="p">,</span>
-        <span class="n">uses_after_metadata</span><span class="p">,</span>
-        <span class="n">uses_before_metadata</span><span class="p">,</span>
-        <span class="n">total_shards</span><span class="p">,</span>
-        <span class="n">failed_shards</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="p">,</span>
+            <span class="n">uses_after_metadata</span><span class="p">,</span>
+            <span class="n">uses_before_metadata</span><span class="p">,</span>
+            <span class="n">total_shards</span><span class="p">,</span>
+            <span class="n">failed_shards</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="n">merged_metadata</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">uses_before_metadata</span><span class="p">:</span>
@@ -617,19 +692,29 @@
         <span class="k">return</span> <span class="n">merged_metadata</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_handle_data_request</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">requests</span><span class="p">,</span>
-        <span class="n">connection_pool</span><span class="p">,</span>
-        <span class="n">uses_before_address</span><span class="p">,</span>
-        <span class="n">uses_after_address</span><span class="p">,</span>
-        <span class="n">timeout_send</span><span class="p">,</span>
-        <span class="n">retries</span><span class="p">,</span>
-        <span class="n">reduce</span><span class="p">,</span>
-        <span class="n">polling_type</span><span class="p">,</span>
-        <span class="n">deployment_name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">requests</span><span class="p">,</span>
+            <span class="n">connection_pool</span><span class="p">,</span>
+            <span class="n">uses_before_address</span><span class="p">,</span>
+            <span class="n">uses_after_address</span><span class="p">,</span>
+            <span class="n">timeout_send</span><span class="p">,</span>
+            <span class="n">retries</span><span class="p">,</span>
+            <span class="n">reduce</span><span class="p">,</span>
+            <span class="n">polling_type</span><span class="p">,</span>
+            <span class="n">deployment_name</span><span class="p">,</span>
+            <span class="n">endpoint</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
         <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">requests</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">docarray_v2</span><span class="p">:</span>
+                <span class="n">req</span><span class="o">.</span><span class="n">document_array_cls</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">AnyDoc</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_start_request_metrics</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pydantic_models_by_endpoint</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">docarray_v2</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">endpoints_discovery_task</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span>
+
         <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">merge_routes</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 
         <span class="n">uses_before_metadata</span> <span class="o">=</span> <span class="kc">None</span>
@@ -659,7 +744,6 @@
             <span class="n">polling_type</span><span class="o">=</span><span class="n">polling_type</span><span class="p">,</span>
             <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
         <span class="p">)</span>
-
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">worker_results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">exceptions</span><span class="p">:</span>
                 <span class="c1"># raise the underlying error first</span>
@@ -672,6 +756,16 @@
         <span class="n">worker_results</span><span class="p">,</span> <span class="n">metadata</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">worker_results</span><span class="p">)</span>
 
         <span class="n">response_request</span> <span class="o">=</span> <span class="n">worker_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">docarray_v2</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pydantic_models_by_endpoint</span><span class="p">[</span><span class="n">endpoint</span><span class="p">][</span><span class="s1">&#39;output&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">worker_result</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">worker_results</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">docarray_v2</span><span class="p">:</span>
+                <span class="n">worker_result</span><span class="o">.</span><span class="n">document_array_cls</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">model</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span> <span class="ow">and</span> <span class="n">worker_result</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">:</span>
+                <span class="n">response_request</span> <span class="o">=</span> <span class="n">worker_result</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+
         <span class="n">uses_after_metadata</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">uses_after_address</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connection_pool</span><span class="o">.</span><span class="n">send_requests_once</span><span class="p">(</span>
@@ -703,14 +797,54 @@
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_end_request_metrics</span><span class="p">(</span><span class="n">response_request</span><span class="p">)</span>
-
         <span class="k">return</span> <span class="n">response_request</span><span class="p">,</span> <span class="n">merged_metadata</span>
 
+    <span class="k">def</span> <span class="nf">_get_endpoints_from_workers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_pool</span><span class="p">:</span> <span class="n">GrpcConnectionPool</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">retries</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                    <span class="n">stop_event</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">google.protobuf</span> <span class="kn">import</span> <span class="n">json_format</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">task</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;starting get endpoints from workers task for deployment </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="n">stop_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">endpoints</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connection_pool</span><span class="o">.</span><span class="n">send_discover_endpoint</span><span class="p">(</span>
+                        <span class="n">name</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span> <span class="n">shard_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="kc">False</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">endpoints</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">endp</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">endpoints</span>
+                        <span class="n">schemas</span> <span class="o">=</span> <span class="n">json_format</span><span class="o">.</span><span class="n">MessageToDict</span><span class="p">(</span><span class="n">endp</span><span class="o">.</span><span class="n">schemas</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_pydantic_models_by_endpoint</span> <span class="o">=</span> <span class="p">{}</span>
+                        <span class="n">models_created_by_name</span> <span class="o">=</span> <span class="p">{}</span>
+                        <span class="k">for</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">inner_dict</span> <span class="ow">in</span> <span class="n">schemas</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                            <span class="n">input_model_name</span> <span class="o">=</span> <span class="n">inner_dict</span><span class="p">[</span><span class="s1">&#39;input&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                            <span class="n">input_model_schema</span> <span class="o">=</span> <span class="n">inner_dict</span><span class="p">[</span><span class="s1">&#39;input&#39;</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span>
+                            <span class="n">output_model_name</span> <span class="o">=</span> <span class="n">inner_dict</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                            <span class="n">output_model_schema</span> <span class="o">=</span> <span class="n">inner_dict</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="n">input_model_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">models_created_by_name</span><span class="p">:</span>
+                                <span class="n">input_model</span> <span class="o">=</span> <span class="n">_create_pydantic_model_from_schema</span><span class="p">(</span><span class="n">input_model_schema</span><span class="p">,</span> <span class="n">input_model_name</span><span class="p">)</span>
+                                <span class="n">models_created_by_name</span><span class="p">[</span><span class="n">input_model_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_model</span>
+                            <span class="k">if</span> <span class="n">output_model_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">models_created_by_name</span><span class="p">:</span>
+                                <span class="n">output_model</span> <span class="o">=</span> <span class="n">_create_pydantic_model_from_schema</span><span class="p">(</span><span class="n">output_model_schema</span><span class="p">,</span> <span class="n">output_model_name</span><span class="p">)</span>
+                                <span class="n">models_created_by_name</span><span class="p">[</span><span class="n">output_model_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_model</span>
+
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_pydantic_models_by_endpoint</span><span class="p">[</span><span class="n">endpoint</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                                <span class="s1">&#39;input&#39;</span><span class="p">:</span> <span class="n">models_created_by_name</span><span class="p">[</span><span class="n">input_model_name</span><span class="p">],</span>
+                                <span class="s1">&#39;output&#39;</span><span class="p">:</span> <span class="n">models_created_by_name</span><span class="p">[</span><span class="n">output_model_name</span><span class="p">]</span>
+                            <span class="p">}</span>
+                        <span class="n">stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+                        <span class="k">return</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Exception raised from sending discover endpoint </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">task</span><span class="p">()</span>
+
 <div class="viewcode-block" id="HeaderRequestHandler.warmup"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.warmup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">warmup</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">connection_pool</span><span class="p">:</span> <span class="n">GrpcConnectionPool</span><span class="p">,</span>
-        <span class="n">stop_event</span><span class="p">:</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">,</span>
-        <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">connection_pool</span><span class="p">:</span> <span class="n">GrpcConnectionPool</span><span class="p">,</span>
+            <span class="n">stop_event</span><span class="p">:</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">,</span>
+            <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Executes warmup task against the deployments from the connection pool.</span>
 <span class="sd">        :param connection_pool: GrpcConnectionPool that implements the warmup to the connected deployments.</span>
@@ -739,9 +873,24 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;exception during warmup task cancellation: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
                 <span class="k">pass</span></div>
 
+<div class="viewcode-block" id="HeaderRequestHandler.cancel_endpoint_discovery_from_workers_task"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.cancel_endpoint_discovery_from_workers_task">[docs]</a>    <span class="k">def</span> <span class="nf">cancel_endpoint_discovery_from_workers_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cancel endpoint_discovery_from_worker task if exists and is not completed. Cancellation is required if the Flow is being terminated before the</span>
+<span class="sd">        task is successful or hasn&#39;t reached the max timeout.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">endpoints_discovery_task</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">endpoints_discovery_task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cancelling endpoint discovery task.&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">endpoints_discovery_stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>  <span class="c1"># this event is useless if simply cancel</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">endpoints_discovery_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;exception during endpoint discovery task cancellation: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">pass</span></div>
+
 <div class="viewcode-block" id="HeaderRequestHandler.close"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the data request handler, by closing the executor and the batch queues.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cancel_warmup_task</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancel_endpoint_discovery_from_workers_task</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="HeaderRequestHandler.process_single_data"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.process_single_data">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_single_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataRequest</span><span class="p">:</span>
@@ -795,6 +944,7 @@
                 <span class="n">timeout_send</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span><span class="p">,</span>
                 <span class="n">polling_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_polling</span><span class="p">[</span><span class="n">endpoint</span><span class="p">],</span>
                 <span class="n">deployment_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployment_name</span><span class="p">,</span>
+                <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span>
             <span class="p">)</span>
             <span class="n">context</span><span class="o">.</span><span class="n">set_trailing_metadata</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
             <span class="k">return</span> <span class="n">response</span>
@@ -803,8 +953,8 @@
                 <span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">Response</span><span class="p">()</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span>
-            <span class="ne">RuntimeError</span><span class="p">,</span>
-            <span class="ne">Exception</span><span class="p">,</span>
+                <span class="ne">RuntimeError</span><span class="p">,</span>
+                <span class="ne">Exception</span><span class="p">,</span>
         <span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>  <span class="c1"># some other error, keep streaming going just add error info</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> add &quot;--quiet-error&quot; to suppress the exception details&#39;</span>
@@ -847,6 +997,7 @@
                 <span class="n">deployment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployment_name</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="kc">False</span>
             <span class="p">)</span>
             <span class="n">response</span><span class="o">.</span><span class="n">endpoints</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">worker_response</span><span class="o">.</span><span class="n">endpoints</span><span class="p">)</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">schemas</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">worker_response</span><span class="o">.</span><span class="n">schemas</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">InternalNetworkError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>  <span class="c1"># can&#39;t connect, Flow broken, interrupt the streaming through gRPC error mechanism</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_internalnetworkerror</span><span class="p">(</span>
                 <span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span>
@@ -872,7 +1023,7 @@
         <span class="k">return</span> <span class="n">infoProto</span>
 
 <div class="viewcode-block" id="HeaderRequestHandler.stream"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.stream">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">request_iterator</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">request_iterator</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        stream requests from client iterator and stream responses back.</span>
@@ -901,7 +1052,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 11, 2023</div>
+                            Last updated on May 15, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

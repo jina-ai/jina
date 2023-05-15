@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/executors/decorators.html" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.executors.decorators - Jina 3.15.4 documentation</title>
+        <title>jina.serve.executors.decorators - Jina 3.16.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.15.4 documentation</div>
+                <div class="brand">Jina 3.16.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -232,6 +232,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/deploy-model/">Deploy a model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">New DocArray support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../docarray-v2/">(Beta) New DocArray support</a></li>
+</ul>
 <p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../concepts/preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -249,7 +253,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../../concepts/serving/executor/file-structure/">File Structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../concepts/serving/executor/containerize/">Containerize</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../concepts/serving/executor/instrumentation/">Instrumentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../../concepts/serving/executor/docarray-v2/">(Beta) DocArray v2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../concepts/serving/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -454,9 +457,9 @@
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">==</span> <span class="bp">cls</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
-                    <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="n">help_text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;FileLock is needed to guarantee non-concurrent initialization of replicas in the &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;same machine.&#39;</span><span class="p">,</span>
+                        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">help_text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;FileLock is needed to guarantee non-concurrent initialization of replicas in the &#39;</span>
+                                  <span class="sa">f</span><span class="s1">&#39;same machine.&#39;</span><span class="p">,</span>
                 <span class="p">):</span>
                     <span class="kn">import</span> <span class="nn">filelock</span>
 
@@ -500,6 +503,126 @@
         <span class="c1"># assume that `requests` is called when importing class, so parent classes will be processed before</span>
         <span class="c1"># inherit all the requests from parents</span>
         <span class="n">_inherit_from_parent_class_inner</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="write"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.serve.executors.decorators.write">[docs]</a><span class="k">def</span> <span class="nf">write</span><span class="p">(</span>
+        <span class="n">func</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="n">Callable</span><span class="p">[</span>
+                <span class="p">[</span>
+                    <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span>
+                    <span class="n">Dict</span><span class="p">,</span>
+                    <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span>
+                    <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">],</span>
+                    <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">],</span>
+                <span class="p">],</span>
+                <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span>
+            <span class="p">]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `@write` is a decorator indicating that the function decorated will change the Executor finite state machine</span>
+
+<span class="sd">    Calls to methods decorated with `write` will be handled by `RAFT` consensus algorithm to guarantee the consensus of the Executor between replicas when used as a `StatefulDeployment`</span>
+
+<span class="sd">    EXAMPLE USAGE</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from jina import Deployment, Executor, requests</span>
+<span class="sd">        from jina.serve.executors.decorators import write</span>
+<span class="sd">        from docarray import DocList</span>
+<span class="sd">        from docarray.documents import TextDoc</span>
+
+
+<span class="sd">        class MyStateStatefulExecutor(Executor):</span>
+<span class="sd">            def __init__(self, *args, **kwargs):</span>
+<span class="sd">                super().__init__(*args, **kwargs)</span>
+<span class="sd">                self._docs_dict = {}</span>
+
+<span class="sd">            @requests(on=[&#39;/index&#39;])</span>
+<span class="sd">            @write</span>
+<span class="sd">            def index(self, docs: DocList[TextDoc], **kwargs) -&gt; DocList[TextDoc]:</span>
+<span class="sd">                for doc in docs:</span>
+<span class="sd">                    self._docs_dict[doc.id] = doc</span>
+
+<span class="sd">            @requests(on=[&#39;/search&#39;])</span>
+<span class="sd">            def search(self,  docs: DocList[TextDoc], **kwargs) -&gt; DocList[TextDoc]:</span>
+<span class="sd">                for doc in docs:</span>
+<span class="sd">                    self.logger.debug(f&#39;Searching against {len(self._docs_dict)} documents&#39;)</span>
+<span class="sd">                    doc.text = self._docs_dict[doc.id].text</span>
+
+<span class="sd">        d = Deployment(name=&#39;stateful_executor&#39;,</span>
+<span class="sd">                       uses=MyStateStatefulExecutor,</span>
+<span class="sd">                       replicas=3,</span>
+<span class="sd">                       stateful=True,</span>
+<span class="sd">                       workspace=&#39;./raft&#39;,</span>
+<span class="sd">                       peer_ports=[12345, 12346, 12347])</span>
+<span class="sd">        with d:</span>
+<span class="sd">            d.post(</span>
+<span class="sd">                on=&#39;/index&#39;, inputs=TextDoc(text=&#39;I am here!&#39;)</span>
+<span class="sd">            )  # send doc to `index` method which will be replicated using RAFT</span>
+<span class="sd">            d.post(</span>
+<span class="sd">                on=&#39;/search&#39;, inputs=TextDoc(text=&#39;Who is there?&#39;)</span>
+<span class="sd">            )  # send doc to `search` method, that will bypass the RAFT apply</span>
+
+
+<span class="sd">    :param func: the method to decorate</span>
+<span class="sd">    :return: decorated function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">class</span> <span class="nc">WriteMethodDecorator</span><span class="p">:</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_requests_decorator</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unwrap_requests_decorator</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+
+                <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+                <span class="k">async</span> <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span>
+                        <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                <span class="p">):</span>  <span class="c1"># we need to get the summary from the executor, so we need to access the self</span>
+                    <span class="k">with</span> <span class="n">executor_instance</span><span class="o">.</span><span class="n">_write_lock</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="k">await</span> <span class="n">fn</span><span class="p">(</span><span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">arg_wrapper</span>
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+                <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span>
+                        <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                <span class="p">):</span>  <span class="c1"># we need to get the summary from the executor, so we need to access the self</span>
+                    <span class="k">with</span> <span class="n">executor_instance</span><span class="o">.</span><span class="n">_write_lock</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">arg_wrapper</span>
+
+        <span class="k">def</span> <span class="nf">_unwrap_requests_decorator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;FunctionMapper&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_requests_decorator</span> <span class="o">=</span> <span class="n">fn</span>
+                <span class="k">return</span> <span class="n">fn</span><span class="o">.</span><span class="n">fn</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">fn</span>
+
+        <span class="k">def</span> <span class="nf">_inject_owner_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="s1">&#39;_write_methods&#39;</span><span class="p">):</span>
+                <span class="n">owner</span><span class="o">.</span><span class="n">_write_methods</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="n">owner</span><span class="o">.</span><span class="n">_write_methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">__set_name__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests_decorator</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_requests_decorator</span><span class="o">.</span><span class="n">_inject_owner_attrs</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_inject_owner_attrs</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="c1"># this is needed to make this decorator work in combination with `@requests`</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">func</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">WriteMethodDecorator</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">WriteMethodDecorator</span></div>
 
 
 <div class="viewcode-block" id="requests"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.serve.executors.decorators.requests">[docs]</a><span class="k">def</span> <span class="nf">requests</span><span class="p">(</span>
@@ -575,10 +698,12 @@
     <span class="k">class</span> <span class="nc">FunctionMapper</span><span class="p">:</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_batching_decorator</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_decorator</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unwrap_batching_decorator</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+            <span class="n">fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unwrap_write_decorator</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
             <span class="n">arg_spec</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">arg_spec</span><span class="o">.</span><span class="n">varkw</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">__args_executor_func__</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span>
-                <span class="n">arg_spec</span><span class="o">.</span><span class="n">args</span>
+                    <span class="n">arg_spec</span><span class="o">.</span><span class="n">args</span>
             <span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s1"> accepts only </span><span class="si">{</span><span class="n">arg_spec</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s1"> which is fewer than expected, &#39;</span>
@@ -589,7 +714,7 @@
 
                 <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
                 <span class="k">async</span> <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span>
-                    <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                        <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
                 <span class="p">):</span>  <span class="c1"># we need to get the summary from the executor, so we need to access the self</span>
                     <span class="k">return</span> <span class="k">await</span> <span class="n">fn</span><span class="p">(</span><span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -598,7 +723,7 @@
 
                 <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
                 <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span>
-                    <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                        <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
                 <span class="p">):</span>  <span class="c1"># we need to get the summary from the executor, so we need to access the self</span>
                     <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -607,6 +732,13 @@
         <span class="k">def</span> <span class="nf">_unwrap_batching_decorator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;DynamicBatchingDecorator&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_batching_decorator</span> <span class="o">=</span> <span class="n">fn</span>
+                <span class="k">return</span> <span class="n">fn</span><span class="o">.</span><span class="n">fn</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">fn</span>
+
+        <span class="k">def</span> <span class="nf">_unwrap_write_decorator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;WriteMethodDecorator&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_decorator</span> <span class="o">=</span> <span class="n">fn</span>
                 <span class="k">return</span> <span class="n">fn</span><span class="o">.</span><span class="n">fn</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">fn</span>
@@ -650,6 +782,8 @@
             <span class="n">_init_requests_by_class</span><span class="p">(</span><span class="n">owner</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batching_decorator</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_batching_decorator</span><span class="o">.</span><span class="n">_inject_owner_attrs</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_decorator</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_decorator</span><span class="o">.</span><span class="n">_inject_owner_attrs</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="o">.</span><span class="n">class_name</span> <span class="o">=</span> <span class="n">owner</span><span class="o">.</span><span class="vm">__name__</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_inject_owner_attrs</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">request_schema</span><span class="p">,</span> <span class="n">response_schema</span><span class="p">)</span>
 
@@ -664,19 +798,19 @@
 
 
 <div class="viewcode-block" id="dynamic_batching"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.serve.executors.decorators.dynamic_batching">[docs]</a><span class="k">def</span> <span class="nf">dynamic_batching</span><span class="p">(</span>
-    <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span>
-        <span class="p">[</span>
-            <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span>
-            <span class="n">Dict</span><span class="p">,</span>
-            <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span>
-            <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">],</span>
-            <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">],</span>
-        <span class="p">],</span>
-        <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span>
-    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">preferred_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10_000</span><span class="p">,</span>
+        <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span>
+            <span class="p">[</span>
+                <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span>
+                <span class="n">Dict</span><span class="p">,</span>
+                <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span>
+                <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">],</span>
+                <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">],</span>
+            <span class="p">],</span>
+            <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">preferred_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10_000</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `@dynamic_batching` defines the dynamic batching behavior of an Executor.</span>
@@ -703,7 +837,7 @@
 
                 <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
                 <span class="k">async</span> <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span>
-                    <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                        <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
                 <span class="p">):</span>  <span class="c1"># we need to get the summary from the executor, so we need to access the self</span>
                     <span class="k">return</span> <span class="k">await</span> <span class="n">fn</span><span class="p">(</span><span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -712,7 +846,7 @@
 
                 <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
                 <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span>
-                    <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                        <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
                 <span class="p">):</span>  <span class="c1"># we need to get the summary from the executor, so we need to access the self</span>
                     <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -757,9 +891,9 @@
 
 
 <div class="viewcode-block" id="monitor"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.serve.executors.decorators.monitor">[docs]</a><span class="k">def</span> <span class="nf">monitor</span><span class="p">(</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">documentation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">documentation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator and context manager that allows monitoring of an Executor.</span>
@@ -854,7 +988,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 11, 2023</div>
+                            Last updated on May 15, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
