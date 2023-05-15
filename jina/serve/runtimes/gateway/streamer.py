@@ -170,14 +170,26 @@ class GatewayStreamer:
         :return: a Dictionary with endpoints as keys and values as a dictionary of input and output schemas and names
         taken from the endpoints proto endpoint of Executors
         """
-        # The logic should be to get the response of all the endpoints protos schemas from all the nodes.
-        # Then do a logic that for every endpoint fom every Executor computes what is the input and output schema seen by the Flow.
+        # The logic should be to get the response of all the endpoints protos schemas from all the nodes. Then do a
+        # logic that for every endpoint fom every Executor computes what is the input and output schema seen by the
+        # Flow.
         from docarray.documents import TextDoc
         class ATextDoc(TextDoc):
             a: str
 
-        return {'/index': {'input': {'model': ATextDoc, 'name': 'ATextDoc'},
-                           'output': {'model': ATextDoc, 'name': 'ATextDoc'}}}
+        return {
+            '/index':
+                {
+                    'input':
+                        {
+                            'model': ATextDoc, 'name': 'ATextDoc'
+                        },
+                    'output':
+                        {
+                            'model': ATextDoc, 'name': 'ATextDoc'
+                        }
+                }
+        }
 
     async def stream(
             self,

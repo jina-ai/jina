@@ -1,5 +1,5 @@
 import copy
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List, Any
 from jina._docarray import docarray_v2
 
 _SPECIFIC_EXECUTOR_SEPARATOR = '__'
@@ -79,7 +79,6 @@ def _parse_specific_params(parameters: Dict, executor_name: str):
 
 
 if docarray_v2:
-    from docarray.base_doc import AnyDoc
     from jina._docarray import docarray_v2
     from docarray import DocList, BaseDoc
 
