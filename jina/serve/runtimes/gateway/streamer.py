@@ -234,7 +234,6 @@ class GatewayStreamer:
             if return_results:
                 yield result, error
             else:
-                result.document_array_cls = DocumentArray
                 yield result.data.docs, error
 
     async def stream_docs(
