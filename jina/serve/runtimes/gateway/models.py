@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Union
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from pydantic import BaseConfig, BaseModel, Field, create_model, root_validator
 
-from jina._docarray import docarray_v2
 from jina.proto.jina_pb2 import DataRequestProto, JinaInfoProto, RouteProto, StatusProto
+from jina._docarray import docarray_v2
 
 if TYPE_CHECKING:  # pragma: no cover
     from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
@@ -87,8 +87,8 @@ def _get_oneof_setter(oneof_fields: List, oneof_key: str) -> Callable:
     def oneof_setter(cls, values):
         for oneof_field in oneof_fields:
             if (
-                    oneof_field in values
-                    and values[oneof_field] == cls.__fields__[oneof_field].default
+                oneof_field in values
+                and values[oneof_field] == cls.__fields__[oneof_field].default
             ):
                 values.pop(oneof_field)
         return values
@@ -98,7 +98,7 @@ def _get_oneof_setter(oneof_fields: List, oneof_key: str) -> Callable:
 
 
 def protobuf_to_pydantic_model(
-        protobuf_model: Union[Descriptor, 'GeneratedProtocolMessageType']
+    protobuf_model: Union[Descriptor, 'GeneratedProtocolMessageType']
 ) -> BaseModel:
     """
     Converts Protobuf messages to Pydantic model for jsonschema creation/validattion
@@ -194,9 +194,11 @@ def protobuf_to_pydantic_model(
     CustomConfig.fields = camel_case_fields
     if model_name == 'DocumentProto':
         from docarray.document.pydantic_model import PydanticDocument
+
         model = PydanticDocument
     elif model_name == 'DocumentArrayProto':
         from docarray.document.pydantic_model import PydanticDocumentArray
+
         model = PydanticDocumentArray
     else:
         model = create_model(
@@ -209,6 +211,7 @@ def protobuf_to_pydantic_model(
     PROTO_TO_PYDANTIC_MODELS.__setattr__(model_name, model)
 
     return model
+
 
 if not docarray_v2:
     for proto in (RouteProto, StatusProto, DataRequestProto, JinaInfoProto):
@@ -224,8 +227,9 @@ def _to_camel_case(snake_str: str) -> str:
     # with the 'title' method and join them together.
     return components[0] + ''.join(x.title() for x in components[1:])
 
-
 if not docarray_v2:
+    from docarray.document.pydantic_model import PydanticDocument, PydanticDocumentArray
+
     class JinaRequestModel(BaseModel):
         """
         Jina HTTP request model.
@@ -233,8 +237,6 @@ if not docarray_v2:
 
         # the dict one is only for compatibility.
         # So we will accept data: {[Doc1.to_dict, Doc2...]} and data: {docs: [[Doc1.to_dict, Doc2...]}
-        from docarray.document.pydantic_model import PydanticDocument, PydanticDocumentArray
-
         data: Optional[
             Union[
                 PydanticDocumentArray,
@@ -268,7 +270,6 @@ if not docarray_v2:
         """
         Jina HTTP Response model. Only `request_id` and `data` are preserved.
         """
-        from docarray.document.pydantic_model import PydanticDocument, PydanticDocumentArray
 
         header: PROTO_TO_PYDANTIC_MODELS.HeaderProto = None
         parameters: Dict = None
@@ -289,5 +290,5 @@ if not docarray_v2:
             default='/',
             example='/',
             description='The endpoint string, by convention starts with `/`. '
-                        'If you specify it as `/foo`, then all executors bind with `@requests(on="/foo")` will receive the request.',
+            'If you specify it as `/foo`, then all executors bind with `@requests(on="/foo")` will receive the request.',
         )

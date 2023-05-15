@@ -98,9 +98,9 @@ def get_fastapi_app(
         from jina.proto import jina_pb2
         from jina.serve.executors import __dry_run_endpoint__
         from jina.serve.runtimes.gateway.models import (
-            PROTO_TO_PYDANTIC_MODELS,
-            JinaInfoModel,
+            PROTO_TO_PYDANTIC_MODELS
         )
+        from jina.serve.runtimes.gateway.health_model import JinaInfoModel
         from jina.types.request.status import StatusMessage
 
         @app.get(
