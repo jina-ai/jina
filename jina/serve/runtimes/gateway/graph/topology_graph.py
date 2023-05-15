@@ -254,7 +254,50 @@ class TopologyGraph:
 
             return None, {}
 
-        def get_leaf_tasks(
+        def _get_output_model_for_endpoint(self,
+                                           previous_input,
+                                           previous_output,
+                                           endpoint):
+            if endpoint in self.endpoints:
+                # update output
+                new_input = previous_input
+                if previous_input is None:
+                    new_input = self._pydantic_models_by_endpoint[endpoint]['input']
+
+                return {
+                    'input': new_input,
+                    'output': self._pydantic_models_by_endpoint[endpoint]['output'],
+                }
+            else:
+                return {
+                    'input': previous_input,
+                    'output': previous_output
+                }
+
+        def _get_leaf_input_output_model(
+                self,
+                previous_input,
+                previous_output,
+                endpoint: Optional[str] = None,
+        ):
+            new_map = self._get_output_model_for_endpoint(previous_input,
+                                                          previous_output,
+                                                          endpoint)
+            if self.leaf:  # I am like a leaf
+                return list([new_map])  # I am the last in the chain
+            list_of_outputs = []
+            for outgoing_node in self.outgoing_nodes:
+                list_of_maps = outgoing_node._get_leaf_input_output_model(
+                    previous_input=new_map['input'],
+                    previous_output=new_map['output'],
+                    endpoint=endpoint
+                )
+                # We are interested in the last one, that will be the task that awaits all the previous
+                list_of_outputs.extend(list_of_maps)
+
+            return list_of_outputs
+
+        def get_leaf_req_response_tasks(
                 self,
                 connection_pool: GrpcConnectionPool,
                 request_to_send: Optional[DataRequest],
@@ -264,6 +307,7 @@ class TopologyGraph:
                 request_input_parameters: Dict = {},
                 request_input_has_specific_params: bool = False,
                 copy_request_at_send: bool = False,
+
         ) -> List[Tuple[bool, asyncio.Task]]:
             """
             Gets all the tasks corresponding from all the subgraphs born from this node
@@ -317,7 +361,7 @@ class TopologyGraph:
             hanging_tasks_tuples = []
             num_outgoing_nodes = len(self.outgoing_nodes)
             for outgoing_node in self.outgoing_nodes:
-                t = outgoing_node.get_leaf_tasks(
+                t = outgoing_node.get_leaf_req_response_tasks(
                     connection_pool=connection_pool,
                     request_to_send=None,
                     previous_task=wait_previous_and_send_task,
@@ -378,10 +422,19 @@ class TopologyGraph:
 
             return asyncio.create_task(task_wrapper())
 
-        def get_leaf_tasks(
+        def get_leaf_req_response_tasks(
                 self, previous_task: Optional[asyncio.Task], *args, **kwargs
         ) -> List[Tuple[bool, asyncio.Task]]:
             return [(True, previous_task)]
+
+        def _get_leaf_input_output_model(
+                self,
+                previous_input,
+                previous_output,
+                endpoint: Optional[str] = None,
+        ):
+            return [{'input': previous_input,
+                     'output': previous_output}]
 
     def __init__(
             self,
@@ -443,6 +496,36 @@ class TopologyGraph:
 
         self._origin_nodes = [nodes[node_name] for node_name in origin_node_names]
         self.has_filter_conditions = bool(graph_conditions)
+
+    async def _get_all_endpoints(self, connection_pool):
+        # TODO: Add option to keep trying. Executors may not be up yet
+        while True:
+            try:
+                tasks_to_get_endpoints = [
+                    node.get_endpoints(connection_pool) for node in self.all_nodes
+                ]
+                await asyncio.gather(*tasks_to_get_endpoints)
+                endpoints = set()
+                for node in self.all_nodes:
+                    if node._pydantic_models_by_endpoint is not None:
+                        endpoints.update(list(node._pydantic_models_by_endpoint.keys()))
+                return endpoints
+            except:
+                await asyncio.sleep(1)
+            # except InternalNetworkError as err:
+            #     err_code = err.code()
+            #     await asyncio.sleep(1)
+            #     if err_code == grpc.StatusCode.UNAVAILABLE:
+            #         err._details = (
+            #                 err.details()
+            #                 + f' |Gateway: Communication error while gathering endpoints with deployment at address(es) {err.dest_addr}. Head or worker(s) may be down.'
+            #         )
+            #         raise err
+            #     else:
+            #         raise
+            # except Exception as exc:
+            #     self.logger.error(f' Error gathering endpoints: {exc}')
+            #     raise exc
 
     def add_routes(self, request: 'DataRequest'):
         """

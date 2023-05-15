@@ -115,7 +115,7 @@ def get_fastapi_app(
             status_message.set_exception(ex)
             return status_message.to_dict(use_integers_for_enums=True)
 
-    request_models_map = streamer.get_endpoints_input_output_models()
+    request_models_map = streamer._endpoints_models_map
 
     if '/status' not in request_models_map:
         from jina.serve.runtimes.gateway.health_model import JinaInfoModel
@@ -204,8 +204,8 @@ def get_fastapi_app(
 
     for endpoint, input_output_map in request_models_map.items():
         if endpoint != '_jina_dry_run_':
-            input_doc_model = input_output_map['input']['model']
-            output_doc_model = input_output_map['output']['model']
+            input_doc_model = input_output_map['input']
+            output_doc_model = input_output_map['output']
 
             endpoint_input_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_input_model',

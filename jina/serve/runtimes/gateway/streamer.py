@@ -83,7 +83,7 @@ class GatewayStreamer:
         :param grpc_channel_options: Optional gprc channel options.
         """
         self.logger = logger or JinaLogger(self.__class__.__name__)
-        topology_graph = TopologyGraph(
+        self.topology_graph = TopologyGraph(
             graph_representation=graph_representation,
             graph_conditions=graph_conditions,
             deployments_metadata=deployments_metadata,
@@ -114,12 +114,13 @@ class GatewayStreamer:
 
         self._streamer = RequestStreamer(
             request_handler=request_handler.handle_request(
-                graph=topology_graph, connection_pool=self._connection_pool
+                graph=self.topology_graph, connection_pool=self._connection_pool
             ),
             result_handler=request_handler.handle_result(),
             prefetch=prefetch,
             logger=logger,
         )
+        self._endpoints_models_map = None
         self._streamer.Call = self._streamer.stream
 
     def _create_connection_pool(
@@ -162,34 +163,15 @@ class GatewayStreamer:
         """
         return self._streamer.stream(*args, **kwargs)
 
-    def get_endpoints_input_output_models(self):
+    async def _get_endpoints_input_output_models(self):
         """
         Return a Dictionary with endpoints as keys and values as a dictionary of input and output schemas and names
-        taken from the endpoints proto endpoint of Executors
-
-        :return: a Dictionary with endpoints as keys and values as a dictionary of input and output schemas and names
         taken from the endpoints proto endpoint of Executors
         """
         # The logic should be to get the response of all the endpoints protos schemas from all the nodes. Then do a
         # logic that for every endpoint fom every Executor computes what is the input and output schema seen by the
         # Flow.
-        from docarray.documents import TextDoc
-        class ATextDoc(TextDoc):
-            a: str
-
-        return {
-            '/index':
-                {
-                    'input':
-                        {
-                            'model': ATextDoc, 'name': 'ATextDoc'
-                        },
-                    'output':
-                        {
-                            'model': ATextDoc, 'name': 'ATextDoc'
-                        }
-                }
-        }
+        self._endpoints_models_map = await self._streamer._get_endpoints_input_output_models(self.topology_graph, self._connection_pool)
 
     async def stream(
             self,

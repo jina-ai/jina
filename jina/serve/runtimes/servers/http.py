@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from jina.importer import ImportExtensions
 from jina.serve.runtimes.servers import BaseServer
+from jina._docarray import docarray_v2
 
 if TYPE_CHECKING:
     from fastapi import FastAPI
@@ -115,6 +116,11 @@ class FastAPIBaseServer(BaseServer):
             logging.getLogger("uvicorn.access").addFilter(_EndpointFilter())
 
         # app property will generate a new fastapi app each time called
+        # here if v2 I need to make sure that stremaer gets all 
+        if docarray_v2:
+            from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+            if isinstance(self._request_handler, GatewayRequestHandler):
+                await self._request_handler.streamer._get_endpoints_input_output_models()
         app = self.app
         _install_health_check(app, self.logger)
         self.server = UviServer(

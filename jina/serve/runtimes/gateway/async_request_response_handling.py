@@ -60,7 +60,7 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
                 tasks_to_get_endpoints = [
                     node.get_endpoints(connection_pool) for node in nodes
                 ]
-                endpoints = await asyncio.gather(*tasks_to_get_endpoints)
+                _ = await asyncio.gather(*tasks_to_get_endpoints)
             except InternalNetworkError as err:
                 err_code = err.code()
                 if err_code == grpc.StatusCode.UNAVAILABLE:
@@ -107,7 +107,7 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
             request.header.target_executor = ''
 
             for origin_node in request_graph.origin_nodes:
-                leaf_tasks = origin_node.get_leaf_tasks(
+                leaf_tasks = origin_node.get_leaf_req_response_tasks(
                     connection_pool=connection_pool,
                     request_to_send=request,
                     previous_task=None,
