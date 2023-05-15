@@ -89,7 +89,7 @@ Replication is used to scale out Executors by creating copies of them that can h
 However, when an Executor maintains some sort of state, then it is not simple to guarantee that each copy of the Executor maintains the *same* state,
 which can lead to undesired behavior, since each replica can provide different results depending on the specific state they hold.
 
-In Jina, you can also have replication while guaranteeing the consensus between Executors. For this, we rely on (RAFT)[https://raft.github.io/], which is
+In Jina, you can also have replication while guaranteeing the consensus between Executors. For this, we rely on [RAFT](https://raft.github.io/), which is
 an algorithm that guarantees eventual consistency between replicas. 
 
 Consensus-based replication using RAFT is a distributed algorithm designed to provide fault tolerance and consistency in a distributed system. In a distributed system, the nodes may fail, and messages may be lost or delayed, which can lead to inconsistencies in the system.
