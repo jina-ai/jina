@@ -81,6 +81,7 @@ def _parse_specific_params(parameters: Dict, executor_name: str):
 if docarray_v2:
     from jina._docarray import docarray_v2
     from docarray import DocList, BaseDoc
+    from docarray.typing import AnyTensor
 
     def _create_pydantic_model_from_schema(schema: Dict[str, any], model_name: str) -> type:
         from pydantic import create_model
@@ -96,25 +97,43 @@ if docarray_v2:
             elif field_type == 'boolean':
                 field_type = bool
             elif field_type == 'array':
-                field_item_type = field_schema.get('items', {}).get('type', None)
-                if field_item_type == 'string':
-                    field_type = List[str]
-                elif field_item_type == 'integer':
-                    field_type = List[int]
-                elif field_item_type == 'number':
-                    field_type = List[float]
-                elif field_item_type == 'boolean':
-                    field_type = List[bool]
-                elif field_item_type == 'object' or field_item_type is None:
-                    # Check if array items are references to definitions
-                    items_ref = field_schema.get('items', {}).get('$ref')
-                    if items_ref:
-                        ref_name = items_ref.split('/')[-1]
-                        field_type = DocList[_create_pydantic_model_from_schema(schema['definitions'][ref_name], ref_name)]
+                def _inner_get_field_type(inner_schema, outer_schema=None):
+                    field_item_type = inner_schema.get('items', {}).get('type', None)
+                    if field_item_type == 'string':
+                        if not outer_schema:
+                            inner_field_type = List[str]
+                        else:
+                            inner_field_type = outer_schema[List[str]]
+                    elif field_item_type == 'integer':
+                        if not outer_schema:
+                            inner_field_type = List[int]
+                        else:
+                            inner_field_type = outer_schema[List[int]]
+                    elif field_item_type == 'number':
+                        if not outer_schema:
+                            # This is a hack because AnyTensor is more generic than a simple List and it comes as simple List
+                            inner_field_type = AnyTensor
+                        else:
+                            inner_field_type = outer_schema[List[float]]
+                    elif field_item_type == 'boolean':
+                        if not outer_schema:
+                            inner_field_type = List[bool]
+                        else:
+                            inner_field_type = outer_schema[List[bool]]
+                    elif field_item_type == 'array':
+                        inner_field_type = _inner_get_field_type(inner_schema.get('items', {}), List)
+                    elif field_item_type == 'object' or field_item_type is None:
+                        # Check if array items are references to definitions
+                        items_ref = field_schema.get('items', {}).get('$ref')
+                        if items_ref:
+                            ref_name = items_ref.split('/')[-1]
+                            inner_field_type = DocList[_create_pydantic_model_from_schema(schema['definitions'][ref_name], ref_name)]
+                        else:
+                            inner_field_type = DocList[_create_pydantic_model_from_schema(field_schema.get('items', {}), field_name)]
                     else:
-                        field_type = DocList[_create_pydantic_model_from_schema(field_schema.get('items', {}), field_name)]
-                else:
-                    raise ValueError(f"Unknown array item type: {field_item_type} for field_name {field_name}")
+                        raise ValueError(f"Unknown array item type: {field_item_type} for field_name {field_name}")
+                    return inner_field_type
+                field_type = _inner_get_field_type(field_schema, None)
             elif field_type == 'object' or field_type is None:
                 # Check if object is a reference to definitions
                 if 'additionalProperties' in field_schema:

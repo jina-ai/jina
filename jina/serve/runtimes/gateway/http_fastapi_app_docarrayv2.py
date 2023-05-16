@@ -172,6 +172,7 @@ def get_fastapi_app(
         )
         async def post(body: input_model, response: Response):
             req = DataRequest()
+            req.document_array_cls = DocList[input_doc_list_model]
             req.data.docs = DocList[input_doc_list_model](body.data)
             req.parameters = body.parameters
             req.header.exec_endpoint = endpoint_path

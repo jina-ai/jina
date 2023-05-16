@@ -12,9 +12,6 @@ from jina import Deployment, Executor, Flow, requests, Client
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_different_document_schema(protocols, replicas):
-    if 'http' in protocols:
-        return
-
     class Image(BaseDoc):
         tensor: Optional[AnyTensor]
         url: ImageUrl
@@ -42,9 +39,6 @@ def test_different_document_schema(protocols, replicas):
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_send_custom_doc(protocols, replicas):
-    if 'http' in protocols:
-        return
-
     class MyDoc(BaseDoc):
         text: str
 
@@ -54,7 +48,7 @@ def test_send_custom_doc(protocols, replicas):
             docs[0].text = 'hello world'
 
     ports = [random_port() for _ in protocols]
-    with Flow(port=ports, protocol=protocols, replicas=replicas).add(uses=MyExec) as f:
+    with Flow(port=ports, protocol=protocols, replicas=replicas).add(uses=MyExec):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             docs = c.post(on='/foo', inputs=MyDoc(text='hello'), return_type=DocList[MyDoc])
@@ -64,8 +58,6 @@ def test_send_custom_doc(protocols, replicas):
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_input_response_schema(protocols, replicas):
-    if 'http' in protocols:
-        return
 
     class MyDoc(BaseDoc):
         text: str
@@ -82,7 +74,7 @@ def test_input_response_schema(protocols, replicas):
             return docs
 
     ports = [random_port() for _ in protocols]
-    with Flow(port=ports, protocol=protocols, replicas=replicas).add(uses=MyExec) as f:
+    with Flow(port=ports, protocol=protocols, replicas=replicas).add(uses=MyExec):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             docs = c.post(on='/foo', inputs=MyDoc(text='hello'), return_type=DocList[MyDoc])
@@ -93,8 +85,6 @@ def test_input_response_schema(protocols, replicas):
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_input_response_schema_annotation(protocols, replicas):
-    if 'http' in protocols:
-        return
 
     class MyDoc(BaseDoc):
         text: str
@@ -107,7 +97,7 @@ def test_input_response_schema_annotation(protocols, replicas):
             return docs
 
     ports = [random_port() for _ in protocols]
-    with Flow(port=ports, protocol=protocols, replicas=replicas).add(uses=MyExec) as f:
+    with Flow(port=ports, protocol=protocols, replicas=replicas).add(uses=MyExec):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             docs = c.post(on='/bar', inputs=MyDoc(text='hello'), return_type=DocList[MyDoc])
@@ -118,8 +108,6 @@ def test_input_response_schema_annotation(protocols, replicas):
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_different_output_input(protocols, replicas):
-    if 'http' in protocols:
-        return
 
     class InputDoc(BaseDoc):
         img: ImageDoc
@@ -136,7 +124,7 @@ def test_different_output_input(protocols, replicas):
             return docs_return
 
     ports = [random_port() for _ in protocols]
-    with Flow(port=ports, protocol=protocols, replicas=replicas).add(uses=MyExec) as f:
+    with Flow(port=ports, protocol=protocols, replicas=replicas).add(uses=MyExec):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             docs = c.post(
@@ -180,7 +168,7 @@ def test_deployments(protocols, replicas):
 
 def test_deployments_with_shards_one_shard_fails():
     from docarray.documents import TextDoc
-    from docarray import DocList, BaseDoc
+    from docarray import DocList
 
     class TextDocWithId(TextDoc):
         id: str
