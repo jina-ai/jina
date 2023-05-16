@@ -9,7 +9,7 @@ from jina.helper import random_port
 from jina import Deployment, Executor, Flow, requests, Client
 
 
-@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])
+@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_different_document_schema(protocols, replicas):
     class Image(BaseDoc):
@@ -36,7 +36,7 @@ def test_different_document_schema(protocols, replicas):
             assert docs.tensor.ndim == 4
 
 
-@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])
+@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_send_custom_doc(protocols, replicas):
     class MyDoc(BaseDoc):
@@ -55,7 +55,7 @@ def test_send_custom_doc(protocols, replicas):
             assert docs[0].text == 'hello world'
 
 
-@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])
+@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_input_response_schema(protocols, replicas):
 
@@ -82,7 +82,7 @@ def test_input_response_schema(protocols, replicas):
             assert docs.__class__.doc_type == MyDoc
 
 
-@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])
+@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_input_response_schema_annotation(protocols, replicas):
 
@@ -105,7 +105,7 @@ def test_input_response_schema_annotation(protocols, replicas):
             assert docs.__class__.doc_type == MyDoc
 
 
-@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])
+@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_different_output_input(protocols, replicas):
 
