@@ -1,4 +1,4 @@
-> The best way to know more about contributing and how to get started is to **[join us on Slack](https://jina.ai/slack)** and ask questions in our public channels.
+> The best way to know more about contributing and how to get started is to **[join us on Discord](https://discord.jina.ai)** and ask questions in our public channels.
 
 # Contributing to Jina
 

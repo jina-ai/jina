@@ -16,7 +16,7 @@ def set_base_parser():
     urls = {
         'Code': ('💻', 'https://oss.jina.ai'),
         'Docs': ('📖', 'https://docs.jina.ai'),
-        'Help': ('💬', 'https://slack.jina.ai'),
+        'Help': ('💬', 'https://discord.jina.ai'),
         'Hiring!': ('🙌', 'https://jobs.jina.ai'),
     }
     url_str = '\n'.join(

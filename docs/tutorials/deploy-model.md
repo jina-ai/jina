@@ -9,7 +9,7 @@ Please check our {ref}`"Before you start" guide<before-start>` to go over a few 
 ```{admonition} This tutorial was written for Jina 3.14
 :class: warning
 
-It will *probably* still work for later versions. If you have trouble, please ask on [our Slack](https://jina.ai/slack).
+It will *probably* still work for later versions. If you have trouble, please ask on [our Discord](https://discord.jina.ai).
 ```
 
 ## Introduction
