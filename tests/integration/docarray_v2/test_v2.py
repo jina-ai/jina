@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 import pytest
 import numpy as np
 from docarray import BaseDoc, DocList
@@ -15,12 +15,14 @@ def test_different_document_schema(protocols, replicas):
     class Image(BaseDoc):
         tensor: Optional[AnyTensor]
         url: ImageUrl
+        lll: List[List[str]] = [[]]
 
     class MyExec(Executor):
         @requests(on='/foo')
         def foo(self, docs: DocList[Image], **kwargs) -> DocList[Image]:
             for doc in docs:
                 doc.tensor = np.zeros((10, 10, 10))
+                doc.lll = [['aa'], ['bb']]
             return docs
 
     ports = [random_port() for _ in protocols]
@@ -34,6 +36,7 @@ def test_different_document_schema(protocols, replicas):
             )
             docs = docs.to_doc_vec()
             assert docs.tensor.ndim == 4
+            assert docs[0].lll == [['aa'], ['bb']]
 
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
@@ -58,7 +61,6 @@ def test_send_custom_doc(protocols, replicas):
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_input_response_schema(protocols, replicas):
-
     class MyDoc(BaseDoc):
         text: str
 
@@ -85,7 +87,6 @@ def test_input_response_schema(protocols, replicas):
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_input_response_schema_annotation(protocols, replicas):
-
     class MyDoc(BaseDoc):
         text: str
 
@@ -108,7 +109,6 @@ def test_input_response_schema_annotation(protocols, replicas):
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_different_output_input(protocols, replicas):
-
     class InputDoc(BaseDoc):
         img: ImageDoc
 
@@ -136,6 +136,70 @@ def test_different_output_input(protocols, replicas):
             assert docs.__class__.doc_type == OutputDoc
 
 
+@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
+def test_chain(protocols):
+    class Input1(BaseDoc):
+        img: ImageDoc
+
+    class Output1(BaseDoc):
+        embedding: AnyTensor
+
+    class Output2(BaseDoc):
+        a: str
+
+    class Exec1(Executor):
+        @requests(on='/bar')
+        def bar(self, docs: DocList[Input1], **kwargs) -> DocList[Output1]:
+            docs_return = DocList[Output1](
+                [Output1(embedding=np.zeros((100, 1))) for _ in range(len(docs))]
+            )
+            return docs_return
+
+    class Exec2(Executor):
+        @requests(on='/bar')
+        def bar(self, docs: DocList[Output1], **kwargs) -> DocList[Output2]:
+            docs_return = DocList[Output2](
+                [Output2(a=f'shape input {docs[0].embedding.shape[0]}') for _ in range(len(docs))]
+            )
+            return docs_return
+
+    ports = [random_port() for _ in protocols]
+    with Flow(port=ports, protocol=protocols).add(uses=Exec1).add(uses=Exec2):
+        for port, protocol in zip(ports, protocols):
+            c = Client(port=port, protocol=protocol)
+            docs = c.post(
+                on='/bar',
+                inputs=Input1(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
+                return_type=DocList[Output2],
+            )
+            assert len(docs) == 1
+            assert docs[0].a == 'shape input 100'
+
+
+@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
+def test_complex_topology_bifurcation(protocols):
+    # TODO: Test how it behaves with complex topologies where bifurcation and reduction occur
+    pass
+
+
+@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
+def test_complex_topology_filter(protocols):
+    # TODO: Test how it behaves with complex topologies and filtering
+    pass
+
+
+@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
+def test_default_endpoint(protocols):
+    # TODO: Test how it behaves with complex topologies and filtering
+    pass
+
+
+@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
+def test_endpoints_target_executors_combinations(protocols):
+    # TODO: Test how it behaves with complex topologies and filtering
+    pass
+
+
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_deployments(protocols, replicas):
@@ -152,7 +216,7 @@ def test_deployments(protocols, replicas):
                 [OutputDoc(embedding=np.zeros((100, 1))) for _ in range(len(docs))]
             )
             return docs_return
-   
+
     ports = [random_port() for _ in protocols]
     with Deployment(port=ports, protocol=protocols, replicas=replicas, uses=MyExec) as dep:
         for port, protocol in zip(ports, protocols):
