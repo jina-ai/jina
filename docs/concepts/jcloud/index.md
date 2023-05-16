@@ -327,7 +327,7 @@ Please refer to {ref}`Configuration <jcloud-configuration>` for configuring the 
 
 ## Restrictions
 
-Jina AI Cloud scales according to your needs. You can demand different instance types with GPU/memory/CPU predefined based on the needs of your Flows and Executors. If you have specific resource requirements, please contact us [on Slack](https://jina.ai/slack) or raise a [GitHub issue](https://github.com/jina-ai/jcloud/issues/new/choose).
+Jina AI Cloud scales according to your needs. You can demand different instance types with GPU/memory/CPU predefined based on the needs of your Flows and Executors. If you have specific resource requirements, please contact us [on Discord](https://discord.jina.ai) or raise a [GitHub issue](https://github.com/jina-ai/jcloud/issues/new/choose).
 
 
 ```{admonition} Restrictions
