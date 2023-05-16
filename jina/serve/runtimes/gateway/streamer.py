@@ -25,6 +25,10 @@ from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.stream import RequestStreamer
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
+from jina._docarray import docarray_v2
+
+if docarray_v2:
+    from docarray import DocList
 
 __all__ = ['GatewayStreamer']
 
@@ -171,7 +175,8 @@ class GatewayStreamer:
         # The logic should be to get the response of all the endpoints protos schemas from all the nodes. Then do a
         # logic that for every endpoint fom every Executor computes what is the input and output schema seen by the
         # Flow.
-        self._endpoints_models_map = await self._streamer._get_endpoints_input_output_models(self.topology_graph, self._connection_pool)
+        self._endpoints_models_map = await self._streamer._get_endpoints_input_output_models(self.topology_graph,
+                                                                                             self._connection_pool)
 
     async def stream(
             self,
@@ -243,16 +248,34 @@ class GatewayStreamer:
         from jina.types.request.data import DataRequest
 
         def _req_generator():
-            for docs_batch in docs.batch(batch_size=request_size, shuffle=False):
-                req = DataRequest()
-                req.data.docs = docs_batch
-                if exec_endpoint:
-                    req.header.exec_endpoint = exec_endpoint
-                if target_executor:
-                    req.header.target_executor = target_executor
-                if parameters:
-                    req.parameters = parameters
-                yield req
+            if not docarray_v2:
+                for docs_batch in docs.batch(batch_size=request_size, shuffle=False):
+                    req = DataRequest()
+                    req.data.docs = docs_batch
+                    if exec_endpoint:
+                        req.header.exec_endpoint = exec_endpoint
+                    if target_executor:
+                        req.header.target_executor = target_executor
+                    if parameters:
+                        req.parameters = parameters
+                    yield req
+            else:
+                def batch(iterable, n=1):
+                    l = len(iterable)
+                    for ndx in range(0, l, n):
+                        yield iterable[ndx:min(ndx + n, l)]
+
+                for docs_batch in batch(docs, n=request_size):
+                    req = DataRequest()
+                    req.document_array_cls = DocList[docs_batch.doc_type]
+                    req.data.docs = docs_batch
+                    if exec_endpoint:
+                        req.header.exec_endpoint = exec_endpoint
+                    if target_executor:
+                        req.header.target_executor = target_executor
+                    if parameters:
+                        req.parameters = parameters
+                    yield req
 
         async for resp in self.rpc_stream(
                 request_iterator=_req_generator(), results_in_order=results_in_order

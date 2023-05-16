@@ -46,7 +46,6 @@ def get_fastapi_app(
         import pydantic
     from docarray.base_doc.docarray_response import DocArrayResponse
     from docarray import DocList, BaseDoc
-    from jina.types.request.data import DataRequest
 
     from jina import __version__
 
@@ -78,7 +77,6 @@ def get_fastapi_app(
         await streamer.close()
 
     from jina.proto import jina_pb2
-    from jina.serve.executors import __dry_run_endpoint__
     from jina.types.request.status import StatusMessage
     from jina.serve.runtimes.gateway.models import (
         PROTO_TO_PYDANTIC_MODELS,
@@ -96,20 +94,13 @@ def get_fastapi_app(
 
         """
 
-        req = DataRequest()
-        req.data.docs = DocList[BaseDoc]([])
-        req.header.exec_endpoint = __dry_run_endpoint__
-
-        def gen():
-            yield req
+        docs = DocList[BaseDoc]([])
 
         try:
-            _ = await _get_singleton_result(
-                gen()
-            )
-            status_message = StatusMessage()
-            status_message.set_code(jina_pb2.StatusProto.SUCCESS)
-            return status_message.to_dict()
+            async for _ in streamer.stream_docs(docs, request_size=1):
+                status_message = StatusMessage()
+                status_message.set_code(jina_pb2.StatusProto.SUCCESS)
+                return status_message.to_dict()
         except Exception as ex:
             status_message = StatusMessage()
             status_message.set_exception(ex)
@@ -171,17 +162,11 @@ def get_fastapi_app(
             **app_kwargs
         )
         async def post(body: input_model, response: Response):
-            req = DataRequest()
-            req.document_array_cls = DocList[input_doc_list_model]
-            req.data.docs = DocList[input_doc_list_model](body.data)
-            req.parameters = body.parameters
-            req.header.exec_endpoint = endpoint_path
-
-            def gen():
-                yield req
-
+            docs = DocList[input_doc_list_model](body.data)
             try:
-                result = await _get_singleton_result(request_iterator=gen())
+                async for result in streamer.stream_docs(docs, exec_endpoint=endpoint_path, parameters=body.parameters, return_results=True):
+                    result_dict = result.to_dict()
+                    return result_dict
             except InternalNetworkError as err:
                 import grpc
 
@@ -201,7 +186,7 @@ def get_fastapi_app(
                 logger.error(
                     f'Error while getting responses from deployments: {err.details()}'
                 )
-            return result
+                return result
 
     for endpoint, input_output_map in request_models_map.items():
         if endpoint != '_jina_dry_run_':
@@ -228,23 +213,5 @@ def get_fastapi_app(
                       input_doc_list_model=input_doc_model,
                       output_doc_list_model=output_doc_model)
 
-    async def _get_singleton_result(request_iterator) -> Dict:
-        """
-        Streams results from AsyncPrefetchCall as a dict
-
-        :param request_iterator: request iterator, with length of 1
-        :return: the first result from the request iterator
-        """
-        from jina._docarray import docarray_v2
-
-        async for result in streamer.rpc_stream(request_iterator=request_iterator):
-            if not docarray_v2:
-                for i in range(len(result.data._content.docs.docs)):
-                    if result.data._content.docs.docs[i].HasField('embedding'):
-                        result.data._content.docs.docs[i].embedding.cls_name = 'numpy'
-                    if result.data._content.docs.docs[i].HasField('tensor'):
-                        result.data._content.docs.docs[i].tensor.cls_name = 'numpy'
-            result_dict = result.to_dict()
-            return result_dict
 
     return app
