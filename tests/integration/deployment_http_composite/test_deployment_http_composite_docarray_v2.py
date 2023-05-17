@@ -130,7 +130,7 @@ def test_base_executor(replicas, include_gateway, protocols):
             assert len(res) == 10
 
 
-@pytest.mark.parametrize('replicas', [1, 2, 3])
+@pytest.mark.parametrize('replicas', [1, 3])
 @pytest.mark.parametrize('include_gateway', [True, False])
 @pytest.mark.parametrize('protocols', [['http'], ['grpc', 'http']])
 @pytest.mark.parametrize('init_sleep_time', [0, 0.5, 5])

@@ -4,6 +4,7 @@ import numpy as np
 from docarray import BaseDoc, DocList
 from docarray.documents import ImageDoc
 from docarray.typing import AnyTensor, ImageUrl
+from docarray.documents import TextDoc
 from jina.helper import random_port
 
 from jina import Deployment, Executor, Flow, requests, Client
@@ -16,6 +17,7 @@ def test_different_document_schema(protocols, replicas):
         tensor: Optional[AnyTensor]
         url: ImageUrl
         lll: List[List[str]] = [[]]
+        texts: DocList[TextDoc]
 
     class MyExec(Executor):
         @requests(on='/foo')
@@ -23,6 +25,7 @@ def test_different_document_schema(protocols, replicas):
             for doc in docs:
                 doc.tensor = np.zeros((10, 10, 10))
                 doc.lll = [['aa'], ['bb']]
+                doc.texts.append(TextDoc('ha'))
             return docs
 
     ports = [random_port() for _ in protocols]
@@ -31,12 +34,15 @@ def test_different_document_schema(protocols, replicas):
             c = Client(port=port, protocol=protocol)
             docs = c.post(
                 on='/foo',
-                inputs=DocList[Image]([Image(url='https://via.placeholder.com/150.png')]),
+                inputs=DocList[Image]([Image(url='https://via.placeholder.com/150.png', texts=DocList[TextDoc]([TextDoc('hey')]))]),
                 return_type=DocList[Image],
             )
             docs = docs.to_doc_vec()
             assert docs.tensor.ndim == 4
             assert docs[0].lll == [['aa'], ['bb']]
+            assert len(docs[0].texts) == 2
+            assert docs[0].texts[0].text == 'hey'
+            assert docs[0].texts[1].text == 'ha'
 
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
@@ -346,3 +352,5 @@ def test_deployments_with_shards_all_shards_return(reduce):
         for r in responses:
             assert r.l[0] == 3
             assert len(r.matches) == 6
+            for match in r.matches:
+                assert 'ID' in match.text
