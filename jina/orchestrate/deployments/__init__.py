@@ -1748,17 +1748,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
             http_ext_table = self._init_table()
             print(f' {swagger_ui_link}')
-            http_ext_table.add_row(
-                ':speech_balloon:',
-                'Swagger UI',
-                swagger_ui_link
-            )
+            http_ext_table.add_row(':speech_balloon:', 'Swagger UI', swagger_ui_link)
 
-            http_ext_table.add_row(
-                ':books:',
-                'Redoc',
-                redoc_link
-            )
+            http_ext_table.add_row(':books:', 'Redoc', redoc_link)
 
             all_panels.append(
                 Panel(

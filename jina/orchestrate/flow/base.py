@@ -2382,19 +2382,11 @@ class Flow(
                 swagger_ui_link,
             )
 
-            http_ext_table.add_row(
-                ':books:',
-                'Redoc',
-                redoc_link
-            )
+            http_ext_table.add_row(':books:', 'Redoc', redoc_link)
 
             if self.gateway_args.expose_graphql_endpoint:
 
-                http_ext_table.add_row(
-                    ':strawberry:',
-                    'GraphQL UI',
-                    graphql_ui_link
-                )
+                http_ext_table.add_row(':strawberry:', 'GraphQL UI', graphql_ui_link)
 
             all_panels.append(
                 Panel(
