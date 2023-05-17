@@ -1129,6 +1129,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             self.enter_context(self.head_pod)
         if self._include_gateway:
             _args = self.pod_args['gateway']
+            _update_gateway_args(_args, gateway_load_balancer=getattr(_args, 'gateway_load_balancer', False))
             _args.noblock_on_start = True
             self.gateway_pod = PodFactory.build_pod(
                 _args, gateway_load_balancer=self._gateway_load_balancer
@@ -1747,7 +1748,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         if ProtocolType.HTTP.to_string().lower() in [p.lower() for p in _protocols]:
 
             http_ext_table = self._init_table()
-            print(f' {swagger_ui_link}')
             http_ext_table.add_row(':speech_balloon:', 'Swagger UI', swagger_ui_link)
 
             http_ext_table.add_row(':books:', 'Redoc', redoc_link)
