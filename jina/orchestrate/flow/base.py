@@ -2326,6 +2326,9 @@ class Flow(
         else:
             _ports = [str(_p) for _p in self.port]
 
+        swagger_ui_link = None
+        redoc_link = None
+        graphql_ui_link = None
         for _port, _protocol in zip(_ports, _protocols):
             if self.gateway_args.ssl_certfile and self.gateway_args.ssl_keyfile:
                 _protocol = f'{_protocol}S'
@@ -2355,6 +2358,11 @@ class Flow(
                     f'[link={_protocol}://{self.address_public}:{_port}]{self.address_public}:{_port}[/]',
                 )
 
+            if _protocol.lower() == ProtocolType.HTTP.to_string().lower():
+                swagger_ui_link = f'[link={_protocol}://{self.host}:{_port}/docs]{self.host}:{_port}/docs'
+                redoc_link = f'[link={_protocol}://{self.host}:{_port}/redoc]{self.host}:{_port}/redoc'
+                graphql_ui_link = f'[link={_protocol}://{self.host}:{_port}/graphql]{self.host}:{_port}/graphql'
+
         all_panels.append(
             Panel(
                 address_table,
@@ -2371,22 +2379,14 @@ class Flow(
             http_ext_table.add_row(
                 ':speech_balloon:',
                 'Swagger UI',
-                f'[link={_protocol}://{self.host}:{self.port}/docs]{self.host}:{self.port}/docs',
+                swagger_ui_link,
             )
 
-            http_ext_table.add_row(
-                ':books:',
-                'Redoc',
-                f'[link={_protocol}://{self.host}:{self.port}/redoc]{self.host}:{self.port}/redoc',
-            )
+            http_ext_table.add_row(':books:', 'Redoc', redoc_link)
 
             if self.gateway_args.expose_graphql_endpoint:
 
-                http_ext_table.add_row(
-                    ':strawberry:',
-                    'GraphQL UI',
-                    f'[link={_protocol}://{self.host}:{self.port}/graphql]{self.host}:{self.port}/graphql',
-                )
+                http_ext_table.add_row(':strawberry:', 'GraphQL UI', graphql_ui_link)
 
             all_panels.append(
                 Panel(
