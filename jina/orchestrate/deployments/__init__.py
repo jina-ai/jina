@@ -560,6 +560,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             args.graph_description = (
                 '{"start-gateway": ["executor"], "executor": ["end-gateway"]}'
             )
+            _update_gateway_args(args, gateway_load_balancer=self._gateway_load_balancer)
             self.pod_args['gateway'] = args
         else:
             self.pod_args['gateway'] = None
@@ -1129,7 +1130,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             self.enter_context(self.head_pod)
         if self._include_gateway:
             _args = self.pod_args['gateway']
-            _update_gateway_args(_args, gateway_load_balancer=getattr(_args, 'gateway_load_balancer', False))
             _args.noblock_on_start = True
             self.gateway_pod = PodFactory.build_pod(
                 _args, gateway_load_balancer=self._gateway_load_balancer
