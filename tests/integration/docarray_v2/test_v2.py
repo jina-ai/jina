@@ -177,6 +177,47 @@ def test_chain(protocols):
 
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
+def test_default_endpoint(protocols):
+    # TODO: Test how it behaves with complex topologies and filtering
+    class Input1(BaseDoc):
+        img: ImageDoc
+
+    class Output1(BaseDoc):
+        embedding: AnyTensor
+
+    class Output2(BaseDoc):
+        a: str
+
+    class Exec1(Executor):
+        @requests()
+        def bar(self, docs: DocList[Input1], **kwargs) -> DocList[Output1]:
+            docs_return = DocList[Output1](
+                [Output1(embedding=np.zeros((100, 1))) for _ in range(len(docs))]
+            )
+            return docs_return
+
+    class Exec2(Executor):
+        @requests()
+        def bar(self, docs: DocList[Output1], **kwargs) -> DocList[Output2]:
+            docs_return = DocList[Output2](
+                [Output2(a=f'shape input {docs[0].embedding.shape[0]}') for _ in range(len(docs))]
+            )
+            return docs_return
+
+    ports = [random_port() for _ in protocols]
+    with Flow(port=ports, protocol=protocols).add(uses=Exec1).add(uses=Exec2):
+        for port, protocol in zip(ports, protocols):
+            c = Client(port=port, protocol=protocol)
+            docs = c.post(
+                on='/default',
+                inputs=Input1(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
+                return_type=DocList[Output2],
+            )
+            assert len(docs) == 1
+            assert docs[0].a == 'shape input 100'
+
+
+@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
 def test_complex_topology_bifurcation(protocols):
     # TODO: Test how it behaves with complex topologies where bifurcation and reduction occur
     pass
@@ -184,12 +225,6 @@ def test_complex_topology_bifurcation(protocols):
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
 def test_complex_topology_filter(protocols):
-    # TODO: Test how it behaves with complex topologies and filtering
-    pass
-
-
-@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
-def test_default_endpoint(protocols):
     # TODO: Test how it behaves with complex topologies and filtering
     pass
 
