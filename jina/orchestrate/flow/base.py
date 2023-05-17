@@ -2359,8 +2359,8 @@ class Flow(
                 )
 
             if _protocol.lower() == ProtocolType.HTTP.to_string().lower():
-                swagger_ui_link = f'[link={_protocol}://{self.host}:{_port}/docs]{self.host}:{_port}/docs',
-                redoc_link = f'[link={_protocol}://{self.host}:{_port}/redoc]{self.host}:{_port}/redoc',
+                swagger_ui_link = f'[link={_protocol}://{self.host}:{_port}/docs]{self.host}:{_port}/docs'
+                redoc_link = f'[link={_protocol}://{self.host}:{_port}/redoc]{self.host}:{_port}/redoc'
                 graphql_ui_link = f'[link={_protocol}://{self.host}:{_port}/graphql]{self.host}:{_port}/graphql'
 
         all_panels.append(
@@ -2379,13 +2379,13 @@ class Flow(
             http_ext_table.add_row(
                 ':speech_balloon:',
                 'Swagger UI',
-                f'{swagger_ui_link}',
+                swagger_ui_link,
             )
 
             http_ext_table.add_row(
                 ':books:',
                 'Redoc',
-                f'{redoc_link}'
+                redoc_link
             )
 
             if self.gateway_args.expose_graphql_endpoint:
@@ -2393,7 +2393,7 @@ class Flow(
                 http_ext_table.add_row(
                     ':strawberry:',
                     'GraphQL UI',
-                    f'{graphql_ui_link}',
+                    graphql_ui_link
                 )
 
             all_panels.append(
