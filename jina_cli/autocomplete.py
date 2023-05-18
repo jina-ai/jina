@@ -246,6 +246,7 @@ ac_table = {
         'cloud resume': ['--help'],
         'cloud scale': ['--help', '--executor', '--replicas'],
         'cloud recreate': ['--help'],
+        'cloud logs': ['--help', '--gateway', '--executor'],
         'cloud survey': ['--help'],
         'cloud': [
             '--help',
@@ -265,6 +266,7 @@ ac_table = {
             'resume',
             'scale',
             'recreate',
+            'logs',
             'survey',
         ],
         'help': ['--help'],
