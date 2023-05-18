@@ -351,10 +351,10 @@ class HeaderRequestHandler(MonitoringRequestMixin):
                             output_model_name = inner_dict['output']['name']
                             output_model_schema = inner_dict['output']['model']
                             if input_model_name not in models_created_by_name:
-                                input_model = _create_pydantic_model_from_schema(input_model_schema, input_model_name)
+                                input_model = _create_pydantic_model_from_schema(input_model_schema, input_model_name, {})
                                 models_created_by_name[input_model_name] = input_model
                             if output_model_name not in models_created_by_name:
-                                output_model = _create_pydantic_model_from_schema(output_model_schema, output_model_name)
+                                output_model = _create_pydantic_model_from_schema(output_model_schema, output_model_name, {})
                                 models_created_by_name[output_model_name] = output_model
 
                             self._pydantic_models_by_endpoint[endpoint] = {

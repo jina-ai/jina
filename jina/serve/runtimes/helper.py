@@ -83,73 +83,70 @@ if docarray_v2:
     from docarray import DocList, BaseDoc
     from docarray.typing import AnyTensor
 
-    def _create_pydantic_model_from_schema(schema: Dict[str, any], model_name: str) -> type:
-        from pydantic import create_model
-        fields = {}
-        for field_name, field_schema in schema.get('properties', {}).items():
-            field_type = field_schema.get('type', None)
-            if field_type == 'string':
-                field_type = str
-            elif field_type == 'integer':
-                field_type = int
-            elif field_type == 'number':
-                field_type = float
-            elif field_type == 'boolean':
-                field_type = bool
-            elif field_type == 'array':
-                def _inner_get_field_type(inner_schema, outer_schema=None):
-                    field_item_type = inner_schema.get('items', {}).get('type', None)
-                    if field_item_type == 'string':
-                        if not outer_schema:
-                            inner_field_type = List[str]
-                        else:
-                            inner_field_type = outer_schema[List[str]]
-                    elif field_item_type == 'integer':
-                        if not outer_schema:
-                            inner_field_type = List[int]
-                        else:
-                            inner_field_type = outer_schema[List[int]]
-                    elif field_item_type == 'number':
-                        if not outer_schema:
-                            # This is a hack because AnyTensor is more generic than a simple List and it comes as simple List
-                            inner_field_type = AnyTensor
-                        else:
-                            inner_field_type = outer_schema[List[float]]
-                    elif field_item_type == 'boolean':
-                        if not outer_schema:
-                            inner_field_type = List[bool]
-                        else:
-                            inner_field_type = outer_schema[List[bool]]
-                    elif field_item_type == 'array':
-                        inner_field_type = _inner_get_field_type(inner_schema.get('items', {}), List)
-                    elif field_item_type == 'object' or field_item_type is None:
-                        # Check if array items are references to definitions
-                        items_ref = field_schema.get('items', {}).get('$ref')
-                        if items_ref:
-                            ref_name = items_ref.split('/')[-1]
-                            inner_field_type = DocList[_create_pydantic_model_from_schema(schema['definitions'][ref_name], ref_name)]
-                        else:
-                            inner_field_type = DocList[_create_pydantic_model_from_schema(field_schema.get('items', {}), field_name)]
-                    else:
-                        raise ValueError(f"Unknown array item type: {field_item_type} for field_name {field_name}")
-                    return inner_field_type
-                field_type = _inner_get_field_type(field_schema, None)
-            elif field_type == 'object' or field_type is None:
-                # Check if object is a reference to definitions
-                if 'additionalProperties' in field_schema:
-                    additional_props = field_schema['additionalProperties']
-                    if additional_props.get('type') == 'object':
-                        field_type = Dict[str, _create_pydantic_model_from_schema(additional_props, field_name)]
-                    else:
-                        field_type = Dict[str, Any]
+
+    def _get_field_from_type(field_schema, field_name, root_schema, cached_models, num_recursions=0):
+        field_type = field_schema.get('type', None)
+        if field_type == 'string':
+            ret = str
+            for rec in range(num_recursions):
+                ret = List[ret]
+        elif field_type == 'integer':
+            ret = int
+            for rec in range(num_recursions):
+                ret = List[ret]
+        elif field_type == 'number':
+            if num_recursions <= 1:
+                # This is a hack because AnyTensor is more generic than a simple List and it comes as simple List
+                ret = AnyTensor
+            else:
+                ret = float
+                for rec in range(num_recursions):
+                    ret = List[ret]
+        elif field_type == 'boolean':
+            ret = bool
+            for rec in range(num_recursions):
+                ret = List[ret]
+        elif field_type == 'object' or field_type is None:
+            if 'additionalProperties' in field_schema:  # handle Dictionaries
+                additional_props = field_schema['additionalProperties']
+                if additional_props.get('type') == 'object':
+                    ret = Dict[str, _create_pydantic_model_from_schema(additional_props, field_name, cached_models=cached_models)]
                 else:
-                    obj_ref = field_schema.get('$ref')
+                    ret = Dict[str, Any]
+            else:
+                obj_ref = field_schema.get('$ref')
+                if num_recursions == 0:  # single object reference
                     if obj_ref:
                         ref_name = obj_ref.split('/')[-1]
-                        field_type = _create_pydantic_model_from_schema(schema['definitions'][ref_name], ref_name)
+                        ret = _create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name, cached_models=cached_models)
                     else:
-                        field_type = _create_pydantic_model_from_schema(field_schema, field_name)
+                        ret = _create_pydantic_model_from_schema(field_schema, field_name, cached_models=cached_models)
+                else:  # object reference in definitions
+                    if obj_ref:
+                        ref_name = obj_ref.split('/')[-1]
+                        ret = DocList[_create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name, cached_models=cached_models)]
+                    else:
+                        ret = DocList[_create_pydantic_model_from_schema(field_schema, field_name, cached_models=cached_models)]
+        elif field_type == 'array':
+            ret = _get_field_from_type(field_schema=field_schema.get('items', {}), field_name=field_name,
+                                       root_schema=root_schema, cached_models=cached_models, num_recursions=num_recursions + 1)
+        else:
+            if num_recursions > 0:
+                raise ValueError(f"Unknown array item type: {field_type} for field_name {field_name}")
             else:
                 raise ValueError(f"Unknown field type: {field_type} for field_name {field_name}")
+        return ret
+
+
+    def _create_pydantic_model_from_schema(schema: Dict[str, any], model_name: str, cached_models: Dict) -> type:
+        from pydantic import create_model
+        fields = {}
+        if model_name in cached_models:
+            return cached_models[model_name]
+        for field_name, field_schema in schema.get('properties', {}).items():
+            field_type = _get_field_from_type(field_schema=field_schema, field_name=field_name, root_schema=schema, cached_models=cached_models, num_recursions=0)
             fields[field_name] = (field_type, field_schema.get('description'))
-        return create_model(model_name, __base__=BaseDoc, **fields)
+
+        model = create_model(model_name, __base__=BaseDoc, **fields)
+        cached_models[model_name] = model
+        return model

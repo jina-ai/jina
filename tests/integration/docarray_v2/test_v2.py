@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Dict
 import pytest
 import numpy as np
 from docarray import BaseDoc, DocList
@@ -259,7 +259,7 @@ def test_deployments(protocols, replicas):
             return docs_return
 
     ports = [random_port() for _ in protocols]
-    with Deployment(port=ports, protocol=protocols, replicas=replicas, uses=MyExec) as dep:
+    with Deployment(port=ports, protocol=protocols, replicas=replicas, uses=MyExec):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             docs = c.post(
@@ -269,6 +269,52 @@ def test_deployments(protocols, replicas):
             )
             assert docs[0].embedding.shape == (100, 1)
             assert docs.__class__.doc_type == OutputDoc
+
+
+@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])
+@pytest.mark.parametrize('replicas', [1, 3])
+def test_deployments_complex_model(protocols, replicas):
+    class InputDoc(BaseDoc):
+        img: ImageDoc
+
+    class OutputDoc(BaseDoc):
+        tensor: Optional[AnyTensor]
+        url: ImageUrl
+        lll: List[List[List[int]]] = [[[5]]]
+        fff: List[List[List[float]]] = [[[5.2]]]
+        single_text: TextDoc
+        texts: DocList[TextDoc]
+        d: Dict[str, str] = {'a': 'b'}
+
+    class MyExec(Executor):
+        @requests(on='/bar')
+        def bar(self, docs: DocList[InputDoc], **kwargs) -> DocList[OutputDoc]:
+            docs_return = DocList[OutputDoc](
+                [OutputDoc(url='photo.jpg', lll=[[[40]]], fff=[[[40.2]]], d={'b': 'a'},
+                           texts=DocList[TextDoc]([TextDoc(text='hey ha', embedding=np.zeros(3))]),
+                           single_text=TextDoc(text='single hey ha', embedding=np.zeros(2))) for _ in range(len(docs))]
+            )
+            return docs_return
+
+    ports = [random_port() for _ in protocols]
+    with Deployment(port=ports, protocol=protocols, replicas=replicas, uses=MyExec):
+        for port, protocol in zip(ports, protocols):
+            c = Client(port=port, protocol=protocol)
+            docs = c.post(
+                on='/bar',
+                inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
+                return_type=DocList[OutputDoc],
+            )
+            assert docs[0].url == 'photo.jpg'
+            assert docs[0].lll == [[[40]]]
+            assert docs[0].fff == [[[40.2]]]
+            assert docs[0].d == {'b': 'a'}
+            assert len(docs[0].texts) == 1
+            assert docs[0].single_text.text == 'single hey ha'
+            assert docs[0].single_text.embedding.shape == (2,)
+            assert len(docs[0].texts) == 1
+            assert docs[0].texts[0].text == 'hey ha'
+            assert docs[0].texts[0].embedding.shape == (3,)
 
 
 def test_deployments_with_shards_one_shard_fails():
