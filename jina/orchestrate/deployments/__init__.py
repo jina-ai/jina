@@ -560,7 +560,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             args.graph_description = (
                 '{"start-gateway": ["executor"], "executor": ["end-gateway"]}'
             )
-            _update_gateway_args(args, gateway_load_balancer=self._gateway_load_balancer)
+            _update_gateway_args(
+                args, gateway_load_balancer=self._gateway_load_balancer
+            )
             self.pod_args['gateway'] = args
         else:
             self.pod_args['gateway'] = None
