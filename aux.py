@@ -82,7 +82,7 @@ from docarray.documents import TextDoc
 #         fields[field_name] = (field_type, field_schema.get('description'))
 #     return create_model(model_name, **fields)
 
-def _get_field_from_type(field_schema, field_name, root_schema, num_recursions=0):
+def _get_field_from_type(field_schema, field_name, root_schema, cached_models, num_recursions=0):
     field_type = field_schema.get('type', None)
     if field_type == 'string':
         ret = str
@@ -105,37 +105,29 @@ def _get_field_from_type(field_schema, field_name, root_schema, num_recursions=0
         for rec in range(num_recursions):
             ret = List[ret]
     elif field_type == 'object' or field_type is None:
-        # Check if array items are references to definitions
-        print(f' OBJ with {num_recursions}')
-        if num_recursions == 0:
-            if 'additionalProperties' in field_schema:
-                additional_props = field_schema['additionalProperties']
-                if additional_props.get('type') == 'object':
-                    ret = Dict[str, _create_pydantic_model_from_schema(additional_props, field_name)]
-                else:
-                    ret = Dict[str, Any]
+        if 'additionalProperties' in field_schema:  # handle Dictionaries
+            additional_props = field_schema['additionalProperties']
+            if additional_props.get('type') == 'object':
+                ret = Dict[str, _create_pydantic_model_from_schema(additional_props, field_name, cached_models=cached_models)]
             else:
-                obj_ref = field_schema.get('$ref')
-                print(f' obj_ref {obj_ref}')
+                ret = Dict[str, Any]
+        else:
+            obj_ref = field_schema.get('$ref')
+            if num_recursions == 0:  # single object reference
                 if obj_ref:
                     ref_name = obj_ref.split('/')[-1]
-                    ret = _create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name)
+                    ret = _create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name, cached_models=cached_models)
                 else:
-                    ret = _create_pydantic_model_from_schema(field_schema, field_name)
-        else:
-            items_ref = field_schema.get('items', {}).get('$ref')
-            print(f' items_ref {items_ref}')
-            if items_ref:
-                ref_name = items_ref.split('/')[-1]
-                ret = DocList[_create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name)]
-            else:
-                inner_doc = _create_pydantic_model_from_schema(field_schema.get('items', {}), field_name)
-                print(f' inner_doc {inner_doc}')
-                print(f' inner_doc {inner_doc.schema()}')
-                ret = DocList[inner_doc]
+                    ret = _create_pydantic_model_from_schema(field_schema, field_name, cached_models=cached_models)
+            else:  # object reference in definitions
+                if obj_ref:
+                    ref_name = obj_ref.split('/')[-1]
+                    ret = DocList[_create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name, cached_models=cached_models)]
+                else:
+                    ret = DocList[_create_pydantic_model_from_schema(field_schema, field_name, cached_models=cached_models)]
     elif field_type == 'array':
         ret = _get_field_from_type(field_schema=field_schema.get('items', {}), field_name=field_name,
-                                   root_schema=root_schema, num_recursions=num_recursions + 1)
+                                   root_schema=root_schema, cached_models=cached_models, num_recursions=num_recursions + 1)
     else:
         if num_recursions > 0:
             raise ValueError(f"Unknown array item type: {field_type} for field_name {field_name}")
@@ -144,13 +136,18 @@ def _get_field_from_type(field_schema, field_name, root_schema, num_recursions=0
     return ret
 
 
-def _create_pydantic_model_from_schema(schema: Dict[str, any], model_name: str) -> type:
+def _create_pydantic_model_from_schema(schema: Dict[str, any], model_name: str, cached_models: Dict) -> type:
     from pydantic import create_model
     fields = {}
+    if model_name in cached_models:
+        return cached_models[model_name]
     for field_name, field_schema in schema.get('properties', {}).items():
-        field_type = _get_field_from_type(field_schema=field_schema, field_name=field_name, root_schema=schema)
+        field_type = _get_field_from_type(field_schema=field_schema, field_name=field_name, root_schema=schema, cached_models=cached_models, num_recursions=0)
         fields[field_name] = (field_type, field_schema.get('description'))
-    return create_model(model_name, __base__=BaseDoc, **fields)
+
+    model = create_model(model_name, __base__=BaseDoc, **fields)
+    cached_models[model_name] = model
+    return model
 
 
 class CustomDoc(BaseDoc):
@@ -158,41 +155,18 @@ class CustomDoc(BaseDoc):
     url: ImageUrl
     lll: List[List[List[int]]] = [[[5]]]
     fff: List[List[List[float]]] = [[[5.2]]]
+    single_text: TextDoc
     texts: DocList[TextDoc]
+    d: Dict[str, str] = {'a': 'b'}
 
 
-print(f' A {CustomDoc.__annotations__}')
-import copy
-
-A = copy.deepcopy(CustomDoc)
-
-
-def update_fields_to_int(model):
-    updated_fields = {}
-
-    for field_name, field_value in model.__annotations__.items():
-        print(f' field_value {field_value}')
-        if field_value == str:
-            updated_fields[field_name] = (int, ...)
-        else:
-            updated_fields[field_name] = (field_value, ...)
-
-    updated_model = type(model.__name__, (model.__base__,), updated_fields)
-    return updated_model
-
-
-#A = update_fields_to_int(A)
-
-print(f'\n{CustomDoc.schema()}\n')
-print(f'\n{A.schema()}\n')
-new_model = _create_pydantic_model_from_schema(CustomDoc.schema(), 'CustomDoc')
-print(f'\n{new_model.schema()}\n')
 #
-original_docs = DocList[CustomDoc]([CustomDoc(url='/home/joan/Downloads/foto.jpg', lll=[[[40]]], fff=[[[40.2]]],
-                                              texts=DocList[TextDoc]([TextDoc(text='hey ha')]))])
+original_docs = DocList[CustomDoc]([CustomDoc(url='photo.jpg', lll=[[[40]]], fff=[[[40.2]]], d={'b': 'a'},
+                                              texts=DocList[TextDoc]([TextDoc(text='hey ha', embedding=np.zeros(3))]),
+                                              single_text=TextDoc(text='single hey ha', embedding=np.zeros(2)))])
 
-print(f' original_docs {original_docs.to_json()}')
-# new_model = _create_pydantic_model_from_schema(CustomDoc.schema(), 'Image')
+new_model = _create_pydantic_model_from_schema(CustomDoc.schema(), 'CustomDoc', {})
+
 for doc in original_docs:
     doc.tensor = np.zeros((10, 10, 10))
 
@@ -201,3 +175,4 @@ b = DocList[CustomDoc].from_protobuf(original_docs.to_protobuf())
 print(b.to_json())
 c = DocList[new_model].from_protobuf(original_docs.to_protobuf())
 print(c.to_json())
+#
