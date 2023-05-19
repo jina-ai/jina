@@ -1,5 +1,5 @@
 import copy
-from typing import Dict, Tuple, List, Any
+from typing import Dict, Tuple, List, Any, Union
 from jina._docarray import docarray_v2
 
 _SPECIFIC_EXECUTOR_SEPARATOR = '__'
@@ -86,7 +86,19 @@ if docarray_v2:
 
     def _get_field_from_type(field_schema, field_name, root_schema, cached_models, num_recursions=0):
         field_type = field_schema.get('type', None)
-        if field_type == 'string':
+        if 'anyOf' in field_schema:
+            any_of_types = []
+            for any_of_schema in field_schema['anyOf']:
+                if '$ref' in any_of_schema:
+                    obj_ref = any_of_schema.get('$ref')
+                    ref_name = obj_ref.split('/')[-1]
+                    any_of_types.append(_create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name, cached_models=cached_models))
+                else:
+                    any_of_types.append(_get_field_from_type(any_of_schema, field_name, root_schema=root_schema, cached_models=cached_models, num_recursions=0)) # No Union of Lists
+            ret = Union[tuple(any_of_types)]
+            for rec in range(num_recursions):
+                ret = List[ret]
+        elif field_type == 'string':
             ret = str
             for rec in range(num_recursions):
                 ret = List[ret]

@@ -81,8 +81,8 @@ class RequestStreamer:
         for endp in endpoints:
             for origin_node in topology_graph.origin_nodes:
                 _endpoints_models_map[endp] = origin_node._get_leaf_input_output_model(previous_input=None,
-                                                             previous_output=None,
-                                                             endpoint=endp)[0]
+                                                                                       previous_output=None,
+                                                                                       endpoint=endp)[0]
         return _endpoints_models_map
 
     async def stream(

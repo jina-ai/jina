@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Union
 import pytest
 import numpy as np
 from docarray import BaseDoc, DocList
@@ -34,7 +34,8 @@ def test_different_document_schema(protocols, replicas):
             c = Client(port=port, protocol=protocol)
             docs = c.post(
                 on='/foo',
-                inputs=DocList[Image]([Image(url='https://via.placeholder.com/150.png', texts=DocList[TextDoc]([TextDoc('hey')]))]),
+                inputs=DocList[Image](
+                    [Image(url='https://via.placeholder.com/150.png', texts=DocList[TextDoc]([TextDoc('hey')]))]),
                 return_type=DocList[Image],
             )
             docs = docs.to_doc_vec()
@@ -224,9 +225,44 @@ def test_default_endpoint(protocols):
 
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
-def test_complex_topology_bifurcation(protocols):
+@pytest.mark.parametrize('reduce', [True, False])
+def test_complex_topology_bifurcation(protocols, reduce):
     # TODO: Test how it behaves with complex topologies where bifurcation and reduction occur
-    pass
+    class DocTest(BaseDoc):
+        text: str
+
+    class ExecutorTest(Executor):
+        def __init__(self, text, **kwargs):
+            super().__init__(**kwargs)
+            self.text = text
+
+        @requests
+        def endpoint(self, docs: DocList[DocTest], **kwargs) -> DocList[DocTest]:
+            for doc in docs:
+                doc.text = self.text
+
+    class ReduceExecutorTest(Executor):
+
+        @requests
+        def endpoint(self, docs: DocList[DocTest], **kwargs) -> DocList[DocTest]:
+            return docs
+
+    ports = [random_port() for _ in protocols]
+    flow = (
+        Flow(protocol=protocols, port=ports)
+            .add(uses=ExecutorTest, uses_with={'text': 'exec1'}, name='pod0')
+            .add(uses=ExecutorTest, uses_with={'text': 'exec2'}, needs='gateway', name='pod1')
+            .add(uses=ExecutorTest, uses_with={'text': 'exec3'}, needs='gateway', name='pod2')
+            .add(needs=['pod0', 'pod1', 'pod2'], uses=ReduceExecutorTest, no_reduce=not reduce, name='pod3')
+    )
+
+    with flow:
+        for port, protocol in zip(ports, protocols):
+            c = Client(port=port, protocol=protocol)
+            docs = c.post('/', inputs=DocList[DocTest]([DocTest(text='') for _ in range(5)]), return_type=DocList[DocTest])
+            assert len(docs) == 5
+            for doc in docs:
+                assert doc.text == 'exec1'
 
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
@@ -285,6 +321,8 @@ def test_deployments_complex_model(protocols, replicas):
         single_text: TextDoc
         texts: DocList[TextDoc]
         d: Dict[str, str] = {'a': 'b'}
+        u: Union[str, int]
+        lu: List[Union[str, int]] = [0, 1, 2]
 
     class MyExec(Executor):
         @requests(on='/bar')
@@ -292,7 +330,8 @@ def test_deployments_complex_model(protocols, replicas):
             docs_return = DocList[OutputDoc](
                 [OutputDoc(url='photo.jpg', lll=[[[40]]], fff=[[[40.2]]], d={'b': 'a'},
                            texts=DocList[TextDoc]([TextDoc(text='hey ha', embedding=np.zeros(3))]),
-                           single_text=TextDoc(text='single hey ha', embedding=np.zeros(2))) for _ in range(len(docs))]
+                           single_text=TextDoc(text='single hey ha', embedding=np.zeros(2)), u='a', lu=[3, 4]) for _ in
+                 range(len(docs))]
             )
             return docs_return
 
@@ -309,6 +348,8 @@ def test_deployments_complex_model(protocols, replicas):
             assert docs[0].lll == [[[40]]]
             assert docs[0].fff == [[[40.2]]]
             assert docs[0].d == {'b': 'a'}
+            assert docs[0].u == 'a'
+            assert docs[0].lu == ['3', '4']
             assert len(docs[0].texts) == 1
             assert docs[0].single_text.text == 'single hey ha'
             assert docs[0].single_text.embedding.shape == (2,)
@@ -391,8 +432,6 @@ def test_deployments_with_shards_all_shards_return(reduce):
             [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(10)]
         )
         dep.index(inputs=index_da, request_size=1, return_type=DocList[TextDocWithId])
-        import time
-        time.sleep(2)
         responses = dep.search(inputs=index_da[0:1], request_size=1, return_type=DocList[ResultTestDoc])
         assert len(responses) == 1 if reduce else 2
         for r in responses:

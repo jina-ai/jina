@@ -139,7 +139,8 @@ class TopologyGraph:
                             output_model_name = inner_dict['output']['name']
                             output_model_schema = inner_dict['output']['model']
                             if input_model_name not in models_created_by_name:
-                                input_model = _create_pydantic_model_from_schema(input_model_schema, input_model_name, {})
+                                input_model = _create_pydantic_model_from_schema(input_model_schema, input_model_name,
+                                                                                 {})
                                 models_created_by_name[input_model_name] = input_model
                             if output_model_name not in models_created_by_name:
                                 output_model = _create_pydantic_model_from_schema(output_model_schema,
@@ -254,20 +255,28 @@ class TopologyGraph:
 
             return None, {}
 
-        def _get_output_model_for_endpoint(self,
+        def _get_input_output_model_for_endpoint(self,
                                            previous_input,
                                            previous_output,
                                            endpoint):
+
             if endpoint in self.endpoints:
                 # update output
                 new_input = previous_input
                 if previous_input is None:
                     new_input = self._pydantic_models_by_endpoint[endpoint]['input']
 
-                return {
-                    'input': new_input,
-                    'output': self._pydantic_models_by_endpoint[endpoint]['output'],
-                }
+                if previous_output and previous_output.schema() == self._pydantic_models_by_endpoint[endpoint]["output"].schema():
+                    # this is needed to not mix model IDs, otherwise FastAPI gets crazy
+                    return {
+                        'input': new_input,
+                        'output': previous_output,
+                    }
+                else:
+                    return {
+                        'input': new_input,
+                        'output': self._pydantic_models_by_endpoint[endpoint]['output'],
+                    }
             else:
                 return {
                     'input': previous_input,
@@ -280,9 +289,9 @@ class TopologyGraph:
                 previous_output,
                 endpoint: Optional[str] = None,
         ):
-            new_map = self._get_output_model_for_endpoint(previous_input,
-                                                          previous_output,
-                                                          endpoint)
+            new_map = self._get_input_output_model_for_endpoint(previous_input,
+                                                                previous_output,
+                                                                endpoint)
             if self.leaf:  # I am like a leaf
                 return list([new_map])  # I am the last in the chain
             list_of_outputs = []
