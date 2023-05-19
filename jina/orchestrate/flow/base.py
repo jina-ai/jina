@@ -75,7 +75,15 @@ from jina.parsers.flow import set_flow_parser
 
 __all__ = ['Flow']
 GATEWAY_ARGS_BLACKLIST = ['uses', 'uses_with']
-EXECUTOR_ARGS_BLACKLIST = ['port', 'port_monitoring', 'uses', 'uses_with', 'protocol']
+EXECUTOR_ARGS_BLACKLIST = [
+    'port',
+    'ports',
+    'port_monitoring',
+    'uses',
+    'uses_with',
+    'protocol',
+    'protocols',
+]
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
