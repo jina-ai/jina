@@ -24,12 +24,9 @@
 
 <!-- start jina-description -->
 
-Jina is an MLOps framework to build multimodal AI microservice-based applications written in Python that can communicate via gRPC, HTTP and WebSocket protocols.
-It allows developers to build and serve **services** and **pipelines** while **scaling** and **deploying** them to a production while removing the complexity, letting them focus on the 
-logic/algorithmic part, saving valuable time and resources for engineering teams.
+Jina lets you build multimodal AI services and pipelines that communicate via gRPC, HTTP and WebSockets, then scale them up and deploy to production. You can focus on your logic and algorithms, without worrying about the infrastructure complexity.
 
-Jina aims to provide a smooth Pythonic experience transitioning from local deployment to deploying to advanced orchestration frameworks such as Docker-Compose, Kubernetes, or Jina AI Cloud.
-It handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer.
+Jina provides a smooth Pythonic experience transitioning from local deployment to advanced orchestration frameworks like Docker-Compose, Kubernetes, or Jina AI Cloud. Jina makes advanced solution engineering and cloud-native technologies accessible to every developer.
 
 <p align="center">
 <strong><a href="#build-ai-services">Build and deploy a gRPC microservice</a> • <a href="#build-a-pipeline">Build and deploy a pipeline</a></strong>
@@ -57,6 +54,8 @@ Applications built with Jina enjoy the following features out of the box:
   - Improved engineering efficiency thanks to the Jina AI ecosystem, so you can focus on innovating with the data applications you build.
   - Free CPU/GPU hosting via [Jina AI Cloud](https://cloud.jina.ai).
 
+<details>
+    <summary><strong>Wait, how is Jina different from FastAPI?</strong></summary>
 Jina's value proposition may seem quite similar to that of FastAPI. However, there are several fundamental differences:
 
  **Data structure and communication protocols**
@@ -71,6 +70,7 @@ Jina's value proposition may seem quite similar to that of FastAPI. However, the
   - Jina provides a smooth transition from local development (using [DocArray](https://github.com/docarray/docarray)) to local serving using (Jina's orchestration layer)
   to having production-ready services by using Kubernetes capacity to orchestrate the lifetime of containers.
   - By using [Jina AI Cloud](https://cloud.jina.ai) you have access to scalable and serverless deployments of your applications in one command.
+</details>
 
 <!-- end jina-description -->
 
