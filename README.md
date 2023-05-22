@@ -168,7 +168,9 @@ Then we deploy it with either the Python API or YAML:
 from jina import Deployment
 from translate_executor import Translator
 
-with Deployment(uses=Translator, timeout_ready=-1, port=12345) as dep:
+dep = Deployment(uses=Translator, timeout_ready=-1, port=12345) as dep:
+
+with dep:
     dep.block()
 ```
 
