@@ -50,7 +50,7 @@ Applications built with Jina enjoy the following features out of the box:
 
 ☁️ **Cloud native**
   - Seamless Docker container integration: sharing, exploring, sandboxing, versioning and dependency control via [Executor Hub](https://cloud.jina.ai).
-  - Full observability via OpenTelemetry, Prometheus and Grafana.
+  - Full observability via OpenTelemetry and Prometheus.
   - Fast deployment to Kubernetes and Docker Compose.
 
 🍱 **Ecosystem**
@@ -347,8 +347,7 @@ Why not just use standard Python to build that microservice and pipeline? Jina a
 
 ### Easy scalability and concurrency
 
-Jina comes with scalability features out of the box like [replicas](https://docs.jina.ai/concepts/orchestration/scale-out/#replicate-executors), [shards](https://docs.jina.ai/concepts/orchestration/scale-out/#customize-polling-behaviors) and [dynamic batching](https://docs.jina.ai/concepts/serving/executor/dynamic-batching/).
-This lets you easily increase your application's throughput.
+Increase your application's throughput with scalability features out of the box, like [replicas](https://docs.jina.ai/concepts/orchestration/scale-out/#replicate-executors), [shards](https://docs.jina.ai/concepts/orchestration/scale-out/#customize-polling-behaviors) and [dynamic batching](https://docs.jina.ai/concepts/serving/executor/dynamic-batching/).
 
 Let's scale a Stable Diffusion Executor deployment with replicas and dynamic batching:
 
@@ -395,7 +394,6 @@ with:
 </tr>
 </table>
 </div>
-
 
 Assuming your machine has two GPUs, using the scaled deployment YAML will give better throughput compared to the normal deployment.
 
