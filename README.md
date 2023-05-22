@@ -14,7 +14,6 @@
 <b>Build multimodal AI services with cloud native technologies</b>
 </p>
 
-
 <p align=center>
 <a href="https://pypi.org/project/jina/"><img alt="PyPI" src="https://img.shields.io/pypi/v/jina?label=Release&style=flat-square"></a>
 <!--<a href="https://codecov.io/gh/jina-ai/jina"><img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/jina-ai/jina/master?&logo=Codecov&logoColor=white&style=flat-square"></a>-->
@@ -31,8 +30,6 @@ logic/algorithmic part, saving valuable time and resources for engineering teams
 
 Jina aims to provide a smooth Pythonic experience transitioning from local deployment to deploying to advanced orchestration frameworks such as Docker-Compose, Kubernetes, or Jina AI Cloud.
 It handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer.
-
-
 
 <p align="center">
 <strong><a href="#build-ai-services">Build and deploy a gRPC microservice</a> • <a href="#build-a-pipeline">Build and deploy a pipeline</a></strong>
@@ -403,38 +400,6 @@ with:
 Assuming your machine has two GPUs, using the scaled deployment YAML will give better throughput compared to the normal deployment.
 
 These features apply to both [Deployment YAML](https://docs.jina.ai/concepts/executor/deployment-yaml-spec/#deployment-yaml-spec) and [Flow YAML](https://docs.jina.ai/concepts/flow/yaml-spec/). Thanks to the YAML syntax, you can inject deployment configurations regardless of Executor code.
-
----
-
-### Seamless container integration
-
-Use [Executor Hub](https://cloud.jina.ai) to share your Executors or use public/private Executors, with no need to worry about dependencies.
-
-To create an Executor:
-
-```bash
-jina hub new 
-```
-
-To push it to Executor Hub:
-
-```bash
-jina hub push .
-```
-
-To use a Hub Executor in your Flow:
-
-|        | Docker container                           | Sandbox                                     | Source                              |
-|--------|--------------------------------------------|---------------------------------------------|-------------------------------------|
-| YAML   | `uses: jinaai+docker://<username>/MyExecutor`        | `uses: jinaai+sandbox://<username>/MyExecutor`        | `uses: jinaai://<username>/MyExecutor`        |
-| Python | `.add(uses='jinaai+docker://<username>/MyExecutor')` | `.add(uses='jinaai+sandbox://<username>/MyExecutor')` | `.add(uses='jinaai://<username>/MyExecutor')` |
-
-Executor Hub manages everything on the backend:
-
-- Automated builds on the cloud
-- Store, deploy, and deliver Executors cost-efficiently;
-- Automatically resolve version conflicts and dependencies;
-- Instant delivery of any Executor via [Sandbox](https://docs.jina.ai/concepts/executor/hub/sandbox/) without pulling anything to local.
 
 ---
 
