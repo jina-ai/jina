@@ -422,41 +422,7 @@ docker-compose up
 > **Note**
 > You can also export Deployment YAML to [Kubernetes](https://docs.jina.ai/concepts/executor/serve/#serve-via-kubernetes) and [Docker Compose](https://docs.jina.ai/concepts/executor/serve/#serve-via-docker-compose).
 
-Likewise, tracing and monitoring with OpenTelemetry is straightforward:
-
-```python
-from docarray import DocumentArray
-from jina import Executor, requests
-
-
-class Encoder(Executor):
-    @requests
-    def encode(self, docs: DocumentArray, **kwargs):
-        with self.tracer.start_as_current_span(
-            'encode', context=tracing_context
-        ) as span:
-            with self.monitor(
-                'preprocessing_seconds', 'Time preprocessing the requests'
-            ):
-                docs.tensors = preprocessing(docs)
-            with self.monitor(
-                'model_inference_seconds', 'Time doing inference the requests'
-            ):
-                docs.embedding = model_inference(docs.tensors)
-```
-
-You can integrate Jaeger or any other distributed tracing tools to collect and visualize request-level and application level service operation attributes. This helps you analyze request-response lifecycle, application behavior and performance.
-
-To use Grafana, [download this JSON](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow-histogram-metrics.json) and import it into Grafana:
-
-<p align="center">
-<a href="https://docs.jina.ai"><img src=".github/readme/grafana-histogram-metrics.png?raw=true" alt="Jina: Seamless Container Integration" width="70%"></a>
-</p>
-
-To trace requests with Jaeger:
-<p align="center">
-<a href="https://docs.jina.ai"><img src=".github/readme/jaeger-tracing-example.png?raw=true" alt="Jina: Seamless Container Integration" width="70%"></a>
-</p>
+That's not all. We also support [OpenTelemetry, Prometheus, and Jaeger](https://docs.jina.ai/cloud-nativeness/opentelemetry/).
 
 What cloud-native technology is still challenging to you? [Tell us](https://github.com/jina-ai/jina/issues) and we'll handle the complexity and make it easy for you.
 
