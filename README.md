@@ -168,7 +168,7 @@ Then we deploy it with either the Python API or YAML:
 from jina import Deployment
 from translate_executor import Translator
 
-with Deployment(uses=Translator, timeout_ready=-1) as dep:
+with Deployment(uses=Translator, timeout_ready=-1, port=12345) as dep:
     dep.block()
 ```
 
@@ -182,6 +182,7 @@ with:
   py_modules:
     - translate_executor.py # name of the module containing Translator
   timeout_ready: -1
+  port: 12345
 ```
 
 And run the YAML Deployment with the CLI: `jina deployment --uses deployment.yml`
@@ -190,16 +191,6 @@ And run the YAML Deployment with the CLI: `jina deployment --uses deployment.yml
 </tr>
 </table>
 </div>
-
-```text
-──────────────────────────────────────── 🎉 Deployment is ready to serve! ─────────────────────────────────────────
-╭────────────── 🔗 Endpoint ───────────────╮
-│  ⛓      Protocol                   GRPC │
-│  🏠        Local          0.0.0.0:12345  │
-│  🔒      Private      172.28.0.12:12345  │
-│  🌍       Public    35.230.97.208:12345  │
-╰──────────────────────────────────────────╯
-```
 
 Use [Jina Client](https://docs.jina.ai/concepts/client/) to make requests to the service:
 
@@ -257,7 +248,7 @@ from jina import Flow
 
 flow = (
     Flow()
-    .add(uses=Translator, timeout_ready=-1)
+    .add(uses=Translator, timeout_ready=-1, port=12345)
     .add(
         uses='jinaai://jina-ai/TextToImage',
         timeout_ready=-1,
@@ -274,6 +265,8 @@ with flow:
 
 ```yaml
 jtype: Flow
+with:
+    port: 12345
 executors:
   - uses: Translator
     timeout_ready: -1
@@ -290,16 +283,6 @@ Then run the YAML Flow with the CLI: `jina flow --uses flow.yml`
 </tr>
 </table>
 </div>
-
-```text
-─────────────────────────────────────────── 🎉 Flow is ready to serve! ────────────────────────────────────────────
-╭────────────── 🔗 Endpoint ───────────────╮
-│  ⛓      Protocol                   GRPC  │
-│  🏠        Local          0.0.0.0:12345  │
-│  🔒      Private      172.28.0.12:12345  │
-│  🌍       Public    35.240.201.66:12345  │
-╰──────────────────────────────────────────╯
-```
 
 Then, use [Jina Client](https://docs.jina.ai/concepts/client/) to make requests to the Flow:
 
