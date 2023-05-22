@@ -77,16 +77,12 @@ Jina's value proposition may seem quite similar to that of FastAPI. However, the
 
 <!-- end jina-description -->
 
-<p align="center">
-<a href="#"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/core-tree-graph.svg?raw=true" alt="Jina in Jina AI neural search ecosystem" width="100%"></a>
-</p>
-
 ## [Documentation](https://docs.jina.ai)
 
 ## Install 
 
 ```bash
-pip install jina transformers sentencepiece
+pip install jina
 ```
 
 Find more install options on [Apple Silicon](https://docs.jina.ai/get-started/install/apple-silicon-m1-m2/)/[Windows](https://docs.jina.ai/get-started/install/windows/).
