@@ -101,10 +101,6 @@ Jina has four fundamental concepts:
 
 ---
 
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/streamline-banner.png?raw=true" alt="Jina: Streamline AI & ML Product Delivery" width="100%"></a>
-</p>
-
 ### Build AI Services
 <!-- start build-ai-services -->
 
@@ -350,15 +346,7 @@ Check [the getting-started project source code](https://github.com/jina-ai/jina/
 
 ---
 
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/no-complexity-banner.png?raw=true" alt="Jina: No Infrastructure Complexity, High Engineering Efficiency" width="100%"></a>
-</p>
-
 Why not just use standard Python to build that microservice and pipeline? Jina accelerates time to market of your application by making it more scalable and cloud-native. Jina also handles the infrastructure complexity in production and other Day-2 operations so that you can focus on the data application itself.
-
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/scalability-banner.png?raw=true" alt="Jina: Scalability and concurrency with ease" width="100%"></a>
-</p>
 
 ### Easy scalability and concurrency
 
@@ -418,10 +406,6 @@ These features apply to both [Deployment YAML](https://docs.jina.ai/concepts/exe
 
 ---
 
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/container-banner.png?raw=true" alt="Jina: Seamless Container Integration" width="100%"></a>
-</p>
-
 ### Seamless container integration
 
 Use [Executor Hub](https://cloud.jina.ai) to share your Executors or use public/private Executors, with no need to worry about dependencies.
@@ -453,10 +437,6 @@ Executor Hub manages everything on the backend:
 - Instant delivery of any Executor via [Sandbox](https://docs.jina.ai/concepts/executor/hub/sandbox/) without pulling anything to local.
 
 ---
-
-<p align="center">
-<a href="https://docs.jina.ai"><img src=".github/readme/cloud-native-banner.png?raw=true" alt="Jina: Seamless Container Integration" width="100%"></a>
-</p>
 
 ### Get on the fast lane to cloud-native
 
