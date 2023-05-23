@@ -10,8 +10,6 @@ from typing import (
     Union,
 )
 
-from aiostream.aiter_utils import anext
-
 from jina.excepts import InternalNetworkError
 from jina.logging.logger import JinaLogger
 from jina.serve.stream.helper import AsyncRequestsIterator, _RequestsCounter
@@ -303,4 +301,4 @@ class RequestStreamer:
         :param context: grpc context
         :return: response DataRequest
         """
-        return await anext(self.stream(iter([request]), context=context))
+        return await self.stream(iter([request]), context=context).__anext__()
