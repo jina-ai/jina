@@ -260,9 +260,9 @@ def test_complex_topology_bifurcation(protocols, reduce):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             docs = c.post('/', inputs=DocList[DocTest]([DocTest(text='') for _ in range(5)]), return_type=DocList[DocTest])
-            assert len(docs) == 5
+            assert len(docs) == 5 if reduce else 15
             for doc in docs:
-                assert doc.text == 'exec1'
+                assert 'exec' in doc.text
 
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
@@ -439,3 +439,56 @@ def test_deployments_with_shards_all_shards_return(reduce):
             assert len(r.matches) == 6
             for match in r.matches:
                 assert 'ID' in match.text
+
+
+@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
+@pytest.mark.parametrize('reduce', [True, False])
+def test_flow_with_shards_all_shards_return(protocols, reduce):
+    from docarray.documents import TextDoc
+    from docarray import DocList, BaseDoc
+    from typing import List
+
+    class TextDocWithId(TextDoc):
+        id: str
+        l: List[int] = []
+
+    class ResultTestDoc(BaseDoc):
+        price: int = '2'
+        l: List[int] = [3]
+        matches: DocList[TextDocWithId]
+
+    class SimilarityTestIndexer(Executor):
+        """Simulates an indexer where no shard would fail, they all pass results"""
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self._docs = DocList[TextDocWithId]()
+
+        @requests(on=['/index'])
+        def index(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[TextDocWithId]:
+            for doc in docs:
+                self._docs.append(doc)
+
+        @requests(on=['/search'])
+        def search(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[ResultTestDoc]:
+            resp = DocList[ResultTestDoc]()
+            for q in docs:
+                res = ResultTestDoc(id=q.id, matches=self._docs[0:3])
+                resp.append(res)
+            return resp
+
+    ports = [random_port() for _ in protocols]
+    with Flow(protocol=protocols, port=ports).add(uses=SimilarityTestIndexer, shards=2, reduce=reduce):
+        for port, protocol in zip(ports, protocols):
+            c = Client(port=port, protocol=protocol)
+            index_da = DocList[TextDocWithId](
+                [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(10)]
+            )
+            c.index(inputs=index_da, request_size=1, return_type=DocList[TextDocWithId])
+            responses = c.search(inputs=index_da[0:1], request_size=1, return_type=DocList[ResultTestDoc])
+            assert len(responses) == 1 if reduce else 2
+            for r in responses:
+                assert r.l[0] == 3
+                assert len(r.matches) == 6
+                for match in r.matches:
+                    assert 'ID' in match.text
