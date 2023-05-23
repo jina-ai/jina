@@ -687,6 +687,23 @@ jc<span class="w"> </span>-h
 <a class="reference internal image-reference" href="../../_images/scale_executor.png"><img alt="../../_images/scale_executor.png" src="../../_images/scale_executor.png" style="width: 70%;" /></a>
 </figure>
 </section>
+<section id="get-executor-or-gateway-logs">
+<h3>Get Executor or Gateway logs<a class="headerlink" href="#get-executor-or-gateway-logs" title="Permalink to this heading">#</a></h3>
+<p>To get the Gateway logs:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>logs<span class="w"> </span>--gateway<span class="w"> </span>central-escargot-354a796df5
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/gateway_logs.png"><img alt="../../_images/gateway_logs.png" src="../../_images/gateway_logs.png" style="width: 70%;" /></a>
+</figure>
+<p>To get the Executor logs:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>logs<span class="w"> </span>--executor<span class="w"> </span>executor0<span class="w"> </span>central-escargot-354a796df5
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/executor_logs.png"><img alt="../../_images/executor_logs.png" src="../../_images/executor_logs.png" style="width: 70%;" /></a>
+</figure>
+</section>
 </section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading">#</a></h2>
@@ -694,7 +711,7 @@ jc<span class="w"> </span>-h
 </section>
 <section id="restrictions">
 <h2>Restrictions<a class="headerlink" href="#restrictions" title="Permalink to this heading">#</a></h2>
-<p>Jina AI Cloud scales according to your needs. You can demand different instance types with GPU/memory/CPU predefined based on the needs of your Flows and Executors. If you have specific resource requirements, please contact us <a class="reference external" href="https://jina.ai/slack">on Slack</a> or raise a <a class="reference external" href="https://github.com/jina-ai/jcloud/issues/new/choose">GitHub issue</a>.</p>
+<p>Jina AI Cloud scales according to your needs. You can demand different instance types with GPU/memory/CPU predefined based on the needs of your Flows and Executors. If you have specific resource requirements, please contact us <a class="reference external" href="https://discord.jina.ai">on Discord</a> or raise a <a class="reference external" href="https://github.com/jina-ai/jcloud/issues/new/choose">GitHub issue</a>.</p>
 <div class="admonition-restrictions admonition">
 <p class="admonition-title">Restrictions</p>
 <ul class="simple">
@@ -735,14 +752,14 @@ jc<span class="w"> </span>-h
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 15, 2023</div>
+                            Last updated on May 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
                             <a class='social-btn' href="https://github.com/jina-ai/jina" aria-label="GitHub"
                                target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
-                            <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank"
-                               rel="noreferrer"> <i class="fab fa-slack"></i></a>
+                            <a class='social-btn' href="https://discord.jina.ai" aria-label="Discord" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-discord"></i></a>
                             <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
                                target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
                             <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
@@ -783,6 +800,7 @@ jc<span class="w"> </span>-h
 <li><a class="reference internal" href="#restart-flow-executor-or-gateway">Restart Flow, Executor or Gateway</a></li>
 <li><a class="reference internal" href="#recreate-a-deleted-flow">Recreate a Deleted Flow</a></li>
 <li><a class="reference internal" href="#scale-an-executor">Scale an Executor</a></li>
+<li><a class="reference internal" href="#get-executor-or-gateway-logs">Get Executor or Gateway logs</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#configuration">Configuration</a></li>

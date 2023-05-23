@@ -490,7 +490,15 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">]</span>
 <span class="n">GATEWAY_ARGS_BLACKLIST</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;uses&#39;</span><span class="p">,</span> <span class="s1">&#39;uses_with&#39;</span><span class="p">]</span>
-<span class="n">EXECUTOR_ARGS_BLACKLIST</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">,</span> <span class="s1">&#39;port_monitoring&#39;</span><span class="p">,</span> <span class="s1">&#39;uses&#39;</span><span class="p">,</span> <span class="s1">&#39;uses_with&#39;</span><span class="p">,</span> <span class="s1">&#39;protocol&#39;</span><span class="p">]</span>
+<span class="n">EXECUTOR_ARGS_BLACKLIST</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;port&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ports&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;port_monitoring&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;uses&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;uses_with&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;protocol&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;protocols&#39;</span><span class="p">,</span>
+<span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">FlowType</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ExitStack</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">)):</span>
@@ -2741,6 +2749,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">_ports</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">_p</span><span class="p">)</span> <span class="k">for</span> <span class="n">_p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">]</span>
 
+        <span class="n">swagger_ui_link</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">redoc_link</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">graphql_ui_link</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">_port</span><span class="p">,</span> <span class="n">_protocol</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_ports</span><span class="p">,</span> <span class="n">_protocols</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_args</span><span class="o">.</span><span class="n">ssl_certfile</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_args</span><span class="o">.</span><span class="n">ssl_keyfile</span><span class="p">:</span>
                 <span class="n">_protocol</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">S&#39;</span>
@@ -2770,6 +2781,11 @@
                     <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">[/]&#39;</span><span class="p">,</span>
                 <span class="p">)</span>
 
+            <span class="k">if</span> <span class="n">_protocol</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">ProtocolType</span><span class="o">.</span><span class="n">HTTP</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="n">swagger_ui_link</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">/docs]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">/docs&#39;</span>
+                <span class="n">redoc_link</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">/redoc]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">/redoc&#39;</span>
+                <span class="n">graphql_ui_link</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">/graphql]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">/graphql&#39;</span>
+
         <span class="n">all_panels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="n">Panel</span><span class="p">(</span>
                 <span class="n">address_table</span><span class="p">,</span>
@@ -2786,22 +2802,14 @@
             <span class="n">http_ext_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                 <span class="s1">&#39;:speech_balloon:&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;Swagger UI&#39;</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/docs]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/docs&#39;</span><span class="p">,</span>
+                <span class="n">swagger_ui_link</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="n">http_ext_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-                <span class="s1">&#39;:books:&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;Redoc&#39;</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/redoc]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/redoc&#39;</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="n">http_ext_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">&#39;:books:&#39;</span><span class="p">,</span> <span class="s1">&#39;Redoc&#39;</span><span class="p">,</span> <span class="n">redoc_link</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_args</span><span class="o">.</span><span class="n">expose_graphql_endpoint</span><span class="p">:</span>
 
-                <span class="n">http_ext_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-                    <span class="s1">&#39;:strawberry:&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;GraphQL UI&#39;</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/graphql]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/graphql&#39;</span><span class="p">,</span>
-                <span class="p">)</span>
+                <span class="n">http_ext_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">&#39;:strawberry:&#39;</span><span class="p">,</span> <span class="s1">&#39;GraphQL UI&#39;</span><span class="p">,</span> <span class="n">graphql_ui_link</span><span class="p">)</span>
 
             <span class="n">all_panels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">Panel</span><span class="p">(</span>
@@ -3280,14 +3288,14 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 15, 2023</div>
+                            Last updated on May 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
                             <a class='social-btn' href="https://github.com/jina-ai/jina" aria-label="GitHub"
                                target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
-                            <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank"
-                               rel="noreferrer"> <i class="fab fa-slack"></i></a>
+                            <a class='social-btn' href="https://discord.jina.ai" aria-label="Discord" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-discord"></i></a>
                             <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
                                target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
                             <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"

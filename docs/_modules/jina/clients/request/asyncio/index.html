@@ -456,10 +456,19 @@
                 <span class="n">endpoint</span><span class="o">=</span><span class="n">exec_endpoint</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">target_executor</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-                <span class="kn">import</span> <span class="nn">aiostream</span>
-
-            <span class="k">async</span> <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">aiostream</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">chunks</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">request_size</span><span class="p">):</span>
+            <span class="n">batch</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">batch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">request_size</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">_new_data_request_from_batch</span><span class="p">(</span>
+                        <span class="n">batch</span><span class="o">=</span><span class="n">batch</span><span class="p">,</span>
+                        <span class="n">data_type</span><span class="o">=</span><span class="n">data_type</span><span class="p">,</span>
+                        <span class="n">endpoint</span><span class="o">=</span><span class="n">exec_endpoint</span><span class="p">,</span>
+                        <span class="n">target</span><span class="o">=</span><span class="n">target_executor</span><span class="p">,</span>
+                        <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">batch</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">_new_data_request_from_batch</span><span class="p">(</span>
                     <span class="n">batch</span><span class="o">=</span><span class="n">batch</span><span class="p">,</span>
                     <span class="n">data_type</span><span class="o">=</span><span class="n">data_type</span><span class="p">,</span>
@@ -485,14 +494,14 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 15, 2023</div>
+                            Last updated on May 23, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
                             <a class='social-btn' href="https://github.com/jina-ai/jina" aria-label="GitHub"
                                target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
-                            <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank"
-                               rel="noreferrer"> <i class="fab fa-slack"></i></a>
+                            <a class='social-btn' href="https://discord.jina.ai" aria-label="Discord" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-discord"></i></a>
                             <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
                                target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
                             <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
