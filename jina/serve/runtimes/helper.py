@@ -82,7 +82,21 @@ if docarray_v2:
     from jina._docarray import docarray_v2
     from docarray import DocList, BaseDoc
     from docarray.typing import AnyTensor
+    from pydantic import create_model
 
+
+    def _create_aux_model_doc_list_to_list(model):
+        fields = {}
+        for field_name, field in model.__annotations__.items():
+            try:
+                if issubclass(field, DocList):
+                    fields[field_name] = (List[field.doc_type], {})
+                else:
+                    fields[field_name] = (field, {})
+            except TypeError:
+                fields[field_name] = (field, {})
+        return create_model(model.__name__, __base__=model, __validators__=model.__validators__,
+                            **fields)
 
     def _get_field_from_type(field_schema, field_name, root_schema, cached_models, num_recursions=0):
         field_type = field_schema.get('type', None)
@@ -126,7 +140,7 @@ if docarray_v2:
                 else:
                     ret = Dict[str, Any]
             else:
-                obj_ref = field_schema.get('$ref')
+                obj_ref = field_schema.get('$ref') or field_schema.get('allOf', [{}])[0].get('$ref', None)
                 if num_recursions == 0:  # single object reference
                     if obj_ref:
                         ref_name = obj_ref.split('/')[-1]
@@ -151,7 +165,6 @@ if docarray_v2:
 
 
     def _create_pydantic_model_from_schema(schema: Dict[str, any], model_name: str, cached_models: Dict) -> type:
-        from pydantic import create_model
         fields = {}
         if model_name in cached_models:
             return cached_models[model_name]

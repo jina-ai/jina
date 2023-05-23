@@ -785,30 +785,18 @@ class WorkerRequestHandler:
         )
         schemas = self._executor._get_endpoint_models_dict()
         if docarray_v2:
-            from docarray import DocList
             from docarray.documents.legacy import LegacyDocument
-            def _create_aux_model_doc_list_to_list(model):
-                from pydantic import create_model
-                fields = {}
-                for field_name, field in model.__annotations__.items():
-                    try:
-                        if issubclass(field, DocList):
-                            fields[field_name] = (List[field.doc_type], {})
-                        else:
-                            fields[field_name] = (field, {})
-                    except TypeError:
-                        fields[field_name] = (field, {})
-                return create_model(model.__name__, __base__=model, __validators__=model.__validators__,
-                                    **fields)
+            from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list
 
+            legacy_doc_schema = LegacyDocument.schema()
             for endpoint_name, inner_dict in schemas.items():
-                if inner_dict['input']['model'].schema() == LegacyDocument.schema():
-                    inner_dict['input']['model'] = LegacyDocument.schema()
+                if inner_dict['input']['model'].schema() == legacy_doc_schema:
+                    inner_dict['input']['model'] = legacy_doc_schema
                 else:
                     inner_dict['input']['model'] = _create_aux_model_doc_list_to_list(inner_dict['input']['model']).schema()
 
-                if inner_dict['output']['model'].schema() == LegacyDocument.schema():
-                    inner_dict['output']['model'] = LegacyDocument.schema()
+                if inner_dict['output']['model'].schema() == legacy_doc_schema:
+                    inner_dict['output']['model'] = legacy_doc_schema
                 else:
                     inner_dict['output']['model'] = _create_aux_model_doc_list_to_list(inner_dict['output']['model']).schema()
         else:

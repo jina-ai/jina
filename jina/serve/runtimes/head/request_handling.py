@@ -333,6 +333,8 @@ class HeaderRequestHandler(MonitoringRequestMixin):
     def _get_endpoints_from_workers(self, connection_pool: GrpcConnectionPool, name: str, retries: int,
                                     stop_event):
         from google.protobuf import json_format
+        from docarray.documents.legacy import LegacyDocument
+        legacy_doc_schema = LegacyDocument.schema()
         async def task():
             self.logger.debug(f'starting get endpoints from workers task for deployment {name}')
             while not stop_event.is_set():
@@ -350,10 +352,16 @@ class HeaderRequestHandler(MonitoringRequestMixin):
                             input_model_schema = inner_dict['input']['model']
                             output_model_name = inner_dict['output']['name']
                             output_model_schema = inner_dict['output']['model']
-                            if input_model_name not in models_created_by_name:
+
+                            if input_model_schema == legacy_doc_schema:
+                                models_created_by_name[input_model_name] = LegacyDocument
+                            elif input_model_name not in models_created_by_name:
                                 input_model = _create_pydantic_model_from_schema(input_model_schema, input_model_name, {})
                                 models_created_by_name[input_model_name] = input_model
-                            if output_model_name not in models_created_by_name:
+
+                            if output_model_name == legacy_doc_schema:
+                                models_created_by_name[output_model_name] = LegacyDocument
+                            elif output_model_name not in models_created_by_name:
                                 output_model = _create_pydantic_model_from_schema(output_model_schema, output_model_name, {})
                                 models_created_by_name[output_model_name] = output_model
 

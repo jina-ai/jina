@@ -19,6 +19,8 @@ from jina._docarray import docarray_v2
 if docarray_v2:
     from jina.serve.runtimes.helper import _create_pydantic_model_from_schema
     from docarray import DocList
+    from docarray.documents.legacy import LegacyDocument
+    legacy_doc_schema = LegacyDocument.schema()
 
 
 class TopologyGraph:
@@ -131,6 +133,7 @@ class TopologyGraph:
                     endp, _ = endpoints_proto
                     self.endpoints = endp.endpoints
                     if docarray_v2:
+                        from docarray.documents.legacy import LegacyDocument
                         schemas = json_format.MessageToDict(endp.schemas)
                         self._pydantic_models_by_endpoint = {}
                         models_created_by_name = {}
@@ -140,12 +143,18 @@ class TopologyGraph:
                             output_model_name = inner_dict['output']['name']
                             output_model_schema = inner_dict['output']['model']
                             if input_model_name not in models_created_by_name:
-                                input_model = _create_pydantic_model_from_schema(input_model_schema, input_model_name,
-                                                                                 {})
+                                if input_model_schema == legacy_doc_schema:
+                                    input_model = LegacyDocument
+                                else:
+                                    input_model = _create_pydantic_model_from_schema(input_model_schema, input_model_name,
+                                                                                     {})
                                 models_created_by_name[input_model_name] = input_model
                             if output_model_name not in models_created_by_name:
-                                output_model = _create_pydantic_model_from_schema(output_model_schema,
-                                                                                  output_model_name, {})
+                                if output_model_schema == legacy_doc_schema:
+                                    output_model = LegacyDocument
+                                else:
+                                    output_model = _create_pydantic_model_from_schema(output_model_schema,
+                                                                                      output_model_name, {})
                                 models_created_by_name[output_model_name] = output_model
 
                             self._pydantic_models_by_endpoint[endpoint] = {
