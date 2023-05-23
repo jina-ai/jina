@@ -321,7 +321,7 @@ jc scale good-martin-ca6bfdef84 --executor executor0 --replicas 2
 :width: 70%
 ```
 
-### Get the logs of the Gateway or Executor
+### Get Executor or Gateway logs
 
 To get the Gateway logs:
 
