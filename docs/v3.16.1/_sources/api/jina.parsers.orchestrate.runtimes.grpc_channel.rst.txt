@@ -1,0 +1,7 @@
+jina.parsers.orchestrate.runtimes.grpc\_channel module
+======================================================
+
+.. automodule:: jina.parsers.orchestrate.runtimes.grpc_channel
+   :members:
+   :undoc-members:
+   :show-inheritance:
