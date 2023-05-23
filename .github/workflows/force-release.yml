@@ -180,6 +180,7 @@ jobs:
           name: artifact
           path: dist
       - run: |
+          git fetch --depth=200
           npm install git-release-notes
           pip install twine wheel
           ./scripts/release.sh final "${{ github.event.inputs.release_reason }}" "${{github.actor}}"
