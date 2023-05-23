@@ -126,6 +126,7 @@ class TopologyGraph:
                 endpoints_proto = await connection_pool.send_discover_endpoint(
                     self.name, retries=self._retries
                 )
+                # TODO: Try more often should not be able to start, synchronization issue
                 if endpoints_proto is not None:
                     endp, _ = endpoints_proto
                     self.endpoints = endp.endpoints
@@ -151,7 +152,9 @@ class TopologyGraph:
                                 'input': models_created_by_name[input_model_name],
                                 'output': models_created_by_name[output_model_name]
                             }
-                return endpoints_proto
+                    return endpoints_proto
+                else:
+                    raise Exception(' Failed to get endpoints')
 
             return asyncio.create_task(task())
 
@@ -256,9 +259,9 @@ class TopologyGraph:
             return None, {}
 
         def _get_input_output_model_for_endpoint(self,
-                                           previous_input,
-                                           previous_output,
-                                           endpoint):
+                                                 previous_input,
+                                                 previous_output,
+                                                 endpoint):
 
             if endpoint in self.endpoints:
                 # update output
@@ -266,7 +269,8 @@ class TopologyGraph:
                 if previous_input is None:
                     new_input = self._pydantic_models_by_endpoint[endpoint]['input']
 
-                if previous_output and previous_output.schema() == self._pydantic_models_by_endpoint[endpoint]["output"].schema():
+                if previous_output and previous_output.schema() == self._pydantic_models_by_endpoint[endpoint][
+                    "output"].schema():
                     # this is needed to not mix model IDs, otherwise FastAPI gets crazy
                     return {
                         'input': new_input,
@@ -519,22 +523,9 @@ class TopologyGraph:
                     if node._pydantic_models_by_endpoint is not None:
                         endpoints.update(list(node._pydantic_models_by_endpoint.keys()))
                 return endpoints
-            except:
+            except Exception as exc:
+                self.logger.warning(f'Getting endpoints failed: {exc}. Waiting for another trial')
                 await asyncio.sleep(1)
-            # except InternalNetworkError as err:
-            #     err_code = err.code()
-            #     await asyncio.sleep(1)
-            #     if err_code == grpc.StatusCode.UNAVAILABLE:
-            #         err._details = (
-            #                 err.details()
-            #                 + f' |Gateway: Communication error while gathering endpoints with deployment at address(es) {err.dest_addr}. Head or worker(s) may be down.'
-            #         )
-            #         raise err
-            #     else:
-            #         raise
-            # except Exception as exc:
-            #     self.logger.error(f' Error gathering endpoints: {exc}')
-            #     raise exc
 
     def add_routes(self, request: 'DataRequest'):
         """

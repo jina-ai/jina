@@ -44,8 +44,10 @@ def main():
         single_text: TextDoc
         texts: DocList[TextDoc]
         d: Dict[str, str] = {'a': 'b'}
+        da: Optional[Dict[str, Any]] = None
         u: Union[str, int]
         lu: List[Union[str, int]] = [0, 1, 2]
+        tags: Optional[Dict[str, Any]] = None
         # ud: Union[TextDoc, ImageDoc] = TextDoc(text='I am in union')
 
     TextDocWithIdCopy = _create_aux_model_doc_list_to_list(TextDocWithId)
@@ -67,6 +69,7 @@ def main():
                                                          lu=[3, 4], ud=TextDoc(text='I am in union'))])
     for doc in original_custom_docs:
         doc.tensor = np.zeros((10, 10, 10))
+        doc.tags = {'a': {'b': 'c'}}
     print(DocList[new_custom_doc_model].from_protobuf(original_custom_docs.to_protobuf()).to_json())
 
     index_da = DocList[TextDocWithId](
@@ -78,13 +81,7 @@ def main():
     result_test_docs = DocList[ResultTestDoc]([ResultTestDoc(matches=index_da)])
     print(DocList[new_result_test_doc_with_id_model].from_protobuf(result_test_docs.to_protobuf()).to_json())
 
-    LegacyDocumentCopy = _create_aux_model_doc_list_to_list(LegacyDocument)
-    legacy_document_model = _create_pydantic_model_from_schema(LegacyDocumentCopy.schema(), 'LegacyDocument', {})
-    legacy = LegacyDocument(text='I am a chunk')
-    legacy2 = LegacyDocument(text=' I am match')
-    legacy_doclist = DocList[LegacyDocument]([LegacyDocument(text='ikhakah', chunks=DocList[LegacyDocument]([legacy]),
-                                                             matches=DocList[LegacyDocument]([legacy2]))])
-    print(DocList[legacy_document_model].from_protobuf(legacy_doclist.to_protobuf()).to_json())
+
 
 
 if __name__ == '__main__':
