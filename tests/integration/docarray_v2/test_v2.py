@@ -1,11 +1,13 @@
 from typing import Optional, List, Dict, Union
 import pytest
 import time
+import os
 import numpy as np
 from docarray import BaseDoc, DocList
 from docarray.documents import ImageDoc
 from docarray.typing import AnyTensor, ImageUrl
 from docarray.documents import TextDoc
+from docarray.documents.legacy import LegacyDocument
 from jina.helper import random_port
 
 from jina import Deployment, Executor, Flow, requests, Client
@@ -275,11 +277,8 @@ def temp_workspace(tmpdir):
     os.unsetenv('TEMP_WORKSPACE')
 
 
-@pytest.mark.parametrize('protocol', ['grpc'])
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_condition_feature(protocol, temp_workspace, tmpdir):
-    # TODO: Test how it behaves with complex topologies and filtering
-    import os
-
     class ProcessingTestDocConditions(BaseDoc):
         text: str
         tags: Dict[str, int]
@@ -343,16 +342,92 @@ def test_condition_feature(protocol, temp_workspace, tmpdir):
             assert fp.read() == 'type2'
 
 
-@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
-def test_endpoints_target_executors_combinations(protocols):
-    # TODO: Test how it behaves with complex topologies and filtering
-    pass
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+def test_endpoints_target_executors_combinations(protocol):
+
+    class Foo(Executor):
+        @requests(on='/hello')
+        def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+            for doc in docs:
+                doc.text += 'Processed by foo'
+
+    class Bar(Executor):
+        @requests(on='/hello')
+        def bar(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+            for doc in docs:
+                doc.text += 'Processed by bar'
+
+    f = Flow(protocol=protocol).add(name='p0', uses=Foo).add(name='p1', uses=Bar)
+
+    with f:
+        docs = f.post(
+            '/hello',
+            inputs=DocList[TextDoc]([TextDoc(text='')]),
+            return_type=DocList[TextDoc]
+        )
+        assert len(docs) == 1
+        for doc in docs:
+            assert doc.text == 'Processed by fooProcessed by bar'
+        docs = f.post(
+            '/hello',
+            target_executor='p1',
+            inputs=DocList[TextDoc]([TextDoc(text='')]),
+            return_type=DocList[TextDoc]
+        )
+        assert len(docs) == 1
+        for doc in docs:
+            assert doc.text == 'Processed by bar'
 
 
-@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
-def test_floating_executors(protocols):
-    # TODO: Test how it behaves with complex topologies and filtering
-    pass
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+def test_floating_executors(protocol, tmpdir):
+    TIME_SLEEP_FLOATING = 1.0
+
+    class FloatingTestExecutor(Executor):
+        def __init__(self, file_name, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.file_name = file_name
+
+        @requests
+        def foo(self, docs, **kwargs):
+            time.sleep(TIME_SLEEP_FLOATING)
+            with open(self.file_name, 'a+', encoding='utf-8') as f:
+                f.write('here ')
+
+            for d in docs:
+                d.text = 'change it'
+
+    NUM_REQ = 20
+    file_name = os.path.join(str(tmpdir), 'file.txt')
+    expected_str = 'here ' * NUM_REQ
+
+    f = (
+        Flow(protocol=protocol)
+            .add(name='first')
+            .add(
+            name='second',
+            floating=True,
+            uses=FloatingTestExecutor,
+            uses_with={'file_name': file_name},
+        )
+    )
+
+    with f:
+        for j in range(NUM_REQ):
+            start_time = time.time()
+            ret = f.post(on='/default', inputs=DocList[LegacyDocument]())
+            end_time = time.time()
+            assert (
+                           end_time - start_time
+                   ) < TIME_SLEEP_FLOATING  # check that the response arrives before the
+            # Floating Executor finishes
+            assert len(ret) == 1
+            assert ret[0].text == ''
+
+    with open(file_name, 'r', encoding='utf-8') as f:
+        resulted_str = f.read()
+
+    assert resulted_str == expected_str
 
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])
