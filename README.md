@@ -314,7 +314,8 @@ jina cloud deploy jcloud-flow.yml
 ```
 
 > **Warning**
-> Make sure to delete/clean up the Flow once you are done with this tutorial to save resources and credits.**
+>
+> Make sure to delete/clean up the Flow once you are done with this tutorial to save resources and credits.
 
 Read more about [deploying Flows to JCloud](https://docs.jina.ai/concepts/jcloud/#deploy).
 
