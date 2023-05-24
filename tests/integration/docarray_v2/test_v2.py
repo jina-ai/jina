@@ -344,7 +344,6 @@ def test_condition_feature(protocol, temp_workspace, tmpdir):
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_endpoints_target_executors_combinations(protocol):
-
     class Foo(Executor):
         @requests(on='/hello')
         def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
@@ -389,7 +388,7 @@ def test_floating_executors(protocol, tmpdir):
             self.file_name = file_name
 
         @requests
-        def foo(self, docs, **kwargs):
+        def foo(self, docs: DocList[LegacyDocument], **kwargs) -> DocList[LegacyDocument]:
             time.sleep(TIME_SLEEP_FLOATING)
             with open(self.file_name, 'a+', encoding='utf-8') as f:
                 f.write('here ')
@@ -415,7 +414,7 @@ def test_floating_executors(protocol, tmpdir):
     with f:
         for j in range(NUM_REQ):
             start_time = time.time()
-            ret = f.post(on='/default', inputs=DocList[LegacyDocument]())
+            ret = f.post(on='/default', inputs=DocList[LegacyDocument]([LegacyDocument(text='')]))
             end_time = time.time()
             assert (
                            end_time - start_time
@@ -428,6 +427,49 @@ def test_floating_executors(protocol, tmpdir):
         resulted_str = f.read()
 
     assert resulted_str == expected_str
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+@pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
+def test_empty_input_output(protocol, ctxt_manager):
+    if ctxt_manager == 'deployment' and protocol == 'websocket':
+        return
+
+    class Foo(Executor):
+        @requests(on='/hello')
+        def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+            for doc in docs:
+                doc.text += 'Processed by foo'
+
+    if ctxt_manager == 'flow':
+        ctxt_mgr = Flow(protocol=protocol).add(uses=Foo)
+    else:
+        ctxt_mgr = Deployment(protocol=protocol, uses=Foo)
+
+    with ctxt_mgr:
+        ret = ctxt_mgr.post(on='/hello', inputs=DocList[TextDoc]())
+        assert len(ret) == 0
+
+
+def test_custom_gateway():
+    pass
+
+
+def test_flow_send_parameters():
+    pass
+
+
+def test_get_parameter_back():
+    pass
+
+
+def test_get_exception_in_header_back():
+    pass
+
+
+def test_custom_gateway():
+    pass
+
 
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])

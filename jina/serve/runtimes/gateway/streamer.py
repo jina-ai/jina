@@ -260,15 +260,28 @@ class GatewayStreamer:
                         req.parameters = parameters
                     yield req
             else:
+                from docarray import BaseDoc
                 def batch(iterable, n=1):
                     l = len(iterable)
                     for ndx in range(0, l, n):
                         yield iterable[ndx:min(ndx + n, l)]
 
-                for docs_batch in batch(docs, n=request_size):
+                if len(docs) > 0:
+                    for docs_batch in batch(docs, n=request_size):
+                        req = DataRequest()
+                        req.document_array_cls = DocList[docs_batch.doc_type]
+                        req.data.docs = docs_batch
+                        if exec_endpoint:
+                            req.header.exec_endpoint = exec_endpoint
+                        if target_executor:
+                            req.header.target_executor = target_executor
+                        if parameters:
+                            req.parameters = parameters
+                        yield req
+                else:
                     req = DataRequest()
-                    req.document_array_cls = DocList[docs_batch.doc_type]
-                    req.data.docs = docs_batch
+                    req.document_array_cls = DocList[BaseDoc]
+                    req.data.docs = DocList[BaseDoc]()
                     if exec_endpoint:
                         req.header.exec_endpoint = exec_endpoint
                     if target_executor:
