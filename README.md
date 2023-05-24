@@ -313,7 +313,7 @@ wget https://raw.githubusercontent.com/jina-ai/jina/master/.github/getting-start
 jina cloud deploy jcloud-flow.yml
 ```
 
-> **Caution**
+> **Warning**
 > Make sure to delete/clean up the Flow once you are done with this tutorial to save resources and credits.**
 
 Read more about [deploying Flows to JCloud](https://docs.jina.ai/concepts/jcloud/#deploy).
