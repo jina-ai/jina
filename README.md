@@ -92,8 +92,6 @@ Jina has four fundamental concepts:
 
 [The full glossary is explained here](https://docs.jina.ai/concepts/preliminaries/#).
 
----
-
 ### Build AI Services
 <!-- start build-ai-services -->
 
@@ -302,6 +300,7 @@ response[0].display()
 ![](https://raw.githubusercontent.com/jina-ai/jina/master/.github/mona-lisa.png)
 ![](./.github/mona-lisa.png)
 
+## Deploy to the cloud
 
 You can also deploy a Flow to JCloud.
 
@@ -323,11 +322,9 @@ Read more about [deploying Flows to JCloud](https://docs.jina.ai/concepts/jcloud
 
 Check [the getting-started project source code](https://github.com/jina-ai/jina/tree/master/.github/getting-started).
 
----
+### Easy scalability and concurrency
 
 Why not just use standard Python to build that microservice and pipeline? Jina accelerates time to market of your application by making it more scalable and cloud-native. Jina also handles the infrastructure complexity in production and other Day-2 operations so that you can focus on the data application itself.
-
-### Easy scalability and concurrency
 
 Increase your application's throughput with scalability features out of the box, like [replicas](https://docs.jina.ai/concepts/orchestration/scale-out/#replicate-executors), [shards](https://docs.jina.ai/concepts/orchestration/scale-out/#customize-polling-behaviors) and [dynamic batching](https://docs.jina.ai/concepts/serving/executor/dynamic-batching/).
 
@@ -380,8 +377,6 @@ with:
 Assuming your machine has two GPUs, using the scaled deployment YAML will give better throughput compared to the normal deployment.
 
 These features apply to both [Deployment YAML](https://docs.jina.ai/concepts/executor/deployment-yaml-spec/#deployment-yaml-spec) and [Flow YAML](https://docs.jina.ai/concepts/flow/yaml-spec/). Thanks to the YAML syntax, you can inject deployment configurations regardless of Executor code.
-
----
 
 ### Get on the fast lane to cloud-native
 
