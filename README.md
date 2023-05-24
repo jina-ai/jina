@@ -348,7 +348,7 @@ Let's scale a Stable Diffusion Executor deployment with replicas and dynamic bat
 jtype: Deployment
 with:
   timeout_ready: -1
-  uses: jinaai://jina-ai/StableLM
+  uses: jinaai://jina-ai/TextToImage
   install_requirements: true
 ```
 
@@ -359,7 +359,7 @@ with:
 jtype: Deployment
 with:
   timeout_ready: -1
-  uses: jinaai://jina-ai/StableLM
+  uses: jinaai://jina-ai/TextToImage
   install_requirements: true
   env:
    CUDA_VISIBLE_DEVICES: RR
