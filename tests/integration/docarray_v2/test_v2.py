@@ -1,5 +1,6 @@
 from typing import Optional, List, Dict, Union
 import pytest
+import time
 import numpy as np
 from docarray import BaseDoc, DocList
 from docarray.documents import ImageDoc
@@ -259,20 +260,97 @@ def test_complex_topology_bifurcation(protocols, reduce):
     with flow:
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
-            docs = c.post('/', inputs=DocList[DocTest]([DocTest(text='') for _ in range(5)]), return_type=DocList[DocTest])
+            docs = c.post('/', inputs=DocList[DocTest]([DocTest(text='') for _ in range(5)]),
+                          return_type=DocList[DocTest])
             assert len(docs) == 5 if reduce else 15
             for doc in docs:
                 assert 'exec' in doc.text
 
 
+@pytest.fixture()
+def temp_workspace(tmpdir):
+    import os
+    os.environ['TEMP_WORKSPACE'] = str(tmpdir)
+    yield
+    os.unsetenv('TEMP_WORKSPACE')
+
+
+@pytest.mark.parametrize('protocol', ['grpc'])
+def test_condition_feature(protocol, temp_workspace, tmpdir):
+    # TODO: Test how it behaves with complex topologies and filtering
+    import os
+
+    class ProcessingTestDocConditions(BaseDoc):
+        text: str
+        tags: Dict[str, int]
+
+    class ConditionDumpExecutor(Executor):
+        @requests(on='/bar')
+        def foo(self, docs: DocList[ProcessingTestDocConditions], **kwargs) -> DocList[ProcessingTestDocConditions]:
+            with open(
+                    os.path.join(str(self.workspace), f'{self.metas.name}.txt'), 'w', encoding='utf-8'
+            ) as fp:
+                for doc in docs:
+                    fp.write(doc.text)
+                    doc.text += f' processed by {self.metas.name}'
+
+    f = (
+        Flow(protocol=protocol)
+            .add(name='first')
+            .add(
+            uses=ConditionDumpExecutor,
+            uses_metas={'name': 'exec1'},
+            workspace=os.environ['TEMP_WORKSPACE'],
+            name='exec1',
+            needs=['first'],
+            when={'tags__type': {'$eq': 1}})
+            .add(
+            uses=ConditionDumpExecutor,
+            workspace=os.environ['TEMP_WORKSPACE'],
+            uses_metas={'name': 'exec2'},
+            name='exec2',
+            needs='first',
+            when={'tags__type': {'$gt': 1}})
+            .needs_all('joiner')
+    )
+
+    with f:
+        input_da = DocList[ProcessingTestDocConditions](
+            [ProcessingTestDocConditions(text='type1', tags={'type': 1}),
+             ProcessingTestDocConditions(text='type2', tags={'type': 2})])
+
+        ret = f.post(
+            on='/bar',
+            inputs=input_da,
+            return_type=DocList[ProcessingTestDocConditions],
+        )
+        assert len(ret) == 2
+        types_set = set()
+        for doc in ret:
+            if doc.tags['type'] == 1:
+                assert doc.text == 'type1 processed by exec1'
+            else:
+                assert doc.tags['type'] == 2
+                assert doc.text == 'type2 processed by exec2'
+            types_set.add(doc.tags['type'])
+
+        assert types_set == {1, 2}
+
+        with open(os.path.join(str(tmpdir), 'exec1', '0', f'exec1.txt'), 'r', encoding='utf-8') as fp:
+            assert fp.read() == 'type1'
+
+        with open(os.path.join(str(tmpdir), 'exec2', '0', f'exec2.txt'), 'r', encoding='utf-8') as fp:
+            assert fp.read() == 'type2'
+
+
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
-def test_complex_topology_filter(protocols):
+def test_endpoints_target_executors_combinations(protocols):
     # TODO: Test how it behaves with complex topologies and filtering
     pass
 
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
-def test_endpoints_target_executors_combinations(protocols):
+def test_floating_executors(protocols):
     # TODO: Test how it behaves with complex topologies and filtering
     pass
 
@@ -393,7 +471,8 @@ def test_deployments_with_shards_one_shard_fails():
 
 
 @pytest.mark.parametrize('reduce', [True, False])
-def test_deployments_with_shards_all_shards_return(reduce):
+@pytest.mark.parametrize('sleep_time', [0.1, 5])
+def test_deployments_with_shards_all_shards_return(reduce, sleep_time):
     from docarray.documents import TextDoc
     from docarray import DocList, BaseDoc
     from typing import List
@@ -410,9 +489,10 @@ def test_deployments_with_shards_all_shards_return(reduce):
     class SimilarityTestIndexer(Executor):
         """Simulates an indexer where no shard would fail, they all pass results"""
 
-        def __init__(self, *args, **kwargs):
+        def __init__(self, sleep_time=0.1, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self._docs = DocList[TextDocWithId]()
+            time.sleep(sleep_time)
 
         @requests(on=['/index'])
         def index(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[TextDocWithId]:
@@ -427,7 +507,7 @@ def test_deployments_with_shards_all_shards_return(reduce):
                 resp.append(res)
             return resp
 
-    with Deployment(uses=SimilarityTestIndexer, shards=2, reduce=reduce) as dep:
+    with Deployment(uses=SimilarityTestIndexer, uses_with={'sleep_time': sleep_time}, shards=2, reduce=reduce) as dep:
         index_da = DocList[TextDocWithId](
             [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(10)]
         )
@@ -443,7 +523,8 @@ def test_deployments_with_shards_all_shards_return(reduce):
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
 @pytest.mark.parametrize('reduce', [True, False])
-def test_flow_with_shards_all_shards_return(protocols, reduce):
+@pytest.mark.parametrize('sleep_time', [0.1, 5])
+def test_flow_with_shards_all_shards_return(protocols, reduce, sleep_time):
     from docarray.documents import TextDoc
     from docarray import DocList, BaseDoc
     from typing import List
@@ -460,9 +541,10 @@ def test_flow_with_shards_all_shards_return(protocols, reduce):
     class SimilarityTestIndexer(Executor):
         """Simulates an indexer where no shard would fail, they all pass results"""
 
-        def __init__(self, *args, **kwargs):
+        def __init__(self, sleep_time=0.1, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self._docs = DocList[TextDocWithId]()
+            time.sleep(sleep_time)
 
         @requests(on=['/index'])
         def index(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[TextDocWithId]:
@@ -478,7 +560,8 @@ def test_flow_with_shards_all_shards_return(protocols, reduce):
             return resp
 
     ports = [random_port() for _ in protocols]
-    with Flow(protocol=protocols, port=ports).add(uses=SimilarityTestIndexer, shards=2, reduce=reduce):
+    with Flow(protocol=protocols, port=ports).add(uses=SimilarityTestIndexer, uses_with={'sleep_time': sleep_time},
+                                                  shards=2, reduce=reduce):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             index_da = DocList[TextDocWithId](

@@ -124,11 +124,26 @@ def test_create_pydantic_model_from_schema(transformation):
         doc.di = {'a': 2}
 
     if transformation == 'proto':
-        custom_da = DocList[new_custom_doc_model].from_protobuf(original_custom_docs.to_protobuf())
-        original_back = DocList[CustomDoc].from_protobuf(custom_da.to_protobuf())
+        custom_partial_da = DocList[new_custom_doc_model].from_protobuf(original_custom_docs.to_protobuf())
+        original_back = DocList[CustomDoc].from_protobuf(custom_partial_da.to_protobuf())
     elif transformation == 'json':
-        custom_da = DocList[new_custom_doc_model].from_json(original_custom_docs.to_json())
-        original_back = DocList[CustomDoc].from_json(custom_da.to_json())
+        custom_partial_da = DocList[new_custom_doc_model].from_json(original_custom_docs.to_json())
+        original_back = DocList[CustomDoc].from_json(custom_partial_da.to_json())
+
+    assert len(custom_partial_da) == 1
+    assert custom_partial_da[0].url == 'photo.jpg'
+    assert custom_partial_da[0].lll == [[[40]]]
+    assert custom_partial_da[0].lu == ['3', '4']  # Union validates back to string
+    assert custom_partial_da[0].fff == [[[40.2]]]
+    assert custom_partial_da[0].di == {'a': 2}
+    assert custom_partial_da[0].d == {'b': 'a'}
+    assert len(custom_partial_da[0].texts) == 1
+    assert custom_partial_da[0].texts[0].text == 'hey ha'
+    assert custom_partial_da[0].texts[0].embedding.shape == (3,)
+    assert custom_partial_da[0].tensor.shape == (10, 10, 10)
+    assert custom_partial_da[0].u == 'a'
+    assert custom_partial_da[0].single_text.text == 'single hey ha'
+    assert custom_partial_da[0].single_text.embedding.shape == (2,)
 
     assert len(original_back) == 1
     assert original_back[0].url == 'photo.jpg'

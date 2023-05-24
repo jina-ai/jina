@@ -20,6 +20,7 @@ if docarray_v2:
     from jina.serve.runtimes.helper import _create_pydantic_model_from_schema
     from docarray import DocList
     from docarray.documents.legacy import LegacyDocument
+
     legacy_doc_schema = LegacyDocument.schema()
 
 
@@ -73,11 +74,14 @@ class TopologyGraph:
 
         def _update_requests_with_filter_condition(self, need_copy):
             for i in range(len(self.parts_to_send)):
+                doc_array_cls = self.parts_to_send[i].document_array_cls
                 req = (
                     self.parts_to_send[i]
                     if not need_copy
                     else copy.deepcopy(self.parts_to_send[i])
                 )
+                # somehow the document_array_cls is not copied
+                req.document_array_cls = doc_array_cls
                 if not docarray_v2:
                     filtered_docs = req.docs.find(self._filter_condition)
                 else:
@@ -122,9 +126,12 @@ class TopologyGraph:
             else:
                 raise
 
-        def get_endpoints(self, connection_pool: GrpcConnectionPool) -> asyncio.Task:
+        def get_endpoints(self, connection_pool: GrpcConnectionPool, models_schema_list: List,
+                          models_list: List) -> asyncio.Task:
+            # models_schema_list and models_list is given to each node. And each one fills its models
             from google.protobuf import json_format
             async def task():
+                self.logger.debug(f'Getting Endpoints data from {self.name}')
                 endpoints_proto = await connection_pool.send_discover_endpoint(
                     self.name, retries=self._retries
                 )
@@ -140,26 +147,42 @@ class TopologyGraph:
                         for endpoint, inner_dict in schemas.items():
                             input_model_name = inner_dict['input']['name']
                             input_model_schema = inner_dict['input']['model']
+                            if input_model_schema in models_schema_list:
+                                input_model = models_list[models_schema_list.index(input_model_schema)]
+                                models_created_by_name[input_model_name] = input_model
+                            else:
+                                if input_model_name not in models_created_by_name:
+                                    if input_model_schema == legacy_doc_schema:
+                                        input_model = LegacyDocument
+                                    else:
+                                        input_model = _create_pydantic_model_from_schema(input_model_schema,
+                                                                                         input_model_name,
+                                                                                         {})
+                                    models_created_by_name[input_model_name] = input_model
+                                input_model = models_created_by_name[input_model_name]
+                                models_schema_list.append(input_model_schema)
+                                models_list.append(input_model)
                             output_model_name = inner_dict['output']['name']
                             output_model_schema = inner_dict['output']['model']
-                            if input_model_name not in models_created_by_name:
-                                if input_model_schema == legacy_doc_schema:
-                                    input_model = LegacyDocument
-                                else:
-                                    input_model = _create_pydantic_model_from_schema(input_model_schema, input_model_name,
-                                                                                     {})
-                                models_created_by_name[input_model_name] = input_model
-                            if output_model_name not in models_created_by_name:
-                                if output_model_schema == legacy_doc_schema:
-                                    output_model = LegacyDocument
-                                else:
-                                    output_model = _create_pydantic_model_from_schema(output_model_schema,
-                                                                                      output_model_name, {})
+                            if output_model_schema in models_schema_list:
+                                output_model = models_list[models_schema_list.index(output_model_schema)]
                                 models_created_by_name[output_model_name] = output_model
+                            else:
+                                if output_model_name not in models_created_by_name:
+                                    if output_model_name == legacy_doc_schema:
+                                        output_model = LegacyDocument
+                                    else:
+                                        output_model = _create_pydantic_model_from_schema(output_model_schema,
+                                                                                          output_model_name,
+                                                                                          {})
+                                    models_created_by_name[output_model_name] = output_model
+                                output_model = models_created_by_name[output_model_name]
+                                models_schema_list.append(output_model)
+                                models_list.append(input_model)
 
                             self._pydantic_models_by_endpoint[endpoint] = {
-                                'input': models_created_by_name[input_model_name],
-                                'output': models_created_by_name[output_model_name]
+                                'input': input_model,
+                                'output': output_model
                             }
                     return endpoints_proto
                 else:
@@ -176,9 +199,12 @@ class TopologyGraph:
                 target_executor_pattern: Optional[str] = None,
                 request_input_parameters: Dict = {},
                 copy_request_at_send: bool = False,
+                init_task: Optional[asyncio.Task] = None
         ):
             # Check my condition and send request with the condition
             metadata = {}
+            if init_task is not None:
+                await init_task
             if previous_task is not None:
                 result = await previous_task
                 request, metadata = result[0], result[1]
@@ -329,7 +355,7 @@ class TopologyGraph:
                 request_input_parameters: Dict = {},
                 request_input_has_specific_params: bool = False,
                 copy_request_at_send: bool = False,
-
+                init_task: Optional[asyncio.Task] = None
         ) -> List[Tuple[bool, asyncio.Task]]:
             """
             Gets all the tasks corresponding from all the subgraphs born from this node
@@ -342,6 +368,7 @@ class TopologyGraph:
             :param request_input_parameters: The parameters coming from the Request as they arrive to the gateway
             :param request_input_has_specific_params: Parameter added for optimization. If this is False, there is no need to copy at all the request
             :param copy_request_at_send: Copy the request before actually calling the `ConnectionPool` sending
+            :param init_task: Initial task to be called before sending any request
 
             .. note:
                 deployment1 -> outgoing_nodes: deployment2
@@ -374,6 +401,7 @@ class TopologyGraph:
                     target_executor_pattern=target_executor_pattern,
                     request_input_parameters=request_input_parameters,
                     copy_request_at_send=copy_request_at_send,
+                    init_task=init_task,
                 )
             )
             if self.leaf:  # I am like a leaf
@@ -519,12 +547,13 @@ class TopologyGraph:
         self._origin_nodes = [nodes[node_name] for node_name in origin_node_names]
         self.has_filter_conditions = bool(graph_conditions)
 
-    async def _get_all_endpoints(self, connection_pool):
-        # TODO: Add option to keep trying. Executors may not be up yet
+    async def _get_all_endpoints(self, connection_pool, retry_forever=False):
         while True:
             try:
+                models_schemas_list = []
+                models_list = []
                 tasks_to_get_endpoints = [
-                    node.get_endpoints(connection_pool) for node in self.all_nodes
+                    node.get_endpoints(connection_pool, models_schemas_list, models_list) for node in self.all_nodes
                 ]
                 await asyncio.gather(*tasks_to_get_endpoints)
                 endpoints = set()
@@ -533,6 +562,8 @@ class TopologyGraph:
                         endpoints.update(list(node._pydantic_models_by_endpoint.keys()))
                 return endpoints
             except Exception as exc:
+                if not retry_forever:
+                    raise exc
                 self.logger.warning(f'Getting endpoints failed: {exc}. Waiting for another trial')
                 await asyncio.sleep(1)
 
