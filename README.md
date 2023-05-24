@@ -99,7 +99,7 @@ Jina has four fundamental concepts:
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jina/blob/master/.github/getting-started/notebook.ipynb)
 
-Let's build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an **[Executor](https://docs.jina.ai/concepts/executor/)**. Our simple Executor will use Facebook's mBART-50 model to translate French to English. We'll then use a **Deployment** to serve it.
+Let's build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an **[Executor](https://docs.jina.ai/concepts/executor/)**. Our simple Executor will wrap the [StableLM](https://huggingface.co/stabilityai/stablelm-base-alpha-3b) LLM from Stability AI. We'll then use a **Deployment** to serve it.
 
 > **Note**
 > A Deployment serves just one Executor. To combine multiple Executors into a pipeline and serve that, use a [Flow](#build-a-pipeline).
@@ -111,39 +111,40 @@ Let's implement the service's logic:
 
 <table>
 <tr>
-<th><code>translate_executor.py</code> </th> 
+<th><code>executor.py</code></th> 
 <tr>
 <td>
 
 ```python
-from docarray import DocumentArray
+from docarray import Document, DocumentArray
 from jina import Executor, requests
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
-class Translator(Executor):
+class StableLM(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.tokenizer = AutoTokenizer.from_pretrained(
-            "facebook/mbart-large-50-many-to-many-mmt", src_lang="fr_XX"
+            'StabilityAI/stablelm-base-alpha-3b'
         )
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(
-            "facebook/mbart-large-50-many-to-many-mmt"
+        self.model = AutoModelForCausalLM.from_pretrained(
+            'StabilityAI/stablelm-base-alpha-3b'
         )
+        self.model.half().cuda()
 
     @requests
-    def translate(self, docs: DocumentArray, **kwargs):
+    def generate(self, docs: DocumentArray, **kwargs):
         for doc in docs:
-            doc.text = self._translate(doc.text)
+            self._generate(doc)
 
-    def _translate(self, text):
-        encoded_en = self.tokenizer(text, return_tensors="pt")
-        generated_tokens = self.model.generate(
-            **encoded_en, forced_bos_token_id=self.tokenizer.lang_code_to_id["en_XX"]
+    def _generate(self, doc: Document, **kwargs):
+        prompt = doc.tags['prompt']
+        inputs = self.tokenizer(prompt, return_tensors='pt').to('cuda')
+        tokens = self.model.generate(
+            **inputs, max_new_tokens=64, temperature=0.7, do_sample=True
         )
-        return self.tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)[
-            0
-        ]
+        output = self.tokenizer.decode(tokens[0], skip_special_tokens=True)
+        doc.text = output
 ```
 
 </td>
@@ -162,9 +163,9 @@ Then we deploy it with either the Python API or YAML:
 
 ```python
 from jina import Deployment
-from translate_executor import Translator
+from executor import StableLM
 
-dep = Deployment(uses=Translator, timeout_ready=-1, port=12345)
+dep = Deployment(uses=StableLM, timeout_ready=-1, port=12345)
 
 with dep:
     dep.block()
@@ -176,9 +177,9 @@ with dep:
 ```yaml
 jtype: Deployment
 with:
-  uses: Translator
+  uses: StableLM
   py_modules:
-    - translate_executor.py # name of the module containing Translator
+    - executor.py # name of the module containing Translator
   timeout_ready: -1
   port: 12345
 ```
@@ -196,25 +197,24 @@ Use [Jina Client](https://docs.jina.ai/concepts/client/) to make requests to the
 from docarray import Document
 from jina import Client
 
-french_text = Document(
-    text='un astronaut est en train de faire une promenade dans un parc'
+prompt = Document(
+    tags = {'prompt': 'suggest an interesting image generation prompt for a mona lisa variant'}
 )
 
 client = Client(port=12345)  # use port from output above
-response = client.post(on='/', inputs=[french_text])
+response = client.post(on='/', inputs=[prompt])
 
 print(response[0].text)
 ```
 
 ```text
-an astronaut is walking in a park
+a steampunk version of the Mona Lisa, incorporating mechanical gears, brass elements, and Victorian era clothing details
 ```
 
 <!-- end build-ai-services -->
 
 > **Note**
-> In a notebook, one cannot use `deployment.block()` and then make requests to the client. Please refer to the colab link above for reproducible Jupyter Notebook code snippets.
-
+> In a notebook, you can't use `deployment.block()` and then make requests to the client. Please refer to the Colab link above for reproducible Jupyter Notebook code snippets.
 
 ### Build a pipeline
 
@@ -228,7 +228,7 @@ A Flow is a [DAG](https://de.wikipedia.org/wiki/DAG) pipeline, composed of a set
 > **Note**
 > If you just want to serve a single Executor, you can use a [Deployment](#build-ai--ml-services).
 
-For instance, let's combine [our French translation service](#build-ai--ml-services) with a Stable Diffusion image generation service from Jina AI's [Executor Hub](https://cloud.jina.ai/executors). Chaining these services together into a [Flow](https://docs.jina.ai/concepts/flow/) will give us a multilingual image generation service.
+For instance, let's combine [our StableLM language model](#build-ai--ml-services) with a Stable Diffusion image generation service from Jina AI's [Executor Hub](https://cloud.jina.ai/executors). Chaining these services together into a [Flow](https://docs.jina.ai/concepts/flow/) will give us a service that will generate images based on a prompt generated by the LLM.
 
 Build the Flow with either Python or YAML:
 
@@ -243,10 +243,11 @@ Build the Flow with either Python or YAML:
 
 ```python
 from jina import Flow
+from executor import StableLM
 
 flow = (
     Flow()
-    .add(uses=Translator, timeout_ready=-1, port=12345)
+    .add(uses=StableLM, timeout_ready=-1, port=12345)
     .add(
         uses='jinaai://jina-ai/TextToImage',
         timeout_ready=-1,
@@ -266,10 +267,10 @@ jtype: Flow
 with:
     port: 12345
 executors:
-  - uses: Translator
+  - uses: StableLM
     timeout_ready: -1
     py_modules:
-      - translate_executor.py
+      - executor.py
   - uses: jinaai://jina-ai/TextToImage
     timeout_ready: -1
     install_requirements: true
@@ -289,17 +290,17 @@ from jina import Client, Document
 
 client = Client(port=12345)  # use port from output above
 
-french_text = Document(
-    text='un astronaut est en train de faire une promenade dans un parc'
+prompt = Document(
+    tags = {'prompt': 'suggest an interesting image generation prompt for a mona lisa variant'}
 )
 
-response = client.post(on='/', inputs=[french_text])
+response = client.post(on='/', inputs=[prompt])
 
 response[0].display()
 ```
 
-
-![stable-diffusion-output.png](https://raw.githubusercontent.com/jina-ai/jina/master/.github/stable-diffusion-output.png)
+![](https://raw.githubusercontent.com/jina-ai/jina/master/.github/mona-lisa.png)
+![](./.github/mona-lisa.png)
 
 
 You can also deploy a Flow to JCloud.
