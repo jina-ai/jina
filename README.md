@@ -29,27 +29,10 @@ Jina lets you build multimodal [**AI services**](#build-ai-services) and [**pipe
 
 Jina provides a smooth Pythonic experience transitioning from local deployment to advanced orchestration frameworks like Docker-Compose, Kubernetes, or Jina AI Cloud. Jina makes advanced solution engineering and cloud-native technologies accessible to every developer.
 
-Applications built with Jina enjoy the following features out of the box:
-
-🌌 **Universal**
-  - Build applications that deliver fresh insights from multiple data types such as text, image, audio, video, 3D mesh, PDF with [LF's DocArray](https://github.com/docarray/docarray).
-  - Support for all mainstream deep learning frameworks.
-  - Polyglot gateway that supports gRPC, Websockets, HTTP, GraphQL protocols with TLS.
-
-⚡ **Performance**
-  - Intuitive design pattern for high-performance microservices.
-  - Easy scaling: set replicas, sharding in one line. 
-  - Duplex streaming between client and server.
-  - Async and non-blocking data processing over dynamic flows.
-
-☁️ **Cloud native**
-  - Seamless Docker container integration: sharing, exploring, sandboxing, versioning and dependency control via [Executor Hub](https://cloud.jina.ai).
-  - Full observability via OpenTelemetry and Prometheus.
-  - Fast deployment to Kubernetes and Docker Compose.
-
-🍱 **Ecosystem**
-  - Improved engineering efficiency thanks to the Jina AI ecosystem, so you can focus on innovating with the data applications you build.
-  - Free CPU/GPU hosting via [Jina AI Cloud](https://cloud.jina.ai).
+- Build applications for any [data type](), any mainstream [deep learning framework](), and any [gateway]().
+- Design high-performance microservices, with [easy scaling](), duplex client-server streaming, and async/non-blocking data processing over dynamic flows.
+- Docker container integration via [Executor Hub](https://cloud.jina.ai), OpenTelemetry/Prometheus observability, and fast Kubernetes/Docker-Compose deployment.
+- Free CPU/GPU hosting via [Jina AI Cloud](https://cloud.jina.ai).
 
 <details>
     <summary><strong>Wait, how is Jina different from FastAPI?</strong></summary>
