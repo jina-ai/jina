@@ -232,6 +232,7 @@ class GatewayStreamer:
             target_executor: Optional[str] = None,
             parameters: Optional[Dict] = None,
             results_in_order: bool = False,
+            request_id: Optional[str] = None
     ):
         """
         stream documents and stream responses back.
@@ -243,15 +244,20 @@ class GatewayStreamer:
         :param target_executor: A regex expression indicating the Executors that should receive the Request
         :param parameters: Parameters to be attached to the Requests
         :param results_in_order: return the results in the same order as the request_iterator
+        :param request_id: Request ID to add to the request streamed to Executor. Only applicable if request_size is equal or less to the length of the docs
         :yield: Yields DocumentArrays or Responses from the Executors
         """
         from jina.types.request.data import DataRequest
+
+        request_id = request_id if len(docs) <= request_size else None
 
         def _req_generator():
             if not docarray_v2:
                 for docs_batch in docs.batch(batch_size=request_size, shuffle=False):
                     req = DataRequest()
                     req.data.docs = docs_batch
+                    if request_id:
+                        req.header.request_id = request_id
                     if exec_endpoint:
                         req.header.exec_endpoint = exec_endpoint
                     if target_executor:
@@ -271,6 +277,8 @@ class GatewayStreamer:
                         req = DataRequest()
                         req.document_array_cls = DocList[docs_batch.doc_type]
                         req.data.docs = docs_batch
+                        if request_id:
+                            req.header.request_id = request_id
                         if exec_endpoint:
                             req.header.exec_endpoint = exec_endpoint
                         if target_executor:
@@ -282,6 +290,8 @@ class GatewayStreamer:
                     req = DataRequest()
                     req.document_array_cls = DocList[BaseDoc]
                     req.data.docs = DocList[BaseDoc]()
+                    if request_id:
+                        req.header.request_id = request_id
                     if exec_endpoint:
                         req.header.exec_endpoint = exec_endpoint
                     if target_executor:

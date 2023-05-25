@@ -26,6 +26,21 @@ def get_fastapi_app(
         from fastapi import FastAPI, Response, HTTPException
         import pydantic
     from jina.proto import jina_pb2
+    from jina.serve.runtimes.gateway.models import _to_camel_case
+
+    from pydantic.config import BaseConfig, inherit_config
+    from pydantic import BaseModel
+
+    class Header(BaseModel):
+        request_id: Optional[str] = None
+
+        class Config(BaseConfig):
+            alias_generator = _to_camel_case
+            allow_population_by_field_name = True
+
+    class InnerConfig(BaseConfig):
+        alias_generator = _to_camel_case
+        allow_population_by_field_name = True
 
     app = FastAPI()
 
@@ -42,14 +57,18 @@ def get_fastapi_app(
             **app_kwargs
         )
         async def post(body: input_model, response: Response):
+
             req = DataRequest()
             if not docarray_v2:
                 req.data.docs = DocumentArray.from_pydantic_model(body.data)
             else:
                 req.data.docs = DocList[input_doc_list_model](body.data)
+
+            if body.header is not None:
+                req.header.request_id = body.header.request_id
+
             req.parameters = body.parameters
             req.header.exec_endpoint = endpoint_path
-            # TODO: potent
             resp = await caller(req)
             status = resp.header.status
 
@@ -72,7 +91,8 @@ def get_fastapi_app(
                 f'{endpoint.strip("/")}_input_model',
                 data=(List[input_doc_model], []),
                 parameters=(Optional[Dict], None),
-                __config__=input_doc_model.__config__
+                header=(Optional[Header], None),
+                __config__=inherit_config(InnerConfig, input_doc_model.__config__)
             )
 
             endpoint_output_model = pydantic.create_model(

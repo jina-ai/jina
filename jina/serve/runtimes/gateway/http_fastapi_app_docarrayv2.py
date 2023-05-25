@@ -79,8 +79,24 @@ def get_fastapi_app(
     from jina.proto import jina_pb2
     from jina.types.request.status import StatusMessage
     from jina.serve.runtimes.gateway.models import (
-        PROTO_TO_PYDANTIC_MODELS,
+        PROTO_TO_PYDANTIC_MODELS, _to_camel_case
     )
+
+    from pydantic.config import BaseConfig, inherit_config
+    from pydantic import BaseModel
+
+    class Header(BaseModel):
+        request_id: Optional[str] = None
+        target_executor: Optional[str] = None
+
+        class Config(BaseConfig):
+            alias_generator = _to_camel_case
+            allow_population_by_field_name = True
+
+    class InnerConfig(BaseConfig):
+        alias_generator = _to_camel_case
+        allow_population_by_field_name = True
+
     @app.get(
         path='/dry_run',
         summary='Get the readiness of Jina Flow service, sends an empty DocumentArray to the complete Flow to '
@@ -163,8 +179,15 @@ def get_fastapi_app(
         )
         async def post(body: input_model, response: Response):
             docs = DocList[input_doc_list_model](body.data)
+            target_executor = None
+            req_id = None
+            if body.header is not None:
+                target_executor = body.header.target_executor
+                req_id = body.header.request_id
+
             try:
-                async for resp in streamer.stream_docs(docs, exec_endpoint=endpoint_path, parameters=body.parameters, return_results=True):
+                async for resp in streamer.stream_docs(docs, exec_endpoint=endpoint_path, parameters=body.parameters,
+                                                       target_executor=target_executor, request_id=req_id, return_results=True):
                     status = resp.header.status
 
                     if status.code == jina_pb2.StatusProto.ERROR:
@@ -202,7 +225,8 @@ def get_fastapi_app(
                 f'{endpoint.strip("/")}_input_model',
                 data=(List[input_doc_model], []),
                 parameters=(Optional[Dict], None),
-                __config__=input_doc_model.__config__
+                header=(Optional[Header], None),
+                __config__=inherit_config(InnerConfig, input_doc_model.__config__)
             )
 
             endpoint_output_model = pydantic.create_model(
@@ -217,6 +241,5 @@ def get_fastapi_app(
                       output_model=endpoint_output_model,
                       input_doc_list_model=input_doc_model,
                       output_doc_list_model=output_doc_model)
-
 
     return app
