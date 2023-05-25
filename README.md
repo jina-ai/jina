@@ -25,7 +25,7 @@
 
 Jina lets you build multimodal [**AI services**](#build-ai-services) and [**pipelines**](#build-a-pipeline) that communicate via gRPC, HTTP and WebSockets, then scale them up and deploy to production. You can focus on your logic and algorithms, without worrying about the infrastructure complexity.
 
-![](./.github/images/build-deploy.png)
+![](https://github.com/jina-ai/jina/blob/docs-readme-revamp/.github/images/build-deploy.png?raw=true)
 
 Jina provides a smooth Pythonic experience transitioning from local deployment to advanced orchestration frameworks like Docker-Compose, Kubernetes, or Jina AI Cloud. Jina makes advanced solution engineering and cloud-native technologies accessible to every developer.
 
