@@ -11,6 +11,7 @@ from typing import (
     Sequence,
     Tuple,
     Union,
+    Type
 )
 
 from jina._docarray import DocumentArray
@@ -391,16 +392,44 @@ class _ExecutorStreamer:
             request_size: int = 100,
             on: Optional[str] = None,
             parameters: Optional[Dict] = None,
+            return_type: Type[DocumentArray] = DocumentArray,
             **kwargs,
     ):
-        reqs = []
-        for docs_batch in inputs.batch(batch_size=request_size, shuffle=False):
-            req = DataRequest()
-            req.header.exec_endpoint = on
-            req.header.target_executor = self.executor_name
-            req.parameters = parameters
-            req.data.docs = docs_batch
-            reqs.append(req)
+        if not docarray_v2:
+            reqs = []
+            for docs_batch in inputs.batch(batch_size=request_size, shuffle=False):
+                req = DataRequest()
+                req.header.exec_endpoint = on
+                req.header.target_executor = self.executor_name
+                req.parameters = parameters
+                req.data.docs = docs_batch
+                reqs.append(req)
+        else:
+            from docarray import BaseDoc
+            def batch(iterable, n=1):
+                l = len(iterable)
+                for ndx in range(0, l, n):
+                    yield iterable[ndx:min(ndx + n, l)]
+
+            reqs = []
+
+            if len(inputs) > 0:
+                for docs_batch in batch(inputs, n=request_size):
+                    req = DataRequest()
+                    req.document_array_cls = DocList[docs_batch.doc_type]
+                    req.data.docs = docs_batch
+                    req.header.exec_endpoint = on
+                    req.header.target_executor = self.executor_name
+                    req.parameters = parameters
+                    reqs.append(req)
+            else:
+                req = DataRequest()
+                req.document_array_cls = DocList[BaseDoc]
+                req.data.docs = DocList[BaseDoc]()
+                req.header.exec_endpoint = on
+                req.header.target_executor = self.executor_name
+                req.parameters = parameters
+                reqs.append(req)
 
         tasks = [
             self._connection_pool.send_requests_once(
@@ -411,8 +440,13 @@ class _ExecutorStreamer:
 
         results = await asyncio.gather(*tasks)
 
-        docs = DocumentArray.empty()
-        for resp, _ in results:
-            docs.extend(resp.docs)
-
+        if not docarray_v2:
+            docs = DocumentArray.empty()
+            for resp, _ in results:
+                docs.extend(resp.docs)
+        else:
+            docs = DocList[return_type.doc_type]()
+            for resp, _ in results:
+                resp.document_array_cls = return_type
+                docs.extend(resp.docs)
         return docs

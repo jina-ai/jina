@@ -525,7 +525,57 @@ def test_raise_exception(protocol, ctxt_manager):
 
 
 def test_custom_gateway():
-    pass
+    from docarray import DocList
+    from docarray.documents.text import TextDoc
+
+    from jina.serve.runtimes.gateway.http import FastAPIBaseGateway
+    from jina import Flow, Executor, requests
+
+    PARAMETERS = {'dog': 'woof'}
+
+    class MyGateway(FastAPIBaseGateway):
+        @property
+        def app(self):
+            from fastapi import FastAPI
+
+            app = FastAPI(title='Custom FastAPI Gateway')
+
+            @app.get('/endpoint_executor')
+            async def get_executor(text: str):
+                docs = DocList[TextDoc]([TextDoc(text=f'executor {text}'), TextDoc(text=f'executor {text}'.upper())])
+                resp = await self.executor['executor1'].post(on='/', inputs=docs, parameters=PARAMETERS, return_type=DocList[TextDoc])
+                return {'result': [doc.text for doc in resp]}
+
+            @app.get('/endpoint_stream')
+            async def get_endpoint_stream(text: str):
+                docs = DocList[TextDoc]([TextDoc(text=f'stream {text}'), TextDoc(text=f'stream {text}'.upper())])
+                async for resp in self.streamer.stream_docs(docs, parameters=PARAMETERS, target_executor='executor1'):
+                    return {'result': [doc.text for doc in resp]}
+
+            return app
+
+    class FirstExec(Executor):
+        @requests
+        def func(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+            for doc in docs:
+                doc.text += ' THIS SHOULD NOT HAVE HAPPENED!'
+
+    class SecondExec(Executor):
+        @requests
+        def func(self, docs: DocList[TextDoc], parameters, **kwargs) -> DocList[TextDoc]:
+            for doc in docs:
+                doc.text += f' Second(parameters={str(parameters)})'
+
+    with Flow().config_gateway(uses=MyGateway, protocol='http').add(uses=FirstExec, name='executor0').add(
+            uses=SecondExec, name='executor1') as flow:
+        import requests
+        r = requests.get(f'http://localhost:{flow.port}/endpoint_executor?text=meow')
+        assert r.json()['result'] == [f'executor meow Second(parameters={str(PARAMETERS)})',
+                                      f'EXECUTOR MEOW Second(parameters={str(PARAMETERS)})']
+
+        r = requests.get(f'http://localhost:{flow.port}/endpoint_stream?text=meow')
+        assert r.json()['result'] == [f'stream meow Second(parameters={str(PARAMETERS)})',
+                                      f'STREAM MEOW Second(parameters={str(PARAMETERS)})']
 
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])
