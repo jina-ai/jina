@@ -41,7 +41,7 @@ def get_fastapi_app(
     if expose_graphql_endpoint:
         logger.error(f' GraphQL endpoint is not enabled when using docarray >0.30')
     with ImportExtensions(required=True):
-        from fastapi import FastAPI, Response, status
+        from fastapi import FastAPI, Response, HTTPException
         from fastapi.middleware.cors import CORSMiddleware
         import pydantic
     from docarray.base_doc.docarray_response import DocArrayResponse
@@ -164,9 +164,14 @@ def get_fastapi_app(
         async def post(body: input_model, response: Response):
             docs = DocList[input_doc_list_model](body.data)
             try:
-                async for result in streamer.stream_docs(docs, exec_endpoint=endpoint_path, parameters=body.parameters, return_results=True):
-                    result_dict = result.to_dict()
-                    return result_dict
+                async for resp in streamer.stream_docs(docs, exec_endpoint=endpoint_path, parameters=body.parameters, return_results=True):
+                    status = resp.header.status
+
+                    if status.code == jina_pb2.StatusProto.ERROR:
+                        raise HTTPException(status_code=499, detail=status.description)
+                    else:
+                        result_dict = resp.to_dict()
+                        return result_dict
             except InternalNetworkError as err:
                 import grpc
 

@@ -163,7 +163,7 @@ class WorkerRequestHandler:
         request_models_map = self._executor._get_endpoint_models_dict()
 
         def call_handle(request):
-            return self.handle([request], None)
+            return self.process_single_data(request, None)
 
         return get_fastapi_app(
             request_models_map=request_models_map,
@@ -838,9 +838,13 @@ class WorkerRequestHandler:
                 if self.logger.debug_enabled:
                     self._log_data_request(requests[0])
 
-                tracing_context = self._extract_tracing_context(
-                    context.invocation_metadata()
-                )
+                if context is not None:
+                    tracing_context = self._extract_tracing_context(
+                        context.invocation_metadata()
+                    )
+                else:
+                    tracing_context = None
+
                 result = await self.handle(
                     requests=requests, tracing_context=tracing_context
                 )
@@ -861,7 +865,8 @@ class WorkerRequestHandler:
                 )
 
                 requests[0].add_exception(ex, self._executor)
-                context.set_trailing_metadata((('is-error', 'true'),))
+                if context is not None:
+                    context.set_trailing_metadata((('is-error', 'true'),))
                 if self._failed_requests_metrics:
                     self._failed_requests_metrics.inc()
                 if self._failed_requests_counter:

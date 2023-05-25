@@ -188,7 +188,6 @@ def test_chain(protocols):
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
 def test_default_endpoint(protocols):
-    # TODO: Test how it behaves with complex topologies and filtering
     class Input1(BaseDoc):
         img: ImageDoc
 
@@ -230,7 +229,6 @@ def test_default_endpoint(protocols):
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
 @pytest.mark.parametrize('reduce', [True, False])
 def test_complex_topology_bifurcation(protocols, reduce):
-    # TODO: Test how it behaves with complex topologies where bifurcation and reduction occur
     class DocTest(BaseDoc):
         text: str
 
@@ -451,25 +449,83 @@ def test_empty_input_output(protocol, ctxt_manager):
         assert len(ret) == 0
 
 
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+@pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
+def test_send_parameters(protocol, ctxt_manager):
+    if ctxt_manager == 'deployment' and protocol == 'websocket':
+        return
+
+    class Foo(Executor):
+        @requests(on='/hello')
+        def foo(self, docs: DocList[TextDoc], parameters, **kwargs) -> DocList[TextDoc]:
+            for doc in docs:
+                doc.text += f'Processed by foo with {parameters["param"]}'
+
+    if ctxt_manager == 'flow':
+        ctxt_mgr = Flow(protocol=protocol).add(uses=Foo)
+    else:
+        ctxt_mgr = Deployment(protocol=protocol, uses=Foo)
+
+    with ctxt_mgr:
+        ret = ctxt_mgr.post(on='/hello', parameters={'param': '5'}, inputs=DocList[TextDoc]([TextDoc(text='')]))
+        assert len(ret) == 1
+        assert ret[0].text == 'Processed by foo with 5'
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+@pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
+def test_get_parameters_back(protocol, ctxt_manager):
+    if ctxt_manager == 'deployment' and protocol == 'websocket':
+        return
+
+    class Foo(Executor):
+        @requests(on='/hello')
+        def foo(self, parameters, **kwargs):
+            return {'back': parameters}
+
+    if ctxt_manager == 'flow':
+        ctxt_mgr = Flow(protocol=protocol).add(uses=Foo, name='foo')
+    else:
+        ctxt_mgr = Deployment(protocol=protocol, uses=Foo, name='foo')
+
+    with ctxt_mgr:
+        ret = ctxt_mgr.post(on='/hello', parameters={'param': '5'}, return_responses=True)
+        assert len(ret) == 1
+        assert ret[0].parameters == {'param': '5', '__results__': {'foo/rep-0': {'back': {'param': '5'}}}}
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+@pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
+def test_raise_exception(protocol, ctxt_manager):
+    from jina.excepts import BadServer
+    if ctxt_manager == 'deployment' and protocol == 'websocket':
+        return
+
+    class Foo(Executor):
+        @requests(on='/hello')
+        def foo(self, **kwargs):
+            raise Exception('Raising some exception from Executor')
+
+    if ctxt_manager == 'flow':
+        ctxt_mgr = Flow(protocol=protocol).add(uses=Foo, name='foo')
+    else:
+        ctxt_mgr = Deployment(protocol=protocol, uses=Foo, name='foo')
+
+    with ctxt_mgr:
+        if protocol == 'http':
+            with pytest.raises(ValueError) as excinfo:
+                ctxt_mgr.post(on='/hello', parameters={'param': '5'}, return_responses=True)
+            assert excinfo.value.args[0] == {'detail': "Exception('Raising some exception from Executor')"}
+        elif protocol == 'grpc':
+            with pytest.raises(BadServer):
+                ctxt_mgr.post(on='/hello', parameters={'param': '5'}, return_responses=True)
+        elif protocol == 'websocket':
+            with pytest.raises(BadServer):
+                ctxt_mgr.post(on='/hello', parameters={'param': '5'}, return_responses=True)
+
+
 def test_custom_gateway():
     pass
-
-
-def test_flow_send_parameters():
-    pass
-
-
-def test_get_parameter_back():
-    pass
-
-
-def test_get_exception_in_header_back():
-    pass
-
-
-def test_custom_gateway():
-    pass
-
 
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])

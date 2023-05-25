@@ -49,8 +49,10 @@ def get_fastapi_app(
                 req.data.docs = DocList[input_doc_list_model](body.data)
             req.parameters = body.parameters
             req.header.exec_endpoint = endpoint_path
+            # TODO: potent
             resp = await caller(req)
             status = resp.header.status
+
             if status.code == jina_pb2.StatusProto.ERROR:
                 raise HTTPException(status_code=499, detail=status.description)
             else:
