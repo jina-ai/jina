@@ -74,6 +74,8 @@ Jina has four fundamental concepts:
 - An [**Executor**](https://docs.jina.ai/concepts/serving/executor/) is a Python class that transforms and processes Documents.
 - A [**Deployment**](https://docs.jina.ai/concepts/orchestration/deployment) serves a single Executor, while a [**Flow**](https://docs.jina.ai/concepts/orchestration/flow/) serves Executors chained into a pipeline.
 
+![](https://github.com/jina-ai/jina/blob/docs-readme-revamp/.github/images/deployment-diagram.png?raw=true)
+
 [The full glossary is explained here](https://docs.jina.ai/concepts/preliminaries/#).
 
 ### Build AI Services [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jina/blob/master/.github/getting-started/notebook.ipynb)
