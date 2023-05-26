@@ -108,7 +108,7 @@ with Deployment(uses=MyExec, protocol='grpc', replicas=2) as dep:
 
 ## Chain Executors in Flow with different schemas
 
-With the new API, when building a Flow the user should ensure that the Document types used as input of an Executor match the schema 
+With the new API, when building a Flow you should ensure that the Document types used as input of an Executor match the schema 
 of the output of its incoming previous Flow.
 
 For instance, this Flow will fail to start because the Document types are wrongly chained.

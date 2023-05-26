@@ -68,8 +68,7 @@ class RequestStreamer:
 
         :param topology_graph: The topology graph from which the models need to be removed
         :param connection_pool: The connection pool to be used
-        :return: a Dictionary with endpoints as keys and values as a dictionary of input and output schemas and names
-        taken from the endpoints proto endpoint of Executors
+        :return: a Dictionary with endpoints as keys and values as a dictionary of input and output schemas and names taken from the endpoints proto endpoint of Executors
         """
         # The logic should be to get the response of all the endpoints protos schemas from all the nodes. Then do a
         # logic that for every endpoint fom every Executor computes what is the input and output schema seen by the
