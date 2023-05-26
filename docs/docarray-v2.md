@@ -92,7 +92,7 @@ If there is no `request_schema` and `response_schema`, the type hint is used to 
 and `response_schema` will be used.
 
 
-## Serve one Executors in a Deployment
+## Serve one Executor in a Deployment
 
 Once you have defined the Executor with the New Executor API, you can easily serve and scale it as a Deployment with `gRPC`, `HTTP` or any combination of these
 protocols.
@@ -108,7 +108,7 @@ with Deployment(uses=MyExec, protocol='grpc', replicas=2) as dep:
 
 ## Chain Executors in Flow with different schemas
 
-With the new API, when building a Flow, the user needs to make sure that the Document types used as input of an Executor match the schema 
+With the new API, when building a Flow the user should ensure that the Document types used as input of an Executor match the schema 
 of the output of its incoming previous Flow.
 
 For instance, this Flow will fail to start because the Document types are wrongly chained.
@@ -174,7 +174,7 @@ class ProcessText(Executor):
         for doc in docs:
             self.logger.info(f'Getting embedding with type {doc.text}')
 
-# This Flow will fail to start, the input type of "process" does not match the output type of "embed"
+# This Flow will fail to start because the input type of "process" does not match the output type of "embed"
 flow = Flow().add(uses=TextEmbeddingExecutor, name='embed').add(uses=ProcessText, name='process')
 with flow:
     flow.block()
@@ -184,7 +184,7 @@ with flow:
 
 ## Client API
 
-In the client, you similarly specify the schema that you expect the Deployment or Flow to return. You can pass the return type by using the `return_type` parameter in the `client.post` method:
+Similarly, In the client, you specify the schema that you expect the Deployment or Flow to return. You can pass the return type by using the `return_type` parameter in the `client.post` method:
 
 ```{code-block} python
 ---
@@ -207,13 +207,13 @@ with Deployment(uses=MyExec) as dep:
 
 Jina is working to offer full compatibility with the new DocArray version.
 
-However, at this moment there are some limitations to consider when using Jina with the new docarray version.
+However, there are currently some limitations to consider.
 
 
 ````{admonition} Note
 :class: note
 
-With DocArray 0.30 support, Jina introduced the concept of input/output schema at the Executor level. In order to chain multiple Executor into a Flow you always need to make sure that the output schema of an Executor is the same as the Input of the Executor that follows it in the Flow
+With DocArray 0.30 support, Jina introduced the concept of input/output schema at the Executor level. To chain multiple Executors into a Flow you need to ensure that the output schema of an Executor is the same as the input of the Executor that follows it in the Flow
 ```
 
 ````{admonition} Note
