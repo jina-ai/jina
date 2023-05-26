@@ -11,6 +11,7 @@ from docarray.documents.legacy import LegacyDocument
 from jina.helper import random_port
 
 from jina import Deployment, Executor, Flow, requests, Client
+from jina.excepts import RuntimeFailToStart
 
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
@@ -282,7 +283,7 @@ def test_condition_feature(protocol, temp_workspace, tmpdir):
         tags: Dict[str, int]
 
     class ConditionDumpExecutor(Executor):
-        @requests(on='/bar')
+        @requests
         def foo(self, docs: DocList[ProcessingTestDocConditions], **kwargs) -> DocList[ProcessingTestDocConditions]:
             with open(
                     os.path.join(str(self.workspace), f'{self.metas.name}.txt'), 'w', encoding='utf-8'
@@ -291,9 +292,23 @@ def test_condition_feature(protocol, temp_workspace, tmpdir):
                     fp.write(doc.text)
                     doc.text += f' processed by {self.metas.name}'
 
+
+    class FirstExec(Executor):
+        @requests
+        def foo(self, docs: DocList[LegacyDocument], **kwargs) -> DocList[ProcessingTestDocConditions]:
+            output_da = DocList[ProcessingTestDocConditions](
+                [ProcessingTestDocConditions(text='type1', tags={'type': 1}),
+                 ProcessingTestDocConditions(text='type2', tags={'type': 2})])
+            return output_da
+
+    class JoinerExec(Executor):
+        @requests
+        def foo(self, docs: DocList[ProcessingTestDocConditions], **kwargs) -> DocList[ProcessingTestDocConditions]:
+            pass
+
     f = (
         Flow(protocol=protocol)
-            .add(name='first')
+            .add(uses=FirstExec, name='first')
             .add(
             uses=ConditionDumpExecutor,
             uses_metas={'name': 'exec1'},
@@ -308,13 +323,11 @@ def test_condition_feature(protocol, temp_workspace, tmpdir):
             name='exec2',
             needs='first',
             when={'tags__type': {'$gt': 1}})
-            .needs_all('joiner')
+            .needs_all('joiner', uses=JoinerExec)
     )
 
     with f:
-        input_da = DocList[ProcessingTestDocConditions](
-            [ProcessingTestDocConditions(text='type1', tags={'type': 1}),
-             ProcessingTestDocConditions(text='type2', tags={'type': 2})])
+        input_da = DocList[LegacyDocument]([])
 
         ret = f.post(
             on='/bar',
@@ -543,7 +556,8 @@ def test_custom_gateway():
             @app.get('/endpoint_executor')
             async def get_executor(text: str):
                 docs = DocList[TextDoc]([TextDoc(text=f'executor {text}'), TextDoc(text=f'executor {text}'.upper())])
-                resp = await self.executor['executor1'].post(on='/', inputs=docs, parameters=PARAMETERS, return_type=DocList[TextDoc])
+                resp = await self.executor['executor1'].post(on='/', inputs=docs, parameters=PARAMETERS,
+                                                             return_type=DocList[TextDoc])
                 return {'result': [doc.text for doc in resp]}
 
             @app.get('/endpoint_stream')
@@ -576,6 +590,156 @@ def test_custom_gateway():
         r = requests.get(f'http://localhost:{flow.port}/endpoint_stream?text=meow')
         assert r.json()['result'] == [f'stream meow Second(parameters={str(PARAMETERS)})',
                                       f'STREAM MEOW Second(parameters={str(PARAMETERS)})']
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+@pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
+def test_any_endpoint(protocol, ctxt_manager):
+    if ctxt_manager == 'deployment' and protocol == 'websocket':
+        return
+
+    class Foo(Executor):
+        @requests
+        def foo(self, docs: DocList[TextDoc], parameters, **kwargs) -> DocList[TextDoc]:
+            for doc in docs:
+                doc.text = 'Foo'
+
+    if ctxt_manager == 'flow':
+        ctxt_mgr = Flow(protocol=protocol).add(uses=Foo, name='foo')
+    else:
+        ctxt_mgr = Deployment(protocol=protocol, uses=Foo, name='foo')
+
+    with ctxt_mgr:
+        ret = ctxt_mgr.post(on='/index', inputs=DocList[TextDoc]([TextDoc(text='')]))
+        assert len(ret) == 1
+        assert ret[0].text == 'Foo'
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+def test_flow_incompatible_linear(protocol):
+    class First(Executor):
+        @requests
+        def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+            pass
+
+    class Second(Executor):
+        @requests
+        def foo(self, docs: DocList[ImageDoc], **kwargs) -> DocList[ImageDoc]:
+            pass
+
+    f = Flow(protocol=protocol).add(uses=First).add(uses=Second)
+
+    with pytest.raises(RuntimeFailToStart):
+        with f:
+            pass
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+def test_flow_incompatible_bifurcation(protocol):
+    class First(Executor):
+        @requests
+        def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+            pass
+
+    class Second(Executor):
+        @requests
+        def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[ImageDoc]:
+            pass
+
+    class Previous(Executor):
+        @requests
+        def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+            pass
+
+    f = Flow(protocol=protocol).add(uses=Previous, name='previous').add(uses=First, name='first', needs='previous').add(uses=Second, name='second', needs='previous').needs_all()
+
+    with pytest.raises(RuntimeFailToStart):
+        with f:
+            pass
+
+
+
+class ExternalDeploymentDoc(BaseDoc):
+    tags: Dict[str, str] = {}
+
+
+@pytest.fixture(scope='function')
+def input_docs():
+    return DocList[ExternalDeploymentDoc]([ExternalDeploymentDoc() for _ in range(50)])
+
+
+@pytest.fixture
+def num_shards(request):
+    return request.param
+
+
+def _external_deployment_args(num_shards, port=None):
+    from jina.parsers import set_deployment_parser
+
+    args = [
+        '--uses',
+        'MyExternalExecutor',
+        '--name',
+        'external_real',
+        '--port',
+        str(port) if port else str(random_port()),
+        '--host-in',
+        '0.0.0.0',
+        '--shards',
+        str(num_shards),
+        '--polling',
+        'all',
+    ]
+    return set_deployment_parser().parse_args(args)
+
+
+@pytest.fixture(scope='function')
+def external_deployment_args(num_shards, port=None):
+    return _external_deployment_args(num_shards, port)
+
+
+@pytest.fixture
+def external_deployment(external_deployment_args):
+    return Deployment(external_deployment_args)
+
+
+import uuid
+
+
+class MyExternalExecutor(Executor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._id = str(uuid.uuid4())
+
+    @requests(on='/index')
+    def foo(self, docs, *args, **kwargs):
+        for doc in docs:
+            doc.tags['name'] = self.runtime_args.name
+            doc.tags['uuid'] = self._id
+
+
+@pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+def test_flow_with_external_deployment(
+        external_deployment, external_deployment_args, input_docs, num_shards, protocol
+):
+    with external_deployment:
+        external_args = vars(external_deployment_args)
+        del external_args['name']
+        del external_args['external']
+        del external_args['deployment_role']
+        flow = Flow(protocol=protocol).add(
+            **external_args,
+            name='external_fake',
+            external=True,
+        )
+        with flow:
+            resp = flow.index(inputs=input_docs)
+
+        assert len(resp) == len(input_docs)
+        assert len(resp) > 0
+        for doc in resp:
+            assert 'external_real' in doc.tags['name']
 
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])

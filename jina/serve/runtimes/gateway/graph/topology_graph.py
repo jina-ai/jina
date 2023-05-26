@@ -67,10 +67,33 @@ class TopologyGraph:
             self.logger = logger or JinaLogger(self.__class__.__name__)
             self.endpoints = None
             self._pydantic_models_by_endpoint = None
+            self._endpoints_proto = None
 
         @property
         def leaf(self):
             return len(self.outgoing_nodes) == 0
+
+        def _validate_against_outgoing_nodes(self):
+            for node in self.outgoing_nodes:
+                # here validate for each endpoint that output of self matches input of node
+                if node._pydantic_models_by_endpoint is not None: # gateway end
+
+                    for endp in self._pydantic_models_by_endpoint.keys():
+                        outgoing_enp = endp
+                        incoming_endp = endp if endp in node._pydantic_models_by_endpoint else __default_endpoint__
+
+                        if incoming_endp in node._pydantic_models_by_endpoint:
+
+                            if endp in node._pydantic_models_by_endpoint:
+                                if self._pydantic_models_by_endpoint[outgoing_enp]['output'].schema() != \
+                                        node._pydantic_models_by_endpoint[incoming_endp]['input'].schema():
+                                    raise Exception(
+                                        f'The output schema of {self.name} is incompatible with the input schema of {node.name}')
+                        else:
+                            raise Exception(
+                                f'{node.name} does not expose {incoming_endp} which makes it impossible to be chained with {self.name} on {outgoing_enp}')
+                return node._validate_against_outgoing_nodes()
+            return True
 
         def _update_requests_with_filter_condition(self, need_copy):
             for i in range(len(self.parts_to_send)):
@@ -131,62 +154,64 @@ class TopologyGraph:
             # models_schema_list and models_list is given to each node. And each one fills its models
             from google.protobuf import json_format
             async def task():
-                self.logger.debug(f'Getting Endpoints data from {self.name}')
-                endpoints_proto = await connection_pool.send_discover_endpoint(
-                    self.name, retries=self._retries
-                )
-                # TODO: Try more often should not be able to start, synchronization issue
-                if endpoints_proto is not None:
-                    endp, _ = endpoints_proto
-                    self.endpoints = endp.endpoints
-                    if docarray_v2:
-                        from docarray.documents.legacy import LegacyDocument
-                        schemas = json_format.MessageToDict(endp.schemas)
-                        self._pydantic_models_by_endpoint = {}
-                        models_created_by_name = {}
-                        for endpoint, inner_dict in schemas.items():
-                            input_model_name = inner_dict['input']['name']
-                            input_model_schema = inner_dict['input']['model']
-                            if input_model_schema in models_schema_list:
-                                input_model = models_list[models_schema_list.index(input_model_schema)]
-                                models_created_by_name[input_model_name] = input_model
-                            else:
-                                if input_model_name not in models_created_by_name:
-                                    if input_model_schema == legacy_doc_schema:
-                                        input_model = LegacyDocument
-                                    else:
-                                        input_model = _create_pydantic_model_from_schema(input_model_schema,
-                                                                                         input_model_name,
-                                                                                         {})
+                if self._endpoints_proto is None:
+                    self.logger.debug(f'Getting Endpoints data from {self.name}')
+                    endpoints_proto = await connection_pool.send_discover_endpoint(
+                        self.name, retries=self._retries
+                    )
+                    # TODO: Try more often should not be able to start, synchronization issue
+                    if endpoints_proto is not None:
+                        endp, _ = endpoints_proto
+                        self.endpoints = endp.endpoints
+                        if docarray_v2:
+                            from docarray.documents.legacy import LegacyDocument
+                            schemas = json_format.MessageToDict(endp.schemas)
+                            self._pydantic_models_by_endpoint = {}
+                            models_created_by_name = {}
+                            for endpoint, inner_dict in schemas.items():
+                                input_model_name = inner_dict['input']['name']
+                                input_model_schema = inner_dict['input']['model']
+                                if input_model_schema in models_schema_list:
+                                    input_model = models_list[models_schema_list.index(input_model_schema)]
                                     models_created_by_name[input_model_name] = input_model
-                                input_model = models_created_by_name[input_model_name]
-                                models_schema_list.append(input_model_schema)
-                                models_list.append(input_model)
-                            output_model_name = inner_dict['output']['name']
-                            output_model_schema = inner_dict['output']['model']
-                            if output_model_schema in models_schema_list:
-                                output_model = models_list[models_schema_list.index(output_model_schema)]
-                                models_created_by_name[output_model_name] = output_model
-                            else:
-                                if output_model_name not in models_created_by_name:
-                                    if output_model_name == legacy_doc_schema:
-                                        output_model = LegacyDocument
-                                    else:
-                                        output_model = _create_pydantic_model_from_schema(output_model_schema,
-                                                                                          output_model_name,
-                                                                                          {})
+                                else:
+                                    if input_model_name not in models_created_by_name:
+                                        if input_model_schema == legacy_doc_schema:
+                                            input_model = LegacyDocument
+                                        else:
+                                            input_model = _create_pydantic_model_from_schema(input_model_schema,
+                                                                                             input_model_name,
+                                                                                             {})
+                                        models_created_by_name[input_model_name] = input_model
+                                    input_model = models_created_by_name[input_model_name]
+                                    models_schema_list.append(input_model_schema)
+                                    models_list.append(input_model)
+                                output_model_name = inner_dict['output']['name']
+                                output_model_schema = inner_dict['output']['model']
+                                if output_model_schema in models_schema_list:
+                                    output_model = models_list[models_schema_list.index(output_model_schema)]
                                     models_created_by_name[output_model_name] = output_model
-                                output_model = models_created_by_name[output_model_name]
-                                models_schema_list.append(output_model)
-                                models_list.append(input_model)
+                                else:
+                                    if output_model_name not in models_created_by_name:
+                                        if output_model_name == legacy_doc_schema:
+                                            output_model = LegacyDocument
+                                        else:
+                                            output_model = _create_pydantic_model_from_schema(output_model_schema,
+                                                                                              output_model_name,
+                                                                                              {})
+                                        models_created_by_name[output_model_name] = output_model
+                                    output_model = models_created_by_name[output_model_name]
+                                    models_schema_list.append(output_model)
+                                    models_list.append(input_model)
 
-                            self._pydantic_models_by_endpoint[endpoint] = {
-                                'input': input_model,
-                                'output': output_model
-                            }
-                    return endpoints_proto
-                else:
-                    raise Exception(' Failed to get endpoints')
+                                self._pydantic_models_by_endpoint[endpoint] = {
+                                    'input': input_model,
+                                    'output': output_model
+                                }
+                        self._endpoints_proto = endpoints_proto
+                    else:
+                        raise Exception(' Failed to get endpoints')
+                return self._endpoints_proto
 
             return asyncio.create_task(task())
 
@@ -546,26 +571,30 @@ class TopologyGraph:
 
         self._origin_nodes = [nodes[node_name] for node_name in origin_node_names]
         self.has_filter_conditions = bool(graph_conditions)
+        self._all_endpoints = None
 
     async def _get_all_endpoints(self, connection_pool, retry_forever=False):
-        while True:
-            try:
-                models_schemas_list = []
-                models_list = []
-                tasks_to_get_endpoints = [
-                    node.get_endpoints(connection_pool, models_schemas_list, models_list) for node in self.all_nodes
-                ]
-                await asyncio.gather(*tasks_to_get_endpoints)
-                endpoints = set()
-                for node in self.all_nodes:
-                    if node._pydantic_models_by_endpoint is not None:
-                        endpoints.update(list(node._pydantic_models_by_endpoint.keys()))
-                return endpoints
-            except Exception as exc:
-                if not retry_forever:
-                    raise exc
-                self.logger.warning(f'Getting endpoints failed: {exc}. Waiting for another trial')
-                await asyncio.sleep(1)
+        if not self._all_endpoints:
+            while True:
+                try:
+                    models_schemas_list = []
+                    models_list = []
+                    tasks_to_get_endpoints = [
+                        node.get_endpoints(connection_pool, models_schemas_list, models_list) for node in self.all_nodes
+                    ]
+                    await asyncio.gather(*tasks_to_get_endpoints)
+                    endpoints = set()
+                    for node in self.all_nodes:
+                        if node._pydantic_models_by_endpoint is not None:
+                            endpoints.update(list(node._pydantic_models_by_endpoint.keys()))
+                    self._all_endpoints = endpoints
+                    break
+                except Exception as exc:
+                    if not retry_forever:
+                        raise exc
+                    self.logger.warning(f'Getting endpoints failed: {exc}. Waiting for another trial')
+                    await asyncio.sleep(1)
+        return self._all_endpoints
 
     def add_routes(self, request: 'DataRequest'):
         """
@@ -624,3 +653,10 @@ class TopologyGraph:
             if node.result_in_params_returned:
                 res.update(node.result_in_params_returned)
         return res
+
+    def _validate_flow_docarray_compatibility(self):
+        """
+        Validates flow docarray validity in terms of input-output schemas of Executors
+        """
+        for node in self.origin_nodes:
+            node._validate_against_outgoing_nodes()

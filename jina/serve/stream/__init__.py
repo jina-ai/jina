@@ -66,6 +66,8 @@ class RequestStreamer:
         Return a Dictionary with endpoints as keys and values as a dictionary of input and output schemas and names
         taken from the endpoints proto endpoint of Executors
 
+        :param topology_graph: The topology graph from which the models need to be removed
+        :param connection_pool: The connection pool to be used
         :return: a Dictionary with endpoints as keys and values as a dictionary of input and output schemas and names
         taken from the endpoints proto endpoint of Executors
         """

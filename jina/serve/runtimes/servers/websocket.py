@@ -44,6 +44,7 @@ class WebSocketServer(BaseServer):
             from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
             if isinstance(self._request_handler, GatewayRequestHandler):
                 await self._request_handler.streamer._get_endpoints_input_output_models()
+                self._request_handler.streamer._validate_flow_docarray_compatibility()
         self.app = self._request_handler._websocket_fastapi_default_app(tracing=self.tracing, tracer_provider=self.tracer_provider)
 
         with ImportExtensions(required=True):

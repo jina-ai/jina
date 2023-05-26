@@ -115,12 +115,13 @@ class FastAPIBaseServer(BaseServer):
             # Filter out healthcheck endpoint `GET /`
             logging.getLogger("uvicorn.access").addFilter(_EndpointFilter())
 
-        # app property will generate a new fastapi app each time called
-        # here if v2 I need to make sure that stremaer gets all 
         if docarray_v2:
             from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
             if isinstance(self._request_handler, GatewayRequestHandler):
                 await self._request_handler.streamer._get_endpoints_input_output_models()
+                self._request_handler.streamer._validate_flow_docarray_compatibility()
+
+        # app property will generate a new fastapi app each time called
         app = self.app
         _install_health_check(app, self.logger)
         self.server = UviServer(

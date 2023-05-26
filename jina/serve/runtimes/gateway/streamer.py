@@ -179,6 +179,12 @@ class GatewayStreamer:
         self._endpoints_models_map = await self._streamer._get_endpoints_input_output_models(self.topology_graph,
                                                                                              self._connection_pool)
 
+    def _validate_flow_docarray_compatibility(self):
+        """
+        This method aims to validate that the input-output docarray models of Executors are good
+        """
+        self.topology_graph._validate_flow_docarray_compatibility()
+
     async def stream(
             self,
             docs: DocumentArray,
