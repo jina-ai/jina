@@ -92,9 +92,99 @@ If there is no `request_schema` and `response_schema`, the type hint is used to 
 and `response_schema` will be used.
 
 
+## Serve one Executors in a Deployment
+
+Once you have defined the Executor with the New Executor API, you can easily serve and scale it as a Deployment with `gRPC`, `HTTP` or any combination of these
+protocols.
+
+
+```{code-block} python
+from jina import Deployment
+
+with Deployment(uses=MyExec, protocol='grpc', replicas=2) as dep:
+    dep.block()
+```
+
+
+## Chain Executors in Flow with different schemas
+
+With the new API, when building a Flow, the user needs to make sure that the Document types used as input of an Executor match the schema 
+of the output of its incoming previous Flow.
+
+For instance, this Flow will fail to start because the Document types are wrongly chained.
+
+````{tab} Valid Flow
+```{code-block} python
+from jina import Executor, requests, Flow
+from docarray import DocList, BaseDoc
+from docarray.typing import NdArray
+import numpy as np
+
+
+class SimpleStrDoc(BaseDoc):
+    text: str
+
+class TextWithEmbedding(SimpleStrDoc):
+    embedding: NdArray
+
+class TextEmbeddingExecutor(Executor):
+    @requests(on='/foo')
+    def foo(docs: DocList[SimpleStrDoc], **kwargs) -> DocList[TextWithEmbedding]
+        ret = DocList[TextWithEmbedding]()
+        for doc in docs:
+            ret.append(TextWithEmbedding(text=doc.text, embedding=np.ramdom.rand(10))
+        return ret
+
+class ProcessEmbedding(Executor):
+    @requests(on='/foo')
+    def foo(docs: DocList[TextWithEmbedding], **kwargs) -> DocList[TextWithEmbedding]
+        for doc in docs:
+            self.logger.info(f'Getting embedding with shape {doc.embedding.shape}')
+
+flow = Flow().add(uses=TextEmbeddingExecutor, name='embed').add(uses=ProcessEmbedding, name='process')
+with flow:
+    flow.block()
+```
+````
+````{tab} Invalid Flow
+```yaml
+from jina import Executor, requests, Flow
+from docarray import DocList, BaseDoc
+from docarray.typing import NdArray
+import numpy as np
+
+
+class SimpleStrDoc(BaseDoc):
+    text: str
+
+class TextWithEmbedding(SimpleStrDoc):
+    embedding: NdArray
+
+class TextEmbeddingExecutor(Executor):
+    @requests(on='/foo')
+    def foo(docs: DocList[SimpleStrDoc], **kwargs) -> DocList[TextWithEmbedding]
+        ret = DocList[TextWithEmbedding]()
+        for doc in docs:
+            ret.append(TextWithEmbedding(text=doc.text, embedding=np.ramdom.rand(10))
+        return ret
+
+class ProcessText(Executor):
+    @requests(on='/foo')
+    def foo(docs: DocList[SimpleStrDoc], **kwargs) -> DocList[TextWithEmbedding]
+        for doc in docs:
+            self.logger.info(f'Getting embedding with type {doc.text}')
+
+# This Flow will fail to start, the input type of "process" does not match the output type of "embed"
+flow = Flow().add(uses=TextEmbeddingExecutor, name='embed').add(uses=ProcessText, name='process')
+with flow:
+    flow.block()
+```
+````
+
+
 ## Client API
 
-In the client, you similarly specify the schema that you expect the Flow to return. You can pass the return type by using the `return_type` parameter in the `client.post` method:
+In the client, you similarly specify the schema that you expect the Deployment or Flow to return. You can pass the return type by using the `return_type` parameter in the `client.post` method:
 
 ```{code-block} python
 ---
@@ -117,20 +207,13 @@ with Deployment(uses=MyExec) as dep:
 
 Jina is working to offer full compatibility with the new DocArray version.
 
-At present, these features are supported if you use the APIs described in the previous sections.
+However, at this moment there are some limitations to consider when using Jina with the new docarray version.
 
-- All the features offered by {ref}`Deployment <deployment>` where a single Executor is served and {ref}`scaled <scale-out>`. This includes both
-HTTP and gRPC protocols, and both of them at the same type.
-
-- When combining multiple Deployments in a pipeline using a {ref}`Flow <flow-cookbook>`, there are currently several limitations:
-
-    - Only gRPC protocol is supported.
-    - Only linear Flows are supported, no topologies using bifurcations can be used at the moment.
 
 ````{admonition} Note
 :class: note
 
-With DocArray 0.30 support, Jina introduced the concept of input/output schema at the Executor level. In order to chain multiple Executor into a Flow you always need to make sure that the output schema of an Executor is the same as the Input of the Executor that follows him in the Flow
+With DocArray 0.30 support, Jina introduced the concept of input/output schema at the Executor level. In order to chain multiple Executor into a Flow you always need to make sure that the output schema of an Executor is the same as the Input of the Executor that follows it in the Flow
 ```
 
 ````{admonition} Note
