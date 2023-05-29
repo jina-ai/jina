@@ -668,6 +668,16 @@ def test_combined_decorators(inputs, expected_values):
 
 def test_write_decorator():
     class WriteExecutor(Executor):
+        @write
+        @requests(on='/delete')
+        def delete(self, **kwargs):
+            pass
+
+        @requests(on='/bar')
+        @write
+        def bar(self, **kwargs):
+            pass
+
         @requests(on='/index')
         @write()
         def index(self, **kwargs):
@@ -678,6 +688,8 @@ def test_write_decorator():
         def update(self, **kwargs):
             pass
 
+
+
         @requests(on='/search')
         def search(self, **kwargs):
             pass
@@ -687,4 +699,4 @@ def test_write_decorator():
             pass
 
     exec = WriteExecutor()
-    assert set(exec.write_endpoints) == {'/index', '/update'}
+    assert set(exec.write_endpoints) == {'/index', '/update', '/delete', '/bar'}
