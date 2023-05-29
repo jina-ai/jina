@@ -378,12 +378,9 @@ class GrpcConnectionPool:
                 details=error.details(),
             )
         else:
-            if error.code() == grpc.StatusCode.UNAVAILABLE and 'not the leader' in error.details():
-                self._logger.debug(f'RAFT node of {current_deployment} is not the leader. Trying next replica, if available.')
-            else:
-                self._logger.debug(
-                    f'gRPC call to deployment {current_deployment} failed with error {format_grpc_error(error)}, for retry attempt {retry_i + 1}/{total_num_tries - 1}.'
-                    f' Trying next replica, if available.'
+            if connection_list:
+                await connection_list.reset_connection(
+                    current_address, current_deployment
                 )
             return None
 
@@ -556,7 +553,6 @@ class GrpcConnectionPool:
                         for task in tasks:
                             task.cancel()
                     raise
-
         except Exception as ex:
             self._logger.error(f'error with warmup up task: {ex}')
             return
@@ -567,5 +563,4 @@ class GrpcConnectionPool:
         replica_set.add(
             self._connections.get_replicas(deployment=deployment, head=True)
         )
-
         return set(filter(None, replica_set))

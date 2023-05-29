@@ -61,7 +61,7 @@ if docarray_v2:
 
 @pytest.mark.parametrize('replicas', [1, 3])
 @pytest.mark.parametrize('include_gateway', [True, False])
-@pytest.mark.parametrize('protocols', [['grpc', 'http'], ['http']])
+@pytest.mark.parametrize('protocols', [['grpc', 'http'], ['grpc'], ['http']])
 @pytest.mark.parametrize('init_sleep_time', [0, 0.5, 5])
 @pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
 def test_slow_load_executor(replicas, include_gateway, protocols, init_sleep_time):
