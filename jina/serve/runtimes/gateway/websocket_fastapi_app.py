@@ -38,8 +38,10 @@ def get_fastapi_app(
     :param tracer_provider: If tracing is enabled the tracer_provider will be used to instrument the code.
     :return: fastapi app
     """
-
-    from jina.serve.runtimes.gateway.models import JinaEndpointRequestModel
+    if not docarray_v2:
+        from jina.serve.runtimes.gateway.models import JinaEndpointRequestModel
+    else:
+        from docarray import DocList, BaseDoc
 
     with ImportExtensions(required=True):
         from fastapi import FastAPI, Response, WebSocket, WebSocketDisconnect, status
@@ -155,6 +157,8 @@ def get_fastapi_app(
     async def _shutdown():
         await streamer.close()
 
+    request_models_map = streamer._endpoints_models_map
+
     @app.websocket('/')
     async def websocket_endpoint(
             websocket: WebSocket, response: Response
@@ -168,16 +172,18 @@ def get_fastapi_app(
                         break
                     else:
                         # NOTE: Helps in converting camelCase to snake_case
-                        req_generator_input = JinaEndpointRequestModel(**request).dict()
-                        req_generator_input['data_type'] = DataInputType.DICT
-                        if request['data'] is not None and 'docs' in request['data']:
-                            req_generator_input['data'] = req_generator_input['data'][
-                                'docs'
-                            ]
-
                         # you can't do `yield from` inside an async function
-                        for data_request in request_generator(**req_generator_input):
-                            yield data_request
+                        if not docarray_v2:
+                            req_generator_input = JinaEndpointRequestModel(**request).dict()
+                            req_generator_input['data_type'] = DataInputType.DICT
+                            if request['data'] is not None and 'docs' in request['data']:
+                                req_generator_input['data'] = req_generator_input['data'][
+                                    'docs'
+                                ]
+                            for data_request in request_generator(**req_generator_input):
+                                yield data_request
+                        else:
+                            raise RuntimeError(f' DocArray v2 is not compatible with {WebsocketSubProtocols.JSON} subprotocol')
                 elif isinstance(request, bytes):
                     if request == bytes(True):
                         break
@@ -243,8 +249,10 @@ def get_fastapi_app(
         .. # noqa: DAR201
 
         """
-
-        da = DocumentArray([])
+        if not docarray_v2:
+            da = DocumentArray([])
+        else:
+            da = DocList[BaseDoc]([])
 
         try:
             _ = await _get_singleton_result(
@@ -270,8 +278,11 @@ def get_fastapi_app(
         from jina.serve.executors import __dry_run_endpoint__
 
         await manager.connect(websocket)
+        if not docarray_v2:
+            da = DocumentArray([])
+        else:
+            da = DocList[BaseDoc]([])
 
-        da = DocumentArray([])
         try:
             async for _ in streamer.rpc_stream(
                     request_iterator=request_generator(

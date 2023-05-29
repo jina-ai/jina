@@ -203,7 +203,7 @@ class GrpcConnectionPool:
             shard_id: Optional[int] = None,
             timeout: Optional[float] = None,
             retries: Optional[int] = -1,
-    ) -> Optional[asyncio.Task]:
+    ):
         """Sends a discover Endpoint call to target.
 
         :param deployment: name of the Jina deployment to send the request to
@@ -211,7 +211,7 @@ class GrpcConnectionPool:
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param timeout: timeout for sending the requests
         :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
-        :return: asyncio.Task items to send call
+        :return: coroutine items to send call
         """
         connection_list = self._connections.get_replicas(
             deployment, head, shard_id, True
@@ -378,12 +378,9 @@ class GrpcConnectionPool:
                 details=error.details(),
             )
         else:
-            if error.code() == grpc.StatusCode.UNAVAILABLE and 'not the leader' in error.details():
-                self._logger.debug(f'RAFT node of {current_deployment} is not the leader. Trying next replica, if available.')
-            else:
-                self._logger.debug(
-                    f'gRPC call to deployment {current_deployment} failed with error {format_grpc_error(error)}, for retry attempt {retry_i + 1}/{total_num_tries - 1}.'
-                    f' Trying next replica, if available.'
+            if connection_list:
+                await connection_list.reset_connection(
+                    current_address, current_deployment
                 )
             return None
 
@@ -460,11 +457,10 @@ class GrpcConnectionPool:
             connection_list: _ReplicaList,
             timeout: Optional[float] = None,
             retries: Optional[int] = -1,
-    ) -> asyncio.Task:
+    ):
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
-        async def task_wrapper():
-
+        async def task_coroutine():
             tried_addresses = set()
             if retries is None or retries < 0:
                 total_num_tries = (
@@ -500,7 +496,7 @@ class GrpcConnectionPool:
                 except AttributeError:
                     return default_endpoints_proto, None
 
-        return asyncio.create_task(task_wrapper())
+        return task_coroutine()
 
     async def warmup(
             self,
@@ -557,7 +553,6 @@ class GrpcConnectionPool:
                         for task in tasks:
                             task.cancel()
                     raise
-
         except Exception as ex:
             self._logger.error(f'error with warmup up task: {ex}')
             return
@@ -568,5 +563,4 @@ class GrpcConnectionPool:
         replica_set.add(
             self._connections.get_replicas(deployment=deployment, head=True)
         )
-
         return set(filter(None, replica_set))
