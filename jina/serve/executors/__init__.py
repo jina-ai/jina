@@ -24,13 +24,14 @@ from typing import (
     overload,
 )
 
-from jina._docarray import DocumentArray
+from jina._docarray import DocumentArray, docarray_v2
 from jina.constants import __args_executor_init__, __cache_path__, __default_endpoint__
 from jina.enums import BetterEnum
 from jina.helper import (
     ArgNamespace,
     T,
     get_or_reuse_loop,
+    is_generator,
     iscoroutinefunction,
     typename,
 )
@@ -48,7 +49,6 @@ from jina.serve.helper import (
     wrap_func,
 )
 from jina.serve.instrumentation import MetricsTimer
-from jina._docarray import docarray_v2
 
 if docarray_v2:
     from docarray.documents.legacy import LegacyDocument
@@ -271,6 +271,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         endpoint_models = {}
         for endpoint, function_with_schema in self.requests.items():
+            _is_generator = getattr(function_with_schema.fn, '__is_generator__', False)
             if docarray_v2:
                 request_schema = function_with_schema.request_schema.doc_type
                 response_schema = function_with_schema.response_schema.doc_type
@@ -286,6 +287,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     'name': response_schema.__name__,
                     'model': response_schema,
                 },
+                'is_generator': _is_generator,
             }
         return endpoint_models
 

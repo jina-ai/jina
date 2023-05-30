@@ -7,7 +7,7 @@ from typing import Callable, Dict, List, Optional, Sequence, Type, Union
 
 from jina._docarray import Document, DocumentArray, docarray_v2
 from jina.constants import __cache_path__
-from jina.helper import iscoroutinefunction
+from jina.helper import is_generator, iscoroutinefunction
 from jina.importer import ImportExtensions
 
 
@@ -42,9 +42,9 @@ def avoid_concurrent_lock_cls(cls):
 
             if self.__class__ == cls:
                 with ImportExtensions(
-                        required=False,
-                        help_text=f'FileLock is needed to guarantee non-concurrent initialization of replicas in the '
-                                  f'same machine.',
+                    required=False,
+                    help_text=f'FileLock is needed to guarantee non-concurrent initialization of replicas in the '
+                    f'same machine.',
                 ):
                     import filelock
 
@@ -91,18 +91,18 @@ def _init_requests_by_class(cls):
 
 
 def write(
-        func: Optional[
-            Callable[
-                [
-                    'DocumentArray',
-                    Dict,
-                    'DocumentArray',
-                    List['DocumentArray'],
-                    List['DocumentArray'],
-                ],
-                Optional[Union['DocumentArray', Dict]],
-            ]
-        ] = None
+    func: Optional[
+        Callable[
+            [
+                'DocumentArray',
+                Dict,
+                'DocumentArray',
+                List['DocumentArray'],
+                List['DocumentArray'],
+            ],
+            Optional[Union['DocumentArray', Dict]],
+        ]
+    ] = None
 ):
     """
     `@write` is a decorator indicating that the function decorated will change the Executor finite state machine
@@ -131,17 +131,20 @@ def write(
                     self._docs_dict[doc.id] = doc
 
             @requests(on=['/search'])
-            def search(self,  docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+            def search(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
                 for doc in docs:
                     self.logger.debug(f'Searching against {len(self._docs_dict)} documents')
                     doc.text = self._docs_dict[doc.id].text
 
-        d = Deployment(name='stateful_executor',
-                       uses=MyStateStatefulExecutor,
-                       replicas=3,
-                       stateful=True,
-                       workspace='./raft',
-                       peer_ports=[12345, 12346, 12347])
+
+        d = Deployment(
+            name='stateful_executor',
+            uses=MyStateStatefulExecutor,
+            replicas=3,
+            stateful=True,
+            workspace='./raft',
+            peer_ports=[12345, 12346, 12347],
+        )
         with d:
             d.post(
                 on='/index', inputs=TextDoc(text='I am here!')
@@ -163,7 +166,7 @@ def write(
 
                 @functools.wraps(fn)
                 async def arg_wrapper(
-                        executor_instance, *args, **kwargs
+                    executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
                     with executor_instance._write_lock:
                         return await fn(executor_instance, *args, **kwargs)
@@ -173,7 +176,7 @@ def write(
 
                 @functools.wraps(fn)
                 def arg_wrapper(
-                        executor_instance, *args, **kwargs
+                    executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
                     with executor_instance._write_lock:
                         return fn(executor_instance, *args, **kwargs)
@@ -280,15 +283,21 @@ def requests(
     """
     from jina.constants import __args_executor_func__, __default_endpoint__
 
+    if func:
+        setattr(func, '__is_generator__', is_generator(func))
+
     class FunctionMapper:
         def __init__(self, fn):
+
+            if fn:
+                setattr(fn, '__is_generator__', is_generator(fn))
             self._batching_decorator = None
             self._write_decorator = None
             fn = self._unwrap_batching_decorator(fn)
             fn = self._unwrap_write_decorator(fn)
             arg_spec = inspect.getfullargspec(fn)
             if not arg_spec.varkw and not __args_executor_func__.issubset(
-                    arg_spec.args
+                arg_spec.args
             ):
                 raise TypeError(
                     f'{fn} accepts only {arg_spec.args} which is fewer than expected, '
@@ -299,7 +308,7 @@ def requests(
 
                 @functools.wraps(fn)
                 async def arg_wrapper(
-                        executor_instance, *args, **kwargs
+                    executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
                     return await fn(executor_instance, *args, **kwargs)
 
@@ -308,7 +317,7 @@ def requests(
 
                 @functools.wraps(fn)
                 def arg_wrapper(
-                        executor_instance, *args, **kwargs
+                    executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
                     return fn(executor_instance, *args, **kwargs)
 
@@ -383,19 +392,19 @@ def requests(
 
 
 def dynamic_batching(
-        func: Callable[
-            [
-                'DocumentArray',
-                Dict,
-                'DocumentArray',
-                List['DocumentArray'],
-                List['DocumentArray'],
-            ],
-            Optional[Union['DocumentArray', Dict]],
-        ] = None,
-        *,
-        preferred_batch_size: Optional[int] = None,
-        timeout: Optional[float] = 10_000,
+    func: Callable[
+        [
+            'DocumentArray',
+            Dict,
+            'DocumentArray',
+            List['DocumentArray'],
+            List['DocumentArray'],
+        ],
+        Optional[Union['DocumentArray', Dict]],
+    ] = None,
+    *,
+    preferred_batch_size: Optional[int] = None,
+    timeout: Optional[float] = 10_000,
 ):
     """
     `@dynamic_batching` defines the dynamic batching behavior of an Executor.
@@ -422,7 +431,7 @@ def dynamic_batching(
 
                 @functools.wraps(fn)
                 async def arg_wrapper(
-                        executor_instance, *args, **kwargs
+                    executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
                     return await fn(executor_instance, *args, **kwargs)
 
@@ -431,7 +440,7 @@ def dynamic_batching(
 
                 @functools.wraps(fn)
                 def arg_wrapper(
-                        executor_instance, *args, **kwargs
+                    executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
                     return fn(executor_instance, *args, **kwargs)
 
@@ -476,9 +485,9 @@ def dynamic_batching(
 
 
 def monitor(
-        *,
-        name: Optional[str] = None,
-        documentation: Optional[str] = None,
+    *,
+    name: Optional[str] = None,
+    documentation: Optional[str] = None,
 ):
     """
     Decorator and context manager that allows monitoring of an Executor.
