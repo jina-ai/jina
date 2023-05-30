@@ -317,6 +317,8 @@ Increase your application's throughput with scalability features out of the box,
 
 Let's scale a Stable Diffusion Executor deployment with replicas and dynamic batching:
 
+![](https://github.com/jina-ai/jina/blob/docs-readme-revamp/.github/images/scaled-deployment.png?raw=true)
+
 * Create two replicas, with [a GPU assigned for each](https://docs.jina.ai/concepts/flow/scale-out/#replicate-on-multiple-gpus).
 * Enable dynamic batching to process incoming parallel requests together with the same model inference.
 
