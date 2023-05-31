@@ -567,13 +567,12 @@ class WorkerRequestHandler:
             warnings.warn(
                 'Batching is not supported for generator executors endpoints. Ignoring batch size.'
             )
-        docs = WorkerRequestHandler.get_docs_from_request(requests)
-        docs_matrix, docs_map = WorkerRequestHandler._get_docs_matrix_from_request(
-            requests
-        )
+        doc = requests[0].data.doc
+        docs_matrix, docs_map = None, None
         return await self._executor.__acall__(
             req_endpoint=exec_endpoint,
-            docs=docs,
+            doc=doc,
+            docs=None,
             parameters=params,
             docs_matrix=docs_matrix,
             docs_map=docs_map,

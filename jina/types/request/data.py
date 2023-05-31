@@ -1,5 +1,5 @@
 import copy
-from typing import Dict, Optional, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Dict, Optional, Type, TypeVar, Union
 
 from google.protobuf import json_format
 
@@ -8,6 +8,9 @@ from jina.excepts import BadRequestType
 from jina.helper import random_identity, typename
 from jina.proto import jina_pb2
 from jina.types.request import Request
+
+if TYPE_CHECKING:
+    from jina._docarray import Document, DocumentArray, docarray_v2
 
 RequestSourceType = TypeVar(
     'RequestSourceType', jina_pb2.DataRequestProto, str, Dict, bytes
@@ -57,6 +60,24 @@ class DataRequest(Request):
             :param value: a DocumentArray
             """
             self.set_docs_convert_arrays(value)
+
+        @property
+        def doc(self) -> 'Document':
+            """Get the :class: `DocumentArray` with sequence `data.docs` as content.
+
+            .. # noqa: DAR201"""
+            if len(self.docs) > 0:
+                return self.docs[0]
+            else:
+                return None
+
+        @doc.setter
+        def doc(self, value: 'Document'):
+            """Override the DocumentArray with the provided one
+
+            :param value: a DocumentArray
+            """
+            self.docs = DocumentArray([value])
 
         def set_docs_convert_arrays(
             self, value: DocumentArray, ndarray_type: Optional[str] = None
