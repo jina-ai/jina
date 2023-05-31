@@ -29,8 +29,8 @@ Jina lets you build multimodal [**AI services**](#build-ai-services) and [**pipe
 
 Jina provides a smooth Pythonic experience transitioning from local deployment to advanced orchestration frameworks like Docker-Compose, Kubernetes, or Jina AI Cloud. Jina makes advanced solution engineering and cloud-native technologies accessible to every developer.
 
-- Build applications for any [data type](), any mainstream [deep learning framework](), and any [gateway]().
-- Design high-performance microservices, with [easy scaling](), duplex client-server streaming, and async/non-blocking data processing over dynamic flows.
+- Build applications for any [data type](https://docs.docarray.org/data_types/first_steps/), any mainstream [deep learning framework](), and any [protocol](https://docs.jina.ai/concepts/serving/gateway/#set-protocol-in-python).
+- Design high-performance microservices, with [easy scaling](https://docs.jina.ai/concepts/orchestration/scale-out/), duplex client-server streaming, and async/non-blocking data processing over dynamic flows.
 - Docker container integration via [Executor Hub](https://cloud.jina.ai), OpenTelemetry/Prometheus observability, and fast Kubernetes/Docker-Compose deployment.
 - Free CPU/GPU hosting via [Jina AI Cloud](https://cloud.jina.ai).
 
