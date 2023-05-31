@@ -3,6 +3,7 @@ import os
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Optional
 
+from jina._docarray import docarray_v2
 from jina.importer import ImportExtensions
 from jina.serve.runtimes.servers import BaseServer
 
@@ -114,6 +115,15 @@ class FastAPIBaseServer(BaseServer):
             # Filter out healthcheck endpoint `GET /`
             logging.getLogger("uvicorn.access").addFilter(_EndpointFilter())
 
+        if docarray_v2:
+            from jina.serve.runtimes.gateway.request_handling import (
+                GatewayRequestHandler,
+            )
+
+            if isinstance(self._request_handler, GatewayRequestHandler):
+                await self._request_handler.streamer._get_endpoints_input_output_models()
+                self._request_handler.streamer._validate_flow_docarray_compatibility()
+
         # app property will generate a new fastapi app each time called
         app = self.app
         _install_health_check(app, self.logger)
@@ -197,7 +207,7 @@ def _install_health_check(app: 'FastAPI', logger):
             )
 
     if not health_check_exists:
-        from jina.serve.runtimes.gateway.models import JinaHealthModel
+        from jina.serve.runtimes.gateway.health_model import JinaHealthModel
 
         @app.get(
             path='/',

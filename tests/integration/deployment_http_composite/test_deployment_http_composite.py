@@ -41,7 +41,7 @@ class SingleExecutorDeployment(Executor):
 
 @pytest.mark.parametrize('replicas', [1, 2, 3])
 @pytest.mark.parametrize('include_gateway', [True, False])
-@pytest.mark.parametrize('protocols', [['http'], ['grpc', 'http']])
+@pytest.mark.parametrize('protocols', [['http'], ['grpc'], ['grpc', 'http']])
 @pytest.mark.parametrize('init_sleep_time', [0, 0.5, 5])
 @pytest.mark.skipif(docarray_v2, reason='tests support for docarray<0.30')
 def test_slow_load_executor(replicas, include_gateway, protocols, init_sleep_time):

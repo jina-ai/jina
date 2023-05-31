@@ -169,10 +169,11 @@ class WorkerRequestHandler:
         request_models_map = self._executor._get_endpoint_models_dict()
 
         def call_handle(request):
-            if request_models_map[request.header.exec_endpoint]['is_generator']:
-                return self.handle_generator([request], None)
-            else:
-                return self.handle([request], None)
+            is_generator = request_models_map[request.header.exec_endpoint][
+                'is_generator'
+            ]
+
+            return self.process_single_data(request, None, is_generator=is_generator)
 
         return get_fastapi_app(
             request_models_map=request_models_map, caller=call_handle, **kwargs
@@ -809,15 +810,18 @@ class WorkerRequestHandler:
         return response_request
 
     # serving part
-    async def process_single_data(self, request: DataRequest, context) -> DataRequest:
+    async def process_single_data(
+        self, request: DataRequest, context, is_generator: bool = False
+    ) -> DataRequest:
         """
         Process the received requests and return the result as a new request
 
         :param request: the data request to process
         :param context: grpc context
+        :param is_generator: whether the request should be handled with streaming
         :returns: the response request
         """
-        return await self.process_data([request], context)
+        return await self.process_data([request], context, is_generator=is_generator)
 
     async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
         """
@@ -834,9 +838,30 @@ class WorkerRequestHandler:
         endpoints_proto.endpoints.extend(list(self._executor.requests.keys()))
         endpoints_proto.write_endpoints.extend(list(self._executor.write_endpoints))
         schemas = self._executor._get_endpoint_models_dict()
-        for endpoint_name, inner_dict in schemas.items():
-            inner_dict['input']['model'] = inner_dict['input']['model'].schema()
-            inner_dict['output']['model'] = inner_dict['output']['model'].schema()
+        if docarray_v2:
+            from docarray.documents.legacy import LegacyDocument
+
+            from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list
+
+            legacy_doc_schema = LegacyDocument.schema()
+            for endpoint_name, inner_dict in schemas.items():
+                if inner_dict['input']['model'].schema() == legacy_doc_schema:
+                    inner_dict['input']['model'] = legacy_doc_schema
+                else:
+                    inner_dict['input']['model'] = _create_aux_model_doc_list_to_list(
+                        inner_dict['input']['model']
+                    ).schema()
+
+                if inner_dict['output']['model'].schema() == legacy_doc_schema:
+                    inner_dict['output']['model'] = legacy_doc_schema
+                else:
+                    inner_dict['output']['model'] = _create_aux_model_doc_list_to_list(
+                        inner_dict['output']['model']
+                    ).schema()
+        else:
+            for endpoint_name, inner_dict in schemas.items():
+                inner_dict['input']['model'] = inner_dict['input']['model'].schema()
+                inner_dict['output']['model'] = inner_dict['output']['model'].schema()
 
         json_format.ParseDict(schemas, endpoints_proto.schemas)
         return endpoints_proto
@@ -857,12 +882,15 @@ class WorkerRequestHandler:
             f'recv DataRequest at {request.header.exec_endpoint} with id: {request.header.request_id}'
         )
 
-    async def process_data(self, requests: List[DataRequest], context) -> DataRequest:
+    async def process_data(
+        self, requests: List[DataRequest], context, is_generator: bool = False
+    ) -> DataRequest:
         """
         Process the received requests and return the result as a new request
 
         :param requests: the data requests to process
         :param context: grpc context
+        :param is_generator: whether the request should be handled with streaming
         :returns: the response request
         """
         with MetricsTimer(
@@ -872,12 +900,22 @@ class WorkerRequestHandler:
                 if self.logger.debug_enabled:
                     self._log_data_request(requests[0])
 
-                tracing_context = self._extract_tracing_context(
-                    context.invocation_metadata()
-                )
-                result = await self.handle(
-                    requests=requests, tracing_context=tracing_context
-                )
+                if context is not None:
+                    tracing_context = self._extract_tracing_context(
+                        context.invocation_metadata()
+                    )
+                else:
+                    tracing_context = None
+
+                if is_generator:
+                    result = await self.handle_generator(
+                        requests=requests, tracing_context=tracing_context
+                    )
+                else:
+                    result = await self.handle(
+                        requests=requests, tracing_context=tracing_context
+                    )
+
                 if self._successful_requests_metrics:
                     self._successful_requests_metrics.inc()
                 if self._successful_requests_counter:
@@ -895,7 +933,8 @@ class WorkerRequestHandler:
                 )
 
                 requests[0].add_exception(ex, self._executor)
-                context.set_trailing_metadata((('is-error', 'true'),))
+                if context is not None:
+                    context.set_trailing_metadata((('is-error', 'true'),))
                 if self._failed_requests_metrics:
                     self._failed_requests_metrics.inc()
                 if self._failed_requests_counter:

@@ -1306,25 +1306,16 @@ def run_async(func, *args, **kwargs):
     if loop and loop.is_running():
         # eventloop already exist
         # running inside Jupyter
-        if is_jupyter():
-            thread = _RunThread()
-            thread.start()
-            thread.join()
-            try:
-                return thread.result
-            except AttributeError:
-                from jina.excepts import BadClient
+        thread = _RunThread()
+        thread.start()
+        thread.join()
+        try:
+            return thread.result
+        except AttributeError:
+            from jina.excepts import BadClient
 
-                raise BadClient(
-                    'something wrong when running the eventloop, result can not be retrieved'
-                )
-        else:
-
-            raise RuntimeError(
-                'you have an eventloop running but not using Jupyter/ipython, '
-                'this may mean you are using Jina with other integration? if so, then you '
-                'may want to use Client/Flow(asyncio=True). If not, then '
-                'please report this issue here: https://github.com/jina-ai/jina'
+            raise BadClient(
+                'something wrong when running the eventloop, result can not be retrieved'
             )
     else:
         return asyncio.run(func(*args, **kwargs))
