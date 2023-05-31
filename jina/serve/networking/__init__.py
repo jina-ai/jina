@@ -339,8 +339,10 @@ class GrpcConnectionPool:
         # if an Executor is down behind an API gateway, grpc.StatusCode.NOT_FOUND is returned
         # requests usually gets cancelled when the server shuts down
         # retries for cancelled requests will hit another replica in K8s
+        skip_resetting = False
         if error.code() == grpc.StatusCode.UNAVAILABLE and 'not the leader' in error.details():
             self._logger.debug(f'RAFT node of {current_deployment} is not the leader. Trying next replica, if available.')
+            skip_resetting = True # no need to reset, no problem with channel
         else:
             self._logger.debug(
                 f'gRPC call to {current_deployment} errored, with error {format_grpc_error(error)} and for the {retry_i + 1}th time.'
@@ -366,7 +368,7 @@ class GrpcConnectionPool:
 
             # after connection failure the gRPC `channel` gets stuck in a failure state for a few seconds
             # removing and re-adding the connection (stub) is faster & more reliable than just waiting
-            if connection_list:
+            if connection_list and not skip_resetting:
                 await connection_list.reset_connection(
                     current_address, current_deployment
                 )
@@ -378,7 +380,7 @@ class GrpcConnectionPool:
                 details=error.details(),
             )
         else:
-            if connection_list:
+            if connection_list and not skip_resetting:
                 await connection_list.reset_connection(
                     current_address, current_deployment
                 )
