@@ -1,12 +1,13 @@
 import asyncio
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Optional, Union, Dict
+from typing import TYPE_CHECKING, Dict, Optional, Union
 
 import aiohttp
 from aiohttp import WSMsgType
 from aiohttp.payload import BytesPayload
 from starlette import status
 
+from jina._docarray import docarray_v2
 from jina.clients.base import retry
 from jina.enums import WebsocketSubProtocols
 from jina.excepts import BadClient
@@ -14,23 +15,22 @@ from jina.importer import ImportExtensions
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
 from jina.types.request.status import StatusMessage
-from jina._docarray import docarray_v2
 
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry import trace
 
+    from jina._docarray import Document
     from jina.logging.logger import JinaLogger
 
 if docarray_v2:
     from docarray.base_doc.io.json import orjson_dumps
 
-
     class JinaJsonPayload(BytesPayload):
         def __init__(
-                self,
-                value,
-                *args,
-                **kwargs,
+            self,
+            value,
+            *args,
+            **kwargs,
         ) -> None:
             super().__init__(
                 orjson_dumps(value),
@@ -45,15 +45,15 @@ class AioHttpClientlet(ABC):
     """aiohttp session manager"""
 
     def __init__(
-            self,
-            url: str,
-            logger: 'JinaLogger',
-            max_attempts: int = 1,
-            initial_backoff: float = 0.5,
-            max_backoff: float = 2,
-            backoff_multiplier: float = 1.5,
-            tracer_provider: Optional['trace.TraceProvider'] = None,
-            **kwargs,
+        self,
+        url: str,
+        logger: 'JinaLogger',
+        max_attempts: int = 1,
+        initial_backoff: float = 0.5,
+        max_backoff: float = 2,
+        backoff_multiplier: float = 1.5,
+        tracer_provider: Optional['trace.TraceProvider'] = None,
+        **kwargs,
     ) -> None:
         """HTTP Client to be used with the streamer
 
@@ -167,10 +167,9 @@ class HTTPClientlet(AioHttpClientlet):
                     request_kwargs['json'] = req_dict
                 else:
                     from docarray.base_doc.io.json import orjson_dumps
+
                     request_kwargs['data'] = JinaJsonPayload(value=req_dict)
-                response = await self.session.post(
-                    **request_kwargs
-                ).__aenter__()
+                response = await self.session.post(**request_kwargs).__aenter__()
                 try:
                     r_str = await response.json()
                 except aiohttp.ContentTypeError:
@@ -186,6 +185,43 @@ class HTTPClientlet(AioHttpClientlet):
                     initial_backoff=self.initial_backoff,
                     max_backoff=self.max_backoff,
                 )
+
+    async def send_streaming_message(self, doc: 'Document'):
+        """Sends a GET SSE request to the server
+
+        :param request: request as dict
+        :yields: responses
+        """
+        req_dict = doc.to_dict()
+        req_dict['exec_endpoint'] = req_dict['header']['exec_endpoint']
+
+        try:
+            request_kwargs = {
+                'url': self.url,
+                'header': {'Accept': 'text/event-stream'},
+            }
+            if not docarray_v2:
+                request_kwargs['json'] = req_dict
+            else:
+                from docarray.base_doc.io.json import orjson_dumps
+
+                request_kwargs['data'] = JinaJsonPayload(value=req_dict)
+            response = await self.session.get(**request_kwargs).__aenter__()
+            try:
+                r_str = await response.json()
+            except aiohttp.ContentTypeError:
+                r_str = await response.text()
+            handle_response_status(response.status, r_str, self.url)
+            return response
+        except (ValueError, ConnectionError, BadClient, aiohttp.ClientError) as err:
+            await retry.wait_or_raise_err(
+                attempt=attempt,
+                err=err,
+                max_attempts=self.max_attempts,
+                backoff_multiplier=self.backoff_multiplier,
+                initial_backoff=self.initial_backoff,
+                max_backoff=self.max_backoff,
+            )
 
     async def send_dry_run(self, **kwargs):
         """Query the dry_run endpoint from Gateway
@@ -338,7 +374,9 @@ class WebsocketClientlet(AioHttpClientlet):
         return self.websocket.close_code if self.websocket else None
 
 
-def handle_response_status(http_status: int, response_content: Union[Dict, str], url: str):
+def handle_response_status(
+    http_status: int, response_content: Union[Dict, str], url: str
+):
     """
     Raise BadClient exception for HTTP 404 status.
     Raise ConnectionError for HTTP status codes 504, 504 if header information is available.
@@ -350,8 +388,8 @@ def handle_response_status(http_status: int, response_content: Union[Dict, str],
     if http_status == status.HTTP_404_NOT_FOUND:
         raise BadClient(f'no such endpoint {url}')
     elif (
-            http_status == status.HTTP_503_SERVICE_UNAVAILABLE
-            or http_status == status.HTTP_504_GATEWAY_TIMEOUT
+        http_status == status.HTTP_503_SERVICE_UNAVAILABLE
+        or http_status == status.HTTP_504_GATEWAY_TIMEOUT
     ):
         if (
             isinstance(response_content, dict)
@@ -363,7 +401,7 @@ def handle_response_status(http_status: int, response_content: Union[Dict, str],
         else:
             raise ValueError(response_content)
     elif (
-            http_status < status.HTTP_200_OK
-            or http_status > status.HTTP_300_MULTIPLE_CHOICES
+        http_status < status.HTTP_200_OK
+        or http_status > status.HTTP_300_MULTIPLE_CHOICES
     ):  # failure codes
         raise ValueError(response_content)

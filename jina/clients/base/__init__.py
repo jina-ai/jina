@@ -198,3 +198,13 @@ class BaseClient(InstrumentationMixin, ABC):
         :return: the Client object
         """
         return self
+
+    @abc.abstractmethod
+    async def _get_streaming_results(self, **kwargs):
+        """Get the results from the Flow
+
+        :param kwargs: potential kwargs received passed from the public interface
+        """
+        raise NotImplementedError(
+            f'Streaming endpoints are not supported yet for {self.__class__.__name__}'
+        )

@@ -1,16 +1,20 @@
 import asyncio
 from contextlib import AsyncExitStack
-from typing import TYPE_CHECKING, Optional, Tuple, Type
+from typing import TYPE_CHECKING, Dict, Optional, Tuple, Type
 
+from jina._docarray import Document, DocumentArray
 from jina.clients.base import BaseClient
-from jina.clients.base.helper import HTTPClientlet, handle_response_status
+from jina.clients.base.helper import (
+    AioHttpClientlet,
+    HTTPClientlet,
+    handle_response_status,
+)
 from jina.clients.helper import callback_exec
 from jina.importer import ImportExtensions
 from jina.logging.profile import ProgressBar
 from jina.serve.stream import RequestStreamer
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
-from jina._docarray import DocumentArray
 
 if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
@@ -34,8 +38,9 @@ class HTTPBaseClient(BaseClient):
 
             return paths_by_method
 
-        import aiohttp
         import json
+
+        import aiohttp
 
         proto = 'https' if self.args.tls else 'http'
         target_url = f'{proto}://{self.args.host}:{self.args.port}/openapi.json'
@@ -44,7 +49,9 @@ class HTTPBaseClient(BaseClient):
                 async with session.get(target_url) as response:
                     content = await response.read()
                     openapi_response = json.loads(content.decode())
-                    self._endpoints = extract_paths_by_method(openapi_response).get('post', [])
+                    self._endpoints = extract_paths_by_method(openapi_response).get(
+                        'post', []
+                    )
         except:
             pass
 
@@ -87,20 +94,20 @@ class HTTPBaseClient(BaseClient):
         return False
 
     async def _get_results(
-            self,
-            inputs: 'InputType',
-            on_done: 'CallbackFnType',
-            on_error: Optional['CallbackFnType'] = None,
-            on_always: Optional['CallbackFnType'] = None,
-            max_attempts: int = 1,
-            initial_backoff: float = 0.5,
-            max_backoff: float = 0.1,
-            backoff_multiplier: float = 1.5,
-            results_in_order: bool = False,
-            prefetch: Optional[int] = None,
-            timeout: Optional[int] = None,
-            return_type: Type[DocumentArray] = DocumentArray,
-            **kwargs,
+        self,
+        inputs: 'InputType',
+        on_done: 'CallbackFnType',
+        on_error: Optional['CallbackFnType'] = None,
+        on_always: Optional['CallbackFnType'] = None,
+        max_attempts: int = 1,
+        initial_backoff: float = 0.5,
+        max_backoff: float = 0.1,
+        backoff_multiplier: float = 1.5,
+        results_in_order: bool = False,
+        prefetch: Optional[int] = None,
+        timeout: Optional[int] = None,
+        return_type: Type[DocumentArray] = DocumentArray,
+        **kwargs,
     ):
         """
         :param inputs: the callable
@@ -158,7 +165,7 @@ class HTTPBaseClient(BaseClient):
             )
 
             def _request_handler(
-                    request: 'Request',
+                request: 'Request',
             ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
                 """
                 For HTTP Client, for each request in the iterator, we `send_message` using
@@ -181,7 +188,7 @@ class HTTPBaseClient(BaseClient):
                 **streamer_args,
             )
             async for response in streamer.stream(
-                    request_iterator=request_iterator, results_in_order=results_in_order
+                request_iterator=request_iterator, results_in_order=results_in_order
             ):
                 r_status = response.status
 
@@ -191,10 +198,13 @@ class HTTPBaseClient(BaseClient):
                 da = None
                 if 'data' in r_str and r_str['data'] is not None:
                     from jina._docarray import DocumentArray, docarray_v2
+
                     if not docarray_v2:
                         da = DocumentArray.from_dict(r_str['data'])
                     else:
-                        da = return_type([return_type.doc_type(**v) for v in r_str['data']])
+                        da = return_type(
+                            [return_type.doc_type(**v) for v in r_str['data']]
+                        )
                     del r_str['data']
 
                 resp = DataRequest(r_str)
@@ -212,3 +222,34 @@ class HTTPBaseClient(BaseClient):
                 if self.show_progress:
                     p_bar.update()
                 yield resp
+
+    async def _get_streaming_results(
+        self,
+        on: str,
+        inputs: Type['Document'] = None,
+        parameters: Optional[Dict] = None,
+        return_type: Type[Document] = Document,
+        timeout: Optional[int] = None,
+        **kwargs,
+    ):
+        proto = 'https' if self.args.tls else 'http'
+        endpoint = on.strip('/')
+        has_default_endpoint = 'default' in self._endpoints
+        if endpoint != '' and endpoint in self._endpoints:
+            url = f'{proto}://{self.args.host}:{self.args.port}/{on.strip("/")}'
+        elif has_default_endpoint:
+            url = f'{proto}://{self.args.host}:{self.args.port}/default'
+        else:
+            url = f'{proto}://{self.args.host}:{self.args.port}/post'
+
+        iolet = HTTPClientlet(
+            url=url,
+            logger=self.logger,
+            tracer_provider=self.tracer_provider,
+            timeout=timeout,
+            **kwargs,
+        )
+
+        async with iolet:
+            async for doc in iolet.send_streaming_message(doc=doc):
+                yield doc

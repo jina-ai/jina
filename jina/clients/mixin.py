@@ -521,6 +521,39 @@ class AsyncPostMixin:
             else:
                 yield result
 
+    async def stream_doc(
+        self,
+        on: str,
+        inputs: Type[Document] = None,
+        parameters: Optional[Dict] = None,
+        return_type: Type[Document] = Document,
+        timeout: Optional[int] = None,
+        **kwargs,
+    ) -> AsyncGenerator[None, 'Document']:
+        """Send one document to a streaming endpoint and receive results asynchronisly.
+
+        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document.
+        :param on: the endpoint which is invoked. All the functions in the executors decorated by `@requests(on=...)` with the same endpoint are invoked.
+        :param parameters: the kwargs that will be sent to the executor
+        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.
+        :param timeout: Timeout for the client to remain connected to the server.
+        :param kwargs: additional parameters, can be used to pass metadata or authentication information in the server call
+        :yield: Document object
+        """
+        c = self.client
+        parameters = _include_results_field_in_param(parameters)
+
+        async for doc in c._get_streaming_results(
+            on=on,
+            inputs=inputs,
+            exec_endpoint=on,
+            parameters=parameters,
+            return_type=return_type,
+            timeout=timeout,
+            **kwargs,
+        ):
+            yield doc
+
     # ONLY CRUD, for other request please use `.post`
     index = partialmethod(post, '/index')
     search = partialmethod(post, '/search')
