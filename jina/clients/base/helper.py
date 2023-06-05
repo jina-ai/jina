@@ -26,6 +26,8 @@ if docarray_v2:
     from docarray.base_doc.io.json import orjson_dumps
 
     class JinaJsonPayload(BytesPayload):
+        """A JSON payload for Jina Requests"""
+
         def __init__(
             self,
             value,
@@ -186,42 +188,37 @@ class HTTPClientlet(AioHttpClientlet):
                     max_backoff=self.max_backoff,
                 )
 
-    async def send_streaming_message(self, doc: 'Document'):
+    async def send_streaming_message(self, doc: 'Document', on: str):
         """Sends a GET SSE request to the server
 
-        :param request: request as dict
+        :param doc: Request Document
+        :param on: Request endpoint
         :yields: responses
         """
+
         req_dict = doc.to_dict()
-        req_dict['exec_endpoint'] = req_dict['header']['exec_endpoint']
+        req_dict['exec_endpoint'] = on
 
-        try:
-            request_kwargs = {
-                'url': self.url,
-                'header': {'Accept': 'text/event-stream'},
-            }
-            if not docarray_v2:
-                request_kwargs['json'] = req_dict
-            else:
-                from docarray.base_doc.io.json import orjson_dumps
+        request_kwargs = {
+            'url': self.url,
+            'headers': {'Accept': 'text/event-stream'},
+        }
+        req_dict = {key: value for key, value in req_dict.items() if value is not None}
+        if not docarray_v2:
+            request_kwargs['params'] = req_dict
+        else:
+            from docarray.base_doc.io.json import orjson_dumps
 
-                request_kwargs['data'] = JinaJsonPayload(value=req_dict)
-            response = await self.session.get(**request_kwargs).__aenter__()
-            try:
-                r_str = await response.json()
-            except aiohttp.ContentTypeError:
-                r_str = await response.text()
-            handle_response_status(response.status, r_str, self.url)
-            return response
-        except (ValueError, ConnectionError, BadClient, aiohttp.ClientError) as err:
-            await retry.wait_or_raise_err(
-                attempt=attempt,
-                err=err,
-                max_attempts=self.max_attempts,
-                backoff_multiplier=self.backoff_multiplier,
-                initial_backoff=self.initial_backoff,
-                max_backoff=self.max_backoff,
-            )
+            request_kwargs['params'] = JinaJsonPayload(value=req_dict)
+
+        async with self.session.get(**request_kwargs) as response:
+            async for chunk in response.content.iter_any():
+                events = chunk.split(b'event: ')[1:]
+                for event in events:
+                    if event.startswith(b'update'):
+                        yield event[14:].decode()
+                    elif event.startswith(b'end'):
+                        pass
 
     async def send_dry_run(self, **kwargs):
         """Query the dry_run endpoint from Gateway

@@ -199,7 +199,6 @@ class BaseClient(InstrumentationMixin, ABC):
         """
         return self
 
-    @abc.abstractmethod
     async def _get_streaming_results(self, **kwargs):
         """Get the results from the Flow
 

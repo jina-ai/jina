@@ -524,7 +524,7 @@ class AsyncPostMixin:
     async def stream_doc(
         self,
         on: str,
-        inputs: Type[Document] = None,
+        inputs: Document,
         parameters: Optional[Dict] = None,
         return_type: Type[Document] = Document,
         timeout: Optional[int] = None,

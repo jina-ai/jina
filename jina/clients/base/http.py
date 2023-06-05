@@ -1,8 +1,9 @@
 import asyncio
+import json
 from contextlib import AsyncExitStack
 from typing import TYPE_CHECKING, Dict, Optional, Tuple, Type
 
-from jina._docarray import Document, DocumentArray
+from jina._docarray import Document, DocumentArray, docarray_v2
 from jina.clients.base import BaseClient
 from jina.clients.base.helper import (
     AioHttpClientlet,
@@ -226,21 +227,14 @@ class HTTPBaseClient(BaseClient):
     async def _get_streaming_results(
         self,
         on: str,
-        inputs: Type['Document'] = None,
+        inputs: 'Document',
         parameters: Optional[Dict] = None,
         return_type: Type[Document] = Document,
         timeout: Optional[int] = None,
         **kwargs,
     ):
         proto = 'https' if self.args.tls else 'http'
-        endpoint = on.strip('/')
-        has_default_endpoint = 'default' in self._endpoints
-        if endpoint != '' and endpoint in self._endpoints:
-            url = f'{proto}://{self.args.host}:{self.args.port}/{on.strip("/")}'
-        elif has_default_endpoint:
-            url = f'{proto}://{self.args.host}:{self.args.port}/default'
-        else:
-            url = f'{proto}://{self.args.host}:{self.args.port}/post'
+        url = f'{proto}://{self.args.host}:{self.args.port}/{on.strip("/")}'
 
         iolet = HTTPClientlet(
             url=url,
@@ -251,5 +245,8 @@ class HTTPBaseClient(BaseClient):
         )
 
         async with iolet:
-            async for doc in iolet.send_streaming_message(doc=doc):
-                yield doc
+            async for doc in iolet.send_streaming_message(doc=inputs, on=on):
+                if not docarray_v2:
+                    yield Document.from_dict(json.loads(doc))
+                else:
+                    yield return_type.from_dict(json.loads(doc))
