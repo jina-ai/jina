@@ -1,3 +1,4 @@
+import inspect
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional
 
 from jina import DocumentArray
@@ -117,9 +118,14 @@ def get_fastapi_app(
     ):
         from fastapi import Request
 
-        def gen_dict_documents(gen):
-            for document in gen:
-                yield {'event': 'update', 'data': document.to_dict()}
+        async def gen_dict_documents(gen):
+            if inspect.isasyncgen(gen):
+                async for document in gen:
+                    yield {'event': 'update', 'data': document.to_dict()}
+            else:
+                for document in gen:
+                    yield {'event': 'update', 'data': document.to_dict()}
+            yield {'event': 'end'}
 
         @app.api_route(
             path=f'/{endpoint_path.strip("/")}',
