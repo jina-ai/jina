@@ -195,8 +195,11 @@ class HTTPClientlet(AioHttpClientlet):
         :param on: Request endpoint
         :yields: responses
         """
+        if docarray_v2:
+            req_dict = doc.dict()
+        else:
+            req_dict = doc.to_dict()
 
-        req_dict = doc.to_dict()
         req_dict['exec_endpoint'] = on
 
         request_kwargs = {
@@ -204,12 +207,7 @@ class HTTPClientlet(AioHttpClientlet):
             'headers': {'Accept': 'text/event-stream'},
         }
         req_dict = {key: value for key, value in req_dict.items() if value is not None}
-        if not docarray_v2:
-            request_kwargs['params'] = req_dict
-        else:
-            from docarray.base_doc.io.json import orjson_dumps
-
-            request_kwargs['params'] = JinaJsonPayload(value=req_dict)
+        request_kwargs['params'] = req_dict
 
         async with self.session.get(**request_kwargs) as response:
             async for chunk in response.content.iter_any():

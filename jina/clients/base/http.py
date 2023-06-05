@@ -249,4 +249,4 @@ class HTTPBaseClient(BaseClient):
                 if not docarray_v2:
                     yield Document.from_dict(json.loads(doc))
                 else:
-                    yield return_type.from_dict(json.loads(doc))
+                    yield return_type(**json.loads(doc))
