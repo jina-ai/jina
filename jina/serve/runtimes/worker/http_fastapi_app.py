@@ -118,15 +118,6 @@ def get_fastapi_app(
     ):
         from fastapi import Request
 
-        async def gen_dict_documents(gen):
-            if inspect.isasyncgen(gen):
-                async for document in gen:
-                    yield {'event': 'update', 'data': document.to_dict()}
-            else:
-                for document in gen:
-                    yield {'event': 'update', 'data': document.to_dict()}
-            yield {'event': 'end'}
-
         @app.api_route(
             path=f'/{endpoint_path.strip("/")}',
             methods=['GET'],
@@ -142,8 +133,8 @@ def get_fastapi_app(
 
                 req.data.doc = Document.from_dict(query_params)
             else:
-                req.data.doc = input_doc_list_model.from_dict(query_params)
-            event_generator = gen_dict_documents(await caller(req))
+                req.data.doc = input_doc_list_model(**query_params)
+            event_generator = _gen_dict_documents(await caller(req))
             return EventSourceResponse(event_generator)
 
     for endpoint, input_output_map in request_models_map.items():
@@ -197,3 +188,20 @@ def get_fastapi_app(
         return {}
 
     return app
+
+
+async def _gen_dict_documents(gen):
+    if inspect.isasyncgen(gen):
+        async for document in gen:
+            yield _doc_to_event(document)
+    else:
+        for document in gen:
+            yield _doc_to_event(document)
+    yield {'event': 'end'}
+
+
+def _doc_to_event(doc):
+    if not docarray_v2:
+        return {'event': 'update', 'data': doc.to_dict()}
+    else:
+        return {'event': 'update', 'data': doc.dict()}
