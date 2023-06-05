@@ -113,10 +113,7 @@ def get_fastapi_app(
 
     def add_streaming_get_route(
         endpoint_path,
-        input_model,
-        output_model,
         input_doc_list_model=None,
-        output_doc_list_model=None,
     ):
         from fastapi import Request
 
@@ -131,7 +128,7 @@ def get_fastapi_app(
         )
         async def streaming_get(request: Request):
             query_params = dict(request.query_params)
-            endpoint = query_params.pop('endpoint')
+            endpoint = query_params.pop('exec_endpoint')
             req = DataRequest()
             req.header.exec_endpoint = endpoint
             if not docarray_v2:
@@ -175,10 +172,7 @@ def get_fastapi_app(
             if is_generator:
                 add_streaming_get_route(
                     endpoint,
-                    input_model=endpoint_input_model,
-                    output_model=endpoint_output_model,
                     input_doc_list_model=input_doc_model,
-                    output_doc_list_model=output_doc_model,
                 )
 
     from jina.serve.runtimes.gateway.health_model import JinaHealthModel
