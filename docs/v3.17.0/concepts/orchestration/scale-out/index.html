@@ -1,0 +1,1122 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<meta property="og:title" content="Scale Out" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://docs.jina.ai/concepts/orchestration/scale-out/" />
+<meta property="og:site_name" content="Jina 3.17.0 Documentation" />
+<meta property="og:description" content="By default, all Executors in an Orchestration run with a single instance. If an Executor is particularly slow, then it will reduce the overall throughput. To solve this, you can specify the number of replicas to scale out an Executor. Replicate stateless Executors: Replication creates multiple co..." />
+<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+<meta property="og:image:alt" content="Jina 3.17.0 Documentation" />
+<meta name="description" content="By default, all Executors in an Orchestration run with a single instance. If an Executor is particularly slow, then it will reduce the overall throughput. To solve this, you can specify the number of replicas to scale out an Executor. Replicate stateless Executors: Replication creates multiple co..." />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@JinaAI_">
+<meta name="twitter:creator" content="@JinaAI_">
+<meta name="description" content="Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · Cloud Native · MLOps">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-48ZDWC8GT6');
+</script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+    
+<link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Hot Reload" href="../hot-reload/" /><link rel="prev" title="Add Executors" href="../add-executors/" />
+        <link rel="canonical" href="https://docs.jina.ai/concepts/orchestration/scale-out.html" />
+
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
+        <title>Scale Out - Jina 3.17.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/docbot.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  --color-brand-primary: #009191;
+  --color-brand-content: #009191;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+    <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+    <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+    <header class="mobile-header">
+        <div class="header-left">
+            <label class="nav-overlay-icon" for="__navigation">
+                <div class="visually-hidden">Toggle site navigation sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-menu"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+        <div class="header-center">
+            <a href="../../../">
+                <div class="brand">Jina 3.17.0 documentation</div>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle-container theme-toggle-header">
+                <button class="theme-toggle">
+                    <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                    <svg class="theme-icon-when-auto">
+                        <use href="#svg-sun-half"></use>
+                    </svg>
+                    <svg class="theme-icon-when-dark">
+                        <use href="#svg-moon"></use>
+                    </svg>
+                    <svg class="theme-icon-when-light">
+                        <use href="#svg-sun"></use>
+                    </svg>
+                </button>
+            </div>
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+                <div class="visually-hidden">Toggle table of contents sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-toc"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+    </header>
+    <aside class="sidebar-drawer">
+        <div class="sidebar-container">
+            
+            <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../../../_static/logo-dark.svg" alt="Dark Logo" />
+  </div>
+  
+  
+</a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../get-started/install/"><svg aria-hidden="true" class="sd-octicon sd-octicon-desktop-download" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4.927 5.427l2.896 2.896a.25.25 0 00.354 0l2.896-2.896A.25.25 0 0010.896 5H8.75V.75a.75.75 0 10-1.5 0V5H5.104a.25.25 0 00-.177.427z"></path><path d="M1.573 2.573a.25.25 0 00-.073.177v7.5a.25.25 0 00.25.25h12.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-3a.75.75 0 110-1.5h3A1.75 1.75 0 0116 2.75v7.5A1.75 1.75 0 0114.25 12h-3.727c.099 1.041.52 1.872 1.292 2.757A.75.75 0 0111.25 16h-6.5a.75.75 0 01-.565-1.243c.772-.885 1.192-1.716 1.292-2.757H1.75A1.75 1.75 0 010 10.25v-7.5A1.75 1.75 0 011.75 1h3a.75.75 0 010 1.5h-3a.25.25 0 00-.177.073zM6.982 12a5.72 5.72 0 01-.765 2.5h3.566a5.72 5.72 0 01-.765-2.5H6.982z"></path></svg> Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/docker/">Via Docker Image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/apple-silicon-m1-m2/">On Apple Silicon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/windows/">On Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get-started/create-app/"><span class="fas fa-folder-plus"></span> Create First Project</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/before-you-start/">Before you start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/deploy-model/">Deploy a model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">New DocArray support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../docarray-v2/">(Beta) New DocArray support</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
+<ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../preliminaries/coding-in-python-yaml/">Coding in Python/YAML</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../serving/"><span class="fas fa-gears"></span> Serving</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../serving/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/create/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/add-endpoints/">Add Endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/serve/">Serve</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/dynamic-batching/">Dynamic Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/health-check/">Health Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/hot-reload/">Hot Reload</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/file-structure/">File Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/containerize/">Containerize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../serving/gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/gateway/health-check/">Health Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/gateway/rate-limit/">Rate Limit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/gateway/customize-http-endpoints/">Customize HTTP endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/gateway/customization/">Customization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/gateway/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../"><span class="fas fa-network-wired"></span> Orchestration</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../deployment/">Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../flow/">Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../add-executors/">Add Executors</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Scale Out</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hot-reload/">Hot Reload</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../handle-exceptions/">Handle Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../readiness/">Readiness</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../health-check/">Health Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting-on-multiprocess/">Troubleshooting on Multiprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../client/"><span class="fas fa-laptop-code"></span> Client</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../client/send-receive-data/">Send &amp; Receive Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/send-parameters/">Send Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/transient-errors/">Transient Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/callbacks/">Callbacks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/rate-limit/">Rate Limit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/third-party-clients/">Third-party clients</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cloud Native</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../cloud-nativeness/k8s/"><span class="fas fa-dharmachakra"></span> Kubernetes Support</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../cloud-nativeness/kubernetes/">Deploy on Kubernetes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cloud-nativeness/docker-compose/"><span class="fab fa-docker"></span> Docker Compose Support</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../cloud-nativeness/opentelemetry/"><svg aria-hidden="true" class="sd-octicon sd-octicon-telescope-fill" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M8.531 10.21a.75.75 0 01.944.253l2.644 3.864a.75.75 0 11-1.238.847L9 12.424v2.826a.75.75 0 01-1.5 0v-2.826l-1.881 2.75a.75.75 0 01-1.238-.848l2.048-2.992a.75.75 0 01.293-.252l1.81-.871zM11.905.42a1.5 1.5 0 012.144.49l1.692 2.93a1.5 1.5 0 01-.649 2.102L2.895 11.815a1.5 1.5 0 01-1.95-.602l-.68-1.176a1.5 1.5 0 01.455-1.99L11.905.422zM3.279 8.119l.835 1.445 1.355-.653-.947-1.64-1.243.848zm7.728-1.874L9.6 3.808l1.243-.848 1.52 2.631-1.356.653z" fill-rule="evenodd"></path></svg> OpenTelemetry Support</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../cloud-nativeness/opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cloud-nativeness/monitoring/">Prometheus/Grafana Support (Legacy)</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../serving/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/hub/debug-executor/">Debug</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../jcloud/configuration/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> Configuration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML Specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
+</ul>
+
+    <p class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+    <ul>
+        <li class="toctree-l1">
+            <a class="reference internal" href="#">
+                <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/search-light.svg">
+                <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/search-dark.svg">
+                Jina</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://cloud.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/hub-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/hub-dark.svg">
+            Jina Hub</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://finetuner.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/finetuner-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/finetuner-dark.svg">
+            Finetuner</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/docarray-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/docarray-dark.svg">
+            DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jcloud">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/JCloud-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/JCloud-dark.svg">
+            JCloud</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://now.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/now-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/now-dark.svg">
+            NOW</a></li>
+    </ul>
+</div>
+
+</div>
+
+            </div>
+            
+        </div>
+    </aside>
+    <div class="main">
+        <div class="content">
+            <div class="article-container">
+                <a href="#" class="back-to-top muted-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+                    </svg>
+                    <span>Back to top</span>
+                </a>
+                <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+                        <button class="theme-toggle">
+                            <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                            <svg class="theme-icon-when-auto">
+                                <use href="#svg-sun-half"></use>
+                            </svg>
+                            <svg class="theme-icon-when-dark">
+                                <use href="#svg-moon"></use>
+                            </svg>
+                            <svg class="theme-icon-when-light">
+                                <use href="#svg-sun"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <label class="toc-overlay-icon toc-content-icon"
+                           for="__toc">
+                        <div class="visually-hidden">Toggle table of contents sidebar</div>
+                        <i class="icon">
+                            <svg>
+                                <use href="#svg-toc"></use>
+                            </svg>
+                        </i>
+                    </label>
+                </div>
+                <article role="main">
+                    <section id="scale-out">
+<span id="id1"></span><h1>Scale Out<a class="headerlink" href="#scale-out" title="Permalink to this heading">#</a></h1>
+<p>By default, all Executors in an Orchestration run with a single instance. If an Executor is particularly slow, then it will reduce the overall throughput. To solve this, you can specify the number of <code class="docutils literal notranslate"><span class="pre">replicas</span></code> to scale out an Executor.</p>
+<section id="replicate-stateless-executors">
+<span id="replicate-executors"></span><h2>Replicate stateless Executors<a class="headerlink" href="#replicate-stateless-executors" title="Permalink to this heading">#</a></h2>
+<p>Replication creates multiple copies of the same <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>. Each request in the Orchestration is then passed to only one replica (instance) of that Executor. <strong>All replicas compete for a request. The idle replica gets the request first.</strong></p>
+<p>This is useful for improving performance and availability:</p>
+<ul class="simple">
+<li><p>If you have slow Executors (e.g. embedding) you can scale up the number of instances to process multiple requests in parallel.</p></li>
+<li><p>Executors might need to be taken offline occasionally (for updates, failures, etc.), but you may want your Orchestration to still process requests without any downtime. Adding replicas allows any replica to be taken down as long as there is at least one still running. This ensures the high availability of your Orchestration.</p></li>
+</ul>
+<section id="replicate-executors-in-a-deployment">
+<h3>Replicate Executors in a Deployment<a class="headerlink" href="#replicate-executors-in-a-deployment" title="Permalink to this heading">#</a></h3>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Python</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
+
+<span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;slow_encoder&#39;</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">YAML</label><div class="tab-content docutils">
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai://jina-ai/CLIPEncoder</span>
+<span class="nt">install_requirements</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"> </span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="replicate-executors-in-a-flow">
+<h3>Replicate Executors in a Flow<a class="headerlink" href="#replicate-executors-in-a-flow" title="Permalink to this heading">#</a></h3>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Python</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;slow_encoder&#39;</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;fast_indexer&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">YAML</label><div class="tab-content docutils">
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai://jina-ai/CLIPEncoder</span>
+<span class="w">  </span><span class="nt">install_requirements</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"> </span>
+</pre></div>
+</div>
+</div>
+</div>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../../../_images/replicas-flow.svg"><img alt="../../../_images/replicas-flow.svg" src="../../../_images/replicas-flow.svg" width="70%" /></a>
+<figcaption>
+<p><span class="caption-text">Flow with three replicas of <code class="docutils literal notranslate"><span class="pre">slow_encoder</span></code> and one replica of <code class="docutils literal notranslate"><span class="pre">fast_indexer</span></code></span><a class="headerlink" href="#id2" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="replicate-stateful-executors-with-consensus-using-raft-beta">
+<span id="scale-consensus"></span><h2>Replicate stateful Executors with consensus using RAFT (Beta)<a class="headerlink" href="#replicate-stateful-executors-with-consensus-using-raft-beta" title="Permalink to this heading">#</a></h2>
+<div class="note admonition">
+<p class="admonition-title">Python3.8 or newer version required on MacOS</p>
+<p>This feature requires at least Python3.8 version when working on MacOS.</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">Feature not supported on Windows</p>
+<p>This feature is not supported when using Windows</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">DocArray 0.30</p>
+<p>Starting from DocArray version 0.30, DocArray changed its interface and implementation drastically. We intend to support these new versions in the near future, but not every feature is yet available. Check <a class="reference internal" href="../../../docarray-v2/#docarray-v2"><span class="std std-ref">here</span></a> for more information. This feature has been added with the new DocArray support.</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">gRPC protocol</p>
+<p>This feature is only available when using gRPC as the protocol for the Deployment or when the Deployment is part of a Flow</p>
+</div>
+<p>Replication is used to scale out Executors by creating copies of them that can handle requests in parallel, providing better RPS.
+However, when an Executor maintains some sort of state, then it is not simple to guarantee that each copy of the Executor maintains the <em>same</em> state,
+which can lead to undesired behavior, since each replica can provide different results depending on the specific state they hold.</p>
+<p>In Jina, you can also have replication while guaranteeing the consensus between Executors. For this, we rely on <a class="reference external" href="https://raft.github.io/">RAFT</a>, which is
+an algorithm that guarantees eventual consistency between replicas.</p>
+<p>Consensus-based replication using RAFT is a distributed algorithm designed to provide fault tolerance and consistency in a distributed system. In a distributed system, the nodes may fail, and messages may be lost or delayed, which can lead to inconsistencies in the system.
+The problem with traditional replication methods is that they can’t guarantee consistency in a distributed system in the presence of failures. This is where consensus-based replication using RAFT comes in.
+With this approach, each Executor can be considered as a Finite State Machine, meaning it has a set of potential states and a set of transitions that it can make between those states. Each request that is sent to the Executor can be considered as a log entry that needs to be replicated across the cluster.</p>
+<p>To enable this kind of replication, we need to consider:</p>
+<ul class="simple">
+<li><p>Specify which methods of the Executor <span class="xref std std-ref"> can update its internal state</span>.</p></li>
+<li><p>Tell the Deployment to use the RAFT consensus algorithm by setting the <code class="docutils literal notranslate"><span class="pre">--stateful</span></code> argument.</p></li>
+<li><p>Set values of replicas compatible with RAFT. RAFT requires at least three replicas to guarantee consistency.</p></li>
+<li><p>Pass the <code class="docutils literal notranslate"><span class="pre">--peer-ports</span></code> argument so that the RAFT cluster can recover from a previous configuration of replicas if existed.</p></li>
+<li><p>Optionally you can pass <code class="docutils literal notranslate"><span class="pre">--raft-configuration</span></code> parameter to tweak the behavior of the consensus module. You can understand the values to pass from
+<a class="reference external" href="https://github.com/ongardie/hashicorp-raft/blob/master/config.go">Hashicorp’s RAFT library</a>.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">jina.serve.executors.decorators</span> <span class="kn">import</span> <span class="n">write</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
+
+
+<span class="k">class</span> <span class="nc">MyStateStatefulExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_docs_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/index&#39;</span><span class="p">])</span>
+    <span class="nd">@write</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_docs_dict</span><span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/search&#39;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Searching against </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs_dict</span><span class="p">)</span><span class="si">}</span><span class="s1"> documents&#39;</span><span class="p">)</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs_dict</span><span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+
+
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;stateful_executor&#39;</span><span class="p">,</span> 
+               <span class="n">uses</span><span class="o">=</span><span class="n">MyStateStatefulExecutor</span><span class="p">,</span>
+               <span class="n">replicas</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> 
+               <span class="n">stateful</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+               <span class="n">workspace</span><span class="o">=</span><span class="s1">&#39;./raft&#39;</span><span class="p">,</span>
+               <span class="n">peer_ports</span><span class="o">=</span><span class="p">[</span><span class="mi">12345</span><span class="p">,</span> <span class="mi">12346</span><span class="p">,</span> <span class="mi">12347</span><span class="p">])</span>
+<span class="k">with</span> <span class="n">d</span><span class="p">:</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This capacity allows you not only to have replicas that work with robustness and availability, it also can help achieve higher throughput in some cases.</p>
+<p>Let’s imagine we write an Executor that is used to index and query documents from a vector index.</p>
+<p>For this, we will use an in-memory solution from <a class="reference external" href="https://docs.docarray.org/user_guide/storing/index_in_memory/">DocArray</a> that performs exact vector search.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">jina.serve.executors.decorators</span> <span class="kn">import</span> <span class="n">write</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
+<span class="kn">from</span> <span class="nn">docarray.index.backends.in_memory</span> <span class="kn">import</span> <span class="n">InMemoryExactNNIndex</span>
+
+
+<span class="k">class</span> <span class="nc">QueryDoc</span><span class="p">(</span><span class="n">TextDoc</span><span class="p">):</span>
+    <span class="n">matches</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]()</span>
+
+
+<span class="k">class</span> <span class="nc">ExactNNSearch</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">InMemoryExactNNIndex</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]()</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/index&#39;</span><span class="p">])</span>
+    <span class="nd">@write</span> <span class="c1"># I add write decorator to indicate that calling this endpoint updates the inner state</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Indexing Document in index with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">)</span><span class="si">}</span><span class="s1"> documents indexed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/search&#39;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">QueryDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">QueryDoc</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Searching Document in index with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">)</span><span class="si">}</span><span class="s1"> documents indexed&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">query</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">docs</span><span class="p">,</span> <span class="n">scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">search_field</span><span class="o">=</span><span class="s1">&#39;embedding&#39;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+            <span class="n">query</span><span class="o">.</span><span class="n">matches</span> <span class="o">=</span> <span class="n">docs</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;indexer&#39;</span><span class="p">,</span>
+               <span class="n">port</span><span class="o">=</span><span class="mi">5555</span><span class="p">,</span>
+               <span class="n">uses</span><span class="o">=</span><span class="n">ExactNNSearch</span><span class="p">,</span>
+               <span class="n">workspace</span><span class="o">=</span><span class="s1">&#39;./raft&#39;</span><span class="p">,</span>
+               <span class="n">replicas</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+               <span class="n">stateful</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+               <span class="n">peer_ports</span><span class="o">=</span><span class="p">[</span><span class="mi">12345</span><span class="p">,</span> <span class="mi">12346</span><span class="p">,</span> <span class="mi">12347</span><span class="p">])</span>
+<span class="k">with</span> <span class="n">d</span><span class="p">:</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Then in another terminal, we will send index and search requests:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="k">class</span> <span class="nc">QueryDoc</span><span class="p">(</span><span class="n">TextDoc</span><span class="p">):</span>
+    <span class="n">matches</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]()</span>
+
+
+<span class="n">NUM_DOCS_TO_INDEX</span> <span class="o">=</span> <span class="mi">100000</span>
+<span class="n">NUM_QUERIES</span> <span class="o">=</span> <span class="mi">1000</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">5555</span><span class="p">)</span>
+
+<span class="n">index_docs</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">](</span>
+    <span class="p">[</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;I am document </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">128</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NUM_DOCS_TO_INDEX</span><span class="p">)])</span>
+<span class="n">start_indexing_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/index&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">index_docs</span><span class="p">,</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Indexing </span><span class="si">{</span><span class="n">NUM_DOCS_TO_INDEX</span><span class="si">}</span><span class="s1"> Documents took </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_indexing_time</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># let some time for the data to be replicated</span>
+
+<span class="n">search_da</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">QueryDoc</span><span class="p">](</span>
+    <span class="p">[</span><span class="n">QueryDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;I am document </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">128</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NUM_QUERIES</span><span class="p">)])</span>
+<span class="n">start_querying_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">responses</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/search&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">search_da</span><span class="p">,</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Searching </span><span class="si">{</span><span class="n">NUM_QUERIES</span><span class="si">}</span><span class="s1"> Queries took </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_querying_time</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">responses</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">matches</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the logs of the <code class="docutils literal notranslate"><span class="pre">server</span></code> you can see how <code class="docutils literal notranslate"><span class="pre">index</span></code> requests reach every replica while <code class="docutils literal notranslate"><span class="pre">search</span></code> requests only reach one replica in a
+<code class="docutils literal notranslate"><span class="pre">round</span> <span class="pre">robin</span></code> fashion.</p>
+<p>Eventually every Indexer replica ends up with the same Documents indexed.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO   indexer/rep-2@923 Indexing Document in index with 99900 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99200 documents indexed                                                                                                                                   
+INFO   indexer/rep-1@910 Indexing Document in index with 99700 documents indexed                                                                                                                                   
+INFO   indexer/rep-1@910 Indexing Document in index with 99800 documents indexed                                                                                                                [04/28/23 16:51:06]
+INFO   indexer/rep-0@902 Indexing Document in index with 99300 documents indexed                                                                                                                [04/28/23 16:51:06]
+INFO   indexer/rep-1@910 Indexing Document in index with 99900 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99400 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99500 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99600 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99700 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99800 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99900 documents indexed 
+</pre></div>
+</div>
+<p>But at search time, the consensus module does not affect, and only one replica serves the queries.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO   indexer/rep-0@902 Searching Document in index with 100000 documents indexed                                                                                                              [04/28/23 16:59:21]
+INFO   indexer/rep-1@910 Searching Document in index with 100000 documents indexed                                                                                                              [04/28/23 16:59:21]
+INFO   indexer/rep-2@923 Searching Document in index with 100000 documents indexed 
+</pre></div>
+</div>
+<p>If you run the same example by setting <code class="docutils literal notranslate"><span class="pre">replicas</span></code> to <code class="docutils literal notranslate"><span class="pre">1</span></code> without the consensus module, you can see the benefits it has in the QPS at search time,
+while there is a little cost on the time used for indexing.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;indexer&#39;</span><span class="p">,</span>
+               <span class="n">port</span><span class="o">=</span><span class="mi">5555</span><span class="p">,</span>
+               <span class="n">uses</span><span class="o">=</span><span class="n">ExactNNSearch</span><span class="p">,</span>
+               <span class="n">workspace</span><span class="o">=</span><span class="s1">&#39;./raft&#39;</span><span class="p">,</span>
+               <span class="n">replicas</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With one replica:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Indexing 100000 Documents took 18.93274688720703s
+Searching 1000 Queries took 385.96641397476196s
+</pre></div>
+</div>
+<p>With three replicas and consensus:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Indexing 100000 Documents took 35.066415548324585s
+Searching 1000 Queries took 202.07950615882874s
+</pre></div>
+</div>
+<p>This increases QPS from 2.5 to 5.</p>
+</section>
+<section id="replicate-on-multiple-gpus">
+<h2>Replicate on multiple GPUs<a class="headerlink" href="#replicate-on-multiple-gpus" title="Permalink to this heading">#</a></h2>
+<p>To replicate your <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s so that each replica uses a different GPU on your machine, you can tell the Orchestration to use multiple GPUs by passing <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR</span></code> as an environment variable.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>You should only replicate on multiple GPUs with <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR</span></code> locally.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>In Kubernetes or with Docker Compose you should allocate GPU resources to each replica directly in the configuration files.</p>
+</div>
+<p>The Orchestration assigns GPU devices in the following round-robin fashion:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>GPU device</p></th>
+<th class="head"><p>Replica ID</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>0</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>You can restrict the visible devices in round-robin assignment using <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR0:2</span></code>, where <code class="docutils literal notranslate"><span class="pre">0:2</span></code> corresponds to a Python slice. This creates the following assignment:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>GPU device</p></th>
+<th class="head"><p>Replica ID</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>You can restrict the visible devices in round-robin assignment by assigning the list of device IDs to <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR1,3</span></code>. This creates the following assignment:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>GPU device</p></th>
+<th class="head"><p>Replica ID</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>You can also refer to GPUs by their UUID. For instance, you could assign a list of device UUIDs:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span>RRGPU-0aaaaaaa-74d2-7297-d557-12771b6a79d5,GPU-0bbbbbbb-74d2-7297-d557-12771b6a79d5,GPU-0ccccccc-74d2-7297-d557-12771b6a79d5,GPU-0ddddddd-74d2-7297-d557-12771b6a79d5
+</pre></div>
+</div>
+<p>Check <a class="reference external" href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#env-vars">CUDA Documentation</a> to see the accepted formats to assign CUDA devices by UUID.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>GPU device</p></th>
+<th class="head"><p>Replica ID</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GPU-0aaaaaaa-74d2-7297-d557-12771b6a79d5</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>GPU-0bbbbbbb-74d2-7297-d557-12771b6a79d5</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>GPU-0ccccccc-74d2-7297-d557-12771b6a79d5</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>GPU-0ddddddd-74d2-7297-d557-12771b6a79d5</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>GPU-0aaaaaaa-74d2-7297-d557-12771b6a79d5</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For example, if you have three GPUs and one of your Executor has five replicas then:</p>
+<section id="gpu-replicas-in-a-deployment">
+<h3>GPU replicas in a Deployment<a class="headerlink" href="#gpu-replicas-in-a-deployment" title="Permalink to this heading">#</a></h3>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--1">Python</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
+
+<span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai://jina-ai/CLIPEncoder&#39;</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">install_requirements</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">dep</span>
+    <span class="n">dep</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span>RR<span class="w"> </span>python<span class="w"> </span>deployment.py
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--2">YAML</label><div class="tab-content docutils">
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai://jina-ai/CLIPEncoder</span>
+<span class="w">  </span><span class="nt">install_requirements</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w">  </span>
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span>RR<span class="w"> </span>jina<span class="w"> </span>deployment<span class="w"> </span>--uses<span class="w"> </span>deployment.yaml
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="gpu-replicas-in-a-flow">
+<h3>GPU replicas in a Flow<a class="headerlink" href="#gpu-replicas-in-a-flow" title="Permalink to this heading">#</a></h3>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--1">Python</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+    <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai://jina-ai/CLIPEncoder&#39;</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">install_requirements</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span> 
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span>RR<span class="w"> </span>python<span class="w"> </span>flow.py
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--2">YAML</label><div class="tab-content docutils">
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai://jina-ai/CLIPEncoder</span>
+<span class="w">  </span><span class="nt">install_requirements</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w">  </span>
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span>RR<span class="w"> </span>jina<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>flow.yaml
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="replicate-external-executors">
+<h2>Replicate external Executors<a class="headerlink" href="#replicate-external-executors" title="Permalink to this heading">#</a></h2>
+<p>If you have external Executors with multiple replicas running elsewhere, you can add them to your Orchestration by specifying all the respective hosts and ports:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--4-input--1" name="tab-set--4" type="radio"><label class="tab-label" for="tab-set--4-input--1">Deployment</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
+
+<span class="n">replica_hosts</span><span class="p">,</span> <span class="n">replica_ports</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span><span class="s1">&#39;91.198.174.192&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;12345&#39;</span><span class="p">,</span><span class="s1">&#39;12346&#39;</span><span class="p">]</span>
+<span class="n">Deployment</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">replica_hosts</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">replica_ports</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># alternative syntax</span>
+<span class="n">Deployment</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;localhost:12345&#39;</span><span class="p">,</span><span class="s1">&#39;91.198.174.192:12346&#39;</span><span class="p">],</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--4-input--2" name="tab-set--4" type="radio"><label class="tab-label" for="tab-set--4-input--2">Flow</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">replica_hosts</span><span class="p">,</span> <span class="n">replica_ports</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span><span class="s1">&#39;91.198.174.192&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;12345&#39;</span><span class="p">,</span><span class="s1">&#39;12346&#39;</span><span class="p">]</span>
+<span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">replica_hosts</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">replica_ports</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># alternative syntax</span>
+<span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;localhost:12345&#39;</span><span class="p">,</span><span class="s1">&#39;91.198.174.192:12346&#39;</span><span class="p">],</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>This connects to <code class="docutils literal notranslate"><span class="pre">grpc://localhost:12345</span></code> and <code class="docutils literal notranslate"><span class="pre">grpc://91.198.174.192:12346</span></code> as two replicas of the external Executor.</p>
+<div class="hint admonition">
+<p class="admonition-title">Reducing</p>
+<p>If an external Executor needs multiple predecessors, reducing needs to be enabled. So setting <code class="docutils literal notranslate"><span class="pre">no_reduce=True</span></code> is not allowed for these cases.</p>
+</div>
+</section>
+<section id="customize-polling-behaviors">
+<span id="partition-data-by-using-shards"></span><h2>Customize polling behaviors<a class="headerlink" href="#customize-polling-behaviors" title="Permalink to this heading">#</a></h2>
+<p>Replicas compete for a request, so only one of them will get the request. What if we want all replicas to get the request?</p>
+<p>For example, consider index and search requests:</p>
+<ul class="simple">
+<li><p>Index (and update, delete) are handled by a single replica, as this is sufficient to add it one time.</p></li>
+<li><p>Search requests are handled by all replicas, as you need to search over all replicas to ensure the completeness of the result. The requested data could be on any shard.</p></li>
+</ul>
+<p>For this purpose, you need <code class="docutils literal notranslate"><span class="pre">shards</span></code> and <code class="docutils literal notranslate"><span class="pre">polling</span></code>.</p>
+<p>You can define if all or any <code class="docutils literal notranslate"><span class="pre">shards</span></code> receive the request by specifying <code class="docutils literal notranslate"><span class="pre">polling</span></code>. <code class="docutils literal notranslate"><span class="pre">ANY</span></code> means only one shard receives the request, while  <code class="docutils literal notranslate"><span class="pre">ALL</span></code> means that all shards receive the same request.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--5-input--1" name="tab-set--5" type="radio"><label class="tab-label" for="tab-set--5-input--1">Deployment</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
+
+<span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;ExecutorWithShards&#39;</span><span class="p">,</span> <span class="n">shards</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">polling</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;/custom&#39;</span><span class="p">:</span> <span class="s1">&#39;ALL&#39;</span><span class="p">,</span> <span class="s1">&#39;/search&#39;</span><span class="p">:</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">:</span> <span class="s1">&#39;ANY&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--5-input--2" name="tab-set--5" type="radio"><label class="tab-label" for="tab-set--5-input--2">Flow</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;ExecutorWithShards&#39;</span><span class="p">,</span> <span class="n">shards</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">polling</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;/custom&#39;</span><span class="p">:</span> <span class="s1">&#39;ALL&#39;</span><span class="p">,</span> <span class="s1">&#39;/search&#39;</span><span class="p">:</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">:</span> <span class="s1">&#39;ANY&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The above example results in an Orchestration having the Executor <code class="docutils literal notranslate"><span class="pre">ExecutorWithShards</span></code> with the following polling options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">/index</span></code> has polling <code class="docutils literal notranslate"><span class="pre">ANY</span></code> (the default value is not changed here).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/search</span></code> has polling <code class="docutils literal notranslate"><span class="pre">ANY</span></code> as it is explicitly set (usually that should not be necessary).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/custom</span></code> has polling <code class="docutils literal notranslate"><span class="pre">ALL</span></code>.</p></li>
+<li><p>All other endpoints have polling <code class="docutils literal notranslate"><span class="pre">ANY</span></code> due to using <code class="docutils literal notranslate"><span class="pre">*</span></code> as a wildcard to catch all other cases.</p></li>
+</ul>
+<section id="understand-behaviors-of-replicas-and-shards-with-polling">
+<h3>Understand behaviors of replicas and shards with polling<a class="headerlink" href="#understand-behaviors-of-replicas-and-shards-with-polling" title="Permalink to this heading">#</a></h3>
+<p>The following example demonstrates the different behaviors when setting <code class="docutils literal notranslate"><span class="pre">replicas</span></code>, <code class="docutils literal notranslate"><span class="pre">shards</span></code> and <code class="docutils literal notranslate"><span class="pre">polling</span></code> together.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--6-input--1" name="tab-set--6" type="radio"><label class="tab-label" for="tab-set--6-input--1">Deployment</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+
+
+<span class="k">class</span> <span class="nc">MyExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;inside: </span><span class="si">{</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+
+<span class="n">dep</span> <span class="o">=</span> <span class="p">(</span>
+<span class="hll">    <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExec</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">polling</span><span class="o">=</span><span class="s1">&#39;ANY&#39;</span><span class="p">)</span>
+</span>    <span class="o">.</span><span class="n">needs_all</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="k">with</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;hello&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;return: </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">texts</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--6-input--2" name="tab-set--6" type="radio"><label class="tab-label" for="tab-set--6-input--2">Flow</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+
+
+<span class="k">class</span> <span class="nc">MyExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;inside: </span><span class="si">{</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+
+<span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Flow</span><span class="p">()</span>
+<span class="hll">    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExec</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">polling</span><span class="o">=</span><span class="s1">&#39;ANY&#39;</span><span class="p">)</span>
+</span>    <span class="o">.</span><span class="n">needs_all</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;hello&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;return: </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">texts</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We now change the combination of the yellow highlighted lines above and see if there is any difference in the console output (note two prints in the snippet):</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">polling='ALL'</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">polling='ANY'</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">replicas=2</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">inside:</span> <span class="pre">['hello']</span> <span class="pre">return:</span> <span class="pre">['hello']</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">inside:</span> <span class="pre">['hello']</span> <span class="pre">return:</span> <span class="pre">['hello']</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">shards=2</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">inside:</span> <span class="pre">['hello']</span> <span class="pre">inside:</span> <span class="pre">['hello']</span>&#160; <span class="pre">return:</span> <span class="pre">['hello']</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">inside:</span> <span class="pre">['hello']</span> <span class="pre">return:</span> <span class="pre">['hello']</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+</section>
+
+                </article>
+            </div>
+            <footer>
+                
+                <div class="related-pages">
+                    <a class="next-page" href="../hot-reload/">
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Next</span>
+                            </div>
+                            <div class="title">Hot Reload</div>
+                        </div>
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+                    </a>
+                    <a class="prev-page" href="../add-executors/">
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Previous</span>
+                            </div>
+                            
+                            <div class="title">Add Executors</div>
+                            
+                        </div>
+                    </a>
+                </div>
+                <div class="bottom-of-page">
+                    <div class="left-details">
+                        <div class="copyright">
+                            Copyright &#169; Jina AI Limited. All rights reserved.
+                        </div><div class="last-updated">
+                            Last updated on Jun 06, 2023</div>
+                    </div>
+                    <div class="right-details">
+                        <div class="social-btns">
+                            <a class='social-btn' href="https://github.com/jina-ai/jina" aria-label="GitHub"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                            <a class='social-btn' href="https://discord.jina.ai" aria-label="Discord" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-discord"></i></a>
+                            <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                            <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                            <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+        <aside class="toc-drawer">
+            
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">Scale Out</a><ul>
+<li><a class="reference internal" href="#replicate-stateless-executors">Replicate stateless Executors</a><ul>
+<li><a class="reference internal" href="#replicate-executors-in-a-deployment">Replicate Executors in a Deployment</a></li>
+<li><a class="reference internal" href="#replicate-executors-in-a-flow">Replicate Executors in a Flow</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#replicate-stateful-executors-with-consensus-using-raft-beta">Replicate stateful Executors with consensus using RAFT (Beta)</a></li>
+<li><a class="reference internal" href="#replicate-on-multiple-gpus">Replicate on multiple GPUs</a><ul>
+<li><a class="reference internal" href="#gpu-replicas-in-a-deployment">GPU replicas in a Deployment</a></li>
+<li><a class="reference internal" href="#gpu-replicas-in-a-flow">GPU replicas in a Flow</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#replicate-external-executors">Replicate external Executors</a></li>
+<li><a class="reference internal" href="#customize-polling-behaviors">Customize polling behaviors</a><ul>
+<li><a class="reference internal" href="#understand-behaviors-of-replicas-and-shards-with-polling">Understand behaviors of replicas and shards with polling</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
+            
+            
+        </aside>
+    </div>
+</div>
+<img referrerpolicy="no-referrer-when-downgrade"
+     src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script src="../../../_static/tabs.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
+    </body>
+</html>
