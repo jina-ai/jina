@@ -118,7 +118,12 @@ class _FunctionWithSchema(NamedTuple):
     @staticmethod
     def get_function_with_schema(fn: Callable) -> T:
 
-        docs_annotation = fn.__annotations__.get('docs', None)
+        # if it's not a generator function, infer the type annotation from the docs parameter
+        # otherwise, infer from the doc parameter (since generator endpoints expect only 1 document as input)
+        if not getattr(fn, '__is_generator__', False):
+            docs_annotation = fn.__annotations__.get('docs', None)
+        else:
+            docs_annotation = fn.__annotations__.get('doc', None)
 
         if docs_annotation is None:
             pass
@@ -273,7 +278,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         for endpoint, function_with_schema in self.requests.items():
             _is_generator = getattr(function_with_schema.fn, '__is_generator__', False)
             if docarray_v2:
-                request_schema = function_with_schema.request_schema.doc_type
+                # if the endpoint is not a generator endpoint, then the request schema is a DocumentArray and we need
+                # to get the doc_type from the schema
+                # otherwise, since generator endpoints only accept a Document as input, the request_schema is the schema
+                # of the Document
+                if not _is_generator:
+                    request_schema = function_with_schema.request_schema.doc_type
+                else:
+                    request_schema = function_with_schema.request_schema
                 response_schema = function_with_schema.response_schema.doc_type
             else:
                 request_schema = PydanticDocument
