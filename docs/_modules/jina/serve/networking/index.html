@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/networking.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.networking - Jina 3.16.1 documentation</title>
+        <title>jina.serve.networking - Jina 3.17.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.16.1 documentation</div>
+                <div class="brand">Jina 3.17.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -618,7 +618,7 @@
             <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">retries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">]:</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sends a discover Endpoint call to target.</span>
 
 <span class="sd">        :param deployment: name of the Jina deployment to send the request to</span>
@@ -626,7 +626,7 @@
 <span class="sd">        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL</span>
 <span class="sd">        :param timeout: timeout for sending the requests</span>
 <span class="sd">        :param retries: number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</span>
-<span class="sd">        :return: asyncio.Task items to send call</span>
+<span class="sd">        :return: coroutine items to send call</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">connection_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">get_replicas</span><span class="p">(</span>
             <span class="n">deployment</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">shard_id</span><span class="p">,</span> <span class="kc">True</span>
@@ -754,8 +754,10 @@
         <span class="c1"># if an Executor is down behind an API gateway, grpc.StatusCode.NOT_FOUND is returned</span>
         <span class="c1"># requests usually gets cancelled when the server shuts down</span>
         <span class="c1"># retries for cancelled requests will hit another replica in K8s</span>
+        <span class="n">skip_resetting</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">error</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span> <span class="ow">and</span> <span class="s1">&#39;not the leader&#39;</span> <span class="ow">in</span> <span class="n">error</span><span class="o">.</span><span class="n">details</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;RAFT node of </span><span class="si">{</span><span class="n">current_deployment</span><span class="si">}</span><span class="s1"> is not the leader. Trying next replica, if available.&#39;</span><span class="p">)</span>
+            <span class="n">skip_resetting</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># no need to reset, no problem with channel</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;gRPC call to </span><span class="si">{</span><span class="n">current_deployment</span><span class="si">}</span><span class="s1"> errored, with error </span><span class="si">{</span><span class="n">format_grpc_error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="si">}</span><span class="s1"> and for the </span><span class="si">{</span><span class="n">retry_i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">th time.&#39;</span>
@@ -781,7 +783,7 @@
 
             <span class="c1"># after connection failure the gRPC `channel` gets stuck in a failure state for a few seconds</span>
             <span class="c1"># removing and re-adding the connection (stub) is faster &amp; more reliable than just waiting</span>
-            <span class="k">if</span> <span class="n">connection_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">connection_list</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">skip_resetting</span><span class="p">:</span>
                 <span class="k">await</span> <span class="n">connection_list</span><span class="o">.</span><span class="n">reset_connection</span><span class="p">(</span>
                     <span class="n">current_address</span><span class="p">,</span> <span class="n">current_deployment</span>
                 <span class="p">)</span>
@@ -793,12 +795,9 @@
                 <span class="n">details</span><span class="o">=</span><span class="n">error</span><span class="o">.</span><span class="n">details</span><span class="p">(),</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">error</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span> <span class="ow">and</span> <span class="s1">&#39;not the leader&#39;</span> <span class="ow">in</span> <span class="n">error</span><span class="o">.</span><span class="n">details</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;RAFT node of </span><span class="si">{</span><span class="n">current_deployment</span><span class="si">}</span><span class="s1"> is not the leader. Trying next replica, if available.&#39;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;gRPC call to deployment </span><span class="si">{</span><span class="n">current_deployment</span><span class="si">}</span><span class="s1"> failed with error </span><span class="si">{</span><span class="n">format_grpc_error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="si">}</span><span class="s1">, for retry attempt </span><span class="si">{</span><span class="n">retry_i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">total_num_tries</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">.&#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39; Trying next replica, if available.&#39;</span>
+            <span class="k">if</span> <span class="n">connection_list</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">skip_resetting</span><span class="p">:</span>
+                <span class="k">await</span> <span class="n">connection_list</span><span class="o">.</span><span class="n">reset_connection</span><span class="p">(</span>
+                    <span class="n">current_address</span><span class="p">,</span> <span class="n">current_deployment</span>
                 <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
@@ -875,11 +874,10 @@
             <span class="n">connection_list</span><span class="p">:</span> <span class="n">_ReplicaList</span><span class="p">,</span>
             <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">retries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">:</span>
+    <span class="p">):</span>
         <span class="c1"># this wraps the awaitable object from grpc as a coroutine so it can be used as a task</span>
         <span class="c1"># the grpc call function is not a coroutine but some _AioCall</span>
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">task_wrapper</span><span class="p">():</span>
-
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">task_coroutine</span><span class="p">():</span>
             <span class="n">tried_addresses</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">retries</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">retries</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">total_num_tries</span> <span class="o">=</span> <span class="p">(</span>
@@ -915,7 +913,7 @@
                 <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">default_endpoints_proto</span><span class="p">,</span> <span class="kc">None</span>
 
-        <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">task_wrapper</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">task_coroutine</span><span class="p">()</span>
 
 <div class="viewcode-block" id="GrpcConnectionPool.warmup"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.warmup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">warmup</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
@@ -972,7 +970,6 @@
                         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
                             <span class="n">task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
                     <span class="k">raise</span>
-
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error with warmup up task: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">return</span></div>
@@ -983,7 +980,6 @@
         <span class="n">replica_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">get_replicas</span><span class="p">(</span><span class="n">deployment</span><span class="o">=</span><span class="n">deployment</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="p">)</span>
-
         <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">replica_set</span><span class="p">))</span></div>
 </pre></div>
                 </article>
@@ -999,7 +995,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 23, 2023</div>
+                            Last updated on Jun 06, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

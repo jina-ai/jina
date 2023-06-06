@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/helper.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.helper - Jina 3.16.1 documentation</title>
+        <title>jina.helper - Jina 3.17.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.16.1 documentation</div>
+                <div class="brand">Jina 3.17.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -1725,25 +1725,16 @@
     <span class="k">if</span> <span class="n">loop</span> <span class="ow">and</span> <span class="n">loop</span><span class="o">.</span><span class="n">is_running</span><span class="p">():</span>
         <span class="c1"># eventloop already exist</span>
         <span class="c1"># running inside Jupyter</span>
-        <span class="k">if</span> <span class="n">is_jupyter</span><span class="p">():</span>
-            <span class="n">thread</span> <span class="o">=</span> <span class="n">_RunThread</span><span class="p">()</span>
-            <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-            <span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">thread</span><span class="o">.</span><span class="n">result</span>
-            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">BadClient</span>
+        <span class="n">thread</span> <span class="o">=</span> <span class="n">_RunThread</span><span class="p">()</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">thread</span><span class="o">.</span><span class="n">result</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">BadClient</span>
 
-                <span class="k">raise</span> <span class="n">BadClient</span><span class="p">(</span>
-                    <span class="s1">&#39;something wrong when running the eventloop, result can not be retrieved&#39;</span>
-                <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s1">&#39;you have an eventloop running but not using Jupyter/ipython, &#39;</span>
-                <span class="s1">&#39;this may mean you are using Jina with other integration? if so, then you &#39;</span>
-                <span class="s1">&#39;may want to use Client/Flow(asyncio=True). If not, then &#39;</span>
-                <span class="s1">&#39;please report this issue here: https://github.com/jina-ai/jina&#39;</span>
+            <span class="k">raise</span> <span class="n">BadClient</span><span class="p">(</span>
+                <span class="s1">&#39;something wrong when running the eventloop, result can not be retrieved&#39;</span>
             <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
@@ -2104,7 +2095,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 23, 2023</div>
+                            Last updated on Jun 06, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

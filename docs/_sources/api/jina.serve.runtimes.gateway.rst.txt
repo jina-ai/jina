@@ -24,6 +24,7 @@ Submodules
    jina.serve.runtimes.gateway.gateway
    jina.serve.runtimes.gateway.health_model
    jina.serve.runtimes.gateway.http_fastapi_app
+   jina.serve.runtimes.gateway.http_fastapi_app_docarrayv2
    jina.serve.runtimes.gateway.models
    jina.serve.runtimes.gateway.request_handling
    jina.serve.runtimes.gateway.streamer

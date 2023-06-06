@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/servers/http.html" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.runtimes.servers.http - Jina 3.16.1 documentation</title>
+        <title>jina.serve.runtimes.servers.http - Jina 3.17.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.16.1 documentation</div>
+                <div class="brand">Jina 3.17.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -420,6 +420,7 @@
 
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.servers</span> <span class="kn">import</span> <span class="n">BaseServer</span>
+<span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">docarray_v2</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
@@ -529,6 +530,12 @@
             <span class="c1"># Filter out healthcheck endpoint `GET /`</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;uvicorn.access&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">addFilter</span><span class="p">(</span><span class="n">_EndpointFilter</span><span class="p">())</span>
 
+        <span class="k">if</span> <span class="n">docarray_v2</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.request_handling</span> <span class="kn">import</span> <span class="n">GatewayRequestHandler</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="p">,</span> <span class="n">GatewayRequestHandler</span><span class="p">):</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">_get_endpoints_input_output_models</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">_validate_flow_docarray_compatibility</span><span class="p">()</span>
+
         <span class="c1"># app property will generate a new fastapi app each time called</span>
         <span class="n">app</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span>
         <span class="n">_install_health_check</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
@@ -612,8 +619,7 @@
             <span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">health_check_exists</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.models</span> <span class="kn">import</span> <span class="n">JinaHealthModel</span>
-
+        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.health_model</span> <span class="kn">import</span> <span class="n">JinaHealthModel</span>
         <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
             <span class="n">summary</span><span class="o">=</span><span class="s1">&#39;Get the health of Jina Gateway service&#39;</span><span class="p">,</span>
@@ -661,7 +667,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 23, 2023</div>
+                            Last updated on Jun 06, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

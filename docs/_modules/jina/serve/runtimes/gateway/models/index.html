@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/gateway/models.html" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.runtimes.gateway.models - Jina 3.16.1 documentation</title>
+        <title>jina.serve.runtimes.gateway.models - Jina 3.17.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.16.1 documentation</div>
+                <div class="brand">Jina 3.17.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -418,12 +418,11 @@
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">from</span> <span class="nn">docarray.document.pydantic_model</span> <span class="kn">import</span> <span class="n">PydanticDocument</span><span class="p">,</span> <span class="n">PydanticDocumentArray</span>
 <span class="kn">from</span> <span class="nn">google.protobuf.descriptor</span> <span class="kn">import</span> <span class="n">Descriptor</span><span class="p">,</span> <span class="n">FieldDescriptor</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseConfig</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">create_model</span><span class="p">,</span> <span class="n">root_validator</span>
 
 <span class="kn">from</span> <span class="nn">jina.proto.jina_pb2</span> <span class="kn">import</span> <span class="n">DataRequestProto</span><span class="p">,</span> <span class="n">JinaInfoProto</span><span class="p">,</span> <span class="n">RouteProto</span><span class="p">,</span> <span class="n">StatusProto</span>
-<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.health_model</span> <span class="kn">import</span> <span class="n">JinaHealthModel</span>
+<span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">docarray_v2</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">from</span> <span class="nn">google.protobuf.pyext.cpp_message</span> <span class="kn">import</span> <span class="n">GeneratedProtocolMessageType</span>
@@ -609,8 +608,12 @@
 
     <span class="n">CustomConfig</span><span class="o">.</span><span class="n">fields</span> <span class="o">=</span> <span class="n">camel_case_fields</span>
     <span class="k">if</span> <span class="n">model_name</span> <span class="o">==</span> <span class="s1">&#39;DocumentProto&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">docarray.document.pydantic_model</span> <span class="kn">import</span> <span class="n">PydanticDocument</span>
+
         <span class="n">model</span> <span class="o">=</span> <span class="n">PydanticDocument</span>
     <span class="k">elif</span> <span class="n">model_name</span> <span class="o">==</span> <span class="s1">&#39;DocumentArrayProto&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">docarray.document.pydantic_model</span> <span class="kn">import</span> <span class="n">PydanticDocumentArray</span>
+
         <span class="n">model</span> <span class="o">=</span> <span class="n">PydanticDocumentArray</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">(</span>
@@ -625,8 +628,12 @@
     <span class="k">return</span> <span class="n">model</span></div>
 
 
-<span class="k">for</span> <span class="n">proto</span> <span class="ow">in</span> <span class="p">(</span><span class="n">RouteProto</span><span class="p">,</span> <span class="n">StatusProto</span><span class="p">,</span> <span class="n">DataRequestProto</span><span class="p">,</span> <span class="n">JinaInfoProto</span><span class="p">):</span>
-    <span class="n">protobuf_to_pydantic_model</span><span class="p">(</span><span class="n">proto</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">docarray_v2</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">proto</span> <span class="ow">in</span> <span class="p">(</span><span class="n">RouteProto</span><span class="p">,</span> <span class="n">StatusProto</span><span class="p">,</span> <span class="n">DataRequestProto</span><span class="p">,</span> <span class="n">JinaInfoProto</span><span class="p">):</span>
+        <span class="n">protobuf_to_pydantic_model</span><span class="p">(</span><span class="n">proto</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">proto</span> <span class="ow">in</span> <span class="p">(</span><span class="n">RouteProto</span><span class="p">,</span> <span class="n">StatusProto</span><span class="p">,</span> <span class="n">JinaInfoProto</span><span class="p">):</span>
+        <span class="n">protobuf_to_pydantic_model</span><span class="p">(</span><span class="n">proto</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_to_camel_case</span><span class="p">(</span><span class="n">snake_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -635,80 +642,71 @@
     <span class="c1"># with the &#39;title&#39; method and join them together.</span>
     <span class="k">return</span> <span class="n">components</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">title</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">components</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
 
+<span class="k">if</span> <span class="ow">not</span> <span class="n">docarray_v2</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">docarray.document.pydantic_model</span> <span class="kn">import</span> <span class="n">PydanticDocument</span><span class="p">,</span> <span class="n">PydanticDocumentArray</span>
 
-<div class="viewcode-block" id="JinaInfoModel"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaInfoModel">[docs]</a><span class="k">class</span> <span class="nc">JinaInfoModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pydantic BaseModel for Jina status, used as the response model in REST app.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="JinaRequestModel"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaRequestModel">[docs]</a>    <span class="k">class</span> <span class="nc">JinaRequestModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Jina HTTP request model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-    <span class="n">jina</span><span class="p">:</span> <span class="n">Dict</span>
-    <span class="n">envs</span><span class="p">:</span> <span class="n">Dict</span>
+        <span class="c1"># the dict one is only for compatibility.</span>
+        <span class="c1"># So we will accept data: {[Doc1.to_dict, Doc2...]} and data: {docs: [[Doc1.to_dict, Doc2...]}</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span>
+                <span class="n">PydanticDocumentArray</span><span class="p">,</span>
+                <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PydanticDocumentArray</span><span class="p">],</span>
+            <span class="p">]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="n">example</span><span class="o">=</span><span class="p">[</span>
+                <span class="p">{</span><span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;hello, world!&#39;</span><span class="p">},</span>
+                <span class="p">{</span><span class="s1">&#39;uri&#39;</span><span class="p">:</span> <span class="s1">&#39;https://docs.jina.ai/_static/logo-light.svg&#39;</span><span class="p">},</span>
+            <span class="p">],</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">DESCRIPTION_DATA</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="n">example</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">DESCRIPTION_TARGET_EXEC</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="n">example</span><span class="o">=</span><span class="p">{},</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">DESCRIPTION_PARAMETERS</span><span class="p">,</span>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="JinaInfoModel.Config"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaInfoModel.Config">[docs]</a>    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-        <span class="n">alias_generator</span> <span class="o">=</span> <span class="n">_to_camel_case</span>
-        <span class="n">allow_population_by_field_name</span> <span class="o">=</span> <span class="kc">True</span></div></div>
-
-
-<div class="viewcode-block" id="JinaRequestModel"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaRequestModel">[docs]</a><span class="k">class</span> <span class="nc">JinaRequestModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Jina HTTP request model.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># the dict one is only for compatibility.</span>
-    <span class="c1"># So we will accept data: {[Doc1.to_dict, Doc2...]} and data: {docs: [[Doc1.to_dict, Doc2...]}</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-        <span class="n">Union</span><span class="p">[</span>
-            <span class="n">PydanticDocumentArray</span><span class="p">,</span>
-            <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PydanticDocumentArray</span><span class="p">],</span>
-        <span class="p">]</span>
-    <span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span>
-        <span class="n">example</span><span class="o">=</span><span class="p">[</span>
-            <span class="p">{</span><span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;hello, world!&#39;</span><span class="p">},</span>
-            <span class="p">{</span><span class="s1">&#39;uri&#39;</span><span class="p">:</span> <span class="s1">&#39;https://docs.jina.ai/_static/logo-light.svg&#39;</span><span class="p">},</span>
-        <span class="p">],</span>
-        <span class="n">description</span><span class="o">=</span><span class="n">DESCRIPTION_DATA</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span>
-        <span class="n">example</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="n">DESCRIPTION_TARGET_EXEC</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span>
-        <span class="n">example</span><span class="o">=</span><span class="p">{},</span>
-        <span class="n">description</span><span class="o">=</span><span class="n">DESCRIPTION_PARAMETERS</span><span class="p">,</span>
-    <span class="p">)</span>
-
-<div class="viewcode-block" id="JinaRequestModel.Config"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaRequestModel.Config">[docs]</a>    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-        <span class="n">alias_generator</span> <span class="o">=</span> <span class="n">_to_camel_case</span>
-        <span class="n">allow_population_by_field_name</span> <span class="o">=</span> <span class="kc">True</span></div></div>
+<div class="viewcode-block" id="JinaRequestModel.Config"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaRequestModel.Config">[docs]</a>        <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+            <span class="n">alias_generator</span> <span class="o">=</span> <span class="n">_to_camel_case</span>
+            <span class="n">allow_population_by_field_name</span> <span class="o">=</span> <span class="kc">True</span></div></div>
 
 
-<div class="viewcode-block" id="JinaResponseModel"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaResponseModel">[docs]</a><span class="k">class</span> <span class="nc">JinaResponseModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Jina HTTP Response model. Only `request_id` and `data` are preserved.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="JinaResponseModel"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaResponseModel">[docs]</a>    <span class="k">class</span> <span class="nc">JinaResponseModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Jina HTTP Response model. Only `request_id` and `data` are preserved.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-    <span class="n">header</span><span class="p">:</span> <span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="o">.</span><span class="n">HeaderProto</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">routes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="o">.</span><span class="n">RouteProto</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PydanticDocumentArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">header</span><span class="p">:</span> <span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="o">.</span><span class="n">HeaderProto</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">routes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="o">.</span><span class="n">RouteProto</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PydanticDocumentArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="JinaResponseModel.Config"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaResponseModel.Config">[docs]</a>    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-        <span class="n">alias_generator</span> <span class="o">=</span> <span class="n">_to_camel_case</span>
-        <span class="n">allow_population_by_field_name</span> <span class="o">=</span> <span class="kc">True</span></div></div>
+<div class="viewcode-block" id="JinaResponseModel.Config"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaResponseModel.Config">[docs]</a>        <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+            <span class="n">alias_generator</span> <span class="o">=</span> <span class="n">_to_camel_case</span>
+            <span class="n">allow_population_by_field_name</span> <span class="o">=</span> <span class="kc">True</span></div></div>
 
 
-<div class="viewcode-block" id="JinaEndpointRequestModel"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaEndpointRequestModel">[docs]</a><span class="k">class</span> <span class="nc">JinaEndpointRequestModel</span><span class="p">(</span><span class="n">JinaRequestModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Jina HTTP request model that allows customized endpoint.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="JinaEndpointRequestModel"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.models/#jina.serve.runtimes.gateway.models.JinaEndpointRequestModel">[docs]</a>    <span class="k">class</span> <span class="nc">JinaEndpointRequestModel</span><span class="p">(</span><span class="n">JinaRequestModel</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Jina HTTP request model that allows customized endpoint.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-    <span class="n">exec_endpoint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
-        <span class="n">example</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;The endpoint string, by convention starts with `/`. &#39;</span>
-        <span class="s1">&#39;If you specify it as `/foo`, then all executors bind with `@requests(on=&quot;/foo&quot;)` will receive the request.&#39;</span><span class="p">,</span>
-    <span class="p">)</span></div>
+        <span class="n">exec_endpoint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+            <span class="n">default</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
+            <span class="n">example</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;The endpoint string, by convention starts with `/`. &#39;</span>
+            <span class="s1">&#39;If you specify it as `/foo`, then all executors bind with `@requests(on=&quot;/foo&quot;)` will receive the request.&#39;</span><span class="p">,</span>
+        <span class="p">)</span></div>
 </pre></div>
                 </article>
             </div>
@@ -723,7 +721,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 23, 2023</div>
+                            Last updated on Jun 06, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

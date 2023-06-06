@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/gateway/http_fastapi_app.html" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.runtimes.gateway.http_fastapi_app - Jina 3.16.1 documentation</title>
+        <title>jina.serve.runtimes.gateway.http_fastapi_app - Jina 3.17.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.16.1 documentation</div>
+                <div class="brand">Jina 3.17.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -430,18 +430,18 @@
 
 
 <div class="viewcode-block" id="get_fastapi_app"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.http_fastapi_app/#jina.serve.runtimes.gateway.http_fastapi_app.get_fastapi_app">[docs]</a><span class="k">def</span> <span class="nf">get_fastapi_app</span><span class="p">(</span>
-    <span class="n">streamer</span><span class="p">:</span> <span class="s1">&#39;GatewayStreamer&#39;</span><span class="p">,</span>
-    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">no_debug_endpoints</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-    <span class="n">no_crud_endpoints</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-    <span class="n">expose_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-    <span class="n">expose_graphql_endpoint</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-    <span class="n">cors</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-    <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">,</span>
-    <span class="n">tracing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">tracer_provider</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;trace.TracerProvider&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
+        <span class="n">streamer</span><span class="p">:</span> <span class="s1">&#39;GatewayStreamer&#39;</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">no_debug_endpoints</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">no_crud_endpoints</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">expose_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">expose_graphql_endpoint</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">cors</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">,</span>
+        <span class="n">tracing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tracer_provider</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;trace.TracerProvider&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the app from FastAPI as the REST interface.</span>
@@ -475,8 +475,8 @@
     <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span>
         <span class="n">title</span><span class="o">=</span><span class="n">title</span> <span class="ow">or</span> <span class="s1">&#39;My Jina Service&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="n">description</span>
-        <span class="ow">or</span> <span class="s1">&#39;This is my awesome service. You can set `title` and `description` in your `Flow` or `Gateway` &#39;</span>
-        <span class="s1">&#39;to customize the title and description.&#39;</span><span class="p">,</span>
+                    <span class="ow">or</span> <span class="s1">&#39;This is my awesome service. You can set `title` and `description` in your `Flow` or `Gateway` &#39;</span>
+                       <span class="s1">&#39;to customize the title and description.&#39;</span><span class="p">,</span>
         <span class="n">version</span><span class="o">=</span><span class="n">__version__</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -505,7 +505,7 @@
             <span class="p">{</span>
                 <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Debug&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Debugging interface. In production, you should hide them by setting &#39;</span>
-                <span class="s1">&#39;`--no-debug-endpoints` in `Flow`/`Gateway`.&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;`--no-debug-endpoints` in `Flow`/`Gateway`.&#39;</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
 
@@ -513,15 +513,15 @@
         <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
         <span class="kn">from</span> <span class="nn">jina.serve.executors</span> <span class="kn">import</span> <span class="n">__dry_run_endpoint__</span>
         <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.models</span> <span class="kn">import</span> <span class="p">(</span>
-            <span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="p">,</span>
-            <span class="n">JinaInfoModel</span><span class="p">,</span>
+            <span class="n">PROTO_TO_PYDANTIC_MODELS</span>
         <span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.health_model</span> <span class="kn">import</span> <span class="n">JinaInfoModel</span>
         <span class="kn">from</span> <span class="nn">jina.types.request.status</span> <span class="kn">import</span> <span class="n">StatusMessage</span>
 
         <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/dry_run&#39;</span><span class="p">,</span>
             <span class="n">summary</span><span class="o">=</span><span class="s1">&#39;Get the readiness of Jina Flow service, sends an empty DocumentArray to the complete Flow to &#39;</span>
-            <span class="s1">&#39;validate connectivity&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;validate connectivity&#39;</span><span class="p">,</span>
             <span class="n">response_model</span><span class="o">=</span><span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="o">.</span><span class="n">StatusProto</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">async</span> <span class="k">def</span> <span class="nf">_flow_health</span><span class="p">():</span>
@@ -576,7 +576,7 @@
             <span class="c1"># do not add response_model here, this debug endpoint should not restricts the response model</span>
         <span class="p">)</span>
         <span class="k">async</span> <span class="k">def</span> <span class="nf">post</span><span class="p">(</span>
-            <span class="n">body</span><span class="p">:</span> <span class="n">JinaEndpointRequestModel</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Response</span>
+                <span class="n">body</span><span class="p">:</span> <span class="n">JinaEndpointRequestModel</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Response</span>
         <span class="p">):</span>  <span class="c1"># &#39;response&#39; is a FastAPI response, not a Jina response</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Post a data request to some endpoint.</span>
@@ -610,8 +610,8 @@
                 <span class="kn">import</span> <span class="nn">grpc</span>
 
                 <span class="k">if</span> <span class="p">(</span>
-                    <span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span>
-                    <span class="ow">or</span> <span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">NOT_FOUND</span>
+                        <span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span>
+                        <span class="ow">or</span> <span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">NOT_FOUND</span>
                 <span class="p">):</span>
                     <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_503_SERVICE_UNAVAILABLE</span>
                 <span class="k">elif</span> <span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">DEADLINE_EXCEEDED</span><span class="p">:</span>
@@ -717,14 +717,12 @@
                     <span class="n">request_generator</span><span class="p">(</span><span class="o">**</span><span class="n">req_generator_input</span><span class="p">)</span>
                 <span class="p">)</span>
 
-
-
     <span class="k">if</span> <span class="ow">not</span> <span class="n">no_crud_endpoints</span><span class="p">:</span>
         <span class="n">openapi_tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;CRUD&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;CRUD interface. If your service does not implement those interfaces, you can should &#39;</span>
-                <span class="s1">&#39;hide them by setting `--no-crud-endpoints` in `Flow`/`Gateway`.&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;hide them by setting `--no-crud-endpoints` in `Flow`/`Gateway`.&#39;</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
         <span class="n">crud</span> <span class="o">=</span> <span class="p">{</span>
@@ -767,7 +765,7 @@
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;GraphQL is not yet supported for DocArrayV2&#39;</span><span class="p">)</span>
 
             <span class="k">async</span> <span class="k">def</span> <span class="nf">get_docs_from_endpoint</span><span class="p">(</span>
-                <span class="n">data</span><span class="p">,</span> <span class="n">target_executor</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">exec_endpoint</span>
+                    <span class="n">data</span><span class="p">,</span> <span class="n">target_executor</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">exec_endpoint</span>
             <span class="p">):</span>
                 <span class="n">req_generator_input</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">asdict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">],</span>
@@ -778,8 +776,8 @@
                 <span class="p">}</span>
 
                 <span class="k">if</span> <span class="p">(</span>
-                    <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                    <span class="ow">and</span> <span class="s1">&#39;docs&#39;</span> <span class="ow">in</span> <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+                        <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                        <span class="ow">and</span> <span class="s1">&#39;docs&#39;</span> <span class="ow">in</span> <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
                 <span class="p">):</span>
                     <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;docs&#39;</span><span class="p">]</span>
                 <span class="k">try</span><span class="p">:</span>
@@ -797,11 +795,11 @@
             <span class="k">class</span> <span class="nc">Mutation</span><span class="p">:</span>
                 <span class="nd">@strawberry</span><span class="o">.</span><span class="n">mutation</span>
                 <span class="k">async</span> <span class="k">def</span> <span class="nf">docs</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="p">,</span>
-                    <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">StrawberryDocumentInput</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                    <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                    <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JSONScalar</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                    <span class="n">exec_endpoint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;/search&#39;</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="p">,</span>
+                        <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">StrawberryDocumentInput</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JSONScalar</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">exec_endpoint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;/search&#39;</span><span class="p">,</span>
                 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">StrawberryDocument</span><span class="p">]:</span>
                     <span class="k">return</span> <span class="k">await</span> <span class="n">get_docs_from_endpoint</span><span class="p">(</span>
                         <span class="n">data</span><span class="p">,</span> <span class="n">target_executor</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">exec_endpoint</span>
@@ -811,11 +809,11 @@
             <span class="k">class</span> <span class="nc">Query</span><span class="p">:</span>
                 <span class="nd">@strawberry</span><span class="o">.</span><span class="n">field</span>
                 <span class="k">async</span> <span class="k">def</span> <span class="nf">docs</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="p">,</span>
-                    <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">StrawberryDocumentInput</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                    <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                    <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JSONScalar</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                    <span class="n">exec_endpoint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;/search&#39;</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="p">,</span>
+                        <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">StrawberryDocumentInput</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JSONScalar</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">exec_endpoint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;/search&#39;</span><span class="p">,</span>
                 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">StrawberryDocument</span><span class="p">]:</span>
                     <span class="k">return</span> <span class="k">await</span> <span class="n">get_docs_from_endpoint</span><span class="p">(</span>
                         <span class="n">data</span><span class="p">,</span> <span class="n">target_executor</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">exec_endpoint</span>
@@ -858,7 +856,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 23, 2023</div>
+                            Last updated on Jun 06, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -6,10 +6,10 @@
 <meta property="og:title" content=" Command-Line Interface" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/cli/" />
-<meta property="og:site_name" content="Jina 3.16.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.17.0 Documentation" />
 <meta property="og:description" content="Command-Line Interface: Positional Arguments: cli,, Possible choices: executor, flow, ping, export, new, gateway, auth, hub, cloud, help, pod, deployment, client,. Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. Sub-commands:: ex..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.16.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.17.0 Documentation" />
 <meta name="description" content="Command-Line Interface: Positional Arguments: cli,, Possible choices: executor, flow, ping, export, new, gateway, auth, hub, cloud, help, pod, deployment, client,. Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. Sub-commands:: ex..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/cli/index.html" />
 
     <link rel="shortcut icon" href="../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Command-Line Interface - Jina 3.16.1 documentation</title>
+        <title>Command-Line Interface - Jina 3.17.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../">
-                <div class="brand">Jina 3.16.1 documentation</div>
+                <div class="brand">Jina 3.17.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -713,7 +713,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --ports</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [51349]</p>
+<p>Default: [52970]</p>
 </dd>
 <dt><kbd>--protocol, --protocols</kbd></dt>
 <dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
@@ -726,7 +726,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [57135]</p>
+<p>Default: [49478]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1298,7 +1298,7 @@ which should be structured as a python package.</p>
 </dd>
 <dt><kbd>--port, --ports, --port-expose, --port-in</kbd></dt>
 <dd><p>The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.</p>
-<p>Default: [52596]</p>
+<p>Default: [50815]</p>
 </dd>
 <dt><kbd>--protocol, --protocols</kbd></dt>
 <dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
@@ -1311,7 +1311,7 @@ which should be structured as a python package.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [54363]</p>
+<p>Default: [53079]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1654,14 +1654,14 @@ which should be structured as a python package.</p>
 <h3>cloud<a class="headerlink" href="#cloud" title="Permalink to this heading">#</a></h3>
 <p>Manage Flows on Jina Cloud</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">loglevel</span> <span class="p">{</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">INFO</span><span class="p">,</span> <span class="n">CRITICAL</span><span class="p">,</span> <span class="n">NOTSET</span><span class="p">}]</span>
-           <span class="p">{</span><span class="n">login</span><span class="p">,</span> <span class="n">logout</span><span class="p">,</span> <span class="n">deploy</span><span class="p">,</span> <span class="n">normalize</span> <span class="o">...</span> <span class="mi">12</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}</span> <span class="o">...</span>
+           <span class="p">{</span><span class="n">login</span><span class="p">,</span> <span class="n">logout</span><span class="p">,</span> <span class="n">deploy</span><span class="p">,</span> <span class="n">normalize</span> <span class="o">...</span> <span class="mi">11</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}</span> <span class="o">...</span>
 </pre></div>
 </div>
 <section id="Positional Arguments_repeat11">
 <h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat11" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>jc_cli</kbd></dt>
-<dd><p>Possible choices: login, logout, deploy, normalize, list, status, remove, new, update, restart, pause, resume, scale, recreate, logs, survey</p>
+<dd><p>Possible choices: login, logout, deploy, normalize, list, status, remove, new, update, restart, pause, resume, scale, recreate, logs</p>
 </dd>
 </dl>
 </section>
@@ -1969,13 +1969,6 @@ which should be structured as a python package.</p>
 </dl>
 </section>
 </section>
-<section id="survey">
-<h5>survey<a class="headerlink" href="#survey" title="Permalink to this heading">#</a></h5>
-<p>Tell us your experience and help us improve.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="n">survey</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
-</pre></div>
-</div>
-</section>
 </section>
 </section>
 <section id="help">
@@ -2237,7 +2230,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --ports</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [55832]</p>
+<p>Default: [56671]</p>
 </dd>
 <dt><kbd>--protocol, --protocols</kbd></dt>
 <dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
@@ -2250,7 +2243,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [53591]</p>
+<p>Default: [49623]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2565,7 +2558,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --ports</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [65450]</p>
+<p>Default: [49376]</p>
 </dd>
 <dt><kbd>--protocol, --protocols</kbd></dt>
 <dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
@@ -2578,7 +2571,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [59373]</p>
+<p>Default: [53526]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2814,7 +2807,7 @@ container.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 23, 2023</div>
+                            Last updated on Jun 06, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -3035,7 +3028,6 @@ container.</p>
 <li><a class="reference internal" href="#Named Arguments_repeat19">Named Arguments</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#survey">survey</a></li>
 </ul>
 </li>
 </ul>

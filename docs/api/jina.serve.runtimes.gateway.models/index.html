@@ -6,9 +6,9 @@
 <meta property="og:title" content="jina.serve.runtimes.gateway.models module" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve.runtimes.gateway.models/" />
-<meta property="og:site_name" content="Jina 3.16.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.17.0 Documentation" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.16.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.17.0 Documentation" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -31,7 +31,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.runtimes.gateway.models.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.runtimes.gateway.models module - Jina 3.16.1 documentation</title>
+        <title>jina.serve.runtimes.gateway.models module - Jina 3.17.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.16.1 documentation</div>
+                <div class="brand">Jina 3.17.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -685,186 +685,6 @@ kwarg; otherwise <code class="docutils literal notranslate"><span class="pre">JS
 <dd class="field-odd"><p>Pydantic model</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.models.JinaInfoModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.models.</span></span><span class="sig-name descname"><span class="pre">JinaInfoModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/models/#JinaInfoModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.models.JinaInfoModel" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>Pydantic BaseModel for Jina status, used as the response model in REST app.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.models.JinaInfoModel.jina">
-<span class="sig-name descname"><span class="pre">jina</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.jina" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.models.JinaInfoModel.envs">
-<span class="sig-name descname"><span class="pre">envs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.envs" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.models.JinaInfoModel.Config">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/models/#JinaInfoModel.Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.Config" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.models.JinaInfoModel.Config.alias_generator">
-<span class="sig-name descname"><span class="pre">alias_generator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.Config.alias_generator" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.models.JinaInfoModel.Config.allow_population_by_field_name">
-<span class="sig-name descname"><span class="pre">allow_population_by_field_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.Config.allow_population_by_field_name" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.models.JinaInfoModel.construct">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">construct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_fields_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.construct" title="Permalink to this definition">#</a></dt>
-<dd><p>Creates a new model setting __dict__ and __fields_set__ from trusted or pre-validated data.
-Default values are respected, but no other validation is performed.
-Behaves as if <cite>Config.extra = ‘allow’</cite> was set since it adds all passed values</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Model</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.models.JinaInfoModel.copy">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.copy" title="Permalink to this definition">#</a></dt>
-<dd><p>Duplicate a model, optionally choose which fields to include, exclude and change.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>include</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – fields to include in new model</p></li>
-<li><p><strong>exclude</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – fields to exclude from new model, as with values this takes precedence over include</p></li>
-<li><p><strong>update</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[DictStrAny]) – values to change/add in the new model. Note: the data is not validated before creating
-the new model: you should trust this data</p></li>
-<li><p><strong>deep</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – set to <cite>True</cite> to make a deep copy of the model</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>Model</p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>new model instance</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.models.JinaInfoModel.dict">
-<span class="sig-name descname"><span class="pre">dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_unset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.dict" title="Permalink to this definition">#</a></dt>
-<dd><p>Generate a dictionary representation of the model, optionally specifying which fields to include or exclude.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>DictStrAny</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.models.JinaInfoModel.from_orm">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_orm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.from_orm" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Model</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.models.JinaInfoModel.json">
-<span class="sig-name descname"><span class="pre">json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_unset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">models_as_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">dumps_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.json" title="Permalink to this definition">#</a></dt>
-<dd><p>Generate a JSON representation of the model, <cite>include</cite> and <cite>exclude</cite> arguments as per <cite>dict()</cite>.</p>
-<p><cite>encoder</cite> is an optional function to supply as <cite>default</cite> to json.dumps(), other arguments as per <cite>json.dumps()</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>unicode</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.models.JinaInfoModel.parse_file">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_pickle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.parse_file" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Model</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.models.JinaInfoModel.parse_obj">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_obj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.parse_obj" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Model</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.models.JinaInfoModel.parse_raw">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_pickle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.parse_raw" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Model</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.models.JinaInfoModel.schema">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#/definitions/{model}'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.schema" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>DictStrAny</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.models.JinaInfoModel.schema_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#/definitions/{model}'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">dumps_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.schema_json" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>unicode</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.models.JinaInfoModel.update_forward_refs">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_forward_refs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">localns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.update_forward_refs" title="Permalink to this definition">#</a></dt>
-<dd><p>Try to update ForwardRefs on fields based on this Model, globalns and localns.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.models.JinaInfoModel.validate">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.validate" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Model</p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -1447,7 +1267,7 @@ the new model: you should trust this data</p></li>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 23, 2023</div>
+                            Last updated on Jun 06, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -1515,28 +1335,6 @@ the new model: you should trust this data</p></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.protobuf_to_pydantic_model"><code class="docutils literal notranslate"><span class="pre">protobuf_to_pydantic_model()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaInfoModel"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.jina"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.jina</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.envs"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.envs</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.Config"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.Config</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.Config.alias_generator"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.Config.alias_generator()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.Config.allow_population_by_field_name"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.Config.allow_population_by_field_name</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.construct"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.construct()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.copy"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.copy()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.dict"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.dict()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.from_orm"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.from_orm()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.json"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.json()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.parse_file"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.parse_file()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.parse_obj"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.parse_obj()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.parse_raw"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.parse_raw()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.schema"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.schema()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.schema_json"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.schema_json()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.update_forward_refs"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.update_forward_refs()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaInfoModel.validate"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.validate()</span></code></a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaRequestModel"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel</span></code></a><ul>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaRequestModel.data"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.data</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.models.JinaRequestModel.target_executor"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.target_executor</span></code></a></li>

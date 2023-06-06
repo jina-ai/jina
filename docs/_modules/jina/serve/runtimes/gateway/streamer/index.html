@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/gateway/streamer.html" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.runtimes.gateway.streamer - Jina 3.16.1 documentation</title>
+        <title>jina.serve.runtimes.gateway.streamer - Jina 3.17.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.16.1 documentation</div>
+                <div class="brand">Jina 3.17.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -426,6 +426,7 @@
     <span class="n">Sequence</span><span class="p">,</span>
     <span class="n">Tuple</span><span class="p">,</span>
     <span class="n">Union</span><span class="p">,</span>
+    <span class="n">Type</span>
 <span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
@@ -440,6 +441,10 @@
 <span class="kn">from</span> <span class="nn">jina.serve.stream</span> <span class="kn">import</span> <span class="n">RequestStreamer</span>
 <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
+<span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">docarray_v2</span>
+
+<span class="k">if</span> <span class="n">docarray_v2</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GatewayStreamer&#39;</span><span class="p">]</span>
 
@@ -458,23 +463,23 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">graph_representation</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
-        <span class="n">executor_addresses</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]],</span>
-        <span class="n">graph_conditions</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
-        <span class="n">deployments_metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{},</span>
-        <span class="n">deployments_no_reduce</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
-        <span class="n">timeout_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">runtime_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;custom gateway&#39;</span><span class="p">,</span>
-        <span class="n">prefetch</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;JinaLogger&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CollectorRegistry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">meter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Meter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">aio_tracing_client_interceptors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="s1">&#39;ClientInterceptor&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tracing_client_interceptor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;OpenTelemetryClientInterceptor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">grpc_channel_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">graph_representation</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+            <span class="n">executor_addresses</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]],</span>
+            <span class="n">graph_conditions</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
+            <span class="n">deployments_metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{},</span>
+            <span class="n">deployments_no_reduce</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
+            <span class="n">timeout_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">runtime_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;custom gateway&#39;</span><span class="p">,</span>
+            <span class="n">prefetch</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;JinaLogger&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CollectorRegistry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">meter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Meter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">aio_tracing_client_interceptors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="s1">&#39;ClientInterceptor&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">tracing_client_interceptor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;OpenTelemetryClientInterceptor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">grpc_channel_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param graph_representation: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to</span>
@@ -498,7 +503,7 @@
 <span class="sd">        :param grpc_channel_options: Optional gprc channel options.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="ow">or</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-        <span class="n">topology_graph</span> <span class="o">=</span> <span class="n">TopologyGraph</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topology_graph</span> <span class="o">=</span> <span class="n">TopologyGraph</span><span class="p">(</span>
             <span class="n">graph_representation</span><span class="o">=</span><span class="n">graph_representation</span><span class="p">,</span>
             <span class="n">graph_conditions</span><span class="o">=</span><span class="n">graph_conditions</span><span class="p">,</span>
             <span class="n">deployments_metadata</span><span class="o">=</span><span class="n">deployments_metadata</span><span class="p">,</span>
@@ -529,24 +534,25 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_streamer</span> <span class="o">=</span> <span class="n">RequestStreamer</span><span class="p">(</span>
             <span class="n">request_handler</span><span class="o">=</span><span class="n">request_handler</span><span class="o">.</span><span class="n">handle_request</span><span class="p">(</span>
-                <span class="n">graph</span><span class="o">=</span><span class="n">topology_graph</span><span class="p">,</span> <span class="n">connection_pool</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span>
+                <span class="n">graph</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">topology_graph</span><span class="p">,</span> <span class="n">connection_pool</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span>
             <span class="p">),</span>
             <span class="n">result_handler</span><span class="o">=</span><span class="n">request_handler</span><span class="o">.</span><span class="n">handle_result</span><span class="p">(),</span>
             <span class="n">prefetch</span><span class="o">=</span><span class="n">prefetch</span><span class="p">,</span>
             <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endpoints_models_map</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_streamer</span><span class="o">.</span><span class="n">Call</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_streamer</span><span class="o">.</span><span class="n">stream</span>
 
     <span class="k">def</span> <span class="nf">_create_connection_pool</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">deployments_addresses</span><span class="p">,</span>
-        <span class="n">compression</span><span class="p">,</span>
-        <span class="n">metrics_registry</span><span class="p">,</span>
-        <span class="n">meter</span><span class="p">,</span>
-        <span class="n">logger</span><span class="p">,</span>
-        <span class="n">aio_tracing_client_interceptors</span><span class="p">,</span>
-        <span class="n">tracing_client_interceptor</span><span class="p">,</span>
-        <span class="n">grpc_channel_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">deployments_addresses</span><span class="p">,</span>
+            <span class="n">compression</span><span class="p">,</span>
+            <span class="n">metrics_registry</span><span class="p">,</span>
+            <span class="n">meter</span><span class="p">,</span>
+            <span class="n">logger</span><span class="p">,</span>
+            <span class="n">aio_tracing_client_interceptors</span><span class="p">,</span>
+            <span class="n">tracing_client_interceptor</span><span class="p">,</span>
+            <span class="n">grpc_channel_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># add the connections needed</span>
         <span class="n">connection_pool</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="p">(</span>
@@ -577,15 +583,32 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_endpoints_input_output_models</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a Dictionary with endpoints as keys and values as a dictionary of input and output schemas and names</span>
+<span class="sd">        taken from the endpoints proto endpoint of Executors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># The logic should be to get the response of all the endpoints protos schemas from all the nodes. Then do a</span>
+        <span class="c1"># logic that for every endpoint fom every Executor computes what is the input and output schema seen by the</span>
+        <span class="c1"># Flow.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endpoints_models_map</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_streamer</span><span class="o">.</span><span class="n">_get_endpoints_input_output_models</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topology_graph</span><span class="p">,</span>
+                                                                                             <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_validate_flow_docarray_compatibility</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method aims to validate that the input-output docarray models of Executors are good</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topology_graph</span><span class="o">.</span><span class="n">_validate_flow_docarray_compatibility</span><span class="p">()</span>
+
 <div class="viewcode-block" id="GatewayStreamer.stream"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.streamer/#jina.serve.runtimes.gateway.streamer.GatewayStreamer.stream">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span>
-        <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="n">return_results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">exec_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span>
+            <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="n">return_results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">exec_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">,</span> <span class="s1">&#39;Request&#39;</span><span class="p">],</span> <span class="s1">&#39;ExecutorError&#39;</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        stream Documents and yield Documents or Responses and unpacked Executor error if any.</span>
@@ -600,13 +623,13 @@
 <span class="sd">        :yield: tuple of Documents or Responses and unpacked error from Executors if any</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">async</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream_docs</span><span class="p">(</span>
-            <span class="n">docs</span><span class="o">=</span><span class="n">docs</span><span class="p">,</span>
-            <span class="n">request_size</span><span class="o">=</span><span class="n">request_size</span><span class="p">,</span>
-            <span class="n">return_results</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># force return Responses</span>
-            <span class="n">exec_endpoint</span><span class="o">=</span><span class="n">exec_endpoint</span><span class="p">,</span>
-            <span class="n">target_executor</span><span class="o">=</span><span class="n">target_executor</span><span class="p">,</span>
-            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
-            <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span><span class="p">,</span>
+                <span class="n">docs</span><span class="o">=</span><span class="n">docs</span><span class="p">,</span>
+                <span class="n">request_size</span><span class="o">=</span><span class="n">request_size</span><span class="p">,</span>
+                <span class="n">return_results</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># force return Responses</span>
+                <span class="n">exec_endpoint</span><span class="o">=</span><span class="n">exec_endpoint</span><span class="p">,</span>
+                <span class="n">target_executor</span><span class="o">=</span><span class="n">target_executor</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+                <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="n">error</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">ERROR</span> <span class="o">==</span> <span class="n">result</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">code</span><span class="p">:</span>
@@ -620,18 +643,18 @@
             <span class="k">if</span> <span class="n">return_results</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">result</span><span class="p">,</span> <span class="n">error</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">document_array_cls</span> <span class="o">=</span> <span class="n">DocumentArray</span>
                 <span class="k">yield</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span><span class="p">,</span> <span class="n">error</span></div>
 
 <div class="viewcode-block" id="GatewayStreamer.stream_docs"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.streamer/#jina.serve.runtimes.gateway.streamer.GatewayStreamer.stream_docs">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream_docs</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span>
-        <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="n">return_results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">exec_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span>
+            <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="n">return_results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">exec_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">request_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        stream documents and stream responses back.</span>
@@ -643,24 +666,64 @@
 <span class="sd">        :param target_executor: A regex expression indicating the Executors that should receive the Request</span>
 <span class="sd">        :param parameters: Parameters to be attached to the Requests</span>
 <span class="sd">        :param results_in_order: return the results in the same order as the request_iterator</span>
+<span class="sd">        :param request_id: Request ID to add to the request streamed to Executor. Only applicable if request_size is equal or less to the length of the docs</span>
 <span class="sd">        :yield: Yields DocumentArrays or Responses from the Executors</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
 
+        <span class="n">request_id</span> <span class="o">=</span> <span class="n">request_id</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">request_size</span> <span class="k">else</span> <span class="kc">None</span>
+
         <span class="k">def</span> <span class="nf">_req_generator</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">docs_batch</span> <span class="ow">in</span> <span class="n">docs</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">request_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-                <span class="n">req</span> <span class="o">=</span> <span class="n">DataRequest</span><span class="p">()</span>
-                <span class="n">req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">docs_batch</span>
-                <span class="k">if</span> <span class="n">exec_endpoint</span><span class="p">:</span>
-                    <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span> <span class="o">=</span> <span class="n">exec_endpoint</span>
-                <span class="k">if</span> <span class="n">target_executor</span><span class="p">:</span>
-                    <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">target_executor</span> <span class="o">=</span> <span class="n">target_executor</span>
-                <span class="k">if</span> <span class="n">parameters</span><span class="p">:</span>
-                    <span class="n">req</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
-                <span class="k">yield</span> <span class="n">req</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">docarray_v2</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">docs_batch</span> <span class="ow">in</span> <span class="n">docs</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">request_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                    <span class="n">req</span> <span class="o">=</span> <span class="n">DataRequest</span><span class="p">()</span>
+                    <span class="n">req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">docs_batch</span>
+                    <span class="k">if</span> <span class="n">request_id</span><span class="p">:</span>
+                        <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">request_id</span> <span class="o">=</span> <span class="n">request_id</span>
+                    <span class="k">if</span> <span class="n">exec_endpoint</span><span class="p">:</span>
+                        <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span> <span class="o">=</span> <span class="n">exec_endpoint</span>
+                    <span class="k">if</span> <span class="n">target_executor</span><span class="p">:</span>
+                        <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">target_executor</span> <span class="o">=</span> <span class="n">target_executor</span>
+                    <span class="k">if</span> <span class="n">parameters</span><span class="p">:</span>
+                        <span class="n">req</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
+                    <span class="k">yield</span> <span class="n">req</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">BaseDoc</span>
+                <span class="k">def</span> <span class="nf">batch</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">ndx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+                        <span class="k">yield</span> <span class="n">iterable</span><span class="p">[</span><span class="n">ndx</span><span class="p">:</span><span class="nb">min</span><span class="p">(</span><span class="n">ndx</span> <span class="o">+</span> <span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">)]</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">docs_batch</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">request_size</span><span class="p">):</span>
+                        <span class="n">req</span> <span class="o">=</span> <span class="n">DataRequest</span><span class="p">()</span>
+                        <span class="n">req</span><span class="o">.</span><span class="n">document_array_cls</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">docs_batch</span><span class="o">.</span><span class="n">doc_type</span><span class="p">]</span>
+                        <span class="n">req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">docs_batch</span>
+                        <span class="k">if</span> <span class="n">request_id</span><span class="p">:</span>
+                            <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">request_id</span> <span class="o">=</span> <span class="n">request_id</span>
+                        <span class="k">if</span> <span class="n">exec_endpoint</span><span class="p">:</span>
+                            <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span> <span class="o">=</span> <span class="n">exec_endpoint</span>
+                        <span class="k">if</span> <span class="n">target_executor</span><span class="p">:</span>
+                            <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">target_executor</span> <span class="o">=</span> <span class="n">target_executor</span>
+                        <span class="k">if</span> <span class="n">parameters</span><span class="p">:</span>
+                            <span class="n">req</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
+                        <span class="k">yield</span> <span class="n">req</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">req</span> <span class="o">=</span> <span class="n">DataRequest</span><span class="p">()</span>
+                    <span class="n">req</span><span class="o">.</span><span class="n">document_array_cls</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">BaseDoc</span><span class="p">]</span>
+                    <span class="n">req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">BaseDoc</span><span class="p">]()</span>
+                    <span class="k">if</span> <span class="n">request_id</span><span class="p">:</span>
+                        <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">request_id</span> <span class="o">=</span> <span class="n">request_id</span>
+                    <span class="k">if</span> <span class="n">exec_endpoint</span><span class="p">:</span>
+                        <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span> <span class="o">=</span> <span class="n">exec_endpoint</span>
+                    <span class="k">if</span> <span class="n">target_executor</span><span class="p">:</span>
+                        <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">target_executor</span> <span class="o">=</span> <span class="n">target_executor</span>
+                    <span class="k">if</span> <span class="n">parameters</span><span class="p">:</span>
+                        <span class="n">req</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
+                    <span class="k">yield</span> <span class="n">req</span>
 
         <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rpc_stream</span><span class="p">(</span>
-            <span class="n">request_iterator</span><span class="o">=</span><span class="n">_req_generator</span><span class="p">(),</span> <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span>
+                <span class="n">request_iterator</span><span class="o">=</span><span class="n">_req_generator</span><span class="p">(),</span> <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span>
         <span class="p">):</span>
             <span class="k">if</span> <span class="n">return_results</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">resp</span>
@@ -677,7 +740,7 @@
     <span class="n">Call</span> <span class="o">=</span> <span class="n">rpc_stream</span>
 
 <div class="viewcode-block" id="GatewayStreamer.process_single_data"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.streamer/#jina.serve.runtimes.gateway.streamer.GatewayStreamer.process_single_data">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_single_data</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataRequest</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Implements request and response handling of a single DataRequest</span>
 <span class="sd">        :param request: DataRequest from Client</span>
@@ -745,21 +808,49 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">executor_name</span> <span class="o">=</span> <span class="n">executor_name</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">post</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">inputs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span>
-        <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="n">on</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span>
+            <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="n">on</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">return_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">]</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="n">reqs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">docs_batch</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">request_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="n">req</span> <span class="o">=</span> <span class="n">DataRequest</span><span class="p">()</span>
-            <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span> <span class="o">=</span> <span class="n">on</span>
-            <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">target_executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor_name</span>
-            <span class="n">req</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
-            <span class="n">req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">docs_batch</span>
-            <span class="n">reqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">docarray_v2</span><span class="p">:</span>
+            <span class="n">reqs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">docs_batch</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">request_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                <span class="n">req</span> <span class="o">=</span> <span class="n">DataRequest</span><span class="p">()</span>
+                <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span> <span class="o">=</span> <span class="n">on</span>
+                <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">target_executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor_name</span>
+                <span class="n">req</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
+                <span class="n">req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">docs_batch</span>
+                <span class="n">reqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">BaseDoc</span>
+            <span class="k">def</span> <span class="nf">batch</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">ndx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+                    <span class="k">yield</span> <span class="n">iterable</span><span class="p">[</span><span class="n">ndx</span><span class="p">:</span><span class="nb">min</span><span class="p">(</span><span class="n">ndx</span> <span class="o">+</span> <span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">)]</span>
+
+            <span class="n">reqs</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">docs_batch</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">request_size</span><span class="p">):</span>
+                    <span class="n">req</span> <span class="o">=</span> <span class="n">DataRequest</span><span class="p">()</span>
+                    <span class="n">req</span><span class="o">.</span><span class="n">document_array_cls</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">docs_batch</span><span class="o">.</span><span class="n">doc_type</span><span class="p">]</span>
+                    <span class="n">req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">docs_batch</span>
+                    <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span> <span class="o">=</span> <span class="n">on</span>
+                    <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">target_executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor_name</span>
+                    <span class="n">req</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
+                    <span class="n">reqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">req</span> <span class="o">=</span> <span class="n">DataRequest</span><span class="p">()</span>
+                <span class="n">req</span><span class="o">.</span><span class="n">document_array_cls</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">BaseDoc</span><span class="p">]</span>
+                <span class="n">req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">BaseDoc</span><span class="p">]()</span>
+                <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span> <span class="o">=</span> <span class="n">on</span>
+                <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">target_executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor_name</span>
+                <span class="n">req</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
+                <span class="n">reqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
 
         <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="o">.</span><span class="n">send_requests_once</span><span class="p">(</span>
@@ -770,10 +861,15 @@
 
         <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
 
-        <span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">resp</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
-            <span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">docs</span><span class="p">)</span>
-
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">docarray_v2</span><span class="p">:</span>
+            <span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">resp</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+                <span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">docs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">docs</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">return_type</span><span class="o">.</span><span class="n">doc_type</span><span class="p">]()</span>
+            <span class="k">for</span> <span class="n">resp</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+                <span class="n">resp</span><span class="o">.</span><span class="n">document_array_cls</span> <span class="o">=</span> <span class="n">return_type</span>
+                <span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">docs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">docs</span>
 </pre></div>
                 </article>
@@ -789,7 +885,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 23, 2023</div>
+                            Last updated on Jun 06, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/stream.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.stream - Jina 3.16.1 documentation</title>
+        <title>jina.serve.stream - Jina 3.17.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.16.1 documentation</div>
+                <div class="brand">Jina 3.17.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -447,16 +447,16 @@
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">request_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span>
-            <span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Awaitable</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Awaitable</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">]]]</span>
-        <span class="p">],</span>
-        <span class="n">result_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">&#39;Request&#39;</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">]],</span>
-        <span class="n">prefetch</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">iterate_sync_in_thread</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">end_of_iter_handler</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;JinaLogger&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">logger_kwargs</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">request_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span>
+                <span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Awaitable</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Awaitable</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">]]]</span>
+            <span class="p">],</span>
+            <span class="n">result_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">&#39;Request&#39;</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">]],</span>
+            <span class="n">prefetch</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">iterate_sync_in_thread</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">end_of_iter_handler</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;JinaLogger&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">logger_kwargs</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param request_handler: The callable responsible for handling the request. It should handle a request as input and return a Future to be awaited</span>
@@ -476,13 +476,36 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_iterate_sync_in_thread</span> <span class="o">=</span> <span class="n">iterate_sync_in_thread</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">total_num_floating_tasks_alive</span> <span class="o">=</span> <span class="mi">0</span>
 
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_endpoints_input_output_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topology_graph</span><span class="p">,</span> <span class="n">connection_pool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a Dictionary with endpoints as keys and values as a dictionary of input and output schemas and names</span>
+<span class="sd">        taken from the endpoints proto endpoint of Executors</span>
+
+<span class="sd">        :param topology_graph: The topology graph from which the models need to be removed</span>
+<span class="sd">        :param connection_pool: The connection pool to be used</span>
+<span class="sd">        :return: a Dictionary with endpoints as keys and values as a dictionary of input and output schemas and names taken from the endpoints proto endpoint of Executors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># The logic should be to get the response of all the endpoints protos schemas from all the nodes. Then do a</span>
+        <span class="c1"># logic that for every endpoint fom every Executor computes what is the input and output schema seen by the</span>
+        <span class="c1"># Flow.</span>
+        <span class="c1"># create loop and get from topology_graph</span>
+        <span class="n">_endpoints_models_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">endpoints</span> <span class="o">=</span> <span class="k">await</span> <span class="n">topology_graph</span><span class="o">.</span><span class="n">_get_all_endpoints</span><span class="p">(</span><span class="n">connection_pool</span><span class="p">,</span> <span class="n">retry_forever</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">endp</span> <span class="ow">in</span> <span class="n">endpoints</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">origin_node</span> <span class="ow">in</span> <span class="n">topology_graph</span><span class="o">.</span><span class="n">origin_nodes</span><span class="p">:</span>
+                <span class="n">_endpoints_models_map</span><span class="p">[</span><span class="n">endp</span><span class="p">]</span> <span class="o">=</span> <span class="n">origin_node</span><span class="o">.</span><span class="n">_get_leaf_input_output_model</span><span class="p">(</span><span class="n">previous_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                                                                       <span class="n">previous_output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                                                                       <span class="n">endpoint</span><span class="o">=</span><span class="n">endp</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">_endpoints_models_map</span>
+
 <div class="viewcode-block" id="RequestStreamer.stream"><a class="viewcode-back" href="../../../../api/jina.serve.stream/#jina.serve.stream.RequestStreamer.stream">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">request_iterator</span><span class="p">,</span>
-        <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">request_iterator</span><span class="p">,</span>
+            <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        stream requests from client iterator and stream responses back.</span>
@@ -515,7 +538,7 @@
                 <span class="k">yield</span> <span class="n">response</span>
         <span class="k">except</span> <span class="n">InternalNetworkError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span>
-                <span class="n">context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="n">context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="p">):</span>  <span class="c1"># inside GrpcGateway we can handle the error directly here through the grpc context</span>
                 <span class="n">context</span><span class="o">.</span><span class="n">set_details</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">())</span>
                 <span class="n">context</span><span class="o">.</span><span class="n">set_code</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">())</span>
@@ -537,10 +560,10 @@
             <span class="k">raise</span> <span class="n">err</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_stream_requests</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">request_iterator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterator</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">],</span>
-        <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">request_iterator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterator</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">],</span>
+            <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Implements request and response handling without prefetching</span>
 <span class="sd">        :param request_iterator: requests iterator from Client</span>
@@ -594,10 +617,10 @@
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">num_reqs</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">async</span> <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="n">AsyncRequestsIterator</span><span class="p">(</span>
-                <span class="n">iterator</span><span class="o">=</span><span class="n">request_iterator</span><span class="p">,</span>
-                <span class="n">request_counter</span><span class="o">=</span><span class="n">requests_to_handle</span><span class="p">,</span>
-                <span class="n">prefetch</span><span class="o">=</span><span class="n">prefetch</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefetch</span><span class="p">,</span>
-                <span class="n">iterate_sync_in_thread</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_iterate_sync_in_thread</span><span class="p">,</span>
+                    <span class="n">iterator</span><span class="o">=</span><span class="n">request_iterator</span><span class="p">,</span>
+                    <span class="n">request_counter</span><span class="o">=</span><span class="n">requests_to_handle</span><span class="p">,</span>
+                    <span class="n">prefetch</span><span class="o">=</span><span class="n">prefetch</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefetch</span><span class="p">,</span>
+                    <span class="n">iterate_sync_in_thread</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_iterate_sync_in_thread</span><span class="p">,</span>
             <span class="p">):</span>
                 <span class="n">num_reqs</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">requests_to_handle</span><span class="o">.</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -624,8 +647,8 @@
                 <span class="n">future_cancel</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">end_future</span><span class="p">())</span>
                 <span class="n">result_queue</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">future_cancel</span><span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span>
-                <span class="n">all_floating_requests_awaited</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
-                <span class="ow">or</span> <span class="n">empty_requests_iterator</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
+                    <span class="n">all_floating_requests_awaited</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
+                    <span class="ow">or</span> <span class="n">empty_requests_iterator</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
             <span class="p">):</span>
                 <span class="c1"># It will be waiting for something that will never appear</span>
                 <span class="n">future_cancel</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">end_future</span><span class="p">())</span>
@@ -633,8 +656,8 @@
 
         <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_floating_responses</span><span class="p">():</span>
             <span class="k">while</span> <span class="p">(</span>
-                <span class="ow">not</span> <span class="n">all_floating_requests_awaited</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
-                <span class="ow">and</span> <span class="ow">not</span> <span class="n">empty_requests_iterator</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
+                    <span class="ow">not</span> <span class="n">all_floating_requests_awaited</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
+                    <span class="ow">and</span> <span class="ow">not</span> <span class="n">empty_requests_iterator</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
             <span class="p">):</span>
                 <span class="n">hanging_response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">floating_results_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
                 <span class="n">res</span> <span class="o">=</span> <span class="n">hanging_response</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
@@ -687,7 +710,7 @@
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="RequestStreamer.process_single_data"><a class="viewcode-back" href="../../../../api/jina.serve.stream/#jina.serve.stream.RequestStreamer.process_single_data">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_single_data</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataRequest</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Implements request and response handling of a single DataRequest</span>
 <span class="sd">        :param request: DataRequest from Client</span>
@@ -709,7 +732,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on May 23, 2023</div>
+                            Last updated on Jun 06, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
