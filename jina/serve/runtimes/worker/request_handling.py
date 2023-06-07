@@ -515,27 +515,18 @@ class WorkerRequestHandler:
         return docs
 
     async def _setup_requests(
-        self, requests: List['DataRequest'], tracing_context: Optional['Context'] = None
+        self,
+        requests: List['DataRequest'],
+        exec_endpoint: str,
+        tracing_context: Optional['Context'] = None,
     ):
         """Execute a request using the executor.
 
         :param requests: the requests to execute
+        :param exec_endpoint: the execution endpoint to use
         :param tracing_context: Optional OpenTelemetry tracing context from the originating request.
         :return: the result of the execution
         """
-        # skip executor if endpoints mismatch
-        exec_endpoint: str = requests[0].header.exec_endpoint
-        if exec_endpoint not in self._executor.requests:
-            if __default_endpoint__ in self._executor.requests:
-                exec_endpoint = __default_endpoint__
-            else:
-                self.logger.debug(
-                    f'skip executor: endpoint mismatch. '
-                    f'Request endpoint: `{exec_endpoint}`. '
-                    'Available endpoints: '
-                    f'{", ".join(list(self._executor.requests.keys()))}'
-                )
-                return requests[0]
 
         self._record_request_size_monitoring(requests)
 
@@ -564,9 +555,18 @@ class WorkerRequestHandler:
         :param tracing_context: Optional OpenTelemetry tracing context from the originating request.
         :returns: the processed message
         """
-        exec_endpoint = requests[0].header.exec_endpoint
+        # skip executor if endpoints mismatch
+        exec_endpoint: str = requests[0].header.exec_endpoint
+        if exec_endpoint not in self._executor.requests:
+            if __default_endpoint__ in self._executor.requests:
+                exec_endpoint = __default_endpoint__
+            else:
+                raise RuntimeError(
+                    f'Request endpoint must match one of the available endpoints.'
+                )
+
         requests, params = await self._setup_requests(
-            requests, tracing_context=tracing_context
+            requests, exec_endpoint, tracing_context=tracing_context
         )
         if exec_endpoint in self._batchqueue_config:
             warnings.warn(
@@ -593,9 +593,22 @@ class WorkerRequestHandler:
         :param tracing_context: Optional OpenTelemetry tracing context from the originating request.
         :returns: the processed message
         """
+        # skip executor if endpoints mismatch
         exec_endpoint: str = requests[0].header.exec_endpoint
+        if exec_endpoint not in self._executor.requests:
+            if __default_endpoint__ in self._executor.requests:
+                exec_endpoint = __default_endpoint__
+            else:
+                self.logger.debug(
+                    f'skip executor: endpoint mismatch. '
+                    f'Request endpoint: `{exec_endpoint}`. '
+                    'Available endpoints: '
+                    f'{", ".join(list(self._executor.requests.keys()))}'
+                )
+                return requests[0]
+
         requests, params = await self._setup_requests(
-            requests, tracing_context=tracing_context
+            requests, exec_endpoint, tracing_context=tracing_context
         )
 
         if exec_endpoint in self._batchqueue_config:
