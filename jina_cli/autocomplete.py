@@ -247,7 +247,6 @@ ac_table = {
         'cloud scale': ['--help', '--executor', '--replicas'],
         'cloud recreate': ['--help'],
         'cloud logs': ['--help', '--gateway', '--executor'],
-        'cloud survey': ['--help'],
         'cloud': [
             '--help',
             '--version',
@@ -267,7 +266,6 @@ ac_table = {
             'scale',
             'recreate',
             'logs',
-            'survey',
         ],
         'help': ['--help'],
         'pod': [
