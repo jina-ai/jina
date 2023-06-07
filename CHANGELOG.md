@@ -245,6 +245,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -618,6 +619,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.15.0`)](#release-note-3150)
 - [Release Note (`3.15.2`)](#release-note-3152)
 - [Release Note (`3.16.1`)](#release-note-3161)
+- [Release Note (`3.17.0`)](#release-note-3170)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -15862,4 +15864,35 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```012aea80```](https://github.com/jina-ai/jina/commit/012aea8071c5ec4a0781ffd53a85ae20ffb2b22c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```89a7df62```](https://github.com/jina-ai/jina/commit/89a7df62c6ed75dc5f96a1c002b180f06ff39ca8)] __-__ remove non-existing property (#5852) (*Joan Fontanals*)
  - [[```3c58b433```](https://github.com/jina-ai/jina/commit/3c58b4339e8c33b1e6a98c84b5007bdbbc48abbb)] __-__ __version__: the next version will be 3.15.3 (*Jina Dev Bot*)
+
+<a name=release-note-3-17-0></a>
+## Release Note (`3.17.0`)
+
+> Release time: 2023-06-06 15:25:15
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```18fb9036```](https://github.com/jina-ai/jina/commit/18fb9036acfb317650867af59a1147b3639aec6f)] __-__ Flow compatible with docarray v2 (#5861) (*Joan Fontanals*)
+
+### 🐞 Bug fixes
+
+ - [[```042b5805```](https://github.com/jina-ai/jina/commit/042b580512c245690baf86d9a91c2301eabc345e)] __-__ fix instantiate of Executor with `write` decorator (#5897) (*Joan Fontanals*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```01f86312```](https://github.com/jina-ai/jina/commit/01f8631216ef881a3b0a016aa489f451f7a00d32)] __-__ add test with shaped ndarray (#5900) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```bef7159a```](https://github.com/jina-ai/jina/commit/bef7159aa900e9ef199a991f9632896a8272c8f6)] __-__ update version to 3.17.0 (#5903) (*Joan Fontanals*)
+ - [[```b5c8b64b```](https://github.com/jina-ai/jina/commit/b5c8b64b2241ab1d04b11ef209ffb95f73928e04)] __-__ remove annoying message for debug (#5901) (*Joan Fontanals*)
+ - [[```bae03637```](https://github.com/jina-ai/jina/commit/bae0363768edac9d2d54f20502b551258560ee2d)] __-__ try fix setting start method (#5896) (*Joan Fontanals*)
+ - [[```dbbecad7```](https://github.com/jina-ai/jina/commit/dbbecad763fd6eadecd1ae768bac29cb898ec4af)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```5542d56a```](https://github.com/jina-ai/jina/commit/5542d56afa196b502c773c8262ac069fa60e05f7)] __-__ __version__: the next version will be 3.16.2 (*Jina Dev Bot*)
 

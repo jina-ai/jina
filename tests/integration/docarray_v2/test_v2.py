@@ -5,7 +5,7 @@ import os
 import numpy as np
 from docarray import BaseDoc, DocList
 from docarray.documents import ImageDoc
-from docarray.typing import AnyTensor, ImageUrl
+from docarray.typing import AnyTensor, ImageUrl, NdArray
 from docarray.documents import TextDoc
 from docarray.documents.legacy import LegacyDocument
 from jina.helper import random_port
@@ -292,7 +292,6 @@ def test_condition_feature(protocol, temp_workspace, tmpdir):
                     fp.write(doc.text)
                     doc.text += f' processed by {self.metas.name}'
 
-
     class FirstExec(Executor):
         @requests
         def foo(self, docs: DocList[LegacyDocument], **kwargs) -> DocList[ProcessingTestDocConditions]:
@@ -460,6 +459,32 @@ def test_empty_input_output(protocol, ctxt_manager):
     with ctxt_mgr:
         ret = ctxt_mgr.post(on='/hello', inputs=DocList[TextDoc]())
         assert len(ret) == 0
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+@pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
+def test_input_output_with_shaped_tensor(protocol, ctxt_manager):
+    if ctxt_manager == 'deployment' and protocol == 'websocket':
+        return
+
+    class MyDoc(BaseDoc):
+        text: str
+        embedding: NdArray[128]
+
+    class Foo(Executor):
+        @requests(on='/hello')
+        def foo(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDoc]:
+            for doc in docs:
+                doc.text += 'Processed by foo'
+
+    if ctxt_manager == 'flow':
+        ctxt_mgr = Flow(protocol=protocol).add(uses=Foo)
+    else:
+        ctxt_mgr = Deployment(protocol=protocol, uses=Foo)
+
+    with ctxt_mgr:
+        ret = ctxt_mgr.post(on='/hello', inputs=DocList[MyDoc]([MyDoc(text='', embedding=np.random.rand(128))]))
+        assert len(ret) == 1
 
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
@@ -651,12 +676,12 @@ def test_flow_incompatible_bifurcation(protocol):
         def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
             pass
 
-    f = Flow(protocol=protocol).add(uses=Previous, name='previous').add(uses=First, name='first', needs='previous').add(uses=Second, name='second', needs='previous').needs_all()
+    f = Flow(protocol=protocol).add(uses=Previous, name='previous').add(uses=First, name='first', needs='previous').add(
+        uses=Second, name='second', needs='previous').needs_all()
 
     with pytest.raises(RuntimeFailToStart):
         with f:
             pass
-
 
 
 class ExternalDeploymentDoc(BaseDoc):
@@ -962,3 +987,51 @@ def test_flow_with_shards_all_shards_return(protocols, reduce, sleep_time):
                 assert len(r.matches) == 6
                 for match in r.matches:
                     assert 'ID' in match.text
+
+
+def test_issue_shards_missmatch_endpoint():
+    class MyDoc(BaseDoc):
+        text: str
+        embedding: NdArray[128]
+
+    class MyDocWithMatchesAndScores(MyDoc):
+        matches: DocList[MyDoc]
+        scores: List[float]
+
+    class MyExec(Executor):
+
+        @requests
+        def foo(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDocWithMatchesAndScores]:
+            res = DocList[MyDocWithMatchesAndScores]()
+            for doc in docs:
+                new_doc = MyDocWithMatchesAndScores(text=doc.text, embedding=doc.embedding, matches=docs,
+                                                    scores=[1.0 for _ in docs])
+                res.append(new_doc)
+            return res
+
+    d = Deployment(uses=MyExec, shards=2)
+    with d:
+        res = d.post(on='/', inputs=DocList[MyDoc]([MyDoc(text='hey ha', embedding=np.random.rand(128))]))
+        assert len(res) == 1
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http'])
+def test_closing_executor(tmpdir, protocol):
+    class ClosingExec(Executor):
+
+        def __init__(self, file_path, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self._file_path = file_path
+
+        def close(self) -> None:
+            with open(self._file_path, 'w') as f:
+                f.write('I closed')
+
+    file_path = f'{str(tmpdir)}/file.txt'
+    d = Deployment(uses=ClosingExec, uses_with={'file_path': file_path}, protocol=protocol)
+    with d:
+        pass
+
+    with open(file_path, 'r') as f:
+        r = f.read()
+    assert r == 'I closed'

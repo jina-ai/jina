@@ -494,7 +494,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         ):
             raise RuntimeError(
                 f'It is not supported to have {ProtocolType.WEBSOCKET.to_string()} deployment for '
-                f'Deployments with more than one shard'
+                f'Deployments'
             )
         is_mac_os = platform.system() == 'Darwin'
         is_windows_os = platform.system() == 'Windows'
