@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, AsyncIterator, Dict, List, Optional, Tuple, An
 import grpc
 
 from jina.enums import PollingType
+from jina.constants import __default_endpoint__
 from jina.excepts import InternalNetworkError
 from jina.helper import get_full_version
 from jina.proto import jina_pb2
@@ -289,7 +290,10 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         response_request = worker_results[0]
         found = False
         if docarray_v2:
-            model = self._pydantic_models_by_endpoint[endpoint]['output']
+            check_endpoint = endpoint
+            if endpoint not in self._pydantic_models_by_endpoint:
+                check_endpoint = __default_endpoint__
+            model = self._pydantic_models_by_endpoint[check_endpoint]['output']
         for i, worker_result in enumerate(worker_results):
             if docarray_v2:
                 worker_result.document_array_cls = DocList[model]

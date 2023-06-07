@@ -103,7 +103,6 @@ func (rpc *RpcInterface) ProcessSingleData(
         }
         response, test := future.Response().(*pb.DataRequestProto)
         if test {
-            rpc.Logger.Debug("Return from RAFT Apply:", "Response", response.String())
             return response, nil
         } else {
             err := future.Response().(error)
