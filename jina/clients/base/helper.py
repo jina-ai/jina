@@ -152,6 +152,8 @@ class AioHttpClientlet(ABC):
 class HTTPClientlet(AioHttpClientlet):
     """HTTP Client to be used with the streamer"""
 
+    UPDATE_EVENT_PREFIX = 14  # the update event has the following format: "event: update: {document_json}"
+
     async def send_message(self, request: 'Request'):
         """Sends a POST request to the server
 
@@ -214,7 +216,7 @@ class HTTPClientlet(AioHttpClientlet):
                 events = chunk.split(b'event: ')[1:]
                 for event in events:
                     if event.startswith(b'update'):
-                        yield event[14:].decode()
+                        yield event[self.UPDATE_EVENT_PREFIX :].decode()
                     elif event.startswith(b'end'):
                         pass
 
