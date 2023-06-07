@@ -987,3 +987,30 @@ def test_flow_with_shards_all_shards_return(protocols, reduce, sleep_time):
                 assert len(r.matches) == 6
                 for match in r.matches:
                     assert 'ID' in match.text
+
+
+def test_issue_shards_missmatch_endpoint():
+
+    class MyDoc(BaseDoc):
+        text: str
+        embedding: NdArray[128]
+
+    class MyDocWithMatchesAndScores(MyDoc):
+        matches: DocList[MyDoc]
+        scores: List[float]
+
+    class MyExec(Executor):
+
+        @requests
+        def foo(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDocWithMatchesAndScores]:
+            res = DocList[MyDocWithMatchesAndScores]()
+            for doc in docs:
+                new_doc = MyDocWithMatchesAndScores(text=doc.text, embedding=doc.embedding, matches=docs,
+                                                    scores=[1.0 for _ in docs])
+                res.append(new_doc)
+            return res
+
+    d = Deployment(uses=MyExec, shards=2)
+    with d:
+        res = d.post(on='/', inputs=DocList[MyDoc]([MyDoc(text='hey ha', embedding=np.random.rand(128))]))
+        assert len(res) == 1
