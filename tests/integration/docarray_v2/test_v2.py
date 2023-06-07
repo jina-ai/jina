@@ -990,7 +990,6 @@ def test_flow_with_shards_all_shards_return(protocols, reduce, sleep_time):
 
 
 def test_issue_shards_missmatch_endpoint():
-
     class MyDoc(BaseDoc):
         text: str
         embedding: NdArray[128]
@@ -1014,3 +1013,25 @@ def test_issue_shards_missmatch_endpoint():
     with d:
         res = d.post(on='/', inputs=DocList[MyDoc]([MyDoc(text='hey ha', embedding=np.random.rand(128))]))
         assert len(res) == 1
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http'])
+def test_closing_executor(tmpdir, protocol):
+    class ClosingExec(Executor):
+
+        def __init__(self, file_path, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self._file_path = file_path
+
+        def close(self) -> None:
+            with open(self._file_path, 'w') as f:
+                f.write('I closed')
+
+    file_path = f'{str(tmpdir)}/file.txt'
+    d = Deployment(uses=ClosingExec, uses_with={'file_path': file_path}, protocol=protocol)
+    with d:
+        pass
+
+    with open(file_path, 'r') as f:
+        r = f.read()
+    assert r == 'I closed'
