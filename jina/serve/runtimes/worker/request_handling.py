@@ -165,11 +165,17 @@ class WorkerRequestHandler:
         def call_handle(request):
             return self.process_single_data(request, None)
 
-        return get_fastapi_app(
+        app = get_fastapi_app(
             request_models_map=request_models_map,
             caller=call_handle,
             **kwargs
         )
+
+        @app.on_event('shutdown')
+        async def _shutdown():
+            await self.close()
+
+        return app
 
     async def _hot_reload(self):
         import inspect
@@ -793,12 +799,14 @@ class WorkerRequestHandler:
                 if inner_dict['input']['model'].schema() == legacy_doc_schema:
                     inner_dict['input']['model'] = legacy_doc_schema
                 else:
-                    inner_dict['input']['model'] = _create_aux_model_doc_list_to_list(inner_dict['input']['model']).schema()
+                    inner_dict['input']['model'] = _create_aux_model_doc_list_to_list(
+                        inner_dict['input']['model']).schema()
 
                 if inner_dict['output']['model'].schema() == legacy_doc_schema:
                     inner_dict['output']['model'] = legacy_doc_schema
                 else:
-                    inner_dict['output']['model'] = _create_aux_model_doc_list_to_list(inner_dict['output']['model']).schema()
+                    inner_dict['output']['model'] = _create_aux_model_doc_list_to_list(
+                        inner_dict['output']['model']).schema()
         else:
             for endpoint_name, inner_dict in schemas.items():
                 inner_dict['input']['model'] = inner_dict['input']['model'].schema()
