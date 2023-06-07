@@ -78,7 +78,6 @@ def get_fastapi_app(
             response_model=output_model,
         )
         if docarray_v2:
-            # TODO: probably this becomes problematic for generator endpoints
             from docarray.base_doc.docarray_response import DocArrayResponse
 
             app_kwargs['response_class'] = DocArrayResponse
@@ -98,8 +97,6 @@ def get_fastapi_app(
             req.parameters = body.parameters
             req.header.exec_endpoint = endpoint_path
             resp = await caller(req)
-            if request_models_map[endpoint_path]['is_generator']:
-                return EventSourceResponse(resp)
             status = resp.header.status
 
             if status.code == jina_pb2.StatusProto.ERROR:
@@ -111,6 +108,36 @@ def get_fastapi_app(
                     docs_response = resp.docs
                 ret = output_model(data=docs_response, parameters=resp.parameters)
                 return ret
+
+    def add_streaming_post_route(
+        endpoint_path,
+        input_model,
+        output_model,
+        input_doc_list_model=None,
+        output_doc_list_model=None,
+    ):
+        app_kwargs = dict(
+            path=f'/{endpoint_path.strip("/")}',
+            methods=['POST'],
+            summary=f'Streaming endpoint {endpoint_path}',
+        )
+
+        @app.api_route(**app_kwargs)
+        async def post(body: input_model, response: Response):
+
+            req = DataRequest()
+            if not docarray_v2:
+                req.data.docs = DocumentArray.from_pydantic_model(body.data)
+            else:
+                req.data.docs = DocList[input_doc_list_model](body.data)
+
+            if body.header is not None:
+                req.header.request_id = body.header.request_id
+
+            req.parameters = body.parameters
+            req.header.exec_endpoint = endpoint_path
+            resp = await caller(req)
+            return EventSourceResponse(resp)
 
     def add_streaming_get_route(
         endpoint_path,
@@ -158,18 +185,25 @@ def get_fastapi_app(
                 __config__=output_doc_model.__config__,
             )
 
-            add_post_route(
-                endpoint,
-                input_model=endpoint_input_model,
-                output_model=endpoint_output_model,
-                input_doc_list_model=input_doc_model,
-                output_doc_list_model=output_doc_model,
-            )
-
             if is_generator:
+                add_streaming_post_route(
+                    endpoint,
+                    input_model=endpoint_input_model,
+                    output_model=endpoint_output_model,
+                    input_doc_list_model=input_doc_model,
+                    output_doc_list_model=output_doc_model,
+                )
                 add_streaming_get_route(
                     endpoint,
                     input_doc_list_model=input_doc_model,
+                )
+            else:
+                add_post_route(
+                    endpoint,
+                    input_model=endpoint_input_model,
+                    output_model=endpoint_output_model,
+                    input_doc_list_model=input_doc_model,
+                    output_doc_list_model=output_doc_model,
                 )
 
     from jina.serve.runtimes.gateway.health_model import JinaHealthModel
