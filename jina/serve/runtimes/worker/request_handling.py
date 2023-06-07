@@ -540,11 +540,16 @@ class WorkerRequestHandler:
         self._record_request_size_monitoring(requests)
 
         params = self._parse_params(requests[0].parameters, self._executor.metas.name)
-
+        endpoint_info = self._executor.requests[exec_endpoint]
         try:
-            requests[0].document_array_cls = self._executor.requests[
-                exec_endpoint
-            ].request_schema
+            if not getattr(endpoint_info.fn, '__is_generator__', False):
+                requests[0].document_array_cls = endpoint_info.request_schema
+            elif docarray_v2:
+                requests[0].document_array_cls = DocumentArray[
+                    endpoint_info.request_schema
+                ]
+            else:
+                requests[0].document_array_cls = DocumentArray
         except AttributeError:
             pass
 
