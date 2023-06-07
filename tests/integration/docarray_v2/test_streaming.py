@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pytest
 
 from jina import Client, Executor, requests
@@ -7,7 +9,7 @@ from jina.helper import random_port
 
 class MyDocument(Document):
     text: str
-    number: int
+    number: Optional[int]
 
 
 class MyExecutor(Executor):
