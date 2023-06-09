@@ -31,8 +31,8 @@ Jina AI Cloud is the **portal** and **single entrypoint** to manage **all** your
 - Data
   - [DocumentArray](https://docarray.jina.ai/fundamentals/documentarray/serialization/#from-to-cloud)
   - [Finetuner artifacts](https://finetuner.jina.ai/walkthrough/save-model/#save-artifact)
-- [Executors](../concepts/executor/index.md)
-- [Flows](../concepts/flow/index.md)
+- [Executors](../concepts/serving/executor/index.md)
+- [Flows](../concepts/orchestration/flow.md)
 - [Apps](https://now.jina.ai)
 
 _Manage_ in this context means: CRUD, access control, personal access tokens, and subscription.
