@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict, Union
+from typing import Optional, List, Union, Dict, Any
 import pytest
 import time
 import os
@@ -1035,3 +1035,39 @@ def test_closing_executor(tmpdir, protocol):
     with open(file_path, 'r') as f:
         r = f.read()
     assert r == 'I closed'
+
+
+def test_issue_dict_docs_http():
+    class AuxDoc(BaseDoc):
+        a: str
+
+
+    class TagsDoc(BaseDoc):
+        tags: Dict[str, Any] = dict()
+        aux: AuxDoc
+
+
+    class TagsDocExecutor(Executor):
+        def __init__(
+                self,
+                **kwargs
+        ):
+            super().__init__(**kwargs)
+
+        @requests(on=['/index'])
+        async def filter(self, docs: DocList[TagsDoc], **kwargs) -> DocList[TagsDoc]:
+            for doc in docs:
+                doc.aux.a = 'b'
+                doc.tags = {'a': {'b': 1}}
+            return docs
+
+
+    f = Flow(protocol='http').add(uses=TagsDocExecutor)
+    doc1 = TagsDoc(aux=AuxDoc(a='a'))
+
+    with f:
+        res = f.post(on='/index', inputs=doc1, return_type=DocList[TagsDoc])
+        assert len(res) == 1
+        for doc in res:
+            assert doc.aux.a == 'b'
+            assert doc.tags == {'a': {'b': 1}}
