@@ -53,6 +53,11 @@ class AppStatus:
 
     @staticmethod
     def handle_exit(*args, **kwargs):
+        """
+        signal handler for uvicorn server
+        :param args: args
+        :param kwargs: kwargs
+        """
         # set bool flag before checking the event to avoid race condition
         AppStatus.should_exit = True
         # Check if event has been initialized, if so notify listeners
@@ -78,12 +83,16 @@ except ModuleNotFoundError:
 
 
 class SseState(enum.Enum):
+    """SSE connection state"""
+
     CONNECTING = 0
     OPENED = 1
     CLOSED = 2
 
 
 class ServerSentEvent:
+    """Class to manage Server-Sent Events"""
+
     def __init__(
         self,
         data: Optional[Any] = None,
@@ -94,22 +103,14 @@ class ServerSentEvent:
         comment: Optional[str] = None,
         sep: Optional[str] = None,
     ) -> None:
-        """Send data using EventSource protocol
+        """Send data using EventSource protocol # noqa: DAR101
 
-        :param str data: The data field for the message.
-        :param str id: The event ID to set the EventSource object's last
-            event ID value to.
-        :param str event: The event's type. If this is specified, an event will
-            be dispatched on the browser to the listener for the specified
-            event name; the web site would use addEventListener() to listen
-            for named events. The default event type is "message".
-        :param int retry: The reconnection time to use when attempting to send
-            the event. [What code handles this?] This must be an integer,
-            specifying the reconnection time in milliseconds. If a non-integer
-            value is specified, the field is ignored.
-        :param str comment: A colon as the first character of a line is essence
-            a comment, and is ignored. Usually used as a ping message to keep connecting.
-            If set, this will be a comment message.
+        :param data: The data field for the message.
+        :param event: The event's type. If this is specified, an event will be dispatched on the browser to the listener for the specified event name; the web site would use addEventListener() to listen for named events. The default event type is "message".
+        :param id: The event ID to set the EventSource object's last event ID value to.
+        :param retry: The reconnection time to use when attempting to send the event. [What code handles this?] This must be an integer, specifying the reconnection time in milliseconds. If a non-integer value is specified, the field is ignored.
+        :param comment: A colon as the first character of a line is essence a comment, and is ignored. Usually used as a ping message to keep connecting. If set, this will be a comment message.
+        :param sep: The separator between lines. Defaults to "\r\n".
         """
         self.data = data
         self.event = event
@@ -121,6 +122,11 @@ class ServerSentEvent:
         self._sep = sep if sep is not None else self.DEFAULT_SEPARATOR
 
     def encode(self) -> bytes:
+        """
+        Encode the message into bytes
+
+        :return: The encoded message
+        """
         buffer = io.StringIO()
         if self.comment is not None:
             for chunk in self.LINE_SEP_EXPR.split(str(self.comment)):
@@ -151,6 +157,11 @@ class ServerSentEvent:
 
 
 def ensure_bytes(data: Union[bytes, dict, ServerSentEvent, Any]) -> bytes:
+    """
+    helper to convert data to bytes
+    :param data: data to convert
+    :return: bytes
+    """
     if isinstance(data, bytes):
         return data
     elif isinstance(data, ServerSentEvent):
@@ -220,6 +231,10 @@ class EventSourceResponse(Response):
 
     @staticmethod
     async def listen_for_disconnect(receive: Receive) -> None:
+        """
+        Listen for the client disconnecting
+        :param receive: receive channel
+        """
         while True:
             message = await receive()
             if message["type"] == "http.disconnect":
@@ -228,6 +243,9 @@ class EventSourceResponse(Response):
 
     @staticmethod
     async def listen_for_exit_signal() -> None:
+        """
+        Listen for the exit signal
+        """
         # Check if should_exit was set before anybody started waiting
         if AppStatus.should_exit:
             return
@@ -244,6 +262,10 @@ class EventSourceResponse(Response):
         await AppStatus.should_exit_event.wait()
 
     async def stream_response(self, send) -> None:
+        """
+        Stream the response
+        :param send: send channel
+        """
         await send(
             {
                 "type": "http.response.start",
@@ -259,6 +281,13 @@ class EventSourceResponse(Response):
         await send({"type": "http.response.body", "body": b"", "more_body": False})
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """
+        Stream the response
+        :param scope: scope
+        :param receive: receive channel
+        :param send: send channel
+        """
+
         async def safe_send(message):
             async with self._send_lock:
                 return await send(message)
@@ -283,18 +312,26 @@ class EventSourceResponse(Response):
             await self.background()
 
     def enable_compression(self, force: bool = False) -> None:
+        """
+        Enable compression
+        :param force: force compression
+        """
         raise NotImplementedError
 
     @property
     def ping_interval(self) -> Union[int, float]:
-        """Time interval between two ping massages"""
+        """
+        Time interval between two ping massages
+
+        :return: ping interval
+        """
         return self._ping_interval
 
     @ping_interval.setter
     def ping_interval(self, value: Union[int, float]) -> None:
         """Setter for ping_interval property.
 
-        :param int value: interval in sec between two ping values.
+        :param value: interval in sec between two ping values.
         """
 
         if not isinstance(value, (int, float)):
