@@ -194,8 +194,10 @@ def write(
             owner._write_methods.append(self.fn.__name__)
 
         def __set_name__(self, owner, name):
+            _init_requests_by_class(owner)
             if self._requests_decorator:
                 self._requests_decorator._inject_owner_attrs(owner, name, None, None)
+
             self._inject_owner_attrs(owner, name)
 
             setattr(owner, name, self.fn)

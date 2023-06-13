@@ -41,10 +41,19 @@ async def request_generator(
                 endpoint=exec_endpoint, target=target_executor, parameters=parameters
             )
         else:
-            with ImportExtensions(required=True):
-                import aiostream
-
-            async for batch in aiostream.stream.chunks(data, request_size):
+            batch = []
+            async for d in data:
+                batch.append(d)
+                if len(batch) >= request_size:
+                    yield _new_data_request_from_batch(
+                        batch=batch,
+                        data_type=data_type,
+                        endpoint=exec_endpoint,
+                        target=target_executor,
+                        parameters=parameters,
+                    )
+                    batch = []
+            if len(batch) > 0:
                 yield _new_data_request_from_batch(
                     batch=batch,
                     data_type=data_type,

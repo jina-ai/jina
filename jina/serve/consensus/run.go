@@ -359,7 +359,6 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
 
 //export add_voter
 func add_voter(self *C.PyObject, args *C.PyObject) *C.PyObject {
-    //TODO: Instantiate new logger based on JINA_LOG_LEVEL
     logLevel := os.Getenv("JINA_LOG_LEVEL")
     if logLevel == "" {
         logLevel = "INFO"

@@ -55,13 +55,21 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
     # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
     from multiprocessing import set_start_method as _set_start_method
 
-    _set_start_method('fork')
+    try:
+        _set_start_method('fork')
+        _warnings.warn(
+            f'multiprocessing start method is set to `fork`'
+        )
+    except Exception as e:
+        _warnings.warn(
+            f'failed to set multiprocessing start_method to `fork`: {e!r}'
+            )
 
 # do not change this line manually
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
 
-__version__ = '3.16.1'
+__version__ = '3.17.1'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
