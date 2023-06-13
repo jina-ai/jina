@@ -99,35 +99,22 @@ Let's implement the service's logic:
 <td>
 
 ```python
-from docarray import Document, DocumentArray
 from jina import Executor, requests
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from docarray import DocumentArray
+
+from transformers import pipeline
 
 
 class StableLM(Executor):
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            'StabilityAI/stablelm-base-alpha-3b'
-        )
-        self.model = AutoModelForCausalLM.from_pretrained(
-            'StabilityAI/stablelm-base-alpha-3b'
-        )
-        self.model.half().cuda()
+        self.generator = pipeline('text-generation', model='stablelm-3b')
 
     @requests
     def generate(self, docs: DocumentArray, **kwargs):
-        for doc in docs:
-            self._generate(doc)
-
-    def _generate(self, doc: Document, **kwargs):
-        prompt = doc.tags['prompt']
-        inputs = self.tokenizer(prompt, return_tensors='pt').to('cuda')
-        tokens = self.model.generate(
-            **inputs, max_new_tokens=64, temperature=0.7, do_sample=True
-        )
-        output = self.tokenizer.decode(tokens[0], skip_special_tokens=True)
-        doc.text = output
+        generated_text = self.generator(docs.texts)
+        docs.texts = [gen[0]['generated_text'] for gen in generated_text]
 ```
 
 </td>
