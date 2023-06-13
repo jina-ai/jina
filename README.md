@@ -149,7 +149,7 @@ jtype: Deployment
 with:
   uses: StableLM
   py_modules:
-    - executor.py # name of the module containing Translator
+    - executor.py
   timeout_ready: -1
   port: 12345
 ```
