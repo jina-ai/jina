@@ -61,24 +61,6 @@ class DataRequest(Request):
             """
             self.set_docs_convert_arrays(value)
 
-        @property
-        def doc(self) -> 'Document':
-            """Get the :class: `DocumentArray` with sequence `data.docs` as content.
-
-            .. # noqa: DAR201"""
-            if len(self.docs) > 0:
-                return self.docs[0]
-            else:
-                return None
-
-        @doc.setter
-        def doc(self, value: 'Document'):
-            """Override the DocumentArray with the provided one
-
-            :param value: a DocumentArray
-            """
-            self.docs = DocumentArray([value])
-
         def set_docs_convert_arrays(
             self, value: DocumentArray, ndarray_type: Optional[str] = None
         ):

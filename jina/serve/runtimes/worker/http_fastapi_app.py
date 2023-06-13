@@ -158,9 +158,9 @@ def get_fastapi_app(
             if not docarray_v2:
                 from docarray import Document
 
-                req.data.doc = Document.from_dict(query_params)
+                req.data.docs = DocumentArray([Document.from_dict(query_params)])
             else:
-                req.data.doc = input_doc_list_model(**query_params)
+                req.data.docs = DocumentArray([input_doc_list_model(**query_params)])
             event_generator = _gen_dict_documents(await caller(req))
             return EventSourceResponse(event_generator)
 

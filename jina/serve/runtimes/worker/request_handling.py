@@ -176,9 +176,7 @@ class WorkerRequestHandler:
             return self.process_single_data(request, None, is_generator=is_generator)
 
         app = get_fastapi_app(
-            request_models_map=request_models_map,
-            caller=call_handle,
-            **kwargs
+            request_models_map=request_models_map, caller=call_handle, **kwargs
         )
 
         @app.on_event('shutdown')
@@ -580,7 +578,7 @@ class WorkerRequestHandler:
             warnings.warn(
                 'Batching is not supported for generator executors endpoints. Ignoring batch size.'
             )
-        doc = requests[0].data.doc
+        doc = requests[0].data.docs[0]
         docs_matrix, docs_map = None, None
         return await self._executor.__acall__(
             req_endpoint=exec_endpoint,
@@ -874,13 +872,15 @@ class WorkerRequestHandler:
                     inner_dict['input']['model'] = legacy_doc_schema
                 else:
                     inner_dict['input']['model'] = _create_aux_model_doc_list_to_list(
-                        inner_dict['input']['model']).schema()
+                        inner_dict['input']['model']
+                    ).schema()
 
                 if inner_dict['output']['model'].schema() == legacy_doc_schema:
                     inner_dict['output']['model'] = legacy_doc_schema
                 else:
                     inner_dict['output']['model'] = _create_aux_model_doc_list_to_list(
-                        inner_dict['output']['model']).schema()
+                        inner_dict['output']['model']
+                    ).schema()
         else:
             for endpoint_name, inner_dict in schemas.items():
                 inner_dict['input']['model'] = inner_dict['input']['model'].schema()
