@@ -77,7 +77,7 @@ Jina has four fundamental concepts:
 
 [The full glossary is explained here](https://docs.jina.ai/concepts/preliminaries/#).
 
-### Build AI Services [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jina/blob/master/.github/getting-started/notebook.ipynb)
+### Build AI Services
 <!-- start build-ai-services -->
 
 Let's build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an **[Executor](https://docs.jina.ai/concepts/executor/)**. Our simple Executor will wrap the [StableLM](https://huggingface.co/stabilityai/stablelm-base-alpha-3b) LLM from Stability AI. We'll then use a **Deployment** to serve it.
@@ -86,9 +86,6 @@ Let's build a fast, reliable and scalable gRPC-based AI service. In Jina we call
 
 > **Note**
 > A Deployment serves just one Executor. To combine multiple Executors into a pipeline and serve that, use a [Flow](#build-a-pipeline).
-
-> **Note**
-> Run the [code in Colab](https://colab.research.google.com/github/jina-ai/jina/blob/master/.github/getting-started/notebook.ipynb#scrollTo=0l-lkmz4H-jW) to install all dependencies.
 
 Let's implement the service's logic:
 
@@ -186,7 +183,7 @@ a steampunk version of the Mona Lisa, incorporating mechanical gears, brass elem
 > **Note**
 > In a notebook, you can't use `deployment.block()` and then make requests to the client. Please refer to the Colab link above for reproducible Jupyter Notebook code snippets.
 
-### Build a pipeline [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jina/blob/master/.github/getting-started/notebook.ipynb#scrollTo=YfNm1nScH30U)
+### Build a pipeline
 
 <!-- start build-pipelines -->
 
