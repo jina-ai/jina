@@ -232,6 +232,25 @@ hello world 1
 hello world 2
 ```
 
+You can also refer to the following Javascript code to connect with the streaming endpoint from your browser:
+
+```javascript
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<h2>SSE Client</h2>
+<script>
+    const evtSource = new EventSource("http://localhost:8080/hello?id=1&exec_endpoint=/hello");
+    evtSource.addEventListener("update", function(event) {
+        // Logic to handle status updates
+        console.log(event)
+    });
+    evtSource.addEventListener("end", function(event) {
+        console.log('Handling end....')
+        evtSource.close();
+    });
+</script></body></html>
+```
 ## Exception handling
 
 Exceptions inside `@requests`-decorated functions can simply be raised.
