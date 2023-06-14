@@ -51,17 +51,17 @@ class Executor2(Executor):
         return docs
 
     @requests(on='/generator')
-    def generator(self, docs: DocumentArray, **kwargs):
+    def generator(self, **kwargs):
         yield Document(text='new document')
 
 
 class Executor3(Executor):
     @requests(on='/non_generator')
-    def non_generator(self, **kwargs):
-        return
+    def non_generator(self, docs: DocumentArray, **kwargs):
+        return docs
 
     @requests(on='/generator')
-    def generator(self, docs: DocumentArray, **kwargs):
+    def generator(self, **kwargs):
         yield Document(text='new document')
 
 
