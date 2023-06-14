@@ -187,6 +187,51 @@ with Deployment(uses=MyExec) as dep:
 {"__results__": {"my_executor/rep-0": {"internal_parameter": 20.0}}}
 ```
   
+
+## Streaming endpoints
+Executors can stream Documents individually rather than as a whole DocumentArray. 
+This is useful when you want to return Documents one by one and you want the client to immediately process Documents as 
+they arrive. This can be helpful for Generative AI use cases, where a Large Language Model is used to generate text 
+token by token and the client displays tokens as they arrive.
+Streaming endpoints receive one Document as input and yields one Document at a time.
+A streaming endpoint has the following signature:
+
+```python
+from jina import Executor, requests, Document, Deployment
+
+class MyExecutor(Executor):
+    @requests(on='/hello')
+    async def task(self, doc: Document, **kwargs):
+        for i in range(3):
+            yield Document(text=f'{doc.text} {i}')
+            
+with Deployment(
+    uses=MyExecutor,
+    port=12345,
+    protocol='http',
+    cors=True,
+    include_gateway=False,
+) as dep:
+    dep.block()
+```
+
+From the client side, any SSE client can be used to receive the Documents, one at a time.
+Jina offers a standard python client to use the streaming endpoint:
+
+```python
+from jina import Client, Document
+client = Client(port=12345, protocol='http', cors=True, asyncio=True)
+async for doc in client.stream_doc(
+    on='/hello', inputs=Document(text='hello world')
+):
+    print(doc.text )
+```
+```text
+hello world 0
+hello world 1
+hello world 2
+```
+
 ## Exception handling
 
 Exceptions inside `@requests`-decorated functions can simply be raised.
