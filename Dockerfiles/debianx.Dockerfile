@@ -38,10 +38,11 @@ ENV PIP_NO_CACHE_DIR=1 \
 # change on extra-requirements.txt, setup.py will invalid the cache
 COPY extra-requirements.txt setup.py /tmp/
 
+
 RUN cd /tmp/ && \
     # apt latest security packages should be install before pypi package
     if [ -n "${APT_PACKAGES}" ]; then apt-get update && apt-get upgrade -y && \
-    apt-get --only-upgrade install openssl libssl1.1 -y && \
+    apt-get --only-upgrade install openssl -y && \
     apt-get install --no-install-recommends -y ${APT_PACKAGES}; fi && \
     if [ $PY_VERSION==3.11 ]; then apt-get install --no-install-recommends -y build-essential ; fi && \
     if [ -n "${PIP_TAG}" ]; then pip install --default-timeout=1000 --compile --extra-index-url $PIP_EXTRA_INDEX_URL ".[${PIP_TAG}]" ; fi && \
