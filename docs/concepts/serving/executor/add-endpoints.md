@@ -194,6 +194,12 @@ This is useful when you want to return Documents one by one and you want the cli
 they arrive. This can be helpful for Generative AI use cases, where a Large Language Model is used to generate text 
 token by token and the client displays tokens as they arrive.
 Streaming endpoints receive one Document as input and yields one Document at a time.
+```{admonition} Note
+:class: note
+
+Streaming endpoints are only supported for HTTP protocol and for Deployment.
+```
+
 A streaming endpoint has the following signature:
 
 ```python
