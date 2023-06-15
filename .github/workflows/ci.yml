@@ -202,7 +202,7 @@ jobs:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v3.1.1
-        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.8'
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
@@ -214,10 +214,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.5.0
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: 3.8
       - name: Prepare enviroment
         run: |
           docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
@@ -384,7 +384,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
         protobuf-version: ['==3.19.6', '']
     steps:
       - uses: actions/checkout@v2.5.0
@@ -406,7 +406,7 @@ jobs:
 
       - name: Build wheels with setuptools-golang-build-manylinux-wheel
         run: |
-          setuptools-golang-build-manylinux-wheels --pythons cp37-cp37m
+          setuptools-golang-build-manylinux-wheels --pythons cp38-cp38
       - name: Prepare environment
         run: |
           docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
@@ -445,7 +445,7 @@ jobs:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v3.1.1
-        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.8'
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
@@ -609,7 +609,7 @@ jobs:
 
       - name: Build wheels with setuptools-golang-build-manylinux-wheel
         run: |
-          setuptools-golang-build-manylinux-wheels --pythons cp37-cp37m
+          setuptools-golang-build-manylinux-wheels --pythons cp38-cp38
       - name: Prepare environment
         run: |
           docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
