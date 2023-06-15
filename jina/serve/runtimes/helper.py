@@ -150,7 +150,7 @@ if docarray_v2:
                         ref_name = obj_ref.split('/')[-1]
                         ret = _create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name, cached_models=cached_models)
                     else:
-                        ret = _create_pydantic_model_from_schema(field_schema, field_name, cached_models=cached_models)
+                        ret = Any
                 else:  # object reference in definitions
                     if obj_ref:
                         ref_name = obj_ref.split('/')[-1]
