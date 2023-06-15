@@ -530,7 +530,7 @@ class AsyncPostMixin:
         timeout: Optional[int] = None,
         **kwargs,
     ) -> AsyncGenerator[None, 'Document']:
-        """Send one document to a streaming endpoint and receive results asynchronisly.
+        """Send one document to a streaming endpoint and receive results asynchronisly, one Document at a time.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document.
         :param on: the endpoint which is invoked. All the functions in the executors decorated by `@requests(on=...)` with the same endpoint are invoked.
