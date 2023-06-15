@@ -240,7 +240,7 @@ hello world 2
 
 You can also refer to the following Javascript code to connect with the streaming endpoint from your browser:
 
-```javascript
+```html
 <!DOCTYPE html>
 <html lang="en">
 <body>
