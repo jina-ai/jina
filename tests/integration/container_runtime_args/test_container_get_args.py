@@ -1,6 +1,3 @@
-import os
-import time
-
 import pytest
 
 from jina import Client, Document, DocumentArray, Flow

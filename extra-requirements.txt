@@ -37,7 +37,6 @@ jina-hubble-sdk>=0.30.4:    core
 jcloud>=0.0.35:             core
 opentelemetry-api>=1.12.0:  core
 opentelemetry-instrumentation-grpc>=0.35b0:  core 
-aiostream:  core
 uvloop:                     perf,standard,devel
 prometheus_client>=0.12.0:          perf,standard,devel
 opentelemetry-sdk>=1.14.0:   perf,standard,devel
@@ -86,3 +85,4 @@ tensorflow>=2.0:            cicd
 opentelemetry-test-utils>=0.33b0:  test
 prometheus-api-client>=0.5.1:  test
 watchfiles>=0.18.0:         devel
+urllib3<2.0.0:              core

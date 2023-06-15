@@ -75,7 +75,15 @@ from jina.parsers.flow import set_flow_parser
 
 __all__ = ['Flow']
 GATEWAY_ARGS_BLACKLIST = ['uses', 'uses_with']
-EXECUTOR_ARGS_BLACKLIST = ['port', 'port_monitoring', 'uses', 'uses_with', 'protocol']
+EXECUTOR_ARGS_BLACKLIST = [
+    'port',
+    'ports',
+    'port_monitoring',
+    'uses',
+    'uses_with',
+    'protocol',
+    'protocols',
+]
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
@@ -205,6 +213,7 @@ class Flow(
         runtime_cls: Optional[str] = 'GatewayRuntime',
         ssl_certfile: Optional[str] = None,
         ssl_keyfile: Optional[str] = None,
+        stateful: Optional[bool] = False,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
@@ -279,6 +288,7 @@ class Flow(
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
+        :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -469,6 +479,7 @@ class Flow(
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
+        :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -862,6 +873,7 @@ class Flow(
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
+        raft_configuration: Optional[dict] = None,
         reload: Optional[bool] = False,
         replicas: Optional[int] = 1,
         retries: Optional[int] = -1,
@@ -869,6 +881,7 @@ class Flow(
         shards: Optional[int] = 1,
         ssl_certfile: Optional[str] = None,
         ssl_keyfile: Optional[str] = None,
+        stateful: Optional[bool] = False,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
@@ -965,6 +978,7 @@ class Flow(
           `Executor cookbook <https://docs.jina.ai/concepts/executor/executor-files/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param raft_configuration: Dictionary of kwargs arguments that will be passed to the RAFT node as configuration options when starting the RAFT node.
         :param reload: If set, the Executor will restart while serving if YAML configuration source or Executor modules are changed. If YAML configuration is changed, the whole deployment is reloaded and new processes will be restarted. If only Python modules of the Executor have changed, they will be reloaded to the interpreter without restarting process.
         :param replicas: The number of replicas in the deployment
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
@@ -972,6 +986,7 @@ class Flow(
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
+        :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -1126,6 +1141,7 @@ class Flow(
           `Executor cookbook <https://docs.jina.ai/concepts/executor/executor-files/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param raft_configuration: Dictionary of kwargs arguments that will be passed to the RAFT node as configuration options when starting the RAFT node.
         :param reload: If set, the Executor will restart while serving if YAML configuration source or Executor modules are changed. If YAML configuration is changed, the whole deployment is reloaded and new processes will be restarted. If only Python modules of the Executor have changed, they will be reloaded to the interpreter without restarting process.
         :param replicas: The number of replicas in the deployment
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
@@ -1133,6 +1149,7 @@ class Flow(
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
+        :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -1319,6 +1336,7 @@ class Flow(
         runtime_cls: Optional[str] = 'GatewayRuntime',
         ssl_certfile: Optional[str] = None,
         ssl_keyfile: Optional[str] = None,
+        stateful: Optional[bool] = False,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
@@ -1393,6 +1411,7 @@ class Flow(
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
+        :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -1492,6 +1511,7 @@ class Flow(
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
+        :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -1987,7 +2007,7 @@ class Flow(
 
             if 'JINA_HIDE_SURVEY' not in os.environ:
                 print(
-                    'Do you love open source? Help us improve [link=https://github.com/jina-ai/jina]Jina[/link] in just 1 minute and 30 seconds by taking our survey: https://10sw1tcpld4.typeform.com/jinasurveyfeb23?utm_source=jina'
+                    'Do you love open source? Help us improve [link=https://github.com/jina-ai/jina]Jina[/link] in just 1 minute and 30 seconds by taking our survey: https://10sw1tcpld4.typeform.com/jinasurveyfeb23?utm_source=jina '
                     '(Set environment variable JINA_HIDE_SURVEY=1 to hide this message.)'
                 )
 
@@ -2314,6 +2334,9 @@ class Flow(
         else:
             _ports = [str(_p) for _p in self.port]
 
+        swagger_ui_link = None
+        redoc_link = None
+        graphql_ui_link = None
         for _port, _protocol in zip(_ports, _protocols):
             if self.gateway_args.ssl_certfile and self.gateway_args.ssl_keyfile:
                 _protocol = f'{_protocol}S'
@@ -2343,6 +2366,11 @@ class Flow(
                     f'[link={_protocol}://{self.address_public}:{_port}]{self.address_public}:{_port}[/]',
                 )
 
+            if _protocol.lower() == ProtocolType.HTTP.to_string().lower():
+                swagger_ui_link = f'[link={_protocol}://{self.host}:{_port}/docs]{self.host}:{_port}/docs'
+                redoc_link = f'[link={_protocol}://{self.host}:{_port}/redoc]{self.host}:{_port}/redoc'
+                graphql_ui_link = f'[link={_protocol}://{self.host}:{_port}/graphql]{self.host}:{_port}/graphql'
+
         all_panels.append(
             Panel(
                 address_table,
@@ -2350,57 +2378,23 @@ class Flow(
                 expand=False,
             )
         )
-
-        if self.protocol == ProtocolType.HTTP:
+        if ProtocolType.HTTP.to_string().lower() in [p.lower() for p in _protocols]:
 
             http_ext_table = self._init_table()
 
-            _address = [
-                f'[link={_protocol}://localhost:{self.port}/docs]Local[/]',
-                f'[link={_protocol}://{self.address_private}:{self.port}/docs]Private[/]',
-            ]
-            if self.address_public:
-                _address.append(
-                    f'[link={_protocol}://{self.address_public}:{self.port}/docs]Public[/]'
-                )
+            _protocol = ProtocolType.HTTP.to_string()
+
             http_ext_table.add_row(
                 ':speech_balloon:',
                 'Swagger UI',
-                '.../docs',
+                swagger_ui_link,
             )
 
-            _address = [
-                f'[link={_protocol}://localhost:{self.port}/redoc]Local[/]',
-                f'[link={_protocol}://{self.address_private}:{self.port}/redoc]Private[/]',
-            ]
-
-            if self.address_public:
-                _address.append(
-                    f'[link={_protocol}://{self.address_public}:{self.port}/redoc]Public[/]'
-                )
-
-            http_ext_table.add_row(
-                ':books:',
-                'Redoc',
-                '.../redoc',
-            )
+            http_ext_table.add_row(':books:', 'Redoc', redoc_link)
 
             if self.gateway_args.expose_graphql_endpoint:
-                _address = [
-                    f'[link={_protocol}://localhost:{self.port}/graphql]Local[/]',
-                    f'[link={_protocol}://{self.address_private}:{self.port}/graphql]Private[/]',
-                ]
 
-                if self.address_public:
-                    _address.append(
-                        f'[link={_protocol}://{self.address_public}:{self.port}/graphql]Public[/]'
-                    )
-
-                http_ext_table.add_row(
-                    ':strawberry:',
-                    'GraphQL UI',
-                    '.../graphql',
-                )
+                http_ext_table.add_row(':strawberry:', 'GraphQL UI', graphql_ui_link)
 
             all_panels.append(
                 Panel(

@@ -9,6 +9,7 @@ from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.helper import get_server_side_grpc_options
 from jina.serve.networking.utils import send_health_check_async, send_health_check_sync
 from jina.serve.runtimes.servers import BaseServer
+from jina._docarray import docarray_v2
 
 
 class GRPCServer(BaseServer):
@@ -38,6 +39,12 @@ class GRPCServer(BaseServer):
         """
         setup GRPC server
         """
+        if docarray_v2:
+            from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+            if isinstance(self._request_handler, GatewayRequestHandler):
+                await self._request_handler.streamer._get_endpoints_input_output_models()
+                self._request_handler.streamer._validate_flow_docarray_compatibility()
+
         self.server = grpc.aio.server(
             options=get_server_side_grpc_options(self.grpc_server_options),
             interceptors=self.grpc_tracing_server_interceptors,
@@ -63,9 +70,26 @@ class GRPCServer(BaseServer):
             jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(
                 self._request_handler, self.server
             )
+        if hasattr(self._request_handler, 'snapshot'):
+            jina_pb2_grpc.add_JinaExecutorSnapshotServicer_to_server(
+                self._request_handler, self.server
+            )
+        if hasattr(self._request_handler, 'snapshot_status'):
+            jina_pb2_grpc.add_JinaExecutorSnapshotProgressServicer_to_server(
+                self._request_handler, self.server
+            )
+        if hasattr(self._request_handler, 'restore'):
+            jina_pb2_grpc.add_JinaExecutorRestoreServicer_to_server(
+                self._request_handler, self.server
+            )
+        if hasattr(self._request_handler, 'restore_status'):
+            jina_pb2_grpc.add_JinaExecutorRestoreProgressServicer_to_server(
+                self._request_handler, self.server
+            )
+
         jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(
-            self._request_handler, self.server
-        )
+                self._request_handler, self.server
+            )
 
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,

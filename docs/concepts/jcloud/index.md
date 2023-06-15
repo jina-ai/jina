@@ -321,13 +321,35 @@ jc scale good-martin-ca6bfdef84 --executor executor0 --replicas 2
 :width: 70%
 ```
 
+### Get Executor or Gateway logs
+
+To get the Gateway logs:
+
+```bash
+jc logs --gateway central-escargot-354a796df5
+```
+
+```{figure} img/gateway_logs.png
+:width: 70%
+```
+
+To get the Executor logs:
+
+```bash
+jc logs --executor executor0 central-escargot-354a796df5
+```
+
+```{figure} img/executor_logs.png
+:width: 70%
+```
+
 ## Configuration
 
 Please refer to {ref}`Configuration <jcloud-configuration>` for configuring the Flow on Jina AI Cloud.
 
 ## Restrictions
 
-Jina AI Cloud scales according to your needs. You can demand different instance types with GPU/memory/CPU predefined based on the needs of your Flows and Executors. If you have specific resource requirements, please contact us [on Slack](https://jina.ai/slack) or raise a [GitHub issue](https://github.com/jina-ai/jcloud/issues/new/choose).
+Jina AI Cloud scales according to your needs. You can demand different instance types with GPU/memory/CPU predefined based on the needs of your Flows and Executors. If you have specific resource requirements, please contact us [on Discord](https://discord.jina.ai) or raise a [GitHub issue](https://github.com/jina-ai/jcloud/issues/new/choose).
 
 
 ```{admonition} Restrictions

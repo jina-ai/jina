@@ -12,6 +12,7 @@ if docarray_v2:
     from docarray import DocList
 
     from docarray import BaseDoc
+    from docarray.documents.legacy import LegacyDocument
 
 
     class InputTestDoc(BaseDoc):
@@ -60,7 +61,7 @@ if docarray_v2:
 
 @pytest.mark.parametrize('replicas', [1, 3])
 @pytest.mark.parametrize('include_gateway', [True, False])
-@pytest.mark.parametrize('protocols', [['grpc', 'http'], ['http']])
+@pytest.mark.parametrize('protocols', [['grpc', 'http'], ['grpc'], ['http']])
 @pytest.mark.parametrize('init_sleep_time', [0, 0.5, 5])
 @pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
 def test_slow_load_executor(replicas, include_gateway, protocols, init_sleep_time):
@@ -124,12 +125,12 @@ def test_base_executor(replicas, include_gateway, protocols):
     with d:
         for protocol, port in zip(protocols, ports):
             c = Client(protocol=protocol, port=port)
-            res = c.post(on='/default', inputs=DocList[InputTestDoc]([InputTestDoc() for _ in range(10)]),
-                         request_size=1, return_type=DocList[OutputTestDoc])
+            res = c.post(on='/default', inputs=DocList[LegacyDocument]([LegacyDocument() for _ in range(10)]),
+                         request_size=1, return_type=DocList[LegacyDocument])
             assert len(res) == 10
 
 
-@pytest.mark.parametrize('replicas', [1, 2, 3])
+@pytest.mark.parametrize('replicas', [1, 3])
 @pytest.mark.parametrize('include_gateway', [True, False])
 @pytest.mark.parametrize('protocols', [['http'], ['grpc', 'http']])
 @pytest.mark.parametrize('init_sleep_time', [0, 0.5, 5])

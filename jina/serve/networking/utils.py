@@ -144,10 +144,12 @@ async def send_health_check_async(
 ) -> health_pb2.HealthCheckResponse:
     """
     Sends a request asynchronously to the target via grpc
+
     :param target: where to send the request to, like 126.0.0.1:8080
     :param timeout: timeout for the send
     :param tls: if True, use tls encryption for the grpc channel
     :param root_certificates: the path to the root certificates for tls, only used if tls is True
+
     :returns: the response health check
     """
 

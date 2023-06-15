@@ -18,7 +18,7 @@ ADD jina ./jina/
 
 WORKDIR /jina/proto
 
-ENTRYPOINT ["bash", "./build-proto.sh", "/builder/grpc/cmake/build/grpc_python_plugin"]
+ENTRYPOINT ["bash", "./build-proto.sh", "/builder/grpc/cmake/build/grpc_python_plugin", "pb2"]
 
 
 

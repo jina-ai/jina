@@ -1,25 +1,27 @@
 import functools
 import json
 import os
-from typing import Dict, Tuple
+import argparse
+import asyncio
+import grpc
+import uuid
+import tempfile
+
+from typing import TYPE_CHECKING, AsyncIterator, List, Optional, Dict, Tuple
+import threading
 
 from jina._docarray import DocumentArray
 from jina.constants import __default_endpoint__
 from jina.excepts import BadConfigSource
 from jina.serve.executors import BaseExecutor
 from jina.serve.runtimes.worker.batch_queue import BatchQueue
-import argparse
-import asyncio
-from typing import TYPE_CHECKING, AsyncIterator, List, Optional
-
-import grpc
-
 from jina.excepts import RuntimeTerminated
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2
 from jina.serve.instrumentation import MetricsTimer
 from jina.types.request.data import DataRequest
+from jina._docarray import docarray_v2
 
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry.propagate import Context
@@ -28,9 +30,11 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from opentelemetry import metrics, trace
     from opentelemetry.context.context import Context
+    from opentelemetry.propagate import Context
     from prometheus_client import CollectorRegistry
 
     from jina.logging.logger import JinaLogger
+    from jina.types.request import Request
 
 
 class WorkerRequestHandler:
@@ -142,6 +146,13 @@ class WorkerRequestHandler:
         # the below is of "shape" exec_endpoint_name -> parameters_key -> batch_queue
         self._batchqueue_instances: Dict[str, Dict[str, BatchQueue]] = {}
         self._init_batchqueue_dict()
+        self._snapshot = None
+        self._did_snapshot_raise_exception = None
+        self._restore = None
+        self._did_restore_raise_exception = None
+        self._snapshot_thread = None
+        self._restore_thread = None
+        self._snapshot_parent_directory = tempfile.mkdtemp()
         self._hot_reload_task = None
         if self.args.reload:
             self._hot_reload_task = asyncio.create_task(self._hot_reload())
@@ -152,13 +163,19 @@ class WorkerRequestHandler:
         request_models_map = self._executor._get_endpoint_models_dict()
 
         def call_handle(request):
-            return self.handle([request], None)
+            return self.process_single_data(request, None)
 
-        return get_fastapi_app(
+        app = get_fastapi_app(
             request_models_map=request_models_map,
             caller=call_handle,
             **kwargs
         )
+
+        @app.on_event('shutdown')
+        async def _shutdown():
+            await self.close()
+
+        return app
 
     async def _hot_reload(self):
         import inspect
@@ -707,8 +724,12 @@ class WorkerRequestHandler:
         :return: the resulting DocumentArray
         """
         if docs_matrix:
-            da = docs_matrix[0]
-            da.reduce_all(docs_matrix[1:])
+            if not docarray_v2:
+                da = docs_matrix[0]
+                da.reduce_all(docs_matrix[1:])
+            else:
+                from docarray.utils.reduce import reduce_all
+                da = reduce_all(docs_matrix)
             return da
 
     @staticmethod
@@ -724,16 +745,21 @@ class WorkerRequestHandler:
         :param requests: List of DataRequest objects
         :return: the resulting DataRequest
         """
+        response_request = requests[0]
+        for i, worker_result in enumerate(requests):
+            if worker_result.status.code == jina_pb2.StatusProto.SUCCESS:
+                response_request = worker_result
+                break
         docs_matrix, _ = WorkerRequestHandler._get_docs_matrix_from_request(requests)
 
         # Reduction is applied in-place to the first DocumentArray in the matrix
         da = WorkerRequestHandler.reduce(docs_matrix)
-        WorkerRequestHandler.replace_docs(requests[0], da)
+        WorkerRequestHandler.replace_docs(response_request, da)
 
         params = WorkerRequestHandler.get_parameters_dict_from_request(requests)
-        WorkerRequestHandler.replace_parameters(requests[0], params)
+        WorkerRequestHandler.replace_parameters(response_request, params)
 
-        return requests[0]
+        return response_request
 
     # serving part
     async def process_single_data(self, request: DataRequest, context) -> DataRequest:
@@ -754,12 +780,39 @@ class WorkerRequestHandler:
         :param context: grpc context
         :returns: the response request
         """
+        from google.protobuf import json_format
         self.logger.debug('got an endpoint discovery request')
         endpoints_proto = jina_pb2.EndpointsProto()
         endpoints_proto.endpoints.extend(
             list(self._executor.requests.keys())
         )
+        endpoints_proto.write_endpoints.extend(
+            list(self._executor.write_endpoints)
+        )
+        schemas = self._executor._get_endpoint_models_dict()
+        if docarray_v2:
+            from docarray.documents.legacy import LegacyDocument
+            from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list
 
+            legacy_doc_schema = LegacyDocument.schema()
+            for endpoint_name, inner_dict in schemas.items():
+                if inner_dict['input']['model'].schema() == legacy_doc_schema:
+                    inner_dict['input']['model'] = legacy_doc_schema
+                else:
+                    inner_dict['input']['model'] = _create_aux_model_doc_list_to_list(
+                        inner_dict['input']['model']).schema()
+
+                if inner_dict['output']['model'].schema() == legacy_doc_schema:
+                    inner_dict['output']['model'] = legacy_doc_schema
+                else:
+                    inner_dict['output']['model'] = _create_aux_model_doc_list_to_list(
+                        inner_dict['output']['model']).schema()
+        else:
+            for endpoint_name, inner_dict in schemas.items():
+                inner_dict['input']['model'] = inner_dict['input']['model'].schema()
+                inner_dict['output']['model'] = inner_dict['output']['model'].schema()
+
+        json_format.ParseDict(schemas, endpoints_proto.schemas)
         return endpoints_proto
 
     def _extract_tracing_context(
@@ -793,9 +846,13 @@ class WorkerRequestHandler:
                 if self.logger.debug_enabled:
                     self._log_data_request(requests[0])
 
-                tracing_context = self._extract_tracing_context(
-                    context.invocation_metadata()
-                )
+                if context is not None:
+                    tracing_context = self._extract_tracing_context(
+                        context.invocation_metadata()
+                    )
+                else:
+                    tracing_context = None
+
                 result = await self.handle(
                     requests=requests, tracing_context=tracing_context
                 )
@@ -816,7 +873,8 @@ class WorkerRequestHandler:
                 )
 
                 requests[0].add_exception(ex, self._executor)
-                context.set_trailing_metadata((('is-error', 'true'),))
+                if context is not None:
+                    context.set_trailing_metadata((('is-error', 'true'),))
                 if self._failed_requests_metrics:
                     self._failed_requests_metrics.inc()
                 if self._failed_requests_counter:
@@ -866,3 +924,155 @@ class WorkerRequestHandler:
             yield await self.process_data([request], context)
 
     Call = stream
+
+    def _create_snapshot_status(
+            self,
+            snapshot_directory: str,
+    ) -> 'jina_pb2.SnapshotStatusProto':
+        _id = str(uuid.uuid4())
+        self.logger.debug(f'Generated snapshot id: {_id}')
+        return jina_pb2.SnapshotStatusProto(
+            id=jina_pb2.SnapshotId(value=_id),
+            status=jina_pb2.SnapshotStatusProto.Status.RUNNING,
+            snapshot_file=os.path.join(os.path.join(snapshot_directory, _id), 'state.bin'),
+        )
+
+    def _create_restore_status(
+            self,
+    ) -> 'jina_pb2.SnapshotStatusProto':
+        _id = str(uuid.uuid4())
+        self.logger.debug(f'Generated restore id: {_id}')
+        return jina_pb2.RestoreSnapshotStatusProto(
+            id=jina_pb2.RestoreId(value=_id),
+            status=jina_pb2.RestoreSnapshotStatusProto.Status.RUNNING,
+        )
+
+    async def snapshot(self, request, context) -> 'jina_pb2.SnapshotStatusProto':
+        """
+        method to start a snapshot process of the Executor
+        :param request: the empty request
+        :param context: grpc context
+
+        :return: the status of the snapshot
+        """
+        self.logger.debug(f' Calling snapshot')
+        if (
+                self._snapshot
+                and self._snapshot_thread
+                and self._snapshot_thread.is_alive()
+        ):
+            raise RuntimeError(
+                f'A snapshot with id {self._snapshot.id.value} is currently in progress. Cannot start another.'
+            )
+        else:
+            self._snapshot = self._create_snapshot_status(
+                self._snapshot_parent_directory,
+            )
+            self._did_snapshot_raise_exception = threading.Event()
+            self._snapshot_thread = threading.Thread(
+                target=self._executor._run_snapshot,
+                args=(self._snapshot.snapshot_file, self._did_snapshot_raise_exception),
+            )
+            self._snapshot_thread.start()
+            return self._snapshot
+
+    async def snapshot_status(
+            self, request: 'jina_pb2.SnapshotId', context
+    ) -> 'jina_pb2.SnapshotStatusProto':
+        """
+        method to start a snapshot process of the Executor
+        :param request: the snapshot Id to get the status from
+        :param context: grpc context
+
+        :return: the status of the snapshot
+        """
+        self.logger.debug(
+            f'Checking status of snapshot with ID of request {request.value} and current snapshot {self._snapshot.id.value if self._snapshot else "DOES NOT EXIST"}')
+        if not self._snapshot or (self._snapshot.id.value != request.value):
+            return jina_pb2.SnapshotStatusProto(
+                id=jina_pb2.SnapshotId(value=request.value),
+                status=jina_pb2.SnapshotStatusProto.Status.NOT_FOUND,
+            )
+        elif self._snapshot_thread and self._snapshot_thread.is_alive():
+            return jina_pb2.SnapshotStatusProto(
+                id=jina_pb2.SnapshotId(value=request.value),
+                status=jina_pb2.SnapshotStatusProto.Status.RUNNING,
+            )
+        elif self._snapshot_thread and not self._snapshot_thread.is_alive():
+            status = jina_pb2.SnapshotStatusProto.Status.SUCCEEDED
+            if self._did_snapshot_raise_exception.is_set():
+                status = jina_pb2.SnapshotStatusProto.Status.FAILED
+            self._did_snapshot_raise_exception = None
+            return jina_pb2.SnapshotStatusProto(
+                id=jina_pb2.SnapshotId(value=request.value),
+                status=status,
+            )
+
+        return jina_pb2.SnapshotStatusProto(
+            id=jina_pb2.SnapshotId(value=request.value),
+            status=jina_pb2.SnapshotStatusProto.Status.NOT_FOUND,
+        )
+
+    async def restore(self, request: 'jina_pb2.RestoreSnapshotCommand', context):
+        """
+        method to start a restore process of the Executor
+        :param request: the command request with the path from where to restore the Executor
+        :param context: grpc context
+
+        :return: the status of the snapshot
+        """
+        self.logger.debug(f' Calling restore')
+        if (
+                self._restore
+                and self._restore_thread
+                and self._restore_thread.is_alive()
+        ):
+            raise RuntimeError(
+                f'A restore with id {self._restore.id.value} is currently in progress. Cannot start another.'
+            )
+        else:
+            self._restore = self._create_restore_status()
+            self._did_restore_raise_exception = threading.Event()
+            self._restore_thread = threading.Thread(
+                target=self._executor._run_restore,
+                args=(request.snapshot_file, self._did_restore_raise_exception),
+            )
+            self._restore_thread.start()
+        return self._restore
+
+    async def restore_status(
+            self, request, context
+    ) -> 'jina_pb2.RestoreSnapshotStatusProto':
+        """
+        method to start a snapshot process of the Executor
+        :param request: the request with the Restore ID from which to get status
+        :param context: grpc context
+
+        :return: the status of the snapshot
+        """
+        self.logger.debug(
+            f'Checking status of restore with ID of request {request.value} and current restore {self._restore.id.value if self._restore else "DOES NOT EXIST"}')
+        if not self._restore or (self._restore.id.value != request.value):
+            return jina_pb2.RestoreSnapshotStatusProto(
+                id=jina_pb2.RestoreId(value=request.value),
+                status=jina_pb2.RestoreSnapshotStatusProto.Status.NOT_FOUND,
+            )
+        elif self._restore_thread and self._restore_thread.is_alive():
+            return jina_pb2.RestoreSnapshotStatusProto(
+                id=jina_pb2.RestoreId(value=request.value),
+                status=jina_pb2.RestoreSnapshotStatusProto.Status.RUNNING,
+            )
+        elif self._restore_thread and not self._restore_thread.is_alive():
+            status = jina_pb2.RestoreSnapshotStatusProto.Status.SUCCEEDED
+            if self._did_restore_raise_exception.is_set():
+                status = jina_pb2.RestoreSnapshotStatusProto.Status.FAILED
+            self._did_restore_raise_exception = None
+            return jina_pb2.RestoreSnapshotStatusProto(
+                id=jina_pb2.RestoreId(value=request.value),
+                status=status,
+            )
+
+        return jina_pb2.RestoreSnapshotStatusProto(
+            id=jina_pb2.RestoreId(value=request.value),
+            status=jina_pb2.RestoreSnapshotStatusProto.Status.NOT_FOUND,
+        )

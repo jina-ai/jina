@@ -9,6 +9,7 @@ from jina.helper import random_port
 from jina.parsers.helper import (
     _SHOW_ALL_ARGS,
     CastToIntAction,
+    CastPeerPorts,
     KVAppendAction,
     add_arg_group,
 )
@@ -108,6 +109,16 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         help='If set, the current Pod/Deployment can not be further chained, '
              'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
     )
+
+    gp.add_argument(
+        '--replica-id',
+        type=int,
+        default=0,
+        help='defines the replica identifier for the executor. It is used when `stateful` is set to true'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
     if pod_type != 'gateway':
         gp.add_argument(
             '--reload',
@@ -132,6 +143,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
             help='If set, the Gateway will restart while serving if YAML configuration source is changed.',
         )
     mixin_pod_runtime_args_parser(gp, pod_type=pod_type)
+    mixin_stateful_parser(gp)
 
 
 def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
@@ -242,3 +254,29 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         default=None,
         help='If tracing is enabled, this port will be used to configure the metrics exporter agent.',
     )
+
+
+def mixin_stateful_parser(parser):
+    """Mixing in arguments required to work with Stateful Executors into the given parser.
+    :param parser: the parser instance to which we add arguments
+    """
+
+    gp = add_arg_group(parser, title='Stateful Executor')
+
+    gp.add_argument(
+        '--stateful',
+        action='store_true',
+        default=False,
+        help='If set, start consensus module to make sure write operations are properly replicated between all the replicas',
+    )
+    gp.add_argument(
+        '--peer-ports',
+        type=str,
+        default=None,
+        help='When using --stateful option, it is required to tell the cluster what are the cluster configuration. This is important'
+             'when the Deployment is restarted. It indicates the ports to which each replica of the cluster binds.'
+             ' It is expected to be a single list if shards == 1 or a dictionary if shards > 1.',
+        action=CastPeerPorts,
+        nargs='+',
+    )
+

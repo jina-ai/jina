@@ -1,5 +1,6 @@
 recursive-include docarray/resources *
 recursive-include jina/resources *
+recursive-include jina/serve/consensus *
 include extra-requirements.txt
 include fastentrypoints.py
 include LICENSE

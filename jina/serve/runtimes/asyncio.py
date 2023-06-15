@@ -11,6 +11,7 @@ from jina.helper import ArgNamespace, is_port_free, random_ports, send_telemetry
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_gateway_parser
 from jina.parsers.helper import _set_gateway_uses
+from jina.serve.networking.utils import send_health_check_async
 
 # Keep these imports even if not used, since YAML parser needs to find them in imported modules
 from jina.serve.runtimes.gateway.composite import CompositeGateway
@@ -253,7 +254,6 @@ class AsyncNewLoopRuntime:
             raise PortAlreadyUsed(f'port:{self.args.port}')
 
         self.server = self._get_server()
-
         await self.server.setup_server()
 
     async def async_teardown(self):

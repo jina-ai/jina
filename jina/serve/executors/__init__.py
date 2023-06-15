@@ -7,6 +7,7 @@ import functools
 import inspect
 import multiprocessing
 import os
+import threading
 import warnings
 from types import SimpleNamespace
 from typing import (
@@ -41,12 +42,18 @@ from jina.serve.executors.decorators import (
     avoid_concurrent_lock_cls,
 )
 from jina.serve.executors.metas import get_executor_taboo
-from jina.serve.helper import store_init_kwargs, wrap_func
+from jina.serve.helper import (
+    _get_workspace_from_name_and_shards,
+    store_init_kwargs,
+    wrap_func,
+)
 from jina.serve.instrumentation import MetricsTimer
+from jina._docarray import docarray_v2
+
+if docarray_v2:
+    from docarray.documents.legacy import LegacyDocument
 
 if TYPE_CHECKING:  # pragma: no cover
-    import threading
-
     from opentelemetry.context.context import Context
 
 __dry_run_endpoint__ = '_jina_dry_run_'
@@ -150,9 +157,12 @@ class _FunctionWithSchema(NamedTuple):
                 ''
             )
             return_annotation = None
-
-        request_schema = docs_annotation or DocumentArray
-        response_schema = return_annotation or DocumentArray
+        if not docarray_v2:
+            request_schema = docs_annotation or DocumentArray
+            response_schema = return_annotation or DocumentArray
+        else:
+            request_schema = docs_annotation or DocumentArray[LegacyDocument]
+            response_schema = return_annotation or DocumentArray[LegacyDocument]
 
         return _FunctionWithSchema(fn, request_schema, response_schema)
 
@@ -227,18 +237,18 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._init_workspace = workspace
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.runtime_args))
         if __dry_run_endpoint__ not in self.requests:
-            self.requests[__dry_run_endpoint__] = _FunctionWithSchema(
-                self._dry_run_func
-            )
+            self.requests[
+                __dry_run_endpoint__
+            ] = _FunctionWithSchema.get_function_with_schema(self._dry_run_func)
         else:
             self.logger.warning(
                 f' Endpoint {__dry_run_endpoint__} is defined by the Executor. Be aware that this endpoint is usually reserved to enable health checks from the Client through the gateway.'
                 f' So it is recommended not to expose this endpoint. '
             )
         if type(self) == BaseExecutor:
-            self.requests[__default_endpoint__] = _FunctionWithSchema(
-                self._dry_run_func
-            )
+            self.requests[
+                __default_endpoint__
+            ] = _FunctionWithSchema.get_function_with_schema(self._dry_run_func)
 
         self._lock = contextlib.AsyncExitStack()
         try:
@@ -248,6 +258,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 )  # Lock to run in Executor non async methods in a way that does not block the event loop to do health checks without the fear of having race conditions or multithreading issues.
         except RuntimeError:
             pass
+
+        self._write_lock = (
+            threading.Lock()
+        )  # watch because this makes it no serializable
 
     def _get_endpoint_models_dict(self):
         from jina._docarray import docarray_v2
@@ -353,6 +367,22 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             # we need to copy so that different instances with different (requests) in input do not disturb one another
             self._requests = copy.copy(self.requests_by_class[self.__class__.__name__])
             return self._requests
+
+    @property
+    def write_endpoints(self):
+        """
+        Get the list of endpoints bound to write methods
+
+        :return: Returns the list of endpoints bound to write methods
+        """
+        if hasattr(self, '_write_methods'):
+            endpoints = []
+            for endpoint, fn in self.requests.items():
+                if fn.fn.__name__ in self._write_methods:
+                    endpoints.append(endpoint)
+            return endpoints
+        else:
+            return []
 
     def _add_requests(self, _requests: Optional[Dict]):
         if _requests:
@@ -552,17 +582,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             or __cache_path__
         )
         if workspace:
-            complete_workspace = os.path.join(workspace, self.metas.name)
             shard_id = getattr(
                 self.runtime_args,
                 'shard_id',
                 None,
             )
-            if shard_id is not None and shard_id != -1:
-                complete_workspace = os.path.join(complete_workspace, str(shard_id))
-            if not os.path.exists(complete_workspace):
-                os.makedirs(complete_workspace)
-            return os.path.abspath(complete_workspace)
+            return _get_workspace_from_name_and_shards(
+                workspace=workspace, shard_id=shard_id, name=self.metas.name
+            )
 
     def __enter__(self):
         return self
@@ -673,6 +700,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
+        raft_configuration: Optional[dict] = None,
         reload: Optional[bool] = False,
         replicas: Optional[int] = 1,
         retries: Optional[int] = -1,
@@ -680,6 +708,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         shards: Optional[int] = 1,
         ssl_certfile: Optional[str] = None,
         ssl_keyfile: Optional[str] = None,
+        stateful: Optional[bool] = False,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
@@ -776,6 +805,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
           `Executor cookbook <https://docs.jina.ai/concepts/executor/executor-files/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param raft_configuration: Dictionary of kwargs arguments that will be passed to the RAFT node as configuration options when starting the RAFT node.
         :param reload: If set, the Executor will restart while serving if YAML configuration source or Executor modules are changed. If YAML configuration is changed, the whole deployment is reloaded and new processes will be restarted. If only Python modules of the Executor have changed, they will be reloaded to the interpreter without restarting process.
         :param replicas: The number of replicas in the deployment
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
@@ -783,6 +813,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
+        :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -1024,3 +1055,40 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             )
 
         return contextlib.nullcontext()
+
+    def snapshot(self, snapshot_file: str):
+        """
+        Interface to take a snapshot from the Executor. Implement it to enable periodic snapshots
+        :param snapshot_file: The file path where to store the binary representation of the Executor snapshot
+        """
+        raise Exception('Raising an Exception. Snapshot is not enabled by default')
+
+    def restore(self, snapshot_file: str):
+        """
+        Interface to restore the state of the Executor from a snapshot that has been taken by the snapshot method.
+        :param snapshot_file: The file path from where to reconstruct the Executor
+        """
+        pass
+
+    def _run_snapshot(self, snapshot_file: str, did_raise_exception):
+        try:
+            from pathlib import Path
+
+            p = Path(snapshot_file)
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.touch()
+            with self._write_lock:
+                self.snapshot(snapshot_file)
+        except:
+            did_raise_exception.set()
+            raise
+
+    def _run_restore(self, snapshot_file: str, did_raise_exception):
+        try:
+            with self._write_lock:
+                self.restore(snapshot_file)
+        except:
+            did_raise_exception.set()
+            raise
+        finally:
+            os.remove(snapshot_file)

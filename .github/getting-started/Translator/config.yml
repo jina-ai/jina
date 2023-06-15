@@ -1,8 +1,0 @@
-jtype: Translator
-py_modules:
-  - executor.py
-metas:
-  name: Translator
-  description: French to English Translation
-  url:
-  keywords: []
