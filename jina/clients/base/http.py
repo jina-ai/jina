@@ -235,8 +235,9 @@ class HTTPBaseClient(BaseClient):
     ):
         proto = 'https' if self.args.tls else 'http'
         endpoint = on.strip('/')
+        has_default_endpoint = 'default' in self._endpoints
 
-        if endpoint != '' and endpoint in self._endpoints:
+        if (endpoint != '' and endpoint in self._endpoints) or not has_default_endpoint:
             url = f'{proto}://{self.args.host}:{self.args.port}/{endpoint}'
         else:
             url = f'{proto}://{self.args.host}:{self.args.port}/default'
