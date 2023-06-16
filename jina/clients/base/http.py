@@ -234,7 +234,12 @@ class HTTPBaseClient(BaseClient):
         **kwargs,
     ):
         proto = 'https' if self.args.tls else 'http'
-        url = f'{proto}://{self.args.host}:{self.args.port}/{on.strip("/")}'
+        endpoint = on.strip('/')
+
+        if endpoint != '' and endpoint in self._endpoints:
+            url = f'{proto}://{self.args.host}:{self.args.port}/{endpoint}'
+        else:
+            url = f'{proto}://{self.args.host}:{self.args.port}/default'
 
         iolet = HTTPClientlet(
             url=url,
