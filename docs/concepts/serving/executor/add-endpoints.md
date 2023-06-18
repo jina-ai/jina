@@ -186,8 +186,8 @@ with Deployment(uses=MyExec) as dep:
 ```json
 {"__results__": {"my_executor/rep-0": {"internal_parameter": 20.0}}}
 ```
-  
 
+(streaming-endpoints)=
 ## Streaming endpoints
 Executors can stream Documents individually rather than as a whole DocumentArray. 
 This is useful when you want to return Documents one by one and you want the client to immediately process Documents as 
@@ -238,6 +238,7 @@ hello world 1
 hello world 2
 ```
 
+You can also implement streaming endpoints in newer versions of DocArray. Refer to {ref}`this section <streaming-endpoits-docarray-v2>` to learn more.
 You can also refer to the following Javascript code to connect with the streaming endpoint from your browser:
 
 ```html
