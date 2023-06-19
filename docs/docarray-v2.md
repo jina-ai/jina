@@ -147,7 +147,7 @@ with flow:
 ```
 ````
 ````{tab} Invalid Flow
-```yaml
+```{code-block} python
 from jina import Executor, requests, Flow
 from docarray import DocList, BaseDoc
 from docarray.typing import NdArray
@@ -202,6 +202,59 @@ with Deployment(uses=MyExec) as dep:
     assert docs.__class__.document_type == OutputDoc
 ```
 
+(streaming-endpoits-docarray-v2)=
+## Streaming Endpoints with DocArray V2
+Similarly to {ref}`Streaming Endpoints API <streaming-endpoints>` in DocArray V1, you can implement streaming endpoints 
+with DocArray v2 schemas.
+
+Streaming endpoints receive one Document as input and yields one Document at a time.
+
+A streaming endpoint has the following signature:
+
+```python
+from jina import Executor, requests, Document, Deployment
+
+# first define schemas
+class MyDocument(Document):
+    text: str
+
+# then define the Executor
+class MyExecutor(Executor):
+
+    @requests(on='/hello')
+    async def task(self, doc: MyDocument, **kwargs):
+        print()
+        # for doc in docs:
+        #     doc.text = 'hello world'
+        for i in range(100):
+            yield MyDocument(text=f'hello world {i}')
+            
+with Deployment(
+    uses=MyExecutor,
+    port=12345,
+    protocol='http',
+    cors=True,
+    include_gateway=False,
+) as dep:
+    dep.block()
+```
+
+From the client side, any SSE client can be used to receive the Documents, one at a time.
+Jina's standard python client also supports streaming endpoints with DocArray v2:
+
+```python
+from jina import Client, Document
+client = Client(port=12345, protocol='http', cors=True, asyncio=True)
+async for doc in client.stream_doc(
+    on='/hello', inputs=MyDocument(text='hello world'), return_type=MyDocument
+):
+    print(doc.text)
+```
+```text
+hello world 0
+hello world 1
+hello world 2
+```
 
 ## Compatible features
 
@@ -214,14 +267,14 @@ However, there are currently some limitations to consider.
 :class: note
 
 With DocArray 0.30 support, Jina introduced the concept of input/output schema at the Executor level. To chain multiple Executors into a Flow you need to ensure that the output schema of an Executor is the same as the input of the Executor that follows it in the Flow
-```
+````
 
 ````{admonition} Note
 :class: note
 
 For now, [Executor Hub](https://cloud.jina.ai/executors] will not automatically build your Docker images with the new DocArray version. If this is needed, you need to provide your 
 Dockerfile where `docarray>=0.30` is specifically installed.
-```
+````
 
 ```{note}
 

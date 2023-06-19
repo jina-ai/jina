@@ -18,6 +18,9 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port, gateway_replicas):
         flow_kwargs['port'] = flow_port
         gateway_kwargs['port'] = flow_port
     gateway_kwargs['replicas'] = gateway_replicas
+    gateway_kwargs['env_from_secret'] = {
+        'SECRET_GATEWAY_USERNAME': {'name': 'gateway_secret', 'key': 'gateway_username'},
+    }
 
     flow = (
         Flow(**flow_kwargs).config_gateway(**gateway_kwargs)
@@ -135,6 +138,10 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port, gateway_replicas):
         {
             'name': 'K8S_POD_NAME',
             'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
+        {
+            'name': 'SECRET_GATEWAY_USERNAME',
+            'valueFrom': {'secretKeyRef': {'name': 'gateway_secret', 'key': 'gateway_username'}},
         },
     ]
 

@@ -95,6 +95,7 @@ class K8sDeploymentConfig:
                 pod_type=self.pod_type,
                 port=self.common_args.port,
                 env=cargs.env,
+                env_from_secret=cargs.env_from_secret,
                 monitoring=self.common_args.monitoring,
                 port_monitoring=self.common_args.port_monitoring,
                 protocol=self.common_args.protocol,
