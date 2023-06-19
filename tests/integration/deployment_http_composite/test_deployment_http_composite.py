@@ -1,14 +1,14 @@
 import os
 import time
+
 import pytest
 
-from jina import Deployment, Executor, requests, Client, DocumentArray
-from jina.helper import random_port
+from jina import Client, Deployment, DocumentArray, Executor, requests
 from jina._docarray import docarray_v2
+from jina.helper import random_port
 
 
 class SingleExecutorDeployment(Executor):
-
     def __init__(self, init_sleep_time=0, *args, **kwargs):
         super().__init__(*args, **kwargs)
         time.sleep(init_sleep_time)
@@ -41,15 +41,25 @@ class SingleExecutorDeployment(Executor):
 
 @pytest.mark.parametrize('replicas', [1, 2, 3])
 @pytest.mark.parametrize('include_gateway', [True, False])
+@pytest.mark.parametrize('cors', [True, False])
 @pytest.mark.parametrize('protocols', [['http'], ['grpc'], ['grpc', 'http']])
 @pytest.mark.parametrize('init_sleep_time', [0, 0.5, 5])
 @pytest.mark.skipif(docarray_v2, reason='tests support for docarray<0.30')
-def test_slow_load_executor(replicas, include_gateway, protocols, init_sleep_time):
+def test_slow_load_executor(
+    replicas, include_gateway, protocols, init_sleep_time, cors
+):
     if replicas > 1 and not include_gateway:
         return
     ports = [random_port() for _ in range(len(protocols))]
-    d = Deployment(uses=SingleExecutorDeployment, uses_with={'init_sleep_time': init_sleep_time}, replicas=replicas,
-                   protocol=protocols, port=ports, include_gateway=include_gateway)
+    d = Deployment(
+        uses=SingleExecutorDeployment,
+        uses_with={'init_sleep_time': init_sleep_time},
+        replicas=replicas,
+        protocol=protocols,
+        port=ports,
+        include_gateway=include_gateway,
+        cors=cors,
+    )
     with d:
         for protocol, port in zip(protocols, ports):
             c = Client(protocol=protocol, port=port)
@@ -73,8 +83,13 @@ def test_slow_load_executor(replicas, include_gateway, protocols, init_sleep_tim
 def test_post_from_deployment(replicas, include_gateway, protocol, init_sleep_time):
     if replicas > 1 and not include_gateway:
         return
-    d = Deployment(uses=SingleExecutorDeployment, uses_with={'init_sleep_time': init_sleep_time}, replicas=replicas,
-                   protocol=protocol, include_gateway=include_gateway)
+    d = Deployment(
+        uses=SingleExecutorDeployment,
+        uses_with={'init_sleep_time': init_sleep_time},
+        replicas=replicas,
+        protocol=protocol,
+        include_gateway=include_gateway,
+    )
     with d:
         res = d.post(on='/foo', inputs=DocumentArray.empty(10), request_size=1)
         assert all(['foo' in doc.text for doc in res])
@@ -95,8 +110,12 @@ def test_base_executor(replicas, include_gateway, protocols):
     if replicas > 1 and not include_gateway:
         return
     ports = [random_port() for _ in range(len(protocols))]
-    d = Deployment(replicas=replicas,
-                   protocol=protocols, port=ports, include_gateway=include_gateway)
+    d = Deployment(
+        replicas=replicas,
+        protocol=protocols,
+        port=ports,
+        include_gateway=include_gateway,
+    )
     with d:
         for protocol, port in zip(protocols, ports):
             c = Client(protocol=protocol, port=port)
@@ -113,18 +132,40 @@ def test_return_parameters(replicas, include_gateway, protocols, init_sleep_time
     if replicas > 1 and not include_gateway:
         return
     ports = [random_port() for _ in range(len(protocols))]
-    d = Deployment(uses=SingleExecutorDeployment, uses_with={'init_sleep_time': init_sleep_time}, replicas=replicas,
-                   protocol=protocols, port=ports, include_gateway=include_gateway)
+    d = Deployment(
+        uses=SingleExecutorDeployment,
+        uses_with={'init_sleep_time': init_sleep_time},
+        replicas=replicas,
+        protocol=protocols,
+        port=ports,
+        include_gateway=include_gateway,
+    )
     with d:
         for protocol, port in zip(protocols, ports):
             c = Client(protocol=protocol, port=port)
-            res = c.post(on='/parameters', inputs=DocumentArray.empty(10), request_size=1, return_responses=True)
+            res = c.post(
+                on='/parameters',
+                inputs=DocumentArray.empty(10),
+                request_size=1,
+                return_responses=True,
+            )
             assert len(res) == 10
-            assert all(['__results__' in response.parameters.keys() for response in res])
-            different_pids = set([list(response.parameters['__results__'].values())[0]['pid'] for response in res])
+            assert all(
+                ['__results__' in response.parameters.keys() for response in res]
+            )
+            different_pids = set(
+                [
+                    list(response.parameters['__results__'].values())[0]['pid']
+                    for response in res
+                ]
+            )
             assert len(different_pids) == replicas
-            res = c.post(on='/docsparams', inputs=DocumentArray.empty(10), parameters={'key': 'value'},
-                         request_size=1)
+            res = c.post(
+                on='/docsparams',
+                inputs=DocumentArray.empty(10),
+                parameters={'key': 'value'},
+                request_size=1,
+            )
             assert len(res) == 10
             assert all([doc.text == 'value' for doc in res])
 
@@ -137,7 +178,12 @@ def test_invalid_protocols_with_shards(replicas, include_gateway, protocols):
     if replicas > 1 and not include_gateway:
         return
     with pytest.raises(RuntimeError):
-        d = Deployment(replicas=replicas, protocol=protocols, include_gateway=include_gateway, shards=2)
+        d = Deployment(
+            replicas=replicas,
+            protocol=protocols,
+            include_gateway=include_gateway,
+            shards=2,
+        )
         with d:
             pass
 
@@ -150,6 +196,8 @@ def test_invalid_websocket_protocol(replicas, include_gateway, protocols):
     if replicas > 1 and not include_gateway:
         return
     with pytest.raises(RuntimeError):
-        d = Deployment(replicas=replicas, protocol=protocols, include_gateway=include_gateway)
+        d = Deployment(
+            replicas=replicas, protocol=protocols, include_gateway=include_gateway
+        )
         with d:
             pass

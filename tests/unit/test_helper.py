@@ -6,8 +6,8 @@ import psutil
 import pytest
 
 from jina import Executor, Flow
-from jina.constants import __default_endpoint__
 from jina.clients.helper import _safe_callback, pprint_routes
+from jina.constants import __default_endpoint__
 from jina.excepts import BadClientCallback, NotSupportedError
 from jina.helper import (
     cached_property,
@@ -16,6 +16,7 @@ from jina.helper import (
     dunder_get,
     find_request_binding,
     get_ci_vendor,
+    is_generator,
     is_port_free,
     is_yaml_filepath,
     parse_arg,
@@ -376,3 +377,30 @@ def test_run_async():
 )
 def test_parse_arg(input, expected):
     assert parse_arg(input) == expected
+
+
+def yield_generator_func():
+    for _ in range(10):
+        # no yield
+        pass
+    yield 1
+    yield 2
+
+
+def normal_func():
+    for _ in range(10):
+        # no yield
+        pass
+
+
+def yield_from_generator_func():
+    for _ in range(10):
+        # no yield
+        pass
+    yield from yield_generator_func()
+
+
+def test_is_generator():
+    assert is_generator(yield_generator_func)
+    assert not is_generator(normal_func)
+    assert is_generator(yield_from_generator_func)
