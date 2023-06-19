@@ -206,6 +206,9 @@ class WorkerRequestHandler:
                 f'detected changes in: {changed_files}. Refreshing the Executor'
             )
             self._refresh_executor(changed_files)
+            self.logger.info(
+                f'Executor refreshed'
+            )
 
     def _all_batch_queues(self) -> List[BatchQueue]:
         """Returns a list of all batch queue instances
@@ -391,14 +394,16 @@ class WorkerRequestHandler:
                             'The main module file was changed, cannot reload Executor, please restart '
                             'the application'
                         )
+                    self.logger.debug(f'Reloading {file_module}')
                     importlib.reload(sys_mod_files_modules[file])
+                    self.logger.debug(f'Reloaded {file_module} successfully')
                 else:
                     self.logger.debug(
                         f'Changed file {file} was not previously imported.'
                     )
         except Exception as exc:
             self.logger.error(
-                f' Exception when refreshing Executor when changes detected in {changed_files}'
+                f'Exception when refreshing Executor when changes detected in {changed_files}: {exc}'
             )
             raise exc
 
