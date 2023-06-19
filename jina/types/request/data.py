@@ -1,5 +1,5 @@
 import copy
-from typing import Dict, Optional, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Dict, Optional, Type, TypeVar, Union
 
 from google.protobuf import json_format
 
@@ -8,6 +8,9 @@ from jina.excepts import BadRequestType
 from jina.helper import random_identity, typename
 from jina.proto import jina_pb2
 from jina.types.request import Request
+
+if TYPE_CHECKING:
+    from jina._docarray import Document, DocumentArray, docarray_v2
 
 RequestSourceType = TypeVar(
     'RequestSourceType', jina_pb2.DataRequestProto, str, Dict, bytes

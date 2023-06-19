@@ -3,11 +3,11 @@ import itertools
 import threading
 from typing import TYPE_CHECKING, AsyncIterator, Dict
 
+from jina.enums import ProtocolType
 from jina.helper import get_full_version
 from jina.proto import jina_pb2
 from jina.types.request.data import DataRequest
 from jina.types.request.status import StatusMessage
-from jina.enums import ProtocolType
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import SimpleNamespace
@@ -21,15 +21,15 @@ class GatewayRequestHandler:
     """Object to encapsulate the code related to handle the data requests in the Gateway"""
 
     def __init__(
-            self,
-            args: 'SimpleNamespace',
-            logger: 'JinaLogger',
-            metrics_registry=None,
-            meter=None,
-            aio_tracing_client_interceptors=None,
-            tracing_client_interceptor=None,
-            works_as_load_balancer: bool = False,
-            **kwargs,
+        self,
+        args: 'SimpleNamespace',
+        logger: 'JinaLogger',
+        metrics_registry=None,
+        meter=None,
+        aio_tracing_client_interceptors=None,
+        tracing_client_interceptor=None,
+        works_as_load_balancer: bool = False,
+        **kwargs,
     ):
         import json
 
@@ -49,7 +49,9 @@ class GatewayRequestHandler:
         deployment_grpc_addresses = {}
         for deployment_name, addresses in deployments_addresses.items():
             if isinstance(addresses, Dict):
-                deployment_grpc_addresses[deployment_name] = addresses.get(ProtocolType.GRPC.to_string(), [])
+                deployment_grpc_addresses[deployment_name] = addresses.get(
+                    ProtocolType.GRPC.to_string(), []
+                )
             else:
                 deployment_grpc_addresses[deployment_name] = addresses
 
@@ -141,13 +143,17 @@ class GatewayRequestHandler:
         cors,
         tracing,
         tracer_provider,
+        **kwargs,
     ):
-        from jina.helper import extend_rest_interface
         from jina._docarray import docarray_v2
+        from jina.helper import extend_rest_interface
+
         if not docarray_v2:
             from jina.serve.runtimes.gateway.http_fastapi_app import get_fastapi_app
         else:
-            from jina.serve.runtimes.gateway.http_fastapi_app_docarrayv2 import get_fastapi_app
+            from jina.serve.runtimes.gateway.http_fastapi_app_docarrayv2 import (
+                get_fastapi_app,
+            )
 
         return extend_rest_interface(
             get_fastapi_app(
@@ -177,13 +183,24 @@ class GatewayRequestHandler:
                 if request.method == 'GET':
                     async with session.get(target_url) as response:
                         content = await response.read()
-                        return web.Response(body=content, status=response.status, content_type=response.content_type)
+                        return web.Response(
+                            body=content,
+                            status=response.status,
+                            content_type=response.content_type,
+                        )
                 elif request.method == 'POST':
                     d = await request.read()
                     import json
-                    async with session.post(url=target_url, json=json.loads(d.decode())) as response:
+
+                    async with session.post(
+                        url=target_url, json=json.loads(d.decode())
+                    ) as response:
                         content = await response.read()
-                        return web.Response(body=content, status=response.status, content_type=response.content_type)
+                        return web.Response(
+                            body=content,
+                            status=response.status,
+                            content_type=response.content_type,
+                        )
         except aiohttp.ClientError as e:
             return web.Response(text=f'Error: {str(e)}', status=500)
 

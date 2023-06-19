@@ -3,9 +3,9 @@ import os
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Optional
 
+from jina._docarray import docarray_v2
 from jina.importer import ImportExtensions
 from jina.serve.runtimes.servers import BaseServer
-from jina._docarray import docarray_v2
 
 if TYPE_CHECKING:
     from fastapi import FastAPI
@@ -116,7 +116,10 @@ class FastAPIBaseServer(BaseServer):
             logging.getLogger("uvicorn.access").addFilter(_EndpointFilter())
 
         if docarray_v2:
-            from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+            from jina.serve.runtimes.gateway.request_handling import (
+                GatewayRequestHandler,
+            )
+
             if isinstance(self._request_handler, GatewayRequestHandler):
                 await self._request_handler.streamer._get_endpoints_input_output_models()
                 self._request_handler.streamer._validate_flow_docarray_compatibility()
@@ -205,6 +208,7 @@ def _install_health_check(app: 'FastAPI', logger):
 
     if not health_check_exists:
         from jina.serve.runtimes.gateway.health_model import JinaHealthModel
+
         @app.get(
             path='/',
             summary='Get the health of Jina Gateway service',
@@ -229,12 +233,15 @@ class HTTPServer(FastAPIBaseServer):
         """Get the default base API app for Server
         :return: Return a FastAPI app for the default HTTPGateway
         """
-        return self._request_handler._http_fastapi_default_app(title=self.title,
-                                                               description=self.description,
-                                                               no_crud_endpoints=self.no_crud_endpoints,
-                                                               no_debug_endpoints=self.no_debug_endpoints,
-                                                               expose_endpoints=self.expose_endpoints,
-                                                               expose_graphql_endpoint=self.expose_graphql_endpoint,
-                                                               tracing=self.tracing,
-                                                               tracer_provider=self.tracer_provider,
-                                                               cors=self.cors)
+        return self._request_handler._http_fastapi_default_app(
+            title=self.title,
+            description=self.description,
+            no_crud_endpoints=self.no_crud_endpoints,
+            no_debug_endpoints=self.no_debug_endpoints,
+            expose_endpoints=self.expose_endpoints,
+            expose_graphql_endpoint=self.expose_graphql_endpoint,
+            tracing=self.tracing,
+            tracer_provider=self.tracer_provider,
+            cors=self.cors,
+            logger=self.logger,
+        )
