@@ -403,7 +403,7 @@ class WorkerRequestHandler:
                             'the application'
                         )
                     self.logger.debug(f'Reloading {file_module}')
-                    importlib.reload(sys_mod_files_modules[file])
+                    importlib.reload(file_module)
                     self.logger.debug(f'Reloaded {file_module} successfully')
                 else:
                     self.logger.debug(
