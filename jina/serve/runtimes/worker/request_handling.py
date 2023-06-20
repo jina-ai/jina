@@ -403,7 +403,12 @@ class WorkerRequestHandler:
                             'the application'
                         )
                     self.logger.debug(f'Reloading {file_module}')
-                    importlib.reload(file_module)
+                    try:
+                        importlib.reload(file_module)
+                    except ModuleNotFoundError:
+                        spec = importlib.util.spec_from_file_location(file_module.__name__, file_module.__file__)
+                        spec.loader.exec_module(file_module)
+
                     self.logger.debug(f'Reloaded {file_module} successfully')
                 else:
                     self.logger.debug(
@@ -415,7 +420,12 @@ class WorkerRequestHandler:
             )
             raise exc
 
-        importlib.reload(inspect.getmodule(self._executor.__class__))
+        executor_module = inspect.getmodule(self._executor.__class__)
+        try:
+            importlib.reload(executor_module)
+        except ModuleNotFoundError:
+            spec = importlib.util.spec_from_file_location(executor_module.__name__, executor_module.__file__)
+            spec.loader.exec_module(file_module)
         requests = copy.copy(self._executor.requests)
         old_cls = self._executor.__class__
         new_cls = getattr(importlib.import_module(old_cls.__module__), old_cls.__name__)
