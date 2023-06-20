@@ -54,6 +54,7 @@ def executor_native(args: 'Namespace'):
             runtime_cls=args.runtime_cls,
             envs=envs,
             is_started=multiprocessing.Event(),
+            is_signal_handlers_installed=multiprocessing.Event(),
             is_shutdown=multiprocessing.Event(),
             is_ready=multiprocessing.Event(),
             jaml_classes=JAML.registered_classes())

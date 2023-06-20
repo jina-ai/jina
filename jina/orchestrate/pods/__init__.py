@@ -50,6 +50,7 @@ class BasePod(ABC):
         self.is_shutdown = _get_event(test_worker)
         self.cancel_event = _get_event(test_worker)
         self.is_started = _get_event(test_worker)
+        self.is_signal_handlers_installed = _get_event(test_worker)
         self.ready_or_shutdown = ConditionalEvent(
             events_list=[self.is_ready, self.is_shutdown],
         )
@@ -93,6 +94,8 @@ class BasePod(ABC):
             self.logger.debug(
                 f'{"shutdown is already set" if self.is_shutdown.is_set() else "Runtime was never started"}. Runtime will end gracefully on its own'
             )
+            if not self.is_shutdown.is_set():
+                self.is_signal_handlers_installed.wait(timeout=self._timeout_ctrl if not __windows__ else 1.0) # waiting for is_signal_handlers_installed will make sure signal handlers are installed
             self._terminate()
         self.is_shutdown.set()
         self.logger.debug(__stop_msg__)
@@ -282,6 +285,7 @@ class Pod(BasePod):
                 'name': self.name,
                 'envs': self._envs,
                 'is_started': self.is_started,
+                'is_signal_handlers_installed': self.is_signal_handlers_installed,
                 'is_shutdown': self.is_shutdown,
                 'is_ready': self.is_ready,
                 'runtime_cls': self.runtime_cls,
