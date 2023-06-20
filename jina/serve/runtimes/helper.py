@@ -98,8 +98,9 @@ if docarray_v2:
         return create_model(model.__name__, __base__=model, __validators__=model.__validators__,
                             **fields)
 
-    def _get_field_from_type(field_schema, field_name, root_schema, cached_models, num_recursions=0):
+    def _get_field_from_type(field_schema, field_name, root_schema, cached_models, is_tensor=False, num_recursions=0):
         field_type = field_schema.get('type', None)
+        tensor_shape = field_schema.get('tensor/array shape', None)
         if 'anyOf' in field_schema:
             any_of_types = []
             for any_of_schema in field_schema['anyOf']:
@@ -108,7 +109,7 @@ if docarray_v2:
                     ref_name = obj_ref.split('/')[-1]
                     any_of_types.append(_create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name, cached_models=cached_models))
                 else:
-                    any_of_types.append(_get_field_from_type(any_of_schema, field_name, root_schema=root_schema, cached_models=cached_models, num_recursions=0)) # No Union of Lists
+                    any_of_types.append(_get_field_from_type(any_of_schema, field_name, root_schema=root_schema, cached_models=cached_models, is_tensor=tensor_shape is not None, num_recursions=0)) # No Union of Lists
             ret = Union[tuple(any_of_types)]
             for rec in range(num_recursions):
                 ret = List[ret]
@@ -123,7 +124,10 @@ if docarray_v2:
         elif field_type == 'number':
             if num_recursions <= 1:
                 # This is a hack because AnyTensor is more generic than a simple List and it comes as simple List
-                ret = AnyTensor
+                if is_tensor:
+                    ret = AnyTensor
+                else:
+                    ret = List[float]
             else:
                 ret = float
                 for rec in range(num_recursions):
@@ -155,7 +159,7 @@ if docarray_v2:
                         ret = DocList[_create_pydantic_model_from_schema(field_schema, field_name, cached_models=cached_models)]
         elif field_type == 'array':
             ret = _get_field_from_type(field_schema=field_schema.get('items', {}), field_name=field_name,
-                                       root_schema=root_schema, cached_models=cached_models, num_recursions=num_recursions + 1)
+                                       root_schema=root_schema, cached_models=cached_models, is_tensor=tensor_shape is not None, num_recursions=num_recursions + 1)
         else:
             if num_recursions > 0:
                 raise ValueError(f"Unknown array item type: {field_type} for field_name {field_name}")
@@ -169,7 +173,7 @@ if docarray_v2:
         if model_name in cached_models:
             return cached_models[model_name]
         for field_name, field_schema in schema.get('properties', {}).items():
-            field_type = _get_field_from_type(field_schema=field_schema, field_name=field_name, root_schema=schema, cached_models=cached_models, num_recursions=0)
+            field_type = _get_field_from_type(field_schema=field_schema, field_name=field_name, root_schema=schema, cached_models=cached_models, is_tensor=False, num_recursions=0)
             fields[field_name] = (field_type, field_schema.get('description'))
 
         model = create_model(model_name, __base__=BaseDoc, **fields)
