@@ -29,8 +29,10 @@ class LoadBalancingServer(BaseServer):
         """
         Initialize and return server
         """
+        self.logger.debug(f'Setting up LoadBalancer server')
         self.app = web.Application()
         self.app.router.add_route('*', '/{path:.*}', self.handle_request)
+        self.logger.debug(f'LoadBalancer server setup successful')
 
     async def run_server(self):
         """Run HTTP server forever"""

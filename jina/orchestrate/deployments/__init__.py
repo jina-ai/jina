@@ -1226,13 +1226,13 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 self.uses_before_pod.join()
             if self.uses_after_pod is not None:
                 self.uses_after_pod.join()
+            if self.shards:
+                for shard_id in self.shards:
+                    self.shards[shard_id].join()
             if self.head_pod is not None:
                 self.head_pod.join()
             if self.gateway_pod is not None:
                 self.gateway_pod.join()
-            if self.shards:
-                for shard_id in self.shards:
-                    self.shards[shard_id].join()
         except KeyboardInterrupt:
             pass
         finally:

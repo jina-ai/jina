@@ -40,6 +40,7 @@ class WebSocketServer(BaseServer):
         """
         Setup WebSocket Server
         """
+        self.logger.debug(f'Setting up Websocket server')
         if docarray_v2:
             from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
             if isinstance(self._request_handler, GatewayRequestHandler):
@@ -103,8 +104,9 @@ class WebSocketServer(BaseServer):
                 **uvicorn_kwargs,
             )
         )
-
+        self.logger.debug(f'UviServer server setup')
         await self.server.setup()
+        self.logger.debug(f'Websocket server setup successful')
 
     @property
     def _should_exit(self):

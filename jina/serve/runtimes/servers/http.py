@@ -77,6 +77,7 @@ class FastAPIBaseServer(BaseServer):
         """
         Initialize and return GRPC server
         """
+        self.logger.debug(f'Setting up HTTP server')
         with ImportExtensions(required=True):
             from uvicorn import Config, Server
 
@@ -136,8 +137,9 @@ class FastAPIBaseServer(BaseServer):
                 **self.uvicorn_kwargs,
             )
         )
-
+        self.logger.debug(f'UviServer server setup')
         await self.server.setup()
+        self.logger.debug(f'HTTP server setup successful')
 
     async def shutdown(self):
         """

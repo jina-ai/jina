@@ -39,6 +39,7 @@ class GRPCServer(BaseServer):
         """
         setup GRPC server
         """
+        self.logger.debug(f'Setting up GRPC server')
         if docarray_v2:
             from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
             if isinstance(self._request_handler, GatewayRequestHandler):
@@ -132,10 +133,12 @@ class GRPCServer(BaseServer):
             self.server.add_insecure_port(bind_addr)
         self.logger.info(f'start server bound to {bind_addr}')
         await self.server.start()
+        self.logger.debug(f'server bound to {bind_addr} started')
         for service in service_names:
             await self.health_servicer.set(
                 service, health_pb2.HealthCheckResponse.SERVING
             )
+        self.logger.debug(f'GRPC server setup successful')
 
     async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""

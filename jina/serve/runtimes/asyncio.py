@@ -58,6 +58,8 @@ class AsyncNewLoopRuntime:
         asyncio.set_event_loop(self._loop)
         self.is_cancel = cancel_event or asyncio.Event()
 
+        self.logger.debug(f'Setting signal handlers')
+
         if not __windows__:
 
             def _cancel(sig):
@@ -78,6 +80,7 @@ class AsyncNewLoopRuntime:
             for sig in HANDLED_SIGNALS:
                 signal.signal(sig, _cancel)
 
+        self.logger.debug(f'Signal handlers already set')
         self._start_time = time.time()
         self._loop.run_until_complete(self.async_setup())
         self._send_telemetry_event(event='start')
