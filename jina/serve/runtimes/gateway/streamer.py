@@ -378,6 +378,7 @@ class GatewayStreamer:
 
                 await asyncio.gather(*deployment_warmup_tasks, return_exceptions=True)
             except asyncio.CancelledError:
+                self.logger.debug(f'Warmup task got cancelled')
                 if deployment_warmup_tasks:
                     for task in deployment_warmup_tasks:
                         task.cancel()

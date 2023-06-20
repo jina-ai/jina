@@ -516,8 +516,13 @@ class GrpcConnectionPool:
                 call_result = stub.send_info_rpc(timeout=0.5)
                 await call_result
                 target_warmup_responses[stub.address] = True
+            except asyncio.CancelledError:
+                self._logger.debug(f'Warmup task got cancelled')
+                target_warmup_responses[stub.address] = False
+                raise
             except Exception:
                 target_warmup_responses[stub.address] = False
+
 
         try:
             start_time = time.time()
@@ -551,6 +556,7 @@ class GrpcConnectionPool:
                         return
                     await asyncio.sleep(0.2)
                 except asyncio.CancelledError:
+                    self._logger.debug(f'Warmup task got cancelled')
                     if tasks:
                         for task in tasks:
                             task.cancel()
