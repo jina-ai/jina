@@ -1,11 +1,12 @@
 import asyncio
 import json
 import threading
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type
 
 import grpc
 from grpc import RpcError
 
+from jina._docarray import Document
 from jina.clients.base import BaseClient
 from jina.clients.base.stream_rpc import StreamRpc
 from jina.clients.base.unary_rpc import UnaryRpc
@@ -210,6 +211,18 @@ class GRPCBaseClient(BaseClient):
             ) from err
         else:
             raise BadServerFlow(msg) from err
+
+    async def _get_streaming_results(
+        self,
+        on: str,
+        inputs: 'Document',
+        parameters: Optional[Dict] = None,
+        return_type: Type[Document] = Document,
+        timeout: Optional[int] = None,
+        **kwargs,
+    ):
+        async for docs in self.post(on='/', inputs=[inputs]):
+            yield docs[0]
 
 
 def client_grpc_options(
