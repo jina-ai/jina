@@ -1004,7 +1004,30 @@ class WorkerRequestHandler:
         :yield: responses to the request
         """
         async for request in request_iterator:
-            yield await self.process_data([request], context)
+            request_endpoint = self._executor.requests.get(
+                request.header.exec_endpoint
+            ) or self._executor.requests.get(__default_endpoint__)
+            if request_endpoint is None:
+                self.logger.debug(
+                    f'skip executor: endpoint mismatch. '
+                    f'Request endpoint: `{request.header.exec_endpoint}`. '
+                    'Available endpoints: '
+                    f'{", ".join(list(self._executor.requests.keys()))}'
+                )
+                yield request
+                continue
+
+            is_generator = getattr(request_endpoint.fn, '__is_generator__', False)
+            result = await self.process_data(
+                [request], context, is_generator=is_generator
+            )
+            if is_generator:
+                async for doc in result:
+                    req = DataRequest()
+                    req.data.docs = DocumentArray([doc])
+                    yield req
+            else:
+                yield result
 
     Call = stream
 
