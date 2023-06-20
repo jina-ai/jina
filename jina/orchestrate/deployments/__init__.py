@@ -153,7 +153,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             if properly_closed:
                 self.logger.debug(f'Add Voters process finished')
             else:
-                self.logger.error(f' Add Voters process did not finish successfully')
+                self.logger.error(f'Add Voters process did not finish successfully')
                 process.kill()
             self.logger.debug(f'Add Voters process finished')
 
@@ -185,7 +185,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             if properly_closed:
                 self.logger.debug(f'Add Voters process finished')
             else:
-                self.logger.error(f' Add Voters process did not finish successfully')
+                self.logger.error(f'Add Voters process did not finish successfully')
                 process.kill()
 
         @property
@@ -204,6 +204,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 pod.join()
 
         def wait_start_success(self):
+            self.logger.debug(f'Waiting for ReplicaSet {self.name} to start successfully')
             for pod in self._pods:
                 pod.wait_start_success()
             # should this be done only when the cluster is started ?
@@ -212,6 +213,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             self.logger.debug(f'ReplicaSet {self.name} started successfully')
 
         async def async_wait_start_success(self):
+            self.logger.debug(f'Waiting for ReplicaSet {self.name} to start successfully')
             await asyncio.gather(
                 *[pod.async_wait_start_success() for pod in self._pods]
             )
@@ -1199,12 +1201,12 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 coros.append(self.uses_before_pod.async_wait_start_success())
             if self.uses_after_pod is not None:
                 coros.append(self.uses_after_pod.async_wait_start_success())
+            for shard_id in self.shards:
+                coros.append(self.shards[shard_id].async_wait_start_success())
             if self.head_pod is not None:
                 coros.append(self.head_pod.async_wait_start_success())
             if self.gateway_pod is not None:
                 coros.append(self.gateway_pod.async_wait_start_success())
-            for shard_id in self.shards:
-                coros.append(self.shards[shard_id].async_wait_start_success())
             await asyncio.gather(*coros)
             self.logger.debug(f'Deployment started successfully')
         except:

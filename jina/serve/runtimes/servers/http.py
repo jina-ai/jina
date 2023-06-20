@@ -166,11 +166,12 @@ class FastAPIBaseServer(BaseServer):
         return self._should_exit
 
     @staticmethod
-    def is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
+    def is_ready(ctrl_address: str, timeout: float = 1.0, logger=None, **kwargs) -> bool:
         """
         Check if status is ready.
         :param ctrl_address: the address where the control request needs to be sent
         :param timeout: timeout of the health check in seconds
+        :param logger: JinaLogger to be used
         :param kwargs: extra keyword arguments
         :return: True if status is ready else False.
         """
@@ -180,19 +181,23 @@ class FastAPIBaseServer(BaseServer):
         try:
             conn = urllib.request.urlopen(url=f'http://{ctrl_address}', timeout=timeout)
             return conn.code == HTTPStatus.OK
-        except:
+        except Exception as exc:
+            if logger:
+                logger.debug(f'Exception: {exc}')
+
             return False
 
     @staticmethod
-    async def async_is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
+    async def async_is_ready(ctrl_address: str, timeout: float = 1.0, logger=None, **kwargs) -> bool:
         """
         Async Check if status is ready.
         :param ctrl_address: the address where the control request needs to be sent
         :param timeout: timeout of the health check in seconds
+        :param logger: JinaLogger to be used
         :param kwargs: extra keyword arguments
         :return: True if status is ready else False.
         """
-        return FastAPIBaseServer.is_ready(ctrl_address, timeout)
+        return FastAPIBaseServer.is_ready(ctrl_address, timeout, logger=logger)
 
 
 def _install_health_check(app: 'FastAPI', logger):

@@ -20,12 +20,12 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
     """
 
     def __init__(
-        self,
-        name: Optional[str] = 'gateway',
-        runtime_args: Optional[Dict] = None,
-        req_handler_cls=None,
-        req_handler=None,
-        **kwargs,
+            self,
+            name: Optional[str] = 'gateway',
+            runtime_args: Optional[Dict] = None,
+            req_handler_cls=None,
+            req_handler=None,
+            **kwargs,
     ):
         self.name = name or ''
         self.runtime_args = runtime_args
@@ -166,16 +166,18 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
 
     @staticmethod
     def is_ready(
-        ctrl_address: str,
-        protocol: Optional[str] = 'grpc',
-        timeout: float = 1.0,
-        **kwargs,
+            ctrl_address: str,
+            protocol: Optional[str] = 'grpc',
+            timeout: float = 1.0,
+            logger=None,
+            **kwargs,
     ) -> bool:
         """
         Check if status is ready.
         :param ctrl_address: the address where the control request needs to be sent
         :param protocol: protocol of the gateway runtime
         :param timeout: timeout of grpc call in seconds
+        :param logger: JinaLogger to be used
         :param kwargs: extra keyword arguments
         :return: True if status is ready else False.
         """
@@ -195,16 +197,18 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
 
     @staticmethod
     async def async_is_ready(
-        ctrl_address: str,
-        protocol: Optional[str] = 'grpc',
-        timeout: float = 1.0,
-        **kwargs,
+            ctrl_address: str,
+            protocol: Optional[str] = 'grpc',
+            timeout: float = 1.0,
+            logger=None,
+            **kwargs,
     ) -> bool:
         """
         Check if status is ready.
         :param ctrl_address: the address where the control request needs to be sent
         :param protocol: protocol of the gateway runtime
         :param timeout: timeout of grpc call in seconds
+        :param logger: JinaLogger to be used
         :param kwargs: extra keyword arguments
         :return: True if status is ready else False.
         """
@@ -217,19 +221,19 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
                 or protocol == ProtocolType.GRPC
                 or protocol == 'grpc'
         ):
-            res = await GRPCServer.async_is_ready(ctrl_address)
+            res = await GRPCServer.async_is_ready(ctrl_address, logger=logger)
         else:
-            res = await FastAPIBaseServer.async_is_ready(ctrl_address)
+            res = await FastAPIBaseServer.async_is_ready(ctrl_address, logger=logger)
         return res
 
     @classmethod
     def wait_for_ready_or_shutdown(
-        cls,
-        timeout: Optional[float],
-        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
-        ctrl_address: str,
-        health_check: bool = False,
-        **kwargs,
+            cls,
+            timeout: Optional[float],
+            ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+            ctrl_address: str,
+            health_check: bool = False,
+            **kwargs,
     ):
         """
         Check if the runtime has successfully started

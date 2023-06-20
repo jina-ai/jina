@@ -149,11 +149,12 @@ class GRPCServer(BaseServer):
         await self.server.wait_for_termination()
 
     @staticmethod
-    def is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
+    def is_ready(ctrl_address: str, timeout: float = 1.0, logger=None, **kwargs) -> bool:
         """
         Check if status is ready.
         :param ctrl_address: the address where the control request needs to be sent
         :param timeout: timeout of the health check in seconds
+        :param logger: JinaLogger to be used
         :param kwargs: extra keyword arguments
         :return: True if status is ready else False.
         """
@@ -164,15 +165,18 @@ class GRPCServer(BaseServer):
             return (
                 response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
             )
-        except RpcError:
+        except RpcError as exc:
+            if logger:
+                logger.debug(f'Exception: {exc}')
             return False
 
     @staticmethod
-    async def async_is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
+    async def async_is_ready(ctrl_address: str, timeout: float = 1.0, logger=None, **kwargs) -> bool:
         """
         Async Check if status is ready.
         :param ctrl_address: the address where the control request needs to be sent
         :param timeout: timeout of the health check in seconds
+        :param logger: JinaLogger to be used
         :param kwargs: extra keyword arguments
         :return: True if status is ready else False.
         """
@@ -183,5 +187,7 @@ class GRPCServer(BaseServer):
             return (
                 response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
             )
-        except RpcError:
+        except RpcError as exc:
+            if logger:
+                logger.debug(f'Exception: {exc}')
             return False
