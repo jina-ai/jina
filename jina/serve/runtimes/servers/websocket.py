@@ -122,9 +122,11 @@ class WebSocketServer(BaseServer):
 
     async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
+        self.logger.debug(f'Shutting down server')
         await super().shutdown()
         self.server.should_exit = True
         await self.server.shutdown()
+        self.logger.debug(f'Server shutdown finished')
 
     async def run_server(self):
         """Run WebSocket server forever"""

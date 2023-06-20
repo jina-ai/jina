@@ -42,9 +42,11 @@ class LoadBalancingServer(BaseServer):
 
     async def shutdown(self):
         """Shutdown the server and free other allocated resources, e.g, streamer object, health check service, ..."""
+        self.logger.debug(f'Shutting down server')
         self._server_exit = True
         await super().shutdown()
         await self._request_handler.close()
+        self.logger.debug(f'Server shutdown finished')
 
     @property
     def _should_exit(self):

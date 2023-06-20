@@ -129,8 +129,10 @@ class GatewayRequestHandler:
         """
         Gratefully closes the object making sure all the floating requests are taken care and the connections are closed gracefully
         """
+        self.logger.debug(f'Closing Request Handler')
         self.cancel_warmup_task()
         await self.streamer.close()
+        self.logger.debug(f'Request Handler closed')
 
     def _http_fastapi_default_app(
         self,

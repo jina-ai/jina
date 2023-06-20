@@ -716,12 +716,15 @@ class WorkerRequestHandler:
 
     async def close(self):
         """Close the data request handler, by closing the executor and the batch queues."""
+        self.logger.debug(f'Closing Request Handler')
         if self._hot_reload_task is not None:
             self._hot_reload_task.cancel()
         if not self._is_closed:
+            self.logger.debug(f'Await closing all the batching queues')
             await asyncio.gather(*[q.close() for q in self._all_batch_queues()])
             self._executor.close()
             self._is_closed = True
+        self.logger.debug(f'Request Handler closed')
 
     @staticmethod
     def _get_docs_matrix_from_request(

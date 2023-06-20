@@ -143,9 +143,11 @@ class FastAPIBaseServer(BaseServer):
         """
         Free resources allocated when setting up HTTP server
         """
+        self.logger.debug(f'Shutting down server')
         await super().shutdown()
         self.server.should_exit = True
         await self.server.shutdown()
+        self.logger.debug(f'Server shutdown finished')
 
     async def run_server(self):
         """Run HTTP server forever"""
