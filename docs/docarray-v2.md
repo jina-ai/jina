@@ -209,6 +209,12 @@ with DocArray v2 schemas.
 
 Streaming endpoints receive one Document as input and yields one Document at a time.
 
+```{admonition} Note
+:class: note
+
+Streaming endpoints are only supported for the HTTP and gRPC protocols and for Deployment.
+```
+
 A streaming endpoint has the following signature:
 
 ```python
@@ -232,7 +238,7 @@ class MyExecutor(Executor):
 with Deployment(
     uses=MyExecutor,
     port=12345,
-    protocol='http',
+    protocol='http', # or 'grpc'
     cors=True,
     include_gateway=False,
 ) as dep:
@@ -244,7 +250,7 @@ Jina's standard python client also supports streaming endpoints with DocArray v2
 
 ```python
 from jina import Client, Document
-client = Client(port=12345, protocol='http', cors=True, asyncio=True)
+client = Client(port=12345, protocol='http', cors=True, asyncio=True) # or protocol='grpc'
 async for doc in client.stream_doc(
     on='/hello', inputs=MyDocument(text='hello world'), return_type=MyDocument
 ):
