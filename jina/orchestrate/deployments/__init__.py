@@ -1210,12 +1210,13 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 coros.append(self.uses_before_pod.async_wait_start_success())
             if self.uses_after_pod is not None:
                 coros.append(self.uses_after_pod.async_wait_start_success())
-            for shard_id in self.shards:
-                coros.append(self.shards[shard_id].async_wait_start_success())
-            if self.head_pod is not None:
-                coros.append(self.head_pod.async_wait_start_success())
             if self.gateway_pod is not None:
                 coros.append(self.gateway_pod.async_wait_start_success())
+            if self.head_pod is not None:
+                coros.append(self.head_pod.async_wait_start_success())
+            for shard_id in self.shards:
+                coros.append(self.shards[shard_id].async_wait_start_success())
+
             await asyncio.gather(*coros)
             self.logger.debug(f'Deployment started successfully')
         except:
