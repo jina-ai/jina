@@ -207,9 +207,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 pod.join()
 
         def wait_start_success(self):
-            self.logger.debug(
-                f'Waiting for ReplicaSet to start successfully'
-            )
+            self.logger.debug(f'Waiting for ReplicaSet to start successfully')
             for pod in self._pods:
                 pod.wait_start_success()
             # should this be done only when the cluster is started ?
@@ -218,9 +216,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             self.logger.debug(f'ReplicaSet started successfully')
 
         async def async_wait_start_success(self):
-            self.logger.debug(
-                f'Waiting for ReplicaSet to start successfully'
-            )
+            self.logger.debug(f'Waiting for ReplicaSet to start successfully')
             await asyncio.gather(
                 *[pod.async_wait_start_success() for pod in self._pods]
             )
