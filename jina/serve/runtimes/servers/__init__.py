@@ -6,12 +6,12 @@ from typing import TYPE_CHECKING, Dict, Optional, Union
 from jina.logging.logger import JinaLogger
 from jina.serve.instrumentation import InstrumentationMixin
 from jina.serve.runtimes.monitoring import MonitoringMixin
+import threading
 
 __all__ = ['BaseServer']
 
 if TYPE_CHECKING:
     import multiprocessing
-    import threading
 
 
 class BaseServer(MonitoringMixin, InstrumentationMixin):
@@ -25,11 +25,13 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
             runtime_args: Optional[Dict] = None,
             req_handler_cls=None,
             req_handler=None,
+            is_cancel=None,
             **kwargs,
     ):
         self.name = name or ''
         self.runtime_args = runtime_args
         self.works_as_load_balancer = False
+        self.is_cancel = is_cancel or threading.Event()
         if isinstance(runtime_args, Dict):
             self.works_as_load_balancer = runtime_args.get('gateway_load_balancer', False)
         if isinstance(self.runtime_args, dict):

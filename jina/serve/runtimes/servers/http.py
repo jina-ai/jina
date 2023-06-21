@@ -122,7 +122,7 @@ class FastAPIBaseServer(BaseServer):
             )
 
             if isinstance(self._request_handler, GatewayRequestHandler):
-                await self._request_handler.streamer._get_endpoints_input_output_models()
+                await self._request_handler.streamer._get_endpoints_input_output_models(is_cancel=self.is_cancel)
                 self._request_handler.streamer._validate_flow_docarray_compatibility()
 
         # app property will generate a new fastapi app each time called

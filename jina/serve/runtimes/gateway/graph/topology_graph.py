@@ -573,9 +573,14 @@ class TopologyGraph:
         self.has_filter_conditions = bool(graph_conditions)
         self._all_endpoints = None
 
-    async def _get_all_endpoints(self, connection_pool, retry_forever=False):
+    async def _get_all_endpoints(self, connection_pool, retry_forever=False, is_cancel=None):
+        def _condition():
+            if is_cancel is not None:
+                return not is_cancel.is_set()
+            else:
+                return True
         if not self._all_endpoints:
-            while True:
+            while _condition():
                 try:
                     models_schemas_list = []
                     models_list = []
