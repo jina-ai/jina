@@ -1125,18 +1125,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             _args.noblock_on_start = True
             self.uses_after_pod = PodFactory.build_pod(_args)
             self.enter_context(self.uses_after_pod)
-        if self.pod_args['head'] is not None:
-            _args = self.pod_args['head']
-            _args.noblock_on_start = True
-            self.head_pod = PodFactory.build_pod(_args)
-            self.enter_context(self.head_pod)
-        if self._include_gateway:
-            _args = self.pod_args['gateway']
-            _args.noblock_on_start = True
-            self.gateway_pod = PodFactory.build_pod(
-                _args, gateway_load_balancer=self._gateway_load_balancer
-            )
-            self.enter_context(self.gateway_pod)
 
         num_shards = len(self.pod_args['pods'])
         for shard_id in self.pod_args['pods']:
@@ -1149,6 +1137,20 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 else f'{self.name}-replica-set',
             )
             self.enter_context(self.shards[shard_id])
+
+        if self.pod_args['head'] is not None:
+            _args = self.pod_args['head']
+            _args.noblock_on_start = True
+            self.head_pod = PodFactory.build_pod(_args)
+            self.enter_context(self.head_pod)
+
+        if self._include_gateway:
+            _args = self.pod_args['gateway']
+            _args.noblock_on_start = True
+            self.gateway_pod = PodFactory.build_pod(
+                _args, gateway_load_balancer=self._gateway_load_balancer
+            )
+            self.enter_context(self.gateway_pod)
 
         if not self.args.noblock_on_start:
             self._wait_until_all_ready()
