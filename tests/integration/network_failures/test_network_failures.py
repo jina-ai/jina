@@ -188,7 +188,7 @@ async def test_runtimes_resource_not_found(port_generator, protocol, monkeypatch
 
         context.set_code(grpc.StatusCode.NOT_FOUND)
 
-    async def patch_process_data(self, requests_, context):
+    async def patch_process_data(self, requests_, context, **kwargs):
         import grpc
 
         context.set_code(grpc.StatusCode.NOT_FOUND)

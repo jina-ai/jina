@@ -208,18 +208,18 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         def wait_start_success(self):
             self.logger.debug(
-                f'Waiting for ReplicaSet {self.name} to start successfully'
+                f'Waiting for ReplicaSet to start successfully'
             )
             for pod in self._pods:
                 pod.wait_start_success()
             # should this be done only when the cluster is started ?
             if self._pods[0].args.stateful:
                 self._add_voter_to_leader()
-            self.logger.debug(f'ReplicaSet {self.name} started successfully')
+            self.logger.debug(f'ReplicaSet started successfully')
 
         async def async_wait_start_success(self):
             self.logger.debug(
-                f'Waiting for ReplicaSet {self.name} to start successfully'
+                f'Waiting for ReplicaSet to start successfully'
             )
             await asyncio.gather(
                 *[pod.async_wait_start_success() for pod in self._pods]
@@ -227,7 +227,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             # should this be done only when the cluster is started ?
             if self._pods[0].args.stateful:
                 await self._async_add_voter_to_leader()
-            self.logger.debug(f'ReplicaSet {self.name} started successfully')
+            self.logger.debug(f'ReplicaSet started successfully')
 
         def __enter__(self):
             for _args in self.args:
