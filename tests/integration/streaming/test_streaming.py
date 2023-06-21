@@ -13,7 +13,8 @@ class MyExecutor(Executor):
 
 
 @pytest.mark.asyncio
-async def test_streaming_sse_http_deployment():
+@pytest.mark.parametrize('protocol', ['http', 'grpc'])
+async def test_streaming_deployment(protocol):
     from jina import Deployment
 
     port = random_port()
@@ -21,12 +22,12 @@ async def test_streaming_sse_http_deployment():
     with Deployment(
         uses=MyExecutor,
         timeout_ready=-1,
-        protocol='http',
+        protocol=protocol,
         cors=True,
         port=port,
         include_gateway=False,
     ):
-        client = Client(port=port, protocol='http', cors=True, asyncio=True)
+        client = Client(port=port, protocol=protocol, cors=True, asyncio=True)
         i = 0
         async for doc in client.stream_doc(
             on='/hello', inputs=Document(text='hello world')
