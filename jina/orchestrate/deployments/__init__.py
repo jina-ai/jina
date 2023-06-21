@@ -69,12 +69,8 @@ def _call_add_voters(leader, voters, replica_ids, name, event_signal=None):
 
     import jraft
 
-    logger = JinaLogger(
-        context=f'add_voter-{name}', name=f'add_voter-{name}'
-    )
-    logger.debug(
-        f'Trying to add {len(replica_ids)} voters to leader {leader}'
-    )
+    logger = JinaLogger(context=f'add_voter-{name}', name=f'add_voter-{name}')
+    logger.debug(f'Trying to add {len(replica_ids)} voters to leader {leader}')
     for voter_address, replica_id in zip(voters, replica_ids):
         logger.debug(
             f'Trying to add replica-{str(replica_id)} as voter with address {voter_address} to leader at {leader}'
@@ -100,9 +96,7 @@ def _call_add_voters(leader, voters, replica_ids, name, event_signal=None):
             logger.success(
                 f'Replica-{str(replica_id)} successfully added as voter with address {voter_address} to leader at {leader}'
             )
-    logger.debug(
-        f'Adding voters to leader finished'
-    )
+    logger.debug(f'Adding voters to leader finished')
     if event_signal:
         event_signal.set()
 
