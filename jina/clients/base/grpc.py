@@ -221,7 +221,7 @@ class GRPCBaseClient(BaseClient):
         timeout: Optional[int] = None,
         **kwargs,
     ):
-        async for docs in self.post(on='/', inputs=[inputs]):
+        async for docs in self.post(on=on, inputs=[inputs]):
             yield docs[0]
 
 
