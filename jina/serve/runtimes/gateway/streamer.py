@@ -168,16 +168,18 @@ class GatewayStreamer:
         """
         return self._streamer.stream(*args, **kwargs)
 
-    async def _get_endpoints_input_output_models(self):
+    async def _get_endpoints_input_output_models(self, is_cancel):
         """
         Return a Dictionary with endpoints as keys and values as a dictionary of input and output schemas and names
-        taken from the endpoints proto endpoint of Executors
+        taken from the endpoints proto endpoint of Executors.
+        :param is_cancel: event signal to show that you should stop trying
         """
         # The logic should be to get the response of all the endpoints protos schemas from all the nodes. Then do a
         # logic that for every endpoint fom every Executor computes what is the input and output schema seen by the
         # Flow.
         self._endpoints_models_map = await self._streamer._get_endpoints_input_output_models(self.topology_graph,
-                                                                                             self._connection_pool)
+                                                                                             self._connection_pool,
+                                                                                             is_cancel)
 
     def _validate_flow_docarray_compatibility(self):
         """
@@ -378,6 +380,7 @@ class GatewayStreamer:
 
                 await asyncio.gather(*deployment_warmup_tasks, return_exceptions=True)
             except asyncio.CancelledError:
+                self.logger.debug(f'Warmup task got cancelled')
                 if deployment_warmup_tasks:
                     for task in deployment_warmup_tasks:
                         task.cancel()

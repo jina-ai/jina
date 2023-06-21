@@ -492,39 +492,6 @@ def test_param_correctness(use_stream):
             ]
             assert [doc.text for doc in results[2]] == [f'D{str(PARAM1)}']
 
-
-def test_failure_propagation():
-    from jina.excepts import BadServer
-
-    f = Flow().add(uses=PlaceholderExecutor)
-    with f:
-        with pytest.raises(BadServer):
-            Client(port=f.port).post(
-                '/wrongtype',
-                inputs=DocumentArray([Document(text=str(i)) for i in range(4)]),
-            )
-        with pytest.raises(BadServer):
-            Client(port=f.port).post(
-                '/wrongtype',
-                inputs=DocumentArray([Document(text=str(i)) for i in range(2)]),
-            )
-        with pytest.raises(BadServer):
-            Client(port=f.port).post(
-                '/wrongtype',
-                inputs=DocumentArray([Document(text=str(i)) for i in range(8)]),
-            )
-        with pytest.raises(BadServer):
-            Client(port=f.port).post(
-                '/wronglenda',
-                inputs=DocumentArray([Document(text=str(i)) for i in range(8)]),
-            )
-        with pytest.raises(BadServer):
-            Client(port=f.port).post(
-                '/wronglennone',
-                inputs=DocumentArray([Document(text=str(i)) for i in range(8)]),
-            )
-
-
 @pytest.mark.parametrize(
     'uses',
     [
@@ -623,3 +590,35 @@ async def test_sigterm_handling(signal, uses_with):
         process.join()
 
         time.sleep(0.1)
+
+
+def test_failure_propagation():
+    from jina.excepts import BadServer
+
+    f = Flow().add(uses=PlaceholderExecutor)
+    with f:
+        with pytest.raises(BadServer):
+            Client(port=f.port).post(
+                '/wrongtype',
+                inputs=DocumentArray([Document(text=str(i)) for i in range(4)]),
+            )
+        with pytest.raises(BadServer):
+            Client(port=f.port).post(
+                '/wrongtype',
+                inputs=DocumentArray([Document(text=str(i)) for i in range(2)]),
+            )
+        with pytest.raises(BadServer):
+            Client(port=f.port).post(
+                '/wrongtype',
+                inputs=DocumentArray([Document(text=str(i)) for i in range(8)]),
+            )
+        with pytest.raises(BadServer):
+            Client(port=f.port).post(
+                '/wronglenda',
+                inputs=DocumentArray([Document(text=str(i)) for i in range(8)]),
+            )
+        with pytest.raises(BadServer):
+            Client(port=f.port).post(
+                '/wronglennone',
+                inputs=DocumentArray([Document(text=str(i)) for i in range(8)]),
+            )

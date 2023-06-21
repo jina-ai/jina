@@ -432,9 +432,11 @@ class HeaderRequestHandler(MonitoringRequestMixin):
 
     async def close(self):
         """Close the data request handler, by closing the executor and the batch queues."""
+        self.logger.debug(f'Closing Request Handler')
         self.cancel_warmup_task()
         self.cancel_endpoint_discovery_from_workers_task()
         await self.connection_pool.close()
+        self.logger.debug(f'Request Handler closed')
 
     async def process_single_data(self, request: DataRequest, context) -> DataRequest:
         """

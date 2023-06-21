@@ -78,6 +78,7 @@ def run(
         is_started: Union['multiprocessing.Event', 'threading.Event'],
         is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
         is_ready: Union['multiprocessing.Event', 'threading.Event'],
+        is_signal_handlers_installed: Union['multiprocessing.Event', 'threading.Event'],
         jaml_classes: Optional[Dict] = None,
 ):
     """Method representing the :class:`BaseRuntime` activity.
@@ -108,6 +109,7 @@ def run(
     :param is_started: concurrency event to communicate runtime is properly started. Used for better logging
     :param is_shutdown: concurrency event to communicate runtime is terminated
     :param is_ready: concurrency event to communicate runtime is ready to receive messages
+    :param is_signal_handlers_installed: concurrency event to communicate runtime is ready to get SIGTERM from orchestration
     :param jaml_classes: all the `JAMLCompatible` classes imported in main process
     """
     req_handler_cls = None
@@ -138,7 +140,8 @@ def run(
         runtime = AsyncNewLoopRuntime(
             args=args,
             req_handler_cls=req_handler_cls,
-            gateway_load_balancer=getattr(args, 'gateway_load_balancer', False)
+            gateway_load_balancer=getattr(args, 'gateway_load_balancer', False),
+            signal_handlers_installed_event=is_signal_handlers_installed
         )
     except Exception as ex:
         logger.error(
