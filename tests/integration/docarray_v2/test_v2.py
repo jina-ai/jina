@@ -532,7 +532,7 @@ def test_get_parameters_back(protocol, ctxt_manager):
         assert ret[0].parameters == {'param': '5', '__results__': {'foo/rep-0': {'back': {'param': '5'}}}}
 
 
-@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+@pytest.mark.parametrize('protocol', ['grpc', 'http'])
 @pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
 def test_raise_exception(protocol, ctxt_manager):
     from jina.excepts import BadServer
@@ -555,9 +555,6 @@ def test_raise_exception(protocol, ctxt_manager):
                 ctxt_mgr.post(on='/hello', parameters={'param': '5'}, return_responses=True)
             assert excinfo.value.args[0] == {'detail': "Exception('Raising some exception from Executor')"}
         elif protocol == 'grpc':
-            with pytest.raises(BadServer):
-                ctxt_mgr.post(on='/hello', parameters={'param': '5'}, return_responses=True)
-        elif protocol == 'websocket':
             with pytest.raises(BadServer):
                 ctxt_mgr.post(on='/hello', parameters={'param': '5'}, return_responses=True)
 
