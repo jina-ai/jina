@@ -70,6 +70,7 @@ def _call_add_voters(leader, voters, replica_ids, name, event_signal=None):
     logger.debug(f'Trying to add {len(replica_ids)} voters to leader {leader}')
 
     import jraft
+
     logger.debug(f'jraft imported')
     for voter_address, replica_id in zip(voters, replica_ids):
         logger.debug(
