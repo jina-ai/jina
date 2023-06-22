@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/asyncio.html" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.runtimes.asyncio - Jina 3.17.0 documentation</title>
+        <title>jina.serve.runtimes.asyncio - Jina 3.18.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.17.0 documentation</div>
+                <div class="brand">Jina 3.18.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -426,7 +426,6 @@
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">set_gateway_parser</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">_set_gateway_uses</span>
-<span class="kn">from</span> <span class="nn">jina.serve.networking.utils</span> <span class="kn">import</span> <span class="n">send_health_check_async</span>
 
 <span class="c1"># Keep these imports even if not used, since YAML parser needs to find them in imported modules</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.composite</span> <span class="kn">import</span> <span class="n">CompositeGateway</span>
@@ -434,6 +433,7 @@
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.grpc</span> <span class="kn">import</span> <span class="n">GRPCGateway</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http</span> <span class="kn">import</span> <span class="n">HTTPGateway</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.websocket</span> <span class="kn">import</span> <span class="n">WebSocketGateway</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.servers</span> <span class="kn">import</span> <span class="n">BaseServer</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">import</span> <span class="nn">multiprocessing</span>
@@ -457,6 +457,9 @@
             <span class="n">cancel_event</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
                 <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;asyncio.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">]</span>
             <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">signal_handlers_ïnstalled_event</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+                <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;asyncio.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">]</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">req_handler_cls</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">gateway_load_balancer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -472,6 +475,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
         <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span> <span class="o">=</span> <span class="n">cancel_event</span> <span class="ow">or</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_signal_handlers_installed</span> <span class="o">=</span> <span class="n">signal_handlers_ïnstalled_event</span> <span class="ow">or</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Setting signal handlers&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">__windows__</span><span class="p">:</span>
 
@@ -493,6 +499,8 @@
             <span class="k">for</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">HANDLED_SIGNALS</span><span class="p">:</span>
                 <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">_cancel</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Signal handlers already set&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_signal_handlers_installed</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">async_setup</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_telemetry_event</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">)</span>
@@ -520,12 +528,12 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Do NOT override this method when inheriting from :class:`GatewayPod`&quot;&quot;&quot;</span>
         <span class="c1"># threads are not using asyncio.Event, but threading.Event</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="s1">&#39;_should_exit&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="s1">&#39;_should_exit&#39;</span>
         <span class="p">):</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="s1">&#39;_should_exit&#39;</span><span class="p">,</span> <span class="kc">False</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="s1">&#39;_should_exit&#39;</span><span class="p">,</span> <span class="kc">False</span>
             <span class="p">):</span>
                 <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
 
@@ -572,7 +580,7 @@
                 <span class="n">uses_with</span><span class="p">[</span><span class="s1">&#39;expose_graphql_endpoint&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">expose_graphql_endpoint</span>
             <span class="k">if</span> <span class="s1">&#39;cors&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">non_defaults</span><span class="p">:</span>
                 <span class="n">uses_with</span><span class="p">[</span><span class="s1">&#39;cors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">cors</span>
-            <span class="k">return</span> <span class="n">BaseGateway</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span>
+            <span class="n">server</span> <span class="o">=</span> <span class="n">BaseGateway</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">,</span>
                 <span class="n">uses_with</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
                     <span class="o">**</span><span class="n">non_defaults</span><span class="p">,</span>
@@ -588,9 +596,11 @@
                 <span class="n">py_modules</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">py_modules</span><span class="p">,</span>
                 <span class="n">extra_search_paths</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">extra_search_paths</span><span class="p">,</span>
             <span class="p">)</span>
-
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">BaseServer</span><span class="p">):</span>
+                <span class="n">server</span><span class="o">.</span><span class="n">is_cancel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span>
+            <span class="k">return</span> <span class="n">server</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;protocol&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
-            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ProtocolType</span><span class="o">.</span><span class="n">GRPC</span>
+                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ProtocolType</span><span class="o">.</span><span class="n">GRPC</span>
         <span class="p">):</span>
             <span class="kn">from</span> <span class="nn">jina.serve.runtimes.servers.grpc</span> <span class="kn">import</span> <span class="n">GRPCServer</span>
 
@@ -613,6 +623,7 @@
                               <span class="n">ssl_keyfile</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;ssl_keyfile&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
                               <span class="n">ssl_certfile</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;ssl_certfile&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
                               <span class="n">cors</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;cors&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                              <span class="n">is_cancel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="p">,</span>
                               <span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ProtocolType</span><span class="o">.</span><span class="n">WEBSOCKET</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">jina.serve.runtimes.servers.websocket</span> <span class="kn">import</span> \
@@ -623,7 +634,8 @@
                                    <span class="n">proxy</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;proxy&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
                                    <span class="n">uvicorn_kwargs</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;uvicorn_kwargs&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
                                    <span class="n">ssl_keyfile</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;ssl_keyfile&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                                   <span class="n">ssl_certfile</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;ssl_certfile&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+                                   <span class="n">ssl_certfile</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;ssl_certfile&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                                   <span class="n">is_cancel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">jina.serve.runtimes.servers.composite</span> <span class="kn">import</span> \
                 <span class="n">CompositeServer</span>  <span class="c1"># we need a concrete implementation of this</span>
@@ -631,7 +643,8 @@
                                    <span class="n">runtime_args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
                                    <span class="n">req_handler_cls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">req_handler_cls</span><span class="p">,</span>
                                    <span class="n">ssl_keyfile</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;ssl_keyfile&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                                   <span class="n">ssl_certfile</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;ssl_certfile&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+                                   <span class="n">ssl_certfile</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;ssl_certfile&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                                   <span class="n">is_cancel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_send_telemetry_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">extra_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">gateway_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
@@ -640,7 +653,7 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">req_handler_cls</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;HeaderRequestHandler&#39;</span><span class="p">:</span>
             <span class="n">runtime_cls_name</span> <span class="o">=</span> <span class="s1">&#39;HeadRuntime&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">runtime_cls_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="vm">__class__</span>
+            <span class="n">runtime_cls_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
             <span class="n">gateway_kwargs</span><span class="p">[</span><span class="s1">&#39;is_custom_gateway&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="vm">__class__</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
                 <span class="n">CompositeGateway</span><span class="p">,</span>
                 <span class="n">GRPCGateway</span><span class="p">,</span>
@@ -741,7 +754,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 06, 2023</div>
+                            Last updated on Jun 22, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

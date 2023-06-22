@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/orchestrate/pods/container.html" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.orchestrate.pods.container - Jina 3.17.0 documentation</title>
+        <title>jina.orchestrate.pods.container - Jina 3.18.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.17.0 documentation</div>
+                <div class="brand">Jina 3.18.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -601,6 +601,7 @@
     <span class="n">is_started</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">],</span>
     <span class="n">is_shutdown</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">],</span>
     <span class="n">is_ready</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">],</span>
+    <span class="n">is_signal_handlers_installed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">],</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Method to be run in a process that stream logs from a Container</span>
 
@@ -622,6 +623,7 @@
 <span class="sd">    :param runtime_ctrl_address: The control address of the runtime in the container</span>
 <span class="sd">    :param envs: Dictionary of environment variables to be set in the docker image</span>
 <span class="sd">    :param is_started: concurrency event to communicate runtime is properly started. Used for better logging</span>
+<span class="sd">    :param is_signal_handlers_installed: concurrency event to communicate runtime is ready to get SIGTERM from orchestration</span>
 <span class="sd">    :param is_shutdown: concurrency event to communicate runtime is terminated</span>
 <span class="sd">    :param is_ready: concurrency event to communicate runtime is ready to receive messages</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -634,16 +636,13 @@
     <span class="n">cancel</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
     <span class="n">fail_to_start</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_cancel</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; Process observing container receives signal&#39;</span><span class="p">)</span>
-        <span class="n">cancel</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">__windows__</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">signame</span> <span class="ow">in</span> <span class="p">{</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGINT</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGTERM</span><span class="p">}:</span>
                 <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signame</span><span class="p">,</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">cancel</span><span class="o">.</span><span class="n">set</span><span class="p">())</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39; The process starting the container for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> will not be able to handle termination signals. &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;The process starting the container for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> will not be able to handle termination signals. &#39;</span>
                 <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -657,6 +656,7 @@
 
         <span class="n">win32api</span><span class="o">.</span><span class="n">SetConsoleCtrlHandler</span><span class="p">(</span><span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">cancel</span><span class="o">.</span><span class="n">set</span><span class="p">(),</span> <span class="kc">True</span><span class="p">)</span>
 
+    <span class="n">is_signal_handlers_installed</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">docker</span><span class="o">.</span><span class="n">from_env</span><span class="p">()</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -719,7 +719,7 @@
         <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_started</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39; Process terminated, the container fails to start, check the arguments or entrypoint&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;Process terminated, the container fails to start, check the arguments or entrypoint&#39;</span>
             <span class="p">)</span>
         <span class="n">is_shutdown</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;process terminated&#39;</span><span class="p">)</span></div>
@@ -832,6 +832,7 @@
                 <span class="s1">&#39;runtime_ctrl_address&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_ctrl_address</span><span class="p">,</span>
                 <span class="s1">&#39;envs&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_envs</span><span class="p">,</span>
                 <span class="s1">&#39;is_started&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_started</span><span class="p">,</span>
+                <span class="s1">&#39;is_signal_handlers_installed&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_signal_handlers_installed</span><span class="p">,</span>
                 <span class="s1">&#39;is_shutdown&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">,</span>
                 <span class="s1">&#39;is_ready&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="p">,</span>
             <span class="p">},</span>
@@ -890,7 +891,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 06, 2023</div>
+                            Last updated on Jun 22, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

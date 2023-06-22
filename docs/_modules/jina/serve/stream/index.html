@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/stream.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.stream - Jina 3.17.0 documentation</title>
+        <title>jina.serve.stream - Jina 3.18.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.17.0 documentation</div>
+                <div class="brand">Jina 3.18.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -476,13 +476,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_iterate_sync_in_thread</span> <span class="o">=</span> <span class="n">iterate_sync_in_thread</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">total_num_floating_tasks_alive</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_endpoints_input_output_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topology_graph</span><span class="p">,</span> <span class="n">connection_pool</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_endpoints_input_output_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topology_graph</span><span class="p">,</span> <span class="n">connection_pool</span><span class="p">,</span> <span class="n">is_cancel</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a Dictionary with endpoints as keys and values as a dictionary of input and output schemas and names</span>
 <span class="sd">        taken from the endpoints proto endpoint of Executors</span>
 
 <span class="sd">        :param topology_graph: The topology graph from which the models need to be removed</span>
 <span class="sd">        :param connection_pool: The connection pool to be used</span>
+<span class="sd">        :param is_cancel: event signal to show that you should stop trying</span>
 <span class="sd">        :return: a Dictionary with endpoints as keys and values as a dictionary of input and output schemas and names taken from the endpoints proto endpoint of Executors</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># The logic should be to get the response of all the endpoints protos schemas from all the nodes. Then do a</span>
@@ -490,7 +491,9 @@
         <span class="c1"># Flow.</span>
         <span class="c1"># create loop and get from topology_graph</span>
         <span class="n">_endpoints_models_map</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">endpoints</span> <span class="o">=</span> <span class="k">await</span> <span class="n">topology_graph</span><span class="o">.</span><span class="n">_get_all_endpoints</span><span class="p">(</span><span class="n">connection_pool</span><span class="p">,</span> <span class="n">retry_forever</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Get all endpoints from TopologyGraph&#39;</span><span class="p">)</span>
+        <span class="n">endpoints</span> <span class="o">=</span> <span class="k">await</span> <span class="n">topology_graph</span><span class="o">.</span><span class="n">_get_all_endpoints</span><span class="p">(</span><span class="n">connection_pool</span><span class="p">,</span> <span class="n">retry_forever</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_cancel</span><span class="o">=</span><span class="n">is_cancel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Got all endpoints from TopologyGraph </span><span class="si">{</span><span class="n">endpoints</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">endp</span> <span class="ow">in</span> <span class="n">endpoints</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">origin_node</span> <span class="ow">in</span> <span class="n">topology_graph</span><span class="o">.</span><span class="n">origin_nodes</span><span class="p">:</span>
@@ -732,7 +735,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 06, 2023</div>
+                            Last updated on Jun 22, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -186,7 +186,78 @@ with Deployment(uses=MyExec) as dep:
 ```json
 {"__results__": {"my_executor/rep-0": {"internal_parameter": 20.0}}}
 ```
-  
+
+(streaming-endpoints)=
+## Streaming endpoints
+Executors can stream Documents individually rather than as a whole DocumentArray. 
+This is useful when you want to return Documents one by one and you want the client to immediately process Documents as 
+they arrive. This can be helpful for Generative AI use cases, where a Large Language Model is used to generate text 
+token by token and the client displays tokens as they arrive.
+Streaming endpoints receive one Document as input and yields one Document at a time.
+```{admonition} Note
+:class: note
+
+Streaming endpoints are only supported for HTTP protocol and for Deployment.
+```
+
+A streaming endpoint has the following signature:
+
+```python
+from jina import Executor, requests, Document, Deployment
+
+class MyExecutor(Executor):
+    @requests(on='/hello')
+    async def task(self, doc: Document, **kwargs):
+        for i in range(3):
+            yield Document(text=f'{doc.text} {i}')
+            
+with Deployment(
+    uses=MyExecutor,
+    port=12345,
+    protocol='http',
+    cors=True,
+    include_gateway=False,
+) as dep:
+    dep.block()
+```
+
+From the client side, any SSE client can be used to receive the Documents, one at a time.
+Jina offers a standard python client to use the streaming endpoint:
+
+```python
+from jina import Client, Document
+client = Client(port=12345, protocol='http', cors=True, asyncio=True)
+async for doc in client.stream_doc(
+    on='/hello', inputs=Document(text='hello world')
+):
+    print(doc.text )
+```
+```text
+hello world 0
+hello world 1
+hello world 2
+```
+
+You can also implement streaming endpoints in newer versions of DocArray. Refer to {ref}`this section <streaming-endpoits-docarray-v2>` to learn more.
+You can also refer to the following Javascript code to connect with the streaming endpoint from your browser:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<h2>SSE Client</h2>
+<script>
+    const evtSource = new EventSource("http://localhost:8080/hello?id=1&exec_endpoint=/hello");
+    evtSource.addEventListener("update", function(event) {
+        // Logic to handle status updates
+        console.log(event)
+    });
+    evtSource.addEventListener("end", function(event) {
+        console.log('Handling end....')
+        evtSource.close();
+    });
+</script></body></html>
+```
 ## Exception handling
 
 Exceptions inside `@requests`-decorated functions can simply be raised.

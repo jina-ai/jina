@@ -6,11 +6,11 @@
 <meta property="og:title" content="Welcome to Jina!" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/" />
-<meta property="og:site_name" content="Jina 3.17.0 Documentation" />
-<meta property="og:description" content="Jina is an MLOps framework to build multimodal AI microservice-based applications written in Python that can communicate via gRPC, HTTP and WebSocket protocols. It allows developers to build and serve services and pipelines while scaling and deploying them to a production while removing the compl..." />
-<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.17.0 Documentation" />
-<meta name="description" content="Jina is an MLOps framework to build multimodal AI microservice-based applications written in Python that can communicate via gRPC, HTTP and WebSocket protocols. It allows developers to build and serve services and pipelines while scaling and deploying them to a production while removing the compl..." />
+<meta property="og:site_name" content="Jina 3.18.0 Documentation" />
+<meta property="og:description" content="Jina lets you build multimodal AI services and pipelines that communicate via gRPC, HTTP and WebSockets, then scale them up and deploy to production. You can focus on your logic and algorithms, without worrying about the infrastructure complexity. Jina provides a smooth Pythonic experience transi..." />
+<meta property="og:image" content="https://docs.jina.ai/.github/images/build-deploy.png" />
+<meta property="og:image:alt" content="" />
+<meta name="description" content="Jina lets you build multimodal AI services and pipelines that communicate via gRPC, HTTP and WebSockets, then scale them up and deploy to production. You can focus on your logic and algorithms, without worrying about the infrastructure complexity. Jina provides a smooth Pythonic experience transi..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/index.html" />
 
     <link rel="shortcut icon" href="_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Jina 3.17.0 documentation</title>
+        <title>Jina 3.18.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="#">
-                <div class="brand">Jina 3.17.0 documentation</div>
+                <div class="brand">Jina 3.18.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -445,40 +445,18 @@
 <p class="admonition-title">Survey</p>
 <p>Take our <strong><a class="reference external" href="https://10sw1tcpld4.typeform.com/to/EGAEReM7?utm_source=doc&amp;amp;utm_medium=github&amp;amp;utm_campaign=user%20experience&amp;amp;utm_term=feb2023&amp;amp;utm_content=survey">user experience survey</a></strong> to let us know your thoughts and help shape the future of Jina!</p>
 </div>
-<p>Jina is an MLOps framework to build multimodal AI microservice-based applications written in Python that can communicate via gRPC, HTTP and WebSocket protocols.
-It allows developers to build and serve <strong>services</strong> and <strong>pipelines</strong> while <strong>scaling</strong> and <strong>deploying</strong> them to a production while removing the complexity, letting them focus on the
-logic/algorithmic part, saving valuable time and resources for engineering teams.</p>
-<p>Jina aims to provide a smooth Pythonic experience transitioning from local deployment to deploying to advanced orchestration frameworks such as Docker-Compose, Kubernetes, or Jina AI Cloud.
-It handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer.</p>
-<p align="center">
-<strong><a href="#build-ai-services">Build and deploy a gRPC microservice</a> • <a href="#build-a-pipeline">Build and deploy a pipeline</a></strong>
-</p>
-<p>Applications built with Jina enjoy the following features out of the box:</p>
-<p>🌌 <strong>Universal</strong></p>
+<p>Jina lets you build multimodal <a class="reference internal" href="#build-ai-services"><strong>AI services</strong></a> and <a class="reference internal" href="#build-a-pipeline"><strong>pipelines</strong></a> that communicate via gRPC, HTTP and WebSockets, then scale them up and deploy to production. You can focus on your logic and algorithms, without worrying about the infrastructure complexity.</p>
+<p><img alt="" src=".github/images/build-deploy.png" /></p>
+<p>Jina provides a smooth Pythonic experience transitioning from local deployment to advanced orchestration frameworks like Docker-Compose, Kubernetes, or Jina AI Cloud. Jina makes advanced solution engineering and cloud-native technologies accessible to every developer.</p>
 <ul class="simple">
-<li><p>Build applications that deliver fresh insights from multiple data types such as text, image, audio, video, 3D mesh, PDF with <a class="reference external" href="https://github.com/docarray/docarray">LF’s DocArray</a>.</p></li>
-<li><p>Support for all mainstream deep learning frameworks.</p></li>
-<li><p>Polyglot gateway that supports gRPC, Websockets, HTTP, GraphQL protocols with TLS.</p></li>
+<li><p>Build applications for any <a class="reference external" href="https://docs.docarray.org/data_types/first_steps/">data type</a>, any mainstream <a class="reference internal" href="#"><span class="xref myst">deep learning framework</span></a>, and any <a class="reference external" href="https://docs.jina.ai/concepts/serving/gateway/#set-protocol-in-python">protocol</a>.</p></li>
+<li><p>Design high-performance microservices, with <a class="reference external" href="https://docs.jina.ai/concepts/orchestration/scale-out/">easy scaling</a>, duplex client-server streaming, and async/non-blocking data processing over dynamic flows.</p></li>
+<li><p>Docker container integration via <a class="reference external" href="https://cloud.jina.ai">Executor Hub</a>, OpenTelemetry/Prometheus observability, and fast Kubernetes/Docker-Compose deployment.</p></li>
+<li><p>CPU/GPU hosting via <a class="reference external" href="https://cloud.jina.ai">Jina AI Cloud</a>.</p></li>
 </ul>
-<p>⚡ <strong>Performance</strong></p>
-<ul class="simple">
-<li><p>Intuitive design pattern for high-performance microservices.</p></li>
-<li><p>Easy scaling: set replicas, sharding in one line.</p></li>
-<li><p>Duplex streaming between client and server.</p></li>
-<li><p>Async and non-blocking data processing over dynamic flows.</p></li>
-</ul>
-<p>☁️ <strong>Cloud native</strong></p>
-<ul class="simple">
-<li><p>Seamless Docker container integration: sharing, exploring, sandboxing, versioning and dependency control via <a class="reference external" href="https://cloud.jina.ai">Executor Hub</a>.</p></li>
-<li><p>Full observability via OpenTelemetry, Prometheus and Grafana.</p></li>
-<li><p>Fast deployment to Kubernetes and Docker Compose.</p></li>
-</ul>
-<p>🍱 <strong>Ecosystem</strong></p>
-<ul class="simple">
-<li><p>Improved engineering efficiency thanks to the Jina AI ecosystem, so you can focus on innovating with the data applications you build.</p></li>
-<li><p>Free CPU/GPU hosting via <a class="reference external" href="https://cloud.jina.ai">Jina AI Cloud</a>.</p></li>
-</ul>
-<p>Jina’s value proposition may seem quite similar to that of FastAPI. However, there are several fundamental differences:</p>
+<details>
+    <summary><strong>Wait, how is Jina different from FastAPI?</strong></summary>
+Jina's value proposition may seem quite similar to that of FastAPI. However, there are several fundamental differences:
 <p><strong>Data structure and communication protocols</strong></p>
 <ul class="simple">
 <li><p>FastAPI communication relies on Pydantic and Jina relies on <a class="reference external" href="https://github.com/docarray/docarray">DocArray</a> allowing Jina to support multiple protocols
@@ -495,6 +473,7 @@ to expose its services.</p></li>
 to having production-ready services by using Kubernetes capacity to orchestrate the lifetime of containers.</p></li>
 <li><p>By using <a class="reference external" href="https://cloud.jina.ai">Jina AI Cloud</a> you have access to scalable and serverless deployments of your applications in one command.</p></li>
 </ul>
+</details>
 <section id="install">
 <h2>Install<a class="headerlink" href="#install" title="Permalink to this heading">#</a></h2>
 <p>Make sure that you have Python 3.7+ installed on Linux/macOS/<a class="reference internal" href="get-started/install/windows/#jina-on-windows"><span class="std std-ref">Windows</span></a>.</p>
@@ -516,50 +495,34 @@ to having production-ready services by using Kubernetes capacity to orchestrate 
 <p>Jina supports developers in building AI services and pipelines:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Build AI Services</label><div class="tab-content docutils">
-<p><a class="reference external" href="https://colab.research.google.com/github/jina-ai/jina/blob/master/.github/getting-started/notebook.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
-<p>Let’s build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an <strong><a class="reference external" href="https://docs.jina.ai/concepts/executor/">Executor</a></strong>. Our simple Executor will use Facebook’s mBART-50 model to translate French to English. We’ll then use a <strong>Deployment</strong> to serve it.</p>
+<p>Let’s build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an <strong><a class="reference external" href="https://docs.jina.ai/concepts/executor/">Executor</a></strong>. Our simple Executor will wrap the <a class="reference external" href="https://huggingface.co/stabilityai/stablelm-base-alpha-3b">StableLM</a> LLM from Stability AI. We’ll then use a <strong>Deployment</strong> to serve it.</p>
+<p><img alt="" src=".github/images/deployment-diagram.png" /></p>
 <blockquote>
 <div><p><strong>Note</strong>
 A Deployment serves just one Executor. To combine multiple Executors into a pipeline and serve that, use a <a class="reference internal" href="#build-a-pipeline">Flow</a>.</p>
 </div></blockquote>
-<blockquote>
-<div><p><strong>Note</strong>
-Run the <a class="reference external" href="https://colab.research.google.com/github/jina-ai/jina/blob/master/.github/getting-started/notebook.ipynb#scrollTo=0l-lkmz4H-jW">code in Colab</a> to install all dependencies.</p>
-</div></blockquote>
 <p>Let’s implement the service’s logic:</p>
 <table>
 <tr>
-<th><code>translate_executor.py</code> </th> 
+<th><code>executor.py</code></th> 
 <tr>
 <td>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
-<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoTokenizer</span><span class="p">,</span> <span class="n">AutoModelForSeq2SeqLM</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">pipeline</span>
 
 
-<span class="k">class</span> <span class="nc">Translator</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">StableLM</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
-            <span class="s2">&quot;facebook/mbart-large-50-many-to-many-mmt&quot;</span><span class="p">,</span> <span class="n">src_lang</span><span class="o">=</span><span class="s2">&quot;fr_XX&quot;</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">AutoModelForSeq2SeqLM</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
-            <span class="s2">&quot;facebook/mbart-large-50-many-to-many-mmt&quot;</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="s1">&#39;text-generation&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;stablelm-3b&#39;</span><span class="p">)</span>
 
     <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
-            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_translate</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
-        <span class="n">encoded_en</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">)</span>
-        <span class="n">generated_tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
-            <span class="o">**</span><span class="n">encoded_en</span><span class="p">,</span> <span class="n">forced_bos_token_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">lang_code_to_id</span><span class="p">[</span><span class="s2">&quot;en_XX&quot;</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">batch_decode</span><span class="p">(</span><span class="n">generated_tokens</span><span class="p">,</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span>
-            <span class="mi">0</span>
-        <span class="p">]</span>
+    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">generated_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">texts</span> <span class="o">=</span> <span class="p">[</span><span class="n">gen</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;generated_text&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">gen</span> <span class="ow">in</span> <span class="n">generated_text</span><span class="p">]</span>
 </pre></div>
 </div>
 </td>
@@ -575,9 +538,11 @@ Run the <a class="reference external" href="https://colab.research.google.com/gi
 <tr>
 <td>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
-<span class="kn">from</span> <span class="nn">translate_executor</span> <span class="kn">import</span> <span class="n">Translator</span>
+<span class="kn">from</span> <span class="nn">executor</span> <span class="kn">import</span> <span class="n">StableLM</span>
 
-<span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">Translator</span><span class="p">,</span> <span class="n">timeout_ready</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
+<span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">StableLM</span><span class="p">,</span> <span class="n">timeout_ready</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">dep</span><span class="p">:</span>
     <span class="n">dep</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -585,10 +550,11 @@ Run the <a class="reference external" href="https://colab.research.google.com/gi
 <td>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span>
 <span class="nt">with</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Translator</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">StableLM</span>
 <span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">translate_executor.py</span><span class="w"> </span><span class="c1"># name of the module containing Translator</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor.py</span>
 <span class="w">  </span><span class="nt">timeout_ready</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345</span>
 </pre></div>
 </div>
 <p>And run the YAML Deployment with the CLI: <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">deployment</span> <span class="pre">--uses</span> <span class="pre">deployment.yml</span></code></p>
@@ -596,42 +562,33 @@ Run the <a class="reference external" href="https://colab.research.google.com/gi
 </tr>
 </table>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>──────────────────────────────────────── 🎉 Deployment is ready to serve! ─────────────────────────────────────────
-╭────────────── 🔗 Endpoint ───────────────╮
-│  ⛓      Protocol                   GRPC │
-│  🏠        Local          0.0.0.0:12345  │
-│  🔒      Private      172.28.0.12:12345  │
-│  🌍       Public    35.230.97.208:12345  │
-╰──────────────────────────────────────────╯
-</pre></div>
-</div>
 <p>Use <a class="reference external" href="https://docs.jina.ai/concepts/client/">Jina Client</a> to make requests to the service:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
 
-<span class="n">french_text</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span>
-    <span class="n">text</span><span class="o">=</span><span class="s1">&#39;un astronaut est en train de faire une promenade dans un parc&#39;</span>
+<span class="n">prompt</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span>
+    <span class="n">tags</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;prompt&#39;</span><span class="p">:</span> <span class="s1">&#39;suggest an interesting image generation prompt for a mona lisa variant&#39;</span><span class="p">}</span>
 <span class="p">)</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>  <span class="c1"># use port from output above</span>
-<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">french_text</span><span class="p">])</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">prompt</span><span class="p">])</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>an astronaut is walking in a park
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>a steampunk version of the Mona Lisa, incorporating mechanical gears, brass elements, and Victorian era clothing details
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">Build Pipelines</label><div class="tab-content docutils">
-<p><a class="reference external" href="https://colab.research.google.com/github/jina-ai/jina/blob/master/.github/getting-started/notebook.ipynb#scrollTo=YfNm1nScH30U"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <p>Sometimes you want to chain microservices together into a pipeline. That’s where a <a class="reference external" href="https://docs.jina.ai/concepts/flow/">Flow</a> comes in.</p>
 <p>A Flow is a <a class="reference external" href="https://de.wikipedia.org/wiki/DAG">DAG</a> pipeline, composed of a set of steps, It orchestrates a set of <a class="reference external" href="https://docs.jina.ai/concepts/executor/">Executors</a> and a <a class="reference external" href="https://docs.jina.ai/concepts/gateway/">Gateway</a> to offer an end-to-end service.</p>
 <blockquote>
 <div><p><strong>Note</strong>
 If you just want to serve a single Executor, you can use a <a class="reference internal" href="#build-ai--ml-services"><span class="xref myst">Deployment</span></a>.</p>
 </div></blockquote>
-<p>For instance, let’s combine <a class="reference internal" href="#build-ai--ml-services"><span class="xref myst">our French translation service</span></a> with a Stable Diffusion image generation service from Jina AI’s <a class="reference external" href="https://cloud.jina.ai/executors">Executor Hub</a>. Chaining these services together into a <a class="reference external" href="https://docs.jina.ai/concepts/flow/">Flow</a> will give us a multilingual image generation service.</p>
+<p>For instance, let’s combine <a class="reference internal" href="#build-ai--ml-services"><span class="xref myst">our StableLM language model</span></a> with a Stable Diffusion image generation service from Jina AI’s <a class="reference external" href="https://cloud.jina.ai/executors">Executor Hub</a>. Chaining these services together into a <a class="reference external" href="https://docs.jina.ai/concepts/flow/">Flow</a> will give us a service that will generate images based on a prompt generated by the LLM.</p>
+<p><img alt="" src=".github/images/flow-diagram.png" /></p>
 <p>Build the Flow with either Python or YAML:</p>
 <div class="table-wrapper">
 <table>
@@ -642,16 +599,17 @@ If you just want to serve a single Executor, you can use a <a class="reference i
 <tr>
 <td>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+<span class="kn">from</span> <span class="nn">executor</span> <span class="kn">import</span> <span class="n">StableLM</span>
 
 <span class="n">flow</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">Flow</span><span class="p">()</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">Translator</span><span class="p">,</span> <span class="n">timeout_ready</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">StableLM</span><span class="p">,</span> <span class="n">timeout_ready</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
     <span class="o">.</span><span class="n">add</span><span class="p">(</span>
         <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai://jina-ai/TextToImage&#39;</span><span class="p">,</span>
         <span class="n">timeout_ready</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">install_requirements</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
-<span class="p">)</span>  <span class="c1"># use the Executor from Executor hub</span>
+<span class="p">)</span>  <span class="c1"># use the Executor from Jina&#39;s Executor hub</span>
 
 <span class="k">with</span> <span class="n">flow</span><span class="p">:</span>
     <span class="n">flow</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
@@ -660,11 +618,13 @@ If you just want to serve a single Executor, you can use a <a class="reference i
 </td>
 <td>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345</span>
 <span class="nt">executors</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Translator</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">StableLM</span>
 <span class="w">    </span><span class="nt">timeout_ready</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
 <span class="w">    </span><span class="nt">py_modules</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">translate_executor.py</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor.py</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai://jina-ai/TextToImage</span>
 <span class="w">    </span><span class="nt">timeout_ready</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
 <span class="w">    </span><span class="nt">install_requirements</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -675,30 +635,22 @@ If you just want to serve a single Executor, you can use a <a class="reference i
 </tr>
 </table>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>─────────────────────────────────────────── 🎉 Flow is ready to serve! ────────────────────────────────────────────
-╭────────────── 🔗 Endpoint ───────────────╮
-│  ⛓      Protocol                   GRPC  │
-│  🏠        Local          0.0.0.0:12345  │
-│  🔒      Private      172.28.0.12:12345  │
-│  🌍       Public    35.240.201.66:12345  │
-╰──────────────────────────────────────────╯
-</pre></div>
-</div>
 <p>Then, use <a class="reference external" href="https://docs.jina.ai/concepts/client/">Jina Client</a> to make requests to the Flow:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Document</span>
 
-<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>  <span class="c1"># use port from output above</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
 
-<span class="n">french_text</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span>
-    <span class="n">text</span><span class="o">=</span><span class="s1">&#39;un astronaut est en train de faire une promenade dans un parc&#39;</span>
+<span class="n">prompt</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span>
+    <span class="n">tags</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;prompt&#39;</span><span class="p">:</span> <span class="s1">&#39;suggest an interesting image generation prompt for a mona lisa variant&#39;</span><span class="p">}</span>
 <span class="p">)</span>
 
-<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">french_text</span><span class="p">])</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">prompt</span><span class="p">])</span>
 
 <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
 </pre></div>
 </div>
-<p><img alt="stable-diffusion-output.png" src="https://raw.githubusercontent.com/jina-ai/jina/master/.github/stable-diffusion-output.png" /></p>
+<p><img alt="" src=".github/images/mona-lisa.png" /></p>
+<h2 class="rubric" id="deploy-to-the-cloud">Deploy to the cloud</h2>
 <p>You can also deploy a Flow to JCloud.</p>
 <p>First, turn the <code class="docutils literal notranslate"><span class="pre">flow.yml</span></code> file into a <a class="reference external" href="https://docs.jina.ai/concepts/jcloud/yaml-spec/">JCloud-compatible YAML</a> by specifying resource requirements and using containerized Hub Executors.</p>
 <p>Then, use <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">cloud</span> <span class="pre">deploy</span></code> command to deploy to the cloud:</p>
@@ -706,7 +658,10 @@ If you just want to serve a single Executor, you can use a <a class="reference i
 jina<span class="w"> </span>cloud<span class="w"> </span>deploy<span class="w"> </span>jcloud-flow.yml
 </pre></div>
 </div>
-<p>⚠️ <strong>Caution: Make sure to delete/clean up the Flow once you are done with this tutorial to save resources and credits.</strong></p>
+<blockquote>
+<div><p><strong>Warning</strong></p>
+<p>Make sure to delete/clean up the Flow once you are done with this tutorial to save resources and credits.</p>
+</div></blockquote>
 <p>Read more about <a class="reference external" href="https://docs.jina.ai/concepts/jcloud/#deploy">deploying Flows to JCloud</a>.</p>
 </div>
 </div>
@@ -785,14 +740,6 @@ jina<span class="w"> </span>cloud<span class="w"> </span>deploy<span class="w"> 
 <h2>Support<a class="headerlink" href="#support" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Join our <a class="reference external" href="https://discord.jina.ai">Discord community</a> and chat with other community members about ideas.</p></li>
-<li><p>Join our <a class="reference external" href="https://youtube.com/playlist?list=PL3UBBWOUVhFYRUa_gpYYKBqEAkO4sxmne">Engineering All Hands</a> meet-up to discuss your use case and learn Jina’s new features.</p>
-<ul>
-<li><p><strong>When?</strong> The second Tuesday of every month</p></li>
-<li><p><strong>Where?</strong>
-Zoom (<a class="reference external" href="https://calendar.google.com/calendar/embed?src=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&amp;amp;ctz=Europe%2FBerlin">see our public events calendar</a>/<a class="reference external" href="https://calendar.google.com/calendar/ical/c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com/public/basic.ics">.ical</a>)
-and <a class="reference external" href="https://youtube.com/c/jina-ai">live stream on YouTube</a></p></li>
-</ul>
-</li>
 <li><p>Subscribe to the latest video tutorials on our <a class="reference external" href="https://youtube.com/c/jina-ai">YouTube channel</a></p></li>
 </ul>
 </section>
@@ -839,7 +786,7 @@ and <a class="reference external" href="https://youtube.com/c/jina-ai">live stre
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 06, 2023</div>
+                            Last updated on Jun 22, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

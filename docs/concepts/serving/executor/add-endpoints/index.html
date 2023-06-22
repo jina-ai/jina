@@ -6,10 +6,10 @@
 <meta property="og:title" content="Add Endpoints" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/serving/executor/add-endpoints/" />
-<meta property="og:site_name" content="Jina 3.17.0 Documentation" />
+<meta property="og:site_name" content="Jina 3.18.0 Documentation" />
 <meta property="og:description" content="Methods decorated with@requests are mapped to network endpoints while serving. Decorator: Executor methods decorated with requests are bound to specific network requests, and respond to network queries. Both def or async def methods can be decorated with requests. You can import the@requests deco..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.17.0 Documentation" />
+<meta property="og:image:alt" content="Jina 3.18.0 Documentation" />
 <meta name="description" content="Methods decorated with@requests are mapped to network endpoints while serving. Decorator: Executor methods decorated with requests are bound to specific network requests, and respond to network queries. Both def or async def methods can be decorated with requests. You can import the@requests deco..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/serving/executor/add-endpoints.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Add Endpoints - Jina 3.17.0 documentation</title>
+        <title>Add Endpoints - Jina 3.18.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.17.0 documentation</div>
+                <div class="brand">Jina 3.18.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -606,6 +606,71 @@ This means it is the fallback handler for endpoints that are not found. <code cl
 </pre></div>
 </div>
 </section>
+<section id="streaming-endpoints">
+<span id="id1"></span><h2>Streaming endpoints<a class="headerlink" href="#streaming-endpoints" title="Permalink to this heading">#</a></h2>
+<p>Executors can stream Documents individually rather than as a whole DocumentArray.
+This is useful when you want to return Documents one by one and you want the client to immediately process Documents as
+they arrive. This can be helpful for Generative AI use cases, where a Large Language Model is used to generate text
+token by token and the client displays tokens as they arrive.
+Streaming endpoints receive one Document as input and yields one Document at a time.</p>
+<div class="note admonition">
+<p class="admonition-title">Note</p>
+<p>Streaming endpoints are only supported for HTTP protocol and for Deployment.</p>
+</div>
+<p>A streaming endpoint has the following signature:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Deployment</span>
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            
+<span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span>
+    <span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span>
+    <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span>
+    <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span>
+    <span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">include_gateway</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">dep</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>From the client side, any SSE client can be used to receive the Documents, one at a time.
+Jina offers a standard python client to use the streaming endpoint:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Document</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">stream_doc</span><span class="p">(</span>
+    <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;hello world&#39;</span><span class="p">)</span>
+<span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>hello world 0
+hello world 1
+hello world 2
+</pre></div>
+</div>
+<p>You can also implement streaming endpoints in newer versions of DocArray. Refer to <a class="reference internal" href="../../../../docarray-v2/#streaming-endpoits-docarray-v2"><span class="std std-ref">this section</span></a> to learn more.
+You can also refer to the following Javascript code to connect with the streaming endpoint from your browser:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&quot;en&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>SSE Client<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">evtSource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">EventSource</span><span class="p">(</span><span class="s2">&quot;http://localhost:8080/hello?id=1&amp;exec_endpoint=/hello&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">evtSource</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;update&quot;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Logic to handle status updates</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">    </span><span class="nx">evtSource</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Handling end....&#39;</span><span class="p">)</span>
+<span class="w">        </span><span class="nx">evtSource</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;&lt;/</span><span class="nt">body</span><span class="p">&gt;&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</section>
 <section id="exception-handling">
 <h2>Exception handling<a class="headerlink" href="#exception-handling" title="Permalink to this heading">#</a></h2>
 <p>Exceptions inside <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code>-decorated functions can simply be raised.</p>
@@ -685,7 +750,7 @@ NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 06, 2023</div>
+                            Last updated on Jun 22, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -725,6 +790,7 @@ NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&
 </li>
 <li><a class="reference internal" href="#arguments">Arguments</a></li>
 <li><a class="reference internal" href="#returns">Returns</a></li>
+<li><a class="reference internal" href="#streaming-endpoints">Streaming endpoints</a></li>
 <li><a class="reference internal" href="#exception-handling">Exception handling</a></li>
 </ul>
 </li>

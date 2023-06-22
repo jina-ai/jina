@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/clients/mixin.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.clients.mixin - Jina 3.17.0 documentation</title>
+        <title>jina.clients.mixin - Jina 3.18.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.17.0 documentation</div>
+                <div class="brand">Jina 3.18.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -936,6 +936,39 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">result</span></div>
 
+<div class="viewcode-block" id="AsyncPostMixin.stream_doc"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin.stream_doc">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream_doc</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">on</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Document</span><span class="p">]</span> <span class="o">=</span> <span class="n">Document</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;Document&#39;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send one document to a streaming endpoint and receive results asynchronisly, one Document at a time.</span>
+
+<span class="sd">        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document.</span>
+<span class="sd">        :param on: the endpoint which is invoked. All the functions in the executors decorated by `@requests(on=...)` with the same endpoint are invoked.</span>
+<span class="sd">        :param parameters: the kwargs that will be sent to the executor</span>
+<span class="sd">        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.</span>
+<span class="sd">        :param timeout: Timeout for the client to remain connected to the server.</span>
+<span class="sd">        :param kwargs: additional parameters, can be used to pass metadata or authentication information in the server call</span>
+<span class="sd">        :yield: Document object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="n">_include_results_field_in_param</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+
+        <span class="k">async</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">_get_streaming_results</span><span class="p">(</span>
+            <span class="n">on</span><span class="o">=</span><span class="n">on</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+            <span class="n">exec_endpoint</span><span class="o">=</span><span class="n">on</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+            <span class="n">return_type</span><span class="o">=</span><span class="n">return_type</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="k">yield</span> <span class="n">doc</span></div>
+
     <span class="c1"># ONLY CRUD, for other request please use `.post`</span>
     <span class="n">index</span> <span class="o">=</span> <span class="n">partialmethod</span><span class="p">(</span><span class="n">post</span><span class="p">,</span> <span class="s1">&#39;/index&#39;</span><span class="p">)</span>
     <span class="n">search</span> <span class="o">=</span> <span class="n">partialmethod</span><span class="p">(</span><span class="n">post</span><span class="p">,</span> <span class="s1">&#39;/search&#39;</span><span class="p">)</span>
@@ -955,7 +988,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 06, 2023</div>
+                            Last updated on Jun 22, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

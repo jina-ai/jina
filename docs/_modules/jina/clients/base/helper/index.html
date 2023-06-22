@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/clients/base/helper.html" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.clients.base.helper - Jina 3.17.0 documentation</title>
+        <title>jina.clients.base.helper - Jina 3.18.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.17.0 documentation</div>
+                <div class="brand">Jina 3.18.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -415,13 +415,14 @@
                     <h1>Source code for jina.clients.base.helper</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">aiohttp</span>
 <span class="kn">from</span> <span class="nn">aiohttp</span> <span class="kn">import</span> <span class="n">WSMsgType</span>
 <span class="kn">from</span> <span class="nn">aiohttp.payload</span> <span class="kn">import</span> <span class="n">BytesPayload</span>
 <span class="kn">from</span> <span class="nn">starlette</span> <span class="kn">import</span> <span class="n">status</span>
 
+<span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">docarray_v2</span>
 <span class="kn">from</span> <span class="nn">jina.clients.base</span> <span class="kn">import</span> <span class="n">retry</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">WebsocketSubProtocols</span>
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">BadClient</span>
@@ -429,23 +430,24 @@
 <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.status</span> <span class="kn">import</span> <span class="n">StatusMessage</span>
-<span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">docarray_v2</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">from</span> <span class="nn">opentelemetry</span> <span class="kn">import</span> <span class="n">trace</span>
 
+    <span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">Document</span>
     <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 
 <span class="k">if</span> <span class="n">docarray_v2</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">docarray.base_doc.io.json</span> <span class="kn">import</span> <span class="n">orjson_dumps</span>
 
-
     <span class="k">class</span> <span class="nc">JinaJsonPayload</span><span class="p">(</span><span class="n">BytesPayload</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A JSON payload for Jina Requests&quot;&quot;&quot;</span>
+
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-                <span class="bp">self</span><span class="p">,</span>
-                <span class="n">value</span><span class="p">,</span>
-                <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">value</span><span class="p">,</span>
+            <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
                 <span class="n">orjson_dumps</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
@@ -460,15 +462,15 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;aiohttp session manager&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">,</span>
-            <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="n">initial_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
-            <span class="n">max_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
-            <span class="n">backoff_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
-            <span class="n">tracer_provider</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;trace.TraceProvider&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">,</span>
+        <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">initial_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">max_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">backoff_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
+        <span class="n">tracer_provider</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;trace.TraceProvider&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;HTTP Client to be used with the streamer</span>
 
@@ -565,6 +567,8 @@
 <div class="viewcode-block" id="HTTPClientlet"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet">[docs]</a><span class="k">class</span> <span class="nc">HTTPClientlet</span><span class="p">(</span><span class="n">AioHttpClientlet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;HTTP Client to be used with the streamer&quot;&quot;&quot;</span>
 
+    <span class="n">UPDATE_EVENT_PREFIX</span> <span class="o">=</span> <span class="mi">14</span>  <span class="c1"># the update event has the following format: &quot;event: update: {document_json}&quot;</span>
+
 <div class="viewcode-block" id="HTTPClientlet.send_message"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.send_message">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sends a POST request to the server</span>
 
@@ -582,10 +586,9 @@
                     <span class="n">request_kwargs</span><span class="p">[</span><span class="s1">&#39;json&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_dict</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="kn">from</span> <span class="nn">docarray.base_doc.io.json</span> <span class="kn">import</span> <span class="n">orjson_dumps</span>
+
                     <span class="n">request_kwargs</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">JinaJsonPayload</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">req_dict</span><span class="p">)</span>
-                <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-                    <span class="o">**</span><span class="n">request_kwargs</span>
-                <span class="p">)</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="o">**</span><span class="n">request_kwargs</span><span class="p">)</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">r_str</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
                 <span class="k">except</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ContentTypeError</span><span class="p">:</span>
@@ -601,6 +604,36 @@
                     <span class="n">initial_backoff</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_backoff</span><span class="p">,</span>
                     <span class="n">max_backoff</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_backoff</span><span class="p">,</span>
                 <span class="p">)</span></div>
+
+<div class="viewcode-block" id="HTTPClientlet.send_streaming_message"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.send_streaming_message">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_streaming_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s1">&#39;Document&#39;</span><span class="p">,</span> <span class="n">on</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sends a GET SSE request to the server</span>
+
+<span class="sd">        :param doc: Request Document</span>
+<span class="sd">        :param on: Request endpoint</span>
+<span class="sd">        :yields: responses</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">docarray_v2</span><span class="p">:</span>
+            <span class="n">req_dict</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">req_dict</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+
+        <span class="n">req_dict</span><span class="p">[</span><span class="s1">&#39;exec_endpoint&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">on</span>
+
+        <span class="n">request_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+            <span class="s1">&#39;headers&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;Accept&#39;</span><span class="p">:</span> <span class="s1">&#39;text/event-stream&#39;</span><span class="p">},</span>
+        <span class="p">}</span>
+        <span class="n">req_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">req_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
+        <span class="n">request_kwargs</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_dict</span>
+
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">**</span><span class="n">request_kwargs</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">iter_any</span><span class="p">():</span>
+                <span class="n">events</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;event: &#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;update&#39;</span><span class="p">):</span>
+                        <span class="k">yield</span> <span class="n">event</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">UPDATE_EVENT_PREFIX</span> <span class="p">:]</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+                    <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;end&#39;</span><span class="p">):</span>
+                        <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="HTTPClientlet.send_dry_run"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.send_dry_run">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Query the dry_run endpoint from Gateway</span>
@@ -753,7 +786,9 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span><span class="o">.</span><span class="n">close_code</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span> <span class="k">else</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="handle_response_status"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.handle_response_status">[docs]</a><span class="k">def</span> <span class="nf">handle_response_status</span><span class="p">(</span><span class="n">http_status</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">response_content</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="handle_response_status"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.handle_response_status">[docs]</a><span class="k">def</span> <span class="nf">handle_response_status</span><span class="p">(</span>
+    <span class="n">http_status</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">response_content</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Raise BadClient exception for HTTP 404 status.</span>
 <span class="sd">    Raise ConnectionError for HTTP status codes 504, 504 if header information is available.</span>
@@ -765,8 +800,8 @@
     <span class="k">if</span> <span class="n">http_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_404_NOT_FOUND</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">BadClient</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;no such endpoint </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="p">(</span>
-            <span class="n">http_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_503_SERVICE_UNAVAILABLE</span>
-            <span class="ow">or</span> <span class="n">http_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_504_GATEWAY_TIMEOUT</span>
+        <span class="n">http_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_503_SERVICE_UNAVAILABLE</span>
+        <span class="ow">or</span> <span class="n">http_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_504_GATEWAY_TIMEOUT</span>
     <span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">response_content</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
@@ -778,8 +813,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">response_content</span><span class="p">)</span>
     <span class="k">elif</span> <span class="p">(</span>
-            <span class="n">http_status</span> <span class="o">&lt;</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span>
-            <span class="ow">or</span> <span class="n">http_status</span> <span class="o">&gt;</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_300_MULTIPLE_CHOICES</span>
+        <span class="n">http_status</span> <span class="o">&lt;</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span>
+        <span class="ow">or</span> <span class="n">http_status</span> <span class="o">&gt;</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_300_MULTIPLE_CHOICES</span>
     <span class="p">):</span>  <span class="c1"># failure codes</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">response_content</span><span class="p">)</span></div>
 </pre></div>
@@ -796,7 +831,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 06, 2023</div>
+                            Last updated on Jun 22, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/orchestrate/deployments.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.orchestrate.deployments - Jina 3.17.0 documentation</title>
+        <title>jina.orchestrate.deployments - Jina 3.18.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.17.0 documentation</div>
+                <div class="brand">Jina 3.18.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -478,19 +478,17 @@
     <span class="k">pass</span></div>
 
 
-<span class="k">def</span> <span class="nf">_call_add_voters</span><span class="p">(</span><span class="n">leader</span><span class="p">,</span> <span class="n">voters</span><span class="p">,</span> <span class="n">replica_ids</span><span class="p">,</span> <span class="n">event_signal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_call_add_voters</span><span class="p">(</span><span class="n">leader</span><span class="p">,</span> <span class="n">voters</span><span class="p">,</span> <span class="n">replica_ids</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">event_signal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="c1"># this method needs to be run in multiprocess, importing jraft in main process</span>
     <span class="c1"># makes it impossible to do tests sequentially</span>
 
     <span class="kn">import</span> <span class="nn">jraft</span>
 
-    <span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span>
-        <span class="s1">&#39;add_voter&#39;</span><span class="p">,</span>
-    <span class="p">)</span>
-
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;add_voter-</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;add_voter-</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Trying to add </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">replica_ids</span><span class="p">)</span><span class="si">}</span><span class="s1"> voters to leader </span><span class="si">{</span><span class="n">leader</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">voter_address</span><span class="p">,</span> <span class="n">replica_id</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">voters</span><span class="p">,</span> <span class="n">replica_ids</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Trying to add </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">replica_id</span><span class="p">)</span><span class="si">}</span><span class="s1"> as voter with address </span><span class="si">{</span><span class="n">voter_address</span><span class="si">}</span><span class="s1"> to leader at </span><span class="si">{</span><span class="n">leader</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;Trying to add replica-</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">replica_id</span><span class="p">)</span><span class="si">}</span><span class="s1"> as voter with address </span><span class="si">{</span><span class="n">voter_address</span><span class="si">}</span><span class="s1"> to leader at </span><span class="si">{</span><span class="n">leader</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="p">)</span>
         <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
@@ -511,8 +509,9 @@
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">replica_id</span><span class="p">)</span><span class="si">}</span><span class="s1"> successfully added as voter with address </span><span class="si">{</span><span class="n">voter_address</span><span class="si">}</span><span class="s1"> to leader at </span><span class="si">{</span><span class="n">leader</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;Replica-</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">replica_id</span><span class="p">)</span><span class="si">}</span><span class="s1"> successfully added as voter with address </span><span class="si">{</span><span class="n">voter_address</span><span class="si">}</span><span class="s1"> to leader at </span><span class="si">{</span><span class="n">leader</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Adding voters to leader finished&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">event_signal</span><span class="p">:</span>
         <span class="n">event_signal</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
@@ -538,7 +537,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span> <span class="o">=</span> <span class="n">head_pod</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">))</span>
+            <span class="n">logger_kwargs</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">)</span>
+            <span class="n">logger_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">logger_kwargs</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">_add_voter_to_leader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="n">leader_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">runtime_ctrl_address</span><span class="si">}</span><span class="s1">&#39;</span>
@@ -552,9 +553,9 @@
                     <span class="s1">&#39;leader&#39;</span><span class="p">:</span> <span class="n">leader_address</span><span class="p">,</span>
                     <span class="s1">&#39;voters&#39;</span><span class="p">:</span> <span class="n">voter_addresses</span><span class="p">,</span>
                     <span class="s1">&#39;replica_ids&#39;</span><span class="p">:</span> <span class="n">replica_ids</span><span class="p">,</span>
+                    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="s1">&#39;event_signal&#39;</span><span class="p">:</span> <span class="n">event_signal</span><span class="p">,</span>
                 <span class="p">},</span>
-                <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">process</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
             <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -567,8 +568,9 @@
                     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">properly_closed</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Add Voters process finished&#39;</span><span class="p">)</span>
+                <span class="n">process</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; Add Voters process did not finish successfully&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Add Voters process did not finish successfully&#39;</span><span class="p">)</span>
                 <span class="n">process</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Add Voters process finished&#39;</span><span class="p">)</span>
 
@@ -584,9 +586,9 @@
                     <span class="s1">&#39;leader&#39;</span><span class="p">:</span> <span class="n">leader_address</span><span class="p">,</span>
                     <span class="s1">&#39;voters&#39;</span><span class="p">:</span> <span class="n">voter_addresses</span><span class="p">,</span>
                     <span class="s1">&#39;replica_ids&#39;</span><span class="p">:</span> <span class="n">replica_ids</span><span class="p">,</span>
+                    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="s1">&#39;event_signal&#39;</span><span class="p">:</span> <span class="n">event_signal</span><span class="p">,</span>
                 <span class="p">},</span>
-                <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">process</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
             <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -599,8 +601,9 @@
                     <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">properly_closed</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Add Voters process finished&#39;</span><span class="p">)</span>
+                <span class="n">process</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; Add Voters process did not finish successfully&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Add Voters process did not finish successfully&#39;</span><span class="p">)</span>
                 <span class="n">process</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
 
         <span class="nd">@property</span>
@@ -619,21 +622,23 @@
                 <span class="n">pod</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
         <span class="k">def</span> <span class="nf">wait_start_success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Waiting for ReplicaSet to start successfully&#39;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">pod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">:</span>
                 <span class="n">pod</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
             <span class="c1"># should this be done only when the cluster is started ?</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">stateful</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_add_voter_to_leader</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ReplicaSet </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> started successfully&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ReplicaSet started successfully&#39;</span><span class="p">)</span>
 
         <span class="k">async</span> <span class="k">def</span> <span class="nf">async_wait_start_success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Waiting for ReplicaSet to start successfully&#39;</span><span class="p">)</span>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
                 <span class="o">*</span><span class="p">[</span><span class="n">pod</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">()</span> <span class="k">for</span> <span class="n">pod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">]</span>
             <span class="p">)</span>
             <span class="c1"># should this be done only when the cluster is started ?</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">stateful</span><span class="p">:</span>
                 <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_add_voter_to_leader</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ReplicaSet </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> started successfully&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ReplicaSet started successfully&#39;</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -909,7 +914,7 @@
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;It is not supported to have </span><span class="si">{</span><span class="n">ProtocolType</span><span class="o">.</span><span class="n">WEBSOCKET</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span><span class="si">}</span><span class="s1"> deployment for &#39;</span>
-                <span class="sa">f</span><span class="s1">&#39;Deployments with more than one shard&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;Deployments&#39;</span>
             <span class="p">)</span>
         <span class="n">is_mac_os</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Darwin&#39;</span>
         <span class="n">is_windows_os</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Windows&#39;</span>
@@ -1540,18 +1545,6 @@
             <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span>
-            <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_gateway</span><span class="p">:</span>
-            <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]</span>
-            <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span>
-                <span class="n">_args</span><span class="p">,</span> <span class="n">gateway_load_balancer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gateway_load_balancer</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span><span class="p">)</span>
 
         <span class="n">num_shards</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">])</span>
         <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">]:</span>
@@ -1564,6 +1557,20 @@
                 <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">-replica-set&#39;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span>
+            <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_gateway</span><span class="p">:</span>
+            <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]</span>
+            <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span>
+                <span class="n">_args</span><span class="p">,</span> <span class="n">gateway_load_balancer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gateway_load_balancer</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">noblock_on_start</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_wait_until_all_ready</span><span class="p">()</span>
@@ -1614,12 +1621,13 @@
                 <span class="n">coros</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">())</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">coros</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">())</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">coros</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">())</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">coros</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">())</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">coros</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">())</span>
             <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">:</span>
                 <span class="n">coros</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">())</span>
+
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">coros</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Deployment started successfully&#39;</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
@@ -1633,13 +1641,13 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">finally</span><span class="p">:</span>
@@ -2390,7 +2398,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 06, 2023</div>
+                            Last updated on Jun 22, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/gateway/request_handling.html" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.runtimes.gateway.request_handling - Jina 3.17.0 documentation</title>
+        <title>jina.serve.runtimes.gateway.request_handling - Jina 3.18.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.17.0 documentation</div>
+                <div class="brand">Jina 3.18.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -418,11 +418,11 @@
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Dict</span>
 
+<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">ProtocolType</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_full_version</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.status</span> <span class="kn">import</span> <span class="n">StatusMessage</span>
-<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">ProtocolType</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
@@ -436,15 +436,15 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Object to encapsulate the code related to handle the data requests in the Gateway&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">args</span><span class="p">:</span> <span class="s1">&#39;SimpleNamespace&#39;</span><span class="p">,</span>
-            <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">,</span>
-            <span class="n">metrics_registry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">meter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">aio_tracing_client_interceptors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">tracing_client_interceptor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">works_as_load_balancer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="s1">&#39;SimpleNamespace&#39;</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">,</span>
+        <span class="n">metrics_registry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">meter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">aio_tracing_client_interceptors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">tracing_client_interceptor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">works_as_load_balancer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="kn">import</span> <span class="nn">json</span>
 
@@ -464,7 +464,9 @@
         <span class="n">deployment_grpc_addresses</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">deployment_name</span><span class="p">,</span> <span class="n">addresses</span> <span class="ow">in</span> <span class="n">deployments_addresses</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">addresses</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
-                <span class="n">deployment_grpc_addresses</span><span class="p">[</span><span class="n">deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">addresses</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ProtocolType</span><span class="o">.</span><span class="n">GRPC</span><span class="o">.</span><span class="n">to_string</span><span class="p">(),</span> <span class="p">[])</span>
+                <span class="n">deployment_grpc_addresses</span><span class="p">[</span><span class="n">deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">addresses</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="n">ProtocolType</span><span class="o">.</span><span class="n">GRPC</span><span class="o">.</span><span class="n">to_string</span><span class="p">(),</span> <span class="p">[]</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">deployment_grpc_addresses</span><span class="p">[</span><span class="n">deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">addresses</span>
 
@@ -542,8 +544,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gratefully closes the object making sure all the floating requests are taken care and the connections are closed gracefully</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Closing Request Handler&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cancel_warmup_task</span><span class="p">()</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Request Handler closed&#39;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_http_fastapi_default_app</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -556,13 +560,17 @@
         <span class="n">cors</span><span class="p">,</span>
         <span class="n">tracing</span><span class="p">,</span>
         <span class="n">tracer_provider</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">extend_rest_interface</span>
         <span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">docarray_v2</span>
+        <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">extend_rest_interface</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">docarray_v2</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http_fastapi_app</span> <span class="kn">import</span> <span class="n">get_fastapi_app</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http_fastapi_app_docarrayv2</span> <span class="kn">import</span> <span class="n">get_fastapi_app</span>
+            <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http_fastapi_app_docarrayv2</span> <span class="kn">import</span> <span class="p">(</span>
+                <span class="n">get_fastapi_app</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">extend_rest_interface</span><span class="p">(</span>
             <span class="n">get_fastapi_app</span><span class="p">(</span>
@@ -592,13 +600,24 @@
                 <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;GET&#39;</span><span class="p">:</span>
                     <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">target_url</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
                         <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-                        <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">content</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">content_type</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span>
+                            <span class="n">body</span><span class="o">=</span><span class="n">content</span><span class="p">,</span>
+                            <span class="n">status</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+                            <span class="n">content_type</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span>
+                        <span class="p">)</span>
                 <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
                     <span class="n">d</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
                     <span class="kn">import</span> <span class="nn">json</span>
-                    <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">target_url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">decode</span><span class="p">()))</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+
+                    <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                        <span class="n">url</span><span class="o">=</span><span class="n">target_url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+                    <span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
                         <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-                        <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">content</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">content_type</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span>
+                            <span class="n">body</span><span class="o">=</span><span class="n">content</span><span class="p">,</span>
+                            <span class="n">status</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+                            <span class="n">content_type</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span>
+                        <span class="p">)</span>
         <span class="k">except</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Error: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
 
@@ -698,7 +717,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 06, 2023</div>
+                            Last updated on Jun 22, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

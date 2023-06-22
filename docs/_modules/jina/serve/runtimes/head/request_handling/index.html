@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/head/request_handling.html" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.runtimes.head.request_handling - Jina 3.17.0 documentation</title>
+        <title>jina.serve.runtimes.head.request_handling - Jina 3.18.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.17.0 documentation</div>
+                <div class="brand">Jina 3.18.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -424,6 +424,7 @@
 <span class="kn">import</span> <span class="nn">grpc</span>
 
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PollingType</span>
+<span class="kn">from</span> <span class="nn">jina.constants</span> <span class="kn">import</span> <span class="n">__default_endpoint__</span>
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">InternalNetworkError</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_full_version</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
@@ -704,7 +705,10 @@
         <span class="n">response_request</span> <span class="o">=</span> <span class="n">worker_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">docarray_v2</span><span class="p">:</span>
-            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pydantic_models_by_endpoint</span><span class="p">[</span><span class="n">endpoint</span><span class="p">][</span><span class="s1">&#39;output&#39;</span><span class="p">]</span>
+            <span class="n">check_endpoint</span> <span class="o">=</span> <span class="n">endpoint</span>
+            <span class="k">if</span> <span class="n">endpoint</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pydantic_models_by_endpoint</span><span class="p">:</span>
+                <span class="n">check_endpoint</span> <span class="o">=</span> <span class="n">__default_endpoint__</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pydantic_models_by_endpoint</span><span class="p">[</span><span class="n">check_endpoint</span><span class="p">][</span><span class="s1">&#39;output&#39;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">worker_result</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">worker_results</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">docarray_v2</span><span class="p">:</span>
                 <span class="n">worker_result</span><span class="o">.</span><span class="n">document_array_cls</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">model</span><span class="p">]</span>
@@ -843,9 +847,11 @@
 
 <div class="viewcode-block" id="HeaderRequestHandler.close"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the data request handler, by closing the executor and the batch queues.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Closing Request Handler&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cancel_warmup_task</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cancel_endpoint_discovery_from_workers_task</span><span class="p">()</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Request Handler closed&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="HeaderRequestHandler.process_single_data"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.process_single_data">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_single_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataRequest</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1006,7 +1012,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 06, 2023</div>
+                            Last updated on Jun 22, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/worker/http_fastapi_app.html" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.runtimes.worker.http_fastapi_app - Jina 3.17.0 documentation</title>
+        <title>jina.serve.runtimes.worker.http_fastapi_app - Jina 3.18.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.17.0 documentation</div>
+                <div class="brand">Jina 3.18.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -413,38 +413,48 @@
                 </div>
                 <article role="main">
                     <h1>Source code for jina.serve.runtimes.worker.http_fastapi_app</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span>
+<span></span><span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
-<span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 <span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">docarray_v2</span>
+<span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">jina.serve.networking.sse</span> <span class="kn">import</span> <span class="n">EventSourceResponse</span>
+<span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 
 <span class="k">if</span> <span class="n">docarray_v2</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
 
 
 <div class="viewcode-block" id="get_fastapi_app"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.http_fastapi_app/#jina.serve.runtimes.worker.http_fastapi_app.get_fastapi_app">[docs]</a><span class="k">def</span> <span class="nf">get_fastapi_app</span><span class="p">(</span>
-        <span class="n">request_models_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
-        <span class="n">caller</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="n">request_models_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">caller</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">,</span>
+    <span class="n">cors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the app from FastAPI as the REST interface.</span>
 
 <span class="sd">    :param request_models_map: Map describing the endpoints and its Pydantic models</span>
 <span class="sd">    :param caller: Callable to be handled by the endpoints of the returned FastAPI app</span>
+<span class="sd">    :param logger: Logger object</span>
+<span class="sd">    :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.</span>
 <span class="sd">    :param kwargs: Extra kwargs to make it compatible with other methods</span>
 <span class="sd">    :return: fastapi app</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">HTTPException</span>
         <span class="kn">import</span> <span class="nn">pydantic</span>
+        <span class="kn">from</span> <span class="nn">fastapi.middleware.cors</span> <span class="kn">import</span> <span class="n">CORSMiddleware</span>
+    <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+    <span class="kn">from</span> <span class="nn">pydantic.config</span> <span class="kn">import</span> <span class="n">BaseConfig</span><span class="p">,</span> <span class="n">inherit_config</span>
+
     <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
     <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.models</span> <span class="kn">import</span> <span class="n">_to_camel_case</span>
-
-    <span class="kn">from</span> <span class="nn">pydantic.config</span> <span class="kn">import</span> <span class="n">BaseConfig</span><span class="p">,</span> <span class="n">inherit_config</span>
-    <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 
     <span class="k">class</span> <span class="nc">Header</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
         <span class="n">request_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -459,18 +469,35 @@
 
     <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">add_route</span><span class="p">(</span><span class="n">endpoint_path</span><span class="p">,</span> <span class="n">input_model</span><span class="p">,</span> <span class="n">output_model</span><span class="p">,</span> <span class="n">input_doc_list_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_doc_list_model</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">app_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;/</span><span class="si">{</span><span class="n">endpoint_path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                          <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">],</span>
-                          <span class="n">summary</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Endpoint </span><span class="si">{</span><span class="n">endpoint_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                          <span class="n">response_model</span><span class="o">=</span><span class="n">output_model</span><span class="p">,</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">cors</span><span class="p">:</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span>
+            <span class="n">CORSMiddleware</span><span class="p">,</span>
+            <span class="n">allow_origins</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;*&#39;</span><span class="p">],</span>
+            <span class="n">allow_credentials</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">allow_methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;*&#39;</span><span class="p">],</span>
+            <span class="n">allow_headers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;*&#39;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;CORS is enabled. This service is accessible from any website!&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_post_route</span><span class="p">(</span>
+        <span class="n">endpoint_path</span><span class="p">,</span>
+        <span class="n">input_model</span><span class="p">,</span>
+        <span class="n">output_model</span><span class="p">,</span>
+        <span class="n">input_doc_list_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">output_doc_list_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">app_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;/</span><span class="si">{</span><span class="n">endpoint_path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">],</span>
+            <span class="n">summary</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Endpoint </span><span class="si">{</span><span class="n">endpoint_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">response_model</span><span class="o">=</span><span class="n">output_model</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">docarray_v2</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">docarray.base_doc.docarray_response</span> <span class="kn">import</span> <span class="n">DocArrayResponse</span>
+
             <span class="n">app_kwargs</span><span class="p">[</span><span class="s1">&#39;response_class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DocArrayResponse</span>
 
-        <span class="nd">@app</span><span class="o">.</span><span class="n">api_route</span><span class="p">(</span>
-            <span class="o">**</span><span class="n">app_kwargs</span>
-        <span class="p">)</span>
+        <span class="nd">@app</span><span class="o">.</span><span class="n">api_route</span><span class="p">(</span><span class="o">**</span><span class="n">app_kwargs</span><span class="p">)</span>
         <span class="k">async</span> <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="n">body</span><span class="p">:</span> <span class="n">input_model</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">):</span>
 
             <span class="n">req</span> <span class="o">=</span> <span class="n">DataRequest</span><span class="p">()</span>
@@ -497,33 +524,68 @@
                 <span class="n">ret</span> <span class="o">=</span> <span class="n">output_model</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">docs_response</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">resp</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">ret</span>
 
+    <span class="k">def</span> <span class="nf">add_streaming_get_route</span><span class="p">(</span>
+        <span class="n">endpoint_path</span><span class="p">,</span>
+        <span class="n">input_doc_list_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">Request</span>
+
+        <span class="nd">@app</span><span class="o">.</span><span class="n">api_route</span><span class="p">(</span>
+            <span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;/</span><span class="si">{</span><span class="n">endpoint_path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">],</span>
+            <span class="n">summary</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Streaming Endpoint </span><span class="si">{</span><span class="n">endpoint_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">streaming_get</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+            <span class="n">query_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">query_params</span><span class="p">)</span>
+            <span class="n">endpoint</span> <span class="o">=</span> <span class="n">query_params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;exec_endpoint&#39;</span><span class="p">)</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">DataRequest</span><span class="p">()</span>
+            <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span> <span class="o">=</span> <span class="n">endpoint</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">docarray_v2</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
+
+                <span class="n">req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">query_params</span><span class="p">)])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">input_doc_list_model</span><span class="p">(</span><span class="o">**</span><span class="n">query_params</span><span class="p">)])</span>
+            <span class="n">event_generator</span> <span class="o">=</span> <span class="n">_gen_dict_documents</span><span class="p">(</span><span class="k">await</span> <span class="n">caller</span><span class="p">(</span><span class="n">req</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">EventSourceResponse</span><span class="p">(</span><span class="n">event_generator</span><span class="p">)</span>
+
     <span class="k">for</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">input_output_map</span> <span class="ow">in</span> <span class="n">request_models_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">endpoint</span> <span class="o">!=</span> <span class="s1">&#39;_jina_dry_run_&#39;</span><span class="p">:</span>
             <span class="n">input_doc_model</span> <span class="o">=</span> <span class="n">input_output_map</span><span class="p">[</span><span class="s1">&#39;input&#39;</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span>
             <span class="n">output_doc_model</span> <span class="o">=</span> <span class="n">input_output_map</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span>
+            <span class="n">is_generator</span> <span class="o">=</span> <span class="n">input_output_map</span><span class="p">[</span><span class="s1">&#39;is_generator&#39;</span><span class="p">]</span>
 
             <span class="n">endpoint_input_model</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">endpoint</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">_input_model&#39;</span><span class="p">,</span>
                 <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">input_doc_model</span><span class="p">],</span> <span class="p">[]),</span>
                 <span class="n">parameters</span><span class="o">=</span><span class="p">(</span><span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span> <span class="kc">None</span><span class="p">),</span>
                 <span class="n">header</span><span class="o">=</span><span class="p">(</span><span class="n">Optional</span><span class="p">[</span><span class="n">Header</span><span class="p">],</span> <span class="kc">None</span><span class="p">),</span>
-                <span class="n">__config__</span><span class="o">=</span><span class="n">inherit_config</span><span class="p">(</span><span class="n">InnerConfig</span><span class="p">,</span> <span class="n">input_doc_model</span><span class="o">.</span><span class="n">__config__</span><span class="p">)</span>
+                <span class="n">__config__</span><span class="o">=</span><span class="n">inherit_config</span><span class="p">(</span><span class="n">InnerConfig</span><span class="p">,</span> <span class="n">input_doc_model</span><span class="o">.</span><span class="n">__config__</span><span class="p">),</span>
             <span class="p">)</span>
 
             <span class="n">endpoint_output_model</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">endpoint</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">_output_model&#39;</span><span class="p">,</span>
                 <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">output_doc_model</span><span class="p">],</span> <span class="p">[]),</span>
                 <span class="n">parameters</span><span class="o">=</span><span class="p">(</span><span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span> <span class="kc">None</span><span class="p">),</span>
-                <span class="n">__config__</span><span class="o">=</span><span class="n">output_doc_model</span><span class="o">.</span><span class="n">__config__</span>
+                <span class="n">__config__</span><span class="o">=</span><span class="n">output_doc_model</span><span class="o">.</span><span class="n">__config__</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="n">add_route</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span>
-                      <span class="n">input_model</span><span class="o">=</span><span class="n">endpoint_input_model</span><span class="p">,</span>
-                      <span class="n">output_model</span><span class="o">=</span><span class="n">endpoint_output_model</span><span class="p">,</span>
-                      <span class="n">input_doc_list_model</span><span class="o">=</span><span class="n">input_doc_model</span><span class="p">,</span>
-                      <span class="n">output_doc_list_model</span><span class="o">=</span><span class="n">output_doc_model</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_generator</span><span class="p">:</span>
+                <span class="n">add_streaming_get_route</span><span class="p">(</span>
+                    <span class="n">endpoint</span><span class="p">,</span>
+                    <span class="n">input_doc_list_model</span><span class="o">=</span><span class="n">input_doc_model</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">add_post_route</span><span class="p">(</span>
+                    <span class="n">endpoint</span><span class="p">,</span>
+                    <span class="n">input_model</span><span class="o">=</span><span class="n">endpoint_input_model</span><span class="p">,</span>
+                    <span class="n">output_model</span><span class="o">=</span><span class="n">endpoint_output_model</span><span class="p">,</span>
+                    <span class="n">input_doc_list_model</span><span class="o">=</span><span class="n">input_doc_model</span><span class="p">,</span>
+                    <span class="n">output_doc_list_model</span><span class="o">=</span><span class="n">output_doc_model</span><span class="p">,</span>
+                <span class="p">)</span>
 
     <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.health_model</span> <span class="kn">import</span> <span class="n">JinaHealthModel</span>
+
     <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
         <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
         <span class="n">summary</span><span class="o">=</span><span class="s1">&#39;Get the health of Jina Executor service&#39;</span><span class="p">,</span>
@@ -538,6 +600,23 @@
         <span class="k">return</span> <span class="p">{}</span>
 
     <span class="k">return</span> <span class="n">app</span></div>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">_gen_dict_documents</span><span class="p">(</span><span class="n">gen</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isasyncgen</span><span class="p">(</span><span class="n">gen</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">document</span> <span class="ow">in</span> <span class="n">gen</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">_doc_to_event</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">document</span> <span class="ow">in</span> <span class="n">gen</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">_doc_to_event</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="p">{</span><span class="s1">&#39;event&#39;</span><span class="p">:</span> <span class="s1">&#39;end&#39;</span><span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_doc_to_event</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">docarray_v2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;event&#39;</span><span class="p">:</span> <span class="s1">&#39;update&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">doc</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;event&#39;</span><span class="p">:</span> <span class="s1">&#39;update&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">doc</span><span class="o">.</span><span class="n">dict</span><span class="p">()}</span>
 </pre></div>
                 </article>
             </div>
@@ -552,7 +631,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 06, 2023</div>
+                            Last updated on Jun 22, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

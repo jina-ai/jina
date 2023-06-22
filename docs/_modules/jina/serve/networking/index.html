@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/networking.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.networking - Jina 3.17.0 documentation</title>
+        <title>jina.serve.networking - Jina 3.18.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.17.0 documentation</div>
+                <div class="brand">Jina 3.18.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -745,6 +745,7 @@
             <span class="n">current_address</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>  <span class="c1"># the specific address that was contacted during this attempt</span>
             <span class="n">current_deployment</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>  <span class="c1"># the specific deployment that was contacted during this attempt</span>
             <span class="n">connection_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_ReplicaList</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">task_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;DataRequest&#39;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Optional[Union[AioRpcError, InternalNetworkError]]&#39;</span><span class="p">:</span>
         <span class="c1"># connection failures, cancelled requests, and timed out requests should be retried</span>
         <span class="c1"># all other cases should not be retried and will be raised immediately</span>
@@ -760,7 +761,7 @@
             <span class="n">skip_resetting</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># no need to reset, no problem with channel</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;gRPC call to </span><span class="si">{</span><span class="n">current_deployment</span><span class="si">}</span><span class="s1"> errored, with error </span><span class="si">{</span><span class="n">format_grpc_error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="si">}</span><span class="s1"> and for the </span><span class="si">{</span><span class="n">retry_i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">th time.&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;gRPC call to </span><span class="si">{</span><span class="n">current_deployment</span><span class="si">}</span><span class="s1"> for </span><span class="si">{</span><span class="n">task_type</span><span class="si">}</span><span class="s1"> errored, with error </span><span class="si">{</span><span class="n">format_grpc_error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="si">}</span><span class="s1"> and for the </span><span class="si">{</span><span class="n">retry_i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">th time.&#39;</span>
             <span class="p">)</span>
         <span class="n">errors_to_retry</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">,</span>
@@ -861,6 +862,7 @@
                         <span class="n">current_address</span><span class="o">=</span><span class="n">current_connection</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
                         <span class="n">current_deployment</span><span class="o">=</span><span class="n">current_connection</span><span class="o">.</span><span class="n">deployment_name</span><span class="p">,</span>
                         <span class="n">connection_list</span><span class="o">=</span><span class="n">connections</span><span class="p">,</span>
+                        <span class="n">task_type</span><span class="o">=</span><span class="s1">&#39;DataRequest&#39;</span>
                     <span class="p">)</span>
                     <span class="k">if</span> <span class="n">error</span><span class="p">:</span>
                         <span class="k">return</span> <span class="n">error</span>
@@ -907,6 +909,7 @@
                         <span class="n">current_deployment</span><span class="o">=</span><span class="n">connection</span><span class="o">.</span><span class="n">deployment_name</span><span class="p">,</span>
                         <span class="n">connection_list</span><span class="o">=</span><span class="n">connection_list</span><span class="p">,</span>
                         <span class="n">total_num_tries</span><span class="o">=</span><span class="n">total_num_tries</span><span class="p">,</span>
+                        <span class="n">task_type</span><span class="o">=</span><span class="s1">&#39;EndpointDiscovery&#39;</span>
                     <span class="p">)</span>
                     <span class="k">if</span> <span class="n">error</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="n">error</span>
@@ -931,8 +934,13 @@
                 <span class="n">call_result</span> <span class="o">=</span> <span class="n">stub</span><span class="o">.</span><span class="n">send_info_rpc</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
                 <span class="k">await</span> <span class="n">call_result</span>
                 <span class="n">target_warmup_responses</span><span class="p">[</span><span class="n">stub</span><span class="o">.</span><span class="n">address</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;warmup task got cancelled&#39;</span><span class="p">)</span>
+                <span class="n">target_warmup_responses</span><span class="p">[</span><span class="n">stub</span><span class="o">.</span><span class="n">address</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">raise</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="n">target_warmup_responses</span><span class="p">[</span><span class="n">stub</span><span class="o">.</span><span class="n">address</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -966,6 +974,7 @@
                         <span class="k">return</span>
                     <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
                 <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;warmup task got cancelled&#39;</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">tasks</span><span class="p">:</span>
                         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
                             <span class="n">task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
@@ -995,7 +1004,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 06, 2023</div>
+                            Last updated on Jun 22, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

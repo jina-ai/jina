@@ -11,6 +11,7 @@ Submodules
    jina.serve.networking.connection_stub
    jina.serve.networking.instrumentation
    jina.serve.networking.replica_list
+   jina.serve.networking.sse
    jina.serve.networking.utils
 
 Module contents

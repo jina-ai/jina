@@ -6,10 +6,10 @@
 <meta property="og:title" content="jina.serve package" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve/" />
-<meta property="og:site_name" content="Jina 3.17.0 Documentation" />
+<meta property="og:site_name" content="Jina 3.18.0 Documentation" />
 <meta property="og:description" content="Subpackages: jina.serve.executors package- Submodules- jina.serve.executors.decorators module- avoid_concurrent_lock_cls(), write(), requests(), dynamic_batching(), monitor()., jina.serve.executors.metas module- get_default_metas(), get_executor_taboo()., jina.serve.executors.run module- run_raft..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.17.0 Documentation" />
+<meta property="og:image:alt" content="Jina 3.18.0 Documentation" />
 <meta name="description" content="Subpackages: jina.serve.executors package- Submodules- jina.serve.executors.decorators module- avoid_concurrent_lock_cls(), write(), requests(), dynamic_batching(), monitor()., jina.serve.executors.metas module- get_default_metas(), get_executor_taboo()., jina.serve.executors.run module- run_raft..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve package - Jina 3.17.0 documentation</title>
+        <title>jina.serve package - Jina 3.18.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.17.0 documentation</div>
+                <div class="brand">Jina 3.18.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -515,6 +515,15 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.networking.instrumentation/">jina.serve.networking.instrumentation module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.networking.replica_list/">jina.serve.networking.replica_list module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.networking.sse/">jina.serve.networking.sse module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.networking.sse/#jina.serve.networking.sse.AppStatus"><code class="docutils literal notranslate"><span class="pre">AppStatus</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.networking.sse/#jina.serve.networking.sse.unpatch_uvicorn_signal_handler"><code class="docutils literal notranslate"><span class="pre">unpatch_uvicorn_signal_handler()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.networking.sse/#jina.serve.networking.sse.SseState"><code class="docutils literal notranslate"><span class="pre">SseState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.networking.sse/#jina.serve.networking.sse.ServerSentEvent"><code class="docutils literal notranslate"><span class="pre">ServerSentEvent</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.networking.sse/#jina.serve.networking.sse.ensure_bytes"><code class="docutils literal notranslate"><span class="pre">ensure_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.networking.sse/#jina.serve.networking.sse.EventSourceResponse"><code class="docutils literal notranslate"><span class="pre">EventSourceResponse</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.networking.utils/">jina.serve.networking.utils module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.networking.utils/#jina.serve.networking.utils.get_grpc_channel"><code class="docutils literal notranslate"><span class="pre">get_grpc_channel()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.serve.networking.utils/#jina.serve.networking.utils.send_request_sync"><code class="docutils literal notranslate"><span class="pre">send_request_sync()</span></code></a></li>
@@ -646,7 +655,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 06, 2023</div>
+                            Last updated on Jun 22, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

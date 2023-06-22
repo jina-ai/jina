@@ -6,9 +6,9 @@
 <meta property="og:title" content="jina.clients.mixin module" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.clients.mixin/" />
-<meta property="og:site_name" content="Jina 3.17.0 Documentation" />
+<meta property="og:site_name" content="Jina 3.18.0 Documentation" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.17.0 Documentation" />
+<meta property="og:image:alt" content="Jina 3.18.0 Documentation" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -31,7 +31,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.clients.mixin.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.clients.mixin module - Jina 3.17.0 documentation</title>
+        <title>jina.clients.mixin module - Jina 3.18.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.17.0 documentation</div>
+                <div class="brand">Jina 3.18.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -716,6 +716,30 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="jina.clients.mixin.AsyncPostMixin.stream_doc">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stream_doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type=&lt;class</span> <span class="pre">'docarray.document.Document'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/mixin/#AsyncPostMixin.stream_doc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.mixin.AsyncPostMixin.stream_doc" title="Permalink to this definition">#</a></dt>
+<dd><p>Send one document to a streaming endpoint and receive results asynchronisly, one Document at a time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputs</strong> (<a class="reference external" href="https://docarray.jina.ai/api/docarray.document/#docarray.document.Document" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – input data which can be an Iterable, a function which returns an Iterable, or a single Document.</p></li>
+<li><p><strong>on</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the endpoint which is invoked. All the functions in the executors decorated by <cite>&#64;requests(on=…)</cite> with the same endpoint are invoked.</p></li>
+<li><p><strong>parameters</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – the kwargs that will be sent to the executor</p></li>
+<li><p><strong>return_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.document/#docarray.document.Document" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]) – the DocumentArray type to be returned. By default, it is <cite>DocumentArray</cite>.</p></li>
+<li><p><strong>timeout</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Timeout for the client to remain connected to the server.</p></li>
+<li><p><strong>kwargs</strong> – additional parameters, can be used to pass metadata or authentication information in the server call</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yield<span class="colon">:</span></dt>
+<dd class="field-even"><p>Document object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncGenerator</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <a class="reference external" href="https://docarray.jina.ai/api/docarray.document/#docarray.document.Document" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="jina.clients.mixin.AsyncPostMixin.index">
 <span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs:</span> <span class="pre">~typing.Optional[InputType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters:</span> <span class="pre">~typing.Optional[~typing.Dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_responses:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type:</span> <span class="pre">~typing.Type[~docarray.array.document.DocumentArray]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'docarray.array.document.DocumentArray'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><span class="pre">Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#jina.clients.mixin.AsyncPostMixin.index" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
@@ -752,7 +776,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 06, 2023</div>
+                            Last updated on Jun 22, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -821,6 +845,7 @@
 </li>
 <li><a class="reference internal" href="#jina.clients.mixin.AsyncPostMixin"><code class="docutils literal notranslate"><span class="pre">AsyncPostMixin</span></code></a><ul>
 <li><a class="reference internal" href="#jina.clients.mixin.AsyncPostMixin.post"><code class="docutils literal notranslate"><span class="pre">AsyncPostMixin.post()</span></code></a></li>
+<li><a class="reference internal" href="#jina.clients.mixin.AsyncPostMixin.stream_doc"><code class="docutils literal notranslate"><span class="pre">AsyncPostMixin.stream_doc()</span></code></a></li>
 <li><a class="reference internal" href="#jina.clients.mixin.AsyncPostMixin.index"><code class="docutils literal notranslate"><span class="pre">AsyncPostMixin.index()</span></code></a></li>
 <li><a class="reference internal" href="#jina.clients.mixin.AsyncPostMixin.search"><code class="docutils literal notranslate"><span class="pre">AsyncPostMixin.search()</span></code></a></li>
 <li><a class="reference internal" href="#jina.clients.mixin.AsyncPostMixin.update"><code class="docutils literal notranslate"><span class="pre">AsyncPostMixin.update()</span></code></a></li>

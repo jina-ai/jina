@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/executors/decorators.html" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.executors.decorators - Jina 3.17.0 documentation</title>
+        <title>jina.serve.executors.decorators - Jina 3.18.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.17.0 documentation</div>
+                <div class="brand">Jina 3.18.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -422,7 +422,7 @@
 
 <span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">docarray_v2</span>
 <span class="kn">from</span> <span class="nn">jina.constants</span> <span class="kn">import</span> <span class="n">__cache_path__</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">iscoroutinefunction</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">is_generator</span><span class="p">,</span> <span class="n">iscoroutinefunction</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 
 
@@ -457,9 +457,9 @@
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">==</span> <span class="bp">cls</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
-                        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                        <span class="n">help_text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;FileLock is needed to guarantee non-concurrent initialization of replicas in the &#39;</span>
-                                  <span class="sa">f</span><span class="s1">&#39;same machine.&#39;</span><span class="p">,</span>
+                    <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">help_text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;FileLock is needed to guarantee non-concurrent initialization of replicas in the &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;same machine.&#39;</span><span class="p">,</span>
                 <span class="p">):</span>
                     <span class="kn">import</span> <span class="nn">filelock</span>
 
@@ -506,18 +506,18 @@
 
 
 <div class="viewcode-block" id="write"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.serve.executors.decorators.write">[docs]</a><span class="k">def</span> <span class="nf">write</span><span class="p">(</span>
-        <span class="n">func</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-            <span class="n">Callable</span><span class="p">[</span>
-                <span class="p">[</span>
-                    <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span>
-                    <span class="n">Dict</span><span class="p">,</span>
-                    <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span>
-                    <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">],</span>
-                    <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">],</span>
-                <span class="p">],</span>
-                <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span>
-            <span class="p">]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">func</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+        <span class="n">Callable</span><span class="p">[</span>
+            <span class="p">[</span>
+                <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span>
+                <span class="n">Dict</span><span class="p">,</span>
+                <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span>
+                <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">],</span>
+                <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">],</span>
+            <span class="p">],</span>
+            <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span>
+        <span class="p">]</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `@write` is a decorator indicating that the function decorated will change the Executor finite state machine</span>
@@ -546,17 +546,20 @@
 <span class="sd">                    self._docs_dict[doc.id] = doc</span>
 
 <span class="sd">            @requests(on=[&#39;/search&#39;])</span>
-<span class="sd">            def search(self,  docs: DocList[TextDoc], **kwargs) -&gt; DocList[TextDoc]:</span>
+<span class="sd">            def search(self, docs: DocList[TextDoc], **kwargs) -&gt; DocList[TextDoc]:</span>
 <span class="sd">                for doc in docs:</span>
 <span class="sd">                    self.logger.debug(f&#39;Searching against {len(self._docs_dict)} documents&#39;)</span>
 <span class="sd">                    doc.text = self._docs_dict[doc.id].text</span>
 
-<span class="sd">        d = Deployment(name=&#39;stateful_executor&#39;,</span>
-<span class="sd">                       uses=MyStateStatefulExecutor,</span>
-<span class="sd">                       replicas=3,</span>
-<span class="sd">                       stateful=True,</span>
-<span class="sd">                       workspace=&#39;./raft&#39;,</span>
-<span class="sd">                       peer_ports=[12345, 12346, 12347])</span>
+
+<span class="sd">        d = Deployment(</span>
+<span class="sd">            name=&#39;stateful_executor&#39;,</span>
+<span class="sd">            uses=MyStateStatefulExecutor,</span>
+<span class="sd">            replicas=3,</span>
+<span class="sd">            stateful=True,</span>
+<span class="sd">            workspace=&#39;./raft&#39;,</span>
+<span class="sd">            peer_ports=[12345, 12346, 12347],</span>
+<span class="sd">        )</span>
 <span class="sd">        with d:</span>
 <span class="sd">            d.post(</span>
 <span class="sd">                on=&#39;/index&#39;, inputs=TextDoc(text=&#39;I am here!&#39;)</span>
@@ -578,7 +581,7 @@
 
                 <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
                 <span class="k">async</span> <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span>
-                        <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                    <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
                 <span class="p">):</span>  <span class="c1"># we need to get the summary from the executor, so we need to access the self</span>
                     <span class="k">with</span> <span class="n">executor_instance</span><span class="o">.</span><span class="n">_write_lock</span><span class="p">:</span>
                         <span class="k">return</span> <span class="k">await</span> <span class="n">fn</span><span class="p">(</span><span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -588,7 +591,7 @@
 
                 <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
                 <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span>
-                        <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                    <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
                 <span class="p">):</span>  <span class="c1"># we need to get the summary from the executor, so we need to access the self</span>
                     <span class="k">with</span> <span class="n">executor_instance</span><span class="o">.</span><span class="n">_write_lock</span><span class="p">:</span>
                         <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -697,15 +700,21 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">jina.constants</span> <span class="kn">import</span> <span class="n">__args_executor_func__</span><span class="p">,</span> <span class="n">__default_endpoint__</span>
 
+    <span class="k">if</span> <span class="n">func</span><span class="p">:</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s1">&#39;__is_generator__&#39;</span><span class="p">,</span> <span class="n">is_generator</span><span class="p">(</span><span class="n">func</span><span class="p">))</span>
+
     <span class="k">class</span> <span class="nc">FunctionMapper</span><span class="p">:</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">fn</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;__is_generator__&#39;</span><span class="p">,</span> <span class="n">is_generator</span><span class="p">(</span><span class="n">fn</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_batching_decorator</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_write_decorator</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unwrap_batching_decorator</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
             <span class="n">fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unwrap_write_decorator</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
             <span class="n">arg_spec</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">arg_spec</span><span class="o">.</span><span class="n">varkw</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">__args_executor_func__</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span>
-                    <span class="n">arg_spec</span><span class="o">.</span><span class="n">args</span>
+                <span class="n">arg_spec</span><span class="o">.</span><span class="n">args</span>
             <span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s1"> accepts only </span><span class="si">{</span><span class="n">arg_spec</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s1"> which is fewer than expected, &#39;</span>
@@ -716,7 +725,7 @@
 
                 <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
                 <span class="k">async</span> <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span>
-                        <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                    <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
                 <span class="p">):</span>  <span class="c1"># we need to get the summary from the executor, so we need to access the self</span>
                     <span class="k">return</span> <span class="k">await</span> <span class="n">fn</span><span class="p">(</span><span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -725,7 +734,7 @@
 
                 <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
                 <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span>
-                        <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                    <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
                 <span class="p">):</span>  <span class="c1"># we need to get the summary from the executor, so we need to access the self</span>
                     <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -800,19 +809,19 @@
 
 
 <div class="viewcode-block" id="dynamic_batching"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.serve.executors.decorators.dynamic_batching">[docs]</a><span class="k">def</span> <span class="nf">dynamic_batching</span><span class="p">(</span>
-        <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span>
-            <span class="p">[</span>
-                <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span>
-                <span class="n">Dict</span><span class="p">,</span>
-                <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span>
-                <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">],</span>
-                <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">],</span>
-            <span class="p">],</span>
-            <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">preferred_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10_000</span><span class="p">,</span>
+    <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span>
+        <span class="p">[</span>
+            <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span>
+            <span class="n">Dict</span><span class="p">,</span>
+            <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span>
+            <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">],</span>
+            <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">],</span>
+        <span class="p">],</span>
+        <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">preferred_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10_000</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `@dynamic_batching` defines the dynamic batching behavior of an Executor.</span>
@@ -839,7 +848,7 @@
 
                 <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
                 <span class="k">async</span> <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span>
-                        <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                    <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
                 <span class="p">):</span>  <span class="c1"># we need to get the summary from the executor, so we need to access the self</span>
                     <span class="k">return</span> <span class="k">await</span> <span class="n">fn</span><span class="p">(</span><span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -848,7 +857,7 @@
 
                 <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
                 <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span>
-                        <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                    <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
                 <span class="p">):</span>  <span class="c1"># we need to get the summary from the executor, so we need to access the self</span>
                     <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -893,9 +902,9 @@
 
 
 <div class="viewcode-block" id="monitor"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.serve.executors.decorators.monitor">[docs]</a><span class="k">def</span> <span class="nf">monitor</span><span class="p">(</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">documentation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">documentation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator and context manager that allows monitoring of an Executor.</span>
@@ -990,7 +999,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 06, 2023</div>
+                            Last updated on Jun 22, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -6,10 +6,10 @@
 <meta property="og:title" content="jina.serve.runtimes.gateway.composite package" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve.runtimes.gateway.composite/" />
-<meta property="og:site_name" content="Jina 3.17.0 Documentation" />
+<meta property="og:site_name" content="Jina 3.18.0 Documentation" />
 <meta property="og:description" content="Module contents:" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.17.0 Documentation" />
+<meta property="og:image:alt" content="Jina 3.18.0 Documentation" />
 <meta name="description" content="Module contents:" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.runtimes.gateway.composite.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.runtimes.gateway.composite package - Jina 3.17.0 documentation</title>
+        <title>jina.serve.runtimes.gateway.composite package - Jina 3.18.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.17.0 documentation</div>
+                <div class="brand">Jina 3.18.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -468,7 +468,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.composite.CompositeGateway.async_is_ready">
-<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grpc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.composite.CompositeGateway.async_is_ready" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grpc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.composite.CompositeGateway.async_is_ready" title="Permalink to this definition">#</a></dt>
 <dd><p>Check if status is ready.
 :type ctrl_address: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
 :param ctrl_address: the address where the control request needs to be sent
@@ -476,6 +476,7 @@
 :param protocol: protocol of the gateway runtime
 :type timeout: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
 :param timeout: timeout of grpc call in seconds
+:param logger: JinaLogger to be used
 :param kwargs: extra keyword arguments
 :rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
 :return: True if status is ready else False.</p>
@@ -490,7 +491,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.composite.CompositeGateway.is_ready">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grpc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.composite.CompositeGateway.is_ready" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grpc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.composite.CompositeGateway.is_ready" title="Permalink to this definition">#</a></dt>
 <dd><p>Check if status is ready.
 :type ctrl_address: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
 :param ctrl_address: the address where the control request needs to be sent
@@ -498,6 +499,7 @@
 :param protocol: protocol of the gateway runtime
 :type timeout: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
 :param timeout: timeout of grpc call in seconds
+:param logger: JinaLogger to be used
 :param kwargs: extra keyword arguments
 :rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
 :return: True if status is ready else False.</p>
@@ -679,7 +681,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 06, 2023</div>
+                            Last updated on Jun 22, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
