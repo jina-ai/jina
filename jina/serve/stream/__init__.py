@@ -76,7 +76,9 @@ class RequestStreamer:
         # Flow.
         # create loop and get from topology_graph
         _endpoints_models_map = {}
+        self.logger.debug(f'Get all endpoints from TopologyGraph')
         endpoints = await topology_graph._get_all_endpoints(connection_pool, retry_forever=True, is_cancel=is_cancel)
+        self.logger.debug(f'Got all endpoints from TopologyGraph {endpoints}')
 
         for endp in endpoints:
             for origin_node in topology_graph.origin_nodes:
