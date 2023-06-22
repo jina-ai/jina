@@ -1,10 +1,10 @@
 (docarray-v2)=
-# (Beta) New DocArray support
+# DocArray>0.30 support
 
 Jina provides early support for [DocArray>=0.30](https://github.com/docarray/docarray) which
-is a rewrite of DocArray. This new version makes the dataclass feature of DocArray v1 a first-class citizen and for this 
+is a rewrite of DocArray. This new version makes the dataclass feature of DocArray<=0.21 a first-class citizen and for this 
 purpose it is built on top of [Pydantic](https://pydantic-docs.helpmanual.io/). An important shift is that 
-the new DocArray adapts to users' data, whereas DocArray v1 forces user to adapt to the Document schema.
+the new DocArray adapts to users' data, whereas DocArray<=0.21 forces user to adapt to the Document schema.
 
 ```{warning} Beta support
 New DocArray syntax is available on DocArray version beyond 0.30. Not every feature in Jina has been adapted to the new DocArray versions, but some of them are.
@@ -21,12 +21,12 @@ Please note that also the names of data structure change in the new version of D
 
 On the Jina side, this flexibility extends to every Executor, where you can now customize input and output schemas:
 
-- With DocArray<0.30 (the version currently used by default in Jina), a Document has a fixed schema and an Executor performs in-place operations on it. 
+- With DocArray<=0.21 (the version currently used by default in Jina), a Document has a fixed schema and an Executor performs in-place operations on it. 
 - With DocArray>=0.30, an Executor defines its own input and output schemas. It also provides several predefined schemas that you can use out of the box.
 
 ## New Executor API
 
-To reflect the change with DocArray v2, the Executor API now supports schema definition. The 
+To reflect the change with DocArray >=0.30, the Executor API now supports schema definition. The 
 design is inspired by [FastAPI](https://fastapi.tiangolo.com/). 
 
 
@@ -203,9 +203,9 @@ with Deployment(uses=MyExec) as dep:
 ```
 
 (streaming-endpoits-docarray-v2)=
-## Streaming Endpoints with DocArray V2
+## Streaming Endpoints with DocArray >=0.30
 Similarly to {ref}`Streaming Endpoints API <streaming-endpoints>` in DocArray V1, you can implement streaming endpoints 
-with DocArray v2 schemas.
+with DocArray >=0.30 schemas.
 
 Streaming endpoints receive one Document as input and yields one Document at a time.
 
@@ -240,7 +240,7 @@ with Deployment(
 ```
 
 From the client side, any SSE client can be used to receive the Documents, one at a time.
-Jina's standard python client also supports streaming endpoints with DocArray v2:
+Jina's standard python client also supports streaming endpoints with DocArray >=0.30:
 
 ```python
 from jina import Client, Document
@@ -274,13 +274,12 @@ With DocArray 0.30 support, Jina introduced the concept of input/output schema a
 
 For now, [Executor Hub](https://cloud.jina.ai/executors] will not automatically build your Docker images with the new DocArray version. If this is needed, you need to provide your 
 Dockerfile where `docarray>=0.30` is specifically installed.
+
 ````
 
-```{note}
 
 ## See also
 
-- [DocArray-v2](https://github.com/docarray/docarray) README
+- [DocArray >0.30](https://github.com/docarray/docarray) README
 - [Pydantic](https://pydantic-docs.helpmanual.io/) documentation for more details on the schema definition
 
-```
