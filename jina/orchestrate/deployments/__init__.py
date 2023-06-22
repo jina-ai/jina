@@ -141,7 +141,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     'name': self.name,
                     'event_signal': event_signal,
                 },
-                daemon=True,
             )
             process.start()
             start = time.time()
@@ -154,6 +153,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     time.sleep(1.0)
             if properly_closed:
                 self.logger.debug(f'Add Voters process finished')
+                process.terminate()
             else:
                 self.logger.error(f'Add Voters process did not finish successfully')
                 process.kill()
@@ -174,7 +174,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     'name': self.name,
                     'event_signal': event_signal,
                 },
-                daemon=True,
             )
             process.start()
             start = time.time()
@@ -187,6 +186,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     await asyncio.sleep(1.0)
             if properly_closed:
                 self.logger.debug(f'Add Voters process finished')
+                process.terminate()
             else:
                 self.logger.error(f'Add Voters process did not finish successfully')
                 process.kill()
