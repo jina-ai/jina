@@ -5,6 +5,7 @@ package main
 #cgo pkg-config: python3
 #include <Python.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 // Workaround missing variadic function support
 // https://github.com/golang/go/issues/975
@@ -42,21 +43,25 @@ static struct PyModuleDef jraftmodule = {
 PyMODINIT_FUNC
 PyInit_jraft(void)
 {
+    printf("Initialize jraft module\n");
     PyObject *m;
     m = PyModule_Create(&jraftmodule);
-    if (m == NULL)
+    if (m == NULL) {
+        printf("PyModule_Create returned NULL\n");
         return NULL;
+    }
 
     AddVoterError = PyErr_NewException("jraft.AddVoterError", PyExc_RuntimeError, NULL);
     Py_XINCREF(AddVoterError);
 
     if (PyModule_AddObject(m, "error", AddVoterError) < 0) {
+        printf("PyModule_AddObject for AddVoterError errored\n");
         Py_XDECREF(AddVoterError);
         Py_CLEAR(AddVoterError);
         Py_DECREF(m);
         return NULL;
     }
-
+    printf("jraft module properly initialized\n");
     return m;
 }
 
