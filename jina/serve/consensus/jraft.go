@@ -26,8 +26,6 @@ PyObject * run(PyObject* , PyObject*, PyObject*);
 PyObject * add_voter(PyObject* , PyObject*);
 PyObject * get_configuration(PyObject* , PyObject*);
 
-static PyObject *AddVoterError = NULL;
-
 static PyMethodDef methods[] = {
     {"run", (PyCFunction)run, METH_VARARGS | METH_KEYWORDS, "Run the raft Node server"},
     {"add_voter", (PyCFunction)add_voter, METH_VARARGS, "Client to add voter"},
@@ -46,17 +44,6 @@ PyInit_jraft(void)
     m = PyModule_Create(&jraftmodule);
     if (m == NULL)
         return NULL;
-
-    AddVoterError = PyErr_NewException("jraft.AddVoterError", PyExc_RuntimeError, NULL);
-    Py_XINCREF(AddVoterError);
-
-    if (PyModule_AddObject(m, "error", AddVoterError) < 0) {
-        Py_XDECREF(AddVoterError);
-        Py_CLEAR(AddVoterError);
-        Py_DECREF(m);
-        return NULL;
-    }
-
     return m;
 }
 
