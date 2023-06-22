@@ -122,22 +122,7 @@ get-started/install/index
 get-started/create-app
 ```
 
-```{toctree}
-:caption: Tutorials
-:hidden:
 
-tutorials/before-you-start
-tutorials/deploy-model
-tutorials/deploy-pipeline
-tutorials/gpu-executor
-```
-
-```{toctree}
-:caption: New DocArray support
-:hidden:
-
-docarray-v2
-```
 
 ```{toctree}
 :caption: Concepts
@@ -159,13 +144,10 @@ cloud-nativeness/opentelemetry
 jina-ai-cloud/index
 ```
 
-
-
 ```{toctree}
 :caption: Developer Reference
 :hidden:
 :maxdepth: 1
-
 
 api-rst
 cli/index
@@ -174,6 +156,16 @@ envs/index
 telemetry
 proto/docs
 developer-reference/clean-code
+tutorials/docarray-031support
+```
+
+```{toctree}
+:caption: Tutorials
+:hidden:
+
+tutorials/deploy-model
+tutorials/gpu-executor
+tutorials/deploy-pipeline
 ```
 
 ```{toctree}
