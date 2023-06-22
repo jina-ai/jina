@@ -330,6 +330,7 @@ class GrpcConnectionPool:
             current_address: str = '',  # the specific address that was contacted during this attempt
             current_deployment: str = '',  # the specific deployment that was contacted during this attempt
             connection_list: Optional[_ReplicaList] = None,
+            task_type: str = 'DataRequest'
     ) -> 'Optional[Union[AioRpcError, InternalNetworkError]]':
         # connection failures, cancelled requests, and timed out requests should be retried
         # all other cases should not be retried and will be raised immediately
@@ -345,7 +346,7 @@ class GrpcConnectionPool:
             skip_resetting = True # no need to reset, no problem with channel
         else:
             self._logger.debug(
-                f'gRPC call to {current_deployment} errored, with error {format_grpc_error(error)} and for the {retry_i + 1}th time.'
+                f'gRPC call to {current_deployment} for {task_type} errored, with error {format_grpc_error(error)} and for the {retry_i + 1}th time.'
             )
         errors_to_retry = [
             grpc.StatusCode.UNAVAILABLE,
@@ -446,6 +447,7 @@ class GrpcConnectionPool:
                         current_address=current_connection.address,
                         current_deployment=current_connection.deployment_name,
                         connection_list=connections,
+                        task_type='DataRequest'
                     )
                     if error:
                         return error
@@ -492,6 +494,7 @@ class GrpcConnectionPool:
                         current_deployment=connection.deployment_name,
                         connection_list=connection_list,
                         total_num_tries=total_num_tries,
+                        task_type='EndpointDiscovery'
                     )
                     if error:
                         raise error
@@ -517,7 +520,7 @@ class GrpcConnectionPool:
                 await call_result
                 target_warmup_responses[stub.address] = True
             except asyncio.CancelledError:
-                self._logger.debug(f'Warmup task got cancelled')
+                self._logger.debug(f'warmup task got cancelled')
                 target_warmup_responses[stub.address] = False
                 raise
             except Exception:
@@ -556,7 +559,7 @@ class GrpcConnectionPool:
                         return
                     await asyncio.sleep(0.2)
                 except asyncio.CancelledError:
-                    self._logger.debug(f'Warmup task got cancelled')
+                    self._logger.debug(f'warmup task got cancelled')
                     if tasks:
                         for task in tasks:
                             task.cancel()
