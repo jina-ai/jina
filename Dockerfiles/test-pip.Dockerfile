@@ -1,6 +1,6 @@
 ARG PY_VERSION=3.7
 ARG PIP_TAG
-
+ARG DOCARRAY_VERSION
 
 FROM python:${PY_VERSION}-slim
 
@@ -19,6 +19,11 @@ ENV GOBIN="/go/bin"
 COPY . /jina/
 
 RUN cd /jina && pip install ."$PIP_TAG"
+RUN if [ -z "$DOCARRAY_VERSION" ]; then \
+      echo "DOCARRAY_VERSION is not provided"; \
+    else \
+      pip install docarray==$DOCARRAY_VERSION; \
+    fi
 RUN cat $HOME/.bashrc
 RUN grep -Fxq "# JINA_CLI_BEGIN" $HOME/.bashrc
 
