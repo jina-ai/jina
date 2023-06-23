@@ -165,7 +165,7 @@ from docarray import Document
 from jina import Client
 
 prompt = Document(
-    tags = {'prompt': 'suggest an interesting image generation prompt for a mona lisa variant'}
+    text = 'suggest an interesting image generation prompt for a mona lisa variant'
 )
 
 client = Client(port=12345)  # use port from output above
@@ -259,7 +259,7 @@ from jina import Client, Document
 client = Client(port=12345)
 
 prompt = Document(
-    tags = {'prompt': 'suggest an interesting image generation prompt for a mona lisa variant'}
+    text = 'suggest an interesting image generation prompt for a mona lisa variant'
 )
 
 response = client.post(on='/', inputs=[prompt])
