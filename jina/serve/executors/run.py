@@ -43,6 +43,8 @@ def run_raft(
         workspace=args.workspace, name='raft', shard_id=shard_id
     )
 
+    consistency_mode = args.consistency_mode.to_string()
+
     port = args.port[0] if isinstance(args.port, list) else args.port
     address = f'{args.host}:{port}'
     executor_target = f'{args.host}:{port + RAFT_TO_EXECUTOR_PORT}'
@@ -65,6 +67,7 @@ def run_raft(
         address,
         raft_id,
         raft_dir,
+        consistency_mode,
         executor_target,
         **raft_configuration,
     )

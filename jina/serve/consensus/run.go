@@ -2,7 +2,7 @@ package main
 
 // #include <Python.h>
 // #include <stdbool.h>
-// int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, char **executorTarget, int *HeartbeatTimeout, int *ElectionTimeout, int *CommitTimeout, int *MaxAppendEntries, bool *BatchApplyCh, bool *ShutdownOnRemove, uint64_t *TrailingLogs, int *snapshotInterval, uint64_t *SnapshotThreshold, int *LeaderLeaseTimeout, char **LogLevel, bool *NoSnapshotRestoreOnStart);
+// int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, char **consistencyMode, char **executorTarget, int *HeartbeatTimeout, int *ElectionTimeout, int *CommitTimeout, int *MaxAppendEntries, bool *BatchApplyCh, bool *ShutdownOnRemove, uint64_t *TrailingLogs, int *snapshotInterval, uint64_t *SnapshotThreshold, int *LeaderLeaseTimeout, char **LogLevel, bool *NoSnapshotRestoreOnStart);
 // int PyArg_ParseTuple_add_voter(PyObject * args, char **a, char **b, char **c);
 // int PyArg_ParseTuple_get_configuration(PyObject * args, char **a, char **b);
 // void raise_exception(char *msg);
@@ -120,6 +120,7 @@ func NewRaft(ctx context.Context,
 func Run(myAddr string,
          raftId string,
          raftDir string,
+         consistencyMode string,
          executorTarget string,
          HeartbeatTimeout int,
          ElectionTimeout int,
@@ -140,7 +141,10 @@ func Run(myAddr string,
     if raftId == "" {
         log.Fatalf("flag --raft_id is required")
     }
+
     run_logger.Info("Running RAFT node in", "address", myAddr, "with the ID", raftId, "in directory", raftDir, "and connecting to Executor", executorTarget)
+    run_logger.Info("Running RAFT node with the ","consistency mode", consistencyMode)
+
     ctx := context.Background()
     _, port, err := net.SplitHostPort(myAddr)
     if err != nil {
@@ -184,26 +188,32 @@ func Run(myAddr string,
                     Level:  hclog.LevelFromString(LogLevel),
                 })
 
+    // FIXME(niebayes): Is it reasonable to have a single RpcInterface instance?
     pb.RegisterJinaSingleDataRequestRPCServer(grpcServer, &jinaraft.RpcInterface{
         Executor: executorFSM,
         Raft:     r,
+        ConsistencyMode: consistencyMode,
         Logger:   rpc_logger,
     })
     pb.RegisterJinaDiscoverEndpointsRPCServer(grpcServer, &jinaraft.RpcInterface{
         Executor: executorFSM,
         Raft:     r,
+        ConsistencyMode: consistencyMode,
         Logger:   rpc_logger,
     })
     pb.RegisterJinaInfoRPCServer(grpcServer, &jinaraft.RpcInterface{
         Executor: executorFSM,
         Raft:     r,
+        ConsistencyMode: consistencyMode,
         Logger:   rpc_logger,
     })
     pb.RegisterJinaRPCServer(grpcServer, &jinaraft.RpcInterface{
-                                    Executor: executorFSM,
-                                    Raft:     r,
-                                    Logger:   rpc_logger,
-                              })
+        Executor: executorFSM,
+        Raft:     r,
+        ConsistencyMode: consistencyMode,
+        Logger:   rpc_logger,
+    })
+
     tm.Register(grpcServer)
 
     healthpb.RegisterHealthServer(grpcServer, &jinaraft.RpcInterface{
@@ -216,6 +226,7 @@ func Run(myAddr string,
     reflection.Register(grpcServer)
     sigchnl := make(chan os.Signal, 1)
     signal.Notify(sigchnl, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, os.Interrupt)
+
     go func(){
         sig := <-sigchnl
         run_logger.Info("Received", "signal", sig)
@@ -231,6 +242,7 @@ func Run(myAddr string,
         }
         run_logger.Info("RAFT shutdown whithout error")
     }()
+
     if err := grpcServer.Serve(sock); err != nil {
         run_logger.Error("failed to serve", "error", err)
         log.Fatalf("failed to serve: %v", err)
@@ -252,6 +264,7 @@ func main() {
     myAddr                   := flag.String("address", "localhost:50051", "TCP host+port for this node")
     raftId                   := flag.String("raft_id", "", "Node id used by Raft")
     raftDir                  := flag.String("raft_data_dir", "data/", "Raft data dir")
+    consistencyMode          := flag.String("consistency_mode", "Strong", "Consistency Mode")
     executorTarget           := flag.String("executor_target", "localhost:54321", "underlying executor host+port")
     HeartbeatTimeout         := flag.Int("heartbeat_timeout", int(raftDefaultConfig.HeartbeatTimeout / time.Millisecond), "HeartbeatTimeout for the RAFT node")
     ElectionTimeout          := flag.Int("election_timeout", int(raftDefaultConfig.ElectionTimeout / time.Millisecond), "ElectionTimeout for the RAFT node")
@@ -269,6 +282,7 @@ func main() {
     Run(*myAddr,
         *raftId,
         *raftDir,
+        *consistencyMode,
         *executorTarget,
         *HeartbeatTimeout,
         *ElectionTimeout,
@@ -290,6 +304,7 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
     var myAddr *C.char
     var raftId *C.char
     var raftDir *C.char
+    var consistencyMode *C.char
     var executorTarget *C.char
     var HeartbeatTimeout C.int
     var ElectionTimeout C.int
@@ -323,6 +338,7 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
                              &myAddr,
                              &raftId,
                              &raftDir,
+                             &consistencyMode,
                              &executorTarget,
                              &HeartbeatTimeout,
                              &ElectionTimeout,
@@ -339,6 +355,7 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
         Run(C.GoString(myAddr),
             C.GoString(raftId),
             C.GoString(raftDir),
+            C.GoString(consistencyMode),
             C.GoString(executorTarget),
             int(HeartbeatTimeout),
             int(ElectionTimeout),

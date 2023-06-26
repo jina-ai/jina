@@ -264,6 +264,13 @@ class WebsocketSubProtocols(str, Enum):
     BYTES = 'bytes'
 
 
+class ConsistencyMode(str, BetterEnum):
+    """Consistency mode supported by the consensus module"""
+
+    EVENTUAL = 'Eventual'
+    STRONG = 'Strong'
+
+
 def replace_enum_to_str(obj):
     """
     Transform BetterEnum type into string.

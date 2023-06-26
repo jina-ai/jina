@@ -17,9 +17,18 @@ import (
     hclog "github.com/hashicorp/go-hclog"
 )
 
+type ConsistencyMode string
+
+const (
+	Strong   ConsistencyMode = "Strong"
+	Eventual ConsistencyMode = "Eventual"
+)
+
+// TODO(niebayes): rewrite RpcInterface to Peer which acts as the coordinator between the executor and the raft node.
 type RpcInterface struct {
     Executor *executorFSM
     Raft     *raft.Raft
+    ConsistencyMode ConsistencyMode
     Logger   hclog.Logger
     pb.UnimplementedJinaSingleDataRequestRPCServer
     pb.UnimplementedJinaDiscoverEndpointsRPCServer
@@ -61,6 +70,75 @@ func (rpc *RpcInterface) Call(stream pb.JinaRPC_CallServer) error {
   }
 }
 
+func (rpc *RpcInterface) proposeRequestToRaft(request *pb.DataRequestProto) (*pb.DataRequestProto, error) {
+    bytes, err := proto.Marshal(request)
+    if err != nil {
+        rpc.Logger.Error("Error marshalling DataRequestProto into bytes:", "error", err)
+        return nil, err
+    }
+
+    rpc.Logger.Debug("Call raft.Apply to propose the request to the RAFT cluster")
+    future := rpc.Raft.Apply(bytes, time.Second)
+    if err := future.Error(); err != nil {
+        rpc.Logger.Error("Error from calling RAFT apply:", "error", err)
+        return nil, rafterrors.MarkRetriable(err)
+    }
+
+    response, test := future.Response().(*pb.DataRequestProto)
+    rpc.Logger.Debug("Got the response from the RAFT cluster")
+
+    if test {
+        return response, nil
+    } else {
+        err := future.Response().(error)
+        return nil, err
+    }
+}
+
+func (rpc *RpcInterface) applyRequestToExecutor(request *pb.DataRequestProto) (*pb.DataRequestProto, error) {
+    rpc.Logger.Debug("Invoke the ProcessSingleData RPC on the Executor")
+
+    executor := rpc.Executor.executor
+    conn, err := executor.newConnection()
+    if err != nil {
+        return nil, err
+    }
+    defer conn.Close()
+
+    client := pb.NewJinaSingleDataRequestRPCClient(conn)
+    response, err := client.ProcessSingleData(context.Background(), request)
+    if err != nil {
+        rpc.Logger.Error("Error when calling Executor", "error", err)
+        return nil, err
+    }
+
+    return response, nil
+}
+
+func (rpc *RpcInterface) handleReadRequest(request *pb.DataRequestProto) (*pb.DataRequestProto, error) {
+    rpc.Logger.Debug("Calling a Read Endpoint:", "endpoint", *request.Header.ExecEndpoint)
+
+    if rpc.ConsistencyMode == Eventual {
+        // simply forward the request to the executor if the consistency mode is eventual.
+        return rpc.applyRequestToExecutor(request)
+    }
+
+    // currently, all read requests go to the RAFT cluster for strong consistency.
+    // TODO(niebayes): implement read index optimization to reduce the overhead of the RAFT cluster.
+    return rpc.proposeRequestToRaft(request)
+}
+
+func (rpc *RpcInterface) handleWriteRequest(request *pb.DataRequestProto) (*pb.DataRequestProto, error) {
+    rpc.Logger.Debug("Calling a Write Endpoint:", "endpoint", *request.Header.ExecEndpoint)
+    if rpc.getRaftState() == raft.Leader && rpc.Executor.isSnapshotInProgress() {
+        err := errors.New("leader cannot process write request while snapshotting")
+        rpc.Logger.Error("Leader cannot process write request while Snapshotting")
+        return nil, err
+    }
+
+    // all write requests go to the RAFT cluster.
+    return rpc.proposeRequestToRaft(request)
+}
 
 /**
  * jina gRPC func for DataRequests.
@@ -68,12 +146,23 @@ func (rpc *RpcInterface) Call(stream pb.JinaRPC_CallServer) error {
  */
 func (rpc *RpcInterface) ProcessSingleData(
     ctx context.Context,
-    dataRequestProto *pb.DataRequestProto) (*pb.DataRequestProto, error) {
+    request *pb.DataRequestProto) (*pb.DataRequestProto, error) {
     rpc.Logger.Debug("Calling ProcessSingleData")
-    endpoint := dataRequestProto.Header.ExecEndpoint
-    found := false
 
-    // Loop through the list and check if the search string is in the list
+    endpoint := request.Header.ExecEndpoint
+
+    // true if found the endpoint in the list of read or write endpoints.
+    found := false
+    isRead := false
+
+    for _, s := range rpc.Executor.read_endpoints {
+        if s == *endpoint {
+            found = true
+            isRead = true
+            break
+        }
+    }
+
     for _, s := range rpc.Executor.write_endpoints {
         if s == *endpoint {
             found = true
@@ -81,36 +170,15 @@ func (rpc *RpcInterface) ProcessSingleData(
         }
     }
 
-    if found {
-        rpc.Logger.Debug("Calling a Write Endpoint:", "endpoint", *endpoint)
-        if rpc.getRaftState() == raft.Leader && rpc.Executor.isSnapshotInProgress() {
-            err := errors.New("Leader cannot process write request while Snapshotting")
-            rpc.Logger.Error("Leader cannot process write request while Snapshotting")
-            return nil, err
-        }
-        bytes, err := proto.Marshal(dataRequestProto)
-        if err != nil {
-            rpc.Logger.Error("Error marshalling DataRequestProto into bytes:", "error", err)
-            return nil, err
-        }
-        // replicate logs to the followers and then to itself
-        rpc.Logger.Debug("Call raft.Apply")
-        // here we should read the `on=` from dat
-        future := rpc.Raft.Apply(bytes, time.Second)
-        if err := future.Error(); err != nil {
-            rpc.Logger.Error("Error from calling RAFT apply:", "error", err)
-            return nil, rafterrors.MarkRetriable(err)
-        }
-        response, test := future.Response().(*pb.DataRequestProto)
-        if test {
-            return response, nil
-        } else {
-            err := future.Response().(error)
-            return nil, err
-        }
+    if !found {
+        rpc.Logger.Error("Calling a RAFT-irrelevant Endpoint:", "endpoint", *endpoint)
+        return nil, errors.New("calling a raft-irrelevant Endpoint")
+    }
+
+    if isRead {
+        return rpc.handleReadRequest(request)
     } else {
-        rpc.Logger.Debug("Calling a Read Endpoint:", "endpoint", *endpoint)
-        return rpc.Executor.Read(ctx, dataRequestProto)
+        return rpc.handleWriteRequest(request)
     }
 }
 

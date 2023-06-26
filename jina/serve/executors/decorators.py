@@ -90,6 +90,83 @@ def _init_requests_by_class(cls):
         _inherit_from_parent_class_inner(cls)
 
 
+def read(
+    func: Optional[
+        Callable[
+            [
+                'DocumentArray',
+                Dict,
+                'DocumentArray',
+                List['DocumentArray'],
+                List['DocumentArray'],
+            ],
+            Optional[Union['DocumentArray', Dict]],
+        ]
+    ] = None
+):
+    """
+    `@read` is a decorator indicating that the method decorated will access the state of the Executor finite state machine
+
+    Calls to methods decorated with `read` will be handled by `RAFT` consensus algorithm to guarantee the consistency model won't be violated.
+    """
+
+    class ReadMethodDecorator:
+        def __init__(self, fn):
+            self._requests_decorator = None
+            fn = self._unwrap_requests_decorator(fn)
+            if iscoroutinefunction(fn):
+
+                @functools.wraps(fn)
+                async def arg_wrapper(
+                    executor_instance, *args, **kwargs
+                ):  # we need to get the summary from the executor, so we need to access the self
+                    with executor_instance._write_lock:
+                        return await fn(executor_instance, *args, **kwargs)
+
+                self.fn = arg_wrapper
+            else:
+
+                @functools.wraps(fn)
+                def arg_wrapper(
+                    executor_instance, *args, **kwargs
+                ):  # we need to get the summary from the executor, so we need to access the self
+                    with executor_instance._write_lock:
+                        return fn(executor_instance, *args, **kwargs)
+
+                self.fn = arg_wrapper
+
+        def _unwrap_requests_decorator(self, fn):
+            if type(fn).__name__ == 'FunctionMapper':
+                self._requests_decorator = fn
+                return fn.fn
+            else:
+                return fn
+
+        def _inject_owner_attrs(self, owner, name):
+            if not hasattr(owner, '_read_methods'):
+                owner._read_methods = []
+
+            owner._read_methods.append(self.fn.__name__)
+
+        def __set_name__(self, owner, name):
+            _init_requests_by_class(owner)
+            if self._requests_decorator:
+                self._requests_decorator._inject_owner_attrs(owner, name, None, None)
+
+            self._inject_owner_attrs(owner, name)
+
+            setattr(owner, name, self.fn)
+
+        def __call__(self, *args, **kwargs):
+            # this is needed to make this decorator work in combination with `@requests`
+            return self.fn(*args, **kwargs)
+
+    if func:
+        return ReadMethodDecorator(func)
+    else:
+        return ReadMethodDecorator
+
+
 def write(
     func: Optional[
         Callable[
@@ -294,8 +371,10 @@ def requests(
             if fn:
                 setattr(fn, '__is_generator__', is_generator(fn))
             self._batching_decorator = None
+            self._read_decorator = None
             self._write_decorator = None
             fn = self._unwrap_batching_decorator(fn)
+            fn = self._unwrap_read_decorator(fn)
             fn = self._unwrap_write_decorator(fn)
             arg_spec = inspect.getfullargspec(fn)
             if not arg_spec.varkw and not __args_executor_func__.issubset(
@@ -328,6 +407,13 @@ def requests(
         def _unwrap_batching_decorator(self, fn):
             if type(fn).__name__ == 'DynamicBatchingDecorator':
                 self._batching_decorator = fn
+                return fn.fn
+            else:
+                return fn
+
+        def _unwrap_read_decorator(self, fn):
+            if type(fn).__name__ == 'ReadMethodDecorator':
+                self._read_decorator = fn
                 return fn.fn
             else:
                 return fn
@@ -378,6 +464,8 @@ def requests(
             _init_requests_by_class(owner)
             if self._batching_decorator:
                 self._batching_decorator._inject_owner_attrs(owner, name)
+            if self._read_decorator:
+                self._read_decorator._inject_owner_attrs(owner, name)
             if self._write_decorator:
                 self._write_decorator._inject_owner_attrs(owner, name)
             self.fn.class_name = owner.__name__

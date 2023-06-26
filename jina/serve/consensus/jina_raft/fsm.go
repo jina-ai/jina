@@ -26,6 +26,7 @@ type executorFSM struct {
     executor *executor
     mtx      sync.RWMutex
     snapshot *snapshot
+    read_endpoints []string
     write_endpoints []string
     RaftID   string
     logger   hclog.Logger
@@ -45,15 +46,23 @@ func NewExecutorFSM(target string, LogLevel string, raftID string) *executorFSM 
 
     conn, _ := executor.newConnection()
     defer conn.Close()
+
     client := pb.NewJinaDiscoverEndpointsRPCClient(conn)
     response, err := client.EndpointDiscovery(context.Background(), &emptypb.Empty{})
     if err != nil {
-        fsm_logger.Error("Error getting endpoints discovery", "error", err)
+        fsm_logger.Error("Error calling endpoints discovery", "error", err)
     }
+
+    // TODO(niebayes): regenerate proto files.
+    read_endpoints := response.ReadEndpoints
+    fsm_logger.Debug("List of read endpoints:", "endpoints", read_endpoints)
+
     write_endpoints := response.WriteEndpoints
-    fsm_logger.Debug("List of endpoints that should trigger Raft Apply:", "endpoints", write_endpoints)
+    fsm_logger.Debug("List of write endpoints:", "endpoints", write_endpoints)
+
     return &executorFSM{
         executor: executor,
+        read_endpoints: read_endpoints,
         write_endpoints: write_endpoints,
         logger: fsm_logger,
         RaftID: raftID,
@@ -93,7 +102,9 @@ func (executor *executorFSM) isSnapshotInProgress() bool {
 func (fsm *executorFSM) Apply(l *raft.Log) interface{} {
     fsm.mtx.Lock()
     defer fsm.mtx.Unlock()
+
     fsm.logger.Debug("Apply new log entry")
+
     for {
         if !fsm.isSnapshotInProgress() {
             // we need not to return error but make it slow, wait until not anymore in progress
@@ -102,17 +113,19 @@ func (fsm *executorFSM) Apply(l *raft.Log) interface{} {
         fsm.logger.Error("cannot execute Apply because a snapshot is in progress")
         time.Sleep(1 * time.Second)
     }
+
     if fsm.isSnapshotInProgress() {
         // we need not to return error but make it slow, wait until not anymore in progress
         fsm.logger.Error("Cannot accept new requests when snap shotting is in progress.")
         return fmt.Errorf("Cannot accept new requests when snap shotting is in progress.")
     }
+
     conn, err := fsm.executor.newConnection()
     if err != nil {
         return err
     }
     defer conn.Close()
-    client := pb.NewJinaSingleDataRequestRPCClient(conn)
+
     dataRequestProto := &pb.DataRequestProto{}
     err = proto.Unmarshal(l.Data, dataRequestProto)
     if err != nil {
@@ -120,11 +133,13 @@ func (fsm *executorFSM) Apply(l *raft.Log) interface{} {
         return err
     }
 
+    client := pb.NewJinaSingleDataRequestRPCClient(conn)
     response, err := client.ProcessSingleData(context.Background(), dataRequestProto)
     if err != nil {
         fsm.logger.Error("Error when calling Executor", "error", err)
         return err
     }
+
     fsm.logger.Debug("Return Apply Log Response")
     return response
 }
@@ -246,6 +261,7 @@ func (fsm *executorFSM) Restore(r io.ReadCloser) error {
     return err
 }
 
+// TODO(niebayes): remove this function.
 func (fsm *executorFSM) Read(ctx context.Context, dataRequestProto *pb.DataRequestProto) (*pb.DataRequestProto, error) {
     fsm.logger.Debug("Call Read Endpoint")
     conn, err := fsm.executor.newConnection()

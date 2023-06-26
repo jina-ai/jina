@@ -268,6 +268,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             threading.Lock()
         )  # watch because this makes it no serializable
 
+        overlap_endpoints = set(self.read_endpoints).intersection(self.write_endpoints)
+        if len(overlap_endpoints) > 0:
+            raise RuntimeError(
+                f'endpoints {overlap_endpoints} cannot be both read and write endpoints'
+            )
+
     def _get_endpoint_models_dict(self):
         from jina._docarray import docarray_v2
 
@@ -381,6 +387,23 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             # we need to copy so that different instances with different (requests) in input do not disturb one another
             self._requests = copy.copy(self.requests_by_class[self.__class__.__name__])
             return self._requests
+
+    @property
+    def read_endpoints(self):
+        """
+        Get the list of endpoints bound to read methods
+
+        :return: Returns the list of endpoints bound to read methods
+        """
+
+        if hasattr(self, '_read_methods'):
+            endpoints = []
+            for endpoint, fn in self.requests.items():
+                if fn.fn.__name__ in self._read_methods:
+                    endpoints.append(endpoint)
+            return endpoints
+        else:
+            return []
 
     @property
     def write_endpoints(self):
@@ -723,6 +746,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         ssl_certfile: Optional[str] = None,
         ssl_keyfile: Optional[str] = None,
         stateful: Optional[bool] = False,
+        consistency_mode: Optional[str] = 'Strong',
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
@@ -828,6 +852,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
         :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
+        :param consistency_mode: If set, the consensus module will use this mode to decide how to handle read requests
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default

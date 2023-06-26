@@ -269,6 +269,7 @@ def mixin_stateful_parser(parser):
         default=False,
         help='If set, start consensus module to make sure write operations are properly replicated between all the replicas',
     )
+
     gp.add_argument(
         '--peer-ports',
         type=str,
@@ -280,3 +281,9 @@ def mixin_stateful_parser(parser):
         nargs='+',
     )
 
+    gp.add_argument(
+        '--consistency-mode',
+        type=str,
+        default='Strong',
+        help='If set, the consensus module will use this mode to decide how to handle read requests'
+    )
