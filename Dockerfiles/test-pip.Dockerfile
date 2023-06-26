@@ -19,6 +19,11 @@ ENV GOBIN="/go/bin"
 COPY . /jina/
 
 RUN cd /jina && pip install ."$PIP_TAG"
+RUN pip install docarray==0.21.0
+#RUN pip uninstall -y mypy-extensions
+#RUN pip uninstall -y types-requests
+#RUN pip uninstall -y types-urllib3
+#RUN pip uninstall -y typing-inspect
 RUN cat $HOME/.bashrc
 RUN grep -Fxq "# JINA_CLI_BEGIN" $HOME/.bashrc
 
