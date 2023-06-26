@@ -2195,6 +2195,7 @@ class Flow(
             image_type = 'img'
 
         url = op_flow._mermaid_to_url(mermaid_str, image_type)
+        print(f' url {url}')
         showed = False
         if inline_display:
             try:

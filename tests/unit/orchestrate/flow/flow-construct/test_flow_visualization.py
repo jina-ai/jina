@@ -109,6 +109,7 @@ def test_flow_vertical(tmpdir, vertical_layout):
 
     output_fn = str(tmpdir / 'flow.png')
     Flow().add(name='a').add(name='b').plot(output_fn, vertical_layout=vertical_layout)
+    print(f'output_fn {output_fn}')
     assert os.path.exists(output_fn)
     w_h = get_image_size(output_fn)
     assert w_h is not None
