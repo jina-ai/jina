@@ -2083,8 +2083,7 @@ class Flow(
       "tertiaryBorderColor": "none",
       "lineColor": "#a6d8da"
       }
-}}%%
-            '''.replace(
+}}%%'''.replace(
                 '\n', ''
             ),
             'flowchart LR;',
