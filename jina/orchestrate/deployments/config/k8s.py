@@ -15,7 +15,7 @@ from jina.orchestrate.deployments import Deployment
 from jina.orchestrate.deployments.config.helper import (
     construct_runtime_container_args,
     get_base_executor_version,
-    get_image_name,
+    resolve_image_name,
     to_compatible_name,
     validate_uses,
 )
@@ -69,7 +69,7 @@ class K8sDeploymentConfig:
                 'env',
             }
 
-            image_name = self._get_image_name(cargs.uses)
+            image_name = resolve_image_name(cargs.uses)
             if cargs.uses not in [
                 __default_http_gateway__,
                 __default_websocket_gateway__,
@@ -102,23 +102,6 @@ class K8sDeploymentConfig:
                 timeout_ready=self.common_args.timeout_ready,
             )
 
-        def _get_image_name(self, uses: Optional[str]):
-            import os
-
-            if 'JINA_GATEWAY_IMAGE' not in os.environ and uses in [__default_http_gateway__,
-                                                                   __default_websocket_gateway__,
-                                                                   __default_grpc_gateway__,
-                                                                   __default_composite_gateway__]:
-                image_name = get_image_name('jinaai+docker://JinaGateway:latest')
-            elif uses is not None and uses != __default_executor__:
-                image_name = get_image_name(uses)
-            else:
-                image_name = os.getenv(
-                    'JINA_GATEWAY_IMAGE', f'jinaai/jina:{self.version}-py38-standard'
-                )
-
-            return image_name
-
         def _get_container_args(self, cargs, pod_type):
             uses_metas = cargs.uses_metas or {}
             uses_with = self.deployment_args.uses_with
@@ -133,14 +116,14 @@ class K8sDeploymentConfig:
         ) -> List[Dict]:
             cargs = copy.copy(self.deployment_args)
 
-            image_name = self._get_image_name(cargs.uses)
+            image_name = resolve_image_name(cargs.uses)
             image_name_uses_before = (
-                self._get_image_name(cargs.uses_before)
+                resolve_image_name(cargs.uses_before)
                 if hasattr(cargs, 'uses_before') and cargs.uses_before
                 else None
             )
             image_name_uses_after = (
-                self._get_image_name(cargs.uses_after)
+                resolve_image_name(cargs.uses_after)
                 if hasattr(cargs, 'uses_after') and cargs.uses_after
                 else None
             )

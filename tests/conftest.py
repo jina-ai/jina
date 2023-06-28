@@ -93,4 +93,5 @@ def event_loop(request):
 def set_test_pip_version() -> None:
     os.environ['JINA_GATEWAY_IMAGE'] = 'jinaai/jina:test-pip'
     yield
-    del os.environ['JINA_GATEWAY_IMAGE']
+    if 'JINA_GATEWAY_IMAGE' in os.environ: # maybe another fixture has already removed
+        del os.environ['JINA_GATEWAY_IMAGE']

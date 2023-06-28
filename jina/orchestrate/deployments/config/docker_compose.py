@@ -21,6 +21,7 @@ from jina.orchestrate.deployments.config.helper import (
     validate_uses,
 )
 from jina.orchestrate.helper import generate_default_volume_and_workspace
+from jina.orchestrate.deployments.config.helper import resolve_image_name
 
 port = 8081
 
@@ -60,7 +61,7 @@ class DockerComposeConfig:
 
             cargs = copy.copy(self.service_args)
 
-            image_name = self._get_image_name(cargs.uses)
+            image_name = resolve_image_name(cargs.uses)
 
             cargs.deployments_addresses = self.deployments_addresses
             from jina.helper import ArgNamespace
@@ -112,23 +113,6 @@ class DockerComposeConfig:
                 'environment': envs,
             }
 
-        def _get_image_name(self, uses: Optional[str]):
-            import os
-
-            if 'JINA_GATEWAY_IMAGE' not in os.environ and uses in [__default_http_gateway__,
-                                                                   __default_websocket_gateway__,
-                                                                   __default_grpc_gateway__,
-                                                                   __default_composite_gateway__]:
-                image_name = get_image_name('jinaai+docker://JinaGateway:latest')
-            elif uses is not None and uses != __default_executor__:
-                image_name = get_image_name(uses)
-            else:
-                image_name = os.getenv(
-                    'JINA_GATEWAY_IMAGE', f'jinaai/jina:{self.version}-py38-standard'
-                )
-
-            return image_name
-
         def _get_container_args(self, cargs):
             uses_metas = cargs.uses_metas or {}
             uses_with = self.service_args.uses_with
@@ -173,7 +157,7 @@ class DockerComposeConfig:
                 )
 
                 env = cargs.env
-                image_name = self._get_image_name(cargs.uses)
+                image_name = resolve_image_name(cargs.uses)
                 container_args = self._get_container_args(cargs)
                 config = {
                     'image': image_name,
