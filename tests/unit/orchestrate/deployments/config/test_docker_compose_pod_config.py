@@ -395,7 +395,7 @@ def test_docker_compose_gateway(deployments_addresses, custom_gateway, port, pro
     assert (
         gateway_config['image'] == custom_gateway
         if custom_gateway
-        else f'jinaai/jina:{deployment_config.worker_services[0].version}-py38-standard'
+        else f'jinaai/jina:test-pip'
     )
     assert gateway_config['entrypoint'] == ['jina']
     assert gateway_config['ports'] == [f'{_port}:{_port}' for _port in args.port]
@@ -510,7 +510,7 @@ def test_docker_compose_yaml_regular_deployment(
         assert head_name == 'executor-head'
         assert (
             head_config['image']
-            == f'jinaai/jina:{deployment_config.head_service.version}-py38-standard'
+            == f'jinaai/jina:test-pip'
         )
         assert head_config['entrypoint'] == ['jina']
         head_args = head_config['command']

@@ -1,0 +1,2 @@
+This is a PlaceHolder Gateway so that Jina when transforming to Kubernetes, requests for this image to `Hubble`, so that Hubble can dynamically
+adapt to the Docker image the `docarray` version required so that it works in conjunction with the rest of the Executors.

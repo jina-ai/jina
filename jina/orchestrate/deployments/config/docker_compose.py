@@ -115,18 +115,17 @@ class DockerComposeConfig:
         def _get_image_name(self, uses: Optional[str]):
             import os
 
-            image_name = os.getenv(
-                'JINA_GATEWAY_IMAGE', f'jinaai/jina:{self.version}-py38-standard'
-            )
-
-            if uses is not None and uses not in [
-                __default_executor__,
-                __default_http_gateway__,
-                __default_websocket_gateway__,
-                __default_grpc_gateway__,
-                __default_composite_gateway__,
-            ]:
+            if 'JINA_GATEWAY_IMAGE' not in os.environ and uses in [__default_http_gateway__,
+                                                                   __default_websocket_gateway__,
+                                                                   __default_grpc_gateway__,
+                                                                   __default_composite_gateway__]:
+                image_name = get_image_name('jinaai+docker://JinaGateway:latest')
+            elif uses is not None and uses != __default_executor__:
                 image_name = get_image_name(uses)
+            else:
+                image_name = os.getenv(
+                    'JINA_GATEWAY_IMAGE', f'jinaai/jina:{self.version}-py38-standard'
+                )
 
             return image_name
 

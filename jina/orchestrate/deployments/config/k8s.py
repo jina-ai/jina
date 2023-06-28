@@ -30,15 +30,15 @@ class K8sDeploymentConfig:
 
     class _K8sDeployment:
         def __init__(
-            self,
-            name: str,
-            version: str,
-            pod_type: PodRoleType,
-            jina_deployment_name: str,
-            shard_id: Optional[int],
-            common_args: Union['Namespace', Dict],
-            deployment_args: Union['Namespace', Dict],
-            k8s_namespace: str,
+                self,
+                name: str,
+                version: str,
+                pod_type: PodRoleType,
+                jina_deployment_name: str,
+                shard_id: Optional[int],
+                common_args: Union['Namespace', Dict],
+                deployment_args: Union['Namespace', Dict],
+                k8s_namespace: str,
         ):
             self.name = name
             self.dns_name = to_compatible_name(name)
@@ -52,7 +52,7 @@ class K8sDeploymentConfig:
             self.k8s_namespace = k8s_namespace
 
         def get_gateway_yamls(
-            self,
+                self,
         ) -> List[Dict]:
             cargs = copy.copy(self.deployment_args)
             from jina.helper import ArgNamespace
@@ -105,17 +105,17 @@ class K8sDeploymentConfig:
         def _get_image_name(self, uses: Optional[str]):
             import os
 
-            image_name = os.getenv(
-                'JINA_GATEWAY_IMAGE', f'jinaai/jina:{self.version}-py38-standard'
-            )
-            if uses is not None and uses not in [
-                __default_executor__,
-                __default_http_gateway__,
-                __default_websocket_gateway__,
-                __default_grpc_gateway__,
-                __default_composite_gateway__,
-            ]:
+            if 'JINA_GATEWAY_IMAGE' not in os.environ and uses in [__default_http_gateway__,
+                                                                   __default_websocket_gateway__,
+                                                                   __default_grpc_gateway__,
+                                                                   __default_composite_gateway__]:
+                image_name = get_image_name('jinaai+docker://JinaGateway:latest')
+            elif uses is not None and uses != __default_executor__:
                 image_name = get_image_name(uses)
+            else:
+                image_name = os.getenv(
+                    'JINA_GATEWAY_IMAGE', f'jinaai/jina:{self.version}-py38-standard'
+                )
 
             return image_name
 
@@ -129,7 +129,7 @@ class K8sDeploymentConfig:
             )
 
         def get_runtime_yamls(
-            self, k8s_port: Optional[int] = GrpcConnectionPool.K8S_PORT
+                self, k8s_port: Optional[int] = GrpcConnectionPool.K8S_PORT
         ) -> List[Dict]:
             cargs = copy.copy(self.deployment_args)
 
@@ -216,10 +216,10 @@ class K8sDeploymentConfig:
             )
 
     def __init__(
-        self,
-        args: Union['Namespace', Dict],
-        k8s_namespace: Optional[str] = None,
-        k8s_port: Optional[int] = GrpcConnectionPool.K8S_PORT,
+            self,
+            args: Union['Namespace', Dict],
+            k8s_namespace: Optional[str] = None,
+            k8s_port: Optional[int] = GrpcConnectionPool.K8S_PORT,
     ):
         # External Deployments should be ignored in a K8s based Flow
         assert not (hasattr(args, 'external') and args.external)
@@ -270,7 +270,7 @@ class K8sDeploymentConfig:
             )
 
     def _get_deployment_args(
-        self, args, k8s_port: Optional[int] = GrpcConnectionPool.K8S_PORT
+            self, args, k8s_port: Optional[int] = GrpcConnectionPool.K8S_PORT
     ):
         parsed_args = {
             'head_deployment': None,
@@ -346,7 +346,7 @@ class K8sDeploymentConfig:
         return parsed_args
 
     def to_kubernetes_yaml(
-        self,
+            self,
     ) -> List[Tuple[str, List[Dict]]]:
         """
         Return a list of dictionary configurations. One for each deployment in this Deployment

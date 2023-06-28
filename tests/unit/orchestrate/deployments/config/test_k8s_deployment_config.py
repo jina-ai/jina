@@ -380,7 +380,7 @@ def test_k8s_yaml_gateway(deployments_addresses, custom_gateway, port, protocol,
     assert (
         container['image'] == custom_gateway
         if custom_gateway
-        else f'jinaai/jina:{deployment_config.worker_deployments[0].version}-py38-standard'
+        else f'jinaai/jina:test-pip'
     )
     assert container['imagePullPolicy'] == 'IfNotPresent'
     assert container['command'] == ['jina']
@@ -559,7 +559,7 @@ def test_k8s_yaml_regular_deployment(
         assert head_runtime_container['name'] == 'executor'
         assert (
             head_runtime_container['image']
-            == f'jinaai/jina:{deployment_config.head_deployment.version}-py38-standard'
+            == f'jinaai/jina:test-pip'
         )
         assert head_runtime_container['imagePullPolicy'] == 'IfNotPresent'
         assert head_runtime_container['command'] == ['jina']
