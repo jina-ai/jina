@@ -376,15 +376,14 @@ def test_worker_services(name: str, shards: str):
         (['12345', '12344', '12343'], ['grpc', 'http', 'websocket']),
     ],
 )
-@pytest.mark.parametrize('custom_gateway', ['jinaai/jina:custom-gateway', None])
+@pytest.mark.parametrize('custom_gateway', ['jinaai+docker://jina/custom-gateway', None])
 def test_docker_compose_gateway(deployments_addresses, custom_gateway, port, protocol):
-    if custom_gateway:
-        os.environ['JINA_GATEWAY_IMAGE'] = custom_gateway
-    elif 'JINA_GATEWAY_IMAGE' in os.environ:
-        del os.environ['JINA_GATEWAY_IMAGE']
+    # TODO: Monkeypatch hubble get_image_name
     args_list = ['--env', 'ENV_VAR:ENV_VALUE', '--port', *port]
     if protocol:
         args_list.extend(['--protocol', *protocol])
+    if custom_gateway:
+        args_list.extend(['--uses', custom_gateway])
     args = set_gateway_parser().parse_args(args_list)  # envs are
     # ignored for gateway
     deployment_config = DockerComposeConfig(

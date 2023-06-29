@@ -29,7 +29,7 @@ def resolve_image_name(uses: Optional[str]):
             'JINA_GATEWAY_IMAGE', None
         )
         if image_name is None:
-            image_name = get_image_name('jinaai+docker://JinaGateway:latest')
+            image_name = get_image_name('jinaai+docker://jina-ai/JinaGateway:latest')
     elif uses is not None and uses != __default_executor__:
         image_name = get_image_name(uses)
     else:
@@ -37,7 +37,7 @@ def resolve_image_name(uses: Optional[str]):
             'JINA_GATEWAY_IMAGE', None
         )
         if image_name is None:
-            image_name = get_image_name('jinaai+docker://JinaGateway:latest')
+            image_name = get_image_name('jinaai+docker://jina-ai/JinaGateway:latest')
 
     return image_name
 
