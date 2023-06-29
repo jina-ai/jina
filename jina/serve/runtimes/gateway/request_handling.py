@@ -287,4 +287,25 @@ class GatewayRequestHandler:
         """
         return await self.streamer.process_single_data(request, context)
 
+    async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
+        """
+        Uses the connection pool to send a discover endpoint call to the Executors
+
+        :param empty: The service expects an empty protobuf message
+        :param context: grpc context
+        :returns: the response request
+        """
+        from google.protobuf import json_format
+        self.logger.debug('got an endpoint discovery request')
+        response = jina_pb2.EndpointsProto()
+        await self.streamer._get_endpoints_input_output_models(is_cancel=None)
+        request_models_map = self.streamer._endpoints_models_map
+        if request_models_map is not None and len(request_models_map) > 0:
+            response.endpoints.extend(request_models_map.keys())
+            json_format.ParseDict(request_models_map, response.schemas)
+        else:
+            endpoints = await self.streamer.topology_graph._get_all_endpoints(self.streamer._connection_pool,  retry_forever=True, is_cancel=None)
+            response.endpoints.extend(list(endpoints))
+        return response
+
     Call = stream

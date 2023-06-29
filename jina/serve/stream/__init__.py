@@ -79,12 +79,14 @@ class RequestStreamer:
         self.logger.debug(f'Get all endpoints from TopologyGraph')
         endpoints = await topology_graph._get_all_endpoints(connection_pool, retry_forever=True, is_cancel=is_cancel)
         self.logger.debug(f'Got all endpoints from TopologyGraph {endpoints}')
-
+        
         for endp in endpoints:
             for origin_node in topology_graph.origin_nodes:
-                _endpoints_models_map[endp] = origin_node._get_leaf_input_output_model(previous_input=None,
-                                                                                       previous_output=None,
-                                                                                       endpoint=endp)[0]
+                leaf_input_output_model = origin_node._get_leaf_input_output_model(previous_input=None,
+                                                                                   previous_output=None,
+                                                                                   endpoint=endp)
+                if leaf_input_output_model is not None and len(leaf_input_output_model) > 0:
+                    _endpoints_models_map[endp] = leaf_input_output_model[0]
         return _endpoints_models_map
 
     async def stream(
