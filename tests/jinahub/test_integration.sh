@@ -23,14 +23,14 @@ TEXT_RESPONSE=$(echo $RESPONSE | jq -e ".data[] | .text")
 echo "Text Response is: ${TEXT_RESPONSE}"
 
 ## remove the new pods
-#docker ps -a | awk '{ print $1,$2 }' | grep hubpod:test | awk '{print $1 }' | xargs -I {} docker rm -f {}
-#docker rm -f $CONTAINER_ID
-#
-#EXPECTED_TEXT='"hey, dude"'
-#
-#if [ "$EXPECTED_TEXT" = "$TEXT_RESPONSE" ]; then
-#        echo "Success"
-#else
-#        echo "Fail"
-#        exit 1
-#fi
+docker ps -a | awk '{ print $1,$2 }' | grep hubpod:test | awk '{print $1 }' | xargs -I {} docker rm -f {}
+docker rm -f $CONTAINER_ID
+
+EXPECTED_TEXT='"hey, dude"'
+
+if [ "$EXPECTED_TEXT" = "$TEXT_RESPONSE" ]; then
+        echo "Success"
+else
+        echo "Fail"
+        exit 1
+fi
