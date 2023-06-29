@@ -323,11 +323,28 @@ def _custom_patched_resolve_image_name(uses: str):
 @pytest.mark.parametrize('custom_gateway', ['jinaai+docker://jina/custom-gateway'])
 @pytest.mark.parametrize('replicas', [1, 2])
 def test_k8s_yaml_gateway(monkeypatch, deployments_addresses, custom_gateway, port, protocol, replicas):
-    monkeypatch.setattr(
-        "jina.orchestrate.deployments.config.helper.resolve_image_name",
-        _custom_patched_resolve_image_name
-    )
-    # TODO: Monkeypatch hubble get_image_name
+    from hubble.executor.hubio import HubExecutor, HubIO
+
+    def _mock_fetch(
+            name,
+            *args,
+            **kwargs,
+    ):
+        return (
+            HubExecutor(
+                uuid='hello',
+                name='custom-gateway',
+                tag='v0',
+                image_name='jina/custom-gateway',
+                md5sum=None,
+                visibility=True,
+                archive_url=None,
+            ),
+            False,
+        )
+
+    monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
+
     args_list = [
         '--env',
         'ENV_VAR:ENV_VALUE',
@@ -416,7 +433,7 @@ def test_k8s_yaml_gateway(monkeypatch, deployments_addresses, custom_gateway, po
     container = containers[0]
     assert container['name'] == 'gateway'
     assert (
-        container['image'] == custom_gateway
+        container['image'] == 'jina/custom-gateway'
         if custom_gateway
         else f'jinaai/jina:test-pip'
     )

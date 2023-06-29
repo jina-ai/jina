@@ -9,7 +9,7 @@ from tests import random_docs
 
 
 @pytest.fixture(scope='function')
-def flow_with_grpc(monkeypatch):
+def flow_with_grpc():
     class AuthInterceptor(grpc.aio.ServerInterceptor):
         def __init__(self, key):
             self._valid_metadata = ('rpc-auth-header', key)

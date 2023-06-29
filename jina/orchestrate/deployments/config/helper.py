@@ -10,6 +10,7 @@ from jina.constants import (
     __default_grpc_gateway__,
     __default_http_gateway__,
     __default_websocket_gateway__,
+    __dynamic_base_gateway_hubble__
 )
 from jina.enums import PodRoleType
 
@@ -29,7 +30,7 @@ def resolve_image_name(uses: Optional[str]):
             'JINA_GATEWAY_IMAGE', None
         )
         if image_name is None:
-            image_name = get_image_name('jinaai+docker://jina-ai/JinaGateway:latest')
+            image_name = get_image_name(__dynamic_base_gateway_hubble__)
     elif uses is not None and uses != __default_executor__:
         image_name = get_image_name(uses)
     else:
@@ -37,7 +38,7 @@ def resolve_image_name(uses: Optional[str]):
             'JINA_GATEWAY_IMAGE', None
         )
         if image_name is None:
-            image_name = get_image_name('jinaai+docker://jina-ai/JinaGateway:latest')
+            image_name = get_image_name(__dynamic_base_gateway_hubble__)
 
     return image_name
 

@@ -377,8 +377,28 @@ def test_worker_services(name: str, shards: str):
     ],
 )
 @pytest.mark.parametrize('custom_gateway', ['jinaai+docker://jina/custom-gateway', None])
-def test_docker_compose_gateway(deployments_addresses, custom_gateway, port, protocol):
-    # TODO: Monkeypatch hubble get_image_name
+def test_docker_compose_gateway(monkeypatch, deployments_addresses, custom_gateway, port, protocol):
+    from hubble.executor.hubio import HubExecutor, HubIO
+
+    def _mock_fetch(
+            name,
+            *args,
+            **kwargs,
+    ):
+        return (
+            HubExecutor(
+                uuid='hello',
+                name='custom-gateway',
+                tag='v0',
+                image_name='jina/custom-gateway',
+                md5sum=None,
+                visibility=True,
+                archive_url=None,
+            ),
+            False,
+        )
+
+    monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
     args_list = ['--env', 'ENV_VAR:ENV_VALUE', '--port', *port]
     if protocol:
         args_list.extend(['--protocol', *protocol])
@@ -392,7 +412,7 @@ def test_docker_compose_gateway(deployments_addresses, custom_gateway, port, pro
     name, gateway_config = deployment_config.to_docker_compose_config()[0]
     assert name == 'gateway'
     assert (
-        gateway_config['image'] == custom_gateway
+        gateway_config['image'] == 'jina/custom-gateway'
         if custom_gateway
         else f'jinaai/jina:test-pip'
     )
