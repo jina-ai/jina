@@ -318,12 +318,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 from prometheus_client import Summary
 
             self._summary_method = Summary(
-                'process_request_seconds',
-                'Time spent when calling the executor request method',
+                'receiving_request_seconds',
+                'Time spent processing request',
                 registry=self.runtime_args.metrics_registry,
                 namespace='jina',
-                labelnames=('executor', 'executor_endpoint', 'runtime_name'),
-            )
+                labelnames=('runtime_name',),
+            ).labels(self.args.name)
             self._metrics_buffer = {'process_request_seconds': self._summary_method}
 
         else:
