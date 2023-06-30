@@ -44,6 +44,7 @@ jobs:
           node-version: '14'
       - run: |
           pip install . --no-cache-dir
+          pip install docarray==0.21.0 # only valid for this version. I think we should remove this schema loading
           JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-master
           echo "JINA_VERSION=${JINA_VERSION}" >> $GITHUB_ENV
           cd schema
