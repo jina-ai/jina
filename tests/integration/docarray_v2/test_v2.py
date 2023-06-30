@@ -158,7 +158,7 @@ def test_chain(protocols):
     class Output2(BaseDoc):
         a: str
 
-    class Exec1(Executor):
+    class Exec1Chain(Executor):
         @requests(on='/bar')
         def bar(self, docs: DocList[Input1], **kwargs) -> DocList[Output1]:
             docs_return = DocList[Output1](
@@ -166,7 +166,7 @@ def test_chain(protocols):
             )
             return docs_return
 
-    class Exec2(Executor):
+    class Exec2Chain(Executor):
         @requests(on='/bar')
         def bar(self, docs: DocList[Output1], **kwargs) -> DocList[Output2]:
             docs_return = DocList[Output2](
@@ -175,7 +175,7 @@ def test_chain(protocols):
             return docs_return
 
     ports = [random_port() for _ in protocols]
-    with Flow(port=ports, protocol=protocols).add(uses=Exec1).add(uses=Exec2):
+    with Flow(port=ports, protocol=protocols).add(uses=Exec1Chain).add(uses=Exec2Chain):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             docs = c.post(
@@ -219,7 +219,7 @@ def test_default_endpoint(protocols):
     class Output2(BaseDoc):
         a: str
 
-    class Exec1(Executor):
+    class Exec1Default(Executor):
         @requests()
         def bar(self, docs: DocList[Input1], **kwargs) -> DocList[Output1]:
             docs_return = DocList[Output1](
@@ -227,7 +227,7 @@ def test_default_endpoint(protocols):
             )
             return docs_return
 
-    class Exec2(Executor):
+    class Exec2Default(Executor):
         @requests()
         def bar(self, docs: DocList[Output1], **kwargs) -> DocList[Output2]:
             docs_return = DocList[Output2](
@@ -236,7 +236,7 @@ def test_default_endpoint(protocols):
             return docs_return
 
     ports = [random_port() for _ in protocols]
-    with Flow(port=ports, protocol=protocols).add(uses=Exec1).add(uses=Exec2):
+    with Flow(port=ports, protocol=protocols).add(uses=Exec1Default).add(uses=Exec2Default):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             docs = c.post(
