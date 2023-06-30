@@ -26,8 +26,9 @@ if TYPE_CHECKING:  # pragma: no cover
 HANDLED_SIGNALS = (
     signal.SIGINT,  # Unix signal 2. Sent by Ctrl+C.
     signal.SIGTERM,  # Unix signal 15. Sent by `kill <pid>`.
-    signal.SIGSEGV,
 )
+
+SEGFAULT_SIGNAL = signal.SIGSEGV
 
 
 class AsyncNewLoopRuntime:
@@ -75,6 +76,13 @@ class AsyncNewLoopRuntime:
 
             for sig in HANDLED_SIGNALS:
                 self._loop.add_signal_handler(sig, _cancel(sig), sig, None)
+
+            def _segfault_signal(*args, **kwargs):
+                print(f'\n\n\n\n\n\nSEGFAULT RECEIVED in {args.name}\n\n\n\n\n\n')
+                self.logger.error('\n\n\n\n\n\nSEGFAULT RECEIVED\n\n\n\n\n\n')
+                self.is_cancel.set(),
+
+            self._loop.add_signal_handler(SEGFAULT_SIGNAL, _segfault_signal, SEGFAULT_SIGNAL, None)
         else:
 
             def _cancel(signum, frame):

@@ -231,6 +231,24 @@ func Run(myAddr string,
         }
         run_logger.Info("RAFT shutdown whithout error")
     }()
+    segfaulchnl := make(chan os.Signal, 1)
+    signal.Notify(sigchnl, syscall.SIGSEGV)
+    go func(){
+        sig := <-segfaulchnl
+        fmt.Printf("\n\n\n\n\n\n\n SEGMENTATION FAULT RECEIVED in RAFT\n\n\n\n\n\n\n\n")
+        run_logger.Info("SEGMENTATION FAULT Received", "signal", sig)
+        run_logger.Info("gRPCServer stopping")
+        grpcServer.GracefulStop()
+        sock.Close()
+        run_logger.Info("call RAFT shutdown")
+        shutdownResultFuture := r.Shutdown()
+        err := shutdownResultFuture.Error()
+        if err != nil {
+            run_logger.Error("Error returned while shutting RAFT down", "error", err)
+            log.Fatalf("Error returned while shutting RAFT down: %v", err)
+        }
+        run_logger.Info("RAFT shutdown whithout error")
+    }()
     if err := grpcServer.Serve(sock); err != nil {
         run_logger.Error("failed to serve", "error", err)
         log.Fatalf("failed to serve: %v", err)
