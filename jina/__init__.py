@@ -14,7 +14,7 @@ import sys as _sys
 import warnings as _warnings
 import faulthandler
 
-faulthandler.enable(all_threads=True)
+faulthandler.enable(file=_sys.stdout, all_threads=True)
 
 import docarray as _docarray
 
