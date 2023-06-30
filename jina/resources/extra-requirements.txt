@@ -85,4 +85,4 @@ tensorflow>=2.0:            cicd
 opentelemetry-test-utils>=0.33b0:  test
 prometheus-api-client>=0.5.1:  test
 watchfiles>=0.18.0:         devel
-urllib3<2.0.0:              core
+urllib3>=1.25.9,<2.0.0:     core
