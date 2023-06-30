@@ -301,8 +301,13 @@ class GatewayRequestHandler:
         await self.streamer._get_endpoints_input_output_models(is_cancel=None)
         request_models_map = self.streamer._endpoints_models_map
         if request_models_map is not None and len(request_models_map) > 0:
-            response.endpoints.extend(request_models_map.keys())
-            json_format.ParseDict(request_models_map, response.schemas)
+            schema_maps = {}
+            for k, v in request_models_map.items():
+                schema_maps[k] = {}
+                schema_maps[k]['input'] = v['input'].schema()
+                schema_maps[k]['output'] = v['output'].schema()
+            response.endpoints.extend(schema_maps.keys())
+            json_format.ParseDict(schema_maps, response.schemas)
         else:
             endpoints = await self.streamer.topology_graph._get_all_endpoints(self.streamer._connection_pool,  retry_forever=True, is_cancel=None)
             response.endpoints.extend(list(endpoints))
