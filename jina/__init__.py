@@ -12,6 +12,9 @@ import platform as _platform
 import signal as _signal
 import sys as _sys
 import warnings as _warnings
+import faulthandler
+
+faulthandler.enable(all_threads=True)
 
 import docarray as _docarray
 
