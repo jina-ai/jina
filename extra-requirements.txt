@@ -38,8 +38,8 @@ jcloud>=0.0.35:             core
 opentelemetry-api>=1.12.0:  core
 opentelemetry-instrumentation-grpc>=0.35b0:  core 
 uvloop:                     perf,standard,devel
-prometheus_client>=0.12.0:          perf,standard,devel
-opentelemetry-sdk>=1.14.0:   perf,standard,devel
+prometheus_client>=0.12.0:  perf,standard,devel
+opentelemetry-sdk>=1.14.0:  perf,standard,devel
 opentelemetry-exporter-otlp>=1.12.0:  perf,standard,devel
 opentelemetry-exporter-prometheus>=1.12.0rc1:  perf,standard,devel
 opentelemetry-instrumentation-aiohttp-client>=0.33b0:    perf,standard,devel
@@ -52,7 +52,7 @@ pathspec:                   standard,devel
 filelock:                   standard,devel
 requests:                   standard,devel
 websockets:                 standard,devel
-pydantic:                   standard,devel
+pydantic<2.0.0:             core
 python-multipart:           standard,devel
 aiofiles:                   standard,devel
 aiohttp:                    standard,devel
