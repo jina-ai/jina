@@ -329,28 +329,7 @@ response[0].display()
 
 ![](./.github/images/mona-lisa.png)
 
-## Deploy to the cloud
-
-You can also deploy a Flow to JCloud.
-
-First, turn the `flow.yml` file into a [JCloud-compatible YAML](https://docs.jina.ai/concepts/jcloud/yaml-spec/) by specifying resource requirements and using containerized Hub Executors.
-
-Then, use `jina cloud deploy` command to deploy to the cloud:
-
-```shell
-wget https://raw.githubusercontent.com/jina-ai/jina/master/.github/getting-started/jcloud-flow.yml
-jina cloud deploy jcloud-flow.yml
-```
-
-> **Warning**
->
-> Make sure to delete/clean up the Flow once you are done with this tutorial to save resources and credits.
-
-Read more about [deploying Flows to JCloud](https://docs.jina.ai/concepts/jcloud/#deploy).
-
 <!-- end build-pipelines -->
-
-Check [the getting-started project source code](https://github.com/jina-ai/jina/tree/master/.github/getting-started).
 
 ### Easy scalability and concurrency
 
@@ -365,6 +344,7 @@ Let's scale a Stable Diffusion Executor deployment with replicas and dynamic bat
 * Create two replicas, with [a GPU assigned for each](https://docs.jina.ai/concepts/flow/scale-out/#replicate-on-multiple-gpus).
 * Enable dynamic batching to process incoming parallel requests together with the same model inference.
 
+TODO: This has to be Containerized before
 
 <div class="table-wrapper">
 <table>
@@ -378,9 +358,10 @@ Let's scale a Stable Diffusion Executor deployment with replicas and dynamic bat
 ```yaml
 jtype: Deployment
 with:
+  uses: TextToImage
   timeout_ready: -1
-  uses: jinaai://jina-ai/TextToImage
-  install_requirements: true
+  py_modules:
+    - text_to_image.py
 ```
 
 </td>
@@ -389,9 +370,10 @@ with:
 ```yaml
 jtype: Deployment
 with:
+  uses: TextToImage
   timeout_ready: -1
-  uses: jinaai://jina-ai/TextToImage
-  install_requirements: true
+  py_modules:
+    - text_to_image.py
   env:
    CUDA_VISIBLE_DEVICES: RR
   replicas: 2
@@ -409,6 +391,71 @@ with:
 Assuming your machine has two GPUs, using the scaled deployment YAML will give better throughput compared to the normal deployment.
 
 These features apply to both [Deployment YAML](https://docs.jina.ai/concepts/executor/deployment-yaml-spec/#deployment-yaml-spec) and [Flow YAML](https://docs.jina.ai/concepts/flow/yaml-spec/). Thanks to the YAML syntax, you can inject deployment configurations regardless of Executor code.
+
+## Deploy to the cloud
+
+### Containerize your Executor
+
+In order to deploy your solutions to the cloud, you need to containerize your services. Jina provides the [Executor Hub](https://docs.jina.ai/concepts/serving/executor/hub/create-hub-executor/), the perfect tool
+to streamline this process taking a lot of the troubles with you.
+
+You just need to structure your Executor in a folder structure:
+
+```shell script
+TextToImage/
+├── executor.py
+├── config.yml
+├── requirements.txt
+```
+<div class="table-wrapper">
+<table>
+<tr>
+<th> <code>config.yml</code> </th>
+<th> <code>requirements.txt</code> </th>
+</tr>
+<tr>
+<td>
+
+```yaml
+jtype: TextToImage
+py_modules:
+  - executor.py
+metas:
+  name: TextToImage
+  description: Text to Image generation Executor based on StableDiffusion
+  url:
+  keywords: []
+```
+
+</td>
+<td>
+
+```requirements.txt
+diffusers
+accelerate
+transformers
+```
+
+</td>
+</tr>
+</table>
+</div>
+
+
+Then push the Executor to the Hub by doing: `jina hub push TextToImage`.
+
+This will give you a URL that you can use in your `Deployment` and `Flow` to use the pushed Executors containers.
+
+
+```yaml
+jtype: Flow
+with:
+    port: 12345
+executors:
+  - uses: jinai+docker://<user-id>/StableLM
+  - uses: jinai+docker://<user-id>/TextToImage
+```
+
 
 ### Get on the fast lane to cloud-native
 
@@ -432,6 +479,25 @@ docker-compose up
 That's not all. We also support [OpenTelemetry, Prometheus, and Jaeger](https://docs.jina.ai/cloud-nativeness/opentelemetry/).
 
 What cloud-native technology is still challenging to you? [Tell us](https://github.com/jina-ai/jina/issues) and we'll handle the complexity and make it easy for you.
+
+### Deploy to JCloud
+
+You can also deploy a Flow to JCloud, where you can easily enjoy autoscaling, monitoring and more with a single command. 
+
+First, turn the `flow.yml` file into a [JCloud-compatible YAML](https://docs.jina.ai/concepts/jcloud/yaml-spec/) by specifying resource requirements and using containerized Hub Executors.
+
+Then, use `jina cloud deploy` command to deploy to the cloud:
+
+```shell
+wget https://raw.githubusercontent.com/jina-ai/jina/master/.github/getting-started/jcloud-flow.yml
+jina cloud deploy jcloud-flow.yml
+```
+
+> **Warning**
+>
+> Make sure to delete/clean up the Flow once you are done with this tutorial to save resources and credits.
+
+Read more about [deploying Flows to JCloud](https://docs.jina.ai/concepts/jcloud/#deploy).
 
 <!-- start support-pitch -->
 
