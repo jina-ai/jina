@@ -12,10 +12,12 @@ import platform as _platform
 import signal as _signal
 import sys as _sys
 import warnings as _warnings
+import traceback
 
 
 def _segfault_signal(signum, frame):
     print(f'\n\n\n\n\n\nSEGFAULT RECEIVED in MAIN PROCESS {signum}, {frame}\n\n\n\n\n\n')
+    traceback.print_stack(frame)
 
 
 _signal.signal(_signal.SIGSEGV, _segfault_signal)
@@ -23,6 +25,7 @@ _signal.signal(_signal.SIGSEGV, _segfault_signal)
 
 def _segfault_child(signum, frame):
     print(f'\n\n\n\n\n\nSIGCHLD RECEIVED in MAIN PROCESS {signum}, {frame}\n\n\n\n\n\n')
+    traceback.print_stack(frame)
 
 
 _signal.signal(_signal.SIGCHLD, _segfault_child)
