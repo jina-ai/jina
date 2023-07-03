@@ -12,7 +12,7 @@ You can think of a Deployment as an interface to configure and launch your {ref}
 (why-deployment)=
 ## Why use a Deployment?
 
-Once you've learned DocumentArray and Executor, you can split a big task into small independent modules and services.
+Once you've learned about Documents, DocList and Executor, you can split a big task into small independent modules and services.
 
 - Deployments let you scale these Executors independently to match your requirements.
 - Deployments let you easily use other cloud-native orchestrators, such as Kubernetes, to manage your service.
@@ -44,19 +44,20 @@ For production, you should define your Deployments with YAML. This is because YA
 
 
 ```python
-from jina import Deployment, Executor, requests, Document
+from jina import Deployment, Executor, requests
+from docarray import DocList, BaseDoc
 
 
 class MyExecutor(Executor):
     @requests(on='/bar')
-    def foo(self, docs, **kwargs):
+    def foo(self, docs: DocList[BaseDoc], **kwargs) -> DocList[BaseDoc]:
         print(docs)
 
 
 dep = Deployment(name='myexec1', uses=MyExecutor)
 
 with dep:
-    dep.post(on='/bar', inputs=Document(), on_done=print)
+    dep.post(on='/bar', inputs=BaseDoc(), return_type=DocList[BaseDoc], on_done=print)
 ```
 
 
@@ -68,11 +69,12 @@ Server:
 
 ```python
 from jina import Deployment, Executor, requests
+from docarray import DocList, BaseDoc
 
 
 class MyExecutor(Executor):
     @requests(on='/bar')
-    def foo(self, docs, **kwargs):
+    def foo(self, docs: DocList[BaseDoc], **kwargs) -> DocList[BaseDoc]:
         print(docs)
 
 
@@ -85,10 +87,11 @@ with dep:
 Client:
 
 ```python
-from jina import Client, Document
+from jina import Client
+from docarray import DocList, BaseDoc
 
 c = Client(port=12345)
-c.post(on='/bar', inputs=Document(), on_done=print)
+c.post(on='/bar', inputs=BaseDoc(), return_type=DocList[BaseDoc], on_done=print)
 ```
 
 ````
@@ -105,23 +108,29 @@ py_modules: exec.py
 
 `exec.py`:
 ```python
-from jina import Executor, requests, Document, DocumentArray
-
-
+from jina import Deployment, Executor, requests
+from docarray import DocList, BaseDoc
+from docarray.documents import TextDoc
+ 
 class FooExecutor(Executor):
     @requests
-    def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text='foo was here'))
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        for doc in docs:
+            doc.text = 'foo was here'
+        docs.summary()
+        return docs
 ```
 
 ```python
-from jina import Deployment, Document
+from jina import Deployment
+from docarray import DocList, BaseDoc
+from docarray.documents import TextDoc
 
 dep = Deployment.load_config('deployment.yml')
 
 with dep:
     try:
-        dep.post(on='/bar', inputs=Document(), on_done=print)
+        dep.post(on='/bar', inputs=TextDoc(), on_done=print)
     except Exception as ex:
         # handle exception
         pass
@@ -394,14 +403,16 @@ HTTP can be used for a stand-alone Deployment (without being part of a Flow), wh
 
 ```python
 from jina import Deployment, Executor, requests
-
-
+from docarray import DocList
+from docarray.documents import TextDoc
+ 
 class MyExec(Executor):
-
-    @requests(on='/bar')
-    def bar(self, docs, **kwargs):
-        pass
-
+    @requests
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        for doc in docs:
+            doc.text = 'foo was here'
+        docs.summary()
+        return docs
 
 dep = Deployment(protocol='http', port=12345, uses=MyExec)
 
@@ -421,13 +432,16 @@ A Deployment can also deploy an Executor and serve it with a combination of gRPC
 
 ```python
 from jina import Deployment, Executor, requests
-
-
+from docarray import DocList
+from docarray.documents import TextDoc
+ 
 class MyExec(Executor):
-
-    @requests(on='/bar')
-    def bar(self, docs, **kwargs):
-        pass
+    @requests
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        for doc in docs:
+            doc.text = 'foo was here'
+        docs.summary()
+        return docs
 
 
 dep = Deployment(protocol=['grpc', 'http'], port=[12345, 12346], uses=MyExec)
