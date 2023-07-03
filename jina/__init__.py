@@ -12,9 +12,20 @@ import platform as _platform
 import signal as _signal
 import sys as _sys
 import warnings as _warnings
-import faulthandler
 
-faulthandler.enable(file=_sys.stdout, all_threads=True)
+
+def _segfault_signal(signum, frame):
+    print(f'\n\n\n\n\n\nSEGFAULT RECEIVED in MAIN PROCESS {signum}, {frame}\n\n\n\n\n\n')
+
+
+_signal.signal(_signal.SIGSEGV, _segfault_signal)
+
+
+def _segfault_child(signum, frame):
+    print(f'\n\n\n\n\n\nSIGCHLD RECEIVED in MAIN PROCESS {signum}, {frame}\n\n\n\n\n\n')
+
+
+_signal.signal(_signal.SIGCHLD, _segfault_child)
 
 import docarray as _docarray
 
@@ -66,7 +77,7 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
     except Exception as e:
         _warnings.warn(
             f'failed to set multiprocessing start_method to `fork`: {e!r}'
-            )
+        )
 
 # do not change this line manually
 # this is managed by git tag and updated on every release
