@@ -158,7 +158,7 @@ def test_chain(protocols):
     class Output2(BaseDoc):
         a: str
 
-    class Exec1(Executor):
+    class Exec1Chain(Executor):
         @requests(on='/bar')
         def bar(self, docs: DocList[Input1], **kwargs) -> DocList[Output1]:
             docs_return = DocList[Output1](
@@ -166,7 +166,7 @@ def test_chain(protocols):
             )
             return docs_return
 
-    class Exec2(Executor):
+    class Exec2Chain(Executor):
         @requests(on='/bar')
         def bar(self, docs: DocList[Output1], **kwargs) -> DocList[Output2]:
             docs_return = DocList[Output2](
@@ -175,7 +175,7 @@ def test_chain(protocols):
             return docs_return
 
     ports = [random_port() for _ in protocols]
-    with Flow(port=ports, protocol=protocols).add(uses=Exec1).add(uses=Exec2):
+    with Flow(port=ports, protocol=protocols).add(uses=Exec1Chain).add(uses=Exec2Chain):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             docs = c.post(
@@ -185,6 +185,27 @@ def test_chain(protocols):
             )
             assert len(docs) == 1
             assert docs[0].a == 'shape input 100'
+            if len(protocols) == 1 and protocols[0] == 'grpc':
+                from jina.proto.jina_pb2_grpc import JinaDiscoverEndpointsRPCStub
+                from jina.proto import jina_pb2
+                from google.protobuf.json_format import MessageToDict
+                from jina.serve.executors import __dry_run_endpoint__
+                from docarray.documents.legacy import LegacyDocument
+                from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list, _create_pydantic_model_from_schema
+                import grpc
+                channel = grpc.insecure_channel(f'0.0.0.0:{ports[0]}')
+                stub = JinaDiscoverEndpointsRPCStub(channel)
+                res = stub.endpoint_discovery(
+                    jina_pb2.google_dot_protobuf_dot_empty__pb2.Empty(),
+                )
+                schema_map = MessageToDict(res.schemas)
+                assert set(schema_map.keys()) == {__dry_run_endpoint__, '/bar'}
+                v = schema_map[__dry_run_endpoint__]
+                assert v['input'] == LegacyDocument.schema()
+                assert v['output'] == LegacyDocument.schema()
+                v = schema_map['/bar']
+                assert v['input'] == _create_pydantic_model_from_schema(_create_aux_model_doc_list_to_list(Input1).schema(), 'Input1', {}).schema()
+                assert v['output'] ==_create_pydantic_model_from_schema(_create_aux_model_doc_list_to_list(Output2).schema(), 'Output2', {}).schema()
 
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
@@ -198,7 +219,7 @@ def test_default_endpoint(protocols):
     class Output2(BaseDoc):
         a: str
 
-    class Exec1(Executor):
+    class Exec1Default(Executor):
         @requests()
         def bar(self, docs: DocList[Input1], **kwargs) -> DocList[Output1]:
             docs_return = DocList[Output1](
@@ -206,7 +227,7 @@ def test_default_endpoint(protocols):
             )
             return docs_return
 
-    class Exec2(Executor):
+    class Exec2Default(Executor):
         @requests()
         def bar(self, docs: DocList[Output1], **kwargs) -> DocList[Output2]:
             docs_return = DocList[Output2](
@@ -215,7 +236,7 @@ def test_default_endpoint(protocols):
             return docs_return
 
     ports = [random_port() for _ in protocols]
-    with Flow(port=ports, protocol=protocols).add(uses=Exec1).add(uses=Exec2):
+    with Flow(port=ports, protocol=protocols).add(uses=Exec1Default).add(uses=Exec2Default):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             docs = c.post(
@@ -225,6 +246,28 @@ def test_default_endpoint(protocols):
             )
             assert len(docs) == 1
             assert docs[0].a == 'shape input 100'
+
+        if len(protocols) == 1 and protocols[0] == 'grpc':
+            from jina.proto.jina_pb2_grpc import JinaDiscoverEndpointsRPCStub
+            from jina.proto import jina_pb2
+            from google.protobuf.json_format import MessageToDict
+            from jina.serve.executors import __dry_run_endpoint__, __default_endpoint__
+            from docarray.documents.legacy import LegacyDocument
+            from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list, _create_pydantic_model_from_schema
+            import grpc
+            channel = grpc.insecure_channel(f'0.0.0.0:{ports[0]}')
+            stub = JinaDiscoverEndpointsRPCStub(channel)
+            res = stub.endpoint_discovery(
+                jina_pb2.google_dot_protobuf_dot_empty__pb2.Empty(),
+            )
+            schema_map = MessageToDict(res.schemas)
+            assert set(schema_map.keys()) == {__dry_run_endpoint__, __default_endpoint__}
+            v = schema_map[__dry_run_endpoint__]
+            assert v['input'] == LegacyDocument.schema()
+            assert v['output'] == LegacyDocument.schema()
+            v = schema_map[__default_endpoint__]
+            assert v['input'] == _create_pydantic_model_from_schema(_create_aux_model_doc_list_to_list(Input1).schema(), 'Input1', {}).schema()
+            assert v['output'] ==_create_pydantic_model_from_schema(_create_aux_model_doc_list_to_list(Output2).schema(), 'Output2', {}).schema()
 
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])

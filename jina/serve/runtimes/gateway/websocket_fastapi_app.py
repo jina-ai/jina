@@ -157,8 +157,6 @@ def get_fastapi_app(
     async def _shutdown():
         await streamer.close()
 
-    request_models_map = streamer._endpoints_models_map
-
     @app.websocket('/')
     async def websocket_endpoint(
             websocket: WebSocket, response: Response

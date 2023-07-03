@@ -181,10 +181,11 @@ jobs:
           python-version: 3.8
       - name: Prepare enviroment
         run: |
-          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build --build-arg DOCARRAY_VERSION="0.21.0" -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
+          pip install docarray==0.21.0
           jina
           export JINA_LOG_LEVEL="ERROR"
         env:
@@ -220,10 +221,11 @@ jobs:
           python-version: 3.8
       - name: Prepare enviroment
         run: |
-          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build --build-arg DOCARRAY_VERSION="0.21.0" -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
+          pip install docarray==0.21.0
           jina
           export JINA_LOG_LEVEL="ERROR"
         env:
@@ -259,10 +261,11 @@ jobs:
           python-version: 3.8
       - name: Prepare enviroment
         run: |
-          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build --build-arg DOCARRAY_VERSION="0.21.0" -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
+          pip install docarray==0.21.0
           jina
           export JINA_LOG_LEVEL="ERROR"
         env:
@@ -299,10 +302,11 @@ jobs:
           python-version: 3.8
       - name: Prepare enviroment
         run: |
-          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build --build-arg DOCARRAY_VERSION="0.21.0" -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
+          pip install docarray==0.21.0
           jina
           export JINA_LOG_LEVEL="ERROR"
         env:
@@ -337,10 +341,11 @@ jobs:
           python-version: 3.8
       - name: Prepare enviroment
         run: |
-          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build --build-arg DOCARRAY_VERSION="0.21.0" -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
+          pip install docarray==0.21.0
           jina
           export JINA_LOG_LEVEL="ERROR"
         env:
@@ -414,7 +419,6 @@ jobs:
           python -m pip install wheel
           WHEEL_FILE=$(ls dist/*whl)
           pip install "$WHEEL_FILE[common,devel,test]" --no-cache-dir
-          pip install -U "docarray[common]"
           pip install -U protobuf${{ matrix.protobuf-version }}
           jina
           export JINA_LOG_LEVEL="ERROR"
@@ -432,7 +436,7 @@ jobs:
       - name: Test stateful
         id: test_stateful
         run: |
-          JINA_LOG_LEVEL=DEBUG pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/stateful
+          JINA_LOG_LEVEL=DEBUG JINA_RANDOM_PORT_MAX="60535" pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/stateful
           echo "flag it as jina for codeoverage"
           echo "codecov_flag=jina" >> $GITHUB_OUTPUT
         timeout-minutes: 30
@@ -612,11 +616,12 @@ jobs:
           setuptools-golang-build-manylinux-wheels --pythons cp38-cp38
       - name: Prepare environment
         run: |
-          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build --build-arg DOCARRAY_VERSION="0.21.0" -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
           WHEEL_FILE=$(ls dist/*whl)
           pip install "$WHEEL_FILE[all]" --no-cache-dir
+          pip install docarray==0.21.0
           jina
           export JINA_LOG_LEVEL="ERROR"
       - name: Test

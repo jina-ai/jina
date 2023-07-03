@@ -32,7 +32,7 @@ grpcio-reflection>=1.46.0,<1.48.1:  core
 grpcio-health-checking>=1.46.0,<1.48.1:  core
 pyyaml>=5.3.1:              core
 packaging>=20.0:            core
-docarray>=0.16.4,<0.30.0:  core
+docarray>=0.16.4:           core
 jina-hubble-sdk>=0.30.4:    core
 jcloud>=0.0.35:             core
 opentelemetry-api>=1.12.0:  core
@@ -52,7 +52,7 @@ pathspec:                   standard,devel
 filelock:                   standard,devel
 requests:                   standard,devel
 websockets:                 standard,devel
-pydantic:                   standard,devel
+pydantic<2.0.0:             core
 python-multipart:           standard,devel
 aiofiles:                   standard,devel
 aiohttp:                    standard,devel
@@ -85,4 +85,4 @@ tensorflow>=2.0:            cicd
 opentelemetry-test-utils>=0.33b0:  test
 prometheus-api-client>=0.5.1:  test
 watchfiles>=0.18.0:         devel
-urllib3<2.0.0:              core
+urllib3>=1.25.9,<2.0.0:     core
