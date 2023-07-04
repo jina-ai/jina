@@ -11,9 +11,9 @@ Iterable of Documents:
 ---
 emphasize-lines: 6
 ---
-from docarray import Document
+from docarray.documents import TextDoc
 
-d1 = Document(content='hello')
+d1 = TextDoc(text='hello')
 client = Client(...)
 
 client.post('/endpoint', d1)
@@ -27,27 +27,28 @@ client.post('/endpoint', d1)
 ---
 emphasize-lines: 7
 ---
-from docarray import Document
+from docarray.documents import TextDoc
 
-d1 = Document(content='hello')
-d2 = Document(content='world')
+d1 = TextDoc(text='hello')
+d2 = TextDoc(text='world')
 client = Client(...)
 
-client.post('/endpoint', [d1, d2])
-
+client.post('/endpoint', inputs=[d1, d2])
 ```
 
 ````
 
-````{tab} A DocumentArray
+````{tab} A DocList
 
 ```{code-block} python
 ---
 emphasize-lines: 6
 ---
-from docarray import DocumentArray
+from docarray import DocList
 
-da = DocumentArray.empty(10)
+d1 = TextDoc(text='hello')
+d2 = TextDoc(text='world')
+da = DocList[TextDoc]([d1, d2])
 client = Client(...)
 
 client.post('/endpoint', da)
@@ -61,11 +62,11 @@ client.post('/endpoint', da)
 ---
 emphasize-lines: 3-5, 9
 ---
-from docarray import Document
+from docarray.documents import TextDoc
 
 def doc_gen():
     for j in range(10):
-        yield Document(content=f'hello {j}')
+        yield TextDoc(content=f'hello {j}')
         
 client = Client(...)
 
@@ -105,11 +106,12 @@ The size of these batches can be controlled with the `request_size` keyword.
 The default `request_size` is 100 Documents. The optimal size will depend on your use case.
 
 ```python
-from jina import Flow, Client, Document, DocumentArray
+from jina import Flow, Client
+from docarray import DocList, BaseDoc
 
 with Flow() as f:
     client = Client(port=f.port)
-    client.post('/', DocumentArray(Document() for _ in range(100)), request_size=10)
+    client.post('/', DocList[BaseDoc](BaseDoc() for _ in range(100)), request_size=10)
 ```
 
 ## Send data asynchronously
@@ -125,12 +127,13 @@ This means you can iterate over Responses one by one, as they come in.
 ```python
 import asyncio
 
-from jina import Client, Flow, Document
+from jina import Client, Flow
+from docarray import BaseDoc
 
 
 async def async_inputs():
     for _ in range(10):
-        yield Document()
+        yield BaseDoc()
         await asyncio.sleep(0.1)
 
 
@@ -147,15 +150,16 @@ with Flow() as f:  # Using it as a Context Manager will start the Flow
 Async send is useful when calling a Flow from an Executor, as described in {ref}`async-executors`.
 
 ```python
-from jina import Client, Executor, requests, DocumentArray
+from jina import Client, Executor, requests
+from docarray import DocList, BaseDoc
 
 
 class DummyExecutor(Executor):
     c = Client(host='grpc://0.0.0.0:51234', asyncio=True)
 
     @requests
-    async def process(self, docs: DocumentArray, **kwargs):
-        self.c.post('/', docs)
+    async def process(self, docs: DocList[BaseDoc], **kwargs) -> DocList[BaseDoc]:
+        return self.c.post('/', docs, return_type=DocList[BaseDoc])
 ```
 
 ## Send data to specific Executors
@@ -166,31 +170,34 @@ the `target_executor` keyword. The request will then only be processed by the Ex
 target_executor regex. Its usage is shown in the listing below.
 
 ```python
-from jina import Client, Executor, Flow, requests, Document, DocumentArray
+from jina import Client, Executor, Flow, requests
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class FooExecutor(Executor):
     @requests
-    async def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text=f'foo was here and got {len(docs)} document'))
-
+    async def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        for doc in docs:
+            doc.text = f'foo was here and got {len(docs)} document'
 
 class BarExecutor(Executor):
     @requests
-    async def bar(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text=f'bar was here and got {len(docs)} document'))
+    async def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        for doc in docs:
+            doc.text = f'bar was here and got {len(docs)} document'
 
 
 f = (
     Flow()
-    .add(uses=FooExecutor, name='fooExecutor')
-    .add(uses=BarExecutor, name='barExecutor')
+        .add(uses=FooExecutor, name='fooExecutor')
+        .add(uses=BarExecutor, name='barExecutor')
 )
 
 with f:  # Using it as a Context Manager will start the Flow
     client = Client(port=f.port)
-    docs = client.post(on='/', target_executor='bar*')
-    print(docs.texts)
+    docs = client.post(on='/', inputs=TextDoc(text=''), target_executor='bar*', return_type=DocList[TextDoc])
+    print(docs.text)
 ```
 
 This will send the request to all Executors whose names start with 'bar', such as 'barExecutor'.
@@ -262,16 +269,18 @@ If a callback function is provided, `client.post()` will return none.
 ````{tab} Return as DocumentArray objects
 
 ```python
-from jina import Flow, Client, Document
+from jina import Flow, Client
+from docarray import DocList
+from docarray.documents import TextDoc
 
 with Flow() as f:
     client = Client(port=f.port)
-    docs = client.post(on='', inputs=Document(text='Hi there!'))
+    docs = client.post(on='', inputs=TextDoc(text='Hi there!'), return_type=DocList[TextDoc])
     print(docs)
-    print(docs.texts)
+    print(docs.text)
 ```
 ```console  
-<DocumentArray (length=1) at 140619524357664>
+<DocList[TextDoc] (length=1)>
 ['Hi there!']
 ```
 
@@ -280,13 +289,14 @@ with Flow() as f:
 ````{tab} Return as Response objects
 
 ```python
-from jina import Flow, Client, Document
+from docarray import DocList
+from docarray.documents import TextDoc
 
 with Flow() as f:
     client = Client(port=f.port)
-    resp = client.post(on='', inputs=Document(text='Hi there!'), return_responses=True)
+    resp = client.post(on='', inputs=TextDoc(text='Hi there!'), return_type=DocList[TextDoc], return_responses=True)
     print(resp)
-    print(resp[0].docs.texts)
+    print(resp[0].docs.text)
 ```
 ```console 
 [<jina.types.request.data.DataRequest ('header', 'parameters', 'routes', 'data') at 140619524354592>]
@@ -298,13 +308,15 @@ with Flow() as f:
 ````{tab} Handle response via callback
 
 ```python
-from jina import Flow, Client, Document
+from jina import Flow, Client
+from docarray import DocList
+from docarray.documents import TextDoc
 
 with Flow() as f:
     client = Client(port=f.port)
     resp = client.post(
         on='',
-        inputs=Document(text='Hi there!'),
+        inputs=TextDoc(text='Hi there!'),
         on_done=lambda resp: print(resp.docs.texts),
     )
     print(resp)
@@ -337,7 +349,9 @@ parameter to {meth}`~jina.clients.mixin.PostMixin.post`.
 ```python
 import random
 import time
-from jina import Flow, Executor, requests, Client, DocumentArray, Document
+from jina import Flow, Executor, requests, Client
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class RandomSleepExecutor(Executor):
@@ -349,11 +363,11 @@ class RandomSleepExecutor(Executor):
 
 f = Flow().add(uses=RandomSleepExecutor, replicas=3)
 input_text = [f'ordinal-{i}' for i in range(180)]
-input_da = DocumentArray([Document(text=t) for t in input_text])
+input_da = DocList[TextDoc]([TextDoc(text=t) for t in input_text])
 
 with f:
     c = Client(port=f.port, protocol=f.protocol)
-    output_da = c.post('/', inputs=input_da, request_size=10, results_in_order=True)
+    output_da = c.post('/', inputs=input_da, request_size=10, return_type=DocList[TextDoc], results_in_order=True)
     for input, output in zip(input_da, output_da):
         assert input.text == output.text
 ```
