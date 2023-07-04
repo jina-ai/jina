@@ -48,7 +48,7 @@ For the rest of this section, we use `jc` or `jcloud`. But again they are interc
 
 ### Deploy
 
-In Jina's idiom, a project is a [Flow](https://docs.jina.ai/concepts/flow/), which represents an end-to-end task such as indexing, searching or recommending. In this document, we use "project" and "Flow" interchangeably.
+In Jina's idiom, a project is a [Flow](https://docs.jina.ai/concepts/orchestration/flow/), which represents an end-to-end task such as indexing, searching or recommending. In this document, we use "project" and "Flow" interchangeably.
 
 ```{caution}
 Flows have a maximum lifetime after which they are automatically deleted.
@@ -58,7 +58,7 @@ A Flow can have two types of file structure: a single YAML file or a project fol
 
 #### Single YAML file
 
-A self-contained YAML file, consisting of all configuration at the [Flow](https://docs.jina.ai/concepts/flow/)-level and [Executor](https://docs.jina.ai/concepts/executor/)-level.
+A self-contained YAML file, consisting of all configuration at the [Flow](https://docs.jina.ai/concepts/orchestration/flow/)-level and [Executor](https://docs.jina.ai/concepts/serving/executor/)-level.
 
 > All Executors' `uses` must follow the format `jinaai+docker://<username>/MyExecutor` (from [Executor Hub](https://cloud.jina.ai)) to avoid any local file dependencies:
 
@@ -95,7 +95,7 @@ jc create secret mysecret -f rich-husky-af14064067 --from-literal "{'env-name': 
 ```
 
 ```{tip}
-You can optionally pass the `--update` flag to automatically update the Flow spec with the updated secret information. This flag will update the Flow which is hosted on the cloud. Finally, you can also optionally pass a Flow's yaml file path with `--path` to update the yaml file locally.
+You can optionally pass the `--update` flag to automatically update the Flow spec with the updated secret information. This flag will update the Flow which is hosted on the cloud. Finally, you can also optionally pass a Flow's yaml file path with `--path` to update the yaml file locally.  Refer to [this](https://docs.jina.ai/cloud-nativeness/kubernetes/#deploy-flow-with-custom-environment-variables-and-secrets) section for more information.
 ```
 
 ```{caution}
@@ -107,7 +107,7 @@ If the `--update` flag is not passed then you have to manually update the flow w
 To create a Job for a Flow:
 
 ```bash
-jc create job job-name rich-husky-af14064067 image 'job entrypoint' --timeout 600 --backofflimit 2
+jc create job job-name -f rich-husky-af14064067 image 'job entrypoint' --timeout 600 --backofflimit 2
 ```
 
 ```{tip}
@@ -143,7 +143,7 @@ hello/
 Where:
 
 - `hello/` is your top-level project folder.
-- `executor1` directory has all Executor related code/configuration. You can read the best practices for [file structures](https://docs.jina.ai/concepts/executor/executor-files/). Multiple Executor directories can be created.
+- `executor1` directory has all Executor related code/configuration. You can read the best practices for [file structures](https://docs.jina.ai/concepts/serving/executor/file-structure/). Multiple Executor directories can be created.
 - `flow.yml` Your Flow YAML.
 - `.env` All environment variables used during deployment.
 
@@ -236,7 +236,11 @@ jc list flows --phase all
 To list all the Secrets created in a Flow's namespace:
 
 ```bash
-jc list secrets rich-husky-af14064067
+jc list secrets -f rich-husky-af14064067
+```
+
+```{figure} img/list_secrets.png
+:width: 90%
 ```
 
 #### List Jobs
@@ -244,10 +248,36 @@ jc list secrets rich-husky-af14064067
 To listg all Jobs created in a Flow's namespace:
 
 ```bash
-jc list jobs rich-husky-af14064067
+jc list jobs -f rich-husky-af14064067
 ```
 
 ```{figure} img/list_jobs.png
+:width: 90%
+```
+
+### Get Secret or Job
+
+#### Get a Secret
+
+To retrieve a Secret's details:
+
+```bash
+jc get secret mysecret -f rich-husky-af14064067
+```
+
+```{figure} img/get_secret.png
+:width: 90%
+```
+
+#### Get a Job
+
+To retrieve a Job's details:
+
+```bash
+jc get job job-one -f rich-husky-af14064067
+```
+
+```{figure} img/get_job.png
 :width: 90%
 ```
 
@@ -283,12 +313,12 @@ export JCLOUD_NO_INTERACTIVE=1
 #### Remove Secret
 
 ```bash
-jc remove secret rich-husky-af14064067 mysecret
+jc remove secret -f rich-husky-af14064067 mysecret
 ```
 
 #### Remove Job
 ```bash
-jc remove job rich-husky-af14064067 job-one
+jc remove job -f rich-husky-af14064067 job-one
 ```
 
 ### Update Flow or Secret
@@ -314,7 +344,7 @@ jc update secret -f rich-husky-af14064067 mysecret --from-literal "{'env-name': 
 ```
 
 ```{tip}
-You can optionally pass the `--update` flag to automatically update the Flow spec with the updated secret information. This flag will update the Flow which is hosted on the cloud. Finally, you can also optionally pass a Flow's yaml file path with `--path` to update the yaml file locally.
+You can optionally pass the `--update` flag to automatically update the Flow spec with the updated secret information. This flag will update the Flow which is hosted on the cloud. Finally, you can also optionally pass a Flow's yaml file path with `--path` to update the yaml file locally. Refer to [this](https://docs.jina.ai/cloud-nativeness/kubernetes/#deploy-flow-with-custom-environment-variables-and-secrets) section for more information.
 ```
 
 ```{caution}
@@ -407,7 +437,7 @@ jc scale good-martin-ca6bfdef84 --executor executor0 --replicas 2
 To get the Gateway logs:
 
 ```bash
-jc logs --gateway central-escargot-354a796df5
+jc logs flow --gateway central-escargot-354a796df5
 ```
 
 ```{figure} img/gateway_logs.png
@@ -417,11 +447,23 @@ jc logs --gateway central-escargot-354a796df5
 To get the Executor logs:
 
 ```bash
-jc logs --executor executor0 central-escargot-354a796df5
+jc logs flow --executor executor0 central-escargot-354a796df5
 ```
 
 ```{figure} img/executor_logs.png
 :width: 70%
+```
+
+### Get Job Logs
+
+To get the Job logs:
+
+```bash
+jc logs job job-one -f rich-husky-af14064067
+```
+
+```{figure} img/job_logs.png
+:width: 90%
 ```
 
 ## Configuration
