@@ -41,7 +41,8 @@ using retries with **gRPC** are:
   stream of responses. The **gRPC** service retry is still configured but cannot be guaranteed.
 
    ```python
-   from jina import Client, Document
+   from jina import Client
+   from dorcarray import BaseDoc 
    from jina.clients.base.retry import wait_or_raise_err
    from jina.helper import run_async
 
@@ -55,7 +56,7 @@ using retries with **gRPC** are:
 
    def input_generator():
        for _ in range(10):
-           yield Document()
+           yield BaseDoc()
 
 
    for attempt in range(1, max_attempts + 1):
@@ -79,7 +80,7 @@ using retries with **gRPC** are:
            )
    ```
 
-- If the `stream` parameter is set to True and the `inputs` parameter is a `Document` or a `DocumentArray`, the retry is
+- If the `stream` parameter is set to True and the `inputs` parameter is a `Document` or a `DocList`, the retry is
   handled internally on the `max_attempts`, `initial_backoff`, `backoff_multiplier` and `max_backoff`
   parameters.
 - If the `stream` parameter is set to False, the {meth}`~jina.clients.mixin.PostMixin.post` method invokes the unary
