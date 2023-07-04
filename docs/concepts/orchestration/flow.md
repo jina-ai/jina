@@ -11,7 +11,7 @@ You can think of Flow as an interface to configure and launch your {ref}`microse
 
 ## Why use a Flow?
 
-Once you've learned DocumentArray and Executor, you can split a big task into small independent modules and services.
+Once you've learned about  Documents, DocList and Executor,, you can split a big task into small independent modules and services.
 But you need to chain them together to bring real value and build and serve an application. Flows enable you to do exactly this.
 
 - Flows connect microservices (Executors) to build a service with proper client/server style interface over HTTP, gRPC, or WebSockets.
@@ -59,19 +59,20 @@ For production, you should define your Flows with YAML. This is because YAML fil
 
 
 ```python
-from jina import Flow, Executor, requests, Document
+from jina import Flow, Executor, requests
+from docarray import DocList, BaseDoc
 
 
 class MyExecutor(Executor):
     @requests(on='/bar')
-    def foo(self, docs, **kwargs):
+    def foo(self, docs: DocList[BaseDoc], **kwargs) -> DocList[BaseDoc]:
         print(docs)
 
 
 f = Flow().add(name='myexec1', uses=MyExecutor)
 
 with f:
-    f.post(on='/bar', inputs=Document(), on_done=print)
+    f.post(on='/bar', inputs=BaseDoc(), return_type=DocList[BaseDoc], on_done=print)
 ```
 
 
@@ -83,13 +84,13 @@ Server:
 
 ```python
 from jina import Flow, Executor, requests
+from docarray import DocList, BaseDoc
 
 
 class MyExecutor(Executor):
     @requests(on='/bar')
-    def foo(self, docs, **kwargs):
+    def foo(self, docs: DocList[BaseDoc], **kwargs) -> DocList[BaseDoc]:
         print(docs)
-
 
 f = Flow(port=12345).add(name='myexec1', uses=MyExecutor)
 
@@ -103,7 +104,7 @@ Client:
 from jina import Client, Document
 
 c = Client(port=12345)
-c.post(on='/bar', inputs=Document(), on_done=print)
+c.post(on='/bar', inputs=BaseDoc(), return_type=DocList[BaseDoc], on_done=print)
 ```
 
 ````
@@ -121,23 +122,29 @@ executors:
 
 `exec.py`:
 ```python
-from jina import Executor, requests, Document, DocumentArray
-
-
+from jina import Deployment, Executor, requests
+from docarray import DocList, BaseDoc
+from docarray.documents import TextDoc
+ 
 class FooExecutor(Executor):
     @requests
-    def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text='foo was here'))
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        for doc in docs:
+            doc.text = 'foo was here'
+        docs.summary()
+        return docs
 ```
 
 ```python
-from jina import Flow, Document
+from jina import Flow
+from docarray import DocList, BaseDoc
+from docarray.documents import TextDoc
 
 f = Flow.load_config('my.yml')
 
 with f:
     try:
-        f.post(on='/bar', inputs=Document(), on_done=print)
+        f.post(on='/bar', inputs=TextDoc(), on_done=print)
     except Exception as ex:
         # handle exception
         pass
@@ -410,45 +417,48 @@ jina flow --uses flow.yml
 
 More Flow YAML specifications can be found in {ref}`Flow YAML Specification<flow-yaml-spec>`.
 
-### How Executors process DocumentArrays in a Flow
+### How Executors process Documents in a Flow
 
-Let's understand how Executors process DocumentArray's inside a Flow, and how changes are chained and applied, affecting downstream Executors in the Flow.
+Let's understand how Executors process Documents's inside a Flow, and how changes are chained and applied, affecting downstream Executors in the Flow.
 
 ```python 
-from jina import Executor, requests, Flow, DocumentArray, Document
+from jina import Executor, requests, Flow
+from docarray import DocList, BaseDoc
+from docarray.documents import TextDoc
 
 
 class PrintDocuments(Executor):
     @requests
-    def foo(self, docs, **kwargs):
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         for doc in docs:
             print(f' PrintExecutor: received document with text: "{doc.text}"')
+        return docs
 
 
 class ProcessDocuments(Executor):
     @requests(on='/change_in_place')
-    def in_place(self, docs, **kwargs):
+    def in_place(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         # This Executor only works on `docs` and doesn't consider any other arguments
         for doc in docs:
-            print(f' ProcessDocuments: received document with text "{doc.text}"')
+            print(f'ProcessDocuments: received document with text "{doc.text}"')
             doc.text = 'I changed the executor in place'
 
     @requests(on='/return_different_docarray')
-    def ret_docs(self, docs, **kwargs):
+    def ret_docs(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         # This executor only works on `docs` and doesn't consider any other arguments
-        ret = DocumentArray()
+        ret = DocList[TextDoc]()
         for doc in docs:
-            print(f' ProcessDocuments: received document with text: "{doc.text}"')
-            ret.append(Document(text='I returned a different Document'))
+            print(f'ProcessDocuments: received document with text: "{doc.text}"')
+            ret.append(TextDoc(text='I returned a different Document'))
         return ret
 
 
 f = Flow().add(uses=ProcessDocuments).add(uses=PrintDocuments)
 
 with f:
-    f.post(on='/change_in_place', inputs=DocumentArray(Document(text='request1')))
+    f.post(on='/change_in_place', inputs=DocList[TextDoc]([TextDoc(text='request1')]), return_type=DocList[TextDoc])
     f.post(
-        on='/return_different_docarray', inputs=DocumentArray(Document(text='request2'))
+        on='/return_different_docarray', inputs=DocList[TextDoc]([TextDoc(text='request2')]), return_type=DocList[TextDoc]))
     )
 ```
 
@@ -477,25 +487,27 @@ A typical use case for such a Flow is a topology with a common pre-processing pa
 To define a custom topology you can use the `needs` keyword when adding an {class}`~jina.Executor`. By default, a Flow assumes that every Executor needs the previously added Executor.
 
 ```python
-from jina import Executor, Flow, requests, Document, DocumentArray
+from jina import Executor, requests, Flow
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class FooExecutor(Executor):
     @requests
-    async def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text=f'foo was here and got {len(docs)} document'))
+    async def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        docs.append(TextDoc(text=f'foo was here and got {len(docs)} document'))
 
 
 class BarExecutor(Executor):
     @requests
-    async def bar(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text=f'bar was here and got {len(docs)} document'))
+    async def bar(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        docs.append(TextDoc(text=f'bar was here and got {len(docs)} document'))
 
 
 class BazExecutor(Executor):
     @requests
-    async def baz(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text=f'baz was here and got {len(docs)} document'))
+    async def baz(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        docs.append(TextDoc(text=f'baz was here and got {len(docs)} document'))
 
 
 f = (
@@ -517,7 +529,7 @@ When sending message to this Flow,
 
 ```python
 with f:
-    print(f.post('/').texts)
+    print(f.post('/', return_type=DocList[TextDoc]).texts)
 ```
 
 This gives the output:
@@ -526,8 +538,83 @@ This gives the output:
 ['foo was here and got 0 document', 'bar was here and got 1 document', 'baz was here and got 1 document']
 ```
 
-Both `BarExecutor` and `BazExecutor` only received a single `Document` from `FooExecutor` because they are run in parallel. The last Executor `executor3` receives both DocumentArrays and merges them automatically.
+Both `BarExecutor` and `BazExecutor` only received a single `Document` from `FooExecutor` because they are run in parallel. The last Executor `executor3` receives both DocLists and merges them automatically.
 This automated merging can be disabled with `no_reduce=True`. This is useful for providing custom merge logic in a separate Executor. In this case the last `.add()` call would look like `.add(needs=['barExecutor', 'bazExecutor'], uses=CustomMergeExecutor, no_reduce=True)`. This feature requires Jina >= 3.0.2.
+
+## Chain Executors in Flow with different schemas
+
+When using `docarray>=0.30.0`, when building a Flow you should ensure that the Document types used as input of an Executor match the schema 
+of the output of its incoming previous Flow.
+
+For instance, this Flow will fail to start because the Document types are wrongly chained.
+
+````{tab} Valid Flow
+```{code-block} python
+from jina import Executor, requests, Flow
+from docarray import DocList, BaseDoc
+from docarray.typing import NdArray
+import numpy as np
+
+
+class SimpleStrDoc(BaseDoc):
+    text: str
+
+class TextWithEmbedding(SimpleStrDoc):
+    embedding: NdArray
+
+class TextEmbeddingExecutor(Executor):
+    @requests(on='/foo')
+    def foo(docs: DocList[SimpleStrDoc], **kwargs) -> DocList[TextWithEmbedding]
+        ret = DocList[TextWithEmbedding]()
+        for doc in docs:
+            ret.append(TextWithEmbedding(text=doc.text, embedding=np.ramdom.rand(10))
+        return ret
+
+class ProcessEmbedding(Executor):
+    @requests(on='/foo')
+    def foo(docs: DocList[TextWithEmbedding], **kwargs) -> DocList[TextWithEmbedding]
+        for doc in docs:
+            self.logger.info(f'Getting embedding with shape {doc.embedding.shape}')
+
+flow = Flow().add(uses=TextEmbeddingExecutor, name='embed').add(uses=ProcessEmbedding, name='process')
+with flow:
+    flow.block()
+```
+````
+````{tab} Invalid Flow
+```{code-block} python
+from jina import Executor, requests, Flow
+from docarray import DocList, BaseDoc
+from docarray.typing import NdArray
+import numpy as np
+
+
+class SimpleStrDoc(BaseDoc):
+    text: str
+
+class TextWithEmbedding(SimpleStrDoc):
+    embedding: NdArray
+
+class TextEmbeddingExecutor(Executor):
+    @requests(on='/foo')
+    def foo(docs: DocList[SimpleStrDoc], **kwargs) -> DocList[TextWithEmbedding]
+        ret = DocList[TextWithEmbedding]()
+        for doc in docs:
+            ret.append(TextWithEmbedding(text=doc.text, embedding=np.ramdom.rand(10))
+        return ret
+
+class ProcessText(Executor):
+    @requests(on='/foo')
+    def foo(docs: DocList[SimpleStrDoc], **kwargs) -> DocList[TextWithEmbedding]
+        for doc in docs:
+            self.logger.info(f'Getting embedding with type {doc.text}')
+
+# This Flow will fail to start because the input type of "process" does not match the output type of "embed"
+flow = Flow().add(uses=TextEmbeddingExecutor, name='embed').add(uses=ProcessText, name='process')
+with flow:
+    flow.block()
+```
+````
 
 (floating-executors)=
 ### Floating Executors
@@ -545,19 +632,21 @@ Those Executors are marked with the `floating` keyword when added to a `Flow`:
 
 ```python
 import time
-from jina import Flow, Executor, requests, DocumentArray
+from jina import Executor, requests, Flow
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class FastChangingExecutor(Executor):
     @requests()
-    def foo(self, docs, **kwargs):
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         for doc in docs:
             doc.text = 'Hello World'
 
 
 class SlowChangingExecutor(Executor):
     @requests()
-    def foo(self, docs, **kwargs):
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         time.sleep(2)
         print(f' Received {docs.texts}')
         for doc in docs:
@@ -575,9 +664,9 @@ f = (
     )
 )
 with f:
-    f.post(on='/endpoint', inputs=DocumentArray.empty(1))  # we need to send a first
+    f.post(on='/endpoint', inputs=DocList[TextDoc]([TextDoc()]), return_type=DocList[TextDoc])  # we need to send a first
     start_time = time.time()
-    response = f.post(on='/endpoint', inputs=DocumentArray.empty(2))
+    response = f.post(on='/endpoint', inputs=DocList[TextDoc]([TextDoc(), TextDoc()]), return_type=DocList[TextDoc])
     end_time = time.time()
     print(f' Response time took {end_time - start_time}s')
     print(f' {response.texts}')
@@ -653,7 +742,7 @@ You can set conditioning for every {class}`~jina.Executor` in the Flow. Document
 
 To add a condition to an Executor, pass it to the `when` parameter of {meth}`~jina.Flow.add` method of the Flow. This then defines *when* a Document is processed by the Executor:
 
-You can use the [DocArray query language](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions) to specify a filter condition for each Executor.
+You can use the [MongoDB query language](https://www.mongodb.com/docs/compass/current/query/filter/#query-your-data) used in [docarray](https://docs.docarray.org/API_reference/utils/filter/) which follows  to specify a filter condition for each Executor.
 
 ```python
 from jina import Flow
@@ -682,25 +771,38 @@ These conditions specify that only Documents that hold data of a specific modali
 ````{tab} Python
 ```{code-block} python
 ---
-emphasize-lines: 3, 8
+emphasize-lines: 16, 24
 ---
-from jina import Flow, DocumentArray, Document
 
-f = Flow().add().add(when={'tags__key': {'$eq': 5}})  # Create the empty Flow, add condition
+from jina import Flow, Executor, requests
+from docarray import DocList, BaseDoc
+from typing import Dict
+
+class MyDoc(BaseDoc):
+    text: str = ''
+    tags: Dict[str, int]
+
+class MyExec
+    @requests
+    def foo(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDoc]:
+        for doc in docs:
+            print(f'{doc.tags}')
+
+f = Flow().add(uses=MyExec).add(uses=MyExec, when={'tags__key': {'$eq': 5}})  # Create the empty Flow, add condition
 
 with f:  # Using it as a Context Manager starts the Flow
     ret = f.post(
         on='/search',
-        inputs=DocumentArray([Document(tags={'key': 5}), Document(tags={'key': 4})]),
+        inputs=DocList[MyDoc]([MyDoc(tags={'key': 5}), MyDoc(tags={'key': 4})]),
+        return_type=DocList[MyDoc]
     )
 
-print(
-    ret[:, 'tags']
-)  # only the Document fulfilling the condition is processed and therefore returned.
+for doc in ret:
+    print(f'{doc.tags}')  # only the Document fulfilling the condition is processed and therefore returned.
 ```
 
 ```shell
-[{'key': 5.0}]
+{'key': 5.0}
 ```
 
 ````
@@ -711,6 +813,7 @@ print(
 jtype: Flow
 executors:
   - name: executor
+    uses: MyExec
     when:
         tags__key:
             $eq: 5
@@ -720,7 +823,7 @@ executors:
 ---
 emphasize-lines: 9
 ---
-from docarray import DocumentArray, Document
+
 from jina import Flow
 
 f = Flow.load_config('flow.yml')  # Load the Flow definition from Yaml file
@@ -728,16 +831,16 @@ f = Flow.load_config('flow.yml')  # Load the Flow definition from Yaml file
 with f:  # Using it as a Context Manager starts the Flow
     ret = f.post(
         on='/search',
-        inputs=DocumentArray([Document(tags={'key': 5}), Document(tags={'key': 4})]),
+        inputs=DocList[MyDoc]([MyDoc(tags={'key': 5}), MyDoc(tags={'key': 4})]),
+        return_type=DocList[MyDoc]
     )
 
-print(
-    ret[:, 'tags']
-)  # only the Document fulfilling the condition is processed and therefore returned.
+for doc in ret:
+    print(f'{doc.tags}')  # only the Document fulfilling the condition is processed and therefore returned.
 ```
 
 ```shell
-[{'key': 5.0}]
+{'key': 5.0}
 ```
 ````
 
@@ -752,17 +855,29 @@ still be used in the other branch, and also after the branches are re-joined:
 
 ```{code-block} python
 ---
-emphasize-lines: 7, 8
+emphasize-lines: 18, 19
 ---
 
-from jina import Flow, DocumentArray, Document
+from jina import Flow, Executor, requests
+from docarray import DocList, BaseDoc
+from typing import Dict
+
+class MyDoc(BaseDoc):
+    text: str = ''
+    tags: Dict[str, int]
+
+class MyExec
+    @requests
+    def foo(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDoc]:
+        for doc in docs:
+            print(f'{doc.tags}')
 
 f = (
     Flow()
-    .add(name='first')
-    .add(when={'tags__key': {'$eq': 5}}, needs='first', name='exec1')
-    .add(when={'tags__key': {'$eq': 4}}, needs='first', name='exec2')
-    .needs_all(name='join')
+    .add(uses=MyExec, name='first')
+    .add(uses=MyExec, when={'tags__key': {'$eq': 5}}, needs='first', name='exec1')
+    .add(uses=MyExec, when={'tags__key': {'$eq': 4}}, needs='first', name='exec2')
+    .needs_all(uses=MyExec, name='join')
 )
 ```
 
@@ -775,14 +890,17 @@ f = (
 with f:
     ret = f.post(
         on='/search',
-        inputs=DocumentArray([Document(tags={'key': 5}), Document(tags={'key': 4})]),
+        inputs=DocList[MyDoc]([MyDoc(tags={'key': 5}), MyDoc(tags={'key': 4})]),
+        return_type=DocList[MyDoc]
     )
 
-print(ret[:, 'tags'])  # Each Document satisfies one parallel branch/filter
+for doc in ret:
+    print(f'{doc.tags}') 
 ```
 
 ```shell
-[{'key': 5.0}, {'key': 4.0}]
+{'key': 5.0}
+{'key': 4.0}
 ```
 
 ````
@@ -790,16 +908,28 @@ print(ret[:, 'tags'])  # Each Document satisfies one parallel branch/filter
 ````{tab} Sequential Executors
 ```{code-block} python
 ---
-emphasize-lines: 7, 8
+emphasize-lines: 18, 19
 ---
 
-from jina import Flow, DocumentArray, Document
+from jina import Flow, Executor, requests
+from docarray import DocList, BaseDoc
+from typing import Dict
+
+class MyDoc(BaseDoc):
+    text: str = ''
+    tags: Dict[str, int]
+
+class MyExec
+    @requests
+    def foo(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDoc]:
+        for doc in docs:
+            print(f'{doc.tags}')
 
 f = (
     Flow()
-    .add(name='first')
-    .add(when={'tags__key': {'$eq': 5}}, name='exec1', needs='first')
-    .add(when={'tags__key': {'$eq': 4}}, needs='exec1', name='exec2')
+    .add(uses=MyExec, name='first')
+    .add(uses=MyExec, when={'tags__key': {'$eq': 5}}, name='exec1', needs='first')
+    .add(uses=MyExec, when={'tags__key': {'$eq': 4}}, needs='exec1', name='exec2')
 )
 ```
 
@@ -813,14 +943,15 @@ f = (
 with f:
     ret = f.post(
         on='/search',
-        inputs=DocumentArray([Document(tags={'key': 5}), Document(tags={'key': 4})]),
+        inputs=DocList[MyDoc]([MyDoc(tags={'key': 5}), MyDoc(tags={'key': 4})]),
+        return_type=DocList[MyDoc]
     )
 
-print(ret[:, 'tags'])  # No Document satisfies both sequential filters
+for doc in ret:
+    print(f'{doc.tags}') 
 ```
 
 ```shell
-[]
 ```
 ````
 
@@ -832,43 +963,10 @@ Note that whenever a Document does not satisfy the condition of an Executor, it 
 Instead, only a tailored Request without any payload is transferred.
 This means that you can not only use this feature to build complex logic, but also to minimize your networking overhead.
 
-#### Filtering outside the Flow
+TODO: Change here
+### Merging upstream Documents
 
-You can use conditions directly on the data, outside the Flow:
-
-```python
-da = ...  # type: docarray.DocumentArray
-filtered_text_data = da.find(text_condition)
-filtered_image_data = da.find(tensor_condition)
-
-print(filtered_text_data.texts)  # print text
-print('---')
-print(filtered_image_data.tensors)
-```
-```shell
-['hey there!', 'hey there!']
----
-[[[0.50535537 0.50538128]
-  [0.40446746 0.34972967]]
-
- [[0.04222604 0.70102327]
-  [0.12079661 0.65313938]]]
-```
-
-Each filter selects Documents that contain the desired data fields.
-That's exactly what you want for your filter!
-
-````{admonition} See Also
-:class: seealso
-
-For a hands-on example of leveraging filter conditions, see {ref}`this how-to <flow-filter>`.
-````
-
-To define a filter condition, use [DocArray's rich query language](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions).
-
-### Merging upstream DocumentArrays
-
-Often when you're building a Flow, you want an Executor to receive DocumentArrays from multiple upstream Executors. 
+Often when you're building a Flow, you want an Executor to receive Documents from multiple upstream Executors. 
 
 ```{figure} images/flow-merge-executor.svg
 :width: 70%
@@ -882,77 +980,85 @@ For this you can use the `docs_matrix` or `docs_map` parameters (part of Executo
 emphasize-lines: 11, 12
 ---
 from typing import Dict, Union, List, Optional
-from jina import Executor, requests, DocumentArray
+from jina import Executor, requests
 
+from docarray import DocList
 
 class MergeExec(Executor):
     @requests
     async def foo(
         self,
-        docs: DocumentArray,
+        docs: DocList[...],
         parameters: Dict,
-        docs_matrix: Optional[List[DocumentArray]],
-        docs_map: Optional[Dict[str, DocumentArray]],
-    ) -> Union[DocumentArray, Dict, None]:
+        docs_matrix: Optional[List[DocList[...]]],
+        docs_map: Optional[Dict[str, DocList[...]]],
+    ) -> DocList[MyDoc]:
         pass
 ```
 
-- Use `docs_matrix` to receive a List of all incoming DocumentArrays from upstream Executors:
+- Use `docs_matrix` to receive a List of all incoming DocLists from upstream Executors:
 
 ```python
 [
-    DocumentArray(...),  # from Executor1
-    DocumentArray(...),  # from Executor2
-    DocumentArray(...),  # from Executor3
+    DocList[...](...),  # from Executor1
+    DocList[...](...),  # from Executor2
+    DocList[...](...),  # from Executor3
 ]
 ```
 
-- Use `docs_map` to receive a Dict, where each item's key is the name of an upstream Executor and the value is the DocumentArray coming from that Executor:
+- Use `docs_map` to receive a Dict, where each item's key is the name of an upstream Executor and the value is the DocList coming from that Executor:
 
 ```python
 {
-    'Executor1': DocumentArray(...),
-    'Executor2': DocumentArray(...),
-    'Executor3': DocumentArray(...),
+    'Executor1': DocList[...](...),
+    'Executor2': DocList[...](...),
+    'Executor3': DocList[...](...),
 }
 ```
 
 (no-reduce)=
-#### Reducing multiple DocumentArrays to one DocumentArray
+#### Reducing multiple DocLists to one DocList
 
-The `no_reduce` argument determines whether DocumentArrays are reduced into one when being received:
+The `no_reduce` argument determines whether DocLists are reduced into one when being received:
 
-- To reduce all incoming DocumentArrays into **one single DocumentArray**, do not set `no_reduce` or set it to `False`. The `docs_map` and `docs_matrix` will be `None`.
-- To receive **a list all incoming DocumentArrays** set `no_reduce` to `True`. The Executor will receive the DocumentArrays independently under `docs_matrix` and `docs_map`.
+- To reduce all incoming DocLists into **one single DocList**, do not set `no_reduce` or set it to `False`. The `docs_map` and `docs_matrix` will be `None`.
+- To receive **a list all incoming DocList** set `no_reduce` to `True`. The Executor will receive the DocLists independently under `docs_matrix` and `docs_map`.
 
 ```python
-from jina import Flow, Executor, requests, Document, DocumentArray
+from jina import Flow, Executor, requests
+
+from docarray import DocList, BaseDoc
+
+
+class MyDoc(BaseDoc):
+    text: str = ''
+
 
 
 class Exec1(Executor):
     @requests
-    def foo(self, docs, **kwargs):
+    def foo(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDoc]:
         for doc in docs:
             doc.text = 'Exec1'
 
 
 class Exec2(Executor):
     @requests
-    def foo(self, docs, **kwargs):
+    def foo(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDoc]:
         for doc in docs:
             doc.text = 'Exec2'
 
 
 class MergeExec(Executor):
     @requests
-    def foo(self, docs_matrix, **kwargs):
-        documents_to_return = DocumentArray()
+    def foo(self, docs: DocList[MyDoc], docs_matrix, **kwargs) -> DocList[MyDoc]:
+        documents_to_return = DocList[MyDoc]()
         for doc1, doc2 in zip(*docs_matrix):
             print(
                 f'MergeExec processing pairs of Documents "{doc1.text}" and "{doc2.text}"'
             )
             documents_to_return.append(
-                Document(text=f'Document merging from "{doc1.text}" and "{doc2.text}"')
+                MyDoc(text=f'Document merging from "{doc1.text}" and "{doc2.text}"')
             )
         return documents_to_return
 
@@ -965,7 +1071,7 @@ f = (
 )
 
 with f:
-    returned_docs = f.post(on='/', inputs=Document())
+    returned_docs = f.post(on='/', inputs=MyDoc(), return_type=DocList[MyDoc])
 
 print(f'Resulting documents {returned_docs[0].text}')
 ```
