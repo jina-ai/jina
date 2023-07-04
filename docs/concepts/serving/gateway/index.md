@@ -13,9 +13,6 @@ with the Flow using the protocol of their choice.
 In most cases, the Gateway is automatically configured when you initialize a Flow object, so you do not need to
 configure it yourself. 
 
-
-
-
 However, you can always explicitly configure the Gateway in Python using the
 {meth}`~jina.Flow.config_gateway` method, or in YAML. The full YAML specification for configuring the Gateway can be
 {ref}`found here<gateway-yaml-spec>`.
@@ -30,24 +27,25 @@ You can use three different protocols to serve the `Flow`: gRPC, HTTP and WebSoc
 
 ```{code-block} python
 ---
-emphasize-lines: 11, 13
+emphasize-lines: 12, 14
 ---
 
-from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
-
+from docarray import DocList
+from docarray.documents import TextDoc
 
 class FooExecutor(Executor):
     @requests
-    def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text='foo was called'))
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        for doc in docs:
+            doc.text = 'foo was called'
 
 
 f = Flow().config_gateway(protocol='grpc', port=12345).add(uses=FooExecutor)
 with f:
     client = Client(port=12345)
-    docs = client.post(on='/')
-    print(docs.texts)
+    docs = client.post(on='/', inputs=TextDoc(), return_type=DocList[TextDoc])
+    print(docs.text)
 ```
 
 ```text
@@ -58,24 +56,25 @@ with f:
 ````{tab} HTTP
 ```{code-block} python
 ---
-emphasize-lines: 11, 13
+emphasize-lines: 12, 14
 ---
 
-from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
-
+from docarray import DocList
+from docarray.documents import TextDoc
 
 class FooExecutor(Executor):
     @requests
-    def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text='foo was called'))
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        for doc in docs:
+            doc.text = 'foo was called'
 
 
 f = Flow().config_gateway(protocol='http', port=12345).add(uses=FooExecutor)
 with f:
     client = Client(port=12345, protocol='http')
-    docs = client.post(on='/')
-    print(docs.texts)
+    docs = client.post(on='/', inputs=TextDoc(), return_type=DocList[TextDoc])
+    print(docs.text)
 ```
 
 ```text
@@ -88,24 +87,25 @@ with f:
 
 ```{code-block} python
 ---
-emphasize-lines: 11, 13
+emphasize-lines: 12, 14
 ---
 
-from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
-
+from docarray import DocList
+from docarray.documents import TextDoc
 
 class FooExecutor(Executor):
     @requests
-    def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text='foo was called'))
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        for doc in docs:
+            doc.text = 'foo was called'
 
 
 f = Flow().config_gateway(protocol='websocket', port=12345).add(uses=FooExecutor)
 with f:
     client = Client(port=12345, protocol='websocket')
-    docs = client.post(on='/')
-    print(docs.texts)
+    docs = client.post(on='/', inputs=TextDoc(), return_type=DocList[TextDoc])
+    print(docs.text)
 ```
 
 ```text
