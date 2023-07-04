@@ -24,6 +24,8 @@ After building a Jina project, the next step is to deploy and host it on the clo
 Are you ready to unlock the power of AI with Jina AI Cloud? Take a look at our [pricing options](https://cloud.jina.ai/pricing) now!
 ```
 
+In addition to deploying Flows, `jcloud` supports the creation of secrets and jobs which are created in the Flow's namespace. 
+
 ## Basics
 
 Jina AI Cloud provides a CLI that you can use via `jina cloud` from the terminal (or `jcloud` or simply `jc` for minimalists.)
@@ -81,6 +83,36 @@ We recommend testing locally before deployment:
 jina flow --uses flow.yml
 ```
 ````
+
+### Create a Secret or Job
+
+#### Create a Secret
+
+To create a Secret for a Flow:
+
+```bash
+jc create secret mysecret -f rich-husky-af14064067 --from-literal "{'env-name': 'secret-value'}"
+```
+
+```{tip}
+You can optionally pass the `--update` flag to automatically update the Flow spec with the updated secret information. This flag will update the Flow which is hosted on the cloud. Finally, you can also optionally pass a Flow's yaml file path with `--path` to update the yaml file locally.
+```
+
+```{caution}
+If the `--update` flag is not passed then you have to manually update the flow with `jc update flow rich-husky-af14064067 updated-flow.yml`
+```
+
+#### Create a Job
+
+To create a Job for a Flow:
+
+```bash
+jc create job job-name rich-husky-af14064067 image 'job entrypoint' --timeout 600 --backofflimit 2
+```
+
+```{tip}
+`image` can be any Executor image passed to a Flow's Executor `uses` or any normal docker image prefixed with `docker://`
+```
 
 #### Project folder
 
@@ -164,12 +196,14 @@ To access the [Grafana](https://grafana.com/)-powered dashboard, first get {ref}
 :width: 80%
 ```
 
-### List Flows
+### List Flows, Secrets or Jobs
 
-To list all of your "Serving" Flows:
+#### List Flows
+
+To list all of your "Starting", "Serving", "Failed", "Updating", and "Paused" Flows:
 
 ```bash
-jc list
+jc list flows
 ```
 
 ```{figure} img/list.png
@@ -179,7 +213,7 @@ jc list
 You can also filter your Flows by passing a phase:
 
 ```bash
-jc list --phase Deleted
+jc list flows --phase Deleted
 ```
 
 
@@ -190,33 +224,54 @@ jc list --phase Deleted
 Or see all Flows:
 
 ```bash
-jc list --phase all
+jc list flows --phase all
 ```
 
 ```{figure} img/list_all.png
 :width: 90%
 ```
 
-### Remove Flows
+#### List Secrets
 
+To list all the Secrets created in a Flow's namespace:
+
+```bash
+jc list secrets rich-husky-af14064067
+```
+
+#### List Jobs
+
+To listg all Jobs created in a Flow's namespace:
+
+```bash
+jc list jobs rich-husky-af14064067
+```
+
+```{figure} img/list_jobs.png
+:width: 90%
+```
+
+### Remove Flows, Secrets or Jobs
+
+#### Remove Flows
 You can remove a single Flow, multiple Flows or even all Flows by passing different identifiers.
 
 To remove a single Flow:
 
 ```bash
-jc remove merry-magpie-82b9c0897f
+jc remove flow merry-magpie-82b9c0897f
 ```
 
 To remove multiple Flows:
 
 ```bash
-jc remove merry-magpie-82b9c0897f wondrous-kiwi-b02db6a066
+jc remove flow merry-magpie-82b9c0897f wondrous-kiwi-b02db6a066
 ```
 
 To remove all Flows:
 
 ```bash
-jc remove all
+jc remove flow all
 ```
 
 By default, removing multiple or all Flows is an interactive process where you must give confirmation before each Flow is deleted. To make it non-interactive, set the below environment variable before running the command:
@@ -225,19 +280,45 @@ By default, removing multiple or all Flows is an interactive process where you m
 export JCLOUD_NO_INTERACTIVE=1
 ```
 
+#### Remove Secret
 
-### Update Flow
+```bash
+jc remove secret rich-husky-af14064067 mysecret
+```
 
+#### Remove Job
+```bash
+jc remove job rich-husky-af14064067 job-one
+```
+
+### Update Flow or Secret
+
+#### Update a Flow
 You can update a Flow by providing an updated YAML.
 
 To update a Flow:
 
 ```bash
-jc update super-mustang-c6cf06bc5b flow.yml
+jc update flow super-mustang-c6cf06bc5b flow.yml
 ```
 
 ```{figure} img/update_flow.png
 :width: 70%
+```
+
+#### Update a Secret
+You can update a Secret for a Flow.
+
+```bash
+jc update secret -f rich-husky-af14064067 mysecret --from-literal "{'env-name': 'secret-value'}"
+```
+
+```{tip}
+You can optionally pass the `--update` flag to automatically update the Flow spec with the updated secret information. This flag will update the Flow which is hosted on the cloud. Finally, you can also optionally pass a Flow's yaml file path with `--path` to update the yaml file locally.
+```
+
+```{caution}
+Updating a Secret automatically restarts a Flow.
 ```
 
 ### Pause / Resume Flow
