@@ -52,7 +52,7 @@ Jina supports developers in building AI services and pipelines:
 
 
 ::::{grid-item-card} {octicon}`cross-reference;1.5em` Learn DocArray API
-:link: https://docarray.jina.ai
+:link: https://docarray.docs.org
 
 DocArray is the foundational data structure of Jina. Before starting Jina, first learn DocArray to quickly build a PoC. 
 ::::
@@ -155,7 +155,6 @@ yaml-spec
 envs/index
 telemetry
 proto/docs
-tutorials/docarray-031support
 ```
 
 ```{toctree}

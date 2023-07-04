@@ -86,6 +86,74 @@ class MyExecutor(Executor):
 
 If a class has no `@requests` decorator, the request simply passes through without any processing.
 
+## Document type binding
+TODO: Explain that each request has input and output DocList types (or if generator not), and it defaults LegacyDocument.
+
+When using `docarray>=0.30`, each endpoint bound by the request endpoints can have different input and output Document types. One can specify these types by adding 
+type annotations to the decorated methods or by using the `request_schema` and `response_schema` argument. The design is inspired by [FastAPI](https://fastapi.tiangolo.com/). 
+
+These schemas have to be parametrized `DocList` with valid `Documents` inheriting from `BaseDoc`. The only exception is when {ref}`streaming endpoints <streaming-endpoints>` are used, in that case
+the `BaseDocs` are the parameters.
+
+When no type annotation or argument is provided, Jina assumes that [LegacyDocument](https://docs.docarray.org/API_reference/documents/documents/#docarray.documents.legacy.LegacyDocument) is the type used.
+This is intended to ease the transition from using Jina with `docarray<0.30.0` to using with the newer versions.
+
+```python
+from jina import Executor, requests
+from docarray import DocList, BaseDoc
+from docarray.typing import AnyTensor
+from typing import Optional
+
+import asyncio
+
+class BarInputDoc(BaseDoc):
+    text: str = ''
+
+
+class BarOutputDoc(BaseDoc):
+    text: str = ''
+    embedding: Optional[AnyTensor] = None
+
+class MyExecutor(Executor):
+    @requests
+    def foo(self, **kwargs):
+        print(kwargs)
+
+    @requests(on='/index')
+    async def bar(self, docs: DocList[BarInputDoc], **kwargs) -> DocList[BarOutputDoc]:
+        print(f'Calling bar')
+        await asyncio.sleep(1.0)
+        ret = DocList[BarOutputDoc]()
+        for doc in docs:
+            ret.append(BarOutputDoc(text=doc.text, embedding = embed(doc.text))
+        return ret
+```
+
+Note that the type hint is actually more that just a hint -- the Executor uses it to infer the actual
+schema of the endpoint.
+
+You can also explicitly define the schema of the endpoint by using the `request_schema` and
+`response_schema` parameters of the `requests` decorator:
+
+```python
+class MyExecutor(Executor):
+    @requests
+    def foo(self, **kwargs):
+        print(kwargs)
+
+    @requests(on='/index', request_schema=DocList[BarInputDoc], response_schema=DocList[BarOutputDoc]) 
+    async def bar(self, docs, **kwargs):
+        print(f'Calling bar')
+        await asyncio.sleep(1.0)
+        ret = DocList[BarOutputDoc]()
+        for doc in docs:
+            ret.append(BarOutputDoc(text=doc.text, embedding = embed(doc.text))
+        return ret
+```
+
+If there is no `request_schema` and `response_schema`, the type hint is used to infer the schema. If both exist, `request_schema`
+and `response_schema` will be used.
+
 (endpoint-arguments)=
 ## Arguments
 All Executor methods decorated by `@requests` need to follow the signature below to be usable as a microservice to be orchestrated either using {class}`~jina.Flow` or {class}`~jina.Deployment`.
@@ -95,35 +163,36 @@ The `async` definition is optional.
 The endpoint signature looks like the following:
 
 ```python
-from typing import Dict, Union, List, Optional
-from jina import Executor, requests, DocumentArray
+from typing import Dict, Union, Optional
+from jina import Executor, requests
+from docarray import DocList
 
 
 class MyExecutor(Executor):
     @requests
     async def foo(
         self,
-        docs: DocumentArray,
+        docs: DocList[...],
         parameters: Dict,
         tracing_context: Optional['Context'],
         **kwargs
-    ) -> Union[DocumentArray, Dict, None]:
+    ) -> Union[DocList[...], Dict, None]:
         pass
 
     @requests
     def bar(
         self,
-        docs: DocumentArray,
+        docs: DocList[...],
         parameters: Dict,
         tracing_context: Optional['Context'],
         **kwargs
-    ) -> Union[DocumentArray, Dict, None]:
+    ) -> Union[DocList[...], Dict, None]:
         pass
 ```
 
 Let's take a look at these arguments:
 
-- `docs`: A DocumentArray that is part of the request. Since an Executor wraps functionality related to `DocumentArray`, it's usually the main data format inside Executor methods. Note that these `docs` can be also change in place, just like any other `list`-like object in a Python function.
+- `docs`: A DocList that is part of the request. Since an Executor wraps functionality related to `DocList`, it's usually the main data format inside Executor methods. Note that these `docs` can be also change in place, just like any other `list`-like object in a Python function.
 - `parameters`: A Dict object that passes extra parameters to Executor functions.
 - `tracing_context`: Context needed if you want to add {ref}`custom traces <instrumenting-executor>` in your Executor.
 
@@ -165,7 +234,7 @@ class MyExecutor(Executor):
 
 Every Executor method can `return` in three ways: 
 
-- You can directly return a `DocumentArray` object.
+- You can directly return a `DocList` object.
 - If you return `None` or don't have a `return` in your method, then the original `docs` object (potentially mutated by your function) is returned.
 - If you return a `dict` object, it will be considered as a result and returned on `parameters['__results__']` to the client.
 
@@ -203,13 +272,23 @@ Streaming endpoints are only supported for HTTP protocol and for Deployment.
 A streaming endpoint has the following signature:
 
 ```python
-from jina import Executor, requests, Document, Deployment
+from jina import Executor, requests, Deployment
+from docarray import DocList, BaseDoc
 
+# first define schemas
+class MyDocument(BaseDoc):
+    text: str
+
+# then define the Executor
 class MyExecutor(Executor):
+
     @requests(on='/hello')
-    async def task(self, doc: Document, **kwargs):
-        for i in range(3):
-            yield Document(text=f'{doc.text} {i}')
+    async def task(self, doc: MyDocument, **kwargs):
+        print()
+        # for doc in docs:
+        #     doc.text = 'hello world'
+        for i in range(100):
+            yield MyDocument(text=f'hello world {i}')
             
 with Deployment(
     uses=MyExecutor,
@@ -225,12 +304,12 @@ From the client side, any SSE client can be used to receive the Documents, one a
 Jina offers a standard python client to use the streaming endpoint:
 
 ```python
-from jina import Client, Document
+from jina import Client
 client = Client(port=12345, protocol='http', cors=True, asyncio=True)
 async for doc in client.stream_doc(
-    on='/hello', inputs=Document(text='hello world')
+    on='/hello', inputs=MyDocument(text='hello world'), return_type=MyDocument
 ):
-    print(doc.text )
+    print(doc.text)
 ```
 ```text
 hello world 0
@@ -238,7 +317,6 @@ hello world 1
 hello world 2
 ```
 
-You can also implement streaming endpoints in newer versions of DocArray. Refer to {ref}`this section <streaming-endpoits-docarray-v2>` to learn more.
 You can also refer to the following Javascript code to connect with the streaming endpoint from your browser:
 
 ```html

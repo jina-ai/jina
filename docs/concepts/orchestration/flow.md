@@ -757,7 +757,7 @@ If you are trying to separate Documents according to the data modality they hold
 ````{admonition} See Also
 :class: seealso
 
-In addition to `$exists` you can use a number of other operators to define your filter: `$eq`, `$gte`, `$lte`, `$size`, `$and`, `$or` and many more. For details, consult this [DocArray documentation page](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions).
+In addition to `$exists` you can use a number of other operators to define your filter: `$eq`, `$gte`, `$lte`, `$size`, `$and`, `$or` and many more. For details, consult [MongoDB query language](https://www.mongodb.com/docs/compass/current/query/filter/#query-your-data) and [docarray](https://docs.docarray.org/API_reference/utils/filter/).
 ````
 
 ```python
