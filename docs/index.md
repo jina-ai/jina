@@ -172,7 +172,6 @@ tutorials/deploy-pipeline
 :hidden:
 :maxdepth: 1
 
-get-started/migrate
 Jina 2 Documentation <https://docs2.jina.ai/>
 ```
 
