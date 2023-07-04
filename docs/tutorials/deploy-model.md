@@ -32,8 +32,8 @@ You can also run this code interactively in [Colab](https://colab.research.googl
 
 ## Understand: Executors and Deployments
 
-- All data that goes in and out of Jina is in the form of a [DocumentArray](https://docarray.org/legacy-docs/fundamentals/documentarray/) from the [DocArray](https://docarray.org/legacy-docs/) package.
-- An {ref}`Executor <executor-cookbook>` is a self-contained gRPC microservice that performs a task on a DocumentArray. This could be very simple (like merely capitalizing the entire text of a Document) or a lot more complex (like generating vector embeddings for a given piece of content).
+- All data that goes in and out of Jina is in the form of [Documents](https://docs.docarray.org/user_guide/representing/first_step/) inside a [DocList](https://docs.docarray.org/user_guide/representing/array/) from the [DocArray](https://docs.docarray.org/) package.
+- An {ref}`Executor <executor-cookbook>` is a self-contained gRPC microservice that performs a task on Documents. This could be very simple (like merely capitalizing the entire text of a Document) or a lot more complex (like generating vector embeddings for a given piece of content).
 - A {ref}`Deployment <deployment>` lets you serve your Executor, scale it up with replicas, and allow users to send and receive requests.
 
 When you build a model or service in Jina, it's always in the form of an Executor. An Executor is a Python class that transforms and processes Documents, and can go way beyond image generation, for example, encoding text/images into vectors, OCR, extracting tables from PDFs, or lots more.
@@ -55,25 +55,25 @@ pip install diffusers
 Let's implement the service's logic in `text_to_image.py`. Don't worry too much about understanding this code right now -- we'll go through it below!
 
 ```python
-from docarray import DocumentArray
-from jina import Executor, requests
 import numpy as np
+from jina import Executor, requests
+from docarray import BaseDoc, DocList
+from docarray.documents import ImageDoc
+
+class ImagePrompt(BaseDoc):
+    text: str
+
 
 class TextToImage(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        import torch
         from diffusers import StableDiffusionPipeline
-
-        self.pipe = StableDiffusionPipeline.from_pretrained(
-            "CompVis/stable-diffusion-v1-4", torch_dtype=torch.float16
-        ).to("cuda")
+        import torch
+        self.pipe = StableDiffusionPipeline.from_pretrained("CompVis/stable-diffusion-v1-4", torch_dtype=torch.float16).to("cuda")
 
     @requests
-    def generate_image(self, docs: DocumentArray, **kwargs):
-    	# image here is in PIL format
-        images = self.pipe(docs.texts).images
-        
+    def generate_image(self, docs: DocList[ImagePrompt], **kwargs) -> DocList[ImageDoc]:
+        images = self.pipe(docs.text).images  # image here is in [PIL format](https://pillow.readthedocs.io/en/stable/)
         for i, doc in enumerate(docs):
             doc.tensor = np.array(images[i])
 ```
@@ -81,10 +81,10 @@ class TextToImage(Executor):
 ### Imports
 
 ```python
-from docarray import DocumentArray
+from docarray import DocList, BaseDoc
 ```
 
-[Documents](https://docarray.org/legacy-docs/fundamentals/document/) and [DocumentArrays](https://docarray.org/legacy-docs/fundamentals/documentarray/) (from the DocArray package) are Jina's native IO format.
+[Documents](https://docs.docarray.org/user_guide/representing/first_step/) and [DocList](https://docs.docarray.org/user_guide/representing/array/) (from the DocArray package) are Jina's native IO format.
 
 ```python
 from jina import Executor, requests
@@ -97,6 +97,18 @@ import numpy as np
 ```
 
 In our case, [NumPy](https://numpy.org/) is specific to this Executor only. We won't really cover it in this article, since we want to keep this as a general overview. (And there’s plenty of information about NumPy out there already).
+
+### Document types
+
+We then import or create the data types on which our Executor will work. In this case, it will get `ImagePrompt` documents and will output `ImageDoc` documents.
+
+```python
+from docarray import BaseDoc
+from docarray.documents import ImageDoc
+
+class ImagePrompt(BaseDoc):
+    text: str
+```
 
 ### Executor class
 
@@ -118,10 +130,8 @@ All Executors are created from Jina's Executor class. User-definable parameters 
 
 ```python
 @requests
-def generate_image(self, docs: DocumentArray, **kwargs):
-    # image here is in PIL format
-    images = self.pipe(docs.texts).images
-
+def generate_image(self, docs: DocList[ImagePrompt], **kwargs) -> DocList[ImageDoc]:
+    images = self.pipe(docs.text).images  # image here is in [PIL format](https://pillow.readthedocs.io/en/stable/)
     for i, doc in enumerate(docs):
         doc.tensor = np.array(images[i])
 ```
@@ -186,13 +196,18 @@ In a notebook, you can't use `deployment.block()` and then make requests with th
 Use {class}`~jina.Client` to make requests to the service. As before, we use Documents as our basic IO format. We'll use the text prompt `rainbow unicorn butterfly kitten`:
 
 ```python
-from docarray import Document
 from jina import Client
+from docarray import BaseDoc, DocList
+from docarray.documents import ImageDoc
 
-image_text = Document(text='rainbow unicorn butterfly kitten')
+class ImagePrompt(BaseDoc):
+    text: str
+
+
+image_text = ImagePrompt(text='rainbow unicorn butterfly kitten')
 
 client = Client(port=12345)  # use port from output above
-response = client.post(on='/', inputs=[image_text])
+response = client.post(on='/', inputs=DocList[ImagePrompt]([image_prompt]), return_type=DocList[ImageDoc])
 
 response[0].display()
 ```

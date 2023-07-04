@@ -648,7 +648,7 @@ class SlowChangingExecutor(Executor):
     @requests()
     def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         time.sleep(2)
-        print(f' Received {docs.texts}')
+        print(f' Received {docs.text}')
         for doc in docs:
             doc.text = 'Change the document but will not affect response'
 

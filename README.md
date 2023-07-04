@@ -119,7 +119,7 @@ class StableLM(Executor):
     @requests
     def generate(self, docs: DocList[Prompt], **kwargs) -> DocList[Generation]:
         generations = DocList[Generation]()
-        prompts = docs.texts
+        prompts = docs.text
         llm_outputs = self.generator(prompts)
         for prompt, output in zip(prompts, llm_outputs):
             generations.append(Generation(prompt=prompt, text=output))
@@ -244,7 +244,7 @@ class TextToImage(Executor):
 
     @requests
     def generate_image(self, docs: DocList[Generation], **kwargs) -> DocList[ImageDoc]:
-        images = self.pipe(docs.texts).images  # image here is in [PIL format](https://pillow.readthedocs.io/en/stable/)
+        images = self.pipe(docs.text).images  # image here is in [PIL format](https://pillow.readthedocs.io/en/stable/)
         for i, doc in enumerate(docs):
             doc.tensor = np.array(images[i])
 ```

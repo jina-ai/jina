@@ -44,19 +44,20 @@ served in multiple ways/configurations using Deployment.
 ````{tab} Python class
 
 ```python
-from docarray import DocumentArray, Document
+from docarray import DocList
+from docarray.documents import TextDoc
 from jina import Executor, requests, Deployment
 
 
 class MyExec(Executor):
     @requests
-    def foo(self, docs: DocumentArray, **kwargs):
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         docs[0].text = 'executed MyExec'  # custom logic goes here
 
 
 with Deployment(uses=MyExec, port=12345, replicas=2) as dep:
-    docs = dep.post(on='/foo', inputs=DocumentArray.empty(1))
-    print(docs.texts)
+    docs = dep.post(on='/foo', inputs=DocList[TextDoc](TextDoc()), return_type=DocList[TextDoc])
+    print(docs.text)
 ```
 ````
 
@@ -72,8 +73,8 @@ py_modules:
 from jina import Deployment
 
 with Deployment(uses='executor.yaml', port=12345, replicas=2) as dep:
-    docs = dep.post(on='/foo', inputs=DocumentArray.empty(1))
-    print(docs.texts)
+    docs = dep.post(on='/foo', inputs=DocList[TextDoc](TextDoc()), return_type=DocList[TextDoc])
+    print(docs.text)
 ```
 ````
 
@@ -83,8 +84,8 @@ with Deployment(uses='executor.yaml', port=12345, replicas=2) as dep:
 from jina import Deployment
 
 with Deployment(uses='jinaai://my-username/MyExec/', port=12345, replicas=2) as dep:
-    docs = dep.post(on='/foo', inputs=DocumentArray.empty(1))
-    print(docs.texts)
+    docs = dep.post(on='/foo', inputs=DocList[TextDoc](TextDoc()), return_type=DocList[TextDoc])
+    print(docs.text)
 ```
 
 ````
@@ -95,8 +96,8 @@ with Deployment(uses='jinaai://my-username/MyExec/', port=12345, replicas=2) as 
 from jina import Deployment
 
 with Deployment(uses='docker://my-executor-image', port=12345, replicas=2) as dep:
-    docs = dep.post(on='/foo', inputs=DocumentArray.empty(1))
-    print(docs.texts)
+    docs = dep.post(on='/foo', inputs=DocList[TextDoc](TextDoc()), return_type=DocList[TextDoc])
+    print(docs.text)
 ```
 
 ````
@@ -264,14 +265,16 @@ Then, we can send requests using {meth}`~jina.Client`. Since Kubernetes load bal
 gRPC requests, it is recommended to set `stream=False` when using gRPC (note that this is only applicable for Kubernetes deployments of Executors):
 ```python
 import os
-from jina import Client, Document
+from jina import Client
+from docarray import DocList
+from docarray.documents import TextDoc
 
 host = os.environ['EXTERNAL_IP']
 port = 80
 
 client = Client(host=host, port=port)
 
-print(client.post(on='/', inputs=Document(), stream=False).texts)
+print(client.post(on='/', inputs=TextDoc(), return_type=DocList[TextDoc], stream=False).text)
 ```
 
 ```text

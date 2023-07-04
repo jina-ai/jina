@@ -198,7 +198,7 @@ Let's take a look at these arguments:
 
 ````{admonition} Flow-specific arguments
 :class: hint
-If you use an Executor in a Flow and want to merge incoming DocumentArrays from multiple Executors, you may also be interested in {ref}`some additional arguments <merge-upstream-documentarrays>`.
+If you use an Executor in a Flow and want to merge incoming DocLists from multiple Executors, you may also be interested in {ref}`some additional arguments <merge-upstream-documentarrays>`.
 ````
 
 ````{admonition} Hint
@@ -258,7 +258,7 @@ with Deployment(uses=MyExec) as dep:
 
 (streaming-endpoints)=
 ## Streaming endpoints
-Executors can stream Documents individually rather than as a whole DocumentArray. 
+Executors can stream Documents individually rather than as a whole DocLists. 
 This is useful when you want to return Documents one by one and you want the client to immediately process Documents as 
 they arrive. This can be helpful for Generative AI use cases, where a Large Language Model is used to generate text 
 token by token and the client displays tokens as they arrive.
@@ -273,7 +273,7 @@ A streaming endpoint has the following signature:
 
 ```python
 from jina import Executor, requests, Deployment
-from docarray import DocList, BaseDoc
+from docarray import BaseDoc
 
 # first define schemas
 class MyDocument(BaseDoc):

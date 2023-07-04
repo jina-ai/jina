@@ -486,7 +486,7 @@ class MyExec(Executor):
 
     @requests
     def foo(self, docs, **kwargs):
-        print(f'inside: {docs.texts}')
+        print(f'inside: {docs.text}')
 
 
 dep = (
@@ -511,7 +511,7 @@ class MyExec(Executor):
 
     @requests
     def foo(self, docs, **kwargs):
-        print(f'inside: {docs.texts}')
+        print(f'inside: {docs.text}')
 
 
 f = (
