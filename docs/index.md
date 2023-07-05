@@ -155,6 +155,7 @@ yaml-spec
 envs/index
 telemetry
 proto/docs
+docarray-support
 ```
 
 ```{toctree}
