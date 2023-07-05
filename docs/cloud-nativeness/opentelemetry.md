@@ -141,7 +141,16 @@ Run the Flow and a sample request that we want to instrument locally. If the bac
 First start a Flow:
 
 ```python
-from jina import Flow
+from jina import Flow, Executor, requests
+from docarray import DocList, BaseDoc
+import time
+
+class MyExecutor(Executor):
+    
+    @requests
+    def foo(self, docs: DocList[BaseDoc], **kwargs) -> DocList[BaseDoc]:
+        time.sleep(0.5)
+        return docs
 
 with Flow(
     port=54321,
@@ -151,14 +160,15 @@ with Flow(
     metrics=True,
     metrics_exporter_host='http://localhost',
     metrics_exporter_port=4317,
-).add(uses='jinaai://jina-ai/SimpleIndexer') as f:
+).add(uses=MyExecutor) as f:
     f.block()
 ```
 
 Second execute requests using the instrumented {class}`jina.Client`:
 
 ```python
-from jina import Client, Document, DocumentArray
+from jina import Client
+from docarray import DocList, BaseDoc
 
 client = Client(
     host='grpc://localhost:54321',
@@ -166,7 +176,7 @@ client = Client(
     traces_exporter_host='http://localhost',
     traces_exporter_port=4317,
 )
-client.post('/', DocumentArray([Document(text='hello')]))
+client.post('/', DocList[BaseDoc]([BaseDoc()]), return_type=DocList[BaseDoc])
 client.teardown_instrumentation()
 ```
 

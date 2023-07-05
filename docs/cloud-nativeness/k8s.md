@@ -7,7 +7,6 @@
 kubernetes
 ```
 
-
 Jina is a cloud-native framework and therefore runs natively and easily on Kubernetes.
 Deploying a Jina Flow on Kubernetes is actually the recommended way to use Jina in production.
 

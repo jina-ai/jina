@@ -21,7 +21,6 @@ Check out {ref}`jcloud` if you want a **one-click** solution to deploy and host 
 ```
 
 
-
 ## Preliminaries
 
 To follow this how-to, you need access to a Kubernetes cluster.
