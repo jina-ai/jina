@@ -87,7 +87,6 @@ class MyExecutor(Executor):
 If a class has no `@requests` decorator, the request simply passes through without any processing.
 
 ## Document type binding
-TODO: Explain that each request has input and output DocList types (or if generator not), and it defaults LegacyDocument.
 
 When using `docarray>=0.30`, each endpoint bound by the request endpoints can have different input and output Document types. One can specify these types by adding 
 type annotations to the decorated methods or by using the `request_schema` and `response_schema` argument. The design is inspired by [FastAPI](https://fastapi.tiangolo.com/). 

@@ -279,6 +279,12 @@ e.set()  # set event and stop (unblock) the Flow
 
 ### Serve on Google Colab
 
+```{admonition} Example built with docarray<0.30
+:class: note
+
+This example is built using docarray<0.30 version. Most of the concepts are similar, but some APIs of how Executors are built change when using newer docarray version.
+```
+
 [Google Colab](https://colab.research.google.com/) provides an easy-to-use Jupyter notebook environment with GPU/TPU support. Flows are fully compatible with Google Colab and you can use it in the following ways:
 
 ```{figure} images/jina-on-colab.svg
@@ -529,7 +535,7 @@ When sending message to this Flow,
 
 ```python
 with f:
-    print(f.post('/', return_type=DocList[TextDoc]).texts)
+    print(f.post('/', return_type=DocList[TextDoc]).text)
 ```
 
 This gives the output:
@@ -615,6 +621,9 @@ with flow:
     flow.block()
 ```
 ````
+
+Jina is also compatible with docarray<0.30, when using that version, only a single Document schema existed (equivalent to [LegacyDocument]() in docarray>0.30) and therefore
+there were no explicit compatibility issues between schemas. However, the complexity was implicitly there (An Executor may expect a Document to be filled with `text` and only fail at Runtime).
 
 (floating-executors)=
 ### Floating Executors
@@ -963,7 +972,6 @@ Note that whenever a Document does not satisfy the condition of an Executor, it 
 Instead, only a tailored Request without any payload is transferred.
 This means that you can not only use this feature to build complex logic, but also to minimize your networking overhead.
 
-TODO: Change here
 ### Merging upstream Documents
 
 Often when you're building a Flow, you want an Executor to receive Documents from multiple upstream Executors. 
@@ -1200,6 +1208,6 @@ The most important methods of the `Flow` object are the following:
 | {meth}`~jina.clients.mixin.PostMixin.post()`                 | Sends requests to the Flow API.                                                                                                                                                                                                                                                      |
 | {meth}`~jina.Flow.block()`                                   | Blocks execution until the program is terminated. This is useful to keep the Flow alive so it can be used from other places (clients, etc).                                                                                                                                          |
 | {meth}`~jina.Flow.to_docker_compose_yaml()`                  | Generates a Docker-Compose file listing all Executors as services.                                                                                                                                                                                                                                                |
-| {meth}`~jina.Flow.to_kubernetes_yaml()`                      | Generates Kubernetes configuration files in `<output_directory>`. Based on your local Jina version, Executor Hub may rebuild the Docker image during the YAML generation process. If you do not wish to rebuild the image, set the environment variable `JINA_HUB_NO_IMAGE_REBUILD`.                                                                                                                                   |
+| {meth}`~jina.Flow.to_kubernetes_yaml()`                      | Generates Kubernetes configuration files in `<output_directory>`. Based on your local Jina and docarray versions, Executor Hub may rebuild the Docker image during the YAML generation process. If you do not wish to rebuild the image, set the environment variable `JINA_HUB_NO_IMAGE_REBUILD`.                                                                                                                                   |
 | {meth}`~jina.clients.mixin.HealthCheckMixin.is_flow_ready()` | Check if the Flow is ready to process requests. Returns a boolean indicating the readiness.                                                                                                                                                                                                                                                                                                                                 |
 

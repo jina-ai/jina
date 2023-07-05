@@ -344,7 +344,6 @@ Let's scale a Stable Diffusion Executor deployment with replicas and dynamic bat
 * Create two replicas, with [a GPU assigned for each](https://docs.jina.ai/concepts/flow/scale-out/#replicate-on-multiple-gpus).
 * Enable dynamic batching to process incoming parallel requests together with the same model inference.
 
-TODO: This has to be Containerized before
 
 <div class="table-wrapper">
 <table>

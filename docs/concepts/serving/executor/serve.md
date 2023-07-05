@@ -25,8 +25,10 @@ It can also be used as part of a Flow.
 
 - A **shared Executor** is launched using the [Jina CLI](../../cli/index.rst) and does *not* sit behind a Gateway.
 It is intended to be used in one or more Flows. However, it can be also accessed by a {ref}`Client <client>`.
-Because a shared Executor does not reside behind a Gataway, it requires fewer networking hops when used inside of a Flow.
-However, it is not suitable for exposing a standalone service, outside the scope of a Flow.
+Because a shared Executor does not reside behind a Gateway, it requires fewer networking hops when used inside of a Flow.
+However, it is not suitable for exposing a standalone service without gRPC protocol.
+
+In any case, the user needs to make sure that the Document types bound to each endpoint are compatible inside a Flow.
 ````
 
 (deployment)=
@@ -295,7 +297,7 @@ This type of standalone Executor can be either *external* or *shared*. By defaul
 - A shared Executor has no Gateway.
 
 Although both types can join a {class}`~jina.Flow`, use a shared Executor if the Executor is only intended to join Flows 
-to have less network hops and save the costs of running running the Gateway in Kubernetes.
+to have less network hops and save the costs of running the Gateway in Kubernetes.
 
 ## Serve via Docker Compose
 

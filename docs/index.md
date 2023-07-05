@@ -91,7 +91,7 @@ The Gateway is a microservice that serves as the entrypoint of a {term}`Flow`. I
 :class-card: color-gradient-card-1
 
 
-Executor Hub is a marketplace that allows you to share, explore and test Executors.
+Executor Hub allows you to containerize, share, explore and make Executors ready for the cloud.
 
 ::::
 

@@ -1,7 +1,6 @@
 (deployment)=
 # Deployment
 
-TODO: Improve docarray v2 here
 ```{important}
 A Deployment is part of the orchestration layer {ref}`Orchestration <orchestration>`. Be sure to read up on that too!
 ```

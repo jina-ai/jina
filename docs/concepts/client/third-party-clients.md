@@ -6,7 +6,7 @@ This page is about accessing the Flow with other clients, e.g. `curl`, or progra
 ````{admonition} Mostly developed for docarray<0.30
 :class: note
 
-Note that most of these clients have been deveoped for Jina compatible with `docarray<0.30.0` version. This means, they will only be able to communicate with services
+Note that most of these clients have been developed for Jina compatible with `docarray<0.30.0` version. This means, they will only be able to communicate with services
 using Jina with docarray<0.30.0
 
 ````
