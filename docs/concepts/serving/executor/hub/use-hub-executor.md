@@ -29,6 +29,32 @@ Hub Executors are cached locally on the first pull. Afterwards, they will not be
 To keep up-to-date with upstream, use `.from_hub(..., force_update=True)`.
 ```
 
+(pull-executor)=
+## Pull only
+
+You can also use `jina hub` CLI to pull an Executor without actually using it in the Flow.
+
+````{admonition} Jina and DocArray version
+:class: note
+
+Independently of the Jina and DocArray version existing when the Executor was pushed to the Hub. When pulling, the Hub will try
+to install the Jina and DocArray version that you have installed locally in the pulled docker images.
+````
+
+### Pull the Docker image
+
+```bash
+jina hub pull jinaai+docker://<USERNAME>/<NAME>[:<TAG>]
+```
+
+
+You can find the Executor by running `docker images`. You can also indicate which version of the Executor you want to use by specifying the `:<TAG>`.
+
+```bash
+jina hub pull jinaai+docker://jina-ai/DummyExecutor:v1.0.0
+```
+
+
 ## Use in Flow as container
 
 Use prebuilt images from Hub in your Python code:
@@ -113,7 +139,7 @@ Use the source code from Executor Hub in your Python code:
 ```python
 from jina import Flow
 
-f = Flow().add(uses='jinaai+docker://<USERNAME>/<NAME>[:<TAG>]')
+f = Flow().add(uses='jinaai://<USERNAME>/<NAME>[:<TAG>]')
 ```
 
 ## Set/override default parameters
@@ -129,25 +155,6 @@ f = Flow().add(
     uses_with={'param1': 'new_value'},
     uses_metas={'name': 'new_name'},
 )
-```
-
-
-(pull-executor)=
-## Pull only
-
-You can also use `jina hub` CLI to pull an Executor without actually using it in the Flow.
-
-### Pull the Docker image
-
-```bash
-jina hub pull jinaai+docker://<USERNAME>/<NAME>[:<TAG>]
-```
-
-
-You can find the Executor by running `docker images`. You can also indicate which version of the Executor you want to use by specifying the `:<TAG>`.
-
-```bash
-jina hub pull jinaai+docker://jina-ai/DummyExecutor:v1.0.0
 ```
 
 ### Platform awareness of Hub images 

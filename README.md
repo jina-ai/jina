@@ -397,7 +397,7 @@ These features apply to both [Deployment YAML](https://docs.jina.ai/concepts/exe
 ### Containerize your Executor
 
 In order to deploy your solutions to the cloud, you need to containerize your services. Jina provides the [Executor Hub](https://docs.jina.ai/concepts/serving/executor/hub/create-hub-executor/), the perfect tool
-to streamline this process taking a lot of the troubles with you.
+to streamline this process taking a lot of the troubles with you. It also allows to share these Executors publicly or privately.
 
 You just need to structure your Executor in a folder structure:
 
