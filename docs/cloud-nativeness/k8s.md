@@ -14,6 +14,12 @@ A {class}`~jina.Flow` is composed of different microservices called {class}`~jin
 
 Deploying a {class}`~jina.Flow` on Kubernetes means wrapping these microservice containers in the appropriate K8s abstraction (Deployment, StatefulSet, and so on), exposing them internally via K8s service and connecting them together by passing the right set of parameters.
 
+```{hint}
+This documentation is designed for users who want to **manually** deploy a Jina project on Kubernetes.
+
+Check out {ref}`jcloud` if you want a **one-click** solution to deploy and host Jina, leveraging a cloud-native stack of Kubernetes, Prometheus and Grafana, **without worrying about provisioning**.
+```
+
 
 ## Automatically translate a Flow to Kubernetes concept
 

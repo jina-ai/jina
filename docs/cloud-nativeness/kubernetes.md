@@ -37,7 +37,191 @@ This automatically sets up and manages the service mesh proxies when you deploy 
 
 To understand why you need to install a service mesh like Linkerd refer to this  {ref}`section <service-mesh-k8s>`
 
+## Build and containerize your Executors
+
+First of all we need to build the Executors we are going to use and containerize them {ref}`manually <dockerize-exec>` or leveraging {ref}`Executor Hub <jina-hub>`. In this example,
+we are going to use the Hub.
+
+We are going to build two Executors, the first is going to use `CLIP` to encode textual Documents, and the second is going to use an in memory vector index. This way 
+we can build a simple neural search system.
+
+First, we build the encoder Executor.
+
+````{tab} executor.py
+```{code-block} python
+import torch
+from transformers import CLIPModel, CLIPTokenizer
+
+from jina import Executor, requests
+from docarray import DocList
+from docarray.documents import TextDoc
+
+
+class CLIPEncoder(Executor):
+    def __init__(
+        self,
+        pretrained_model_name_or_path: str = 'openai/clip-vit-base-patch32',
+        device: str = 'cpu',
+        *args,
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+        self.device = device
+        self.pretrained_model_name_or_path = pretrained_model_name_or_path
+        self.tokenizer = CLIPTokenizer.from_pretrained(self.pretrained_model_name_or_path)
+        self.model = CLIPModel.from_pretrained(self.pretrained_model_name_or_path)
+
+        self.model.eval().to(device)
+
+    def _tokenize_texts(self, texts):
+        x = self.tokenizer(
+            texts,
+            max_length=77,
+            padding='longest',
+            truncation=True,
+            return_tensors='pt',
+        )
+        return {k: v.to(self.device) for k, v in x.items()}
+
+    @requests
+    def encode(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        with torch.inference_mode():
+            input_tokens = self._tokenize_texts(docs.text)
+            embeddings = self.model.get_text_features(**input_tokens).cpu().numpy()
+            for doc, embedding in zip(docs, embeddings):
+                doc.embedding = embedding
+        return docs
+```
+````
+````{tab} requirements.txt
+```
+torch==1.12.0
+transformers==4.16.2
+```
+````
+````{tab} config.yml
+```
+jtype: CLIPEncoder
+metas:
+  name: CLIPEncoderPrivate
+  py_modules:
+    - executor.py
+```
+````
+
+Putting all these files into a folder named CLIPEncoder and calling `jina hub push CLIPEncoder --private` should give:
+
+```shell
+╭────────────────────────── Published ───────────────────────────╮
+│                                                                │
+│   📛 Name           CLIPEncoderPrivate                         │
+│   🔗 Jina Hub URL   https://cloud.jina.ai/executor/<executor-id>/   │
+│   👀 Visibility     private                                    │
+│                                                                │
+╰────────────────────────────────────────────────────────────────╯
+╭───────────────────────────────────────────────────── Usage ─────────────────────────────────────────────────────╮
+│                                                                                                                 │
+│   Container   YAML     uses: jinaai+docker://<user-id>/CLIPEncoderPrivate:latest           │
+│               Python   .add(uses='jinaai+docker://<user-id>/CLIPEncoderPrivate:latest')    │
+│                                                                                                                 │
+│   Sandbox     YAML     uses: jinaai+sandbox://<user-id>/CLIPEncoderPrivate:latest          │
+│               Python   .add(uses='jinaai+sandbox://<user-id>/CLIPEncoderPrivate:latest')   │
+│                                                                                                                 │
+│   Source      YAML     uses: jinaai://<user-id>/CLIPEncoderPrivate:latest                  │
+│               Python   .add(uses='jinaai://<user-id>/CLIPEncoderPrivate:latest')           │
+│                                                                                                                 │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+```
+
+Then we can build an indexer to provide `index` and `search` endpoints:
+
+````{tab} executor.py
+```{code-block} python
+from typing import List
+from jina import Executor, requests
+from docarray import DocList
+from docarray.documents import TextDoc
+from docarray.index import InMemoryExactNNIndex
+
+class TextDocWithMatches(TextDoc):
+    matches: DocList[TextDoc]
+    scores: List[float]
+
+
+class Indexer(Executor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._indexer = InMemoryExactNNIndex[TextDoc]()
+
+    @requests(on='/index')
+    def index(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        self._indexer.index(docs)
+        return docs
+
+    @requests(on='/search')
+    def search(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDocWithMatches]:
+        res = DocList[TextDocWithMatches]()
+        ret = self._indexer.find_batched(docs, search_field='embedding')
+        matched_documents = ret.documents
+        matched_scores = ret.scores
+        for query, matches, scores in zip(docs, matched_documents, matched_scores):
+            output_doc = TextDocWithMatches(**query.dict())
+            output_doc.matches = matches
+            output_doc.scores = scores.tolist()
+            res.append(output_doc)
+        return res
+```
+````
+````{tab} config.yml
+```
+jtype: Indexer
+metas:
+  name: IndexerPrivate
+  py_modules:
+    - executor.py
+```
+````
+
+Putting all these files into a folder named Indexer and calling `jina hub push Indexer --private` should give:
+
+```shell
+╭────────────────────────── Published ───────────────────────────╮
+│                                                                │
+│   📛 Name           IndexerPrivate                         │
+│   🔗 Jina Hub URL   https://cloud.jina.ai/executor/<executor-id>/   │
+│   👀 Visibility     private                                    │
+│                                                                │
+╰────────────────────────────────────────────────────────────────╯
+╭───────────────────────────────────────────────────── Usage ─────────────────────────────────────────────────────╮
+│                                                                                                                 │
+│   Container   YAML     uses: jinaai+docker://<user-id>/IndexerPrivate:latest           │
+│               Python   .add(uses='jinaai+docker://<user-id>/IndexerPrivate:latest')    │
+│                                                                                                                 │
+│   Sandbox     YAML     uses: jinaai+sandbox://<user-id>/IndexerPrivate:latest          │
+│               Python   .add(uses='jinaai+sandbox://<user-id>/IndexerPrivate:latest')   │
+│                                                                                                                 │
+│   Source      YAML     uses: jinaai://<user-id>/IndexerPrivate:latest                  │
+│               Python   .add(uses='jinaai://<user-id>/IndexerPrivate:latest')           │
+│                                                                                                                 │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+```
+
+Now, let's make sure that the docker images are present in our system:
+
+```shell script
+jina hub pull jinaai+docker://<user-id>/CLIPEncoderPrivate:latest
+jina hub pull jinaai+docker://<user-id>/IndexerPrivate:latest
+```
+
+Also, we need to make sure to have the image for the Gateway with the proper Jina and docarray version, for that we do:
+
+```shell script
+jina hub pull jinaai+docker://jina-ai/JinaGateway:latest
+```
+
 ## Deploy a simple Flow
+
+Now we are ready to build our Flow.
 
 By *simple* in this context we mean a Flow without replicated or sharded Executors - you can see how to use those in
 Kubernetes {ref}`later on <kubernetes-replicas>`.
@@ -50,11 +234,10 @@ from jina import Flow
 
 f = (
     Flow(port=8080)
-    .add(name='encoder', uses='jinaai+docker://jina-ai/CLIPEncoder')
+    .add(name='encoder', uses='jinaai+docker://<user-id>/CLIPEncoderPrivate')
     .add(
         name='indexer',
-        uses='jinaai+docker://jina-ai/AnnLiteIndexer',
-        uses_with={'dim': 512},
+        uses='jinaai+docker://<user-id>/IndexerPrivate',
     )
 )
 ```
@@ -165,11 +348,10 @@ from jina import Flow
 
 f = (
     Flow(port=8080)
-    .add(name='encoder', uses='jinaai+docker://jina-ai/CLIPEncoder', replicas=2)
+    .add(name='encoder', uses='jinaai+docker://<user-id>/CLIPEncoderPrivate', replicas=2)
     .add(
         name='indexer',
-        uses='jinaai+docker://jina-ai/AnnLiteIndexer',
-        uses_with={'dim': 512},
+        uses='jinaai+docker://<user-id>/IndexerPrivate',
         shards=2,
     )
 )
@@ -219,8 +401,7 @@ f = (
     Flow(port=8080)
     .add(
         name='indexer',
-        uses='jinaai+docker://jina-ai/AnnLiteIndexer',
-        uses_with={'dim': 512},
+        uses='jinaai+docker://<user-id>/IndexerPrivate',
         env={'k1': 'v1', 'k2': 'v2'},
         env_from_secret={
             'SECRET_USERNAME': {'name': 'mysecret', 'key': 'username'},
@@ -241,9 +422,7 @@ with:
   protocol: http
 executors:
 - name: indexer
-  uses: jinaai+docker://jina-ai/AnnLiteIndexer
-  uses_with:
-    dim: 512
+  uses: jinaai+docker://<user-id>/IndexerPrivate
   env:
     k1: v1
     k2: v2
@@ -269,7 +448,6 @@ kubectl -n custom-namespace create secret generic mysecret --from-literal=userna
 ```
 
 Then you can apply your configuration.
-
 
 
 (kubernetes-expose)=
@@ -325,7 +503,7 @@ print(f"Matched documents: {len(matches)}")
 
 In Kubernetes, you can update your Executors by patching the Deployment corresponding to your Executor.
 
-For instance, in the example above, you can change the CLIPEncoder's `batch_size` parameter by changing the content of the Deployment inside the `executor.yml` dumped by `.to_kubernetes_yaml`.
+For instance, in the example above, you can change the CLIPEncoderPrivate's `pretrained_model_name_or_path` parameter by changing the content of the Deployment inside the `executor.yml` dumped by `.to_kubernetes_yaml`.
 
 You need to add `--uses_with` and pass the batch size argument to it. This is passed to the container inside the Deployment:
 
@@ -345,7 +523,7 @@ You need to add `--uses_with` and pass the batch size argument to it. This is pa
         - --uses-metas
         - '{}'
         - --uses-with
-        - '{"batch_size": 64}'
+        - '{"pretrained_model_name_or_path": "other_model"}'
         - --native
         command:
         - jina
