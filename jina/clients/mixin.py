@@ -400,10 +400,10 @@ class PostMixin:
             result = [] if return_responses else return_type([])
             async for resp in c._get_results(*args, **kwargs):
                 if return_results:
+                    resp.document_array_cls = return_type
                     if return_responses:
                         result.append(resp)
                     else:
-                        resp.document_array_cls = return_type
                         result.extend(resp.data.docs)
             if return_results:
                 return result
@@ -515,8 +515,8 @@ class AsyncPostMixin:
             return_type=return_type,
             **kwargs,
         ):
+            result.document_array_cls = return_type
             if not return_responses:
-                result.document_array_cls = return_type
                 yield result.data.docs
             else:
                 yield result
