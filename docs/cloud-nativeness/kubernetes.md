@@ -108,6 +108,22 @@ metas:
     - executor.py
 ```
 ````
+````{tab} Dockerfile
+```
+FROM jinaai/jina:latest
+
+# setup the workspace
+COPY . /workspace
+WORKDIR /workspace
+
+# install the third-party requirements
+RUN pip install -r requirements.txt
+
+RUN python -c "from transformers import CLIPModel, CLIPTokenizer; CLIPTokenizer.from_pretrained('openai/clip-vit-base-patch32'); CLIPModel.from_pretrained('openai/clip-vit-base-patch32')" # cache the models
+
+ENTRYPOINT ["jina", "executor", "--uses", "config.yml"]
+```
+````
 
 Putting all these files into a folder named CLIPEncoder and calling `jina hub push CLIPEncoder --private` should give:
 
@@ -206,17 +222,40 @@ Putting all these files into a folder named Indexer and calling `jina hub push I
 ╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-Now, let's make sure that the docker images are present in our system:
+Now, since we have created private Executors, we need to make sure that K8s has the right credentials to download
+from the private registry:
 
-```shell script
-jina hub pull jinaai+docker://<user-id>/CLIPEncoderPrivate:latest
-jina hub pull jinaai+docker://<user-id>/IndexerPrivate:latest
+First, we need to create the namespace where our Flow will run:
+
+```shell
+kubectl create namespace custom-namespace
 ```
 
-Also, we need to make sure to have the image for the Gateway with the proper Jina and docarray version, for that we do:
+Second, we execute this python script:
+
+```python
+import json
+import os
+import base64
+
+JINA_CONFIG_JSON_PATH = os.path.join(os.path.expanduser('~'), os.path.join('.jina', 'config.json'))
+CONFIG_JSON = 'config.json'
+
+with open(JINA_CONFIG_JSON_PATH) as fp:
+    auth_token = json.load(fp)['auth_token']
+
+config_dict = dict()
+config_dict['auths'] = dict()
+config_dict['auths']['registry.hubble.jina.ai'] = {'auth': base64.b64encode(f'<token>:{auth_token}'.encode()).decode()}
+
+with open(CONFIG_JSON, mode='w') as fp:
+    json.dump(config_dict, fp)
+```
+
+Finally, we add a secret to be used as [imagePullSecrets](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) in the namespace from our config.json:
 
 ```shell script
-jina hub pull jinaai+docker://jina-ai/JinaGateway:latest
+kubectl -n custom-namespace create secret generic regcred --from-file=.dockerconfigjson=config.json --type=kubernetes.io/dockerconfigjson
 ```
 
 ## Deploy a simple Flow
@@ -233,7 +272,7 @@ either in {ref}`YAML <flow-yaml-spec>` or directly in Python, as we do here:
 from jina import Flow
 
 f = (
-    Flow(port=8080)
+    Flow(port=8080, image_pull_secrets=['regcred'])
     .add(name='encoder', uses='jinaai+docker://<user-id>/CLIPEncoderPrivate')
     .add(
         name='indexer',
@@ -248,8 +287,8 @@ Executors <dockerize-exec>`.
 
 The example Flow here simply encodes and indexes text or image data using two Executors from [Executor Hub](https://cloud.jina.ai/).
  
-Next, generate Kubernetes YAML configs from the Flow.
-It's good practice to define a new Kubernetes namespace for that purpose:
+Next, generate Kubernetes YAML configs from the Flow. Notice, that this step may be a little slow, because [Executor Hub](https://cloud.jina.ai/) may 
+adapt the image to your Jina and docarray version.
 
 ```python
 f.to_kubernetes_yaml('./k8s_flow', k8s_namespace='custom-namespace')
@@ -291,12 +330,6 @@ Please adapt this if you named your Executor configuration file differently.
 Next you can actually apply these configuration files to your cluster, using `kubectl`.
 This launches all Flow microservices.
 
-First, create the namespace you defined earlier:
-
-```shell
-kubectl create namespace custom-namespace
-```
-
 Now, deploy this Flow to your cluster:
 ```shell
 kubectl apply -R -f ./k8s_flow
@@ -312,7 +345,6 @@ NAME                              READY   STATUS    RESTARTS   AGE
 encoder-8b5575cb9-bh2x8           1/1     Running   0          60m
 gateway-7df8765bd9-xf5tf          1/1     Running   0          60m
 indexer-8f676fc9d-4fh52           1/1     Running   0          60m
-indexer-head-6fcc679d95-8mrm6     1/1     Running   0          60m
 ```
 
 Note that the Jina gateway was deployed with name `gateway-7df8765bd9-xf5tf`.
@@ -323,19 +355,31 @@ Once you see that all the Deployments in the Flow are ready, you can start index
 import portforward
 
 from jina.clients import Client
-from docarray import DocumentArray
+from typing import List
+from docarray import DocList
+from docarray.documents import TextDoc
+
+class TextDocWithMatches(TextDoc):
+    matches: DocList[TextDoc]
+    scores: List[float]
 
 with portforward.forward('custom-namespace', 'gateway-7df8765bd9-xf5tf', 8080, 8080):
     client = Client(host='localhost', port=8080)
     client.show_progress = True
     docs = client.post(
         '/index',
-        inputs=DocumentArray.from_files('./imgs/*.png').apply(
-            lambda d: d.convert_uri_to_datauri()
-        ),
+        inputs=DocList[TextDoc]([TextDoc(f'This is document indexed number {i}') for i in range(1000)]),
+        return_type=DocList[TextDoc]
     )
 
-    print(f' Indexed documents: {len(docs)}')
+    print(f'Indexed documents: {len(docs)}')
+    docs = client.post(
+        '/search',
+        inputs=DocList[TextDocWithMatches]([TextDoc(f'This is document query number {i}') for i in range(10)]),
+        return_type=DocList[TextDocWithMatches]
+    )
+    for doc in docs:
+        print(f'Query {doc.text} has {len(doc.matches)} matches')
 ```
 
 ### Deploy Flow with shards and replicas
@@ -347,7 +391,7 @@ You can adapt the Flow from above to work with two replicas for the encoder, and
 from jina import Flow
 
 f = (
-    Flow(port=8080)
+    Flow(port=8080, image_pull_secrets=['regcred'])
     .add(name='encoder', uses='jinaai+docker://<user-id>/CLIPEncoderPrivate', replicas=2)
     .add(
         name='indexer',
@@ -398,7 +442,7 @@ You can customize the environment variables that are available inside runtime, e
 from jina import Flow
 
 f = (
-    Flow(port=8080)
+    Flow(port=8080, image_pull_secrets=['regcred'])
     .add(
         name='indexer',
         uses='jinaai+docker://<user-id>/IndexerPrivate',

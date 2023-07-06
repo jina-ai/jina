@@ -66,6 +66,8 @@ class K8sDeploymentConfig:
                 'workspace',
                 'workspace_id',
                 'noblock_on_start',
+                'env_from_secret',
+                'image_pull_secrets',
                 'env',
             }
 
