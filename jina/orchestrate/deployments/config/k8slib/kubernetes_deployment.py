@@ -55,6 +55,7 @@ def get_template_yamls(
     :param port: port which will be exposed by the deployed containers
     :param env: environment variables to be passed into configmap.
     :param env_from_secret: environment variables from secret to be passed to this pod
+    :param image_pull_secrets: list of secrets to be added uder ImagePullSecrets
     :param gpus: number of gpus to use, for k8s requires you pass an int number, refers to the number of requested gpus.
     :param image_name_uses_before: image for uses_before container in the k8s deployment
     :param image_name_uses_after: image for uses_after container in the k8s deployment
