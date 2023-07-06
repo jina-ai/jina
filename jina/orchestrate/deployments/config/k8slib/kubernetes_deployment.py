@@ -25,6 +25,7 @@ def get_template_yamls(
     port: Optional[Union[int, List[int]]] = None,
     env: Optional[Dict] = None,
     env_from_secret: Optional[Dict] = None,
+    image_pull_secrets: Optional[List] = None,
     gpus: Optional[Union[int, str]] = None,
     image_name_uses_before: Optional[str] = None,
     image_name_uses_after: Optional[str] = None,
@@ -54,6 +55,7 @@ def get_template_yamls(
     :param port: port which will be exposed by the deployed containers
     :param env: environment variables to be passed into configmap.
     :param env_from_secret: environment variables from secret to be passed to this pod
+    :param image_pull_secrets: list of secrets to be added uder ImagePullSecrets
     :param gpus: number of gpus to use, for k8s requires you pass an int number, refers to the number of requested gpus.
     :param image_name_uses_before: image for uses_before container in the k8s deployment
     :param image_name_uses_after: image for uses_after container in the k8s deployment
@@ -117,6 +119,7 @@ def get_template_yamls(
         'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
         'pod_type': pod_type,
         'env_from_secret': env_from_secret,
+        'image_pull_secrets': image_pull_secrets,
         'protocol': str(protocols[0]).lower() if protocols[0] is not None else '',
         'volume_path': volumes[0] if volumes is not None else None,
         'period_seconds': PERIOD_SECONDS,
