@@ -98,6 +98,6 @@ def _get_deployment_with_image_pull_secrets(deployment: Dict, params: Dict) -> D
     image_pull_secrets = params['image_pull_secrets']
     image_pull_secrets_dict = [{'name': secret} for secret in image_pull_secrets]
     deployment['spec']['template']['spec'][
-        'ImagePullSecrets'
+        'imagePullSecrets'
     ] = image_pull_secrets_dict
     return deployment
