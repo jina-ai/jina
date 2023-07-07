@@ -40,7 +40,7 @@ To understand why you need to install a service mesh like Linkerd refer to this 
 (build-containerize-for-k8s)=
 ## Build and containerize your Executors
 
-First of all we need to build the Executors we are going to use and containerize them {ref}`manually <dockerize-exec>` or leveraging {ref}`Executor Hub <jina-hub>`. In this example,
+First, we need to build the Executors that we are going to use and containerize them {ref}`manually <dockerize-exec>` or by leveraging {ref}`Executor Hub <jina-hub>`. In this example,
 we are going to use the Hub.
 
 We are going to build two Executors, the first is going to use `CLIP` to encode textual Documents, and the second is going to use an in-memory vector index. This way 
