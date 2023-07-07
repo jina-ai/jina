@@ -9,15 +9,17 @@ There are three ways to use Hub {class}`~jina.Executor`s in your project. Each h
 You can use a Hub Executor as-is via `Executor.from_hub()`:
 
 ```python
-from jina import Executor, Document, DocumentArray
+from jina import Executor
+from docarray import DocList
+from docarray.documents.legacy import LegacyDocument
 
 exec = Executor.from_hub('jinaai://jina-ai/DummyHubExecutor')
-da = DocumentArray([Document()])
+da = DocList[LegacyDocument]([LegacyDocument()])
 exec.foo(da)
 assert da.texts == ['hello']
 ```
 
-The Hub Executor will be pulled to your local machine and run as a native Python object. You can use a line-debugger to step in/out `exec` object, set breakpoints, and observe how it behaves. You can directly feed in a `DocumentArray`. After you build some confidence in that Executor, you can move to the next step: Using it as a part of your Flow.
+The Hub Executor will be pulled to your local machine and run as a native Python object. You can use a line-debugger to step in/out `exec` object, set breakpoints, and observe how it behaves. You can directly feed in `Documents`. After you build some confidence in that Executor, you can move to the next step: Using it as a part of your Flow.
 
 ```{caution}
 Not all Executors on the Hub can be directly run in this way - some require extra dependencies. In that case, you can add `.from_hub(..., install_requirements=True)` to install the requirements automatically. Be careful - these dependencies may not be compatible with your local packages and may override your local development environment.
@@ -191,6 +193,7 @@ jina hub pull jinaai://<USERNAME>/<NAME>[:<TAG>]
 jina hub list
 ```
 
+<script id="asciicast-z81wi9gwVm7gYjfl5ocBD1RH3" src="https://asciinema.org/a/z81wi9gwVm7gYjfl5ocBD1RH3.js" async></script>
 <script id="asciicast-z81wi9gwVm7gYjfl5ocBD1RH3" src="https://asciinema.org/a/z81wi9gwVm7gYjfl5ocBD1RH3.js" async></script>
 
 ```{tip}

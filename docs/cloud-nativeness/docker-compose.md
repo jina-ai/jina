@@ -5,7 +5,7 @@ One of the simplest ways to prototype or serve in
 production is to run your {class}`~jina.Flow` with `docker-compose`.
 
 A {class}`~jina.Flow` is composed of {class}`~jina.Executor`s which run Python code
-that operates on `DocumentArray`. These `Executors` live in different runtimes depending on how you want to deploy
+that operates on `Documents`. These `Executors` live in different runtimes depending on how you want to deploy
 your Flow. 
 
 By default, if you are serving your Flow locally they live within processes. Nevertheless, 
@@ -45,17 +45,16 @@ If you change the Docker images in your Docker Compose generated file, ensure th
 the Gateway are built with the same Jina version to guarantee compatibility.
 ````
 
-## Example: Index and search images using CLIPEncoder and AnnLiteIndexer
+## Example: Index and search text using our own build Encoder and Indexer
 
 Install [`Docker Compose`](https://docs.docker.com/compose/install/) locally to follow this how-to.
 
-This example shows how to build and deploy a Flow with Docker Compose, using [`CLIPImageEncoder`](https://cloud.jina.ai/executor/0hnlmu3q)
-as an image encoder and [`AnnLiteIndexer`](https://cloud.jina.ai/executor/7yypg8qk) as an indexer to perform fast nearest
-neighbor retrieval on image embeddings.
+For this example we recommend to check {ref}`how to build and containerize the Executors to be run in Kubernetes. <build-containerize-for-k8s>`
 
 ### Deploy the Flow
 
 First define the Flow and generate the Docker Compose YAML configuration:
+
 
 ````{tab} YAML
 In a `flow.yml` file :
@@ -66,12 +65,10 @@ with:
   protocol: http
 executors:
 - name: encoder
-  uses: jinaai+docker://jina-ai/CLIPEncoder
+  uses: jinaai+docker://<user-id>/EncoderPrivate
   replicas: 2
 - name: indexer
-  uses: jinaai+docker://jina-ai/AnnLiteIndexer
-  uses_with:
-    dim: 512
+  uses: jinaai+docker://<user-id>/IndexerPrivate
   shards: 2
 ```
 Then in a shell run:
@@ -88,11 +85,10 @@ from jina import Flow
 
 flow = (
     Flow(port=8080, protocol='http')
-    .add(name='encoder', uses='jinaai+docker://jina-ai/CLIPEncoder', replicas=2)
+    .add(name='encoder', uses='jinaai+docker://<user-id>/EncoderPrivate', replicas=2)
     .add(
         name='indexer',
-        uses='jinaai+docker://jina-ai/AnnLiteIndexer',
-        uses_with={'dim': 512},
+        uses='jinaai+docker://<user-id>/IndexerPrivate',
         shards=2,
     )
 )
@@ -155,38 +151,36 @@ from jina.clients import Client
 client = Client(host='http://localhost:8080')
 ```
 
-Then index the set of images we want to search:
 
 ```python
-from docarray import DocumentArray
+from typing import List, Optional
+from docarray import DocList, BaseDoc
+from docarray.typing import NdArray
 
-da = DocumentArray.pull('demo-da-images-jina', show_progress=True)
 
-da_query = da[0:1]  # one document for query
-da_index = da[1:]  # the rest is for indexing
+class MyDoc(BaseDoc):
+    text: str
+    embedding: Optional[NdArray] = None
 
-indexed_docs = client.index(inputs=da_index)
-print(f'Indexed Documents: {len(indexed_docs)}')
+
+class MyDocWithMatches(MyDoc):
+    matches: DocList[MyDoc] = []
+    scores: List[float] = []
+
+docs = client.post(
+    '/index',
+    inputs=DocList[MyDoc]([MyDoc(text=f'This is document indexed number {i}') for i in range(100)]),
+    return_type=DocList[MyDoc],
+    request_size=10
+)
+
+print(f'Indexed documents: {len(docs)}')
+docs = client.post(
+    '/search',
+    inputs=DocList[MyDoc]([MyDoc(text=f'This is document query number {i}') for i in range(10)]),
+    return_type=DocList[MyDocWithMatches],
+    request_size=10
+)
+for doc in docs:
+    print(f'Query {doc.text} has {len(doc.matches)} matches')
 ```
-
-```shell
-Indexed Documents: 99
-```
-
-We indexed 99 Documents!
-
-Now we can search for the closest image to the query image:
-
-```python
-queried_docs = client.search(inputs=da_query)
-
-matches = queried_docs[0].matches
-print(f'Matched Documents: {len(matches)}')
-```
-
-
-```shell
-Matched Documents: 10
-```
-
-This gives us the list of the ten closest images to the query.

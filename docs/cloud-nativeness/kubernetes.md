@@ -278,7 +278,7 @@ You can essentially define any Flow of your liking.
 Just ensure that all Executors are containerized, either by using *'jinahub+docker'*, or by {ref}`containerizing your local
 Executors <dockerize-exec>`.
 
-The example Flow here simply encodes and indexes text or image data using two Executors from [Executor Hub](https://cloud.jina.ai/).
+The example Flow here simply encodes and indexes text data using two Executors pushed to the [Executor Hub](https://cloud.jina.ai/).
  
 Next, generate Kubernetes YAML configs from the Flow. Notice, that this step may be a little slow, because [Executor Hub](https://cloud.jina.ai/) may 
 adapt the image to your Jina and docarray version.
