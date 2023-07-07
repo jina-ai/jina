@@ -68,11 +68,11 @@ Find more install options on [Apple Silicon](https://docs.jina.ai/get-started/in
 
 ### Basic Concepts
 
-Jina has five fundamental concepts:
+Jina has three fundamental layers:
 
-- [**BaseDoc**](https://docarray.docs.org/) and [**DocList**](https://docarray.docs.org/) (from [DocArray](https://github.com/docarray/docarray)) is the input/output format in Jina.
-- An [**Executor**](https://docs.jina.ai/concepts/serving/executor/) is a Python class that transforms and processes Documents.
-- A [**Deployment**](https://docs.jina.ai/concepts/orchestration/deployment) serves a single Executor, while a [**Flow**](https://docs.jina.ai/concepts/orchestration/flow/) serves Executors chained into a pipeline.
+- Data layer: [**BaseDoc**](https://docarray.docs.org/) and [**DocList**](https://docarray.docs.org/) (from [DocArray](https://github.com/docarray/docarray)) is the input/output format in Jina.
+- Serving layer: An [**Executor**](https://docs.jina.ai/concepts/serving/executor/) is a Python class that transforms and processes Documents. [**Gateway**](https://docs.jina.ai/concepts/serving/gateway/) is the service making sure connecting all Executors inside a Flow.
+- Orchestration layer:  [**Deployment**](https://docs.jina.ai/concepts/orchestration/deployment) serves a single Executor, while a [**Flow**](https://docs.jina.ai/concepts/orchestration/flow/) serves Executors chained into a pipeline.
 
 
 [The full glossary is explained here](https://docs.jina.ai/concepts/preliminaries/#).

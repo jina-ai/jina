@@ -86,8 +86,7 @@ Data structures coming from [docarray](https://docs.docarray.org/) are the basic
 
 **Serving**
 
-This layer contains all the objects and concepts that are used to actually serve the logic and receive and respond to queries. These components are designed to be used
-as microservices ready to be containerized. 
+This layer contains all the objects and concepts that are used to actually serve the logic and receive and respond to queries. These components are designed to be used as microservices ready to be containerized. 
 These components can be orchestrated by Jina's {term}`orchestration` layer or by other container orchestration frameworks such as Kubernetes or Docker Compose.
  
 

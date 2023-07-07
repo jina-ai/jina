@@ -162,30 +162,22 @@ The `async` definition is optional.
 The endpoint signature looks like the following:
 
 ```python
-from typing import Dict, Union, Optional
+from typing import Dict, Union, Optional, TypeVar
 from jina import Executor, requests
-from docarray import DocList
+from docarray import DocList, BaseDoc
 
+T_input = TypeVar('T_input', bound='BaseDoc')
+T_output = TypeVar('T_output', bound='BaseDoc')
 
 class MyExecutor(Executor):
     @requests
     async def foo(
         self,
-        docs: DocList[...],
+        docs: DocList[T_input],
         parameters: Dict,
         tracing_context: Optional['Context'],
         **kwargs
-    ) -> Union[DocList[...], Dict, None]:
-        pass
-
-    @requests
-    def bar(
-        self,
-        docs: DocList[...],
-        parameters: Dict,
-        tracing_context: Optional['Context'],
-        **kwargs
-    ) -> Union[DocList[...], Dict, None]:
+    ) -> Union[DocList[T_output], Dict, None]:
         pass
 ```
 
@@ -306,7 +298,7 @@ Jina offers a standard python client to use the streaming endpoint:
 from jina import Client
 client = Client(port=12345, protocol='http', cors=True, asyncio=True)
 async for doc in client.stream_doc(
-    on='/hello', inputs=MyDocument(text='hello world'), return_type=MyDocument
+    on='/hello', inputs=MyDocument(text='hello world'), return_type=DocList[MyDocument]
 ):
     print(doc.text)
 ```

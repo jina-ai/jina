@@ -18,7 +18,6 @@ However, you can always explicitly configure the Gateway in Python using the
 {ref}`found here<gateway-yaml-spec>`.
 
 (flow-protocol)=
-
 ## Set protocol in Python
 
 You can use three different protocols to serve the `Flow`: gRPC, HTTP and WebSocket.
