@@ -193,7 +193,7 @@ setup(
     packages=find_packages(),
     version=__version__,
     include_package_data=True,
-    description='Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · MLOps',
+    description='Multimodal AI services & pipelines with cloud-native stack: gRPC, Kubernetes, Docker, OpenTelemetry, Prometheus, Jaeger, etc.',
     author='Jina AI',
     author_email='hello@jina.ai',
     license='Apache 2.0',
