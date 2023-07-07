@@ -90,8 +90,11 @@ class TopologyGraph:
                                     raise Exception(
                                         f'The output schema of {self.name} is incompatible with the input schema of {node.name}')
                         else:
-                            raise Exception(
-                                f'{node.name} does not expose {incoming_endp} which makes it impossible to be chained with {self.name} on {outgoing_enp}')
+                            if outgoing_enp != __default_endpoint__:# It could happen that there is an Encoder with default followed by an indexer with [index, search]
+                                raise Exception(
+                                    f'{node.name} does not expose {incoming_endp} which makes it impossible to be chained with {self.name} on {outgoing_enp}')
+                            else:
+                                self.logger.warning(f'{node.name} does not expose {incoming_endp} which could lead to incompatibility when calling non-explicitly bound endpoints')
                 return node._validate_against_outgoing_nodes()
             return True
 
