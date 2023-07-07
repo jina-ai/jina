@@ -680,6 +680,23 @@ def test_any_endpoint(protocol, ctxt_manager):
         assert ret[0].text == 'Foo'
 
 
+def test_flow_compatible_with_default():
+    class FirstCompatible(Executor):
+        @requests
+        def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[ImageDoc]:
+            pass
+
+    class SecondCompatible(Executor):
+        @requests(on=['/index'])
+        def foo(self, docs: DocList[ImageDoc], **kwargs) -> DocList[ImageDoc]:
+            pass
+
+    f = Flow().add(uses=FirstCompatible).add(uses=SecondCompatible)
+
+    with f:
+        pass
+
+
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_flow_incompatible_linear(protocol):
     class First(Executor):
