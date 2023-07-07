@@ -37,6 +37,7 @@ This automatically sets up and manages the service mesh proxies when you deploy 
 
 To understand why you need to install a service mesh like Linkerd refer to this  {ref}`section <service-mesh-k8s>`
 
+(build-containerize-for-k8s)=
 ## Build and containerize your Executors
 
 First of all we need to build the Executors we are going to use and containerize them {ref}`manually <dockerize-exec>` or leveraging {ref}`Executor Hub <jina-hub>`. In this example,
