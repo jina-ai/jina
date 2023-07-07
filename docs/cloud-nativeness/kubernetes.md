@@ -43,7 +43,7 @@ To understand why you need to install a service mesh like Linkerd refer to this 
 First of all we need to build the Executors we are going to use and containerize them {ref}`manually <dockerize-exec>` or leveraging {ref}`Executor Hub <jina-hub>`. In this example,
 we are going to use the Hub.
 
-We are going to build two Executors, the first is going to use `CLIP` to encode textual Documents, and the second is going to use an in memory vector index. This way 
+We are going to build two Executors, the first is going to use `CLIP` to encode textual Documents, and the second is going to use an in-memory vector index. This way 
 we can build a simple neural search system.
 
 First, we build the encoder Executor.
