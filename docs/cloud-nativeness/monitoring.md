@@ -43,7 +43,7 @@ setting the `serviceMonitorSelectorNilUsesHelmValues` to false allows the Promet
 
 Deploy the Flow that we want to monitor:
 
-For this example we recommend to check {ref}`how to build and containerize the Executors to be run in Kubernetes. <build-containerize-for-k8s>`
+For this example we recommend reading {ref}`how to build and containerize the Executors to be run in Kubernetes. <build-containerize-for-k8s>`
 
 
 ````{tab} via YAML

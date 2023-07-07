@@ -47,9 +47,9 @@ the Gateway are built with the same Jina version to guarantee compatibility.
 
 ## Example: Index and search text using our own build Encoder and Indexer
 
-Install [`Docker Compose`](https://docs.docker.com/compose/install/) locally to follow this how-to.
+Install [`Docker Compose`](https://docs.docker.com/compose/install/) locally before starting this tutorial.
 
-For this example we recommend to check {ref}`how to build and containerize the Executors to be run in Kubernetes. <build-containerize-for-k8s>`
+For this example we recommend that you read {ref}`how to build and containerize the Executors to be run in Kubernetes. <build-containerize-for-k8s>`
 
 ### Deploy the Flow
 
