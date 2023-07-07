@@ -73,7 +73,7 @@ and contains the following concepts:
 
 ```{glossary}
 
-**docarray data structure**
+**DocArray data structure**
 
 Data structures coming from [docarray](https://docs.docarray.org/) are the basic fundamental data structure in Jina.
 
