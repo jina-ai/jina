@@ -51,26 +51,28 @@ First, we build the encoder Executor.
 ```{code-block} python
 import torch
 from transformers import CLIPModel, CLIPTokenizer
-
+from docarray import DocList, BaseDoc
+from docarray.typing import NdArray
 from jina import Executor, requests
-from docarray import DocList
-from docarray.documents import TextDoc
 
 
-class CLIPEncoder(Executor):
+class MyDoc(BaseDoc):
+    text: str
+    embedding: Optional[NdArray] = None
+
+
+class Encoder(Executor):
     def __init__(
-        self,
-        pretrained_model_name_or_path: str = 'openai/clip-vit-base-patch32',
-        device: str = 'cpu',
-        *args,
-        **kwargs,
+            self,
+            pretrained_model_name_or_path: str = 'openai/clip-vit-base-patch32'
+            device: str = 'cpu',
+            *args,
+            **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.device = device
-        self.pretrained_model_name_or_path = pretrained_model_name_or_path
-        self.tokenizer = CLIPTokenizer.from_pretrained(self.pretrained_model_name_or_path)
-        self.model = CLIPModel.from_pretrained(self.pretrained_model_name_or_path)
-
+        self.tokenizer = CLIPTokenizer.from_pretrained(pretrained_model_name_or_path)
+        self.model = CLIPModel.from_pretrained(pretrained_model_name_or_path)
         self.model.eval().to(device)
 
     def _tokenize_texts(self, texts):
@@ -84,13 +86,12 @@ class CLIPEncoder(Executor):
         return {k: v.to(self.device) for k, v in x.items()}
 
     @requests
-    def encode(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+    def encode(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDoc]:
         with torch.inference_mode():
             input_tokens = self._tokenize_texts(docs.text)
-            embeddings = self.model.get_text_features(**input_tokens).cpu().numpy()
-            for doc, embedding in zip(docs, embeddings):
-                doc.embedding = embedding
+            docs.embedding = self.model.get_text_features(**input_tokens).cpu().numpy()
         return docs
+
 ```
 ````
 ````{tab} requirements.txt
@@ -101,27 +102,11 @@ transformers==4.16.2
 ````
 ````{tab} config.yml
 ```
-jtype: CLIPEncoder
+jtype: Encoder
 metas:
-  name: CLIPEncoderPrivate
+  name: EncoderPrivate
   py_modules:
     - executor.py
-```
-````
-````{tab} Dockerfile
-```
-FROM jinaai/jina:latest
-
-# setup the workspace
-COPY . /workspace
-WORKDIR /workspace
-
-# install the third-party requirements
-RUN pip install -r requirements.txt
-
-RUN python -c "from transformers import CLIPModel, CLIPTokenizer; CLIPTokenizer.from_pretrained('openai/clip-vit-base-patch32'); CLIPModel.from_pretrained('openai/clip-vit-base-patch32')" # cache the models
-
-ENTRYPOINT ["jina", "executor", "--uses", "config.yml"]
 ```
 ````
 
@@ -130,21 +115,21 @@ Putting all these files into a folder named CLIPEncoder and calling `jina hub pu
 ```shell
 ╭────────────────────────── Published ───────────────────────────╮
 │                                                                │
-│   📛 Name           CLIPEncoderPrivate                         │
+│   📛 Name           EncoderPrivate                         │
 │   🔗 Jina Hub URL   https://cloud.jina.ai/executor/<executor-id>/   │
 │   👀 Visibility     private                                    │
 │                                                                │
 ╰────────────────────────────────────────────────────────────────╯
 ╭───────────────────────────────────────────────────── Usage ─────────────────────────────────────────────────────╮
 │                                                                                                                 │
-│   Container   YAML     uses: jinaai+docker://<user-id>/CLIPEncoderPrivate:latest           │
-│               Python   .add(uses='jinaai+docker://<user-id>/CLIPEncoderPrivate:latest')    │
+│   Container   YAML     uses: jinaai+docker://<user-id>/EncoderPrivate:latest           │
+│               Python   .add(uses='jinaai+docker://<user-id>/EncoderPrivate:latest')    │
 │                                                                                                                 │
-│   Sandbox     YAML     uses: jinaai+sandbox://<user-id>/CLIPEncoderPrivate:latest          │
-│               Python   .add(uses='jinaai+sandbox://<user-id>/CLIPEncoderPrivate:latest')   │
+│   Sandbox     YAML     uses: jinaai+sandbox://<user-id>/EncoderPrivate:latest          │
+│               Python   .add(uses='jinaai+sandbox://<user-id>/EncoderPrivate:latest')   │
 │                                                                                                                 │
-│   Source      YAML     uses: jinaai://<user-id>/CLIPEncoderPrivate:latest                  │
-│               Python   .add(uses='jinaai://<user-id>/CLIPEncoderPrivate:latest')           │
+│   Source      YAML     uses: jinaai://<user-id>/EncoderPrivate:latest                  │
+│               Python   .add(uses='jinaai://<user-id>/EncoderPrivate:latest')           │
 │                                                                                                                 │
 ╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
@@ -153,39 +138,46 @@ Then we can build an indexer to provide `index` and `search` endpoints:
 
 ````{tab} executor.py
 ```{code-block} python
-from typing import List
-from jina import Executor, requests
-from docarray import DocList
-from docarray.documents import TextDoc
+from typing import Optional, List
+from docarray import DocList, BaseDoc
 from docarray.index import InMemoryExactNNIndex
+from docarray.typing import NdArray
+from jina import Executor, requests
 
-class TextDocWithMatches(TextDoc):
-    matches: DocList[TextDoc]
-    scores: List[float]
+
+class MyDoc(BaseDoc):
+    text: str
+    embedding: Optional[NdArray] = None
+
+
+class MyDocWithMatches(MyDoc):
+    matches: DocList[MyDoc] = []
+    scores: List[float] = []
 
 
 class Indexer(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._indexer = InMemoryExactNNIndex[TextDoc]()
+        self._indexer = InMemoryExactNNIndex[MyDoc]()
 
     @requests(on='/index')
-    def index(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+    def index(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDoc]:
         self._indexer.index(docs)
         return docs
 
     @requests(on='/search')
-    def search(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDocWithMatches]:
-        res = DocList[TextDocWithMatches]()
+    def search(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDocWithMatches]:
+        res = DocList[MyDocWithMatches]()
         ret = self._indexer.find_batched(docs, search_field='embedding')
         matched_documents = ret.documents
         matched_scores = ret.scores
         for query, matches, scores in zip(docs, matched_documents, matched_scores):
-            output_doc = TextDocWithMatches(**query.dict())
+            output_doc = MyDocWithMatches(**query.dict())
             output_doc.matches = matches
             output_doc.scores = scores.tolist()
             res.append(output_doc)
         return res
+
 ```
 ````
 ````{tab} config.yml
@@ -273,7 +265,7 @@ from jina import Flow
 
 f = (
     Flow(port=8080, image_pull_secrets=['regcred'])
-    .add(name='encoder', uses='jinaai+docker://<user-id>/CLIPEncoderPrivate')
+    .add(name='encoder', uses='jinaai+docker://<user-id>/EncoderPrivate')
     .add(
         name='indexer',
         uses='jinaai+docker://<user-id>/IndexerPrivate',
@@ -343,7 +335,7 @@ kubectl get pods -n custom-namespace
 ```text
 NAME                              READY   STATUS    RESTARTS   AGE
 encoder-8b5575cb9-bh2x8           1/1     Running   0          60m
-gateway-7df8765bd9-xf5tf          1/1     Running   0          60m
+gateway-66d5f45ff5-4q7sw          1/1     Running   0          60m
 indexer-8f676fc9d-4fh52           1/1     Running   0          60m
 ```
 
@@ -352,34 +344,44 @@ Note that the Jina gateway was deployed with name `gateway-7df8765bd9-xf5tf`.
 Once you see that all the Deployments in the Flow are ready, you can start indexing documents:
 
 ```python
+from typing import List, Optional
 import portforward
+from docarray import DocList, BaseDoc
+from docarray.typing import NdArray
 
 from jina.clients import Client
-from typing import List
-from docarray import DocList
-from docarray.documents import TextDoc
 
-class TextDocWithMatches(TextDoc):
-    matches: DocList[TextDoc]
-    scores: List[float]
 
-with portforward.forward('custom-namespace', 'gateway-7df8765bd9-xf5tf', 8080, 8080):
+class MyDoc(BaseDoc):
+    text: str
+    embedding: Optional[NdArray] = None
+
+
+class MyDocWithMatches(MyDoc):
+    matches: DocList[MyDoc] = []
+    scores: List[float] = []
+
+
+with portforward.forward('custom-namespace', 'gateway-66d5f45ff5-4q7sw', 8080, 8080):
     client = Client(host='localhost', port=8080)
     client.show_progress = True
     docs = client.post(
         '/index',
-        inputs=DocList[TextDoc]([TextDoc(f'This is document indexed number {i}') for i in range(1000)]),
-        return_type=DocList[TextDoc]
+        inputs=DocList[MyDoc]([MyDoc(text=f'This is document indexed number {i}') for i in range(100)]),
+        return_type=DocList[MyDoc],
+        request_size=10
     )
 
     print(f'Indexed documents: {len(docs)}')
     docs = client.post(
         '/search',
-        inputs=DocList[TextDocWithMatches]([TextDoc(f'This is document query number {i}') for i in range(10)]),
-        return_type=DocList[TextDocWithMatches]
+        inputs=DocList[MyDoc]([MyDoc(text=f'This is document query number {i}') for i in range(10)]),
+        return_type=DocList[MyDocWithMatches],
+        request_size=10
     )
     for doc in docs:
         print(f'Query {doc.text} has {len(doc.matches)} matches')
+
 ```
 
 ### Deploy Flow with shards and replicas
@@ -526,7 +528,21 @@ You should configure your Client to connect to the Flow via the external IP addr
 
 ```python
 import os
+from typing import List, Optional
+from docarray import DocList, BaseDoc
+from docarray.typing import NdArray
+
 from jina.clients import Client
+
+
+class MyDoc(BaseDoc):
+    text: str
+    embedding: Optional[NdArray] = None
+
+
+class MyDocWithMatches(MyDoc):
+    matches: DocList[MyDoc] = []
+    scores: List[float] = []
 
 host = os.environ['EXTERNAL_IP']
 port = 80
@@ -534,10 +550,8 @@ port = 80
 client = Client(host=host, port=port)
 
 client.show_progress = True
-docs = DocumentArray.from_files("./imgs/*.png").apply(
-    lambda d: d.convert_uri_to_datauri()
-)
-queried_docs = client.post("/search", inputs=docs)
+docs = DocList[MyDoc]([MyDoc(text=f'This is document indexed number {i}') for i in range(100)])
+queried_docs = client.post("/search", inputs=docs, return_type=DocList[MyDocWithMatches])
 
 matches = queried_docs[0].matches
 print(f"Matched documents: {len(matches)}")
