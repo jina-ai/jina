@@ -249,7 +249,7 @@ with Deployment(uses=MyExec) as dep:
 
 (streaming-endpoints)=
 ## Streaming endpoints
-Executors can stream Documents individually rather than as a whole DocLists. 
+Executors can stream Documents individually rather than as a whole DocList. 
 This is useful when you want to return Documents one by one and you want the client to immediately process Documents as 
 they arrive. This can be helpful for Generative AI use cases, where a Large Language Model is used to generate text 
 token by token and the client displays tokens as they arrive.
@@ -292,7 +292,7 @@ with Deployment(
 ```
 
 From the client side, any SSE client can be used to receive the Documents, one at a time.
-Jina offers a standard python client to use the streaming endpoint:
+Jina offers a standard python client for using the streaming endpoint:
 
 ```python
 from jina import Client

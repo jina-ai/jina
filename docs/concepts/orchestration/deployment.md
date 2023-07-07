@@ -12,7 +12,7 @@ You can think of a Deployment as an interface to configure and launch your {ref}
 (why-deployment)=
 ## Why use a Deployment?
 
-Once you've learned about Documents, DocList and Executor, you can split a big task into small independent modules and services.
+Once you've learned about Documents, DocLists and Executors, you can split a big task into small independent modules and services.
 
 - Deployments let you scale these Executors independently to match your requirements.
 - Deployments let you easily use other cloud-native orchestrators, such as Kubernetes, to manage your service.

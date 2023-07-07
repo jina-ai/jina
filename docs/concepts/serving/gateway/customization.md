@@ -272,7 +272,7 @@ async def get(text: str):
 Jina injects an `executor` object into your Gateway class which lets you call individual Executors from the Gateway.
 
 After transforming requests that arrive to the Gateway server into Documents, you can call the Executor in your Python code using `self.executor['executor_name'].post(args)`.
-This method expects a DOcList object and an endpoint exposed by the Executor (similar to {ref}`Jina Client <client>`). 
+This method expects a DocList object and an endpoint exposed by the Executor (similar to {ref}`Jina Client <client>`). 
 It returns a 'coroutine' which returns a DocList.
 Check the method documentation for more information: {meth}`~ jina.serve.streamer._ExecutorStreamer.post()`
 
