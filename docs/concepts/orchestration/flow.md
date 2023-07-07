@@ -12,9 +12,9 @@ You can think of Flow as an interface to configure and launch your {ref}`microse
 ## Why use a Flow?
 
 Once you've learned about  Documents, DocList and Executor,, you can split a big task into small independent modules and services.
-But you need to chain them together to bring real value and build and serve an application. Flows enable you to do exactly this.
+But you need to chain them together to create, build ,and serve an application. Flows enable you to do exactly this.
 
-- Flows connect microservices (Executors) to build a service with proper client/server style interface over HTTP, gRPC, or WebSockets.
+- Flows connect microservices (Executors) to build a service with proper client/server style interfaces over HTTP, gRPC, or WebSockets.
 - Flows let you scale these Executors independently to match your requirements.
 - Flows let you easily use other cloud-native orchestrators, such as Kubernetes, to manage your service.
 

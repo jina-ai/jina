@@ -1,7 +1,7 @@
 (docarray-support)=
 # DocArray support
 
-Jina depends heavily on docarray to provide the data that is processed inside Jina Executors and send by our Clients.
+Jina depends heavily on DocArray to provide the data that is processed inside Jina Executors and sent by our Clients.
 Recently, DocArray was heavily refactored for version 0.30. 
 
 Starting from that version, DocArray usage  has changed drastically, however Jina can work seamlessly and automatically with any of the versions of Jina.

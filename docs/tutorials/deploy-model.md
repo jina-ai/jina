@@ -32,7 +32,7 @@ You can also run this code interactively in [Colab](https://colab.research.googl
 
 ## Understand: Executors and Deployments
 
-- All data that goes in and out of Jina is in the form of [Documents](https://docs.docarray.org/user_guide/representing/first_step/) inside a [DocList](https://docs.docarray.org/user_guide/representing/array/) from the [DocArray](https://docs.docarray.org/) package.
+- All data that goes into and out of Jina is in the form of [Documents](https://docs.docarray.org/user_guide/representing/first_step/) inside a [DocList](https://docs.docarray.org/user_guide/representing/array/) from the [DocArray](https://docs.docarray.org/) package.
 - An {ref}`Executor <executor-cookbook>` is a self-contained gRPC microservice that performs a task on Documents. This could be very simple (like merely capitalizing the entire text of a Document) or a lot more complex (like generating vector embeddings for a given piece of content).
 - A {ref}`Deployment <deployment>` lets you serve your Executor, scale it up with replicas, and allow users to send and receive requests.
 
