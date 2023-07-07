@@ -2,11 +2,11 @@
 # DocArray support
 
 Jina depends heavily on docarray to provide the data that is processed inside Jina Executors and send by our Clients.
-Recently, docarray had a very big refactor when it released version 0.30. 
+Recently, DocArray was heavily refactored for version 0.30. 
 
-From this version, the usage of DocArray changed drastically, however Jina can work seamlessly and automatically with any of the versions of Jina.
+Starting from that version, DocArray usage  has changed drastically, however Jina can work seamlessly and automatically with any of the versions of Jina.
 Jina will automatically detect the docarray version installed and use the corresponding methods and APIs. However, developers
-must have into account that some APIs and usage changes, specially when it comes to developing Executors.
+must take into account that some APIs and usages have changed, especially when it comes to developing Executors.
 
 The new version makes the dataclass feature of DocArray<0.30 a first-class citizen and for this 
 purpose it is built on top of [Pydantic](https://pydantic-docs.helpmanual.io/). An important shift is that 
