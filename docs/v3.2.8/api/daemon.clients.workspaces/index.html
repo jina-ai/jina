@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -641,117 +641,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-daemon.clients.workspaces">
-<span id="daemon-clients-workspaces-module"></span><h1>daemon.clients.workspaces module<a class="headerlink" href="#module-daemon.clients.workspaces" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.clients.workspaces.FormData">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.clients.workspaces.</span></span><span class="sig-name descname"><span class="pre">FormData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">complete</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/clients/workspaces/#FormData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.clients.workspaces.FormData" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FormData</span></code></p>
-<p>FormData used to upload files to remote</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.clients.workspaces.FormData.add">
-<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/clients/workspaces/#FormData.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.clients.workspaces.FormData.add" title="Permalink to this definition">#</a></dt>
-<dd><p>add a field to Form</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – filepath</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.clients.workspaces.FormData.fields">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.clients.workspaces.FormData.fields" title="Permalink to this definition">#</a></dt>
-<dd><p>all fields in current Form</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>list of fields</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.clients.workspaces.FormData.filenames">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filenames</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.clients.workspaces.FormData.filenames" title="Permalink to this definition">#</a></dt>
-<dd><p>all filenames in current Form</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>list of filenames</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.clients.workspaces.AsyncWorkspaceClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.clients.workspaces.</span></span><span class="sig-name descname"><span class="pre">AsyncWorkspaceClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/clients/workspaces/#AsyncWorkspaceClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.clients.workspaces.AsyncWorkspaceClient" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../daemon.clients.base/#daemon.clients.base.AsyncBaseClient" title="daemon.clients.base.AsyncBaseClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncBaseClient</span></code></a></p>
-<p>Async Client to create/update/delete Workspaces on remote JinaD</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.clients.workspaces.AsyncWorkspaceClient.create">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#daemon.clients.workspaces.AsyncWorkspaceClient.create" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a Workspace/Flow/Pod/Deployment on remote.
-Must be implemented by the inherited class.</p>
-<p># noqa: DAR101
-# noqa: DAR102</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.clients.workspaces.AsyncWorkspaceClient.wait">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sleep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/clients/workspaces/#AsyncWorkspaceClient.wait"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.clients.workspaces.AsyncWorkspaceClient.wait" title="Permalink to this definition">#</a></dt>
-<dd><p>Wait until workspace creation completes</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>id</strong> (<a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><em>DaemonID</em></a>) – workspace id</p></li>
-<li><p><strong>status</strong> (<em>Status</em>) – rich.console.status object to update</p></li>
-<li><p><strong>logs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – True if logs need to be streamed, defaults to True</p></li>
-<li><p><strong>sleep</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – sleep time between each check, defaults to 2</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>True if workspace creation succeeds</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.clients.workspaces.AsyncWorkspaceClient.update">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#daemon.clients.workspaces.AsyncWorkspaceClient.update" title="Permalink to this definition">#</a></dt>
-<dd><p>Update a Workspace/Flow/Pod/Deployment on remote.
-Must be implemented by the inherited class.</p>
-<p># noqa: DAR101
-# noqa: DAR102</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.clients.workspaces.AsyncWorkspaceClient.delete">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#daemon.clients.workspaces.AsyncWorkspaceClient.delete" title="Permalink to this definition">#</a></dt>
-<dd><p>Delete a Workspace/Flow/Pod/Deployment on remote.
-Must be implemented by the inherited class.</p>
-<p># noqa: DAR101
-# noqa: DAR102</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.clients.workspaces.WorkspaceClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.clients.workspaces.</span></span><span class="sig-name descname"><span class="pre">WorkspaceClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/clients/workspaces/#WorkspaceClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.clients.workspaces.WorkspaceClient" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../daemon.clients.mixin/#daemon.clients.mixin.AsyncToSyncMixin" title="daemon.clients.mixin.AsyncToSyncMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncToSyncMixin</span></code></a>, <a class="reference internal" href="#daemon.clients.workspaces.AsyncWorkspaceClient" title="daemon.clients.workspaces.AsyncWorkspaceClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncWorkspaceClient</span></code></a></p>
-<p>Client to create/update/delete workspaces on remote JinaD</p>
-</dd></dl>
-
+                <section id="daemon-clients-workspaces-module">
+<h1>daemon.clients.workspaces module<a class="headerlink" href="#daemon-clients-workspaces-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -786,7 +677,7 @@ Must be implemented by the inherited class.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Jun 22, 2023.
+                    Last updated on Jul 10, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -802,36 +693,6 @@ Must be implemented by the inherited class.</p>
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">daemon.clients.workspaces module</a><ul>
-<li><a class="reference internal" href="#daemon.clients.workspaces.FormData"><code class="docutils literal notranslate"><span class="pre">FormData</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.clients.workspaces.FormData.add"><code class="docutils literal notranslate"><span class="pre">FormData.add()</span></code></a></li>
-<li><a class="reference internal" href="#daemon.clients.workspaces.FormData.fields"><code class="docutils literal notranslate"><span class="pre">FormData.fields</span></code></a></li>
-<li><a class="reference internal" href="#daemon.clients.workspaces.FormData.filenames"><code class="docutils literal notranslate"><span class="pre">FormData.filenames</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#daemon.clients.workspaces.AsyncWorkspaceClient"><code class="docutils literal notranslate"><span class="pre">AsyncWorkspaceClient</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.clients.workspaces.AsyncWorkspaceClient.create"><code class="docutils literal notranslate"><span class="pre">AsyncWorkspaceClient.create()</span></code></a></li>
-<li><a class="reference internal" href="#daemon.clients.workspaces.AsyncWorkspaceClient.wait"><code class="docutils literal notranslate"><span class="pre">AsyncWorkspaceClient.wait()</span></code></a></li>
-<li><a class="reference internal" href="#daemon.clients.workspaces.AsyncWorkspaceClient.update"><code class="docutils literal notranslate"><span class="pre">AsyncWorkspaceClient.update()</span></code></a></li>
-<li><a class="reference internal" href="#daemon.clients.workspaces.AsyncWorkspaceClient.delete"><code class="docutils literal notranslate"><span class="pre">AsyncWorkspaceClient.delete()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#daemon.clients.workspaces.WorkspaceClient"><code class="docutils literal notranslate"><span class="pre">WorkspaceClient</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

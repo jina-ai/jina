@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve.runtimes.gateway.websocket/" />
 <meta property="og:site_name" content="Jina 3.2.4 Documentation" />
-<meta property="og:description" content="Submodules: jina.serve.runtimes.gateway.websocket.app module- get_fastapi_app().. Module contents:" />
+<meta property="og:description" content="Submodules: jina.serve.runtimes.gateway.websocket.app module. Module contents:" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.2.4 Documentation" />
-<meta name="description" content="Submodules: jina.serve.runtimes.gateway.websocket.app module- get_fastapi_app().. Module contents:" />
+<meta name="description" content="Submodules: jina.serve.runtimes.gateway.websocket.app module. Module contents:" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -648,47 +648,12 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket.app/">jina.serve.runtimes.gateway.websocket.app module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket.app/#jina.serve.runtimes.gateway.websocket.app.get_fastapi_app"><code class="docutils literal notranslate"><span class="pre">get_fastapi_app()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket.app/">jina.serve.runtimes.gateway.websocket.app module</a></li>
 </ul>
 </div>
 </section>
-<section id="module-jina.serve.runtimes.gateway.websocket">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.serve.runtimes.gateway.websocket" title="Permalink to this heading">#</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.websocket.</span></span><span class="sig-name descname"><span class="pre">WebSocketGatewayRuntime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/websocket/#WebSocketGatewayRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime" title="jina.serve.runtimes.gateway.GatewayRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">GatewayRuntime</span></code></a></p>
-<p>Runtime for Websocket interface.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_setup">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/websocket/#WebSocketGatewayRuntime.async_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_setup" title="Permalink to this definition">#</a></dt>
-<dd><p>The async method setup the runtime.</p>
-<p>Setup the uvicorn server.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_run_forever">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_run_forever</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/websocket/#WebSocketGatewayRuntime.async_run_forever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_run_forever" title="Permalink to this definition">#</a></dt>
-<dd><p>Running method of ther server.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_teardown">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_teardown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/websocket/#WebSocketGatewayRuntime.async_teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_teardown" title="Permalink to this definition">#</a></dt>
-<dd><p>Shutdown the server.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_cancel">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/websocket/#WebSocketGatewayRuntime.async_cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_cancel" title="Permalink to this definition">#</a></dt>
-<dd><p>Stop the server.</p>
-</dd></dl>
-
-</dd></dl>
-
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 </section>
 </section>
 
@@ -724,7 +689,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Jun 22, 2023.
+                    Last updated on Jul 10, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -751,16 +716,7 @@
                         <ul>
 <li><a class="reference internal" href="#">jina.serve.runtimes.gateway.websocket package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.serve.runtimes.gateway.websocket">Module contents</a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime"><code class="docutils literal notranslate"><span class="pre">WebSocketGatewayRuntime</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_setup"><code class="docutils literal notranslate"><span class="pre">WebSocketGatewayRuntime.async_setup()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_run_forever"><code class="docutils literal notranslate"><span class="pre">WebSocketGatewayRuntime.async_run_forever()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_teardown"><code class="docutils literal notranslate"><span class="pre">WebSocketGatewayRuntime.async_teardown()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_cancel"><code class="docutils literal notranslate"><span class="pre">WebSocketGatewayRuntime.async_cancel()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>

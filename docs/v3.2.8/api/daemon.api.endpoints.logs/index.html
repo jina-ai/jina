@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -641,52 +641,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-daemon.api.endpoints.logs">
-<span id="daemon-api-endpoints-logs-module"></span><h1>daemon.api.endpoints.logs module<a class="headerlink" href="#module-daemon.api.endpoints.logs" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.api.endpoints.logs.ConnectionManager">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.api.endpoints.logs.</span></span><span class="sig-name descname"><span class="pre">ConnectionManager</span></span><a class="reference internal" href="../../_modules/daemon/api/endpoints/logs/#ConnectionManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.api.endpoints.logs.ConnectionManager" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Manager of websockets listening for a log stream.</p>
-<p>TODO for now contian a single connection. Ideally there must be one
-manager per log with a thread checking for updates in log and broadcasting
-to active connections</p>
-<p>Instantiate a ConnectionManager.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.api.endpoints.logs.ConnectionManager.connect">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">websocket</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/api/endpoints/logs/#ConnectionManager.connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.api.endpoints.logs.ConnectionManager.connect" title="Permalink to this definition">#</a></dt>
-<dd><p>Register a new websocket.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>websocket</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code>) – websocket to register</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.api.endpoints.logs.ConnectionManager.disconnect">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">websocket</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/api/endpoints/logs/#ConnectionManager.disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.api.endpoints.logs.ConnectionManager.disconnect" title="Permalink to this definition">#</a></dt>
-<dd><p>Disconnect a websocket.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>websocket</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code>) – websocket to disconnect</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.api.endpoints.logs.ConnectionManager.broadcast">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">broadcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/api/endpoints/logs/#ConnectionManager.broadcast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.api.endpoints.logs.ConnectionManager.broadcast" title="Permalink to this definition">#</a></dt>
-<dd><p>Send a json message to all registered websockets.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>message</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – JSON-serializable message to be broadcast</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+                <section id="daemon-api-endpoints-logs-module">
+<h1>daemon.api.endpoints.logs module<a class="headerlink" href="#daemon-api-endpoints-logs-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -721,7 +677,7 @@ to active connections</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Jun 22, 2023.
+                    Last updated on Jul 10, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -737,28 +693,6 @@ to active connections</p>
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">daemon.api.endpoints.logs module</a><ul>
-<li><a class="reference internal" href="#daemon.api.endpoints.logs.ConnectionManager"><code class="docutils literal notranslate"><span class="pre">ConnectionManager</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.api.endpoints.logs.ConnectionManager.connect"><code class="docutils literal notranslate"><span class="pre">ConnectionManager.connect()</span></code></a></li>
-<li><a class="reference internal" href="#daemon.api.endpoints.logs.ConnectionManager.disconnect"><code class="docutils literal notranslate"><span class="pre">ConnectionManager.disconnect()</span></code></a></li>
-<li><a class="reference internal" href="#daemon.api.endpoints.logs.ConnectionManager.broadcast"><code class="docutils literal notranslate"><span class="pre">ConnectionManager.broadcast()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

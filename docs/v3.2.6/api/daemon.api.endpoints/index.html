@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/daemon.api.endpoints/" />
 <meta property="og:site_name" content="Jina 3.2.6 Documentation" />
-<meta property="og:description" content="Subpackages: daemon.api.endpoints.partial package- Submodules- daemon.api.endpoints.partial.deployment module- rolling_update(), scale()., daemon.api.endpoints.partial.flow module- rolling_update(), scale()., daemon.api.endpoints.partial.pod module., Module contents.. Submodules: daemon.api.endpo..." />
+<meta property="og:description" content="Subpackages: daemon.api.endpoints.partial package- Submodules- daemon.api.endpoints.partial.deployment module, daemon.api.endpoints.partial.flow module, daemon.api.endpoints.partial.pod module., Module contents.. Submodules: daemon.api.endpoints.deployments module, daemon.api.endpoints.flows modu..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.2.6 Documentation" />
-<meta name="description" content="Subpackages: daemon.api.endpoints.partial package- Submodules- daemon.api.endpoints.partial.deployment module- rolling_update(), scale()., daemon.api.endpoints.partial.flow module- rolling_update(), scale()., daemon.api.endpoints.partial.pod module., Module contents.. Submodules: daemon.api.endpo..." />
+<meta name="description" content="Subpackages: daemon.api.endpoints.partial package- Submodules- daemon.api.endpoints.partial.deployment module, daemon.api.endpoints.partial.flow module, daemon.api.endpoints.partial.pod module., Module contents.. Submodules: daemon.api.endpoints.deployments module, daemon.api.endpoints.flows modu..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -650,20 +650,12 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../daemon.api.endpoints.partial/">daemon.api.endpoints.partial package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../daemon.api.endpoints.partial/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.api.endpoints.partial.deployment/">daemon.api.endpoints.partial.deployment module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../daemon.api.endpoints.partial.deployment/#daemon.api.endpoints.partial.deployment.rolling_update"><code class="docutils literal notranslate"><span class="pre">rolling_update()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../daemon.api.endpoints.partial.deployment/#daemon.api.endpoints.partial.deployment.scale"><code class="docutils literal notranslate"><span class="pre">scale()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.api.endpoints.partial.flow/">daemon.api.endpoints.partial.flow module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../daemon.api.endpoints.partial.flow/#daemon.api.endpoints.partial.flow.rolling_update"><code class="docutils literal notranslate"><span class="pre">rolling_update()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../daemon.api.endpoints.partial.flow/#daemon.api.endpoints.partial.flow.scale"><code class="docutils literal notranslate"><span class="pre">scale()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.api.endpoints.partial.deployment/">daemon.api.endpoints.partial.deployment module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.api.endpoints.partial.flow/">daemon.api.endpoints.partial.flow module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../daemon.api.endpoints.partial.pod/">daemon.api.endpoints.partial.pod module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../daemon.api.endpoints.partial/#module-daemon.api.endpoints.partial">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../daemon.api.endpoints.partial/#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -675,28 +667,14 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../daemon.api.endpoints.deployments/">daemon.api.endpoints.deployments module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../daemon.api.endpoints.flows/">daemon.api.endpoints.flows module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../daemon.api.endpoints.logs/">daemon.api.endpoints.logs module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../daemon.api.endpoints.logs/#daemon.api.endpoints.logs.ConnectionManager"><code class="docutils literal notranslate"><span class="pre">ConnectionManager</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.api.endpoints.logs/#daemon.api.endpoints.logs.ConnectionManager.connect"><code class="docutils literal notranslate"><span class="pre">ConnectionManager.connect()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.api.endpoints.logs/#daemon.api.endpoints.logs.ConnectionManager.disconnect"><code class="docutils literal notranslate"><span class="pre">ConnectionManager.disconnect()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.api.endpoints.logs/#daemon.api.endpoints.logs.ConnectionManager.broadcast"><code class="docutils literal notranslate"><span class="pre">ConnectionManager.broadcast()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../daemon.api.endpoints.logs/">daemon.api.endpoints.logs module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../daemon.api.endpoints.pods/">daemon.api.endpoints.pods module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../daemon.api.endpoints.workspaces/">daemon.api.endpoints.workspaces module</a></li>
 </ul>
 </div>
 </section>
-<section id="module-daemon.api.endpoints">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-daemon.api.endpoints" title="Permalink to this heading">#</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="daemon.api.endpoints.startup">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.api.endpoints.</span></span><span class="sig-name descname"><span class="pre">startup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/api/endpoints/#startup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.api.endpoints.startup" title="Permalink to this definition">#</a></dt>
-<dd><p>Start the process</p>
-</dd></dl>
-
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 </section>
 </section>
 
@@ -732,7 +710,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Jun 22, 2023.
+                    Last updated on Jul 10, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -760,10 +738,7 @@
 <li><a class="reference internal" href="#">daemon.api.endpoints package</a><ul>
 <li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-daemon.api.endpoints">Module contents</a><ul>
-<li><a class="reference internal" href="#daemon.api.endpoints.startup"><code class="docutils literal notranslate"><span class="pre">startup()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>

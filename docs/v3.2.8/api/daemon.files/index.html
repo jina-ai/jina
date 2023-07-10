@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -641,193 +641,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-daemon.files">
-<span id="daemon-files-module"></span><h1>daemon.files module<a class="headerlink" href="#module-daemon.files" title="Permalink to this heading">#</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="daemon.files.store_files_in_workspace">
-<span class="sig-prename descclassname"><span class="pre">daemon.files.</span></span><span class="sig-name descname"><span class="pre">store_files_in_workspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/files/#store_files_in_workspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.files.store_files_in_workspace" title="Permalink to this definition">#</a></dt>
-<dd><p>Store the uploaded files in local disk</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>workspace_id</strong> (<a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><code class="xref py py-class docutils literal notranslate"><span class="pre">DaemonID</span></code></a>) – workspace id representing the local directory</p></li>
-<li><p><strong>files</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">UploadFile</span></code>]) – files uploaded to the workspace endpoint</p></li>
-<li><p><strong>logger</strong> (<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaLogger</span></code></a>) – JinaLogger to use</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="daemon.files.is_requirements_txt">
-<span class="sig-prename descclassname"><span class="pre">daemon.files.</span></span><span class="sig-name descname"><span class="pre">is_requirements_txt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/files/#is_requirements_txt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.files.is_requirements_txt" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if filename is of requirements.txt format</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>filename</strong> – filename</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>True if filename is in requirements.txt format</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.files.DaemonFile">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.files.</span></span><span class="sig-name descname"><span class="pre">DaemonFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/files/#DaemonFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.files.DaemonFile" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Object representing .jinad file</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.files.DaemonFile.extension">
-<span class="sig-name descname"><span class="pre">extension</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'.jinad'</span></em><a class="headerlink" href="#daemon.files.DaemonFile.extension" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.files.DaemonFile.dockerfile">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dockerfile</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.files.DaemonFile.dockerfile" title="Permalink to this definition">#</a></dt>
-<dd><p>Property representing dockerfile value</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>daemon dockerfile in the daemonfile</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.files.DaemonFile.python">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">python</span></span><a class="headerlink" href="#daemon.files.DaemonFile.python" title="Permalink to this definition">#</a></dt>
-<dd><p>Property representing python version</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>python version in the daemonfile</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.files.DaemonFile.jinav">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">jinav</span></span><a class="headerlink" href="#daemon.files.DaemonFile.jinav" title="Permalink to this definition">#</a></dt>
-<dd><p>Property representing python version</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>python version in the daemonfile</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.files.DaemonFile.run">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.files.DaemonFile.run" title="Permalink to this definition">#</a></dt>
-<dd><p>Property representing run command</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>run command in the daemonfile</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.files.DaemonFile.ports">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ports</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.files.DaemonFile.ports" title="Permalink to this definition">#</a></dt>
-<dd><p>Property representing ports</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>ports to be mapped in the daemonfile</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.files.DaemonFile.requirements">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">requirements</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.files.DaemonFile.requirements" title="Permalink to this definition">#</a></dt>
-<dd><p>pip packages mentioned in requirements.txt</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>space separated values</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.files.DaemonFile.dockercontext">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dockercontext</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.files.DaemonFile.dockercontext" title="Permalink to this definition">#</a></dt>
-<dd><p>directory for docker context during docker build</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>docker context directory</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.files.DaemonFile.dockerargs">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dockerargs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span></em><a class="headerlink" href="#daemon.files.DaemonFile.dockerargs" title="Permalink to this definition">#</a></dt>
-<dd><p>dict of args to be passed during docker build</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>For DEVEL, we expect an already built jina image to be available locally.
-We only pass the pip requirements as arguments.
-For DEFAULT (cpu), we pass the python version, jina version used to pull the
-image from docker hub in addition to the requirements.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>dict of args to be passed during docker build</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.files.DaemonFile.process_file">
-<span class="sig-name descname"><span class="pre">process_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/files/#DaemonFile.process_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.files.DaemonFile.process_file" title="Permalink to this definition">#</a></dt>
-<dd><p>Process .jinad file and set args</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.files.DaemonFile.set_args">
-<span class="sig-name descname"><span class="pre">set_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/files/#DaemonFile.set_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.files.DaemonFile.set_args" title="Permalink to this definition">#</a></dt>
-<dd><p>read .jinad file &amp; set properties</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>file</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – .jinad filepath</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+                <section id="daemon-files-module">
+<h1>daemon.files module<a class="headerlink" href="#daemon-files-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -862,7 +677,7 @@ image from docker hub in addition to the requirements.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Jun 22, 2023.
+                    Last updated on Jul 10, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -878,38 +693,6 @@ image from docker hub in addition to the requirements.</p>
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">daemon.files module</a><ul>
-<li><a class="reference internal" href="#daemon.files.store_files_in_workspace"><code class="docutils literal notranslate"><span class="pre">store_files_in_workspace()</span></code></a></li>
-<li><a class="reference internal" href="#daemon.files.is_requirements_txt"><code class="docutils literal notranslate"><span class="pre">is_requirements_txt()</span></code></a></li>
-<li><a class="reference internal" href="#daemon.files.DaemonFile"><code class="docutils literal notranslate"><span class="pre">DaemonFile</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.files.DaemonFile.extension"><code class="docutils literal notranslate"><span class="pre">DaemonFile.extension</span></code></a></li>
-<li><a class="reference internal" href="#daemon.files.DaemonFile.dockerfile"><code class="docutils literal notranslate"><span class="pre">DaemonFile.dockerfile</span></code></a></li>
-<li><a class="reference internal" href="#daemon.files.DaemonFile.python"><code class="docutils literal notranslate"><span class="pre">DaemonFile.python</span></code></a></li>
-<li><a class="reference internal" href="#daemon.files.DaemonFile.jinav"><code class="docutils literal notranslate"><span class="pre">DaemonFile.jinav</span></code></a></li>
-<li><a class="reference internal" href="#daemon.files.DaemonFile.run"><code class="docutils literal notranslate"><span class="pre">DaemonFile.run</span></code></a></li>
-<li><a class="reference internal" href="#daemon.files.DaemonFile.ports"><code class="docutils literal notranslate"><span class="pre">DaemonFile.ports</span></code></a></li>
-<li><a class="reference internal" href="#daemon.files.DaemonFile.requirements"><code class="docutils literal notranslate"><span class="pre">DaemonFile.requirements</span></code></a></li>
-<li><a class="reference internal" href="#daemon.files.DaemonFile.dockercontext"><code class="docutils literal notranslate"><span class="pre">DaemonFile.dockercontext</span></code></a></li>
-<li><a class="reference internal" href="#daemon.files.DaemonFile.dockerargs"><code class="docutils literal notranslate"><span class="pre">DaemonFile.dockerargs</span></code></a></li>
-<li><a class="reference internal" href="#daemon.files.DaemonFile.process_file"><code class="docutils literal notranslate"><span class="pre">DaemonFile.process_file()</span></code></a></li>
-<li><a class="reference internal" href="#daemon.files.DaemonFile.set_args"><code class="docutils literal notranslate"><span class="pre">DaemonFile.set_args()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -641,124 +641,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-daemon.models.workspaces">
-<span id="daemon-models-workspaces-module"></span><h1>daemon.models.workspaces module<a class="headerlink" href="#module-daemon.models.workspaces" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceArguments">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.models.workspaces.</span></span><span class="sig-name descname"><span class="pre">WorkspaceArguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/workspaces/#WorkspaceArguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.workspaces.WorkspaceArguments" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>Pydantic model for WorkspaceArguments</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceArguments.files">
-<span class="sig-name descname"><span class="pre">files</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.models.workspaces.WorkspaceArguments.files" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceArguments.jinad">
-<span class="sig-name descname"><span class="pre">jinad</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.models.workspaces.WorkspaceArguments.jinad" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceArguments.requirements">
-<span class="sig-name descname"><span class="pre">requirements</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.models.workspaces.WorkspaceArguments.requirements" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceMetadata">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.models.workspaces.</span></span><span class="sig-name descname"><span class="pre">WorkspaceMetadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/workspaces/#WorkspaceMetadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.workspaces.WorkspaceMetadata" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>Pydantic model for WorkspaceMetadata</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceMetadata.image_id">
-<span class="sig-name descname"><span class="pre">image_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.models.workspaces.WorkspaceMetadata.image_id" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceMetadata.image_name">
-<span class="sig-name descname"><span class="pre">image_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.models.workspaces.WorkspaceMetadata.image_name" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceMetadata.network">
-<span class="sig-name descname"><span class="pre">network</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.models.workspaces.WorkspaceMetadata.network" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceMetadata.workdir">
-<span class="sig-name descname"><span class="pre">workdir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.models.workspaces.WorkspaceMetadata.workdir" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceMetadata.container_id">
-<span class="sig-name descname"><span class="pre">container_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.models.workspaces.WorkspaceMetadata.container_id" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceMetadata.managed_objects">
-<span class="sig-name descname"><span class="pre">managed_objects</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><span class="pre">DaemonID</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.models.workspaces.WorkspaceMetadata.managed_objects" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceItem">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.models.workspaces.</span></span><span class="sig-name descname"><span class="pre">WorkspaceItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/workspaces/#WorkspaceItem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.workspaces.WorkspaceItem" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../daemon.models.base/#daemon.models.base.StoreItem" title="daemon.models.base.StoreItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoreItem</span></code></a></p>
-<p>Pydantic model for WorkspaceItem</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceItem.state">
-<span class="sig-name descname"><span class="pre">state</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../jina.enums/#jina.enums.RemoteWorkspaceState" title="jina.enums.RemoteWorkspaceState"><span class="pre">RemoteWorkspaceState</span></a></em><a class="headerlink" href="#daemon.models.workspaces.WorkspaceItem.state" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceItem.metadata">
-<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#daemon.models.workspaces.WorkspaceMetadata" title="daemon.models.workspaces.WorkspaceMetadata"><span class="pre">WorkspaceMetadata</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.models.workspaces.WorkspaceItem.metadata" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceItem.arguments">
-<span class="sig-name descname"><span class="pre">arguments</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#daemon.models.workspaces.WorkspaceArguments" title="daemon.models.workspaces.WorkspaceArguments"><span class="pre">WorkspaceArguments</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.models.workspaces.WorkspaceItem.arguments" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceStoreStatus">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.models.workspaces.</span></span><span class="sig-name descname"><span class="pre">WorkspaceStoreStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/workspaces/#WorkspaceStoreStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.workspaces.WorkspaceStoreStatus" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../daemon.models.base/#daemon.models.base.StoreStatus" title="daemon.models.base.StoreStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoreStatus</span></code></a></p>
-<p>Pydantic model for WorkspaceStoreStatus</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceStoreStatus.ip_range_start">
-<span class="sig-name descname"><span class="pre">ip_range_start</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">IPv4Address</span></em><a class="headerlink" href="#daemon.models.workspaces.WorkspaceStoreStatus.ip_range_start" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceStoreStatus.subnet_size">
-<span class="sig-name descname"><span class="pre">subnet_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#daemon.models.workspaces.WorkspaceStoreStatus.subnet_size" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceStoreStatus.ip_range_current_offset">
-<span class="sig-name descname"><span class="pre">ip_range_current_offset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#daemon.models.workspaces.WorkspaceStoreStatus.ip_range_current_offset" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.workspaces.WorkspaceStoreStatus.items">
-<span class="sig-name descname"><span class="pre">items</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><span class="pre">DaemonID</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#daemon.models.workspaces.WorkspaceItem" title="daemon.models.workspaces.WorkspaceItem"><span class="pre">WorkspaceItem</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.models.workspaces.WorkspaceStoreStatus.items" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+                <section id="daemon-models-workspaces-module">
+<h1>daemon.models.workspaces module<a class="headerlink" href="#daemon-models-workspaces-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -793,7 +677,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Jun 22, 2023.
+                    Last updated on Jul 10, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -809,50 +693,6 @@
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">daemon.models.workspaces module</a><ul>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceArguments"><code class="docutils literal notranslate"><span class="pre">WorkspaceArguments</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceArguments.files"><code class="docutils literal notranslate"><span class="pre">WorkspaceArguments.files</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceArguments.jinad"><code class="docutils literal notranslate"><span class="pre">WorkspaceArguments.jinad</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceArguments.requirements"><code class="docutils literal notranslate"><span class="pre">WorkspaceArguments.requirements</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceMetadata"><code class="docutils literal notranslate"><span class="pre">WorkspaceMetadata</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceMetadata.image_id"><code class="docutils literal notranslate"><span class="pre">WorkspaceMetadata.image_id</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceMetadata.image_name"><code class="docutils literal notranslate"><span class="pre">WorkspaceMetadata.image_name</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceMetadata.network"><code class="docutils literal notranslate"><span class="pre">WorkspaceMetadata.network</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceMetadata.workdir"><code class="docutils literal notranslate"><span class="pre">WorkspaceMetadata.workdir</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceMetadata.container_id"><code class="docutils literal notranslate"><span class="pre">WorkspaceMetadata.container_id</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceMetadata.managed_objects"><code class="docutils literal notranslate"><span class="pre">WorkspaceMetadata.managed_objects</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceItem"><code class="docutils literal notranslate"><span class="pre">WorkspaceItem</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceItem.state"><code class="docutils literal notranslate"><span class="pre">WorkspaceItem.state</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceItem.metadata"><code class="docutils literal notranslate"><span class="pre">WorkspaceItem.metadata</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceItem.arguments"><code class="docutils literal notranslate"><span class="pre">WorkspaceItem.arguments</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceStoreStatus"><code class="docutils literal notranslate"><span class="pre">WorkspaceStoreStatus</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceStoreStatus.ip_range_start"><code class="docutils literal notranslate"><span class="pre">WorkspaceStoreStatus.ip_range_start</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceStoreStatus.subnet_size"><code class="docutils literal notranslate"><span class="pre">WorkspaceStoreStatus.subnet_size</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceStoreStatus.ip_range_current_offset"><code class="docutils literal notranslate"><span class="pre">WorkspaceStoreStatus.ip_range_current_offset</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.workspaces.WorkspaceStoreStatus.items"><code class="docutils literal notranslate"><span class="pre">WorkspaceStoreStatus.items</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -640,111 +640,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-daemon.models.ports">
-<span id="daemon-models-ports-module"></span><h1>daemon.models.ports module<a class="headerlink" href="#module-daemon.models.ports" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.models.ports.Ports">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.models.ports.</span></span><span class="sig-name descname"><span class="pre">Ports</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/ports/#Ports"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.ports.Ports" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>Port names</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.ports.Ports.port">
-<span class="sig-name descname"><span class="pre">port</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.models.ports.Ports.port" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.models.ports.PortMapping">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.models.ports.</span></span><span class="sig-name descname"><span class="pre">PortMapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/ports/#PortMapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.ports.PortMapping" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>Used to set the additional port mappings in partial-daemon</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.ports.PortMapping.deployment_name">
-<span class="sig-name descname"><span class="pre">deployment_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.models.ports.PortMapping.deployment_name" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.ports.PortMapping.pod_name">
-<span class="sig-name descname"><span class="pre">pod_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.models.ports.PortMapping.pod_name" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.ports.PortMapping.ports">
-<span class="sig-name descname"><span class="pre">ports</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#daemon.models.ports.Ports" title="daemon.models.ports.Ports"><span class="pre">Ports</span></a></em><a class="headerlink" href="#daemon.models.ports.PortMapping.ports" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.models.ports.PortMappings">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.models.ports.</span></span><span class="sig-name descname"><span class="pre">PortMappings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/ports/#PortMappings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.ports.PortMappings" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>Pydantic model for list of PortMappings</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.models.ports.PortMappings.ports">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ports</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.models.ports.PortMappings.ports" title="Permalink to this definition">#</a></dt>
-<dd><p>Get all ports in current model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>list of ports</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.models.ports.PortMappings.docker_ports">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">docker_ports</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.models.ports.PortMappings.docker_ports" title="Permalink to this definition">#</a></dt>
-<dd><p>Get all ports for docker client</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>dict of ports for docker-py syntax</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.models.ports.PortMappings.deployment_names">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">deployment_names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.models.ports.PortMappings.deployment_names" title="Permalink to this definition">#</a></dt>
-<dd><p>Get all deployment names</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>unique list of deployment names</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.models.ports.PortMappings.pod_names">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pod_names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.models.ports.PortMappings.pod_names" title="Permalink to this definition">#</a></dt>
-<dd><p>Get all pod names</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>list of pod names</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+                <section id="daemon-models-ports-module">
+<h1>daemon.models.ports module<a class="headerlink" href="#daemon-models-ports-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -779,7 +676,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Jun 22, 2023.
+                    Last updated on Jul 10, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -795,39 +692,6 @@
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">daemon.models.ports module</a><ul>
-<li><a class="reference internal" href="#daemon.models.ports.Ports"><code class="docutils literal notranslate"><span class="pre">Ports</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.models.ports.Ports.port"><code class="docutils literal notranslate"><span class="pre">Ports.port</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#daemon.models.ports.PortMapping"><code class="docutils literal notranslate"><span class="pre">PortMapping</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.models.ports.PortMapping.deployment_name"><code class="docutils literal notranslate"><span class="pre">PortMapping.deployment_name</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.ports.PortMapping.pod_name"><code class="docutils literal notranslate"><span class="pre">PortMapping.pod_name</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.ports.PortMapping.ports"><code class="docutils literal notranslate"><span class="pre">PortMapping.ports</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#daemon.models.ports.PortMappings"><code class="docutils literal notranslate"><span class="pre">PortMappings</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.models.ports.PortMappings.ports"><code class="docutils literal notranslate"><span class="pre">PortMappings.ports</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.ports.PortMappings.docker_ports"><code class="docutils literal notranslate"><span class="pre">PortMappings.docker_ports</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.ports.PortMappings.deployment_names"><code class="docutils literal notranslate"><span class="pre">PortMappings.deployment_names</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.ports.PortMappings.pod_names"><code class="docutils literal notranslate"><span class="pre">PortMappings.pod_names</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

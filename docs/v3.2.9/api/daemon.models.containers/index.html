@@ -184,7 +184,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -651,104 +651,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-daemon.models.containers">
-<span id="daemon-models-containers-module"></span><h1>daemon.models.containers module<a class="headerlink" href="#module-daemon.models.containers" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.models.containers.ContainerArguments">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.models.containers.</span></span><span class="sig-name descname"><span class="pre">ContainerArguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/containers/#ContainerArguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.containers.ContainerArguments" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>Pydantic model for ContainerArguments</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.containers.ContainerArguments.object">
-<span class="sig-name descname"><span class="pre">object</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span></em><a class="headerlink" href="#daemon.models.containers.ContainerArguments.object" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.containers.ContainerArguments.entrypoint">
-<span class="sig-name descname"><span class="pre">entrypoint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.models.containers.ContainerArguments.entrypoint" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.models.containers.ContainerMetadata">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.models.containers.</span></span><span class="sig-name descname"><span class="pre">ContainerMetadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/containers/#ContainerMetadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.containers.ContainerMetadata" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>Pydantic model for ContainerMetadata</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.containers.ContainerMetadata.container_id">
-<span class="sig-name descname"><span class="pre">container_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.models.containers.ContainerMetadata.container_id" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.containers.ContainerMetadata.container_name">
-<span class="sig-name descname"><span class="pre">container_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.models.containers.ContainerMetadata.container_name" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.containers.ContainerMetadata.image_id">
-<span class="sig-name descname"><span class="pre">image_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.models.containers.ContainerMetadata.image_id" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.containers.ContainerMetadata.network">
-<span class="sig-name descname"><span class="pre">network</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.models.containers.ContainerMetadata.network" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.containers.ContainerMetadata.ports">
-<span class="sig-name descname"><span class="pre">ports</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span></em><a class="headerlink" href="#daemon.models.containers.ContainerMetadata.ports" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.containers.ContainerMetadata.uri">
-<span class="sig-name descname"><span class="pre">uri</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.models.containers.ContainerMetadata.uri" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.models.containers.ContainerItem">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.models.containers.</span></span><span class="sig-name descname"><span class="pre">ContainerItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/containers/#ContainerItem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.containers.ContainerItem" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../daemon.models.base/#daemon.models.base.StoreItem" title="daemon.models.base.StoreItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoreItem</span></code></a></p>
-<p>Pydantic model for ContainerItem</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.containers.ContainerItem.metadata">
-<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#daemon.models.containers.ContainerMetadata" title="daemon.models.containers.ContainerMetadata"><span class="pre">ContainerMetadata</span></a></em><a class="headerlink" href="#daemon.models.containers.ContainerItem.metadata" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.containers.ContainerItem.arguments">
-<span class="sig-name descname"><span class="pre">arguments</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#daemon.models.containers.ContainerArguments" title="daemon.models.containers.ContainerArguments"><span class="pre">ContainerArguments</span></a></em><a class="headerlink" href="#daemon.models.containers.ContainerItem.arguments" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.containers.ContainerItem.workspace_id">
-<span class="sig-name descname"><span class="pre">workspace_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><span class="pre">DaemonID</span></a></em><a class="headerlink" href="#daemon.models.containers.ContainerItem.workspace_id" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.models.containers.ContainerStoreStatus">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.models.containers.</span></span><span class="sig-name descname"><span class="pre">ContainerStoreStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/containers/#ContainerStoreStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.containers.ContainerStoreStatus" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../daemon.models.base/#daemon.models.base.StoreStatus" title="daemon.models.base.StoreStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoreStatus</span></code></a></p>
-<p>Pydantic model for ContainerStoreStatus</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.containers.ContainerStoreStatus.items">
-<span class="sig-name descname"><span class="pre">items</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><span class="pre">DaemonID</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#daemon.models.containers.ContainerItem" title="daemon.models.containers.ContainerItem"><span class="pre">ContainerItem</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.models.containers.ContainerStoreStatus.items" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+                <section id="daemon-models-containers-module">
+<h1>daemon.models.containers module<a class="headerlink" href="#daemon-models-containers-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -783,7 +687,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Jun 22, 2023.
+                    Last updated on Jul 10, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -799,46 +703,6 @@
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">daemon.models.containers module</a><ul>
-<li><a class="reference internal" href="#daemon.models.containers.ContainerArguments"><code class="docutils literal notranslate"><span class="pre">ContainerArguments</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.models.containers.ContainerArguments.object"><code class="docutils literal notranslate"><span class="pre">ContainerArguments.object</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.containers.ContainerArguments.entrypoint"><code class="docutils literal notranslate"><span class="pre">ContainerArguments.entrypoint</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#daemon.models.containers.ContainerMetadata"><code class="docutils literal notranslate"><span class="pre">ContainerMetadata</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.models.containers.ContainerMetadata.container_id"><code class="docutils literal notranslate"><span class="pre">ContainerMetadata.container_id</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.containers.ContainerMetadata.container_name"><code class="docutils literal notranslate"><span class="pre">ContainerMetadata.container_name</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.containers.ContainerMetadata.image_id"><code class="docutils literal notranslate"><span class="pre">ContainerMetadata.image_id</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.containers.ContainerMetadata.network"><code class="docutils literal notranslate"><span class="pre">ContainerMetadata.network</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.containers.ContainerMetadata.ports"><code class="docutils literal notranslate"><span class="pre">ContainerMetadata.ports</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.containers.ContainerMetadata.uri"><code class="docutils literal notranslate"><span class="pre">ContainerMetadata.uri</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#daemon.models.containers.ContainerItem"><code class="docutils literal notranslate"><span class="pre">ContainerItem</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.models.containers.ContainerItem.metadata"><code class="docutils literal notranslate"><span class="pre">ContainerItem.metadata</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.containers.ContainerItem.arguments"><code class="docutils literal notranslate"><span class="pre">ContainerItem.arguments</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.containers.ContainerItem.workspace_id"><code class="docutils literal notranslate"><span class="pre">ContainerItem.workspace_id</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#daemon.models.containers.ContainerStoreStatus"><code class="docutils literal notranslate"><span class="pre">ContainerStoreStatus</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.models.containers.ContainerStoreStatus.items"><code class="docutils literal notranslate"><span class="pre">ContainerStoreStatus.items</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

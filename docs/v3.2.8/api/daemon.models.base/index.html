@@ -178,7 +178,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -641,56 +641,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-daemon.models.base">
-<span id="daemon-models-base-module"></span><h1>daemon.models.base module<a class="headerlink" href="#module-daemon.models.base" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.models.base.StoreItem">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.models.base.</span></span><span class="sig-name descname"><span class="pre">StoreItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/base/#StoreItem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.base.StoreItem" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>Pydantic model for StoreItem</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.base.StoreItem.time_created">
-<span class="sig-name descname"><span class="pre">time_created</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#daemon.models.base.StoreItem.time_created" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.models.base.StoreStatus">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.models.base.</span></span><span class="sig-name descname"><span class="pre">StoreStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/base/#StoreStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.base.StoreStatus" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>Pydantic model for StoreStatus</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.base.StoreStatus.time_created">
-<span class="sig-name descname"><span class="pre">time_created</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#daemon.models.base.StoreStatus.time_created" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.base.StoreStatus.time_updated">
-<span class="sig-name descname"><span class="pre">time_updated</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#daemon.models.base.StoreStatus.time_updated" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.base.StoreStatus.num_add">
-<span class="sig-name descname"><span class="pre">num_add</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#daemon.models.base.StoreStatus.num_add" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.base.StoreStatus.num_del">
-<span class="sig-name descname"><span class="pre">num_del</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#daemon.models.base.StoreStatus.num_del" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.models.base.StoreStatus.items">
-<span class="sig-name descname"><span class="pre">items</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><span class="pre">DaemonID</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#daemon.models.base.StoreItem" title="daemon.models.base.StoreItem"><span class="pre">StoreItem</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.models.base.StoreStatus.items" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+                <section id="daemon-models-base-module">
+<h1>daemon.models.base module<a class="headerlink" href="#daemon-models-base-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -725,7 +677,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Jun 22, 2023.
+                    Last updated on Jul 10, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -741,34 +693,6 @@
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">daemon.models.base module</a><ul>
-<li><a class="reference internal" href="#daemon.models.base.StoreItem"><code class="docutils literal notranslate"><span class="pre">StoreItem</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.models.base.StoreItem.time_created"><code class="docutils literal notranslate"><span class="pre">StoreItem.time_created</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#daemon.models.base.StoreStatus"><code class="docutils literal notranslate"><span class="pre">StoreStatus</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.models.base.StoreStatus.time_created"><code class="docutils literal notranslate"><span class="pre">StoreStatus.time_created</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.base.StoreStatus.time_updated"><code class="docutils literal notranslate"><span class="pre">StoreStatus.time_updated</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.base.StoreStatus.num_add"><code class="docutils literal notranslate"><span class="pre">StoreStatus.num_add</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.base.StoreStatus.num_del"><code class="docutils literal notranslate"><span class="pre">StoreStatus.num_del</span></code></a></li>
-<li><a class="reference internal" href="#daemon.models.base.StoreStatus.items"><code class="docutils literal notranslate"><span class="pre">StoreStatus.items</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

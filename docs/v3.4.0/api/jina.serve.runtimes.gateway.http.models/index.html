@@ -184,7 +184,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -602,211 +602,8 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.serve.runtimes.gateway.http.models">
-<span id="jina-serve-runtimes-gateway-http-models-module"></span><h1>jina.serve.runtimes.gateway.http.models module<a class="headerlink" href="#module-jina.serve.runtimes.gateway.http.models" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.CustomConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.http.models.</span></span><span class="sig-name descname"><span class="pre">CustomConfig</span></span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/models/#CustomConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.CustomConfig" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseConfig</span></code></p>
-<p>Pydantic config for Camel case and enum handling</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.CustomConfig.use_enum_values">
-<span class="sig-name descname"><span class="pre">use_enum_values</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.CustomConfig.use_enum_values" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.CustomConfig.allow_population_by_field_name">
-<span class="sig-name descname"><span class="pre">allow_population_by_field_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.CustomConfig.allow_population_by_field_name" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.CustomConfig.fields">
-<span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'data':</span> <span class="pre">{'alias':</span> <span class="pre">'data',</span> <span class="pre">'alias_priority':</span> <span class="pre">2},</span> <span class="pre">'header':</span> <span class="pre">{'alias':</span> <span class="pre">'header',</span> <span class="pre">'alias_priority':</span> <span class="pre">2},</span> <span class="pre">'parameters':</span> <span class="pre">{'alias':</span> <span class="pre">'parameters',</span> <span class="pre">'alias_priority':</span> <span class="pre">2},</span> <span class="pre">'routes':</span> <span class="pre">{'alias':</span> <span class="pre">'routes',</span> <span class="pre">'alias_priority':</span> <span class="pre">2}}</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.CustomConfig.fields" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.protobuf_to_pydantic_model">
-<span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.http.models.</span></span><span class="sig-name descname"><span class="pre">protobuf_to_pydantic_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protobuf_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/models/#protobuf_to_pydantic_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.protobuf_to_pydantic_model" title="Permalink to this definition">#</a></dt>
-<dd><p>Converts Protobuf messages to Pydantic model for jsonschema creation/validattion</p>
-<p>..note:: Model gets assigned in the global Namespace :<a class="reference external" href="data:PROTO_TO_PYDANTIC_MODELS">data:PROTO_TO_PYDANTIC_MODELS</a></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>protobuf_model</strong> (<em>Union</em><em>[</em><em>Descriptor</em><em>, </em><em>GeneratedProtocolMessageType</em><em>]</em>) – message from jina.proto file</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Pydantic model</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaHealthModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.http.models.</span></span><span class="sig-name descname"><span class="pre">JinaHealthModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/models/#JinaHealthModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaHealthModel" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>Pydantic BaseModel for Jina health check, used as the response model in REST app.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaStatusModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.http.models.</span></span><span class="sig-name descname"><span class="pre">JinaStatusModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/models/#JinaStatusModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaStatusModel" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>Pydantic BaseModel for Jina status, used as the response model in REST app.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaStatusModel.jina">
-<span class="sig-name descname"><span class="pre">jina</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaStatusModel.jina" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaStatusModel.envs">
-<span class="sig-name descname"><span class="pre">envs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaStatusModel.envs" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaStatusModel.used_memory">
-<span class="sig-name descname"><span class="pre">used_memory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaStatusModel.used_memory" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaStatusModel.Config">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/models/#JinaStatusModel.Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaStatusModel.Config" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaStatusModel.Config.alias_generator">
-<span class="sig-name descname"><span class="pre">alias_generator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaStatusModel.Config.alias_generator" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaStatusModel.Config.allow_population_by_field_name">
-<span class="sig-name descname"><span class="pre">allow_population_by_field_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaStatusModel.Config.allow_population_by_field_name" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaRequestModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.http.models.</span></span><span class="sig-name descname"><span class="pre">JinaRequestModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/models/#JinaRequestModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>Jina HTTP request model.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaRequestModel.data">
-<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">PydanticDocument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">PydanticDocument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.data" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaRequestModel.target_executor">
-<span class="sig-name descname"><span class="pre">target_executor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.target_executor" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaRequestModel.parameters">
-<span class="sig-name descname"><span class="pre">parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.parameters" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/models/#JinaRequestModel.Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config.alias_generator">
-<span class="sig-name descname"><span class="pre">alias_generator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config.alias_generator" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config.allow_population_by_field_name">
-<span class="sig-name descname"><span class="pre">allow_population_by_field_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config.allow_population_by_field_name" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.http.models.</span></span><span class="sig-name descname"><span class="pre">JinaResponseModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/models/#JinaResponseModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>Jina HTTP Response model. Only <cite>request_id</cite> and <cite>data</cite> are preserved.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel.header">
-<span class="sig-name descname"><span class="pre">header</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">HeaderProto</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.header" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel.parameters">
-<span class="sig-name descname"><span class="pre">parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.parameters" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel.routes">
-<span class="sig-name descname"><span class="pre">routes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">RouteProto</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.routes" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel.data">
-<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">PydanticDocument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.data" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/models/#JinaResponseModel.Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config.alias_generator">
-<span class="sig-name descname"><span class="pre">alias_generator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config.alias_generator" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config.allow_population_by_field_name">
-<span class="sig-name descname"><span class="pre">allow_population_by_field_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config.allow_population_by_field_name" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.http.models.</span></span><span class="sig-name descname"><span class="pre">JinaEndpointRequestModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/models/#JinaEndpointRequestModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel" title="jina.serve.runtimes.gateway.http.models.JinaRequestModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaRequestModel</span></code></a></p>
-<p>Jina HTTP request model that allows customized endpoint.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.exec_endpoint">
-<span class="sig-name descname"><span class="pre">exec_endpoint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.exec_endpoint" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+                <section id="jina-serve-runtimes-gateway-http-models-module">
+<h1>jina.serve.runtimes.gateway.http.models module<a class="headerlink" href="#jina-serve-runtimes-gateway-http-models-module" title="Permalink to this heading">#</a></h1>
 </section>
 
             </article>
@@ -841,7 +638,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Jun 22, 2023.
+                    Last updated on Jul 10, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -857,68 +654,6 @@
             
 
             <div class="toc-sticky toc-scroll">
-                
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.serve.runtimes.gateway.http.models module</a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.CustomConfig"><code class="docutils literal notranslate"><span class="pre">CustomConfig</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.CustomConfig.use_enum_values"><code class="docutils literal notranslate"><span class="pre">CustomConfig.use_enum_values</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.CustomConfig.allow_population_by_field_name"><code class="docutils literal notranslate"><span class="pre">CustomConfig.allow_population_by_field_name</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.CustomConfig.fields"><code class="docutils literal notranslate"><span class="pre">CustomConfig.fields</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.protobuf_to_pydantic_model"><code class="docutils literal notranslate"><span class="pre">protobuf_to_pydantic_model()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaHealthModel"><code class="docutils literal notranslate"><span class="pre">JinaHealthModel</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaStatusModel"><code class="docutils literal notranslate"><span class="pre">JinaStatusModel</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaStatusModel.jina"><code class="docutils literal notranslate"><span class="pre">JinaStatusModel.jina</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaStatusModel.envs"><code class="docutils literal notranslate"><span class="pre">JinaStatusModel.envs</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaStatusModel.used_memory"><code class="docutils literal notranslate"><span class="pre">JinaStatusModel.used_memory</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaStatusModel.Config"><code class="docutils literal notranslate"><span class="pre">JinaStatusModel.Config</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaStatusModel.Config.alias_generator"><code class="docutils literal notranslate"><span class="pre">JinaStatusModel.Config.alias_generator()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaStatusModel.Config.allow_population_by_field_name"><code class="docutils literal notranslate"><span class="pre">JinaStatusModel.Config.allow_population_by_field_name</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.data"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.data</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.target_executor"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.target_executor</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.parameters"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.parameters</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.Config</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config.alias_generator"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.Config.alias_generator()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config.allow_population_by_field_name"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.Config.allow_population_by_field_name</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.header"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.header</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.parameters"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.parameters</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.routes"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.routes</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.data"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.data</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.Config</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config.alias_generator"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.Config.alias_generator()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config.allow_population_by_field_name"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.Config.allow_population_by_field_name</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.exec_endpoint"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.exec_endpoint</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
                 
             </div>
 

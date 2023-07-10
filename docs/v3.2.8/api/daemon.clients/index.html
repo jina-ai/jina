@@ -712,132 +712,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../daemon.clients.pods/#daemon.clients.pods.PodClient"><code class="docutils literal notranslate"><span class="pre">PodClient</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../daemon.clients.workspaces/">daemon.clients.workspaces module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../daemon.clients.workspaces/#daemon.clients.workspaces.FormData"><code class="docutils literal notranslate"><span class="pre">FormData</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.clients.workspaces/#daemon.clients.workspaces.FormData.add"><code class="docutils literal notranslate"><span class="pre">FormData.add()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.clients.workspaces/#daemon.clients.workspaces.FormData.fields"><code class="docutils literal notranslate"><span class="pre">FormData.fields</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.clients.workspaces/#daemon.clients.workspaces.FormData.filenames"><code class="docutils literal notranslate"><span class="pre">FormData.filenames</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../daemon.clients.workspaces/#daemon.clients.workspaces.AsyncWorkspaceClient"><code class="docutils literal notranslate"><span class="pre">AsyncWorkspaceClient</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.clients.workspaces/#daemon.clients.workspaces.AsyncWorkspaceClient.create"><code class="docutils literal notranslate"><span class="pre">AsyncWorkspaceClient.create()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.clients.workspaces/#daemon.clients.workspaces.AsyncWorkspaceClient.wait"><code class="docutils literal notranslate"><span class="pre">AsyncWorkspaceClient.wait()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.clients.workspaces/#daemon.clients.workspaces.AsyncWorkspaceClient.update"><code class="docutils literal notranslate"><span class="pre">AsyncWorkspaceClient.update()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.clients.workspaces/#daemon.clients.workspaces.AsyncWorkspaceClient.delete"><code class="docutils literal notranslate"><span class="pre">AsyncWorkspaceClient.delete()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../daemon.clients.workspaces/#daemon.clients.workspaces.WorkspaceClient"><code class="docutils literal notranslate"><span class="pre">WorkspaceClient</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../daemon.clients.workspaces/">daemon.clients.workspaces module</a></li>
 </ul>
 </div>
 </section>
-<section id="module-daemon.clients">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-daemon.clients" title="Permalink to this heading">#</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.clients.JinaDClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.clients.</span></span><span class="sig-name descname"><span class="pre">JinaDClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/clients/#JinaDClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.clients.JinaDClient" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>JinaD Client</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>host</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – hostname of remote JinaD server</p></li>
-<li><p><strong>port</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – port of remote JinaD server</p></li>
-<li><p><strong>timeout</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – default timeout for requests, defaults to None</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.clients.JinaDClient.pods">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pods</span></span><a class="headerlink" href="#daemon.clients.JinaDClient.pods" title="Permalink to this definition">#</a></dt>
-<dd><p>Pod Client</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Pod Client</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.clients.JinaDClient.deployments">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">deployments</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../daemon.clients.deployments/#daemon.clients.deployments.DeploymentClient" title="daemon.clients.deployments.DeploymentClient"><span class="pre">DeploymentClient</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../daemon.clients.deployments/#daemon.clients.deployments.AsyncDeploymentClient" title="daemon.clients.deployments.AsyncDeploymentClient"><span class="pre">AsyncDeploymentClient</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.clients.JinaDClient.deployments" title="Permalink to this definition">#</a></dt>
-<dd><p>Deployment Client</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../daemon.clients.deployments/#daemon.clients.deployments.DeploymentClient" title="daemon.clients.deployments.DeploymentClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeploymentClient</span></code></a>, <a class="reference internal" href="../daemon.clients.deployments/#daemon.clients.deployments.AsyncDeploymentClient" title="daemon.clients.deployments.AsyncDeploymentClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncDeploymentClient</span></code></a>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Deployment Client</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.clients.JinaDClient.flows">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flows</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../daemon.clients.flows/#daemon.clients.flows.FlowClient" title="daemon.clients.flows.FlowClient"><span class="pre">FlowClient</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../daemon.clients.flows/#daemon.clients.flows.AsyncFlowClient" title="daemon.clients.flows.AsyncFlowClient"><span class="pre">AsyncFlowClient</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.clients.JinaDClient.flows" title="Permalink to this definition">#</a></dt>
-<dd><p>Flow Client</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../daemon.clients.flows/#daemon.clients.flows.FlowClient" title="daemon.clients.flows.FlowClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowClient</span></code></a>, <a class="reference internal" href="../daemon.clients.flows/#daemon.clients.flows.AsyncFlowClient" title="daemon.clients.flows.AsyncFlowClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncFlowClient</span></code></a>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Flow Client</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.clients.JinaDClient.workspaces">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">workspaces</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../daemon.clients.workspaces/#daemon.clients.workspaces.WorkspaceClient" title="daemon.clients.workspaces.WorkspaceClient"><span class="pre">WorkspaceClient</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../daemon.clients.workspaces/#daemon.clients.workspaces.AsyncWorkspaceClient" title="daemon.clients.workspaces.AsyncWorkspaceClient"><span class="pre">AsyncWorkspaceClient</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.clients.JinaDClient.workspaces" title="Permalink to this definition">#</a></dt>
-<dd><p>Workspace Client</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../daemon.clients.workspaces/#daemon.clients.workspaces.WorkspaceClient" title="daemon.clients.workspaces.WorkspaceClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">WorkspaceClient</span></code></a>, <a class="reference internal" href="../daemon.clients.workspaces/#daemon.clients.workspaces.AsyncWorkspaceClient" title="daemon.clients.workspaces.AsyncWorkspaceClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncWorkspaceClient</span></code></a>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Workspace Client</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.clients.JinaDClient.alive">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alive</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#daemon.clients.JinaDClient.alive" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if JinaD is alive</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True if alive</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="daemon.clients.JinaDClient.status">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.clients.JinaDClient.status" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the status of remote JinaD</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Dict object describing remote store</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="daemon.clients.AsyncJinaDClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.clients.</span></span><span class="sig-name descname"><span class="pre">AsyncJinaDClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/clients/#AsyncJinaDClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.clients.AsyncJinaDClient" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#daemon.clients.JinaDClient" title="daemon.clients.JinaDClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaDClient</span></code></a></p>
-<p>Async JinaD Client</p>
-</dd></dl>
-
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 </section>
 </section>
 
@@ -873,7 +753,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Jun 22, 2023.
+                    Last updated on Jul 10, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -900,19 +780,7 @@
                         <ul>
 <li><a class="reference internal" href="#">daemon.clients package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-daemon.clients">Module contents</a><ul>
-<li><a class="reference internal" href="#daemon.clients.JinaDClient"><code class="docutils literal notranslate"><span class="pre">JinaDClient</span></code></a><ul>
-<li><a class="reference internal" href="#daemon.clients.JinaDClient.pods"><code class="docutils literal notranslate"><span class="pre">JinaDClient.pods</span></code></a></li>
-<li><a class="reference internal" href="#daemon.clients.JinaDClient.deployments"><code class="docutils literal notranslate"><span class="pre">JinaDClient.deployments</span></code></a></li>
-<li><a class="reference internal" href="#daemon.clients.JinaDClient.flows"><code class="docutils literal notranslate"><span class="pre">JinaDClient.flows</span></code></a></li>
-<li><a class="reference internal" href="#daemon.clients.JinaDClient.workspaces"><code class="docutils literal notranslate"><span class="pre">JinaDClient.workspaces</span></code></a></li>
-<li><a class="reference internal" href="#daemon.clients.JinaDClient.alive"><code class="docutils literal notranslate"><span class="pre">JinaDClient.alive</span></code></a></li>
-<li><a class="reference internal" href="#daemon.clients.JinaDClient.status"><code class="docutils literal notranslate"><span class="pre">JinaDClient.status</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#daemon.clients.AsyncJinaDClient"><code class="docutils literal notranslate"><span class="pre">AsyncJinaDClient</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
