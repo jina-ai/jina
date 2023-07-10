@@ -667,14 +667,15 @@ class WorkerRequestHandler:
         for req in requests:
             req.add_executor(self.deployment_name)
 
-        self._record_docs_processed_monitoring(requests)
-        self._record_response_size_monitoring(requests)
         try:
             requests[0].document_array_cls = self._executor.requests[
                 exec_endpoint
             ].response_schema
         except AttributeError:
             pass
+
+        self._record_docs_processed_monitoring(requests)
+        self._record_response_size_monitoring(requests)
 
         return requests[0]
 
