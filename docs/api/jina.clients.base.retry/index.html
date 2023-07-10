@@ -6,9 +6,9 @@
 <meta property="og:title" content="jina.clients.base.retry module" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.clients.base.retry/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -31,7 +31,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.clients.base.retry.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.clients.base.retry module - Jina 3.18.1 documentation</title>
+        <title>jina.clients.base.retry module - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -183,7 +183,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -345,8 +345,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -355,7 +354,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -374,7 +372,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -422,7 +420,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon"
+                    <label class="toc-overlay-icon toc-content-icon no-toc"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -433,46 +431,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section id="module-jina.clients.base.retry">
-<span id="jina-clients-base-retry-module"></span><h1>jina.clients.base.retry module<a class="headerlink" href="#module-jina.clients.base.retry" title="Permalink to this heading">#</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.clients.base.retry.sync_wait_or_raise_err">
-<span class="sig-prename descclassname"><span class="pre">jina.clients.base.retry.</span></span><span class="sig-name descname"><span class="pre">sync_wait_or_raise_err</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attempt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">err</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/retry/#sync_wait_or_raise_err"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.retry.sync_wait_or_raise_err" title="Permalink to this definition">#</a></dt>
-<dd><p>Accepts retry parameters and the underlying. The error is raised if the max_attempts has been reached otherwise the
-method waits based on the backoff calculations.
-:type attempt: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
-:param attempt: Number of the current attempt.
-:type err: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>
-:param err: Underlying error that was raised by the operation.
-:type max_attempts: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
-:param max_attempts: Maximum number of attempts that are allowed.
-:type backoff_multiplier: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
-:param backoff_multiplier: Factor that will be raised to the exponent of (attempt - 1) for calculating the backoff wait time.
-:type initial_backoff: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
-:param initial_backoff: The backoff time on the first error. This will be multiplied by the backoff_multiplier exponent for subsequent wait time calculations.
-:type max_backoff: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
-:param max_backoff: The maximum backoff wait time.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.clients.base.retry.wait_or_raise_err">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.retry.</span></span><span class="sig-name descname"><span class="pre">wait_or_raise_err</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attempt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">err</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/retry/#wait_or_raise_err"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.retry.wait_or_raise_err" title="Permalink to this definition">#</a></dt>
-<dd><p>Accepts retry parameters and the underlying. The error is raised if the max_attempts has been reached otherwise the
-method waits based on the backoff calculations.
-:type attempt: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
-:param attempt: Number of the current attempt.
-:type err: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>
-:param err: Underlying error that was raised by the operation.
-:type max_attempts: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
-:param max_attempts: Maximum number of attempts that are allowed.
-:type backoff_multiplier: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
-:param backoff_multiplier: Factor that will be raised to the exponent of (attempt - 1) for calculating the backoff wait time.
-:type initial_backoff: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
-:param initial_backoff: The backoff time on the first error. This will be multiplied by the backoff_multiplier exponent for subsequent wait time calculations.
-:type max_backoff: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
-:param max_backoff: The maximum backoff wait time.</p>
-</dd></dl>
-
+                    <section id="jina-clients-base-retry-module">
+<h1>jina.clients.base.retry module<a class="headerlink" href="#jina-clients-base-retry-module" title="Permalink to this heading">#</a></h1>
 </section>
 
                 </article>
@@ -488,7 +448,7 @@ method waits based on the backoff calculations.
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -508,28 +468,8 @@ method waits based on the backoff calculations.
                 
             </footer>
         </div>
-        <aside class="toc-drawer">
+        <aside class="toc-drawer no-toc">
             
-            
-            <div class="toc-sticky toc-scroll">
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.clients.base.retry module</a><ul>
-<li><a class="reference internal" href="#jina.clients.base.retry.sync_wait_or_raise_err"><code class="docutils literal notranslate"><span class="pre">sync_wait_or_raise_err()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.base.retry.wait_or_raise_err"><code class="docutils literal notranslate"><span class="pre">wait_or_raise_err()</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
-            </div>
             
             
         </aside>

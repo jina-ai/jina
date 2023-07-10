@@ -6,10 +6,10 @@
 <meta property="og:title" content="Containerize" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/serving/executor/containerize/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:description" content="Once you understand what an Executor is, you may want to wrap it into a container so you can isolate its dependencies and make it ready to run in the cloud or Kubernetes. You can also build a Docker image yourself and use it like any other Executor. There are some requirements on how this image n..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="description" content="Once you understand what an Executor is, you may want to wrap it into a container so you can isolate its dependencies and make it ready to run in the cloud or Kubernetes. You can also build a Docker image yourself and use it like any other Executor. There are some requirements on how this image n..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/serving/executor/containerize.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Containerize - Jina 3.18.1 documentation</title>
+        <title>Containerize - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -347,8 +347,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -357,7 +356,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -376,7 +374,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -469,7 +467,7 @@ a <a class="reference external" href="https://docs.docker.com/engine/reference/b
 <li><p>Use a <a class="reference external" href="https://hub.docker.com/r/jinaai/jina">Jina based image</a> as the base image in your Dockerfile.
 This ensures that everything needed for Jina to run the Executor is installed.</p></li>
 </ul>
-<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">jinaai/jina:3-py37-perf</span>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">jinaai/jina:3-py38-perf</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -489,7 +487,7 @@ or by including the <code class="docutils literal notranslate"><span class="pre"
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>We <strong>strongly encourage</strong> you to name the Executor YAML as <code class="docutils literal notranslate"><span class="pre">config.yml</span></code>, otherwise using your containerized Executor with Kubernetes requires an extra step.
-When using <a class="reference internal" href="../../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.to_kubernetes_yaml" title="jina.serve.executors.BaseExecutor.to_kubernetes_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code></a> or <a class="reference internal" href="../../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.to_docker_compose_yaml" title="jina.serve.executors.BaseExecutor.to_docker_compose_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_docker_compose_yaml()</span></code></a>, Jina adds <code class="docutils literal notranslate"><span class="pre">--uses</span> <span class="pre">config.yml</span></code> in the entrypoint.
+When using <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code> or <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_docker_compose_yaml()</span></code>, Jina adds <code class="docutils literal notranslate"><span class="pre">--uses</span> <span class="pre">config.yml</span></code> in the entrypoint.
 To change that you need to manually edit the generated files.</p>
 </div>
 </section>
@@ -502,14 +500,17 @@ To change that you need to manually edit the generated files.</p>
 <p>We do this here in the <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code> file:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>  <span class="c1"># Our Executor has dependency on torch</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 
 
 <span class="k">class</span> <span class="nc">ContainerizedEncoder</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]:</span>
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;This Document is embedded by ContainerizedEncoder&#39;</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">docs</span>
 </pre></div>
 </div>
 </section>
@@ -539,7 +540,7 @@ and we can define such a configuration in <code class="docutils literal notransl
 <section id="write-the-dockerfile">
 <h3>Write the Dockerfile<a class="headerlink" href="#write-the-dockerfile" title="Permalink to this heading">#</a></h3>
 <p>The last step is to write a <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>, which has to do little more than launching the Executor via the Jina CLI:</p>
-<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">jinaai/jina:3-py37-perf</span>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">jinaai/jina:3-py38-perf</span>
 
 <span class="c"># make sure the files are copied into the image</span>
 <span class="k">COPY</span><span class="w"> </span>.<span class="w"> </span>/executor_root/
@@ -576,12 +577,14 @@ my_containerized_executor<span class="w">        </span>latest<span class="w">  
 <h3>Use the containerized Executor<a class="headerlink" href="#use-the-containerized-executor" title="Permalink to this heading">#</a></h3>
 <p>The containerized Executor can be used like any other, the only difference being the ‘docker’ prefix in the <code class="docutils literal notranslate"><span class="pre">uses</span></code>
 parameter:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 
 <span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;docker://my_containerized_executor&#39;</span><span class="p">)</span>
 
 <span class="k">with</span> <span class="n">dep</span><span class="p">:</span>
-    <span class="n">returned_docs</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">()]))</span>
+    <span class="n">returned_docs</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]([</span><span class="n">TextDoc</span><span class="p">()]),</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">])</span>
 
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">returned_docs</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Document returned with text: &quot;</span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
@@ -627,7 +630,7 @@ Document<span class="w"> </span>embedding<span class="w"> </span>of<span class="
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

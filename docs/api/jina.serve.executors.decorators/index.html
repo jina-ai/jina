@@ -6,11 +6,9 @@
 <meta property="og:title" content="jina.serve.executors.decorators module" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve.executors.decorators/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
-<meta property="og:description" content="Decorators and wrappers designed for wrapping BaseExecutor functions." />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
-<meta name="description" content="Decorators and wrappers designed for wrapping BaseExecutor functions." />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -33,7 +31,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.executors.decorators.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.executors.decorators module - Jina 3.18.1 documentation</title>
+        <title>jina.serve.executors.decorators module - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -167,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -185,7 +183,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -347,8 +345,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -357,7 +354,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -376,7 +372,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -424,7 +420,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon"
+                    <label class="toc-overlay-icon toc-content-icon no-toc"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -435,223 +431,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section id="module-jina.serve.executors.decorators">
-<span id="jina-serve-executors-decorators-module"></span><h1>jina.serve.executors.decorators module<a class="headerlink" href="#module-jina.serve.executors.decorators" title="Permalink to this heading">#</a></h1>
-<p>Decorators and wrappers designed for wrapping <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code> functions.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.serve.executors.decorators.avoid_concurrent_lock_cls">
-<span class="sig-prename descclassname"><span class="pre">jina.serve.executors.decorators.</span></span><span class="sig-name descname"><span class="pre">avoid_concurrent_lock_cls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/executors/decorators/#avoid_concurrent_lock_cls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.executors.decorators.avoid_concurrent_lock_cls" title="Permalink to this definition">#</a></dt>
-<dd><p>Wraps a function to lock a filelock for concurrent access with the name of the class to which it applies, to avoid deadlocks
-:param cls: the class to which is applied, only when the class corresponds to the instance type, this filelock will apply
-:return: the wrapped function</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.serve.executors.decorators.write">
-<span class="sig-prename descclassname"><span class="pre">jina.serve.executors.decorators.</span></span><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/executors/decorators/#write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.executors.decorators.write" title="Permalink to this definition">#</a></dt>
-<dd><p><cite>&#64;write</cite> is a decorator indicating that the function decorated will change the Executor finite state machine</p>
-<p>Calls to methods decorated with <cite>write</cite> will be handled by <cite>RAFT</cite> consensus algorithm to guarantee the consensus of the Executor between replicas when used as a <cite>StatefulDeployment</cite></p>
-<p>EXAMPLE USAGE</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
-<span class="kn">from</span> <span class="nn">jina.serve.executors.decorators</span> <span class="kn">import</span> <span class="n">write</span>
-<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
-<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
-
-
-<span class="k">class</span> <span class="nc">MyStateStatefulExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_docs_dict</span> <span class="o">=</span> <span class="p">{}</span>
-
-    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/index&#39;</span><span class="p">])</span>
-    <span class="nd">@write</span>
-    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]:</span>
-        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_docs_dict</span><span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span>
-
-    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/search&#39;</span><span class="p">])</span>
-    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]:</span>
-        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Searching against </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs_dict</span><span class="p">)</span><span class="si">}</span><span class="s1"> documents&#39;</span><span class="p">)</span>
-            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs_dict</span><span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
-
-
-<span class="n">d</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;stateful_executor&#39;</span><span class="p">,</span>
-    <span class="n">uses</span><span class="o">=</span><span class="n">MyStateStatefulExecutor</span><span class="p">,</span>
-    <span class="n">replicas</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">stateful</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">workspace</span><span class="o">=</span><span class="s1">&#39;./raft&#39;</span><span class="p">,</span>
-    <span class="n">peer_ports</span><span class="o">=</span><span class="p">[</span><span class="mi">12345</span><span class="p">,</span> <span class="mi">12346</span><span class="p">,</span> <span class="mi">12347</span><span class="p">],</span>
-<span class="p">)</span>
-<span class="k">with</span> <span class="n">d</span><span class="p">:</span>
-    <span class="n">d</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-        <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/index&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;I am here!&#39;</span><span class="p">)</span>
-    <span class="p">)</span>  <span class="c1"># send doc to `index` method which will be replicated using RAFT</span>
-    <span class="n">d</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-        <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/search&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Who is there?&#39;</span><span class="p">)</span>
-    <span class="p">)</span>  <span class="c1"># send doc to `search` method, that will bypass the RAFT apply</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>func</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>, <a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>]], <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]]]) – the method to decorate</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>decorated function</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.serve.executors.decorators.requests">
-<span class="sig-prename descclassname"><span class="pre">jina.serve.executors.decorators.</span></span><span class="sig-name descname"><span class="pre">requests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/executors/decorators/#requests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.executors.decorators.requests" title="Permalink to this definition">#</a></dt>
-<dd><p><cite>&#64;requests</cite> defines the endpoints of an Executor. It has a keyword <cite>on=</cite> to
-define the endpoint.</p>
-<p>A class method decorated with plain <cite>&#64;requests</cite> (without <cite>on=</cite>) is the default
-handler for all endpoints.
-That means, it is the fallback handler for endpoints that are not found.</p>
-<p>EXAMPLE USAGE</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
-<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="c1"># define Executor with custom `@requests` endpoints</span>
-<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/index&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>  <span class="c1"># index docs here</span>
-
-    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/search&#39;</span><span class="p">,</span> <span class="s1">&#39;/query&#39;</span><span class="p">])</span>
-    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>  <span class="c1"># perform search here</span>
-
-    <span class="nd">@requests</span>  <span class="c1"># default/fallback endpoint</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>  <span class="c1"># process docs here</span>
-
-
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">)</span>  <span class="c1"># add your Executor to a Flow</span>
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-        <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/index&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;I am here!&#39;</span><span class="p">)</span>
-    <span class="p">)</span>  <span class="c1"># send doc to `index` method</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-        <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/search&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Who is there?&#39;</span><span class="p">)</span>
-    <span class="p">)</span>  <span class="c1"># send doc to `search` method</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-        <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/query&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Who is there?&#39;</span><span class="p">)</span>
-    <span class="p">)</span>  <span class="c1"># send doc to `search` method</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/bar&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Who is there?&#39;</span><span class="p">))</span>  <span class="c1"># send doc to</span>
-    <span class="c1"># `foo` method</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>, <a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>]], <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]]]) – the method to decorate</p></li>
-<li><p><strong>on</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – the endpoint string, by convention starts with <cite>/</cite></p></li>
-<li><p><strong>request_schema</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>]]) – the type of the input document</p></li>
-<li><p><strong>response_schema</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>]]) – the type of the output document</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>decorated function</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.serve.executors.decorators.dynamic_batching">
-<span class="sig-prename descclassname"><span class="pre">jina.serve.executors.decorators.</span></span><span class="sig-name descname"><span class="pre">dynamic_batching</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preferred_batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/executors/decorators/#dynamic_batching"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.executors.decorators.dynamic_batching" title="Permalink to this definition">#</a></dt>
-<dd><p><cite>&#64;dynamic_batching</cite> defines the dynamic batching behavior of an Executor.
-Dynamic batching works by collecting Documents from multiple requests in a queue, and passing them to the Executor
-in batches of specified size.
-This can improve throughput and resource utilization at the cost of increased latency.
-TODO(johannes) add docstring example</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>, <a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>]], <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]]]) – the method to decorate</p></li>
-<li><p><strong>preferred_batch_size</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – target number of Documents in a batch. The batcher will collect requests until <cite>preferred_batch_size</cite> is reached,
-or until <cite>timeout</cite> is reached. Therefore, the actual batch size can be smaller or larger than <cite>preferred_batch_size</cite>.</p></li>
-<li><p><strong>timeout</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – maximum time in milliseconds to wait for a request to be assigned to a batch.
-If the oldest request in the queue reaches a waiting time of <cite>timeout</cite>, the batch will be passed to the Executor,
-even if it contains fewer than <cite>preferred_batch_size</cite> Documents.
-Default is 10_000ms (10 seconds).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>decorated function</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.serve.executors.decorators.monitor">
-<span class="sig-prename descclassname"><span class="pre">jina.serve.executors.decorators.</span></span><span class="sig-name descname"><span class="pre">monitor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documentation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/executors/decorators/#monitor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.executors.decorators.monitor" title="Permalink to this definition">#</a></dt>
-<dd><p>Decorator and context manager that allows monitoring of an Executor.</p>
-<p>You can access these metrics by enabling
-monitoring on your Executor. It will track the time spent calling the function and the number of times it has been
-called. Under the hood it will create a prometheus Summary : <a class="reference external" href="https://prometheus.io/docs/practices/histograms/">https://prometheus.io/docs/practices/histograms/</a>.</p>
-<p>EXAMPLE USAGE</p>
-<blockquote>
-<div><p>As decorator</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">monitor</span>
-
-
-<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="nd">@requests</span>  <span class="c1"># `@requests` are monitored automatically</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="o">...</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">my_method</span><span class="p">()</span>
-        <span class="o">...</span>
-
-    <span class="c1"># custom metric for `my_method`</span>
-    <span class="nd">@monitor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;metric_name&#39;</span><span class="p">,</span> <span class="n">documentation</span><span class="o">=</span><span class="s1">&#39;useful information goes here&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="o">...</span>
-</pre></div>
-</div>
-<p>As context manager</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
-
-
-<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="nd">@requests</span>  <span class="c1"># `@requests` are monitored automatically</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="o">...</span>
-        <span class="c1"># custom metric for code block</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">(</span><span class="s1">&#39;metric_name&#39;</span><span class="p">,</span> <span class="s1">&#39;useful information goes here&#39;</span><span class="p">):</span>
-            <span class="n">docs</span> <span class="o">=</span> <span class="n">process</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>To enable the defined <a class="reference internal" href="#jina.serve.executors.decorators.monitor" title="jina.serve.executors.decorators.monitor"><code class="xref py py-meth docutils literal notranslate"><span class="pre">monitor()</span></code></a> blocks, enable monitoring on the Flow level</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
-
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">monitoring</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">port_monitoring</span><span class="o">=</span><span class="mi">9090</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-    <span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">port_monitoring</span><span class="o">=</span><span class="mi">9091</span>
-<span class="p">)</span>
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="o">...</span>
-</pre></div>
-</div>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Warning<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Don’t use this decorator in combination with the &#64;request decorator. &#64;request’s are already monitored.</p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the name of the metrics, by default it is based on the name of the method it decorates</p></li>
-<li><p><strong>documentation</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the description of the metrics, by default it is based on the name of the method it decorates</p></li>
-</ul>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>decorator which takes as an input a single callable</p>
-</dd>
-</dl>
-</dd></dl>
-
+                    <section id="jina-serve-executors-decorators-module">
+<h1>jina.serve.executors.decorators module<a class="headerlink" href="#jina-serve-executors-decorators-module" title="Permalink to this heading">#</a></h1>
 </section>
 
                 </article>
@@ -667,7 +448,7 @@ called. Under the hood it will create a prometheus Summary : <a class="reference
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -687,31 +468,8 @@ called. Under the hood it will create a prometheus Summary : <a class="reference
                 
             </footer>
         </div>
-        <aside class="toc-drawer">
+        <aside class="toc-drawer no-toc">
             
-            
-            <div class="toc-sticky toc-scroll">
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.serve.executors.decorators module</a><ul>
-<li><a class="reference internal" href="#jina.serve.executors.decorators.avoid_concurrent_lock_cls"><code class="docutils literal notranslate"><span class="pre">avoid_concurrent_lock_cls()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.executors.decorators.write"><code class="docutils literal notranslate"><span class="pre">write()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.executors.decorators.requests"><code class="docutils literal notranslate"><span class="pre">requests()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.executors.decorators.dynamic_batching"><code class="docutils literal notranslate"><span class="pre">dynamic_batching()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.executors.decorators.monitor"><code class="docutils literal notranslate"><span class="pre">monitor()</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
-            </div>
             
             
         </aside>

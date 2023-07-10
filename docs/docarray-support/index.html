@@ -2,11 +2,39 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="#" /><link rel="search" title="Search" href="../search/" />
-        <link rel="canonical" href="https://docs.jina.ai/genindex.html" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<meta property="og:title" content="DocArray support" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://docs.jina.ai/docarray-support/" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
+<meta property="og:description" content="Jina depends heavily on DocArray to provide the data that is processed inside Jina Executors and sent by our Clients. Recently, DocArray was heavily refactored for version 0.30. Starting from that version, DocArray usage has changed drastically, however Jina can work seamlessly and automatically ..." />
+<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
+<meta name="description" content="Jina depends heavily on DocArray to provide the data that is processed inside Jina Executors and sent by our Clients. Recently, DocArray was heavily refactored for version 0.30. Starting from that version, DocArray usage has changed drastically, however Jina can work seamlessly and automatically ..." />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@JinaAI_">
+<meta name="twitter:creator" content="@JinaAI_">
+<meta name="description" content="Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · Cloud Native · MLOps">
 
-    <link rel="shortcut icon" href="../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 --><title>Index - Jina 3.19.0 documentation</title>
-<link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-48ZDWC8GT6');
+</script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+    
+<link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="Deploy a model" href="../tutorials/deploy-model/" /><link rel="prev" title="Protocol Documentation" href="../proto/docs/" />
+        <link rel="canonical" href="https://docs.jina.ai/docarray-support.html" />
+
+    <link rel="shortcut icon" href="../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
+        <title>DocArray support - Jina 3.19.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
@@ -157,7 +185,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -312,14 +340,14 @@
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML Specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../docarray-support/">DocArray support</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -394,7 +422,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon no-toc"
+                    <label class="toc-overlay-icon toc-content-icon"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -405,224 +433,152 @@
                     </label>
                 </div>
                 <article role="main">
-                    
-<section class="genindex-section">
-  <h1 id="index">Index</h1>
-  <div class="genindex-jumpbox"><a href="#Symbols"><strong>Symbols</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#J"><strong>J</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#W"><strong>W</strong></a> | <a href="#Y"><strong>Y</strong></a></div>
+                    <section id="docarray-support">
+<span id="id1"></span><h1>DocArray support<a class="headerlink" href="#docarray-support" title="Permalink to this heading">#</a></h1>
+<p>Jina depends heavily on DocArray to provide the data that is processed inside Jina Executors and sent by our Clients.
+Recently, DocArray was heavily refactored for version 0.30.</p>
+<p>Starting from that version, DocArray usage  has changed drastically, however Jina can work seamlessly and automatically with any of the versions of Jina.
+Jina will automatically detect the docarray version installed and use the corresponding methods and APIs. However, developers
+must take into account that some APIs and usages have changed, especially when it comes to developing Executors.</p>
+<p>The new version makes the dataclass feature of DocArray&lt;0.30 a first-class citizen and for this
+purpose it is built on top of <a class="reference external" href="https://pydantic-docs.helpmanual.io/">Pydantic</a>. An important shift is that
+the new DocArray adapts to users’ data, whereas DocArray&lt;0.30 forces user to adapt to the Document schema.</p>
+<section id="document-schema">
+<h2>Document schema<a class="headerlink" href="#document-schema" title="Permalink to this heading">#</a></h2>
+<p>At the heart of DocArray&gt;=0.30 is a new schema that is more flexible and expressive than the original DocArray schema.</p>
+<p>You can refer to the <a class="reference external" href="https://github.com/docarray/docarray">DocArray README</a> for more details.
+Please note that also the names of data structure change in the new version of DocArray.</p>
+<p>TODO: ADD snippets for both versions</p>
+<p>On the Jina side, this flexibility extends to every Executor, where you can now customize input and output schemas:</p>
+<ul class="simple">
+<li><p>With DocArray&lt;0.30 a Document has a fixed schema in the input and the output</p></li>
+<li><p>With DocArray&gt;=0.30 (the version currently used by default in Jina), an Executor defines its own input and output schemas.
+It also provides several predefined schemas that you can use out of the box.</p></li>
+</ul>
 </section>
-<section id="Symbols" class="genindex-section">
-  <h2>Symbols</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../concepts/preliminaries/#term-BaseDoc"><strong>- BaseDoc</strong></a>
-</li>
-        <li><a href="../concepts/preliminaries/#term-Deployment"><strong>- Deployment</strong></a>
-</li>
-        <li><a href="../concepts/preliminaries/#term-DocList"><strong>- DocList</strong></a>
-</li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../concepts/preliminaries/#term-Executor"><strong>- Executor</strong></a>
-</li>
-        <li><a href="../concepts/preliminaries/#term-Flow"><strong>- Flow</strong></a>
-</li>
-        <li><a href="../concepts/preliminaries/#term-Gateway"><strong>- Gateway</strong></a>
-</li>
-    </ul></td>
-  </tr></table>
+<section id="executor-api">
+<h2>Executor API<a class="headerlink" href="#executor-api" title="Permalink to this heading">#</a></h2>
+<p>To reflect the change with DocArray &gt;=0.30, the Executor API supports schema definition. The
+design is inspired by <a class="reference external" href="https://fastapi.tiangolo.com/">FastAPI</a>.</p>
+<p>The main difference, is that for <code class="docutils literal notranslate"><span class="pre">docarray&lt;0.30</span></code> there is only a single <a class="reference external" href="https://docarray.org/legacy-docs/fundamentals/document/">Document</a> with a fixed schema.
+However, with <code class="docutils literal notranslate"><span class="pre">docarray&gt;=0.30</span></code> user needs to define their own <code class="docutils literal notranslate"><span class="pre">Document</span></code> by subclassing from <a class="reference external" href="https://docs.docarray.org/user_guide/representing/first_step/">BaseDoc</a> or taking any of the <a class="reference external" href="https://docs.docarray.org/data_types/first_steps/">predefined Document types</a> provided.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">docarray&gt;=0.30</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">ImageDoc</span>
+<span class="kn">from</span> <span class="nn">docarray.typing</span> <span class="kn">import</span> <span class="n">AnyTensor</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">class</span> <span class="nc">InputDoc</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
+    <span class="n">img</span><span class="p">:</span> <span class="n">ImageDoc</span>
+
+<span class="k">class</span> <span class="nc">OutputDoc</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
+    <span class="n">embedding</span><span class="p">:</span> <span class="n">AnyTensor</span>
+
+<span class="k">class</span> <span class="nc">MyExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/bar&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">InputDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">OutputDoc</span><span class="p">]:</span>
+        <span class="n">docs_return</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">OutputDoc</span><span class="p">](</span>
+            <span class="p">[</span><span class="n">OutputDoc</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">))]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">docs_return</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">docarray&lt;0.30</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="k">class</span> <span class="nc">MyExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/bar&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="n">docs_return</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">Document</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">))]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">docs_return</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>To ease with the transition from the old to the new <code class="docutils literal notranslate"><span class="pre">docarray</span></code> versions, there is the <a class="reference external" href="https://docs.docarray.org/API_reference/documents/documents/#docarray.documents.legacy.LegacyDocument"><code class="docutils literal notranslate"><span class="pre">LegacyDocument</span></code></a> which is a predefined Document that aims to provide
+the same data type as the original <code class="docutils literal notranslate"><span class="pre">Document</span></code> in <code class="docutils literal notranslate"><span class="pre">docarray&lt;0.30</span></code>.</p>
 </section>
+<section id="client-api">
+<h2>Client API<a class="headerlink" href="#client-api" title="Permalink to this heading">#</a></h2>
+<p>In the client, the big change is that when using <code class="docutils literal notranslate"><span class="pre">docarray&gt;=0.30</span></code>. you specify the schema that you expect the Deployment or Flow to return. You can pass the return type by using the <code class="docutils literal notranslate"><span class="pre">return_type</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">client.post</span></code> method:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">docarray&gt;=0.30</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">ImageDoc</span>
+<span class="kn">from</span> <span class="nn">docarray.typing</span> <span class="kn">import</span> <span class="n">AnyTensor</span>
 
-<section id="C" class="genindex-section">
-  <h2>C</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../concepts/preliminaries/#term-Client"><strong>Client</strong></a>
-</li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../concepts/preliminaries/#term-Client-connects-to-a-Gateway-or-Executor-and-sends-receives-streams-data-from-it."><strong>Client connects to a Gateway or Executor and sends/receives/streams data from it.</strong></a>
-</li>
-    </ul></td>
-  </tr></table>
+<span class="k">class</span> <span class="nc">InputDoc</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
+    <span class="n">img</span><span class="p">:</span> <span class="n">ImageDoc</span>
+
+<span class="k">class</span> <span class="nc">OutputDoc</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
+    <span class="n">embedding</span><span class="p">:</span> <span class="n">AnyTensor</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">DocList</span><span class="p">[</span><span class="n">InputDoc</span><span class="p">]([</span><span class="n">InputDoc</span><span class="p">(</span><span class="n">img</span><span class="o">=</span><span class="n">ImageDoc</span><span class="p">())</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]),</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">OutputDoc</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">docarray&lt;0.30</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]))</span>
+</pre></div>
+</div>
+</div>
+</div>
 </section>
-
-<section id="D" class="genindex-section">
-  <h2>D</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../concepts/preliminaries/#term-Data-structures-coming-from-docarray-are-the-basic-fundamental-data-structure-in-Jina."><strong>Data structures coming from docarray are the basic fundamental data structure in Jina.</strong></a>
-</li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../concepts/preliminaries/#term-DocArray-data-structure"><strong>DocArray data structure</strong></a>
-</li>
-    </ul></td>
-  </tr></table>
+<section id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.docarray.org/">DocArray&gt;=0.30</a> docs</p></li>
+<li><p><a class="reference external" href="https://docarray.org/legacy-docs/">DocArray&lt;0.30</a> docs</p></li>
+<li><p><a class="reference external" href="https://pydantic-docs.helpmanual.io/">Pydantic</a> documentation for more details on the schema definition</p></li>
+</ul>
 </section>
-
-<section id="F" class="genindex-section">
-  <h2>F</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li>
-    fastentrypoints
-
-        <ul>
-          <li><a href="../api/fastentrypoints/#module-fastentrypoints">module</a>
-</li>
-        </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../concepts/preliminaries/#term-frameworks-Kubernetes-Docker-compose-to-provide-more-advanced-and-production-ready-settings.-They-can-also-be-directly-deployed-to-Jina-AI-Cloud"><strong>frameworks (Kubernetes, Docker compose) to provide more advanced and production-ready settings. They can also be directly deployed to Jina AI Cloud</strong></a>
-</li>
-    </ul></td>
-  </tr></table>
 </section>
-
-<section id="G" class="genindex-section">
-  <h2>G</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/fastentrypoints/#fastentrypoints.get_args">get_args() (in module fastentrypoints)</a>
-</li>
-    </ul></td>
-  </tr></table>
-</section>
-
-<section id="J" class="genindex-section">
-  <h2>J</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li>
-    jina_cli
-
-        <ul>
-          <li><a href="../api/jina_cli/#module-jina_cli">module</a>
-</li>
-        </ul></li>
-        <li>
-    jina_cli.autocomplete
-
-        <ul>
-          <li><a href="../api/jina_cli.autocomplete/#module-jina_cli.autocomplete">module</a>
-</li>
-        </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li>
-    jina_cli.known_plugins
-
-        <ul>
-          <li><a href="../api/jina_cli.known_plugins/#module-jina_cli.known_plugins">module</a>
-</li>
-        </ul></li>
-    </ul></td>
-  </tr></table>
-</section>
-
-<section id="M" class="genindex-section">
-  <h2>M</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/fastentrypoints/#fastentrypoints.main">main() (in module fastentrypoints)</a>
-
-        <ul>
-          <li><a href="../api/jina_cli/#jina_cli.main">(in module jina_cli)</a>
-</li>
-        </ul></li>
-        <li>
-    module
-
-        <ul>
-          <li><a href="../api/fastentrypoints/#module-fastentrypoints">fastentrypoints</a>
-</li>
-          <li><a href="../api/jina_cli/#module-jina_cli">jina_cli</a>
-</li>
-          <li><a href="../api/jina_cli.autocomplete/#module-jina_cli.autocomplete">jina_cli.autocomplete</a>
-</li>
-          <li><a href="../api/jina_cli.known_plugins/#module-jina_cli.known_plugins">jina_cli.known_plugins</a>
-</li>
-        </ul></li>
-    </ul></td>
-  </tr></table>
-</section>
-
-<section id="O" class="genindex-section">
-  <h2>O</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../concepts/preliminaries/#term-Orchestration"><strong>Orchestration</strong></a>
-</li>
-    </ul></td>
-  </tr></table>
-</section>
-
-<section id="P" class="genindex-section">
-  <h2>P</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../concepts/preliminaries/coding-in-python-yaml/#term-Pythonic"><strong>Pythonic</strong></a>
-</li>
-    </ul></td>
-  </tr></table>
-</section>
-
-<section id="S" class="genindex-section">
-  <h2>S</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../concepts/preliminaries/#term-Serving"><strong>Serving</strong></a>
-</li>
-    </ul></td>
-  </tr></table>
-</section>
-
-<section id="T" class="genindex-section">
-  <h2>T</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../concepts/preliminaries/#term-These-components-can-be-orchestrated-by-Jina-s-orchestration-layer-or-by-other-container-orchestration-frameworks-such-as-Kubernetes-or-Docker-Compose."><strong>These components can be orchestrated by Jina&#39;s orchestration layer or by other container orchestration frameworks such as Kubernetes or Docker Compose.</strong></a>
-</li>
-        <li><a href="../concepts/preliminaries/#term-They-wrap-them-to-provide-them-the-scalability-and-serving-capabilities.-They-also-provide-easy-translation-to-other-orchestration"><strong>They wrap them to provide them the scalability and serving capabilities. They also provide easy translation to other orchestration</strong></a>
-</li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../concepts/preliminaries/#term-This-layer-contains-all-the-objects-and-concepts-that-are-used-to-actually-serve-the-logic-and-receive-and-respond-to-queries.-These-components-are-designed-to-be-used-as-microservices-ready-to-be-containerized."><strong>This layer contains all the objects and concepts that are used to actually serve the logic and receive and respond to queries. These components are designed to be used as microservices ready to be containerized.</strong></a>
-</li>
-        <li><a href="../concepts/preliminaries/#term-This-layer-contains-the-components-making-sure-that-the-objects-especially-the-Executor-are-deployed-and-scaled-for-serving."><strong>This layer contains the components making sure that the objects (especially the Executor) are deployed and scaled for serving.</strong></a>
-</li>
-    </ul></td>
-  </tr></table>
-</section>
-
-<section id="W" class="genindex-section">
-  <h2>W</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../concepts/preliminaries/#term-with-a-single-command-line."><strong>with a single command line.</strong></a>
-</li>
-    </ul></td>
-  </tr></table>
-</section>
-
-<section id="Y" class="genindex-section">
-  <h2>Y</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../concepts/preliminaries/coding-in-python-yaml/#term-YAMLish"><strong>YAMLish</strong></a>
-</li>
-    </ul></td>
-  </tr></table>
-</section>
-
 
                 </article>
             </div>
             <footer>
                 
                 <div class="related-pages">
-                    
-                    
+                    <a class="next-page" href="../tutorials/deploy-model/">
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Next</span>
+                            </div>
+                            <div class="title">Deploy a model</div>
+                        </div>
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+                    </a>
+                    <a class="prev-page" href="../proto/docs/">
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Previous</span>
+                            </div>
+                            
+                            <div class="title">Protocol Documentation</div>
+                            
+                        </div>
+                    </a>
                 </div>
                 <div class="bottom-of-page">
                     <div class="left-details">
@@ -649,8 +605,30 @@
                 
             </footer>
         </div>
-        <aside class="toc-drawer no-toc">
+        <aside class="toc-drawer">
             
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">DocArray support</a><ul>
+<li><a class="reference internal" href="#document-schema">Document schema</a></li>
+<li><a class="reference internal" href="#executor-api">Executor API</a></li>
+<li><a class="reference internal" href="#client-api">Client API</a></li>
+<li><a class="reference internal" href="#see-also">See also</a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
             
             
         </aside>

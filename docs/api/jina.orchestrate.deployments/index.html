@@ -6,11 +6,11 @@
 <meta property="og:title" content="jina.orchestrate.deployments package" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.orchestrate.deployments/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
-<meta property="og:description" content="Subpackages: jina.orchestrate.deployments.config package- Subpackages- jina.orchestrate.deployments.config.k8slib package- Submodules, Module contents.., Submodules- jina.orchestrate.deployments.config.docker_compose module- DockerComposeConfig., jina.orchestrate.deployments.config.helper module-..." />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
+<meta property="og:description" content="Subpackages: jina.orchestrate.deployments.config package- Subpackages- jina.orchestrate.deployments.config.k8slib package- Submodules, Module contents.., Submodules- jina.orchestrate.deployments.config.docker_compose module, jina.orchestrate.deployments.config.helper module, jina.orchestrate.depl..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
-<meta name="description" content="Subpackages: jina.orchestrate.deployments.config package- Subpackages- jina.orchestrate.deployments.config.k8slib package- Submodules, Module contents.., Submodules- jina.orchestrate.deployments.config.docker_compose module- DockerComposeConfig., jina.orchestrate.deployments.config.helper module-..." />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
+<meta name="description" content="Subpackages: jina.orchestrate.deployments.config package- Subpackages- jina.orchestrate.deployments.config.k8slib package- Submodules, Module contents.., Submodules- jina.orchestrate.deployments.config.docker_compose module, jina.orchestrate.deployments.config.helper module, jina.orchestrate.depl..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.orchestrate.deployments.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.orchestrate.deployments package - Jina 3.18.1 documentation</title>
+        <title>jina.orchestrate.deployments package - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -347,8 +347,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -357,7 +356,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -376,7 +374,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -445,31 +443,18 @@
 <li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.deployments.config/#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.deployments.config.k8slib/">jina.orchestrate.deployments.config.k8slib package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.orchestrate.deployments.config.k8slib/#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.orchestrate.deployments.config.k8slib/#module-jina.orchestrate.deployments.config.k8slib">Module contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.orchestrate.deployments.config.k8slib/#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.deployments.config/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.deployments.config.docker_compose/">jina.orchestrate.deployments.config.docker_compose module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.orchestrate.deployments.config.docker_compose/#jina.orchestrate.deployments.config.docker_compose.DockerComposeConfig"><code class="docutils literal notranslate"><span class="pre">DockerComposeConfig</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.deployments.config.docker_compose/">jina.orchestrate.deployments.config.docker_compose module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.deployments.config.helper/">jina.orchestrate.deployments.config.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.deployments.config.k8s/">jina.orchestrate.deployments.config.k8s module</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.deployments.config.helper/">jina.orchestrate.deployments.config.helper module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.orchestrate.deployments.config.helper/#jina.orchestrate.deployments.config.helper.get_image_name"><code class="docutils literal notranslate"><span class="pre">get_image_name()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.orchestrate.deployments.config.helper/#jina.orchestrate.deployments.config.helper.to_compatible_name"><code class="docutils literal notranslate"><span class="pre">to_compatible_name()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.orchestrate.deployments.config.helper/#jina.orchestrate.deployments.config.helper.get_base_executor_version"><code class="docutils literal notranslate"><span class="pre">get_base_executor_version()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.orchestrate.deployments.config.helper/#jina.orchestrate.deployments.config.helper.construct_runtime_container_args"><code class="docutils literal notranslate"><span class="pre">construct_runtime_container_args()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.orchestrate.deployments.config.helper/#jina.orchestrate.deployments.config.helper.validate_uses"><code class="docutils literal notranslate"><span class="pre">validate_uses()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.deployments.config.k8s/">jina.orchestrate.deployments.config.k8s module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.orchestrate.deployments.config.k8s/#jina.orchestrate.deployments.config.k8s.K8sDeploymentConfig"><code class="docutils literal notranslate"><span class="pre">K8sDeploymentConfig</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.deployments.config/#module-jina.orchestrate.deployments.config">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.deployments.config/#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -479,670 +464,12 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.deployments.install_requirements_helper/">jina.orchestrate.deployments.install_requirements_helper module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.deployments.install_requirements_helper/#jina.orchestrate.deployments.install_requirements_helper.install_package_dependencies"><code class="docutils literal notranslate"><span class="pre">install_package_dependencies()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.deployments.install_requirements_helper/">jina.orchestrate.deployments.install_requirements_helper module</a></li>
 </ul>
 </div>
 </section>
-<section id="module-jina.orchestrate.deployments">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.orchestrate.deployments" title="Permalink to this heading">#</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.DeploymentType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.orchestrate.deployments.</span></span><span class="sig-name descname"><span class="pre">DeploymentType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#DeploymentType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.DeploymentType" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABCMeta</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">JAMLCompatibleType</span></code></p>
-<p>Type of Deployment, metaclass of <a class="reference internal" href="#jina.orchestrate.deployments.Deployment" title="jina.orchestrate.deployments.Deployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.DeploymentType.mro">
-<span class="sig-name descname"><span class="pre">mro</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.orchestrate.deployments.DeploymentType.mro" title="Permalink to this definition">#</a></dt>
-<dd><p>Return a type’s method resolution order.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.DeploymentType.register">
-<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subclass</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.orchestrate.deployments.DeploymentType.register" title="Permalink to this definition">#</a></dt>
-<dd><p>Register a virtual subclass of an ABC.</p>
-<p>Returns the subclass, to allow usage as a class decorator.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.orchestrate.deployments.</span></span><span class="sig-name descname"><span class="pre">Deployment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_concurrent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_auto_volume</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docker_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entrypoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_from_secret</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exit_on_exceptions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">floating</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grpc_channel_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grpc_metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grpc_server_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['0.0.0.0']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">install_requirements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics_exporter_host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics_exporter_port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monitoring</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'executor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">native</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_reduce</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_array_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ANY'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_monitoring</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefer_platform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['GRPC']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">py_modules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiet_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raft_configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reload</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replicas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime_cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'WorkerRuntime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shards</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssl_certfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssl_keyfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateful</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_ctrl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_ready</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">600000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_send</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traces_exporter_host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traces_exporter_port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../jina.serve.executors/#jina.serve.executors.BaseExecutor" title="jina.serve.executors.BaseExecutor"><span class="pre">BaseExecutor</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'BaseExecutor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_after</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../jina.serve.executors/#jina.serve.executors.BaseExecutor" title="jina.serve.executors.BaseExecutor"><span class="pre">BaseExecutor</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_after_address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_before</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../jina.serve.executors/#jina.serve.executors.BaseExecutor" title="jina.serve.executors.BaseExecutor"><span class="pre">BaseExecutor</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_before_address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_dynamic_batching</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_metas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_requests</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_with</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uvicorn_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volumes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">when</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.jaml/#jina.jaml.JAMLCompatible" title="jina.jaml.JAMLCompatible"><code class="xref py py-class docutils literal notranslate"><span class="pre">JAMLCompatible</span></code></a>, <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.PostMixin" title="jina.clients.mixin.PostMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">PostMixin</span></code></a>, <a class="reference internal" href="../jina.orchestrate.orchestrator/#jina.orchestrate.orchestrator.BaseOrchestrator" title="jina.orchestrate.orchestrator.BaseOrchestrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOrchestrator</span></code></a></p>
-<p>A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.
-Internally, the pods can run with the process/thread backend. They can also be run in their own containers
-:type args: <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]
-:param args: arguments parsed from the CLI
-:type needs: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Set</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]
-:param needs: deployments names of preceding deployments, the output of these deployments go into the input of this deployment</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.needs">
-<span class="sig-name descname"><span class="pre">needs</span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.needs" title="Permalink to this definition">#</a></dt>
-<dd><p>used in the <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.flow.Flow</span></code> to build the graph</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.update_pod_args">
-<span class="sig-name descname"><span class="pre">update_pod_args</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.update_pod_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.update_pod_args" title="Permalink to this definition">#</a></dt>
-<dd><p>Update args of all its pods based on Deployment args. Including head/tail</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.update_sandbox_args">
-<span class="sig-name descname"><span class="pre">update_sandbox_args</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.update_sandbox_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.update_sandbox_args" title="Permalink to this definition">#</a></dt>
-<dd><p>Update args of all its pods based on the host and port returned by Hubble</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.update_worker_pod_args">
-<span class="sig-name descname"><span class="pre">update_worker_pod_args</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.update_worker_pod_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.update_worker_pod_args" title="Permalink to this definition">#</a></dt>
-<dd><p>Update args of all its worker pods based on Deployment args. Does not touch head and tail</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.is_sandbox">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_sandbox</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.is_sandbox" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if this deployment is a sandbox.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if this deployment is provided as a sandbox, False otherwise</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.role">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">role</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../jina.enums/#jina.enums.DeploymentRoleType" title="jina.enums.DeploymentRoleType"><span class="pre">DeploymentRoleType</span></a></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.role" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the role of this <a class="reference internal" href="#jina.orchestrate.deployments.Deployment" title="jina.orchestrate.deployments.Deployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../jina.enums/#jina.enums.DeploymentRoleType" title="jina.enums.DeploymentRoleType"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeploymentRoleType</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.name" title="Permalink to this definition">#</a></dt>
-<dd><p>The name of this <a class="reference internal" href="#jina.orchestrate.deployments.Deployment" title="jina.orchestrate.deployments.Deployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.head_host">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">head_host</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.head_host" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the host of the HeadPod of this deployment
-.. # noqa: DAR201</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.head_port">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">head_port</span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.head_port" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the port of the HeadPod of this deployment
-.. # noqa: DAR201</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.head_port_monitoring">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">head_port_monitoring</span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.head_port_monitoring" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the port_monitoring of the HeadPod of this deployment
-.. # noqa: DAR201</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.client">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../jina.clients.base/#jina.clients.base.BaseClient" title="jina.clients.base.BaseClient"><span class="pre">BaseClient</span></a></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.client" title="Permalink to this definition">#</a></dt>
-<dd><p>Return a <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseClient</span></code> object attach to this Flow.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../jina.clients.base/#jina.clients.base.BaseClient" title="jina.clients.base.BaseClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseClient</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.deployments">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">deployments</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.deployments" title="Permalink to this definition">#</a></dt>
-<dd><p>Get deployments of the deployment. The Deployment just gives one deployment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of deployments</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.tls_enabled">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tls_enabled</span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.tls_enabled" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if secure connection via TLS is enabled for this Deployment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True if tls is enabled, False otherwise</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.external">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">external</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.external" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if this deployment is external.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if this deployment is provided as an external deployment, False otherwise</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.grpc_metadata">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">grpc_metadata</span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.grpc_metadata" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the gRPC metadata for this deployment
-:return: The gRPC metadata for this deployment. If the deployment is a Gateway, return None.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.protocol">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protocol</span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.protocol" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the protocol of this deployment</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.first_pod_args">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">first_pod_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Namespace</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.first_pod_args" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the first worker pod’s args</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.host">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">host</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.host" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the host name of this deployment</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.port">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">port</span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.port" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The port of this deployment</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.ports">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ports</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.ports" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns a list of ports exposed by this Deployment.
-Exposed means these are the ports a Client/Gateway is supposed to communicate with.
-For sharded deployments this will be the head_port.
-For non-sharded deployments it will be all replica ports.
-.. # noqa: DAR201</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.hosts">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hosts</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.hosts" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns a list of host addresses exposed by this Deployment.
-Exposed means these are the host a Client/Gateway is supposed to communicate with.
-For sharded deployments this will be the head host.
-For non-sharded deployments it will be all replica hosts.
-.. # noqa: DAR201</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.head_args">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">head_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Namespace</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.head_args" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the arguments for the <cite>head</cite> of this Deployment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.uses_before_args">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">uses_before_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Namespace</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.uses_before_args" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the arguments for the <cite>uses_before</cite> of this Deployment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.uses_after_args">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">uses_after_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Namespace</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.uses_after_args" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the arguments for the <cite>uses_after</cite> of this Deployment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.all_args">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Namespace</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.all_args" title="Permalink to this definition">#</a></dt>
-<dd><p>Get all arguments of all Pods in this Deployment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.num_pods">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_pods</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.num_pods" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the number of running <code class="xref py py-class docutils literal notranslate"><span class="pre">Pod</span></code></p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.get_worker_host">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_worker_host</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pod_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pod_is_container</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">head_is_container</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.get_worker_host"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.get_worker_host" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if the current pod and head are both containerized on the same host
-If so, __docker_host__ needs to be advertised as the worker’s address to the head</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pod_args</strong> – arguments of the worker pod</p></li>
-<li><p><strong>pod_is_container</strong> – boolean specifying if pod is to be run in container</p></li>
-<li><p><strong>head_is_container</strong> – boolean specifying if head pod is to be run in container</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>host to pass in connection list of the head</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.start">
-<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.start" title="Permalink to this definition">#</a></dt>
-<dd><p>Start to run all <code class="xref py py-class docutils literal notranslate"><span class="pre">Pod</span></code> in this Deployment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#jina.orchestrate.deployments.Deployment" title="jina.orchestrate.deployments.Deployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></a></p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>started deployment</p>
-</dd>
-</dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If one of the <code class="xref py py-class docutils literal notranslate"><span class="pre">Pod</span></code> fails to start, make sure that all of them
-are properly closed.</p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.wait_start_success">
-<span class="sig-name descname"><span class="pre">wait_start_success</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.wait_start_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.wait_start_success" title="Permalink to this definition">#</a></dt>
-<dd><p>Block until all pods start successfully.</p>
-<p>If not successful, it will raise an error hoping the outer function will catch it</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.async_wait_start_success">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_wait_start_success</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.async_wait_start_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.async_wait_start_success" title="Permalink to this definition">#</a></dt>
-<dd><p>Block until all pods start successfully.</p>
-<p>If unsuccessful, it will raise an error hoping the outer function will catch it</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.join">
-<span class="sig-name descname"><span class="pre">join</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.join"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.join" title="Permalink to this definition">#</a></dt>
-<dd><p>Wait until all pods exit</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.is_ready">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_ready</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.is_ready" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if Deployment is ready</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>A Deployment is ready when all the Pods it contains are ready</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.block">
-<span class="sig-name descname"><span class="pre">block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stop_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.block"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.block" title="Permalink to this definition">#</a></dt>
-<dd><p>Block the Deployment until <cite>stop_event</cite> is set or user hits KeyboardInterrupt</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>stop_event</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – a threading event or a multiprocessing event that once set will resume the control flow
-to main thread.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.address_private">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">address_private</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.address_private" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the private IP address of the gateway for connecting from other machine in the same network</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.address_public">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">address_public</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.address_public" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the public IP address of the gateway for connecting from other machine in the public network</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.callback">
-<span class="sig-name descname"><span class="pre">callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.callback" title="Permalink to this definition">#</a></dt>
-<dd><p>Registers an arbitrary callback and arguments.</p>
-<p>Cannot suppress exceptions.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.close">
-<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.close" title="Permalink to this definition">#</a></dt>
-<dd><p>Immediately unwind the context stack.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.delete">
-<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs:</span> <span class="pre">~typing.Optional[InputType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters:</span> <span class="pre">~typing.Optional[~typing.Dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_responses:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type:</span> <span class="pre">~typing.Type[~docarray.array.document.DocumentArray]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'docarray.array.document.DocumentArray'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><span class="pre">Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.delete" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.enter_context">
-<span class="sig-name descname"><span class="pre">enter_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cm</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.enter_context" title="Permalink to this definition">#</a></dt>
-<dd><p>Enters the supplied context manager.</p>
-<p>If successful, also pushes its __exit__ method as a callback and
-returns the result of the __enter__ method.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.index">
-<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs:</span> <span class="pre">~typing.Optional[InputType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters:</span> <span class="pre">~typing.Optional[~typing.Dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_responses:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type:</span> <span class="pre">~typing.Type[~docarray.array.document.DocumentArray]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'docarray.array.document.DocumentArray'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><span class="pre">Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.index" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.is_valid_jaml">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_valid_jaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.is_valid_jaml" title="Permalink to this definition">#</a></dt>
-<dd><p>Verifies the yaml syntax of a given object by first serializing it and attempting to deserialize and catch
-parser errors
-:type obj: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>
-:param obj: yaml object
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
-:return: whether the syntax is valid or not</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.load_config">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_py_modules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">substitute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_metas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_requests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_search_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">py_modules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_dynamic_batching</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">needs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_gateway</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noblock_on_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.load_config" title="Permalink to this definition">#</a></dt>
-<dd><p>A high-level interface for loading configuration with features
-of loading extra py_modules, substitute env &amp; context variables. Any class that
-implements <code class="xref py py-class docutils literal notranslate"><span class="pre">JAMLCompatible</span></code> mixin can enjoy this feature, e.g. <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFlow</span></code>,
-<code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGateway</span></code> and all their subclasses.</p>
-<dl class="simple">
-<dt>Support substitutions in YAML:</dt><dd><ul class="simple">
-<li><p>Environment variables: <code class="docutils literal notranslate"><span class="pre">${{</span> <span class="pre">ENV.VAR</span> <span class="pre">}}</span></code> (recommended), <code class="docutils literal notranslate"><span class="pre">$VAR</span></code> (deprecated).</p></li>
-<li><p>Context dict (<code class="docutils literal notranslate"><span class="pre">context</span></code>): <code class="docutils literal notranslate"><span class="pre">${{</span> <span class="pre">CONTEXT.VAR</span> <span class="pre">}}``(recommended),</span> <span class="pre">``${{</span> <span class="pre">VAR</span> <span class="pre">}}</span></code>.</p></li>
-<li><p>Internal reference via <code class="docutils literal notranslate"><span class="pre">this</span></code> and <code class="docutils literal notranslate"><span class="pre">root</span></code>: <code class="docutils literal notranslate"><span class="pre">${{this.same_level_key}}</span></code>, <code class="docutils literal notranslate"><span class="pre">${{root.root_level_key}}</span></code></p></li>
-</ul>
-</dd>
-</dl>
-<p>Substitutions are carried in the order and multiple passes to resolve variables with best effort.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!BaseEncoder</span>
-<span class="nt">metas</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{VAR_A}}</span><span class="w">  </span><span class="c1"># env or context variables</span>
-<span class="w">    </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-${{this.name}}</span><span class="w">  </span><span class="c1"># internal reference</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># load Executor from yaml file</span>
-<span class="n">BaseExecutor</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">&#39;a.yml&#39;</span><span class="p">)</span>
-
-<span class="c1"># load Executor from yaml file and substitute environment variables</span>
-<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;VAR_A&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;hello-world&#39;</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">BaseExecutor</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">&#39;a.yml&#39;</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">b</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;hello-world&#39;</span>
-
-<span class="c1"># load Executor from yaml file and substitute variables from a dict</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">BaseExecutor</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">&#39;a.yml&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;VAR_A&#39;</span><span class="p">:</span> <span class="s1">&#39;hello-world&#39;</span><span class="p">})</span>
-<span class="k">assert</span> <span class="n">b</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;hello-world&#39;</span>
-
-<span class="c1"># disable substitute</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">BaseExecutor</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">&#39;a.yml&#39;</span><span class="p">,</span> <span class="n">substitute</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>source</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TextIO</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – the multi-kind source of the configs.</p></li>
-<li><p><strong>allow_py_modules</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – allow importing plugins specified by <code class="docutils literal notranslate"><span class="pre">py_modules</span></code> in YAML at any levels</p></li>
-<li><p><strong>substitute</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – substitute environment, internal reference and context variables.</p></li>
-<li><p><strong>context</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – context replacement variables in a dict, the value of the dict is the replacement.</p></li>
-<li><p><strong>uses_with</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – dictionary of parameters to overwrite from the default config’s with field</p></li>
-<li><p><strong>uses_metas</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – dictionary of parameters to overwrite from the default config’s metas field</p></li>
-<li><p><strong>uses_requests</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – dictionary of parameters to overwrite from the default config’s requests field</p></li>
-<li><p><strong>extra_search_paths</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – extra paths used when looking for executor yaml files</p></li>
-<li><p><strong>py_modules</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Optional py_module from which the object need to be loaded</p></li>
-<li><p><strong>runtime_args</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – Optional dictionary of parameters runtime_args to be directly passed without being parsed into a yaml config</p></li>
-<li><p><strong>uses_dynamic_batching</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – dictionary of parameters to overwrite from the default config’s dynamic_batching field</p></li>
-<li><p><strong>needs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Set</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – the name of the Deployment(s) that this Deployment receives data from. One can also use “gateway” to indicate the connection with the gateway.</p></li>
-<li><p><strong>include_gateway</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Defines if the gateway deployment should be included, defaults to True</p></li>
-<li><p><strong>noblock_on_start</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set, starting a Pod/Deployment does not block the thread/process. It then relies on ‘
-‘<cite>wait_start_success</cite> at outer function for the postpone check.</p></li>
-<li><p><strong>kwargs</strong> – kwargs for parse_config_source</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../jina.jaml/#jina.jaml.JAMLCompatible" title="jina.jaml.JAMLCompatible"><code class="xref py py-class docutils literal notranslate"><span class="pre">JAMLCompatible</span></code></a></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">JAMLCompatible</span></code> object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.pop_all">
-<span class="sig-name descname"><span class="pre">pop_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.pop_all" title="Permalink to this definition">#</a></dt>
-<dd><p>Preserve the context stack by transferring it to a new instance.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.post">
-<span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size=100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_responses=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff=0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff=2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier=1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type=&lt;class</span> <span class="pre">'docarray.array.document.DocumentArray'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.post" title="Permalink to this definition">#</a></dt>
-<dd><p>Post a general data request to the Flow.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>inputs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[InputType]) – input data which can be an Iterable, a function which returns an Iterable, or a single Document.</p></li>
-<li><p><strong>on</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the endpoint which is invoked. All the functions in the executors decorated by <cite>&#64;requests(on=…)</cite> with the same endpoint are invoked.</p></li>
-<li><p><strong>on_done</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[CallbackFnType]) – the function to be called when the <code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> object is resolved.</p></li>
-<li><p><strong>on_error</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[CallbackFnType]) – the function to be called when the <code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> object is rejected.</p></li>
-<li><p><strong>on_always</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[CallbackFnType]) – the function to be called when the <code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> object is either resolved or rejected.</p></li>
-<li><p><strong>parameters</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – the kwargs that will be sent to the executor</p></li>
-<li><p><strong>target_executor</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a regex string. Only matching Executors will process the request.</p></li>
-<li><p><strong>request_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the number of Documents per request. &lt;=0 means all inputs in one request.</p></li>
-<li><p><strong>show_progress</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if set, client will show a progress bar on receiving every request.</p></li>
-<li><p><strong>continue_on_error</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if set, a Request that causes an error will be logged only without blocking the further requests.</p></li>
-<li><p><strong>return_responses</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if set to True, the result will come as Response and not as a <cite>DocumentArray</cite></p></li>
-<li><p><strong>max_attempts</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of sending attempts, including the original request.</p></li>
-<li><p><strong>initial_backoff</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The first retry will happen with a delay of random(0, initial_backoff)</p></li>
-<li><p><strong>max_backoff</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The maximum accepted backoff after the exponential incremental delay</p></li>
-<li><p><strong>backoff_multiplier</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))</p></li>
-<li><p><strong>results_in_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – return the results in the same order as the inputs</p></li>
-<li><p><strong>stream</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.</p></li>
-<li><p><strong>prefetch</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – How many Requests are processed from the Client at the same time. If not provided then Gateway prefetch value will be used.</p></li>
-<li><p><strong>return_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>]) – the DocumentArray type to be returned. By default, it is <cite>DocumentArray</cite>.</p></li>
-<li><p><strong>kwargs</strong> – additional parameters</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[Response], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None or DocumentArray containing all response Documents</p>
-</dd>
-</dl>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p><code class="docutils literal notranslate"><span class="pre">target_executor</span></code> uses <code class="docutils literal notranslate"><span class="pre">re.match</span></code> for checking if the pattern is matched. <code class="docutils literal notranslate"><span class="pre">target_executor=='foo'</span></code> will match both deployments with the name <code class="docutils literal notranslate"><span class="pre">foo</span></code> and <code class="docutils literal notranslate"><span class="pre">foo_what_ever_suffix</span></code>.</p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.push">
-<span class="sig-name descname"><span class="pre">push</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.push" title="Permalink to this definition">#</a></dt>
-<dd><p>Registers a callback with the standard __exit__ method signature.</p>
-<p>Can suppress exceptions the same way __exit__ method can.
-Also accepts any object with an __exit__ method (registering a call
-to the method instead of the object itself).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.save_config">
-<span class="sig-name descname"><span class="pre">save_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.save_config" title="Permalink to this definition">#</a></dt>
-<dd><p>Save the object’s config into a YAML file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filename</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – file path of the yaml file, if not given then <code class="xref py py-attr docutils literal notranslate"><span class="pre">config_abspath</span></code> is used</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.search">
-<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs:</span> <span class="pre">~typing.Optional[InputType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters:</span> <span class="pre">~typing.Optional[~typing.Dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_responses:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type:</span> <span class="pre">~typing.Type[~docarray.array.document.DocumentArray]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'docarray.array.document.DocumentArray'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><span class="pre">Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.search" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs:</span> <span class="pre">~typing.Optional[InputType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters:</span> <span class="pre">~typing.Optional[~typing.Dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_responses:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type:</span> <span class="pre">~typing.Type[~docarray.array.document.DocumentArray]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'docarray.array.document.DocumentArray'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><span class="pre">Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.update" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.to_docker_compose_yaml">
-<span class="sig-name descname"><span class="pre">to_docker_compose_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.to_docker_compose_yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.to_docker_compose_yaml" title="Permalink to this definition">#</a></dt>
-<dd><p>Converts a Jina Deployment into a Docker compose YAML file</p>
-<p>If you don’t want to rebuild image on Executor Hub,
-you can set <cite>JINA_HUB_NO_IMAGE_REBUILD</cite> environment variable.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>output_path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The path to dump the YAML file to</p></li>
-<li><p><strong>network_name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The name of the network that will be used by the deployment</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.to_kubernetes_yaml">
-<span class="sig-name descname"><span class="pre">to_kubernetes_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_base_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k8s_namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.to_kubernetes_yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.to_kubernetes_yaml" title="Permalink to this definition">#</a></dt>
-<dd><p>Convert a Jina Deployment into a set of YAML deployments to deploy in Kubernetes.</p>
-<p>If you don’t want to rebuild image on Executor Hub,
-you can set <cite>JINA_HUB_NO_IMAGE_REBUILD</cite> environment variable.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>output_base_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The base path where to dump all the YAML files</p></li>
-<li><p><strong>k8s_namespace</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.to_k8s_yaml">
-<span class="sig-name descname"><span class="pre">to_k8s_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_base_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k8s_namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.to_k8s_yaml" title="Permalink to this definition">#</a></dt>
-<dd><p>Convert a Jina Deployment into a set of YAML deployments to deploy in Kubernetes.</p>
-<p>If you don’t want to rebuild image on Executor Hub,
-you can set <cite>JINA_HUB_NO_IMAGE_REBUILD</cite> environment variable.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>output_base_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The base path where to dump all the YAML files</p></li>
-<li><p><strong>k8s_namespace</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 </section>
 </section>
 
@@ -1159,7 +486,7 @@ you can set <cite>JINA_HUB_NO_IMAGE_REBUILD</cite> environment variable.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -1194,68 +521,7 @@ you can set <cite>JINA_HUB_NO_IMAGE_REBUILD</cite> environment variable.</p>
 <li><a class="reference internal" href="#">jina.orchestrate.deployments package</a><ul>
 <li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.orchestrate.deployments">Module contents</a><ul>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.DeploymentType"><code class="docutils literal notranslate"><span class="pre">DeploymentType</span></code></a><ul>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.DeploymentType.mro"><code class="docutils literal notranslate"><span class="pre">DeploymentType.mro()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.DeploymentType.register"><code class="docutils literal notranslate"><span class="pre">DeploymentType.register()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment"><code class="docutils literal notranslate"><span class="pre">Deployment</span></code></a><ul>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.needs"><code class="docutils literal notranslate"><span class="pre">Deployment.needs</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.update_pod_args"><code class="docutils literal notranslate"><span class="pre">Deployment.update_pod_args()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.update_sandbox_args"><code class="docutils literal notranslate"><span class="pre">Deployment.update_sandbox_args()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.update_worker_pod_args"><code class="docutils literal notranslate"><span class="pre">Deployment.update_worker_pod_args()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.is_sandbox"><code class="docutils literal notranslate"><span class="pre">Deployment.is_sandbox</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.role"><code class="docutils literal notranslate"><span class="pre">Deployment.role</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.name"><code class="docutils literal notranslate"><span class="pre">Deployment.name</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.head_host"><code class="docutils literal notranslate"><span class="pre">Deployment.head_host</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.head_port"><code class="docutils literal notranslate"><span class="pre">Deployment.head_port</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.head_port_monitoring"><code class="docutils literal notranslate"><span class="pre">Deployment.head_port_monitoring</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.client"><code class="docutils literal notranslate"><span class="pre">Deployment.client</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.deployments"><code class="docutils literal notranslate"><span class="pre">Deployment.deployments</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.tls_enabled"><code class="docutils literal notranslate"><span class="pre">Deployment.tls_enabled</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.external"><code class="docutils literal notranslate"><span class="pre">Deployment.external</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.grpc_metadata"><code class="docutils literal notranslate"><span class="pre">Deployment.grpc_metadata</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.protocol"><code class="docutils literal notranslate"><span class="pre">Deployment.protocol</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.first_pod_args"><code class="docutils literal notranslate"><span class="pre">Deployment.first_pod_args</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.host"><code class="docutils literal notranslate"><span class="pre">Deployment.host</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.port"><code class="docutils literal notranslate"><span class="pre">Deployment.port</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.ports"><code class="docutils literal notranslate"><span class="pre">Deployment.ports</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.hosts"><code class="docutils literal notranslate"><span class="pre">Deployment.hosts</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.head_args"><code class="docutils literal notranslate"><span class="pre">Deployment.head_args</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.uses_before_args"><code class="docutils literal notranslate"><span class="pre">Deployment.uses_before_args</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.uses_after_args"><code class="docutils literal notranslate"><span class="pre">Deployment.uses_after_args</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.all_args"><code class="docutils literal notranslate"><span class="pre">Deployment.all_args</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.num_pods"><code class="docutils literal notranslate"><span class="pre">Deployment.num_pods</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.get_worker_host"><code class="docutils literal notranslate"><span class="pre">Deployment.get_worker_host()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.start"><code class="docutils literal notranslate"><span class="pre">Deployment.start()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.wait_start_success"><code class="docutils literal notranslate"><span class="pre">Deployment.wait_start_success()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.async_wait_start_success"><code class="docutils literal notranslate"><span class="pre">Deployment.async_wait_start_success()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.join"><code class="docutils literal notranslate"><span class="pre">Deployment.join()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.is_ready"><code class="docutils literal notranslate"><span class="pre">Deployment.is_ready</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.block"><code class="docutils literal notranslate"><span class="pre">Deployment.block()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.address_private"><code class="docutils literal notranslate"><span class="pre">Deployment.address_private</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.address_public"><code class="docutils literal notranslate"><span class="pre">Deployment.address_public</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.callback"><code class="docutils literal notranslate"><span class="pre">Deployment.callback()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.close"><code class="docutils literal notranslate"><span class="pre">Deployment.close()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.delete"><code class="docutils literal notranslate"><span class="pre">Deployment.delete()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.enter_context"><code class="docutils literal notranslate"><span class="pre">Deployment.enter_context()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.index"><code class="docutils literal notranslate"><span class="pre">Deployment.index()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.is_valid_jaml"><code class="docutils literal notranslate"><span class="pre">Deployment.is_valid_jaml()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.load_config"><code class="docutils literal notranslate"><span class="pre">Deployment.load_config()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.pop_all"><code class="docutils literal notranslate"><span class="pre">Deployment.pop_all()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.post"><code class="docutils literal notranslate"><span class="pre">Deployment.post()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.push"><code class="docutils literal notranslate"><span class="pre">Deployment.push()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.save_config"><code class="docutils literal notranslate"><span class="pre">Deployment.save_config()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.search"><code class="docutils literal notranslate"><span class="pre">Deployment.search()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.update"><code class="docutils literal notranslate"><span class="pre">Deployment.update()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.to_docker_compose_yaml"><code class="docutils literal notranslate"><span class="pre">Deployment.to_docker_compose_yaml()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.to_kubernetes_yaml"><code class="docutils literal notranslate"><span class="pre">Deployment.to_kubernetes_yaml()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.to_k8s_yaml"><code class="docutils literal notranslate"><span class="pre">Deployment.to_k8s_yaml()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>

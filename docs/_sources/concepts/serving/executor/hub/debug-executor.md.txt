@@ -8,6 +8,13 @@ This does not work for containerized Executors.
 
 In this tutorial you will learn how to debug [Hello Executor](https://cloud.jina.ai/executor/9o9yjq1q) step by step.
 
+````{admonition} Make sure the schemas are known
+:class: note
+
+While using docarray>0.30.0, Executors do not have a fix schema and each Executor defines its own. Make sure you know
+those schemas when using Executors from the Hub.
+````
+
 ## Pull the Executor
 
 Pull the source code of the Executor you want to debug:
@@ -47,13 +54,13 @@ exec.foo()
 ````
 ````{tab} Executor inside a Deployment
 ```python
-from docarray import Document
 from jina import Deployment
+from docarray.documents.legacy import LegacyDocument
 
 dep = Deployment(uses='jinaai://jina-ai/Hello')
 
 with dep:
-    res = dep.post('/', inputs=Document(text='hello'), return_results=True)
+    res = dep.post('/', inputs=LegacyDocument(text='hello'), return_results=True)
     print(res)
 ```
 ````

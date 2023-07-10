@@ -6,9 +6,9 @@
 <meta property="og:title" content="jina.clients.base.http module" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.clients.base.http/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -31,7 +31,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.clients.base.http.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.clients.base.http module - Jina 3.18.1 documentation</title>
+        <title>jina.clients.base.http module - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -183,7 +183,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -345,8 +345,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -355,7 +354,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -374,7 +372,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -422,7 +420,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon"
+                    <label class="toc-overlay-icon toc-content-icon no-toc"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -433,97 +431,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section id="module-jina.clients.base.http">
-<span id="jina-clients-base-http-module"></span><h1>jina.clients.base.http module<a class="headerlink" href="#module-jina.clients.base.http" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.clients.base.http.HTTPBaseClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.http.</span></span><span class="sig-name descname"><span class="pre">HTTPBaseClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/http/#HTTPBaseClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.http.HTTPBaseClient" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.clients.base/#jina.clients.base.BaseClient" title="jina.clients.base.BaseClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseClient</span></code></a></p>
-<p>A MixIn for HTTP Client.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.base.http.HTTPBaseClient.aio_tracing_client_interceptors">
-<span class="sig-name descname"><span class="pre">aio_tracing_client_interceptors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.base.http.HTTPBaseClient.aio_tracing_client_interceptors" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a gRPC client aio channel interceptor.
-:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ClientInterceptor</span></code>]]
-:returns: An invocation-side list of aio interceptor objects.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.base.http.HTTPBaseClient.aio_tracing_server_interceptors">
-<span class="sig-name descname"><span class="pre">aio_tracing_server_interceptors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.base.http.HTTPBaseClient.aio_tracing_server_interceptors" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a gRPC aio server interceptor.
-:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ServerInterceptor</span></code>]]
-:returns: A service-side aio interceptor object.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.base.http.HTTPBaseClient.check_input">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.base.http.HTTPBaseClient.check_input" title="Permalink to this definition">#</a></dt>
-<dd><p>Validate the inputs and print the first request if success.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>inputs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[InputType]) – the inputs</p></li>
-<li><p><strong>kwargs</strong> – keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.clients.base.http.HTTPBaseClient.client">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">T</span></em><a class="headerlink" href="#jina.clients.base.http.HTTPBaseClient.client" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the client object itself</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the Client object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.clients.base.http.HTTPBaseClient.inputs">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">InputType</span></em><a class="headerlink" href="#jina.clients.base.http.HTTPBaseClient.inputs" title="Permalink to this definition">#</a></dt>
-<dd><p>An iterator of bytes, each element represents a Document’s raw content.</p>
-<p><code class="docutils literal notranslate"><span class="pre">inputs</span></code> defined in the protobuf</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>InputType</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>inputs</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.base.http.HTTPBaseClient.teardown_instrumentation">
-<span class="sig-name descname"><span class="pre">teardown_instrumentation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.base.http.HTTPBaseClient.teardown_instrumentation" title="Permalink to this definition">#</a></dt>
-<dd><p>Shut down the OpenTelemetry tracer and meter if available. This ensures that the daemon threads for
-exporting metrics data is properly cleaned up.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.base.http.HTTPBaseClient.tracing_client_interceptor">
-<span class="sig-name descname"><span class="pre">tracing_client_interceptor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.base.http.HTTPBaseClient.tracing_client_interceptor" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">OpenTelemetryClientInterceptor</span></code>]</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a gRPC client interceptor with the global tracing provider.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+                    <section id="jina-clients-base-http-module">
+<h1>jina.clients.base.http module<a class="headerlink" href="#jina-clients-base-http-module" title="Permalink to this heading">#</a></h1>
 </section>
 
                 </article>
@@ -539,7 +448,7 @@ exporting metrics data is properly cleaned up.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -559,36 +468,8 @@ exporting metrics data is properly cleaned up.</p>
                 
             </footer>
         </div>
-        <aside class="toc-drawer">
+        <aside class="toc-drawer no-toc">
             
-            
-            <div class="toc-sticky toc-scroll">
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.clients.base.http module</a><ul>
-<li><a class="reference internal" href="#jina.clients.base.http.HTTPBaseClient"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient</span></code></a><ul>
-<li><a class="reference internal" href="#jina.clients.base.http.HTTPBaseClient.aio_tracing_client_interceptors"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.aio_tracing_client_interceptors()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.base.http.HTTPBaseClient.aio_tracing_server_interceptors"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.aio_tracing_server_interceptors()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.base.http.HTTPBaseClient.check_input"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.check_input()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.base.http.HTTPBaseClient.client"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.client</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.base.http.HTTPBaseClient.inputs"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.inputs</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.base.http.HTTPBaseClient.teardown_instrumentation"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.teardown_instrumentation()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.base.http.HTTPBaseClient.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.tracing_client_interceptor()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
-            </div>
             
             
         </aside>

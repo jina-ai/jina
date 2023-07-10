@@ -6,9 +6,9 @@
 <meta property="og:title" content="jina.serve.networking.sse module" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve.networking.sse/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -31,7 +31,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.networking.sse.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.networking.sse module - Jina 3.18.1 documentation</title>
+        <title>jina.serve.networking.sse module - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -183,7 +183,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -345,8 +345,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -355,7 +354,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -374,7 +372,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -422,7 +420,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon"
+                    <label class="toc-overlay-icon toc-content-icon no-toc"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -433,255 +431,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section id="module-jina.serve.networking.sse">
-<span id="jina-serve-networking-sse-module"></span><h1>jina.serve.networking.sse module<a class="headerlink" href="#module-jina.serve.networking.sse" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.AppStatus">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.networking.sse.</span></span><span class="sig-name descname"><span class="pre">AppStatus</span></span><a class="reference internal" href="../../_modules/jina/serve/networking/sse/#AppStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.sse.AppStatus" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>helper for monkey-patching the signal-handler of uvicorn</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.AppStatus.should_exit">
-<span class="sig-name descname"><span class="pre">should_exit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#jina.serve.networking.sse.AppStatus.should_exit" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.AppStatus.should_exit_event">
-<span class="sig-name descname"><span class="pre">should_exit_event</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Event</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#jina.serve.networking.sse.AppStatus.should_exit_event" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.AppStatus.handle_exit">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handle_exit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/sse/#AppStatus.handle_exit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.sse.AppStatus.handle_exit" title="Permalink to this definition">#</a></dt>
-<dd><p>signal handler for uvicorn server
-:param args: args
-:param kwargs: kwargs</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.unpatch_uvicorn_signal_handler">
-<span class="sig-prename descclassname"><span class="pre">jina.serve.networking.sse.</span></span><span class="sig-name descname"><span class="pre">unpatch_uvicorn_signal_handler</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/sse/#unpatch_uvicorn_signal_handler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.sse.unpatch_uvicorn_signal_handler" title="Permalink to this definition">#</a></dt>
-<dd><p>restores original signal-handler and rolls back monkey-patching.
-Normally this should not be necessary.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.SseState">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.networking.sse.</span></span><span class="sig-name descname"><span class="pre">SseState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/sse/#SseState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.sse.SseState" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<p>SSE connection state</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.SseState.CONNECTING">
-<span class="sig-name descname"><span class="pre">CONNECTING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.serve.networking.sse.SseState.CONNECTING" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.SseState.OPENED">
-<span class="sig-name descname"><span class="pre">OPENED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.serve.networking.sse.SseState.OPENED" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.SseState.CLOSED">
-<span class="sig-name descname"><span class="pre">CLOSED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.serve.networking.sse.SseState.CLOSED" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.ServerSentEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.networking.sse.</span></span><span class="sig-name descname"><span class="pre">ServerSentEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/sse/#ServerSentEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.sse.ServerSentEvent" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class to manage Server-Sent Events</p>
-<p>Send data using EventSource protocol # noqa: DAR101</p>
-<blockquote>
-<div><dl class="field-list simple">
-<dt class="field-odd">param data<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The data field for the message.</p>
-</dd>
-<dt class="field-even">param event<span class="colon">:</span></dt>
-<dd class="field-even"><p>The event’s type. If this is specified, an event will be dispatched on the browser to the listener for the specified event name; the web site would use addEventListener() to listen for named events. The default event type is “message”.</p>
-</dd>
-<dt class="field-odd">param id<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The event ID to set the EventSource object’s last event ID value to.</p>
-</dd>
-<dt class="field-even">param retry<span class="colon">:</span></dt>
-<dd class="field-even"><p>The reconnection time to use when attempting to send the event. [What code handles this?] This must be an integer, specifying the reconnection time in milliseconds. If a non-integer value is specified, the field is ignored.</p>
-</dd>
-<dt class="field-odd">param comment<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A colon as the first character of a line is essence a comment, and is ignored. Usually used as a ping message to keep connecting. If set, this will be a comment message.</p>
-</dd>
-<dt class="field-even">param sep<span class="colon">:</span></dt>
-<dd class="field-even"><p>The separator between lines. Defaults to “</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>“.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.ServerSentEvent.encode">
-<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/sse/#ServerSentEvent.encode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.sse.ServerSentEvent.encode" title="Permalink to this definition">#</a></dt>
-<dd><p>Encode the message into bytes</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The encoded message</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.ensure_bytes">
-<span class="sig-prename descclassname"><span class="pre">jina.serve.networking.sse.</span></span><span class="sig-name descname"><span class="pre">ensure_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/sse/#ensure_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.sse.ensure_bytes" title="Permalink to this definition">#</a></dt>
-<dd><p>helper to convert data to bytes
-:type data: <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <a class="reference internal" href="#jina.serve.networking.sse.ServerSentEvent" title="jina.serve.networking.sse.ServerSentEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerSentEvent</span></code></a>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]
-:param data: data to convert
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>
-:return: bytes</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.EventSourceResponse">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.networking.sse.</span></span><span class="sig-name descname"><span class="pre">EventSourceResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">media_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text/event-stream'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ping_message_factory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_sender_callable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/sse/#EventSourceResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.sse.EventSourceResponse" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></p>
-<p>Implements the ServerSentEvent Protocol:
-<a class="reference external" href="https://www.w3.org/TR/2009/WD-eventsource-20090421/">https://www.w3.org/TR/2009/WD-eventsource-20090421/</a></p>
-<p>Responses must not be compressed by middleware in order to work.
-implementation based on Starlette StreamingResponse</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.EventSourceResponse.DEFAULT_PING_INTERVAL">
-<span class="sig-name descname"><span class="pre">DEFAULT_PING_INTERVAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="headerlink" href="#jina.serve.networking.sse.EventSourceResponse.DEFAULT_PING_INTERVAL" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.EventSourceResponse.media_type">
-<span class="sig-name descname"><span class="pre">media_type</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#jina.serve.networking.sse.EventSourceResponse.media_type" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.EventSourceResponse.listen_for_disconnect">
-<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">listen_for_disconnect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">receive</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/sse/#EventSourceResponse.listen_for_disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.sse.EventSourceResponse.listen_for_disconnect" title="Permalink to this definition">#</a></dt>
-<dd><p>Listen for the client disconnecting
-:type receive: <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[], <code class="xref py py-class docutils literal notranslate"><span class="pre">Awaitable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">MutableMapping</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]]
-:param receive: receive channel</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.EventSourceResponse.listen_for_exit_signal">
-<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">listen_for_exit_signal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/sse/#EventSourceResponse.listen_for_exit_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.sse.EventSourceResponse.listen_for_exit_signal" title="Permalink to this definition">#</a></dt>
-<dd><p>Listen for the exit signal</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.EventSourceResponse.stream_response">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stream_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">send</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/sse/#EventSourceResponse.stream_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.sse.EventSourceResponse.stream_response" title="Permalink to this definition">#</a></dt>
-<dd><p>Stream the response
-:param send: send channel</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.EventSourceResponse.enable_compression">
-<span class="sig-name descname"><span class="pre">enable_compression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/sse/#EventSourceResponse.enable_compression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.sse.EventSourceResponse.enable_compression" title="Permalink to this definition">#</a></dt>
-<dd><p>Enable compression
-:type force: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
-:param force: force compression</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.EventSourceResponse.charset">
-<span class="sig-name descname"><span class="pre">charset</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'utf-8'</span></em><a class="headerlink" href="#jina.serve.networking.sse.EventSourceResponse.charset" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.EventSourceResponse.delete_cookie">
-<span class="sig-name descname"><span class="pre">delete_cookie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">httponly</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samesite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lax'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.networking.sse.EventSourceResponse.delete_cookie" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.EventSourceResponse.headers">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MutableHeaders</span></em><a class="headerlink" href="#jina.serve.networking.sse.EventSourceResponse.headers" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MutableHeaders</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.EventSourceResponse.init_headers">
-<span class="sig-name descname"><span class="pre">init_headers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.networking.sse.EventSourceResponse.init_headers" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.EventSourceResponse.render">
-<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.networking.sse.EventSourceResponse.render" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.EventSourceResponse.set_cookie">
-<span class="sig-name descname"><span class="pre">set_cookie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expires</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">httponly</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samesite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lax'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.networking.sse.EventSourceResponse.set_cookie" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.serve.networking.sse.EventSourceResponse.ping_interval">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ping_interval</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.serve.networking.sse.EventSourceResponse.ping_interval" title="Permalink to this definition">#</a></dt>
-<dd><p>Time interval between two ping massages</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>ping interval</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+                    <section id="jina-serve-networking-sse-module">
+<h1>jina.serve.networking.sse module<a class="headerlink" href="#jina-serve-networking-sse-module" title="Permalink to this heading">#</a></h1>
 </section>
 
                 </article>
@@ -697,7 +448,7 @@ implementation based on Starlette StreamingResponse</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -717,60 +468,8 @@ implementation based on Starlette StreamingResponse</p>
                 
             </footer>
         </div>
-        <aside class="toc-drawer">
+        <aside class="toc-drawer no-toc">
             
-            
-            <div class="toc-sticky toc-scroll">
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.serve.networking.sse module</a><ul>
-<li><a class="reference internal" href="#jina.serve.networking.sse.AppStatus"><code class="docutils literal notranslate"><span class="pre">AppStatus</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.networking.sse.AppStatus.should_exit"><code class="docutils literal notranslate"><span class="pre">AppStatus.should_exit</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.AppStatus.should_exit_event"><code class="docutils literal notranslate"><span class="pre">AppStatus.should_exit_event</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.AppStatus.handle_exit"><code class="docutils literal notranslate"><span class="pre">AppStatus.handle_exit()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.unpatch_uvicorn_signal_handler"><code class="docutils literal notranslate"><span class="pre">unpatch_uvicorn_signal_handler()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.SseState"><code class="docutils literal notranslate"><span class="pre">SseState</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.networking.sse.SseState.CONNECTING"><code class="docutils literal notranslate"><span class="pre">SseState.CONNECTING</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.SseState.OPENED"><code class="docutils literal notranslate"><span class="pre">SseState.OPENED</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.SseState.CLOSED"><code class="docutils literal notranslate"><span class="pre">SseState.CLOSED</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.ServerSentEvent"><code class="docutils literal notranslate"><span class="pre">ServerSentEvent</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.networking.sse.ServerSentEvent.encode"><code class="docutils literal notranslate"><span class="pre">ServerSentEvent.encode()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.ensure_bytes"><code class="docutils literal notranslate"><span class="pre">ensure_bytes()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.EventSourceResponse"><code class="docutils literal notranslate"><span class="pre">EventSourceResponse</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.networking.sse.EventSourceResponse.DEFAULT_PING_INTERVAL"><code class="docutils literal notranslate"><span class="pre">EventSourceResponse.DEFAULT_PING_INTERVAL</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.EventSourceResponse.media_type"><code class="docutils literal notranslate"><span class="pre">EventSourceResponse.media_type</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.EventSourceResponse.listen_for_disconnect"><code class="docutils literal notranslate"><span class="pre">EventSourceResponse.listen_for_disconnect()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.EventSourceResponse.listen_for_exit_signal"><code class="docutils literal notranslate"><span class="pre">EventSourceResponse.listen_for_exit_signal()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.EventSourceResponse.stream_response"><code class="docutils literal notranslate"><span class="pre">EventSourceResponse.stream_response()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.EventSourceResponse.enable_compression"><code class="docutils literal notranslate"><span class="pre">EventSourceResponse.enable_compression()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.EventSourceResponse.charset"><code class="docutils literal notranslate"><span class="pre">EventSourceResponse.charset</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.EventSourceResponse.delete_cookie"><code class="docutils literal notranslate"><span class="pre">EventSourceResponse.delete_cookie()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.EventSourceResponse.headers"><code class="docutils literal notranslate"><span class="pre">EventSourceResponse.headers</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.EventSourceResponse.init_headers"><code class="docutils literal notranslate"><span class="pre">EventSourceResponse.init_headers()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.EventSourceResponse.render"><code class="docutils literal notranslate"><span class="pre">EventSourceResponse.render()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.EventSourceResponse.set_cookie"><code class="docutils literal notranslate"><span class="pre">EventSourceResponse.set_cookie()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.sse.EventSourceResponse.ping_interval"><code class="docutils literal notranslate"><span class="pre">EventSourceResponse.ping_interval</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
-            </div>
             
             
         </aside>

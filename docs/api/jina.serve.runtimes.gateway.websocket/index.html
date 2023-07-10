@@ -6,10 +6,10 @@
 <meta property="og:title" content="jina.serve.runtimes.gateway.websocket package" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve.runtimes.gateway.websocket/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:description" content="Module contents:" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="description" content="Module contents:" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.runtimes.gateway.websocket.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.serve.runtimes.gateway.websocket package - Jina 3.18.1 documentation</title>
+        <title>jina.serve.runtimes.gateway.websocket package - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -347,8 +347,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -357,7 +356,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -376,7 +374,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -437,252 +435,8 @@
                 <article role="main">
                     <section id="jina-serve-runtimes-gateway-websocket-package">
 <h1>jina.serve.runtimes.gateway.websocket package<a class="headerlink" href="#jina-serve-runtimes-gateway-websocket-package" title="Permalink to this heading">#</a></h1>
-<section id="module-jina.serve.runtimes.gateway.websocket">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.serve.runtimes.gateway.websocket" title="Permalink to this heading">#</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.websocket.</span></span><span class="sig-name descname"><span class="pre">WebSocketGateway</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ssl_keyfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssl_certfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uvicorn_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proxy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/websocket/#WebSocketGateway"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.serve.runtimes.servers.websocket/#jina.serve.runtimes.servers.websocket.WebSocketServer" title="jina.serve.runtimes.servers.websocket.WebSocketServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketServer</span></code></a>, <a class="reference internal" href="../jina.serve.runtimes.gateway.gateway/#jina.serve.runtimes.gateway.gateway.BaseGateway" title="jina.serve.runtimes.gateway.gateway.BaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGateway</span></code></a></p>
-<p><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway" title="jina.serve.runtimes.gateway.websocket.WebSocketGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketGateway</span></code></a> is a WebSocketServer that can be loaded from YAML as any other Gateway</p>
-<p>Initialize the gateway
-:type ssl_keyfile: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
-:param ssl_keyfile: the path to the key file
-:type ssl_certfile: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
-:param ssl_certfile: the path to the certificate file
-:type uvicorn_kwargs: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]
-:param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
-:type proxy: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]
-:param proxy: If set, respect the http_proxy and https_proxy environment variables, otherwise, it will unset</p>
-<blockquote>
-<div><p>these proxy variables before start. gRPC seems to prefer no proxy</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kwargs</strong> – keyword args</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.aio_tracing_client_interceptors">
-<span class="sig-name descname"><span class="pre">aio_tracing_client_interceptors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.aio_tracing_client_interceptors" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a gRPC client aio channel interceptor.
-:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ClientInterceptor</span></code>]]
-:returns: An invocation-side list of aio interceptor objects.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.aio_tracing_server_interceptors">
-<span class="sig-name descname"><span class="pre">aio_tracing_server_interceptors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.aio_tracing_server_interceptors" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a gRPC aio server interceptor.
-:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ServerInterceptor</span></code>]]
-:returns: A service-side aio interceptor object.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.async_is_ready">
-<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grpc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.async_is_ready" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if status is ready.
-:type ctrl_address: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param ctrl_address: the address where the control request needs to be sent
-:type protocol: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
-:param protocol: protocol of the gateway runtime
-:type timeout: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
-:param timeout: timeout of grpc call in seconds
-:param logger: JinaLogger to be used
-:param kwargs: extra keyword arguments
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
-:return: True if status is ready else False.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.host">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">host</span></span><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.host" title="Permalink to this definition">#</a></dt>
-<dd><p>Gets the host from the runtime_args
-:return: The host where to bind the gateway</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.is_ready">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grpc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.is_ready" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if status is ready.
-:type ctrl_address: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param ctrl_address: the address where the control request needs to be sent
-:type protocol: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
-:param protocol: protocol of the gateway runtime
-:type timeout: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
-:param timeout: timeout of grpc call in seconds
-:param logger: JinaLogger to be used
-:param kwargs: extra keyword arguments
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
-:return: True if status is ready else False.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.is_valid_jaml">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_valid_jaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.is_valid_jaml" title="Permalink to this definition">#</a></dt>
-<dd><p>Verifies the yaml syntax of a given object by first serializing it and attempting to deserialize and catch
-parser errors
-:type obj: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>
-:param obj: yaml object
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
-:return: whether the syntax is valid or not</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.load_config">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_py_modules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">substitute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_metas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_requests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_search_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">py_modules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_dynamic_batching</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">needs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_gateway</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noblock_on_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.load_config" title="Permalink to this definition">#</a></dt>
-<dd><p>A high-level interface for loading configuration with features
-of loading extra py_modules, substitute env &amp; context variables. Any class that
-implements <code class="xref py py-class docutils literal notranslate"><span class="pre">JAMLCompatible</span></code> mixin can enjoy this feature, e.g. <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFlow</span></code>,
-<code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGateway</span></code> and all their subclasses.</p>
-<dl class="simple">
-<dt>Support substitutions in YAML:</dt><dd><ul class="simple">
-<li><p>Environment variables: <code class="docutils literal notranslate"><span class="pre">${{</span> <span class="pre">ENV.VAR</span> <span class="pre">}}</span></code> (recommended), <code class="docutils literal notranslate"><span class="pre">$VAR</span></code> (deprecated).</p></li>
-<li><p>Context dict (<code class="docutils literal notranslate"><span class="pre">context</span></code>): <code class="docutils literal notranslate"><span class="pre">${{</span> <span class="pre">CONTEXT.VAR</span> <span class="pre">}}``(recommended),</span> <span class="pre">``${{</span> <span class="pre">VAR</span> <span class="pre">}}</span></code>.</p></li>
-<li><p>Internal reference via <code class="docutils literal notranslate"><span class="pre">this</span></code> and <code class="docutils literal notranslate"><span class="pre">root</span></code>: <code class="docutils literal notranslate"><span class="pre">${{this.same_level_key}}</span></code>, <code class="docutils literal notranslate"><span class="pre">${{root.root_level_key}}</span></code></p></li>
-</ul>
-</dd>
-</dl>
-<p>Substitutions are carried in the order and multiple passes to resolve variables with best effort.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!BaseEncoder</span>
-<span class="nt">metas</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{VAR_A}}</span><span class="w">  </span><span class="c1"># env or context variables</span>
-<span class="w">    </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-${{this.name}}</span><span class="w">  </span><span class="c1"># internal reference</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># load Executor from yaml file</span>
-<span class="n">BaseExecutor</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">&#39;a.yml&#39;</span><span class="p">)</span>
-
-<span class="c1"># load Executor from yaml file and substitute environment variables</span>
-<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;VAR_A&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;hello-world&#39;</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">BaseExecutor</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">&#39;a.yml&#39;</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">b</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;hello-world&#39;</span>
-
-<span class="c1"># load Executor from yaml file and substitute variables from a dict</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">BaseExecutor</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">&#39;a.yml&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;VAR_A&#39;</span><span class="p">:</span> <span class="s1">&#39;hello-world&#39;</span><span class="p">})</span>
-<span class="k">assert</span> <span class="n">b</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;hello-world&#39;</span>
-
-<span class="c1"># disable substitute</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">BaseExecutor</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">&#39;a.yml&#39;</span><span class="p">,</span> <span class="n">substitute</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>source</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TextIO</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – the multi-kind source of the configs.</p></li>
-<li><p><strong>allow_py_modules</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – allow importing plugins specified by <code class="docutils literal notranslate"><span class="pre">py_modules</span></code> in YAML at any levels</p></li>
-<li><p><strong>substitute</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – substitute environment, internal reference and context variables.</p></li>
-<li><p><strong>context</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – context replacement variables in a dict, the value of the dict is the replacement.</p></li>
-<li><p><strong>uses_with</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – dictionary of parameters to overwrite from the default config’s with field</p></li>
-<li><p><strong>uses_metas</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – dictionary of parameters to overwrite from the default config’s metas field</p></li>
-<li><p><strong>uses_requests</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – dictionary of parameters to overwrite from the default config’s requests field</p></li>
-<li><p><strong>extra_search_paths</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – extra paths used when looking for executor yaml files</p></li>
-<li><p><strong>py_modules</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Optional py_module from which the object need to be loaded</p></li>
-<li><p><strong>runtime_args</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – Optional dictionary of parameters runtime_args to be directly passed without being parsed into a yaml config</p></li>
-<li><p><strong>uses_dynamic_batching</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – dictionary of parameters to overwrite from the default config’s dynamic_batching field</p></li>
-<li><p><strong>needs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Set</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – the name of the Deployment(s) that this Deployment receives data from. One can also use “gateway” to indicate the connection with the gateway.</p></li>
-<li><p><strong>include_gateway</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Defines if the gateway deployment should be included, defaults to True</p></li>
-<li><p><strong>noblock_on_start</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set, starting a Pod/Deployment does not block the thread/process. It then relies on ‘
-‘<cite>wait_start_success</cite> at outer function for the postpone check.</p></li>
-<li><p><strong>kwargs</strong> – kwargs for parse_config_source</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../jina.jaml/#jina.jaml.JAMLCompatible" title="jina.jaml.JAMLCompatible"><code class="xref py py-class docutils literal notranslate"><span class="pre">JAMLCompatible</span></code></a></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">JAMLCompatible</span></code> object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.port">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">port</span></span><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.port" title="Permalink to this definition">#</a></dt>
-<dd><p>Gets the first port of the port list argument. To be used in the regular case where a Gateway exposes a single port
-:return: The first port to be exposed</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.ports">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ports</span></span><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.ports" title="Permalink to this definition">#</a></dt>
-<dd><p>Gets all the list of ports from the runtime_args as a list.
-:return: The lists of ports to be exposed</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.protocols">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protocols</span></span><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.protocols" title="Permalink to this definition">#</a></dt>
-<dd><p>Gets all the list of protocols from the runtime_args as a list.
-:return: The lists of protocols to be exposed</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.run_server">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run_server</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.run_server" title="Permalink to this definition">#</a></dt>
-<dd><p>Run WebSocket server forever</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.save_config">
-<span class="sig-name descname"><span class="pre">save_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.save_config" title="Permalink to this definition">#</a></dt>
-<dd><p>Save the object’s config into a YAML file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filename</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – file path of the yaml file, if not given then <code class="xref py py-attr docutils literal notranslate"><span class="pre">config_abspath</span></code> is used</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.setup_server">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setup_server</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.setup_server" title="Permalink to this definition">#</a></dt>
-<dd><p>Setup WebSocket Server</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.should_exit">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">should_exit</span></span><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.should_exit" title="Permalink to this definition">#</a></dt>
-<dd><p>Property describing if server is ready to exit
-:return: boolean indicating if Server ready to exit</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.shutdown">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.shutdown" title="Permalink to this definition">#</a></dt>
-<dd><p>Free other resources allocated with the server, e.g, gateway object, …</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.tracing_client_interceptor">
-<span class="sig-name descname"><span class="pre">tracing_client_interceptor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.tracing_client_interceptor" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">OpenTelemetryClientInterceptor</span></code>]</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a gRPC client interceptor with the global tracing provider.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.wait_for_ready_or_shutdown">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wait_for_ready_or_shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ready_or_shutdown_event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">health_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.wait_for_ready_or_shutdown" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if the runtime has successfully started
-:type timeout: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]
-:param timeout: The time to wait before readiness or failure is determined
-:type ctrl_address: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param ctrl_address: the address where the control message needs to be sent
-:type ready_or_shutdown_event: <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>]
-:param ready_or_shutdown_event: the multiprocessing event to detect if the process failed or is ready
-:type health_check: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
-:param health_check: if true, a grpc health check will be used instead of relying on the event
-:param kwargs: extra keyword arguments
-:return: True if is ready or it needs to be shutdown</p>
-</dd></dl>
-
-</dd></dl>
-
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 </section>
 </section>
 
@@ -699,7 +453,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -732,29 +486,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">jina.serve.runtimes.gateway.websocket package</a><ul>
-<li><a class="reference internal" href="#module-jina.serve.runtimes.gateway.websocket">Module contents</a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.aio_tracing_client_interceptors"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.aio_tracing_client_interceptors()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.aio_tracing_server_interceptors"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.aio_tracing_server_interceptors()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.async_is_ready"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.async_is_ready()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.host"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.host</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.is_ready"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.is_ready()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.is_valid_jaml"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.is_valid_jaml()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.load_config"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.load_config()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.port"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.port</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.ports"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.ports</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.protocols"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.protocols</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.run_server"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.run_server()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.save_config"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.save_config()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.setup_server"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.setup_server()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.should_exit"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.should_exit</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.shutdown"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.shutdown()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.tracing_client_interceptor()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.wait_for_ready_or_shutdown"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.wait_for_ready_or_shutdown()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>

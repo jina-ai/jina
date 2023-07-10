@@ -6,9 +6,9 @@
 <meta property="og:title" content="jina_cli.api module" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina_cli.api/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -31,7 +31,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina_cli.api.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina_cli.api module - Jina 3.18.1 documentation</title>
+        <title>jina_cli.api module - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -183,7 +183,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -345,8 +345,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -355,7 +354,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -374,7 +372,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -422,7 +420,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon"
+                    <label class="toc-overlay-icon toc-content-icon no-toc"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -433,164 +431,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section id="module-jina_cli.api">
-<span id="jina-cli-api-module"></span><h1>jina_cli.api module<a class="headerlink" href="#module-jina_cli.api" title="Permalink to this heading">#</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="jina_cli.api.deployment">
-<span class="sig-prename descclassname"><span class="pre">jina_cli.api.</span></span><span class="sig-name descname"><span class="pre">deployment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina_cli/api/#deployment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina_cli.api.deployment" title="Permalink to this definition">#</a></dt>
-<dd><p>Start a Deployment</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – arguments coming from the CLI.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina_cli.api.pod">
-<span class="sig-prename descclassname"><span class="pre">jina_cli.api.</span></span><span class="sig-name descname"><span class="pre">pod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina_cli/api/#pod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina_cli.api.pod" title="Permalink to this definition">#</a></dt>
-<dd><p>Start a Pod</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – arguments coming from the CLI.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina_cli.api.executor_native">
-<span class="sig-prename descclassname"><span class="pre">jina_cli.api.</span></span><span class="sig-name descname"><span class="pre">executor_native</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina_cli/api/#executor_native"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina_cli.api.executor_native" title="Permalink to this definition">#</a></dt>
-<dd><p>Starts an Executor in a WorkerRuntime</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – arguments coming from the CLI.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina_cli.api.executor">
-<span class="sig-prename descclassname"><span class="pre">jina_cli.api.</span></span><span class="sig-name descname"><span class="pre">executor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina_cli/api/#executor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina_cli.api.executor" title="Permalink to this definition">#</a></dt>
-<dd><p>Starts an Executor in any Runtime</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – arguments coming from the CLI.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>return the same as <cite>pod</cite> or <cite>worker_runtime</cite></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina_cli.api.gateway">
-<span class="sig-prename descclassname"><span class="pre">jina_cli.api.</span></span><span class="sig-name descname"><span class="pre">gateway</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina_cli/api/#gateway"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina_cli.api.gateway" title="Permalink to this definition">#</a></dt>
-<dd><p>Start a Gateway Deployment</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – arguments coming from the CLI.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina_cli.api.ping">
-<span class="sig-prename descclassname"><span class="pre">jina_cli.api.</span></span><span class="sig-name descname"><span class="pre">ping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina_cli/api/#ping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina_cli.api.ping" title="Permalink to this definition">#</a></dt>
-<dd><p>Check the connectivity of a Pod</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – arguments coming from the CLI.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina_cli.api.dryrun">
-<span class="sig-prename descclassname"><span class="pre">jina_cli.api.</span></span><span class="sig-name descname"><span class="pre">dryrun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina_cli/api/#dryrun"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina_cli.api.dryrun" title="Permalink to this definition">#</a></dt>
-<dd><p>Check the health of a Flow</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – arguments coming from the CLI.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina_cli.api.client">
-<span class="sig-prename descclassname"><span class="pre">jina_cli.api.</span></span><span class="sig-name descname"><span class="pre">client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina_cli/api/#client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina_cli.api.client" title="Permalink to this definition">#</a></dt>
-<dd><p>Start a client connects to the gateway</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – arguments coming from the CLI.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina_cli.api.export">
-<span class="sig-prename descclassname"><span class="pre">jina_cli.api.</span></span><span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina_cli/api/#export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina_cli.api.export" title="Permalink to this definition">#</a></dt>
-<dd><p>Export the API</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – arguments coming from the CLI.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina_cli.api.flow">
-<span class="sig-prename descclassname"><span class="pre">jina_cli.api.</span></span><span class="sig-name descname"><span class="pre">flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina_cli/api/#flow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina_cli.api.flow" title="Permalink to this definition">#</a></dt>
-<dd><p>Start a Flow from a YAML file or a docker image</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – arguments coming from the CLI.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina_cli.api.hub">
-<span class="sig-prename descclassname"><span class="pre">jina_cli.api.</span></span><span class="sig-name descname"><span class="pre">hub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina_cli/api/#hub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina_cli.api.hub" title="Permalink to this definition">#</a></dt>
-<dd><p>Start a hub builder for push, pull
-:type args: <code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>
-:param args: arguments coming from the CLI.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina_cli.api.new">
-<span class="sig-prename descclassname"><span class="pre">jina_cli.api.</span></span><span class="sig-name descname"><span class="pre">new</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina_cli/api/#new"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina_cli.api.new" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a new jina project
-:type args: <code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>
-:param args:  arguments coming from the CLI.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina_cli.api.help">
-<span class="sig-prename descclassname"><span class="pre">jina_cli.api.</span></span><span class="sig-name descname"><span class="pre">help</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina_cli/api/#help"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina_cli.api.help" title="Permalink to this definition">#</a></dt>
-<dd><p>Lookup the usage of certain argument in Jina API.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – arguments coming from the CLI.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina_cli.api.auth">
-<span class="sig-prename descclassname"><span class="pre">jina_cli.api.</span></span><span class="sig-name descname"><span class="pre">auth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina_cli/api/#auth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina_cli.api.auth" title="Permalink to this definition">#</a></dt>
-<dd><p>Authenticate a user
-:type args: <code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>
-:param args: arguments coming from the CLI.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina_cli.api.cloud">
-<span class="sig-prename descclassname"><span class="pre">jina_cli.api.</span></span><span class="sig-name descname"><span class="pre">cloud</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina_cli/api/#cloud"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina_cli.api.cloud" title="Permalink to this definition">#</a></dt>
-<dd><p>Use jcloud (Jina Cloud) commands
-:type args: <code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>
-:param args: arguments coming from the CLI.</p>
-</dd></dl>
-
+                    <section id="jina-cli-api-module">
+<h1>jina_cli.api module<a class="headerlink" href="#jina-cli-api-module" title="Permalink to this heading">#</a></h1>
 </section>
 
                 </article>
@@ -606,7 +448,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -626,41 +468,8 @@
                 
             </footer>
         </div>
-        <aside class="toc-drawer">
+        <aside class="toc-drawer no-toc">
             
-            
-            <div class="toc-sticky toc-scroll">
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina_cli.api module</a><ul>
-<li><a class="reference internal" href="#jina_cli.api.deployment"><code class="docutils literal notranslate"><span class="pre">deployment()</span></code></a></li>
-<li><a class="reference internal" href="#jina_cli.api.pod"><code class="docutils literal notranslate"><span class="pre">pod()</span></code></a></li>
-<li><a class="reference internal" href="#jina_cli.api.executor_native"><code class="docutils literal notranslate"><span class="pre">executor_native()</span></code></a></li>
-<li><a class="reference internal" href="#jina_cli.api.executor"><code class="docutils literal notranslate"><span class="pre">executor()</span></code></a></li>
-<li><a class="reference internal" href="#jina_cli.api.gateway"><code class="docutils literal notranslate"><span class="pre">gateway()</span></code></a></li>
-<li><a class="reference internal" href="#jina_cli.api.ping"><code class="docutils literal notranslate"><span class="pre">ping()</span></code></a></li>
-<li><a class="reference internal" href="#jina_cli.api.dryrun"><code class="docutils literal notranslate"><span class="pre">dryrun()</span></code></a></li>
-<li><a class="reference internal" href="#jina_cli.api.client"><code class="docutils literal notranslate"><span class="pre">client()</span></code></a></li>
-<li><a class="reference internal" href="#jina_cli.api.export"><code class="docutils literal notranslate"><span class="pre">export()</span></code></a></li>
-<li><a class="reference internal" href="#jina_cli.api.flow"><code class="docutils literal notranslate"><span class="pre">flow()</span></code></a></li>
-<li><a class="reference internal" href="#jina_cli.api.hub"><code class="docutils literal notranslate"><span class="pre">hub()</span></code></a></li>
-<li><a class="reference internal" href="#jina_cli.api.new"><code class="docutils literal notranslate"><span class="pre">new()</span></code></a></li>
-<li><a class="reference internal" href="#jina_cli.api.help"><code class="docutils literal notranslate"><span class="pre">help()</span></code></a></li>
-<li><a class="reference internal" href="#jina_cli.api.auth"><code class="docutils literal notranslate"><span class="pre">auth()</span></code></a></li>
-<li><a class="reference internal" href="#jina_cli.api.cloud"><code class="docutils literal notranslate"><span class="pre">cloud()</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
-            </div>
             
             
         </aside>

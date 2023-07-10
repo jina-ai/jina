@@ -4,7 +4,7 @@
 ## Table of Contents
 
 - [docarray.proto](#docarray-proto)
-    - [DocumentArrayProto](#docarray-DocumentArrayProto)
+    - [DocListProto](#docarray-DocListProto)
   
 - [jina.proto](#jina-proto)
     - [DataRequestListProto](#jina-DataRequestListProto)
@@ -52,10 +52,10 @@
 
 
 
-<a name="docarray-DocumentArrayProto"></a>
+<a name="docarray-DocListProto"></a>
 
-### DocumentArrayProto
-this file is just a placeholder for the DA coming from docarray dependency
+### DocListProto
+this file is just a placeholder for the DA coming from jina._docarray dependency
 
 
 
@@ -120,7 +120,7 @@ Represents a DataRequest
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| docs | [docarray.DocumentArrayProto](#docarray-DocumentArrayProto) |  | the docs in this request |
+| docs | [docarray.DocListProto](#docarray-DocListProto) |  | the docs in this request |
 | docs_bytes | [bytes](#bytes) |  | the docs in this request as bytes |
 
 

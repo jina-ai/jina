@@ -6,10 +6,10 @@
 <meta property="og:title" content="Customization" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/serving/gateway/customization/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:description" content="Gateways are customizable in Jina. You can implement them in much the same way as an Executor. With customized Gateways, Jina gives you more power by letting you implement any server, protocol and interface at the Gateway level. This means you have more freedom to: Define and expose your own API ..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="description" content="Gateways are customizable in Jina. You can implement them in much the same way as an Executor. With customized Gateways, Jina gives you more power by letting you implement any server, protocol and interface at the Gateway level. This means you have more freedom to: Define and expose your own API ..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/serving/gateway/customization.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Customization - Jina 3.18.1 documentation</title>
+        <title>Customization - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -347,8 +347,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -357,7 +356,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -376,7 +374,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -453,10 +451,10 @@ Jina will instantiate your implemented class, inject runtime arguments and user-
 run it, orchestrate it, and send it health-checks.</p>
 <p>There are two Gateway base classes for implementing a custom Gateway:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a>: Use this abstract class to implement a custom Gateway using FastAPI.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code>: Use this abstract class to implement a custom Gateway using FastAPI.</p></li>
 <li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code>: Use this abstract class to implement a custom Gateway of any type.</p></li>
 </ul>
-<p>Whether your custom Gateway is based on a FastAPI app using <a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a>
+<p>Whether your custom Gateway is based on a FastAPI app using <code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code>
 or based on a general server using <code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code>, you will need to implement your server behavior in almost
 the same way.
 In the next section we will discuss the implementation steps, and then we will discuss how to use both base Gateway classes.</p>
@@ -470,15 +468,17 @@ In the next section we will discuss the implementation steps, and then we will d
 use Executors as a service and receive response Documents back.</p></li>
 <li><p>Convert response <code class="docutils literal notranslate"><span class="pre">Documents</span></code> to a server response and return it.</p></li>
 <li><p>Implement  <a class="reference internal" href="#custom-gateway-health-check"><span class="std std-ref">the required health-checks</span></a> for the Gateway.
-(This is not required when using <a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a>.)</p></li>
+(This is not required when using <code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code>.)</p></li>
 <li><p>Bind your Gateway server to <a class="reference internal" href="#gateway-runtime-arguments"><span class="std std-ref">parameters injected by the runtime</span></a>, i.e, <code class="docutils literal notranslate"><span class="pre">self.port</span></code>, <code class="docutils literal notranslate"><span class="pre">self.host</span></code>,…
-(Also not required for <a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a>.)</p></li>
+(Also not required for <code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code>.)</p></li>
 </ol>
 <p>Let’s suppose you want to implement a ‘/service’ GET endpoint in an HTTP server. Following the steps above, the server
 implementation might look like the following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
 <span class="kn">from</span> <span class="nn">uvicorn</span> <span class="kn">import</span> <span class="n">Server</span><span class="p">,</span> <span class="n">Config</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Gateway</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Gateway</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 
 
 <span class="k">class</span> <span class="nc">MyGateway</span><span class="p">(</span><span class="n">Gateway</span><span class="p">):</span>
@@ -489,13 +489,14 @@ implementation might look like the following:</p>
         <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/service&#39;</span><span class="p">)</span>
         <span class="k">async</span> <span class="k">def</span> <span class="nf">my_service</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
             <span class="c1"># step 2: convert input request to Documents</span>
-            <span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="nb">input</span><span class="p">)])</span>
+            <span class="n">docs</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]([</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="nb">input</span><span class="p">)])</span>
 
             <span class="c1"># step 3: send Documents to Executors using GatewayStreamer</span>
             <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">async</span> <span class="k">for</span> <span class="n">response_docs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">stream_docs</span><span class="p">(</span>
                 <span class="n">docs</span><span class="o">=</span><span class="n">docs</span><span class="p">,</span>
                 <span class="n">exec_endpoint</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
+                <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]</span>
             <span class="p">):</span>
                 <span class="c1"># step 4: convert response docs to server response and return it</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="n">response_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
@@ -514,11 +515,11 @@ implementation might look like the following:</p>
 </div>
 </section>
 <section id="subclass-from-fastapibasegateway">
-<h3>Subclass from <a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a><a class="headerlink" href="#subclass-from-fastapibasegateway" title="Permalink to this heading">#</a></h3>
-<p><a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a> offers a simple API to implement custom
+<h3>Subclass from <code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code><a class="headerlink" href="#subclass-from-fastapibasegateway" title="Permalink to this heading">#</a></h3>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code> offers a simple API to implement custom
 Gateways, but is restricted to FastAPI apps.</p>
-<p>To implement a custom gateway using <a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a>,
-simply implement the <a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.app" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.app"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app()</span></code></a> property:</p>
+<p>To implement a custom gateway using <code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code>,
+simply implement the <code class="xref py py-meth docutils literal notranslate"><span class="pre">app()</span></code> property:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http.fastapi</span> <span class="kn">import</span> <span class="n">FastAPIBaseGateway</span>
 
 
@@ -536,8 +537,8 @@ simply implement the <a class="reference internal" href="../../../../api/jina.se
         <span class="k">return</span> <span class="n">app</span>
 </pre></div>
 </div>
-<p>As an example, you can refer to <a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGateway" title="jina.serve.runtimes.gateway.http.HTTPGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPGateway</span></code></a>.</p>
-<p><a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a> is a subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code>.</p>
+<p>As an example, you can refer to <code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPGateway</span></code>.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code> is a subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code>.</p>
 </section>
 <section id="subclass-from-gateway">
 <h3>Subclass from <code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code><a class="headerlink" href="#subclass-from-gateway" title="Permalink to this heading">#</a></h3>
@@ -608,8 +609,8 @@ the server.</p>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>As an example, you can refer to <a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGateway" title="jina.serve.runtimes.gateway.grpc.GRPCGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">GRPCGateway</span></code></a> and
-<a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.websocket/#jina.serve.runtimes.gateway.websocket.WebSocketGateway" title="jina.serve.runtimes.gateway.websocket.WebSocketGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketGateway</span></code></a>.</p>
+<p>As an example, you can refer to <code class="xref py py-class docutils literal notranslate"><span class="pre">GRPCGateway</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketGateway</span></code>.</p>
 </section>
 </section>
 <section id="calling-executors-with-gatewaystreamer">
@@ -631,10 +632,11 @@ object using <code class="xref py py-meth docutils literal notranslate"><span cl
 </div>
 <p>After transforming requests that arrive to the Gateway server into Documents, you can send them to Executors in the Flow
 using <code class="xref py py-meth docutils literal notranslate"><span class="pre">stream_docs()</span></code>.</p>
-<p>This method expects a DocumentArray object and an endpoint exposed by the Flow Executors (similar to <a class="reference internal" href="../../../client/#client"><span class="std std-ref">Jina Client</span></a>).
-It returns an <code class="docutils literal notranslate"><span class="pre">AsyncGenerator</span></code> of DocumentArrays:</p>
+<p>This method expects a DocList object and an endpoint exposed by the Flow Executors (similar to <a class="reference internal" href="../../../client/#client"><span class="std std-ref">Jina Client</span></a>).
+It returns an <code class="docutils literal notranslate"><span class="pre">AsyncGenerator</span></code> of DocLists:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http.fastapi</span> <span class="kn">import</span> <span class="n">FastAPIBaseGateway</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
 
 
@@ -647,8 +649,9 @@ It returns an <code class="docutils literal notranslate"><span class="pre">Async
         <span class="k">async</span> <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="hll">            <span class="k">async</span> <span class="k">for</span> <span class="n">docs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">stream_docs</span><span class="p">(</span>
-</span><span class="hll">                <span class="n">docs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span>
+</span><span class="hll">                <span class="n">docs</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]([</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span>
 </span><span class="hll">                <span class="n">exec_endpoint</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
+</span><span class="hll">                <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span>
 </span><span class="hll">            <span class="p">):</span>
 </span><span class="hll">                <span class="n">result</span> <span class="o">=</span> <span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
 </span>            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="n">result</span><span class="p">}</span>
@@ -659,21 +662,22 @@ It returns an <code class="docutils literal notranslate"><span class="pre">Async
 <section id="recovering-executor-errors">
 <h3>Recovering Executor errors<a class="headerlink" href="#recovering-executor-errors" title="Permalink to this heading">#</a></h3>
 <p>Exceptions raised by an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> are captured in the server object which can be extracted by using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">jina.serve.streamer.stream()</span></code> method. The <code class="docutils literal notranslate"><span class="pre">stream</span></code> method
-returns an <code class="docutils literal notranslate"><span class="pre">AsyncGenerator</span></code> of a tuple of <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> and an optional <a class="reference internal" href="../../../../api/jina.excepts/#jina.excepts.ExecutorError" title="jina.excepts.ExecutorError"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.ExecutorError</span></code></a> class that be used to check if the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> has issues processing the input request.
+returns an <code class="docutils literal notranslate"><span class="pre">AsyncGenerator</span></code> of a tuple of <code class="docutils literal notranslate"><span class="pre">DocList</span></code> and an optional <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.ExecutorError</span></code> class that be used to check if the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> has issues processing the input request.
 The error can be utilized for retries, handling partial responses or returning default responses.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/endpoint&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="hll">    <span class="k">async</span> <span class="k">for</span> <span class="n">docs</span><span class="p">,</span> <span class="n">error</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span>
-</span><span class="hll">        <span class="n">docs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span>
+<span class="hll">    <span class="k">async</span> <span class="k">for</span> <span class="k">for</span> <span class="n">docs</span><span class="p">,</span> <span class="n">error</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span>
+</span><span class="hll">        <span class="n">docs</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]([</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span>
 </span><span class="hll">        <span class="n">exec_endpoint</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
+</span><span class="hll">        <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span>
 </span><span class="hll">    <span class="p">):</span>
 </span><span class="hll">        <span class="k">if</span> <span class="n">error</span><span class="p">:</span>
 </span><span class="hll">            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
 </span><span class="hll">        <span class="k">else</span><span class="p">:</span>
-</span><span class="hll">            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-</span>    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;results&#39;</span><span class="p">:</span> <span class="n">results</span><span class="p">,</span> <span class="s1">&#39;errors&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">error</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">]}</span>
+</span>            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;results&#39;</span><span class="p">:</span> <span class="n">results</span><span class="p">,</span> <span class="s1">&#39;errors&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">error</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">]}</span>
 </pre></div>
 </div>
 </section>
@@ -682,15 +686,16 @@ The error can be utilized for retries, handling partial responses or returning d
 <span id="executor-streamer"></span><h2>Calling an individual Executor<a class="headerlink" href="#calling-an-individual-executor" title="Permalink to this heading">#</a></h2>
 <p>Jina injects an <code class="docutils literal notranslate"><span class="pre">executor</span></code> object into your Gateway class which lets you call individual Executors from the Gateway.</p>
 <p>After transforming requests that arrive to the Gateway server into Documents, you can call the Executor in your Python code using <code class="docutils literal notranslate"><span class="pre">self.executor['executor_name'].post(args)</span></code>.
-This method expects a DocumentArray object and an endpoint exposed by the Executor (similar to <a class="reference internal" href="../../../client/#client"><span class="std std-ref">Jina Client</span></a>).
-It returns a ‘coroutine’ which returns a DocumentArray.
+This method expects a DocList object and an endpoint exposed by the Executor (similar to <a class="reference internal" href="../../../client/#client"><span class="std std-ref">Jina Client</span></a>).
+It returns a ‘coroutine’ which returns a DocList.
 Check the method documentation for more information: <code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></p>
 <p>In this example, we have a Flow with two Executors (<code class="docutils literal notranslate"><span class="pre">executor1</span></code> and <code class="docutils literal notranslate"><span class="pre">executor2</span></code>). We can call them individually using <code class="docutils literal notranslate"><span class="pre">self.executor['executor_name'].post</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http.fastapi</span> <span class="kn">import</span> <span class="n">FastAPIBaseGateway</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
 
 <span class="k">class</span> <span class="nc">MyGateway</span><span class="p">(</span><span class="n">FastAPIBaseGateway</span><span class="p">):</span>
     <span class="nd">@property</span>
@@ -700,22 +705,22 @@ Check the method documentation for more information: <code class="xref py py-met
         <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/endpoint&quot;</span><span class="p">)</span>
         <span class="k">async</span> <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">toc</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="hll">            <span class="n">doc1</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="p">[</span><span class="s1">&#39;executor1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="s1">&#39;v&#39;</span><span class="p">})</span>
-</span><span class="hll">            <span class="n">doc2</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="p">[</span><span class="s1">&#39;executor2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="s1">&#39;v&#39;</span><span class="p">})</span>
-</span>            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="n">doc1</span><span class="o">.</span><span class="n">texts</span> <span class="o">+</span> <span class="n">doc2</span><span class="o">.</span><span class="n">texts</span><span class="p">,</span> <span class="s1">&#39;time_taken&#39;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">toc</span><span class="p">}</span>
+<span class="hll">            <span class="n">docs1</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="p">[</span><span class="s1">&#39;executor1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]([</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="s1">&#39;v&#39;</span><span class="p">},</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">])</span>
+</span><span class="hll">            <span class="n">docs2</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="p">[</span><span class="s1">&#39;executor2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]([</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="s1">&#39;v&#39;</span><span class="p">},</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">])</span>
+</span>            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="n">docs1</span><span class="o">.</span><span class="n">text</span> <span class="o">+</span> <span class="n">docs2</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;time_taken&#39;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">toc</span><span class="p">}</span>
 
         <span class="k">return</span> <span class="n">app</span>
 
 <span class="k">class</span> <span class="nc">FirstExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]:</span>
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39; saw the first executor&#39;</span>
 
 <span class="k">class</span> <span class="nc">SecondExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]:</span>
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39; saw the second executor&#39;</span>
@@ -731,7 +736,9 @@ Check the method documentation for more information: <code class="xref py py-met
 <p>You can also call two Executors in parallel using asyncio. This will overlap their execution times – speeding up the response time of the endpoint.
 Here is one way to do it:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http.fastapi</span> <span class="kn">import</span> <span class="n">FastAPIBaseGateway</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
@@ -744,23 +751,23 @@ Here is one way to do it:</p>
         <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/endpoint&quot;</span><span class="p">)</span>
         <span class="k">async</span> <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">toc</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="hll">            <span class="n">call1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="p">[</span><span class="s1">&#39;executor1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="s1">&#39;v&#39;</span><span class="p">})</span>
-</span><span class="hll">            <span class="n">call2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="p">[</span><span class="s1">&#39;executor2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="s1">&#39;v&#39;</span><span class="p">})</span>
-</span><span class="hll">            <span class="n">doc1</span><span class="p">,</span> <span class="n">doc2</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">call1</span><span class="p">,</span> <span class="n">call2</span><span class="p">)</span>
-</span>            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="n">doc1</span><span class="o">.</span><span class="n">texts</span> <span class="o">+</span> <span class="n">doc2</span><span class="o">.</span><span class="n">texts</span><span class="p">,</span> <span class="s1">&#39;time_taken&#39;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">toc</span><span class="p">}</span>
+<span class="hll">            <span class="n">call1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="p">[</span><span class="s1">&#39;executor1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]([</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="s1">&#39;v&#39;</span><span class="p">},</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">])</span>
+</span><span class="hll">            <span class="n">call2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="p">[</span><span class="s1">&#39;executor2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]([</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="s1">&#39;v&#39;</span><span class="p">},</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">])</span>
+</span><span class="hll">            <span class="n">docs1</span><span class="p">,</span> <span class="n">docs2</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">call1</span><span class="p">,</span> <span class="n">call2</span><span class="p">)</span>
+</span>            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="n">docs1</span><span class="o">.</span><span class="n">text</span> <span class="o">+</span> <span class="n">docs2</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;time_taken&#39;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">toc</span><span class="p">}</span>
 
         <span class="k">return</span> <span class="n">app</span>
 
 <span class="k">class</span> <span class="nc">FirstExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]:</span>
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39; saw the first executor&#39;</span>
 
 <span class="k">class</span> <span class="nc">SecondExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]:</span>
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39; saw the second executor&#39;</span>
@@ -860,7 +867,7 @@ In this case, dockerizing the Gateway is straighforward:</p>
 This ensures that everything needed for Jina to run the Gateway is installed. Make sure the Jina version supports
 custom Gateways:</p></li>
 </ol>
-<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">jinaai/jina:latest-py37-standard</span>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">jinaai/jina:latest-py38-standard</span>
 </pre></div>
 </div>
 <p>Alternatively, you can just install jina using <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
@@ -1017,7 +1024,7 @@ health checks will be sent, it is important to specify them when including the G
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

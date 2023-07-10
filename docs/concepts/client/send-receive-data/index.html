@@ -6,11 +6,11 @@
 <meta property="og:title" content="Send & Receive Data" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/client/send-receive-data/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
-<meta property="og:description" content="After a Client has connected to a Flow, it can send requests to the Flow using its post() method. This expects as inputs the Executor endpoint that you want to target, as well as a Document or Iterable of Documents: A single Document A list of Documents A DocumentArray A Generator of Document No ..." />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
+<meta property="og:description" content="After a Client has connected to a Flow, it can send requests to the Flow using its post() method. This expects as inputs the Executor endpoint that you want to target, as well as a Document or Iterable of Documents: A single Document A list of Documents A DocList A Generator of Document No Docume..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
-<meta name="description" content="After a Client has connected to a Flow, it can send requests to the Flow using its post() method. This expects as inputs the Executor endpoint that you want to target, as well as a Document or Iterable of Documents: A single Document A list of Documents A DocumentArray A Generator of Document No ..." />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
+<meta name="description" content="After a Client has connected to a Flow, it can send requests to the Flow using its post() method. This expects as inputs the Executor endpoint that you want to target, as well as a Document or Iterable of Documents: A single Document A list of Documents A DocList A Generator of Document No Docume..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/client/send-receive-data.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Send &amp; Receive Data - Jina 3.18.1 documentation</title>
+        <title>Send &amp; Receive Data - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -347,8 +347,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -357,7 +356,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -376,7 +374,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -438,14 +436,14 @@
                     <section id="send-receive-data">
 <h1>Send &amp; Receive Data<a class="headerlink" href="#send-receive-data" title="Permalink to this heading">#</a></h1>
 <p>After a <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code> has connected to a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>, it can send requests to the Flow using its
-<a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> method.
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code> method.
 This expects as inputs the <a class="reference internal" href="../../serving/executor/add-endpoints/#exec-endpoint"><span class="std std-ref">Executor endpoint</span></a> that you want to target, as well as a Document or
 Iterable of Documents:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">A single Document</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 
-<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span>
+<span class="n">d1</span> <span class="o">=</span> <span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span>
 <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 
 <span class="hll"><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/endpoint&#39;</span><span class="p">,</span> <span class="n">d1</span><span class="p">)</span>
@@ -453,32 +451,34 @@ Iterable of Documents:</p>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">A list of Documents</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 
-<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span>
-<span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">&#39;world&#39;</span><span class="p">)</span>
+<span class="n">d1</span> <span class="o">=</span> <span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span>
+<span class="n">d2</span> <span class="o">=</span> <span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;world&#39;</span><span class="p">)</span>
 <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 
-<span class="hll"><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/endpoint&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">])</span>
+<span class="hll"><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/endpoint&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--3">A DocumentArray</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+<input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--3">A DocList</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
 
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-
-<span class="hll"><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/endpoint&#39;</span><span class="p">,</span> <span class="n">da</span><span class="p">)</span>
-</span></pre></div>
+<span class="n">d1</span> <span class="o">=</span> <span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span>
+<span class="n">d2</span> <span class="o">=</span> <span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;world&#39;</span><span class="p">)</span>
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]([</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">])</span>
+<span class="hll"><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</span>
+<span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/endpoint&#39;</span><span class="p">,</span> <span class="n">da</span><span class="p">)</span>
+</pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--4" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--4">A Generator of Document</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 
 <span class="hll"><span class="k">def</span> <span class="nf">doc_gen</span><span class="p">():</span>
 </span><span class="hll">    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
-</span><span class="hll">        <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;hello </span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</span><span class="hll">        <span class="k">yield</span> <span class="n">TextDoc</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;hello </span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </span>        
 <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 
@@ -508,30 +508,32 @@ thanks
 to <a class="reference internal" href="../callbacks/#callback-functions"><span class="std std-ref">callback functions</span></a>.</p>
 <p>The size of these batches can be controlled with the <code class="docutils literal notranslate"><span class="pre">request_size</span></code> keyword.
 The default <code class="docutils literal notranslate"><span class="pre">request_size</span></code> is 100 Documents. The optimal size will depend on your use case.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
 
 <span class="k">with</span> <span class="n">Flow</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">Document</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)),</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">DocList</span><span class="p">[</span><span class="n">BaseDoc</span><span class="p">](</span><span class="n">BaseDoc</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)),</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="send-data-asynchronously">
 <h2>Send data asynchronously<a class="headerlink" href="#send-data-asynchronously" title="Permalink to this heading">#</a></h2>
-<p>There is an async version of the Python Client which works with <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> and
-<a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.MutateMixin.mutate" title="jina.clients.mixin.MutateMixin.mutate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mutate()</span></code></a>.</p>
+<p>There is an async version of the Python Client which works with <code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">mutate()</span></code>.</p>
 <p>While the standard <code class="docutils literal notranslate"><span class="pre">Client</span></code> is also asynchronous under the hood, its async version exposes this fact to the outside
 world,
 by allowing <em>coroutines</em> as input, and returning an <em>asynchronous iterator</em>.
 This means you can iterate over Responses one by one, as they come in.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Flow</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">BaseDoc</span>
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">async_inputs</span><span class="p">():</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
-        <span class="k">yield</span> <span class="n">Document</span><span class="p">()</span>
+        <span class="k">yield</span> <span class="n">BaseDoc</span><span class="p">()</span>
         <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
 
 
@@ -546,15 +548,16 @@ This means you can iterate over Responses one by one, as they come in.</p>
 </pre></div>
 </div>
 <p>Async send is useful when calling a Flow from an Executor, as described in <span class="xref std std-ref">async-executors</span>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">DocumentArray</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
 
 
 <span class="k">class</span> <span class="nc">DummyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;grpc://0.0.0.0:51234&#39;</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="nd">@requests</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">docs</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">BaseDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">BaseDoc</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">BaseDoc</span><span class="p">])</span>
 </pre></div>
 </div>
 </section>
@@ -564,31 +567,34 @@ This means you can iterate over Responses one by one, as they come in.</p>
 configured. But the <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code> also allows you to only target specific Executors in a Flow using
 the <code class="docutils literal notranslate"><span class="pre">target_executor</span></code> keyword. The request will then only be processed by the Executors which match the provided
 target_executor regex. Its usage is shown in the listing below.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 
 
 <span class="k">class</span> <span class="nc">FooExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;foo was here and got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span><span class="si">}</span><span class="s1"> document&#39;</span><span class="p">))</span>
-
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;foo was here and got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span><span class="si">}</span><span class="s1"> document&#39;</span>
 
 <span class="k">class</span> <span class="nc">BarExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;bar was here and got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span><span class="si">}</span><span class="s1"> document&#39;</span><span class="p">))</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;bar was here and got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span><span class="si">}</span><span class="s1"> document&#39;</span>
 
 
 <span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">Flow</span><span class="p">()</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">FooExecutor</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fooExecutor&#39;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">BarExecutor</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;barExecutor&#39;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">FooExecutor</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fooExecutor&#39;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">BarExecutor</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;barExecutor&#39;</span><span class="p">)</span>
 <span class="p">)</span>
 
 <span class="k">with</span> <span class="n">f</span><span class="p">:</span>  <span class="c1"># Using it as a Context Manager will start the Flow</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
-    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">target_executor</span><span class="o">=</span><span class="s1">&#39;bar*&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="n">target_executor</span><span class="o">=</span><span class="s1">&#39;bar*&#39;</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This will send the request to all Executors whose names start with ‘bar’, such as ‘barExecutor’.
@@ -599,7 +605,7 @@ Executor.</p>
 <h2>Use Unary or Streaming gRPC<a class="headerlink" href="#use-unary-or-streaming-grpc" title="Permalink to this heading">#</a></h2>
 <p>The Flow with <strong>gRPC</strong> protocol implements the unary and the streaming RPC lifecycle for communicating with the clients.
 When sending more than one request using the batching or the iterator mechanism, the RPC lifecycle for the
-<a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> method can be controlled using the <code class="docutils literal notranslate"><span class="pre">stream</span></code> boolean method argument. By
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code> method can be controlled using the <code class="docutils literal notranslate"><span class="pre">stream</span></code> boolean method argument. By
 default the stream option is set to <code class="docutils literal notranslate"><span class="pre">True</span></code> which uses the streaming RPC to send the data to the Flow. If the stream
 option is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, the unary RPC is used to send the data to the Flow.
 Both RPC lifecycles are implemented to provide the flexibility for the clients.</p>
@@ -631,7 +637,7 @@ used to overwrite the default options. The default <strong>gRPC</strong> options
 <span class="c1"># allow grpc pings from client without data every 4 seconds</span>
 </pre></div>
 </div>
-<p>If the <code class="docutils literal notranslate"><span class="pre">max_attempts</span></code> is greater than 1 on the <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> method,
+<p>If the <code class="docutils literal notranslate"><span class="pre">max_attempts</span></code> is greater than 1 on the <code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code> method,
 the <code class="docutils literal notranslate"><span class="pre">grpc.service_config</span></code> option will not be applied since the retry
 options will be configured internally.</p>
 <p>Refer to the <a class="reference external" href="https://grpc.github.io/grpc/python/glossary.html#term-channel_arguments">channel_arguments</a> section for
@@ -643,34 +649,37 @@ the full list of available <strong>gRPC</strong> options.</p>
 </section>
 <section id="returns">
 <h2>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">#</a></h2>
-<p><a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> returns a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> containing all Documents flattened over all
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code> returns a <code class="docutils literal notranslate"><span class="pre">DocList</span></code> containing all Documents flattened over all
 Requests. When setting <code class="docutils literal notranslate"><span class="pre">return_responses=True</span></code>, this behavior is changed to returning a list of
-<a class="reference internal" href="../../../api/jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a> objects.</p>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code> objects.</p>
 <p>If a callback function is provided, <code class="docutils literal notranslate"><span class="pre">client.post()</span></code> will return none.</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Return as DocumentArray objects</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Document</span>
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Return as DocList objects</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 
 <span class="k">with</span> <span class="n">Flow</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
-    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Hi there!&#39;</span><span class="p">))</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Hi there!&#39;</span><span class="p">),</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">])</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">&lt;DocumentArray (length=1) at 140619524357664&gt;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">&lt;DocList[TextDoc] (length=1)&gt;</span>
 <span class="go">[&#39;Hi there!&#39;]</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">Return as Response objects</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Document</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 
 <span class="k">with</span> <span class="n">Flow</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
-    <span class="n">resp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Hi there!&#39;</span><span class="p">),</span> <span class="n">return_responses</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Hi there!&#39;</span><span class="p">),</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="n">return_responses</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">resp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">resp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[&lt;jina.types.request.data.DataRequest (&#39;header&#39;, &#39;parameters&#39;, &#39;routes&#39;, &#39;data&#39;) at 140619524354592&gt;]</span>
@@ -679,13 +688,15 @@ Requests. When setting <code class="docutils literal notranslate"><span class="p
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--3" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--3">Handle response via callback</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Document</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 
 <span class="k">with</span> <span class="n">Flow</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
     <span class="n">resp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
         <span class="n">on</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-        <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Hi there!&#39;</span><span class="p">),</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Hi there!&#39;</span><span class="p">),</span>
         <span class="n">on_done</span><span class="o">=</span><span class="k">lambda</span> <span class="n">resp</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
@@ -701,7 +712,7 @@ Requests. When setting <code class="docutils literal notranslate"><span class="p
 <h3>Callbacks vs returns<a class="headerlink" href="#callbacks-vs-returns" title="Permalink to this heading">#</a></h3>
 <p>Callback operates on every sub-request generated by <code class="docutils literal notranslate"><span class="pre">request_size</span></code>. The callback function consumes the response one by
 one. The old response is immediately free from the memory after the consumption.</p>
-<p>When callback is not provided, the client accumulates all DocumentArray of all Requests before returning.
+<p>When callback is not provided, the client accumulates all DocLists of all Requests before returning.
 This means you will not receive results until all Requests have been processed, which is slower and requires more
 memory.</p>
 </section>
@@ -711,10 +722,12 @@ memory.</p>
 requests may not be the same order as the Client sending them. Hence, the response order may also not be consistent as
 the sending order.</p>
 <p>To force the order of the results to be deterministic and the same as when they are sent, passing <code class="docutils literal notranslate"><span class="pre">results_in_order</span></code>
-parameter to <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a>.</p>
+parameter to <code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 
 
 <span class="k">class</span> <span class="nc">RandomSleepExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
@@ -726,11 +739,11 @@ parameter to <a class="reference internal" href="../../../api/jina.clients.mixin
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">RandomSleepExecutor</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="n">input_text</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;ordinal-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">180</span><span class="p">)]</span>
-<span class="n">input_da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">input_text</span><span class="p">])</span>
+<span class="n">input_da</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]([</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">input_text</span><span class="p">])</span>
 
 <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span>
-    <span class="n">output_da</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">input_da</span><span class="p">,</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">results_in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">output_da</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">input_da</span><span class="p">,</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="n">results_in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">for</span> <span class="nb">input</span><span class="p">,</span> <span class="n">output</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">input_da</span><span class="p">,</span> <span class="n">output_da</span><span class="p">):</span>
         <span class="k">assert</span> <span class="nb">input</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="n">output</span><span class="o">.</span><span class="n">text</span>
 </pre></div>
@@ -770,7 +783,7 @@ parameter to <a class="reference internal" href="../../../api/jina.clients.mixin
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

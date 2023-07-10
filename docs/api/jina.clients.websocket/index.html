@@ -6,9 +6,9 @@
 <meta property="og:title" content="jina.clients.websocket module" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.clients.websocket/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -31,7 +31,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.clients.websocket.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.clients.websocket module - Jina 3.18.1 documentation</title>
+        <title>jina.clients.websocket module - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -183,7 +183,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -345,8 +345,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -355,7 +354,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -374,7 +372,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -422,7 +420,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon"
+                    <label class="toc-overlay-icon toc-content-icon no-toc"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -433,455 +431,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section id="module-jina.clients.websocket">
-<span id="jina-clients-websocket-module"></span><h1>jina.clients.websocket module<a class="headerlink" href="#module-jina.clients.websocket" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.clients.websocket.WebSocketClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.websocket.</span></span><span class="sig-name descname"><span class="pre">WebSocketClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/websocket/#WebSocketClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.websocket.WebSocketClient" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.clients.base.websocket/#jina.clients.base.websocket.WebSocketBaseClient" title="jina.clients.base.websocket.WebSocketBaseClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketBaseClient</span></code></a>, <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.PostMixin" title="jina.clients.mixin.PostMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">PostMixin</span></code></a>, <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.ProfileMixin" title="jina.clients.mixin.ProfileMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileMixin</span></code></a>, <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin" title="jina.clients.mixin.HealthCheckMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">HealthCheckMixin</span></code></a></p>
-<p>A client connecting to a Gateway using WebSocket protocol.</p>
-<p>Instantiate this class through the <code class="xref py py-meth docutils literal notranslate"><span class="pre">jina.Client()</span></code> convenience method.</p>
-<p>EXAMPLE USAGE</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="c1"># select host address to connect to</span>
-<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
-    <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;websocket&#39;</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">&#39;ws://my.awesome.flow:1234&#39;</span>
-<span class="p">)</span>  <span class="c1"># returns WebSocketClient instance</span>
-<span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/index&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;hello!&#39;</span><span class="p">))</span>
-</pre></div>
-</div>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.WebSocketClient.aio_tracing_client_interceptors">
-<span class="sig-name descname"><span class="pre">aio_tracing_client_interceptors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.WebSocketClient.aio_tracing_client_interceptors" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a gRPC client aio channel interceptor.
-:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ClientInterceptor</span></code>]]
-:returns: An invocation-side list of aio interceptor objects.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.WebSocketClient.aio_tracing_server_interceptors">
-<span class="sig-name descname"><span class="pre">aio_tracing_server_interceptors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.WebSocketClient.aio_tracing_server_interceptors" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a gRPC aio server interceptor.
-:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ServerInterceptor</span></code>]]
-:returns: A service-side aio interceptor object.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.WebSocketClient.check_input">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.WebSocketClient.check_input" title="Permalink to this definition">#</a></dt>
-<dd><p>Validate the inputs and print the first request if success.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>inputs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[InputType]) – the inputs</p></li>
-<li><p><strong>kwargs</strong> – keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.clients.websocket.WebSocketClient.client">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">T</span></em><a class="headerlink" href="#jina.clients.websocket.WebSocketClient.client" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the client object itself</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the Client object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.WebSocketClient.delete">
-<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs:</span> <span class="pre">~typing.Optional[InputType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters:</span> <span class="pre">~typing.Optional[~typing.Dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_responses:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type:</span> <span class="pre">~typing.Type[~docarray.array.document.DocumentArray]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'docarray.array.document.DocumentArray'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><span class="pre">Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#jina.clients.websocket.WebSocketClient.delete" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.WebSocketClient.dry_run">
-<span class="sig-name descname"><span class="pre">dry_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.WebSocketClient.dry_run" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.WebSocketClient.index">
-<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs:</span> <span class="pre">~typing.Optional[InputType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters:</span> <span class="pre">~typing.Optional[~typing.Dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_responses:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type:</span> <span class="pre">~typing.Type[~docarray.array.document.DocumentArray]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'docarray.array.document.DocumentArray'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><span class="pre">Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#jina.clients.websocket.WebSocketClient.index" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.clients.websocket.WebSocketClient.inputs">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">InputType</span></em><a class="headerlink" href="#jina.clients.websocket.WebSocketClient.inputs" title="Permalink to this definition">#</a></dt>
-<dd><p>An iterator of bytes, each element represents a Document’s raw content.</p>
-<p><code class="docutils literal notranslate"><span class="pre">inputs</span></code> defined in the protobuf</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>InputType</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>inputs</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.WebSocketClient.is_flow_ready">
-<span class="sig-name descname"><span class="pre">is_flow_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.WebSocketClient.is_flow_ready" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if the Flow is ready to receive requests</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kwargs</strong> – potential kwargs received passed from the public interface</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>boolean indicating the health/readiness of the Flow</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.WebSocketClient.post">
-<span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size=100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_responses=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff=0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff=2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier=1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type=&lt;class</span> <span class="pre">'docarray.array.document.DocumentArray'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.WebSocketClient.post" title="Permalink to this definition">#</a></dt>
-<dd><p>Post a general data request to the Flow.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>inputs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[InputType]) – input data which can be an Iterable, a function which returns an Iterable, or a single Document.</p></li>
-<li><p><strong>on</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the endpoint which is invoked. All the functions in the executors decorated by <cite>&#64;requests(on=…)</cite> with the same endpoint are invoked.</p></li>
-<li><p><strong>on_done</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[CallbackFnType]) – the function to be called when the <code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> object is resolved.</p></li>
-<li><p><strong>on_error</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[CallbackFnType]) – the function to be called when the <code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> object is rejected.</p></li>
-<li><p><strong>on_always</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[CallbackFnType]) – the function to be called when the <code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> object is either resolved or rejected.</p></li>
-<li><p><strong>parameters</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – the kwargs that will be sent to the executor</p></li>
-<li><p><strong>target_executor</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a regex string. Only matching Executors will process the request.</p></li>
-<li><p><strong>request_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the number of Documents per request. &lt;=0 means all inputs in one request.</p></li>
-<li><p><strong>show_progress</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if set, client will show a progress bar on receiving every request.</p></li>
-<li><p><strong>continue_on_error</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if set, a Request that causes an error will be logged only without blocking the further requests.</p></li>
-<li><p><strong>return_responses</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if set to True, the result will come as Response and not as a <cite>DocumentArray</cite></p></li>
-<li><p><strong>max_attempts</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of sending attempts, including the original request.</p></li>
-<li><p><strong>initial_backoff</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The first retry will happen with a delay of random(0, initial_backoff)</p></li>
-<li><p><strong>max_backoff</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The maximum accepted backoff after the exponential incremental delay</p></li>
-<li><p><strong>backoff_multiplier</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))</p></li>
-<li><p><strong>results_in_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – return the results in the same order as the inputs</p></li>
-<li><p><strong>stream</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.</p></li>
-<li><p><strong>prefetch</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – How many Requests are processed from the Client at the same time. If not provided then Gateway prefetch value will be used.</p></li>
-<li><p><strong>return_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>]) – the DocumentArray type to be returned. By default, it is <cite>DocumentArray</cite>.</p></li>
-<li><p><strong>kwargs</strong> – additional parameters</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[Response], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None or DocumentArray containing all response Documents</p>
-</dd>
-</dl>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p><code class="docutils literal notranslate"><span class="pre">target_executor</span></code> uses <code class="docutils literal notranslate"><span class="pre">re.match</span></code> for checking if the pattern is matched. <code class="docutils literal notranslate"><span class="pre">target_executor=='foo'</span></code> will match both deployments with the name <code class="docutils literal notranslate"><span class="pre">foo</span></code> and <code class="docutils literal notranslate"><span class="pre">foo_what_ever_suffix</span></code>.</p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.WebSocketClient.profiling">
-<span class="sig-name descname"><span class="pre">profiling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.WebSocketClient.profiling" title="Permalink to this definition">#</a></dt>
-<dd><p>Profiling a single query’s roundtrip including network and computation latency. Results is summarized in a Dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>show_table</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – whether to show the table or not.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the latency report in a dict.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.WebSocketClient.search">
-<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs:</span> <span class="pre">~typing.Optional[InputType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters:</span> <span class="pre">~typing.Optional[~typing.Dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_responses:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type:</span> <span class="pre">~typing.Type[~docarray.array.document.DocumentArray]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'docarray.array.document.DocumentArray'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><span class="pre">Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#jina.clients.websocket.WebSocketClient.search" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.WebSocketClient.teardown_instrumentation">
-<span class="sig-name descname"><span class="pre">teardown_instrumentation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.WebSocketClient.teardown_instrumentation" title="Permalink to this definition">#</a></dt>
-<dd><p>Shut down the OpenTelemetry tracer and meter if available. This ensures that the daemon threads for
-exporting metrics data is properly cleaned up.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.WebSocketClient.tracing_client_interceptor">
-<span class="sig-name descname"><span class="pre">tracing_client_interceptor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.WebSocketClient.tracing_client_interceptor" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">OpenTelemetryClientInterceptor</span></code>]</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a gRPC client interceptor with the global tracing provider.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.WebSocketClient.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs:</span> <span class="pre">~typing.Optional[InputType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters:</span> <span class="pre">~typing.Optional[~typing.Dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_responses:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type:</span> <span class="pre">~typing.Type[~docarray.array.document.DocumentArray]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'docarray.array.document.DocumentArray'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><span class="pre">Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#jina.clients.websocket.WebSocketClient.update" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.clients.websocket.AsyncWebSocketClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.websocket.</span></span><span class="sig-name descname"><span class="pre">AsyncWebSocketClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/websocket/#AsyncWebSocketClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.websocket.AsyncWebSocketClient" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.clients.base.websocket/#jina.clients.base.websocket.WebSocketBaseClient" title="jina.clients.base.websocket.WebSocketBaseClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketBaseClient</span></code></a>, <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin" title="jina.clients.mixin.AsyncPostMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncPostMixin</span></code></a>, <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncProfileMixin" title="jina.clients.mixin.AsyncProfileMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncProfileMixin</span></code></a>, <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncHealthCheckMixin" title="jina.clients.mixin.AsyncHealthCheckMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncHealthCheckMixin</span></code></a></p>
-<p>Asynchronous client connecting to a Gateway using WebSocket protocol.</p>
-<p>Instantiate this class through the <code class="xref py py-meth docutils literal notranslate"><span class="pre">jina.Client()</span></code> convenience method.</p>
-<p>Unlike <a class="reference internal" href="#jina.clients.websocket.WebSocketClient" title="jina.clients.websocket.WebSocketClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketClient</span></code></a>, here <a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient.post" title="jina.clients.websocket.AsyncWebSocketClient.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> is a coroutine (i.e. declared with the async/await syntax),
-simply calling them will not schedule them to be executed.</p>
-<p>To actually run a coroutine, user need to put them in an event loop, e.g. via <code class="docutils literal notranslate"><span class="pre">asyncio.run()</span></code>,
-<code class="docutils literal notranslate"><span class="pre">asyncio.create_task()</span></code>.</p>
-<p><a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient" title="jina.clients.websocket.AsyncWebSocketClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncWebSocketClient</span></code></a> can be very useful in
-the integration settings, where Jina/Flow/Client is NOT the main logic, but rather served as a part of other program.
-In this case, users often do not want to let Jina control the <code class="docutils literal notranslate"><span class="pre">asyncio.eventloop</span></code>. On contrary, <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code>
-is controlling and wrapping the event loop internally, making the Client looks synchronous from outside.</p>
-<p>EXAMPLE USAGE</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="c1"># async inputs for the client</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">async_inputs</span><span class="p">():</span>
-    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
-        <span class="k">yield</span> <span class="n">Document</span><span class="p">()</span>
-        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
-
-
-<span class="c1"># select host address to connect to</span>
-<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
-    <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;websocket&#39;</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">&#39;http://ws.awesome.flow:1234&#39;</span>
-<span class="p">)</span>  <span class="c1"># returns AsyncWebSocketClient instance</span>
-
-<span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/index&#39;</span><span class="p">,</span> <span class="n">async_inputs</span><span class="p">,</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.AsyncWebSocketClient.aio_tracing_client_interceptors">
-<span class="sig-name descname"><span class="pre">aio_tracing_client_interceptors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.AsyncWebSocketClient.aio_tracing_client_interceptors" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a gRPC client aio channel interceptor.
-:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ClientInterceptor</span></code>]]
-:returns: An invocation-side list of aio interceptor objects.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.AsyncWebSocketClient.aio_tracing_server_interceptors">
-<span class="sig-name descname"><span class="pre">aio_tracing_server_interceptors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.AsyncWebSocketClient.aio_tracing_server_interceptors" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a gRPC aio server interceptor.
-:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ServerInterceptor</span></code>]]
-:returns: A service-side aio interceptor object.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.AsyncWebSocketClient.check_input">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.AsyncWebSocketClient.check_input" title="Permalink to this definition">#</a></dt>
-<dd><p>Validate the inputs and print the first request if success.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>inputs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[InputType]) – the inputs</p></li>
-<li><p><strong>kwargs</strong> – keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.clients.websocket.AsyncWebSocketClient.client">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">T</span></em><a class="headerlink" href="#jina.clients.websocket.AsyncWebSocketClient.client" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the client object itself</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the Client object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.AsyncWebSocketClient.delete">
-<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs:</span> <span class="pre">~typing.Optional[InputType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters:</span> <span class="pre">~typing.Optional[~typing.Dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_responses:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type:</span> <span class="pre">~typing.Type[~docarray.array.document.DocumentArray]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'docarray.array.document.DocumentArray'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><span class="pre">Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#jina.clients.websocket.AsyncWebSocketClient.delete" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.AsyncWebSocketClient.dry_run">
-<span class="sig-name descname"><span class="pre">dry_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.AsyncWebSocketClient.dry_run" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.AsyncWebSocketClient.index">
-<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs:</span> <span class="pre">~typing.Optional[InputType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters:</span> <span class="pre">~typing.Optional[~typing.Dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_responses:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type:</span> <span class="pre">~typing.Type[~docarray.array.document.DocumentArray]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'docarray.array.document.DocumentArray'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><span class="pre">Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#jina.clients.websocket.AsyncWebSocketClient.index" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.clients.websocket.AsyncWebSocketClient.inputs">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">InputType</span></em><a class="headerlink" href="#jina.clients.websocket.AsyncWebSocketClient.inputs" title="Permalink to this definition">#</a></dt>
-<dd><p>An iterator of bytes, each element represents a Document’s raw content.</p>
-<p><code class="docutils literal notranslate"><span class="pre">inputs</span></code> defined in the protobuf</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>InputType</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>inputs</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.AsyncWebSocketClient.is_flow_ready">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_flow_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.AsyncWebSocketClient.is_flow_ready" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if the Flow is ready to receive requests</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kwargs</strong> – potential kwargs received passed from the public interface</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>boolean indicating the health/readiness of the Flow</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.AsyncWebSocketClient.post">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size=100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_responses=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff=0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff=2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier=1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type=&lt;class</span> <span class="pre">'docarray.array.document.DocumentArray'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.AsyncWebSocketClient.post" title="Permalink to this definition">#</a></dt>
-<dd><p>Async Post a general data request to the Flow.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>inputs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[InputType]) – input data which can be an Iterable, a function which returns an Iterable, or a single Document.</p></li>
-<li><p><strong>on</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the endpoint which is invoked. All the functions in the executors decorated by <cite>&#64;requests(on=…)</cite> with the same endpoint are invoked.</p></li>
-<li><p><strong>on_done</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[CallbackFnType]) – the function to be called when the <code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> object is resolved.</p></li>
-<li><p><strong>on_error</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[CallbackFnType]) – the function to be called when the <code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> object is rejected.</p></li>
-<li><p><strong>on_always</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[CallbackFnType]) – the function to be called when the <code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> object is either resolved or rejected.</p></li>
-<li><p><strong>parameters</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – the kwargs that will be sent to the executor</p></li>
-<li><p><strong>target_executor</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a regex string. Only matching Executors will process the request.</p></li>
-<li><p><strong>request_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the number of Documents per request. &lt;=0 means all inputs in one request.</p></li>
-<li><p><strong>show_progress</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if set, client will show a progress bar on receiving every request.</p></li>
-<li><p><strong>continue_on_error</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if set, a Request that causes an error will be logged only without blocking the further requests.</p></li>
-<li><p><strong>return_responses</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if set to True, the result will come as Response and not as a <cite>DocumentArray</cite></p></li>
-<li><p><strong>max_attempts</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of sending attempts, including the original request.</p></li>
-<li><p><strong>initial_backoff</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The first retry will happen with a delay of random(0, initial_backoff)</p></li>
-<li><p><strong>max_backoff</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The maximum accepted backoff after the exponential incremental delay</p></li>
-<li><p><strong>backoff_multiplier</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))</p></li>
-<li><p><strong>results_in_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – return the results in the same order as the inputs</p></li>
-<li><p><strong>stream</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.</p></li>
-<li><p><strong>prefetch</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – How many Requests are processed from the Client at the same time. If not provided then Gateway prefetch value will be used.</p></li>
-<li><p><strong>return_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>]) – the DocumentArray type to be returned. By default, it is <cite>DocumentArray</cite>.</p></li>
-<li><p><strong>kwargs</strong> – additional parameters, can be used to pass metadata or authentication information in the server call</p></li>
-</ul>
-</dd>
-<dt class="field-even">Yield<span class="colon">:</span></dt>
-<dd class="field-even"><p>Response object</p>
-</dd>
-</dl>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p><code class="docutils literal notranslate"><span class="pre">target_executor</span></code> uses <code class="docutils literal notranslate"><span class="pre">re.match</span></code> for checking if the pattern is matched. <code class="docutils literal notranslate"><span class="pre">target_executor=='foo'</span></code> will match both deployments with the name <code class="docutils literal notranslate"><span class="pre">foo</span></code> and <code class="docutils literal notranslate"><span class="pre">foo_what_ever_suffix</span></code>.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncGenerator</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, Response]]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.AsyncWebSocketClient.profiling">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">profiling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.AsyncWebSocketClient.profiling" title="Permalink to this definition">#</a></dt>
-<dd><p>Profiling a single query’s roundtrip including network and computation latency. Results is summarized in a Dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>show_table</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – whether to show the table or not.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the latency report in a dict.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.AsyncWebSocketClient.search">
-<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs:</span> <span class="pre">~typing.Optional[InputType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters:</span> <span class="pre">~typing.Optional[~typing.Dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_responses:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type:</span> <span class="pre">~typing.Type[~docarray.array.document.DocumentArray]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'docarray.array.document.DocumentArray'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><span class="pre">Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#jina.clients.websocket.AsyncWebSocketClient.search" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.AsyncWebSocketClient.stream_doc">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stream_doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type=&lt;class</span> <span class="pre">'docarray.document.Document'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.AsyncWebSocketClient.stream_doc" title="Permalink to this definition">#</a></dt>
-<dd><p>Send one document to a streaming endpoint and receive results asynchronisly, one Document at a time.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>inputs</strong> (<a class="reference external" href="https://docarray.jina.ai/api/docarray.document/#docarray.document.Document" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – input data which can be an Iterable, a function which returns an Iterable, or a single Document.</p></li>
-<li><p><strong>on</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the endpoint which is invoked. All the functions in the executors decorated by <cite>&#64;requests(on=…)</cite> with the same endpoint are invoked.</p></li>
-<li><p><strong>parameters</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – the kwargs that will be sent to the executor</p></li>
-<li><p><strong>return_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.document/#docarray.document.Document" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]) – the DocumentArray type to be returned. By default, it is <cite>DocumentArray</cite>.</p></li>
-<li><p><strong>timeout</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Timeout for the client to remain connected to the server.</p></li>
-<li><p><strong>kwargs</strong> – additional parameters, can be used to pass metadata or authentication information in the server call</p></li>
-</ul>
-</dd>
-<dt class="field-even">Yield<span class="colon">:</span></dt>
-<dd class="field-even"><p>Document object</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncGenerator</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <a class="reference external" href="https://docarray.jina.ai/api/docarray.document/#docarray.document.Document" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.AsyncWebSocketClient.teardown_instrumentation">
-<span class="sig-name descname"><span class="pre">teardown_instrumentation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.AsyncWebSocketClient.teardown_instrumentation" title="Permalink to this definition">#</a></dt>
-<dd><p>Shut down the OpenTelemetry tracer and meter if available. This ensures that the daemon threads for
-exporting metrics data is properly cleaned up.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.AsyncWebSocketClient.tracing_client_interceptor">
-<span class="sig-name descname"><span class="pre">tracing_client_interceptor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.websocket.AsyncWebSocketClient.tracing_client_interceptor" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">OpenTelemetryClientInterceptor</span></code>]</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a gRPC client interceptor with the global tracing provider.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.websocket.AsyncWebSocketClient.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs:</span> <span class="pre">~typing.Optional[InputType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always:</span> <span class="pre">~typing.Optional[CallbackFnType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters:</span> <span class="pre">~typing.Optional[~typing.Dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_responses:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_backoff:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_multiplier:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_in_order:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type:</span> <span class="pre">~typing.Type[~docarray.array.document.DocumentArray]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'docarray.array.document.DocumentArray'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><span class="pre">Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#jina.clients.websocket.AsyncWebSocketClient.update" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+                    <section id="jina-clients-websocket-module">
+<h1>jina.clients.websocket module<a class="headerlink" href="#jina-clients-websocket-module" title="Permalink to this heading">#</a></h1>
 </section>
 
                 </article>
@@ -897,7 +448,7 @@ exporting metrics data is properly cleaned up.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -917,63 +468,8 @@ exporting metrics data is properly cleaned up.</p>
                 
             </footer>
         </div>
-        <aside class="toc-drawer">
+        <aside class="toc-drawer no-toc">
             
-            
-            <div class="toc-sticky toc-scroll">
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.clients.websocket module</a><ul>
-<li><a class="reference internal" href="#jina.clients.websocket.WebSocketClient"><code class="docutils literal notranslate"><span class="pre">WebSocketClient</span></code></a><ul>
-<li><a class="reference internal" href="#jina.clients.websocket.WebSocketClient.aio_tracing_client_interceptors"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.aio_tracing_client_interceptors()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.WebSocketClient.aio_tracing_server_interceptors"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.aio_tracing_server_interceptors()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.WebSocketClient.check_input"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.check_input()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.WebSocketClient.client"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.client</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.WebSocketClient.delete"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.delete()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.WebSocketClient.dry_run"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.dry_run()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.WebSocketClient.index"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.index()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.WebSocketClient.inputs"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.inputs</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.WebSocketClient.is_flow_ready"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.is_flow_ready()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.WebSocketClient.post"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.post()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.WebSocketClient.profiling"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.profiling()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.WebSocketClient.search"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.search()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.WebSocketClient.teardown_instrumentation"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.teardown_instrumentation()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.WebSocketClient.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.tracing_client_interceptor()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.WebSocketClient.update"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.update()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient</span></code></a><ul>
-<li><a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient.aio_tracing_client_interceptors"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.aio_tracing_client_interceptors()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient.aio_tracing_server_interceptors"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.aio_tracing_server_interceptors()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient.check_input"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.check_input()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient.client"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.client</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient.delete"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.delete()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient.dry_run"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.dry_run()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient.index"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.index()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient.inputs"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.inputs</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient.is_flow_ready"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.is_flow_ready()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient.post"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.post()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient.profiling"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.profiling()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient.search"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.search()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient.stream_doc"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.stream_doc()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient.teardown_instrumentation"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.teardown_instrumentation()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.tracing_client_interceptor()</span></code></a></li>
-<li><a class="reference internal" href="#jina.clients.websocket.AsyncWebSocketClient.update"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.update()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
-            </div>
             
             
         </aside>

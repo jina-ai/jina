@@ -6,10 +6,10 @@
 <meta property="og:title" content=" Client" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/client/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:description" content="Client enables you to send Documents to a running Flow. Same as Gateway, Client supports four networking protocols: gRPC, HTTP, WebSocket and GraphQL with/without TLS. You may have observed two styles of using a Client in the docs: Implicit, inside a Flow Explicit, outside a Flow The implicit sty..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="description" content="Client enables you to send Documents to a running Flow. Same as Gateway, Client supports four networking protocols: gRPC, HTTP, WebSocket and GraphQL with/without TLS. You may have observed two styles of using a Client in the docs: Implicit, inside a Flow Explicit, outside a Flow The implicit sty..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/client/index.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Client - Jina 3.18.1 documentation</title>
+        <title>Client - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -347,8 +347,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -357,7 +356,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -376,7 +374,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -561,9 +559,30 @@ For instance, if you’re building a web server, you can introduce multi-process
 <code class="docutils literal notranslate"><span class="pre">gunicorn</span></code>: <code class="docutils literal notranslate"><span class="pre">gunicorn</span> <span class="pre">main:app</span> <span class="pre">--workers</span> <span class="pre">4</span> <span class="pre">--worker-class</span> <span class="pre">uvicorn.workers.UvicornWorker</span> <span class="pre">...</span></code></p>
 </div>
 </section>
+<section id="client-api">
+<h2>Client API<a class="headerlink" href="#client-api" title="Permalink to this heading">#</a></h2>
+<p>When using <code class="docutils literal notranslate"><span class="pre">docarray&gt;=0,30</span></code>, you specify the schema that you expect the Deployment or Flow to return. You can pass the return type by using the <code class="docutils literal notranslate"><span class="pre">return_type</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">client.post</span></code> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
+
+<span class="k">class</span> <span class="nc">InputDoc</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+<span class="hll"><span class="k">class</span> <span class="nc">OutputDoc</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
+</span>    <span class="n">tags</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;https://my.awesome.flow:1234&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">4321</span><span class="p">)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+    <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="n">InputDoc</span><span class="p">(),</span>
+    <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">OutputDoc</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
 <section id="enable-compression">
 <span id="client-compress"></span><h2>Enable compression<a class="headerlink" href="#enable-compression" title="Permalink to this heading">#</a></h2>
-<p>If the communication to the Gateway is via gRPC, you can pass <code class="docutils literal notranslate"><span class="pre">compression</span></code> parameter to  <a class="reference internal" href="../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> to benefit from <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">gRPC compression</a> methods.</p>
+<p>If the communication to the Gateway is via gRPC, you can pass <code class="docutils literal notranslate"><span class="pre">compression</span></code> parameter to  <code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code> to benefit from <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">gRPC compression</a> methods.</p>
 <p>The supported choices are: None, <code class="docutils literal notranslate"><span class="pre">gzip</span></code> and <code class="docutils literal notranslate"><span class="pre">deflate</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
 
@@ -579,7 +598,7 @@ For instance, if you’re building a web server, you can introduce multi-process
 </section>
 <section id="simple-profiling-of-the-latency">
 <h2>Simple profiling of the latency<a class="headerlink" href="#simple-profiling-of-the-latency" title="Permalink to this heading">#</a></h2>
-<p>Before sending any real data, you can test the connectivity and network latency by calling the <a class="reference internal" href="../../api/jina.clients.mixin/#jina.clients.mixin.ProfileMixin.profiling" title="jina.clients.mixin.ProfileMixin.profiling"><code class="xref py py-meth docutils literal notranslate"><span class="pre">profiling()</span></code></a> method:</p>
+<p>Before sending any real data, you can test the connectivity and network latency by calling the <code class="xref py py-meth docutils literal notranslate"><span class="pre">profiling()</span></code> method:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
 
 <span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;grpc://my.awesome.flow:1234&#39;</span><span class="p">)</span>
@@ -649,7 +668,7 @@ For instance, if you’re building a web server, you can introduce multi-process
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -683,6 +702,7 @@ For instance, if you’re building a web server, you can introduce multi-process
                         <ul>
 <li><a class="reference internal" href="#"><span class="fas fa-laptop-code"></span> Client</a><ul>
 <li><a class="reference internal" href="#connect">Connect</a></li>
+<li><a class="reference internal" href="#client-api">Client API</a></li>
 <li><a class="reference internal" href="#enable-compression">Enable compression</a></li>
 <li><a class="reference internal" href="#test-readiness-of-the-flow">Test readiness of the Flow</a></li>
 <li><a class="reference internal" href="#simple-profiling-of-the-latency">Simple profiling of the latency</a></li>

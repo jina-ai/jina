@@ -6,10 +6,10 @@
 <meta property="og:title" content="Add Executors" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/orchestration/add-executors/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:description" content="Define Executor with uses: An Executor ’s type is defined by the uses keyword: Deployment Flow Note that some usages are not supported on JCloud due to security reasons and the nature of facilitating local debugging.,,,, Local Dev, JCloud, uses=..., Description,,, ✅, ❌, ExecutorClass, Use Executo..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="description" content="Define Executor with uses: An Executor ’s type is defined by the uses keyword: Deployment Flow Note that some usages are not supported on JCloud due to security reasons and the nature of facilitating local debugging.,,,, Local Dev, JCloud, uses=..., Description,,, ✅, ❌, ExecutorClass, Use Executo..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/orchestration/add-executors.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Add Executors - Jina 3.18.1 documentation</title>
+        <title>Add Executors - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -347,8 +347,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -357,7 +356,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -376,7 +374,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -831,37 +829,6 @@ different_name
 </div>
 </div>
 </section>
-<section id="unify-output-ndarray-types">
-<h3>Unify output <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> types<a class="headerlink" href="#unify-output-ndarray-types" title="Permalink to this heading">#</a></h3>
-<p>Different <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s may depend on different <code class="docutils literal notranslate"><span class="pre">types</span></code> for array-like data such as <code class="docutils literal notranslate"><span class="pre">doc.tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">doc.embedding</span></code>,
-often because they were written with different machine learning frameworks.
-As the builder of an Orchestration you don’t always have control over this, for example when using Executors from Executor Hub.</p>
-<p>To ease the integration of different Executors, an Orchestration allows you to convert <code class="docutils literal notranslate"><span class="pre">tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">embedding</span></code>:</p>
-<div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--5-input--1" name="tab-set--5" type="radio"><label class="tab-label" for="tab-set--5-input--1">Deployment</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
-
-<span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">output_array_type</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<input class="tab-input" id="tab-set--5-input--2" name="tab-set--5" type="radio"><label class="tab-label" for="tab-set--5-input--2">Flow</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
-
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">output_array_type</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">NeedsNumpyExecutor</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<p>This converts the <code class="docutils literal notranslate"><span class="pre">.tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">.embedding</span></code> fields of all output Documents of <code class="docutils literal notranslate"><span class="pre">MyExecutor</span></code> to <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, making the data
-usable by <code class="docutils literal notranslate"><span class="pre">NeedsNumpyExecutor</span></code>. This works whether <code class="docutils literal notranslate"><span class="pre">MyExecutor</span></code> populates these fields with arrays/tensors from
-PyTorch, TensorFlow, or any other popular ML framework.</p>
-<div class="note admonition">
-<p class="admonition-title">Output types</p>
-<p><code class="docutils literal notranslate"><span class="pre">output_array_type=</span></code> supports more types than <code class="docutils literal notranslate"><span class="pre">'numpy'</span></code>. For the full specification and further details, check the
-<a class="reference external" href="https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf">protobuf serialization docs</a>.</p>
-</div>
-</section>
 </section>
 <section id="use-external-executors">
 <span id="external-executors"></span><h2>Use external Executors<a class="headerlink" href="#use-external-executors" title="Permalink to this heading">#</a></h2>
@@ -870,7 +837,7 @@ PyTorch, TensorFlow, or any other popular ML framework.</p>
 <p>Both <a class="reference internal" href="../../serving/executor/serve/#serve-executor-standalone"><span class="std std-ref">served and shared Executors</span></a> can be used as external Executors.</p>
 <p>When you add an external Executor, you have to provide a <code class="docutils literal notranslate"><span class="pre">host</span></code> and <code class="docutils literal notranslate"><span class="pre">port</span></code>, and enable the <code class="docutils literal notranslate"><span class="pre">external</span></code> flag:</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--6-input--1" name="tab-set--6" type="radio"><label class="tab-label" for="tab-set--6-input--1">Deployment</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--5-input--1" name="tab-set--5" type="radio"><label class="tab-label" for="tab-set--5-input--1">Deployment</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
 
 <span class="n">Deployment</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;123.45.67.89&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -881,7 +848,7 @@ PyTorch, TensorFlow, or any other popular ML framework.</p>
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--6-input--2" name="tab-set--6" type="radio"><label class="tab-label" for="tab-set--6-input--2">Flow</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--5-input--2" name="tab-set--5" type="radio"><label class="tab-label" for="tab-set--5-input--2">Flow</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;123.45.67.89&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -899,14 +866,14 @@ PyTorch, TensorFlow, or any other popular ML framework.</p>
 <h3>Enable TLS<a class="headerlink" href="#enable-tls" title="Permalink to this heading">#</a></h3>
 <p>You can also use external Executors with <code class="docutils literal notranslate"><span class="pre">tls</span></code>:</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--7-input--1" name="tab-set--7" type="radio"><label class="tab-label" for="tab-set--7-input--1">Deployment</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--6-input--1" name="tab-set--6" type="radio"><label class="tab-label" for="tab-set--6-input--1">Deployment</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
 
 <span class="n">Deployment</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;123.45.67.89:443&#39;</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--7-input--2" name="tab-set--7" type="radio"><label class="tab-label" for="tab-set--7-input--2">Flow</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--6-input--2" name="tab-set--6" type="radio"><label class="tab-label" for="tab-set--6-input--2">Flow</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;123.45.67.89:443&#39;</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -924,7 +891,7 @@ PyTorch, TensorFlow, or any other popular ML framework.</p>
 <h3>Pass arguments<a class="headerlink" href="#pass-arguments" title="Permalink to this heading">#</a></h3>
 <p>External Executors may require extra configuration to run. Think about an Executor that requires authentication to run. You can pass the <code class="docutils literal notranslate"><span class="pre">grpc_metadata</span></code> parameter to the Executor. <code class="docutils literal notranslate"><span class="pre">grpc_metadata</span></code> is a dictionary of key-value pairs to be passed along with every gRPC request sent to that Executor.</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--8-input--1" name="tab-set--8" type="radio"><label class="tab-label" for="tab-set--8-input--1">Deployment</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--7-input--1" name="tab-set--7" type="radio"><label class="tab-label" for="tab-set--7-input--1">Deployment</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
 
 <span class="n">Deployment</span><span class="p">(</span>
@@ -936,7 +903,7 @@ PyTorch, TensorFlow, or any other popular ML framework.</p>
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--8-input--2" name="tab-set--8" type="radio"><label class="tab-label" for="tab-set--8-input--2">Flow</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--7-input--2" name="tab-set--7" type="radio"><label class="tab-label" for="tab-set--7-input--2">Flow</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
@@ -988,7 +955,7 @@ PyTorch, TensorFlow, or any other popular ML framework.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -1026,7 +993,6 @@ PyTorch, TensorFlow, or any other popular ML framework.</p>
 <li><a class="reference internal" href="#set-with-via-uses-with">Set <code class="docutils literal notranslate"><span class="pre">with</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_with</span></code></a></li>
 <li><a class="reference internal" href="#set-requests-via-uses-requests">Set <code class="docutils literal notranslate"><span class="pre">requests</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_requests</span></code></a></li>
 <li><a class="reference internal" href="#set-metas-via-uses-metas">Set <code class="docutils literal notranslate"><span class="pre">metas</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code></a></li>
-<li><a class="reference internal" href="#unify-output-ndarray-types">Unify output <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> types</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#use-external-executors">Use external Executors</a><ul>

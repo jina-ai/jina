@@ -6,9 +6,9 @@
 <meta property="og:title" content="jina.types.request.status module" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.types.request.status/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -31,7 +31,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.types.request.status.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.types.request.status module - Jina 3.18.1 documentation</title>
+        <title>jina.types.request.status module - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -183,7 +183,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -345,8 +345,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -355,7 +354,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -374,7 +372,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -422,7 +420,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon"
+                    <label class="toc-overlay-icon toc-content-icon no-toc"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -433,181 +431,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section id="module-jina.types.request.status">
-<span id="jina-types-request-status-module"></span><h1>jina.types.request.status module<a class="headerlink" href="#module-jina.types.request.status" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.types.request.status.StatusMessage">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.types.request.status.</span></span><span class="sig-name descname"><span class="pre">StatusMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">status_object</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/status/#StatusMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.status.StatusMessage" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin" title="jina.types.mixin.ProtoTypeMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProtoTypeMixin</span></code></a></p>
-<p>Represents a Status message used for health check of the Flow</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.status.StatusMessage.CopyFrom">
-<span class="sig-name descname"><span class="pre">CopyFrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.status.StatusMessage.CopyFrom" title="Permalink to this definition">#</a></dt>
-<dd><p>Copy the content of target</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)) – the document to copy from</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.status.StatusMessage.MergeFrom">
-<span class="sig-name descname"><span class="pre">MergeFrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.status.StatusMessage.MergeFrom" title="Permalink to this definition">#</a></dt>
-<dd><p>Merge the content of target</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)) – the document to merge from</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.status.StatusMessage.binary_str">
-<span class="sig-name descname"><span class="pre">binary_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.status.StatusMessage.binary_str" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.status.StatusMessage.clear">
-<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.status.StatusMessage.clear" title="Permalink to this definition">#</a></dt>
-<dd><p>Remove all values from all fields of this Document.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.status.StatusMessage.dict">
-<span class="sig-name descname"><span class="pre">dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.status.StatusMessage.dict" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.status.StatusMessage.json">
-<span class="sig-name descname"><span class="pre">json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.status.StatusMessage.json" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.request.status.StatusMessage.nbytes">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nbytes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#jina.types.request.status.StatusMessage.nbytes" title="Permalink to this definition">#</a></dt>
-<dd><p>Return total bytes consumed by protobuf.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>number of bytes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.status.StatusMessage.pop">
-<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.status.StatusMessage.pop" title="Permalink to this definition">#</a></dt>
-<dd><p>Remove the values from the given fields of this Document.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fields</strong> – field names</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.request.status.StatusMessage.proto">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto</span></span><a class="headerlink" href="#jina.types.request.status.StatusMessage.proto" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the underlying Protobuf object</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Protobuf representation of the object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.status.StatusMessage.set_exception">
-<span class="sig-name descname"><span class="pre">set_exception</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ex</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/status/#StatusMessage.set_exception"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.status.StatusMessage.set_exception" title="Permalink to this definition">#</a></dt>
-<dd><p>Set exception information into the Status Message</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ex</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>) – The Exception to be filled</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.status.StatusMessage.to_bytes">
-<span class="sig-name descname"><span class="pre">to_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.status.StatusMessage.to_bytes" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the serialized the message to a string.</p>
-<p>For more Pythonic code, please use <code class="docutils literal notranslate"><span class="pre">bytes(...)</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>binary string representation of the object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.status.StatusMessage.to_dict">
-<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.status.StatusMessage.to_dict" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the object in Python dictionary.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Array like object such as <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> (i.e. anything described as <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.NdArrayProto</span></code>)
-will be converted to Python list.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kwargs</strong> – Extra kwargs to be passed to MessageToDict, like use_integers_for_enums</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict representation of the object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.status.StatusMessage.to_json">
-<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.status.StatusMessage.to_json" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the object in JSON string</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>JSON string of the object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.status.StatusMessage.set_code">
-<span class="sig-name descname"><span class="pre">set_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/status/#StatusMessage.set_code"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.status.StatusMessage.set_code" title="Permalink to this definition">#</a></dt>
-<dd><p>Set the code of the Status Message</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>code</strong> – The code to be added</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+                    <section id="jina-types-request-status-module">
+<h1>jina.types.request.status module<a class="headerlink" href="#jina-types-request-status-module" title="Permalink to this heading">#</a></h1>
 </section>
 
                 </article>
@@ -623,7 +448,7 @@ will be converted to Python list.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -643,43 +468,8 @@ will be converted to Python list.</p>
                 
             </footer>
         </div>
-        <aside class="toc-drawer">
+        <aside class="toc-drawer no-toc">
             
-            
-            <div class="toc-sticky toc-scroll">
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.types.request.status module</a><ul>
-<li><a class="reference internal" href="#jina.types.request.status.StatusMessage"><code class="docutils literal notranslate"><span class="pre">StatusMessage</span></code></a><ul>
-<li><a class="reference internal" href="#jina.types.request.status.StatusMessage.CopyFrom"><code class="docutils literal notranslate"><span class="pre">StatusMessage.CopyFrom()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.status.StatusMessage.MergeFrom"><code class="docutils literal notranslate"><span class="pre">StatusMessage.MergeFrom()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.status.StatusMessage.binary_str"><code class="docutils literal notranslate"><span class="pre">StatusMessage.binary_str()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.status.StatusMessage.clear"><code class="docutils literal notranslate"><span class="pre">StatusMessage.clear()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.status.StatusMessage.dict"><code class="docutils literal notranslate"><span class="pre">StatusMessage.dict()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.status.StatusMessage.json"><code class="docutils literal notranslate"><span class="pre">StatusMessage.json()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.status.StatusMessage.nbytes"><code class="docutils literal notranslate"><span class="pre">StatusMessage.nbytes</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.status.StatusMessage.pop"><code class="docutils literal notranslate"><span class="pre">StatusMessage.pop()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.status.StatusMessage.proto"><code class="docutils literal notranslate"><span class="pre">StatusMessage.proto</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.status.StatusMessage.set_exception"><code class="docutils literal notranslate"><span class="pre">StatusMessage.set_exception()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.status.StatusMessage.to_bytes"><code class="docutils literal notranslate"><span class="pre">StatusMessage.to_bytes()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.status.StatusMessage.to_dict"><code class="docutils literal notranslate"><span class="pre">StatusMessage.to_dict()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.status.StatusMessage.to_json"><code class="docutils literal notranslate"><span class="pre">StatusMessage.to_json()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.status.StatusMessage.set_code"><code class="docutils literal notranslate"><span class="pre">StatusMessage.set_code()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
-            </div>
             
             
         </aside>

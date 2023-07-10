@@ -6,10 +6,10 @@
 <meta property="og:title" content="Serve" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/serving/executor/serve/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:description" content="Executor s can be served and accessed over the network using gRPC or HTTP protocols, allowing you to use them to create services for tasks like model inference, data processing, generative AI, and search services. There are different options for deploying and running a standalone Executor: Run th..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="description" content="Executor s can be served and accessed over the network using gRPC or HTTP protocols, allowing you to use them to create services for tasks like model inference, data processing, generative AI, and search services. There are different options for deploying and running a standalone Executor: Run th..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/serving/executor/serve.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Serve - Jina 3.18.1 documentation</title>
+        <title>Serve - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -347,8 +347,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -357,7 +356,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -376,7 +374,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -440,10 +438,10 @@
 <p><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s can be served and accessed over the network using gRPC or HTTP protocols, allowing you to use them to create services for tasks like model inference, data processing, generative AI, and search services.</p>
 <p>There are different options for deploying and running a standalone Executor:</p>
 <ul class="simple">
-<li><p>Run the Executor directly from Python with the <a class="reference internal" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment" title="jina.orchestrate.deployments.Deployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></a> class</p></li>
+<li><p>Run the Executor directly from Python with the <code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code> class</p></li>
 <li><p>Run the <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code> method to generate Kubernetes deployment configuration files
-from an instance of <a class="reference internal" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment" title="jina.orchestrate.deployments.Deployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></a></p></li>
-<li><p>Run the static <a class="reference internal" href="../../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.to_docker_compose_yaml" title="jina.serve.executors.BaseExecutor.to_docker_compose_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_docker_compose_yaml()</span></code></a> method to generate a Docker Compose service file</p></li>
+from an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></p></li>
+<li><p>Run the static <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_docker_compose_yaml()</span></code> method to generate a Docker Compose service file</p></li>
 </ul>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -454,19 +452,20 @@ to achieve this with the <a class="reference internal" href="../../../orchestrat
 <p class="admonition-title">Served vs. shared Executor</p>
 <p>In Jina there are two ways of running standalone Executors: <em>Served Executors</em> and <em>shared Executors</em>.</p>
 <ul class="simple">
-<li><p>A <strong>served Executor</strong> is launched by one of the following methods: <a class="reference internal" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment" title="jina.orchestrate.deployments.Deployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></a>, <code class="docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code>, or <code class="docutils literal notranslate"><span class="pre">to_docker_compose_yaml()</span></code>.
+<li><p>A <strong>served Executor</strong> is launched by one of the following methods: <code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code>, <code class="docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code>, or <code class="docutils literal notranslate"><span class="pre">to_docker_compose_yaml()</span></code>.
 It resides behind a <a class="reference internal" href="../../../preliminaries/#architecture-overview"><span class="std std-ref">Gateway</span></a> and can be directly accessed by a <a class="reference internal" href="../../../client/#client"><span class="std std-ref">Client</span></a>.
 It can also be used as part of a Flow.</p></li>
 <li><p>A <strong>shared Executor</strong> is launched using the <a class="reference internal" href="#../../cli/index.rst"><span class="xref myst">Jina CLI</span></a> and does <em>not</em> sit behind a Gateway.
 It is intended to be used in one or more Flows. However, it can be also accessed by a <a class="reference internal" href="../../../client/#client"><span class="std std-ref">Client</span></a>.
-Because a shared Executor does not reside behind a Gataway, it requires fewer networking hops when used inside of a Flow.
-However, it is not suitable for exposing a standalone service, outside the scope of a Flow.</p></li>
+Because a shared Executor does not reside behind a Gateway, it requires fewer networking hops when used inside of a Flow.
+However, it is not suitable for exposing a standalone service without gRPC protocol.</p></li>
 </ul>
+<p>In any case, the user needs to make sure that the Document types bound to each endpoint are compatible inside a Flow.</p>
 </div>
 <section id="serve-directly">
 <span id="deployment"></span><h2>Serve directly<a class="headerlink" href="#serve-directly" title="Permalink to this heading">#</a></h2>
-<p>An <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> can be served using the <a class="reference internal" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment" title="jina.orchestrate.deployments.Deployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></a> class.</p>
-<p>The <a class="reference internal" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment" title="jina.orchestrate.deployments.Deployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></a> class aims to separate the deployment configuration from the serving logic.
+<p>An <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> can be served using the <code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code> class.</p>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code> class aims to separate the deployment configuration from the serving logic.
 In other words:</p>
 <ul class="simple">
 <li><p>the Executor cares about defining the logic to serve, which endpoints to define and what data to accept.</p></li>
@@ -476,19 +475,20 @@ In other words:</p>
 served in multiple ways/configurations using Deployment.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Python class</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Deployment</span>
 
 
 <span class="k">class</span> <span class="nc">MyExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]:</span>
         <span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;executed MyExec&#39;</span>  <span class="c1"># custom logic goes here</span>
 
 
 <span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExec</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
-    <span class="n">docs</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">](</span><span class="n">TextDoc</span><span class="p">()),</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -502,8 +502,8 @@ served in multiple ways/configurations using Deployment.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
 
 <span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;executor.yaml&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
-    <span class="n">docs</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">](</span><span class="n">TextDoc</span><span class="p">()),</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -511,8 +511,8 @@ served in multiple ways/configurations using Deployment.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
 
 <span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai://my-username/MyExec/&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
-    <span class="n">docs</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">](</span><span class="n">TextDoc</span><span class="p">()),</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -520,8 +520,8 @@ served in multiple ways/configurations using Deployment.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
 
 <span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;docker://my-executor-image&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
-    <span class="n">docs</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">](</span><span class="n">TextDoc</span><span class="p">()),</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -672,14 +672,16 @@ sleep<span class="w"> </span><span class="m">60</span><span class="w"> </span><s
 <p>Then, we can send requests using <code class="xref py py-meth docutils literal notranslate"><span class="pre">Client()</span></code>. Since Kubernetes load balancers cannot load balance streaming
 gRPC requests, it is recommended to set <code class="docutils literal notranslate"><span class="pre">stream=False</span></code> when using gRPC (note that this is only applicable for Kubernetes deployments of Executors):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Document</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 
 <span class="n">host</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;EXTERNAL_IP&#39;</span><span class="p">]</span>
 <span class="n">port</span> <span class="o">=</span> <span class="mi">80</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(),</span> <span class="n">stream</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">TextDoc</span><span class="p">(),</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="n">stream</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[&#39;hello&#39;]
@@ -698,7 +700,7 @@ gRPC requests, it is recommended to set <code class="docutils literal notranslat
 <li><p>A shared Executor has no Gateway.</p></li>
 </ul>
 <p>Although both types can join a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>, use a shared Executor if the Executor is only intended to join Flows
-to have less network hops and save the costs of running running the Gateway in Kubernetes.</p>
+to have less network hops and save the costs of running the Gateway in Kubernetes.</p>
 </section>
 </section>
 <section id="serve-via-docker-compose">
@@ -763,7 +765,7 @@ to have less network hops and save the costs of running running the Gateway in K
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

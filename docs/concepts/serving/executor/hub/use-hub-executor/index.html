@@ -6,10 +6,10 @@
 <meta property="og:title" content="Use" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/serving/executor/hub/use-hub-executor/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:description" content="There are three ways to use Hub Executor s in your project. Each has its own use case and benefits. Use as-is: You can use a Hub Executor as-is via Executor.from_hub(): The Hub Executor will be pulled to your local machine and run as a native Python object. You can use a line-debugger to step in/..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="description" content="There are three ways to use Hub Executor s in your project. Each has its own use case and benefits. Use as-is: You can use a Hub Executor as-is via Executor.from_hub(): The Hub Executor will be pulled to your local machine and run as a native Python object. You can use a line-debugger to step in/..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/serving/executor/hub/use-hub-executor.html" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Use - Jina 3.18.1 documentation</title>
+        <title>Use - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -347,8 +347,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -357,7 +356,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -376,7 +374,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../../../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../../../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -441,15 +439,17 @@
 <section id="use-as-is">
 <h2>Use as-is<a class="headerlink" href="#use-as-is" title="Permalink to this heading">#</a></h2>
 <p>You can use a Hub Executor as-is via <code class="docutils literal notranslate"><span class="pre">Executor.from_hub()</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents.legacy</span> <span class="kn">import</span> <span class="n">LegacyDocument</span>
 
 <span class="n">exec</span> <span class="o">=</span> <span class="n">Executor</span><span class="o">.</span><span class="n">from_hub</span><span class="p">(</span><span class="s1">&#39;jinaai://jina-ai/DummyHubExecutor&#39;</span><span class="p">)</span>
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">()])</span>
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">LegacyDocument</span><span class="p">]([</span><span class="n">LegacyDocument</span><span class="p">()])</span>
 <span class="n">exec</span><span class="o">.</span><span class="n">foo</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">da</span><span class="o">.</span><span class="n">texts</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;hello&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>The Hub Executor will be pulled to your local machine and run as a native Python object. You can use a line-debugger to step in/out <code class="docutils literal notranslate"><span class="pre">exec</span></code> object, set breakpoints, and observe how it behaves. You can directly feed in a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>. After you build some confidence in that Executor, you can move to the next step: Using it as a part of your Flow.</p>
+<p>The Hub Executor will be pulled to your local machine and run as a native Python object. You can use a line-debugger to step in/out <code class="docutils literal notranslate"><span class="pre">exec</span></code> object, set breakpoints, and observe how it behaves. You can directly feed in <code class="docutils literal notranslate"><span class="pre">Documents</span></code>. After you build some confidence in that Executor, you can move to the next step: Using it as a part of your Flow.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
 <p>Not all Executors on the Hub can be directly run in this way - some require extra dependencies. In that case, you can add <code class="docutils literal notranslate"><span class="pre">.from_hub(...,</span> <span class="pre">install_requirements=True)</span></code> to install the requirements automatically. Be careful - these dependencies may not be compatible with your local packages and may override your local development environment.</p>
@@ -459,6 +459,25 @@
 <p>Hub Executors are cached locally on the first pull. Afterwards, they will not be updated.</p>
 <p>To keep up-to-date with upstream, use <code class="docutils literal notranslate"><span class="pre">.from_hub(...,</span> <span class="pre">force_update=True)</span></code>.</p>
 </div>
+</section>
+<section id="pull-only">
+<span id="pull-executor"></span><h2>Pull only<a class="headerlink" href="#pull-only" title="Permalink to this heading">#</a></h2>
+<p>You can also use <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span></code> CLI to pull an Executor without actually using it in the Flow.</p>
+<div class="note admonition">
+<p class="admonition-title">Jina and DocArray version</p>
+<p>Independently of the Jina and DocArray version existing when the Executor was pushed to the Hub. When pulling, the Hub will try
+to install the Jina and DocArray version that you have installed locally in the pulled docker images.</p>
+</div>
+<section id="pull-the-docker-image">
+<h3>Pull the Docker image<a class="headerlink" href="#pull-the-docker-image" title="Permalink to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>hub<span class="w"> </span>pull<span class="w"> </span>jinaai+docker://&lt;USERNAME&gt;/&lt;NAME&gt;<span class="o">[</span>:&lt;TAG&gt;<span class="o">]</span>
+</pre></div>
+</div>
+<p>You can find the Executor by running <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">images</span></code>. You can also indicate which version of the Executor you want to use by specifying the <code class="docutils literal notranslate"><span class="pre">:&lt;TAG&gt;</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>hub<span class="w"> </span>pull<span class="w"> </span>jinaai+docker://jina-ai/DummyExecutor:v1.0.0
+</pre></div>
+</div>
+</section>
 </section>
 <section id="use-in-flow-as-container">
 <h2>Use in Flow as container<a class="headerlink" href="#use-in-flow-as-container" title="Permalink to this heading">#</a></h2>
@@ -527,7 +546,7 @@ a workspace is recommended.</p>
 <p>Use the source code from Executor Hub in your Python code:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://&lt;USERNAME&gt;/&lt;NAME&gt;[:&lt;TAG&gt;]&#39;</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai://&lt;USERNAME&gt;/&lt;NAME&gt;[:&lt;TAG&gt;]&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -544,20 +563,6 @@ pass <code class="docutils literal notranslate"><span class="pre">uses_with</spa
 <span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="pull-only">
-<span id="pull-executor"></span><h2>Pull only<a class="headerlink" href="#pull-only" title="Permalink to this heading">#</a></h2>
-<p>You can also use <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span></code> CLI to pull an Executor without actually using it in the Flow.</p>
-<section id="pull-the-docker-image">
-<h3>Pull the Docker image<a class="headerlink" href="#pull-the-docker-image" title="Permalink to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>hub<span class="w"> </span>pull<span class="w"> </span>jinaai+docker://&lt;USERNAME&gt;/&lt;NAME&gt;<span class="o">[</span>:&lt;TAG&gt;<span class="o">]</span>
-</pre></div>
-</div>
-<p>You can find the Executor by running <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">images</span></code>. You can also indicate which version of the Executor you want to use by specifying the <code class="docutils literal notranslate"><span class="pre">:&lt;TAG&gt;</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>hub<span class="w"> </span>pull<span class="w"> </span>jinaai+docker://jina-ai/DummyExecutor:v1.0.0
-</pre></div>
-</div>
-</section>
 <section id="platform-awareness-of-hub-images">
 <h3>Platform awareness of Hub images<a class="headerlink" href="#platform-awareness-of-hub-images" title="Permalink to this heading">#</a></h3>
 <div class="hint admonition">
@@ -588,6 +593,7 @@ pass <code class="docutils literal notranslate"><span class="pre">uses_with</spa
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>hub<span class="w"> </span>list
 </pre></div>
 </div>
+<script id="asciicast-z81wi9gwVm7gYjfl5ocBD1RH3" src="https://asciinema.org/a/z81wi9gwVm7gYjfl5ocBD1RH3.js" async></script>
 <script id="asciicast-z81wi9gwVm7gYjfl5ocBD1RH3" src="https://asciinema.org/a/z81wi9gwVm7gYjfl5ocBD1RH3.js" async></script>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -629,7 +635,7 @@ pass <code class="docutils literal notranslate"><span class="pre">uses_with</spa
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -663,14 +669,16 @@ pass <code class="docutils literal notranslate"><span class="pre">uses_with</spa
                         <ul>
 <li><a class="reference internal" href="#">Use</a><ul>
 <li><a class="reference internal" href="#use-as-is">Use as-is</a></li>
+<li><a class="reference internal" href="#pull-only">Pull only</a><ul>
+<li><a class="reference internal" href="#pull-the-docker-image">Pull the Docker image</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#use-in-flow-as-container">Use in Flow as container</a><ul>
 <li><a class="reference internal" href="#mount-local-volumes">Mount local volumes</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#use-in-flow-via-source-code">Use in Flow via source code</a></li>
-<li><a class="reference internal" href="#set-override-default-parameters">Set/override default parameters</a></li>
-<li><a class="reference internal" href="#pull-only">Pull only</a><ul>
-<li><a class="reference internal" href="#pull-the-docker-image">Pull the Docker image</a></li>
+<li><a class="reference internal" href="#set-override-default-parameters">Set/override default parameters</a><ul>
 <li><a class="reference internal" href="#platform-awareness-of-hub-images">Platform awareness of Hub images</a></li>
 <li><a class="reference internal" href="#pull-the-source-code">Pull the source code</a></li>
 <li><a class="reference internal" href="#list-locations-of-local-executors">List locations of local Executors</a></li>

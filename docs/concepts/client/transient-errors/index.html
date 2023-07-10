@@ -6,10 +6,10 @@
 <meta property="og:title" content="Transient Errors" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/client/transient-errors/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:description" content="Most transient errors can be attributed to network issues between the client and target server or between a server’s dependencies like a database. The errors can be: ignored if an operation produced by a generator or sequence of operations isn’t relevant to the overall success., retried up to a c..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="description" content="Most transient errors can be attributed to network issues between the client and target server or between a server’s dependencies like a database. The errors can be: ignored if an operation produced by a generator or sequence of operations isn’t relevant to the overall success., retried up to a c..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/client/transient-errors.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Transient Errors - Jina 3.18.1 documentation</title>
+        <title>Transient Errors - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -347,8 +347,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -357,7 +356,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -376,7 +374,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -446,12 +444,12 @@ dependencies like a database. The errors can be:</p>
 </ul>
 <section id="transient-fault-handling-with-retries">
 <h2>Transient fault handling with retries<a class="headerlink" href="#transient-fault-handling-with-retries" title="Permalink to this heading">#</a></h2>
-<p>The <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> method accepts <code class="docutils literal notranslate"><span class="pre">max_attempts</span></code>, <code class="docutils literal notranslate"><span class="pre">initial_backoff</span></code>, <code class="docutils literal notranslate"><span class="pre">max_backoff</span></code>
+<p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code> method accepts <code class="docutils literal notranslate"><span class="pre">max_attempts</span></code>, <code class="docutils literal notranslate"><span class="pre">initial_backoff</span></code>, <code class="docutils literal notranslate"><span class="pre">max_backoff</span></code>
 and <code class="docutils literal notranslate"><span class="pre">backoff_multiplier</span></code> parameters to control the capacity to retry requests when a transient connectivity error
 occurs, using an exponential backoff strategy.
 This can help to overcome transient network connectivity issues which are broadly captured by the
 <code class="xref py py-class docutils literal notranslate"><span class="pre">AioRpcError</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ClientError</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">CancelledError</span></code> and
-<a class="reference internal" href="../../../api/jina.excepts/#jina.excepts.InternalNetworkError" title="jina.excepts.InternalNetworkError"><code class="xref py py-class docutils literal notranslate"><span class="pre">InternalNetworkError</span></code></a>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">InternalNetworkError</span></code>
 exception types.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">max_attempts</span></code> parameter determines the number of sending attempts, including the original request.
 The <code class="docutils literal notranslate"><span class="pre">initial_backoff</span></code>, <code class="docutils literal notranslate"><span class="pre">max_backoff</span></code>, and <code class="docutils literal notranslate"><span class="pre">backoff_multiplier</span></code> parameters determine the randomized delay in seconds
@@ -460,7 +458,7 @@ before retry attempts.</p>
 at <code class="docutils literal notranslate"><span class="pre">random(0,</span> <span class="pre">min(initial_backoff*backoff_multiplier**(n-1),</span> <span class="pre">max_backoff))</span></code>.</p>
 <section id="handling-grpc-retries-for-streaming-and-unary-rpc-methods">
 <h3>Handling gRPC retries for streaming and unary RPC methods<a class="headerlink" href="#handling-grpc-retries-for-streaming-and-unary-rpc-methods" title="Permalink to this heading">#</a></h3>
-<p>The <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> method supports the <code class="docutils literal notranslate"><span class="pre">stream</span></code> boolean parameter (defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>). If
+<p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code> method supports the <code class="docutils literal notranslate"><span class="pre">stream</span></code> boolean parameter (defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>). If
 set to <code class="docutils literal notranslate"><span class="pre">True</span></code>,
 the <strong>gRPC</strong> server side streaming RPC method will be invoked. If set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, the server side unary RPC method will
 be invoked. Some important implication of
@@ -471,7 +469,8 @@ details are specified in the <a class="reference external" href="https://github.
 <li><p>If the <code class="docutils literal notranslate"><span class="pre">stream</span></code> parameter is set to True and if the <code class="docutils literal notranslate"><span class="pre">inputs</span></code> parameters is a <code class="docutils literal notranslate"><span class="pre">GeneratorType</span></code> or
 an <code class="docutils literal notranslate"><span class="pre">Iterable</span></code>, the retry must be handled as below because the result must be consumed to check for errors in the
 stream of responses. The <strong>gRPC</strong> service retry is still configured but cannot be guaranteed.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Document</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">dorcarray</span> <span class="kn">import</span> <span class="n">BaseDoc</span> 
 <span class="kn">from</span> <span class="nn">jina.clients.base.retry</span> <span class="kn">import</span> <span class="n">wait_or_raise_err</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">run_async</span>
 
@@ -485,7 +484,7 @@ stream of responses. The <strong>gRPC</strong> service retry is still configured
 
 <span class="k">def</span> <span class="nf">input_generator</span><span class="p">():</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
-        <span class="k">yield</span> <span class="n">Document</span><span class="p">()</span>
+        <span class="k">yield</span> <span class="n">BaseDoc</span><span class="p">()</span>
 
 
 <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_attempts</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
@@ -510,29 +509,29 @@ stream of responses. The <strong>gRPC</strong> service retry is still configured
 </pre></div>
 </div>
 </li>
-<li><p>If the <code class="docutils literal notranslate"><span class="pre">stream</span></code> parameter is set to True and the <code class="docutils literal notranslate"><span class="pre">inputs</span></code> parameter is a <code class="docutils literal notranslate"><span class="pre">Document</span></code> or a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>, the retry is
+<li><p>If the <code class="docutils literal notranslate"><span class="pre">stream</span></code> parameter is set to True and the <code class="docutils literal notranslate"><span class="pre">inputs</span></code> parameter is a <code class="docutils literal notranslate"><span class="pre">Document</span></code> or a <code class="docutils literal notranslate"><span class="pre">DocList</span></code>, the retry is
 handled internally on the <code class="docutils literal notranslate"><span class="pre">max_attempts</span></code>, <code class="docutils literal notranslate"><span class="pre">initial_backoff</span></code>, <code class="docutils literal notranslate"><span class="pre">backoff_multiplier</span></code> and <code class="docutils literal notranslate"><span class="pre">max_backoff</span></code>
 parameters.</p></li>
-<li><p>If the <code class="docutils literal notranslate"><span class="pre">stream</span></code> parameter is set to False, the <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> method invokes the unary
+<li><p>If the <code class="docutils literal notranslate"><span class="pre">stream</span></code> parameter is set to False, the <code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code> method invokes the unary
 RPC method and the
 retry is handled internally.</p></li>
 </ul>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
-<p>The retry parameters <code class="docutils literal notranslate"><span class="pre">max_attempts</span></code>, <code class="docutils literal notranslate"><span class="pre">initial_backoff</span></code>, <code class="docutils literal notranslate"><span class="pre">backoff_multiplier</span></code> and <code class="docutils literal notranslate"><span class="pre">max_backoff</span></code> of the <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> method will be used to set the <strong>gRPC</strong> retry service options. This improves the chances of success if the gRPC retry conditions are met.</p>
+<p>The retry parameters <code class="docutils literal notranslate"><span class="pre">max_attempts</span></code>, <code class="docutils literal notranslate"><span class="pre">initial_backoff</span></code>, <code class="docutils literal notranslate"><span class="pre">backoff_multiplier</span></code> and <code class="docutils literal notranslate"><span class="pre">max_backoff</span></code> of the <code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code> method will be used to set the <strong>gRPC</strong> retry service options. This improves the chances of success if the gRPC retry conditions are met.</p>
 </div>
 </section>
 </section>
 <section id="continue-streaming-when-an-executor-error-occurs">
 <h2>Continue streaming when an Executor error occurs<a class="headerlink" href="#continue-streaming-when-an-executor-error-occurs" title="Permalink to this heading">#</a></h2>
-<p>The <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> accepts a <code class="docutils literal notranslate"><span class="pre">continue_on_error</span></code> parameter. When set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the Client
+<p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code> accepts a <code class="docutils literal notranslate"><span class="pre">continue_on_error</span></code> parameter. When set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the Client
 will keep trying to send the remaining requests. The <code class="docutils literal notranslate"><span class="pre">continue_on_error</span></code> parameter will only apply
 to Exceptions caused by an Executor, but in case of network connectivity issues, an Exception will be raised.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">continue_on_error</span></code> parameter handles the errors that are returned by the Executor as part of its response. The
 errors can be logical errors that might be raised
 during the execution of the operation. This doesn’t include transient errors represented by
 <code class="xref py py-class docutils literal notranslate"><span class="pre">AioRpcError</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ClientError</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">CancelledError</span></code> and
-<a class="reference internal" href="../../../api/jina.excepts/#jina.excepts.InternalNetworkError" title="jina.excepts.InternalNetworkError"><code class="xref py py-class docutils literal notranslate"><span class="pre">InternalNetworkError</span></code></a> triggered during the Gateway and Executor communication.</p>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">InternalNetworkError</span></code> triggered during the Gateway and Executor communication.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">retries</span></code> parameter of the Gateway control the number of retries for the transient errors that arise between the
 Gateway and Executor communication.</p>
 <div class="admonition hint">
@@ -585,7 +584,7 @@ parameter must also be set to perform smaller operations which can be retried wi
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

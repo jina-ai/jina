@@ -6,9 +6,9 @@
 <meta property="og:title" content="jina.orchestrate.deployments.config.k8slib.kubernetes_deployment module" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.orchestrate.deployments.config.k8slib.kubernetes_deployment/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -31,7 +31,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.orchestrate.deployments.config.k8slib.kubernetes_deployment.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.orchestrate.deployments.config.k8slib.kubernetes_deployment module - Jina 3.18.1 documentation</title>
+        <title>jina.orchestrate.deployments.config.k8slib.kubernetes_deployment module - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -183,7 +183,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -345,8 +345,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -355,7 +354,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -374,7 +372,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -422,7 +420,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon"
+                    <label class="toc-overlay-icon toc-content-icon no-toc"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -433,90 +431,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section id="module-jina.orchestrate.deployments.config.k8slib.kubernetes_deployment">
-<span id="jina-orchestrate-deployments-config-k8slib-kubernetes-deployment-module"></span><h1>jina.orchestrate.deployments.config.k8slib.kubernetes_deployment module<a class="headerlink" href="#module-jina.orchestrate.deployments.config.k8slib.kubernetes_deployment" title="Permalink to this heading">#</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.config.k8slib.kubernetes_deployment.get_template_yamls">
-<span class="sig-prename descclassname"><span class="pre">jina.orchestrate.deployments.config.k8slib.kubernetes_deployment.</span></span><span class="sig-name descname"><span class="pre">get_template_yamls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_cmd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replicas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pull_policy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jina_deployment_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pod_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shard_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_from_secret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_name_uses_before</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_name_uses_after</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_cmd_uses_before</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_cmd_uses_after</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_args_uses_before</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_args_uses_after</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monitoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_monitoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volumes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_ready</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k8s_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8080</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/config/k8slib/kubernetes_deployment/#get_template_yamls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.config.k8slib.kubernetes_deployment.get_template_yamls" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the yaml description of a service on Kubernetes</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – name of the service and deployment</p></li>
-<li><p><strong>namespace</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – k8s namespace of the service and deployment</p></li>
-<li><p><strong>image_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – image for the k8s deployment</p></li>
-<li><p><strong>container_cmd</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – command executed on the k8s pods</p></li>
-<li><p><strong>container_args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – arguments used for the k8s pod</p></li>
-<li><p><strong>replicas</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – number of replicas</p></li>
-<li><p><strong>pull_policy</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – pull policy used for fetching the Docker images from the registry.</p></li>
-<li><p><strong>jina_deployment_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Name of the Jina Deployment this deployment belongs to</p></li>
-<li><p><strong>pod_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – type os this pod, can be gateway/head/worker</p></li>
-<li><p><strong>shard_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – id of this shard, None if shards=1 or this is gateway/head</p></li>
-<li><p><strong>port</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – port which will be exposed by the deployed containers</p></li>
-<li><p><strong>env</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – environment variables to be passed into configmap.</p></li>
-<li><p><strong>env_from_secret</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – environment variables from secret to be passed to this pod</p></li>
-<li><p><strong>gpus</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – number of gpus to use, for k8s requires you pass an int number, refers to the number of requested gpus.</p></li>
-<li><p><strong>image_name_uses_before</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – image for uses_before container in the k8s deployment</p></li>
-<li><p><strong>image_name_uses_after</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – image for uses_after container in the k8s deployment</p></li>
-<li><p><strong>container_cmd_uses_before</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – command executed in the uses_before container on the k8s pods</p></li>
-<li><p><strong>container_cmd_uses_after</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – command executed in the uses_after container on the k8s pods</p></li>
-<li><p><strong>container_args_uses_before</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – arguments used for uses_before container on the k8s pod</p></li>
-<li><p><strong>container_args_uses_after</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – arguments used for uses_after container on the k8s pod</p></li>
-<li><p><strong>monitoring</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – enable monitoring on the deployment</p></li>
-<li><p><strong>port_monitoring</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – port which will be exposed, for the prometheus server, by the deployed containers</p></li>
-<li><p><strong>protocol</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – In case of being a Gateway, the protocol or protocols list used to expose its server</p></li>
-<li><p><strong>volumes</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – If volumes are passed to Executors, Jina will create a StatefulSet instead of Deployment and include the first volume in the volume mounts</p></li>
-<li><p><strong>timeout_ready</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – The timeout in milliseconds of a Pod waits for the runtime to be ready. This parameter will be
-reflected in Kubernetes in the startup configuration where the failureThreshold will be calculated depending on
-timeout_ready. Value -1 is not supported for kubernetes</p></li>
-<li><p><strong>k8s_port</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Default kubernetes service port to be used</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]</p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Return a dictionary with all the yaml configuration needed for a deployment</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.config.k8slib.kubernetes_deployment.get_cli_params">
-<span class="sig-prename descclassname"><span class="pre">jina.orchestrate.deployments.config.k8slib.kubernetes_deployment.</span></span><span class="sig-name descname"><span class="pre">get_cli_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arguments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/config/k8slib/kubernetes_deployment/#get_cli_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.config.k8slib.kubernetes_deployment.get_cli_params" title="Permalink to this definition">#</a></dt>
-<dd><p>Get cli parameters based on the arguments.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>arguments</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – arguments where the cli parameters are generated from</p></li>
-<li><p><strong>skip_list</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – list of arguments which should be ignored</p></li>
-<li><p><strong>port</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – overwrite port with the provided value if set</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>string which contains all cli parameters</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.orchestrate.deployments.config.k8slib.kubernetes_deployment.dictionary_to_cli_param">
-<span class="sig-prename descclassname"><span class="pre">jina.orchestrate.deployments.config.k8slib.kubernetes_deployment.</span></span><span class="sig-name descname"><span class="pre">dictionary_to_cli_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dictionary</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/config/k8slib/kubernetes_deployment/#dictionary_to_cli_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.config.k8slib.kubernetes_deployment.dictionary_to_cli_param" title="Permalink to this definition">#</a></dt>
-<dd><p>Convert the dictionary into a string to pass it as argument in k8s.
-:param dictionary: dictionary which has to be passed as argument in k8s.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>string representation of the dictionary</p>
-</dd>
-</dl>
-</dd></dl>
-
+                    <section id="jina-orchestrate-deployments-config-k8slib-kubernetes-deployment-module">
+<h1>jina.orchestrate.deployments.config.k8slib.kubernetes_deployment module<a class="headerlink" href="#jina-orchestrate-deployments-config-k8slib-kubernetes-deployment-module" title="Permalink to this heading">#</a></h1>
 </section>
 
                 </article>
@@ -532,7 +448,7 @@ timeout_ready. Value -1 is not supported for kubernetes</p></li>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -552,29 +468,8 @@ timeout_ready. Value -1 is not supported for kubernetes</p></li>
                 
             </footer>
         </div>
-        <aside class="toc-drawer">
+        <aside class="toc-drawer no-toc">
             
-            
-            <div class="toc-sticky toc-scroll">
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">jina.orchestrate.deployments.config.k8slib.kubernetes_deployment module</a><ul>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.config.k8slib.kubernetes_deployment.get_template_yamls"><code class="docutils literal notranslate"><span class="pre">get_template_yamls()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.config.k8slib.kubernetes_deployment.get_cli_params"><code class="docutils literal notranslate"><span class="pre">get_cli_params()</span></code></a></li>
-<li><a class="reference internal" href="#jina.orchestrate.deployments.config.k8slib.kubernetes_deployment.dictionary_to_cli_param"><code class="docutils literal notranslate"><span class="pre">dictionary_to_cli_param()</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
-            </div>
             
             
         </aside>

@@ -6,11 +6,11 @@
 <meta property="og:title" content=" Docker Compose Support" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/cloud-nativeness/docker-compose/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
-<meta property="og:description" content="One of the simplest ways to prototype or serve in production is to run your Flow with docker-compose. A Flow is composed of Executor s which run Python code that operates on DocumentArray. These Executors live in different runtimes depending on how you want to deploy your Flow. By default, if you..." />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
+<meta property="og:description" content="One of the simplest ways to prototype or serve in production is to run your Flow with docker-compose. A Flow is composed of Executor s which run Python code that operates on Documents. These Executors live in different runtimes depending on how you want to deploy your Flow. By default, if you are..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
-<meta name="description" content="One of the simplest ways to prototype or serve in production is to run your Flow with docker-compose. A Flow is composed of Executor s which run Python code that operates on DocumentArray. These Executors live in different runtimes depending on how you want to deploy your Flow. By default, if you..." />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
+<meta name="description" content="One of the simplest ways to prototype or serve in production is to run your Flow with docker-compose. A Flow is composed of Executor s which run Python code that operates on Documents. These Executors live in different runtimes depending on how you want to deploy your Flow. By default, if you are..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/cloud-nativeness/docker-compose.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Docker Compose Support - Jina 3.18.1 documentation</title>
+        <title>Docker Compose Support - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -347,8 +347,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -357,7 +356,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -376,7 +374,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -440,7 +438,7 @@
 <p>One of the simplest ways to prototype or serve in
 production is to run your <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> with <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code>.</p>
 <p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> is composed of <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s which run Python code
-that operates on <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>. These <code class="docutils literal notranslate"><span class="pre">Executors</span></code> live in different runtimes depending on how you want to deploy
+that operates on <code class="docutils literal notranslate"><span class="pre">Documents</span></code>. These <code class="docutils literal notranslate"><span class="pre">Executors</span></code> live in different runtimes depending on how you want to deploy
 your Flow.</p>
 <p>By default, if you are serving your Flow locally they live within processes. Nevertheless,
 because Jina is cloud native your Flow can easily manage Executors that live in containers and that are
@@ -468,12 +466,10 @@ always be “unhealthy.”</p>
 <p>If you change the Docker images in your Docker Compose generated file, ensure that all services included in
 the Gateway are built with the same Jina version to guarantee compatibility.</p>
 </div>
-<section id="example-index-and-search-images-using-clipencoder-and-annliteindexer">
-<h2>Example: Index and search images using CLIPEncoder and AnnLiteIndexer<a class="headerlink" href="#example-index-and-search-images-using-clipencoder-and-annliteindexer" title="Permalink to this heading">#</a></h2>
-<p>Install <a class="reference external" href="https://docs.docker.com/compose/install/"><code class="docutils literal notranslate"><span class="pre">Docker</span> <span class="pre">Compose</span></code></a> locally to follow this how-to.</p>
-<p>This example shows how to build and deploy a Flow with Docker Compose, using <a class="reference external" href="https://cloud.jina.ai/executor/0hnlmu3q"><code class="docutils literal notranslate"><span class="pre">CLIPImageEncoder</span></code></a>
-as an image encoder and <a class="reference external" href="https://cloud.jina.ai/executor/7yypg8qk"><code class="docutils literal notranslate"><span class="pre">AnnLiteIndexer</span></code></a> as an indexer to perform fast nearest
-neighbor retrieval on image embeddings.</p>
+<section id="example-index-and-search-text-using-your-own-built-encoder-and-indexer">
+<h2>Example: Index and search text using your own built Encoder and Indexer<a class="headerlink" href="#example-index-and-search-text-using-your-own-built-encoder-and-indexer" title="Permalink to this heading">#</a></h2>
+<p>Install <a class="reference external" href="https://docs.docker.com/compose/install/"><code class="docutils literal notranslate"><span class="pre">Docker</span> <span class="pre">Compose</span></code></a> locally before starting this tutorial.</p>
+<p>For this example we recommend that you read <a class="reference internal" href="../kubernetes/#build-containerize-for-k8s"><span class="std std-ref">how to build and containerize the Executors to be run in Kubernetes.</span></a></p>
 <section id="deploy-the-flow">
 <h3>Deploy the Flow<a class="headerlink" href="#deploy-the-flow" title="Permalink to this heading">#</a></h3>
 <p>First define the Flow and generate the Docker Compose YAML configuration:</p>
@@ -486,12 +482,10 @@ neighbor retrieval on image embeddings.</p>
 <span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
 <span class="nt">executors</span><span class="p">:</span>
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://jina-ai/CLIPEncoder</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;user-id&gt;/EncoderPrivate</span>
 <span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer</span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://jina-ai/AnnLiteIndexer</span>
-<span class="w">  </span><span class="nt">uses_with</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">dim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;user-id&gt;/IndexerPrivate</span>
 <span class="w">  </span><span class="nt">shards</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 </pre></div>
 </div>
@@ -506,11 +500,10 @@ neighbor retrieval on image embeddings.</p>
 
 <span class="n">flow</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;encoder&#39;</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://jina-ai/CLIPEncoder&#39;</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;encoder&#39;</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://&lt;user-id&gt;/EncoderPrivate&#39;</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="o">.</span><span class="n">add</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;indexer&#39;</span><span class="p">,</span>
-        <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://jina-ai/AnnLiteIndexer&#39;</span><span class="p">,</span>
-        <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;dim&#39;</span><span class="p">:</span> <span class="mi">512</span><span class="p">},</span>
+        <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://&lt;user-id&gt;/IndexerPrivate&#39;</span><span class="p">,</span>
         <span class="n">shards</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="p">)</span>
 <span class="p">)</span>
@@ -568,33 +561,38 @@ adapt it to your own needs.</p>
 <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;http://localhost:8080&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Then index the set of images we want to search:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
+<span class="kn">from</span> <span class="nn">docarray.typing</span> <span class="kn">import</span> <span class="n">NdArray</span>
 
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="s1">&#39;demo-da-images-jina&#39;</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="n">da_query</span> <span class="o">=</span> <span class="n">da</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># one document for query</span>
-<span class="n">da_index</span> <span class="o">=</span> <span class="n">da</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>  <span class="c1"># the rest is for indexing</span>
+<span class="k">class</span> <span class="nc">MyDoc</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">embedding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NdArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-<span class="n">indexed_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">da_index</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Indexed Documents: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indexed_docs</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MyDocWithMatches</span><span class="p">(</span><span class="n">MyDoc</span><span class="p">):</span>
+    <span class="n">matches</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">scores</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+    <span class="s1">&#39;/index&#39;</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">]([</span><span class="n">MyDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;This is document indexed number </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)]),</span>
+    <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">],</span>
+    <span class="n">request_size</span><span class="o">=</span><span class="mi">10</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Indexed documents: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+    <span class="s1">&#39;/search&#39;</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">]([</span><span class="n">MyDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;This is document query number </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]),</span>
+    <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">MyDocWithMatches</span><span class="p">],</span>
+    <span class="n">request_size</span><span class="o">=</span><span class="mi">10</span>
+<span class="p">)</span>
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Query </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1"> has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">matches</span><span class="p">)</span><span class="si">}</span><span class="s1"> matches&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Indexed<span class="w"> </span>Documents:<span class="w"> </span><span class="m">99</span>
-</pre></div>
-</div>
-<p>We indexed 99 Documents!</p>
-<p>Now we can search for the closest image to the query image:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">queried_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">da_query</span><span class="p">)</span>
-
-<span class="n">matches</span> <span class="o">=</span> <span class="n">queried_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">matches</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Matched Documents: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Matched<span class="w"> </span>Documents:<span class="w"> </span><span class="m">10</span>
-</pre></div>
-</div>
-<p>This gives us the list of the ten closest images to the query.</p>
 </section>
 </section>
 </section>
@@ -630,7 +628,7 @@ adapt it to your own needs.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -663,7 +661,7 @@ adapt it to your own needs.</p>
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#"><span class="fab fa-docker"></span> Docker Compose Support</a><ul>
-<li><a class="reference internal" href="#example-index-and-search-images-using-clipencoder-and-annliteindexer">Example: Index and search images using CLIPEncoder and AnnLiteIndexer</a><ul>
+<li><a class="reference internal" href="#example-index-and-search-text-using-your-own-built-encoder-and-indexer">Example: Index and search text using your own built Encoder and Indexer</a><ul>
 <li><a class="reference internal" href="#deploy-the-flow">Deploy the Flow</a></li>
 <li><a class="reference internal" href="#query-the-flow">Query the Flow</a></li>
 </ul>

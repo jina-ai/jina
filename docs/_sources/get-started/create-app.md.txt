@@ -121,17 +121,17 @@ emphasize-lines: 13-16
 import numpy as np
 import torch
 
-from jina import Executor, requests, DocumentArray
+from jina import Executor, requests
 
 
 class MyExecutor(Executor):
     @requests
-    def foo(self, docs: DocumentArray, **kwargs):
+    def foo(self, docs, **kwargs):
         docs[0].text = 'hello, world!'
         docs[1].text = 'goodbye, world!'
 
     @requests(on='/crunch-numbers')
-    def bar(self, docs: DocumentArray, **kwargs):
+    def bar(self, docs:, **kwargs):
         for doc in docs:
             doc.tensor = torch.tensor(np.random.random([10, 2]))
 ```
@@ -143,12 +143,14 @@ Kill the last server with `Ctrl-C` and restart the server with `jina flow --uses
 Modify `client.py` to call the `/crunch-numbers` endpoint:
 
 ```python
-from jina import Client, DocumentArray
+from jina import Client
+from docarray import DocList
+from docarray.documents.legacy import LegacyDocument
 
 if __name__ == '__main__':
     c = Client(host='grpcs://1655d050ad.wolf.jina.ai')
-    da = c.post('/crunch-numbers', DocumentArray.empty(2))
-    print(da.tensors)
+    da = c.post('/crunch-numbers', DocList[LegacyDocument]([LegacyDocument(), LegacyDocument()]), return_type=DocList[LegacyDocument])
+    print(da.tensor)
 ```
 
 After you save that, you can run your new client:
@@ -221,14 +223,16 @@ Now change the Client's code to use the deployed endpoint shown above:
 
 ```{code-block} python
 ---
-emphasize-lines: 4
+emphasize-lines: 6
 ---
-from jina import Client, DocumentArray
+from jina import Client
+from docarray import DocList
+from docarray.documents.legacy import LegacyDocument
 
 if __name__ == '__main__':
     c = Client(host='grpcs://1655d050ad.wolf.jina.ai')
-    da = c.post('/crunch-numbers', DocumentArray.empty(2))
-    print(da.tensors)
+    da = c.post('/crunch-numbers', DocList[LegacyDocument]([LegacyDocument(), LegacyDocument()]))
+    print(da.tensor)
 ```
 
 ```{tip}

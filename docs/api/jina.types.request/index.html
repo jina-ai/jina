@@ -6,11 +6,11 @@
 <meta property="og:title" content="jina.types.request package" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.types.request/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
-<meta property="og:description" content="Submodules: jina.types.request.data module- DataRequest- DataRequest.document_array_cls, DataRequest.is_decompressed, DataRequest.is_decompressed_with_data, DataRequest.is_decompressed_wo_data, DataRequest.proto_wo_data, DataRequest.proto, DataRequest.proto_with_data, DataRequest.to_dict(), DataR..." />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
+<meta property="og:description" content="Submodules: jina.types.request.data module, jina.types.request.status module. Module contents:" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
-<meta name="description" content="Submodules: jina.types.request.data module- DataRequest- DataRequest.document_array_cls, DataRequest.is_decompressed, DataRequest.is_decompressed_with_data, DataRequest.is_decompressed_wo_data, DataRequest.proto_wo_data, DataRequest.proto, DataRequest.proto_with_data, DataRequest.to_dict(), DataR..." />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
+<meta name="description" content="Submodules: jina.types.request.data module, jina.types.request.status module. Module contents:" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.types.request.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>jina.types.request package - Jina 3.18.1 documentation</title>
+        <title>jina.types.request package - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -347,8 +347,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -357,7 +356,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -376,7 +374,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -441,271 +439,13 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.types.request.data/">jina.types.request.data module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest"><code class="docutils literal notranslate"><span class="pre">DataRequest</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.document_array_cls"><code class="docutils literal notranslate"><span class="pre">DataRequest.document_array_cls</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.is_decompressed"><code class="docutils literal notranslate"><span class="pre">DataRequest.is_decompressed</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.is_decompressed_with_data"><code class="docutils literal notranslate"><span class="pre">DataRequest.is_decompressed_with_data</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.is_decompressed_wo_data"><code class="docutils literal notranslate"><span class="pre">DataRequest.is_decompressed_wo_data</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.proto_wo_data"><code class="docutils literal notranslate"><span class="pre">DataRequest.proto_wo_data</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.proto"><code class="docutils literal notranslate"><span class="pre">DataRequest.proto</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.proto_with_data"><code class="docutils literal notranslate"><span class="pre">DataRequest.proto_with_data</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.to_dict"><code class="docutils literal notranslate"><span class="pre">DataRequest.to_dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.docs"><code class="docutils literal notranslate"><span class="pre">DataRequest.docs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.data"><code class="docutils literal notranslate"><span class="pre">DataRequest.data</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.CopyFrom"><code class="docutils literal notranslate"><span class="pre">DataRequest.CopyFrom()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.MergeFrom"><code class="docutils literal notranslate"><span class="pre">DataRequest.MergeFrom()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.add_exception"><code class="docutils literal notranslate"><span class="pre">DataRequest.add_exception()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.binary_str"><code class="docutils literal notranslate"><span class="pre">DataRequest.binary_str()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.clear"><code class="docutils literal notranslate"><span class="pre">DataRequest.clear()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.dict"><code class="docutils literal notranslate"><span class="pre">DataRequest.dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.json"><code class="docutils literal notranslate"><span class="pre">DataRequest.json()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.nbytes"><code class="docutils literal notranslate"><span class="pre">DataRequest.nbytes</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.parameters"><code class="docutils literal notranslate"><span class="pre">DataRequest.parameters</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.pop"><code class="docutils literal notranslate"><span class="pre">DataRequest.pop()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.to_bytes"><code class="docutils literal notranslate"><span class="pre">DataRequest.to_bytes()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.to_json"><code class="docutils literal notranslate"><span class="pre">DataRequest.to_json()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.response"><code class="docutils literal notranslate"><span class="pre">DataRequest.response</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.status"><code class="docutils literal notranslate"><span class="pre">DataRequest.status</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.last_executor"><code class="docutils literal notranslate"><span class="pre">DataRequest.last_executor</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.add_executor"><code class="docutils literal notranslate"><span class="pre">DataRequest.add_executor()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.routes"><code class="docutils literal notranslate"><span class="pre">DataRequest.routes</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.request_id"><code class="docutils literal notranslate"><span class="pre">DataRequest.request_id</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.from_proto"><code class="docutils literal notranslate"><span class="pre">DataRequest.from_proto()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response"><code class="docutils literal notranslate"><span class="pre">Response</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.CopyFrom"><code class="docutils literal notranslate"><span class="pre">Response.CopyFrom()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.MergeFrom"><code class="docutils literal notranslate"><span class="pre">Response.MergeFrom()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.add_exception"><code class="docutils literal notranslate"><span class="pre">Response.add_exception()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.add_executor"><code class="docutils literal notranslate"><span class="pre">Response.add_executor()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.binary_str"><code class="docutils literal notranslate"><span class="pre">Response.binary_str()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.clear"><code class="docutils literal notranslate"><span class="pre">Response.clear()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.data"><code class="docutils literal notranslate"><span class="pre">Response.data</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.dict"><code class="docutils literal notranslate"><span class="pre">Response.dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.docs"><code class="docutils literal notranslate"><span class="pre">Response.docs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.document_array_cls"><code class="docutils literal notranslate"><span class="pre">Response.document_array_cls</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.from_proto"><code class="docutils literal notranslate"><span class="pre">Response.from_proto()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.is_decompressed"><code class="docutils literal notranslate"><span class="pre">Response.is_decompressed</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.is_decompressed_with_data"><code class="docutils literal notranslate"><span class="pre">Response.is_decompressed_with_data</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.is_decompressed_wo_data"><code class="docutils literal notranslate"><span class="pre">Response.is_decompressed_wo_data</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.json"><code class="docutils literal notranslate"><span class="pre">Response.json()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.last_executor"><code class="docutils literal notranslate"><span class="pre">Response.last_executor</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.nbytes"><code class="docutils literal notranslate"><span class="pre">Response.nbytes</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.parameters"><code class="docutils literal notranslate"><span class="pre">Response.parameters</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.pop"><code class="docutils literal notranslate"><span class="pre">Response.pop()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.proto"><code class="docutils literal notranslate"><span class="pre">Response.proto</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.proto_with_data"><code class="docutils literal notranslate"><span class="pre">Response.proto_with_data</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.proto_wo_data"><code class="docutils literal notranslate"><span class="pre">Response.proto_wo_data</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.request_id"><code class="docutils literal notranslate"><span class="pre">Response.request_id</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.response"><code class="docutils literal notranslate"><span class="pre">Response.response</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.routes"><code class="docutils literal notranslate"><span class="pre">Response.routes</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.status"><code class="docutils literal notranslate"><span class="pre">Response.status</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.to_bytes"><code class="docutils literal notranslate"><span class="pre">Response.to_bytes()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.to_dict"><code class="docutils literal notranslate"><span class="pre">Response.to_dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.to_json"><code class="docutils literal notranslate"><span class="pre">Response.to_json()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.types.request.status/">jina.types.request.status module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage"><code class="docutils literal notranslate"><span class="pre">StatusMessage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.CopyFrom"><code class="docutils literal notranslate"><span class="pre">StatusMessage.CopyFrom()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.MergeFrom"><code class="docutils literal notranslate"><span class="pre">StatusMessage.MergeFrom()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.binary_str"><code class="docutils literal notranslate"><span class="pre">StatusMessage.binary_str()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.clear"><code class="docutils literal notranslate"><span class="pre">StatusMessage.clear()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.dict"><code class="docutils literal notranslate"><span class="pre">StatusMessage.dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.json"><code class="docutils literal notranslate"><span class="pre">StatusMessage.json()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.nbytes"><code class="docutils literal notranslate"><span class="pre">StatusMessage.nbytes</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.pop"><code class="docutils literal notranslate"><span class="pre">StatusMessage.pop()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.proto"><code class="docutils literal notranslate"><span class="pre">StatusMessage.proto</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.set_exception"><code class="docutils literal notranslate"><span class="pre">StatusMessage.set_exception()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.to_bytes"><code class="docutils literal notranslate"><span class="pre">StatusMessage.to_bytes()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.to_dict"><code class="docutils literal notranslate"><span class="pre">StatusMessage.to_dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.to_json"><code class="docutils literal notranslate"><span class="pre">StatusMessage.to_json()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.set_code"><code class="docutils literal notranslate"><span class="pre">StatusMessage.set_code()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.types.request.data/">jina.types.request.data module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.types.request.status/">jina.types.request.status module</a></li>
 </ul>
 </div>
 </section>
-<section id="module-jina.types.request">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.types.request" title="Permalink to this heading">#</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.types.request.Request">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.types.request.</span></span><span class="sig-name descname"><span class="pre">Request</span></span><a class="reference internal" href="../../_modules/jina/types/request/#Request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.Request" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin" title="jina.types.mixin.ProtoTypeMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProtoTypeMixin</span></code></a></p>
-<p><a class="reference internal" href="#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> is one of the primitive data types in Jina, and serves as a base for
-<a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a> and <a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a>.</p>
-<p>It offers a Pythonic interface to allow users access and manipulate
-<code class="xref py py-class docutils literal notranslate"><span class="pre">jina.jina_pb2.RequestProto</span></code> object without working with Protobuf itself.</p>
-<p>It serves as a container for serialized <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.RequestProto</span></code> that only triggers deserialization
-and decompression when receives the first read access to its member.</p>
-<p>It overrides <code class="xref py py-meth docutils literal notranslate"><span class="pre">__getattr__()</span></code> to provide the same get/set interface as an
-<code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.RequestProto</span></code> object.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.Request.add_exception">
-<span class="sig-name descname"><span class="pre">add_exception</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/#Request.add_exception"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.Request.add_exception" title="Permalink to this definition">#</a></dt>
-<dd><p>Add exception to the last route in the envelope
-:type ex: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>]
-:param ex: Exception to be added
-:type executor: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="../jina.serve.executors/#jina.serve.executors.BaseExecutor" title="jina.serve.executors.BaseExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code></a>]
-:param executor: Executor related to the exception</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.Request.CopyFrom">
-<span class="sig-name descname"><span class="pre">CopyFrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.CopyFrom" title="Permalink to this definition">#</a></dt>
-<dd><p>Copy the content of target</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)) – the document to copy from</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.Request.MergeFrom">
-<span class="sig-name descname"><span class="pre">MergeFrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.MergeFrom" title="Permalink to this definition">#</a></dt>
-<dd><p>Merge the content of target</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)) – the document to merge from</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.Request.binary_str">
-<span class="sig-name descname"><span class="pre">binary_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.binary_str" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.Request.clear">
-<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.clear" title="Permalink to this definition">#</a></dt>
-<dd><p>Remove all values from all fields of this Document.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.Request.dict">
-<span class="sig-name descname"><span class="pre">dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.dict" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.Request.json">
-<span class="sig-name descname"><span class="pre">json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.json" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.request.Request.nbytes">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nbytes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#jina.types.request.Request.nbytes" title="Permalink to this definition">#</a></dt>
-<dd><p>Return total bytes consumed by protobuf.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>number of bytes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.Request.pop">
-<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.pop" title="Permalink to this definition">#</a></dt>
-<dd><p>Remove the values from the given fields of this Document.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fields</strong> – field names</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.request.Request.proto">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto</span></span><a class="headerlink" href="#jina.types.request.Request.proto" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the underlying Protobuf object</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Protobuf representation of the object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.Request.to_bytes">
-<span class="sig-name descname"><span class="pre">to_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.to_bytes" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the serialized the message to a string.</p>
-<p>For more Pythonic code, please use <code class="docutils literal notranslate"><span class="pre">bytes(...)</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>binary string representation of the object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.Request.to_dict">
-<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.to_dict" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the object in Python dictionary.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Array like object such as <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> (i.e. anything described as <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.NdArrayProto</span></code>)
-will be converted to Python list.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kwargs</strong> – Extra kwargs to be passed to MessageToDict, like use_integers_for_enums</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict representation of the object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.request.Request.to_json">
-<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.to_json" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the object in JSON string</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>JSON string of the object</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 </section>
 </section>
 
@@ -722,7 +462,7 @@ will be converted to Python list.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -756,25 +496,7 @@ will be converted to Python list.</p>
                         <ul>
 <li><a class="reference internal" href="#">jina.types.request package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.types.request">Module contents</a><ul>
-<li><a class="reference internal" href="#jina.types.request.Request"><code class="docutils literal notranslate"><span class="pre">Request</span></code></a><ul>
-<li><a class="reference internal" href="#jina.types.request.Request.add_exception"><code class="docutils literal notranslate"><span class="pre">Request.add_exception()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.Request.CopyFrom"><code class="docutils literal notranslate"><span class="pre">Request.CopyFrom()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.Request.MergeFrom"><code class="docutils literal notranslate"><span class="pre">Request.MergeFrom()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.Request.binary_str"><code class="docutils literal notranslate"><span class="pre">Request.binary_str()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.Request.clear"><code class="docutils literal notranslate"><span class="pre">Request.clear()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.Request.dict"><code class="docutils literal notranslate"><span class="pre">Request.dict()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.Request.json"><code class="docutils literal notranslate"><span class="pre">Request.json()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.Request.nbytes"><code class="docutils literal notranslate"><span class="pre">Request.nbytes</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.Request.pop"><code class="docutils literal notranslate"><span class="pre">Request.pop()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.Request.proto"><code class="docutils literal notranslate"><span class="pre">Request.proto</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.Request.to_bytes"><code class="docutils literal notranslate"><span class="pre">Request.to_bytes()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.Request.to_dict"><code class="docutils literal notranslate"><span class="pre">Request.to_dict()</span></code></a></li>
-<li><a class="reference internal" href="#jina.types.request.Request.to_json"><code class="docutils literal notranslate"><span class="pre">Request.to_json()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>

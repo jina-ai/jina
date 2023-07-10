@@ -6,11 +6,11 @@
 <meta property="og:title" content="Executor Hub" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/serving/executor/hub/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
-<meta property="og:description" content="Now that you understand that Executor is a building block in Jina, you may also wonder: Can I reuse my Executor in another project?, Can I share my Executor with my colleagues?, Can I just use someone else’s Executor instead of building it myself?. Basically, something like the following: Yes! Th..." />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
+<meta property="og:description" content="Now that you understand that Executor is a building block in Jina, you may also wonder: Can I streamline the process of containerizing my Executor?, Can I reuse my Executor in another project?, Can I share my Executor with my colleagues?, Can I just use someone else’s Executor instead of building..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
-<meta name="description" content="Now that you understand that Executor is a building block in Jina, you may also wonder: Can I reuse my Executor in another project?, Can I share my Executor with my colleagues?, Can I just use someone else’s Executor instead of building it myself?. Basically, something like the following: Yes! Th..." />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
+<meta name="description" content="Now that you understand that Executor is a building block in Jina, you may also wonder: Can I streamline the process of containerizing my Executor?, Can I reuse my Executor in another project?, Can I share my Executor with my colleagues?, Can I just use someone else’s Executor instead of building..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/serving/executor/hub/index.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Executor Hub - Jina 3.18.1 documentation</title>
+        <title>Executor Hub - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -185,7 +185,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -347,8 +347,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -357,7 +356,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -376,7 +374,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -424,7 +422,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon"
+                    <label class="toc-overlay-icon toc-content-icon no-toc"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -439,6 +437,7 @@
 <span id="jina-hub"></span><h1>Executor Hub<a class="headerlink" href="#executor-hub" title="Permalink to this heading">#</a></h1>
 <p>Now that you understand that <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> is a building block in Jina, you may also wonder:</p>
 <ul class="simple">
+<li><p>Can I streamline the process of containerizing my <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>?</p></li>
 <li><p>Can I reuse my Executor in another project?</p></li>
 <li><p>Can I share my Executor with my colleagues?</p></li>
 <li><p>Can I just use someone else’s Executor instead of building it myself?</p></li>
@@ -446,9 +445,10 @@
 <p>Basically, something like the following:</p>
 <figure class="align-center">
 <img alt="../../../../_images/hub-user-journey.svg" src="../../../../_images/hub-user-journey.svg" /></figure>
-<p><strong>Yes!</strong> This is exactly the purpose of Executor Hub - a marketplace for Executors. With Hub you can pull prebuilt
-Executors to dramatically reduce the effort and complexity needed in your search system, or push your own custom
-Executors to share privately or publicly.</p>
+<p><strong>Yes!</strong> This is exactly the purpose of Executor Hub.
+Hub allows you to turn your Executor into a ready-for-the-cloud containerized service taking away a lot of the work from you.
+With Hub you can pull prebuilt Executors to dramatically reduce the effort and complexity needed in your system, or push your own custom
+Executors to share privately or publicly. You can think of the Hub as your easy to entry door to a Docker registry.</p>
 <p>A Hub Executor is an Executor published on Executor Hub. You can use such an Executor in a Flow:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -458,14 +458,13 @@ Executors to share privately or publicly.</p>
     <span class="o">...</span>
 </pre></div>
 </div>
-<section id="hub-architecture">
-<h2>Hub architecture<a class="headerlink" href="#hub-architecture" title="Permalink to this heading">#</a></h2>
-<p>The Hub architecture looks like the following:</p>
-<figure class="align-center">
-<img alt="../.github/hub-system.svg" src="../.github/hub-system.svg" /></figure>
+<div class="note admonition">
+<p class="admonition-title">Make sure the schemas are known</p>
+<p>While using docarray&gt;0.30.0, Executors do not have a fix schema and each Executor defines its own. Make sure you know
+those schemas when using Executors from the Hub.</p>
+</div>
 <div class="toctree-wrapper compound">
 </div>
-</section>
 </section>
 
                 </article>
@@ -499,7 +498,7 @@ Executors to share privately or publicly.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -519,27 +518,8 @@ Executors to share privately or publicly.</p>
                 
             </footer>
         </div>
-        <aside class="toc-drawer">
+        <aside class="toc-drawer no-toc">
             
-            
-            <div class="toc-sticky toc-scroll">
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#">Executor Hub</a><ul>
-<li><a class="reference internal" href="#hub-architecture">Hub architecture</a></li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
-            </div>
             
             
         </aside>

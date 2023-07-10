@@ -6,10 +6,10 @@
 <meta property="og:title" content=" Kubernetes Support" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/cloud-nativeness/k8s/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:description" content="Jina is a cloud-native framework and therefore runs natively and easily on Kubernetes. Deploying a Jina Flow on Kubernetes is actually the recommended way to use Jina in production. A Flow is composed of different microservices called Executor s which natively run in containers. This means that K..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="description" content="Jina is a cloud-native framework and therefore runs natively and easily on Kubernetes. Deploying a Jina Flow on Kubernetes is actually the recommended way to use Jina in production. A Flow is composed of different microservices called Executor s which natively run in containers. This means that K..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/cloud-nativeness/k8s.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Kubernetes Support - Jina 3.18.1 documentation</title>
+        <title>Kubernetes Support - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -347,8 +347,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -357,7 +356,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -376,7 +374,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -443,6 +441,11 @@
 Deploying a Jina Flow on Kubernetes is actually the recommended way to use Jina in production.</p>
 <p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> is composed of different microservices called <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s which natively run in containers. This means that Kubernetes can natively take over the lifetime management of Executors.</p>
 <p>Deploying a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> on Kubernetes means wrapping these microservice containers in the appropriate K8s abstraction (Deployment, StatefulSet, and so on), exposing them internally via K8s service and connecting them together by passing the right set of parameters.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>This documentation is designed for users who want to <strong>manually</strong> deploy a Jina project on Kubernetes.</p>
+<p>Check out <a class="reference internal" href="../../concepts/jcloud/#jcloud"><span class="std std-ref">Jina AI Cloud Hosting</span></a> if you want a <strong>one-click</strong> solution to deploy and host Jina, leveraging a cloud-native stack of Kubernetes, Prometheus and Grafana, <strong>without worrying about provisioning</strong>.</p>
+</div>
 <section id="automatically-translate-a-flow-to-kubernetes-concept">
 <h2>Automatically translate a Flow to Kubernetes concept<a class="headerlink" href="#automatically-translate-a-flow-to-kubernetes-concept" title="Permalink to this heading">#</a></h2>
 <div class="admonition hint">
@@ -497,7 +500,7 @@ This means that, while Jina generates configurations for you that run out of the
 <p>Service meshes work by attaching a tiny proxy to each of your Kubernetes Pods, allowing for smart rerouting, load balancing, request retrying, and host of <a class="reference external" href="https://linkerd.io/2.11/features/">other features</a>.</p>
 <p>Jina relies on a service mesh to load balance requests between replicas of the same Executor.
 You can use your favourite Kubernetes service mesh in combination with your Jina Flow, but the configuration files
-generated by <code class="docutils literal notranslate"><span class="pre">to_kubernetes_config()</span></code> already include all necessary annotations for the <a class="reference external" href="https://linkerd.io">Linkerd service mesh</a>.</p>
+generated by <code class="docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code> already include all necessary annotations for the <a class="reference external" href="https://linkerd.io">Linkerd service mesh</a>.</p>
 <div class="hint admonition">
 <p class="admonition-title">Hint</p>
 <p>You can use any service mesh with Jina, but Jina Kubernetes configurations come with Linkerd annotations out of the box.</p>
@@ -608,7 +611,7 @@ To expose your Gateway replicas outside Kubernetes, you can add a load balancer 
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

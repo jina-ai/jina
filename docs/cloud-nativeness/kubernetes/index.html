@@ -6,10 +6,10 @@
 <meta property="og:title" content="Deploy on Kubernetes" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/cloud-nativeness/kubernetes/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:description" content="This how-to will go through deploying a simple Flow using Kubernetes, customizing the Kubernetes configuration to your needs, and scaling Executors using replicas and shards. Deploying a Flow in Kubernetes is the recommended way to use Jina in production. Since a Flow is composed of Executor s wh..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="description" content="This how-to will go through deploying a simple Flow using Kubernetes, customizing the Kubernetes configuration to your needs, and scaling Executors using replicas and shards. Deploying a Flow in Kubernetes is the recommended way to use Jina in production. Since a Flow is composed of Executor s wh..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/cloud-nativeness/kubernetes.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Deploy on Kubernetes - Jina 3.18.1 documentation</title>
+        <title>Deploy on Kubernetes - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -347,8 +347,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -357,7 +356,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -376,7 +374,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -462,8 +460,208 @@ solutions in the cloud:</p>
 This automatically sets up and manages the service mesh proxies when you deploy the Flow.</p>
 <p>To understand why you need to install a service mesh like Linkerd refer to this  <a class="reference internal" href="../k8s/#service-mesh-k8s"><span class="std std-ref">section</span></a></p>
 </section>
+<section id="build-and-containerize-your-executors">
+<span id="build-containerize-for-k8s"></span><h2>Build and containerize your Executors<a class="headerlink" href="#build-and-containerize-your-executors" title="Permalink to this heading">#</a></h2>
+<p>First, we need to build the Executors that we are going to use and containerize them <a class="reference internal" href="../../concepts/serving/executor/containerize/#dockerize-exec"><span class="std std-ref">manually</span></a> or by leveraging <a class="reference internal" href="../../concepts/serving/executor/hub/#jina-hub"><span class="std std-ref">Executor Hub</span></a>. In this example,
+we are going to use the Hub.</p>
+<p>We are going to build two Executors, the first is going to use <code class="docutils literal notranslate"><span class="pre">CLIP</span></code> to encode textual Documents, and the second is going to use an in-memory vector index. This way
+we can build a simple neural search system.</p>
+<p>First, we build the encoder Executor.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">executor.py</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">CLIPModel</span><span class="p">,</span> <span class="n">CLIPTokenizer</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
+<span class="kn">from</span> <span class="nn">docarray.typing</span> <span class="kn">import</span> <span class="n">NdArray</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+
+
+<span class="k">class</span> <span class="nc">MyDoc</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">embedding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NdArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">class</span> <span class="nc">Encoder</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">pretrained_model_name_or_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;openai/clip-vit-base-patch32&#39;</span>
+            <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cpu&#39;</span><span class="p">,</span>
+            <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">CLIPTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">pretrained_model_name_or_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">CLIPModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">pretrained_model_name_or_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_tokenize_texts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">texts</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">(</span>
+            <span class="n">texts</span><span class="p">,</span>
+            <span class="n">max_length</span><span class="o">=</span><span class="mi">77</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;longest&#39;</span><span class="p">,</span>
+            <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">return_tensors</span><span class="o">=</span><span class="s1">&#39;pt&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">]:</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">inference_mode</span><span class="p">():</span>
+            <span class="n">input_tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tokenize_texts</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">docs</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_text_features</span><span class="p">(</span><span class="o">**</span><span class="n">input_tokens</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">docs</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">requirements.txt</label><div class="tab-content docutils">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">torch</span><span class="o">==</span><span class="mf">1.12.0</span>
+<span class="n">transformers</span><span class="o">==</span><span class="mf">4.16.2</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--3">config.yml</label><div class="tab-content docutils">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jtype</span><span class="p">:</span> <span class="n">Encoder</span>
+<span class="n">metas</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">EncoderPrivate</span>
+  <span class="n">py_modules</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">executor</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Putting all these files into a folder named CLIPEncoder and calling <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span> <span class="pre">push</span> <span class="pre">CLIPEncoder</span> <span class="pre">--private</span></code> should give:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>╭──────────────────────────<span class="w"> </span>Published<span class="w"> </span>───────────────────────────╮
+│<span class="w">                                                                </span>│
+│<span class="w">   </span>📛<span class="w"> </span>Name<span class="w">           </span>EncoderPrivate<span class="w">                         </span>│
+│<span class="w">   </span>🔗<span class="w"> </span>Jina<span class="w"> </span>Hub<span class="w"> </span>URL<span class="w">   </span>https://cloud.jina.ai/executor/&lt;executor-id&gt;/<span class="w">   </span>│
+│<span class="w">   </span>👀<span class="w"> </span>Visibility<span class="w">     </span>private<span class="w">                                    </span>│
+│<span class="w">                                                                </span>│
+╰────────────────────────────────────────────────────────────────╯
+╭─────────────────────────────────────────────────────<span class="w"> </span>Usage<span class="w"> </span>─────────────────────────────────────────────────────╮
+│<span class="w">                                                                                                                 </span>│
+│<span class="w">   </span>Container<span class="w">   </span>YAML<span class="w">     </span>uses:<span class="w"> </span>jinaai+docker://&lt;user-id&gt;/EncoderPrivate:latest<span class="w">           </span>│
+│<span class="w">               </span>Python<span class="w">   </span>.add<span class="o">(</span><span class="nv">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://&lt;user-id&gt;/EncoderPrivate:latest&#39;</span><span class="o">)</span><span class="w">    </span>│
+│<span class="w">                                                                                                                 </span>│
+│<span class="w">   </span>Sandbox<span class="w">     </span>YAML<span class="w">     </span>uses:<span class="w"> </span>jinaai+sandbox://&lt;user-id&gt;/EncoderPrivate:latest<span class="w">          </span>│
+│<span class="w">               </span>Python<span class="w">   </span>.add<span class="o">(</span><span class="nv">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+sandbox://&lt;user-id&gt;/EncoderPrivate:latest&#39;</span><span class="o">)</span><span class="w">   </span>│
+│<span class="w">                                                                                                                 </span>│
+│<span class="w">   </span>Source<span class="w">      </span>YAML<span class="w">     </span>uses:<span class="w"> </span>jinaai://&lt;user-id&gt;/EncoderPrivate:latest<span class="w">                  </span>│
+│<span class="w">               </span>Python<span class="w">   </span>.add<span class="o">(</span><span class="nv">uses</span><span class="o">=</span><span class="s1">&#39;jinaai://&lt;user-id&gt;/EncoderPrivate:latest&#39;</span><span class="o">)</span><span class="w">           </span>│
+│<span class="w">                                                                                                                 </span>│
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+</pre></div>
+</div>
+<p>Then we can build an indexer to provide <code class="docutils literal notranslate"><span class="pre">index</span></code> and <code class="docutils literal notranslate"><span class="pre">search</span></code> endpoints:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">executor.py</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
+<span class="kn">from</span> <span class="nn">docarray.index</span> <span class="kn">import</span> <span class="n">InMemoryExactNNIndex</span>
+<span class="kn">from</span> <span class="nn">docarray.typing</span> <span class="kn">import</span> <span class="n">NdArray</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+
+
+<span class="k">class</span> <span class="nc">MyDoc</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">embedding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NdArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">class</span> <span class="nc">MyDocWithMatches</span><span class="p">(</span><span class="n">MyDoc</span><span class="p">):</span>
+    <span class="n">matches</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">scores</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+<span class="k">class</span> <span class="nc">Indexer</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_indexer</span> <span class="o">=</span> <span class="n">InMemoryExactNNIndex</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">]()</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/index&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_indexer</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">docs</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/search&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">MyDocWithMatches</span><span class="p">]:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">MyDocWithMatches</span><span class="p">]()</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indexer</span><span class="o">.</span><span class="n">find_batched</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">search_field</span><span class="o">=</span><span class="s1">&#39;embedding&#39;</span><span class="p">)</span>
+        <span class="n">matched_documents</span> <span class="o">=</span> <span class="n">ret</span><span class="o">.</span><span class="n">documents</span>
+        <span class="n">matched_scores</span> <span class="o">=</span> <span class="n">ret</span><span class="o">.</span><span class="n">scores</span>
+        <span class="k">for</span> <span class="n">query</span><span class="p">,</span> <span class="n">matches</span><span class="p">,</span> <span class="n">scores</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">matched_documents</span><span class="p">,</span> <span class="n">matched_scores</span><span class="p">):</span>
+            <span class="n">output_doc</span> <span class="o">=</span> <span class="n">MyDocWithMatches</span><span class="p">(</span><span class="o">**</span><span class="n">query</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
+            <span class="n">output_doc</span><span class="o">.</span><span class="n">matches</span> <span class="o">=</span> <span class="n">matches</span>
+            <span class="n">output_doc</span><span class="o">.</span><span class="n">scores</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">output_doc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">config.yml</label><div class="tab-content docutils">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jtype</span><span class="p">:</span> <span class="n">Indexer</span>
+<span class="n">metas</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">IndexerPrivate</span>
+  <span class="n">py_modules</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">executor</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Putting all these files into a folder named Indexer and calling <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span> <span class="pre">push</span> <span class="pre">Indexer</span> <span class="pre">--private</span></code> should give:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>╭──────────────────────────<span class="w"> </span>Published<span class="w"> </span>───────────────────────────╮
+│<span class="w">                                                                </span>│
+│<span class="w">   </span>📛<span class="w"> </span>Name<span class="w">           </span>IndexerPrivate<span class="w">                         </span>│
+│<span class="w">   </span>🔗<span class="w"> </span>Jina<span class="w"> </span>Hub<span class="w"> </span>URL<span class="w">   </span>https://cloud.jina.ai/executor/&lt;executor-id&gt;/<span class="w">   </span>│
+│<span class="w">   </span>👀<span class="w"> </span>Visibility<span class="w">     </span>private<span class="w">                                    </span>│
+│<span class="w">                                                                </span>│
+╰────────────────────────────────────────────────────────────────╯
+╭─────────────────────────────────────────────────────<span class="w"> </span>Usage<span class="w"> </span>─────────────────────────────────────────────────────╮
+│<span class="w">                                                                                                                 </span>│
+│<span class="w">   </span>Container<span class="w">   </span>YAML<span class="w">     </span>uses:<span class="w"> </span>jinaai+docker://&lt;user-id&gt;/IndexerPrivate:latest<span class="w">           </span>│
+│<span class="w">               </span>Python<span class="w">   </span>.add<span class="o">(</span><span class="nv">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://&lt;user-id&gt;/IndexerPrivate:latest&#39;</span><span class="o">)</span><span class="w">    </span>│
+│<span class="w">                                                                                                                 </span>│
+│<span class="w">   </span>Sandbox<span class="w">     </span>YAML<span class="w">     </span>uses:<span class="w"> </span>jinaai+sandbox://&lt;user-id&gt;/IndexerPrivate:latest<span class="w">          </span>│
+│<span class="w">               </span>Python<span class="w">   </span>.add<span class="o">(</span><span class="nv">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+sandbox://&lt;user-id&gt;/IndexerPrivate:latest&#39;</span><span class="o">)</span><span class="w">   </span>│
+│<span class="w">                                                                                                                 </span>│
+│<span class="w">   </span>Source<span class="w">      </span>YAML<span class="w">     </span>uses:<span class="w"> </span>jinaai://&lt;user-id&gt;/IndexerPrivate:latest<span class="w">                  </span>│
+│<span class="w">               </span>Python<span class="w">   </span>.add<span class="o">(</span><span class="nv">uses</span><span class="o">=</span><span class="s1">&#39;jinaai://&lt;user-id&gt;/IndexerPrivate:latest&#39;</span><span class="o">)</span><span class="w">           </span>│
+│<span class="w">                                                                                                                 </span>│
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+</pre></div>
+</div>
+<p>Now, since we have created private Executors, we need to make sure that K8s has the right credentials to download
+from the private registry:</p>
+<p>First, we need to create the namespace where our Flow will run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>create<span class="w"> </span>namespace<span class="w"> </span>custom-namespace
+</pre></div>
+</div>
+<p>Second, we execute this python script:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+
+<span class="n">JINA_CONFIG_JSON_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;.jina&#39;</span><span class="p">,</span> <span class="s1">&#39;config.json&#39;</span><span class="p">))</span>
+<span class="n">CONFIG_JSON</span> <span class="o">=</span> <span class="s1">&#39;config.json&#39;</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">JINA_CONFIG_JSON_PATH</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+    <span class="n">auth_token</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)[</span><span class="s1">&#39;auth_token&#39;</span><span class="p">]</span>
+
+<span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;auths&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;auths&#39;</span><span class="p">][</span><span class="s1">&#39;registry.hubble.jina.ai&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;auth&#39;</span><span class="p">:</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;token&gt;:</span><span class="si">{</span><span class="n">auth_token</span><span class="si">}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">()}</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">CONFIG_JSON</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">config_dict</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, we add a secret to be used as <a class="reference external" href="https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/">imagePullSecrets</a> in the namespace from our config.json:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>-n<span class="w"> </span>custom-namespace<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>regcred<span class="w"> </span>--from-file<span class="o">=</span>.dockerconfigjson<span class="o">=</span>config.json<span class="w"> </span>--type<span class="o">=</span>kubernetes.io/dockerconfigjson
+</pre></div>
+</div>
+</section>
 <section id="deploy-a-simple-flow">
 <h2>Deploy a simple Flow<a class="headerlink" href="#deploy-a-simple-flow" title="Permalink to this heading">#</a></h2>
+<p>Now we are ready to build our Flow.</p>
 <p>By <em>simple</em> in this context we mean a Flow without replicated or sharded Executors - you can see how to use those in
 Kubernetes <a class="reference internal" href="../k8s/#kubernetes-replicas"><span class="std std-ref">later on</span></a>.</p>
 <p>For now, define a Flow,
@@ -471,21 +669,20 @@ either in <a class="reference internal" href="../../concepts/orchestration/yaml-
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;encoder&#39;</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://jina-ai/CLIPEncoder&#39;</span><span class="p">)</span>
+    <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">image_pull_secrets</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;regcred&#39;</span><span class="p">])</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;encoder&#39;</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://&lt;user-id&gt;/EncoderPrivate&#39;</span><span class="p">)</span>
     <span class="o">.</span><span class="n">add</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;indexer&#39;</span><span class="p">,</span>
-        <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://jina-ai/AnnLiteIndexer&#39;</span><span class="p">,</span>
-        <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;dim&#39;</span><span class="p">:</span> <span class="mi">512</span><span class="p">},</span>
+        <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://&lt;user-id&gt;/IndexerPrivate&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <p>You can essentially define any Flow of your liking.
 Just ensure that all Executors are containerized, either by using <em>‘jinahub+docker’</em>, or by <a class="reference internal" href="../../concepts/serving/executor/containerize/#dockerize-exec"><span class="std std-ref">containerizing your local Executors</span></a>.</p>
-<p>The example Flow here simply encodes and indexes text or image data using two Executors from <a class="reference external" href="https://cloud.jina.ai/">Executor Hub</a>.</p>
-<p>Next, generate Kubernetes YAML configs from the Flow.
-It’s good practice to define a new Kubernetes namespace for that purpose:</p>
+<p>The example Flow here simply encodes and indexes text data using two Executors pushed to the <a class="reference external" href="https://cloud.jina.ai/">Executor Hub</a>.</p>
+<p>Next, generate Kubernetes YAML configs from the Flow. Notice, that this step may be a little slow, because <a class="reference external" href="https://cloud.jina.ai/">Executor Hub</a> may
+adapt the image to your Jina and docarray version.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">to_kubernetes_yaml</span><span class="p">(</span><span class="s1">&#39;./k8s_flow&#39;</span><span class="p">,</span> <span class="n">k8s_namespace</span><span class="o">=</span><span class="s1">&#39;custom-namespace&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -517,10 +714,6 @@ Please adapt this if you named your Executor configuration file differently.</p>
 </div>
 <p>Next you can actually apply these configuration files to your cluster, using <code class="docutils literal notranslate"><span class="pre">kubectl</span></code>.
 This launches all Flow microservices.</p>
-<p>First, create the namespace you defined earlier:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>create<span class="w"> </span>namespace<span class="w"> </span>custom-namespace
-</pre></div>
-</div>
 <p>Now, deploy this Flow to your cluster:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>apply<span class="w"> </span>-R<span class="w"> </span>-f<span class="w"> </span>./k8s_flow
 </pre></div>
@@ -531,29 +724,50 @@ This launches all Flow microservices.</p>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>NAME                              READY   STATUS    RESTARTS   AGE
 encoder-8b5575cb9-bh2x8           1/1     Running   0          60m
-gateway-7df8765bd9-xf5tf          1/1     Running   0          60m
+gateway-66d5f45ff5-4q7sw          1/1     Running   0          60m
 indexer-8f676fc9d-4fh52           1/1     Running   0          60m
-indexer-head-6fcc679d95-8mrm6     1/1     Running   0          60m
 </pre></div>
 </div>
 <p>Note that the Jina gateway was deployed with name <code class="docutils literal notranslate"><span class="pre">gateway-7df8765bd9-xf5tf</span></code>.</p>
 <p>Once you see that all the Deployments in the Flow are ready, you can start indexing documents:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">portforward</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span> <span class="nn">portforward</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
+<span class="kn">from</span> <span class="nn">docarray.typing</span> <span class="kn">import</span> <span class="n">NdArray</span>
 
 <span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
-<span class="k">with</span> <span class="n">portforward</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="s1">&#39;custom-namespace&#39;</span><span class="p">,</span> <span class="s1">&#39;gateway-7df8765bd9-xf5tf&#39;</span><span class="p">,</span> <span class="mi">8080</span><span class="p">,</span> <span class="mi">8080</span><span class="p">):</span>
+
+<span class="k">class</span> <span class="nc">MyDoc</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">embedding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NdArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">class</span> <span class="nc">MyDocWithMatches</span><span class="p">(</span><span class="n">MyDoc</span><span class="p">):</span>
+    <span class="n">matches</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">scores</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+<span class="k">with</span> <span class="n">portforward</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="s1">&#39;custom-namespace&#39;</span><span class="p">,</span> <span class="s1">&#39;gateway-66d5f45ff5-4q7sw&#39;</span><span class="p">,</span> <span class="mi">8080</span><span class="p">,</span> <span class="mi">8080</span><span class="p">):</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">)</span>
     <span class="n">client</span><span class="o">.</span><span class="n">show_progress</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
         <span class="s1">&#39;/index&#39;</span><span class="p">,</span>
-        <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_files</span><span class="p">(</span><span class="s1">&#39;./imgs/*.png&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">convert_uri_to_datauri</span><span class="p">()</span>
-        <span class="p">),</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">]([</span><span class="n">MyDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;This is document indexed number </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)]),</span>
+        <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">],</span>
+        <span class="n">request_size</span><span class="o">=</span><span class="mi">10</span>
     <span class="p">)</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; Indexed documents: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Indexed documents: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="s1">&#39;/search&#39;</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">]([</span><span class="n">MyDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;This is document query number </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]),</span>
+        <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">MyDocWithMatches</span><span class="p">],</span>
+        <span class="n">request_size</span><span class="o">=</span><span class="mi">10</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Query </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1"> has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">matches</span><span class="p">)</span><span class="si">}</span><span class="s1"> matches&#39;</span><span class="p">)</span>
+
 </pre></div>
 </div>
 <section id="deploy-flow-with-shards-and-replicas">
@@ -563,12 +777,11 @@ You can adapt the Flow from above to work with two replicas for the encoder, and
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;encoder&#39;</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://jina-ai/CLIPEncoder&#39;</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">image_pull_secrets</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;regcred&#39;</span><span class="p">])</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;encoder&#39;</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://&lt;user-id&gt;/CLIPEncoderPrivate&#39;</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="o">.</span><span class="n">add</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;indexer&#39;</span><span class="p">,</span>
-        <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://jina-ai/AnnLiteIndexer&#39;</span><span class="p">,</span>
-        <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;dim&#39;</span><span class="p">:</span> <span class="mi">512</span><span class="p">},</span>
+        <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://&lt;user-id&gt;/IndexerPrivate&#39;</span><span class="p">,</span>
         <span class="n">shards</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="p">)</span>
 <span class="p">)</span>
@@ -604,15 +817,14 @@ You can adapt the Flow from above to work with two replicas for the encoder, and
 <h3>Deploy Flow with custom environment variables and secrets<a class="headerlink" href="#deploy-flow-with-custom-environment-variables-and-secrets" title="Permalink to this heading">#</a></h3>
 <p>You can customize the environment variables that are available inside runtime, either defined directly or read from a <a class="reference external" href="https://kubernetes.io/docs/concepts/configuration/secret/">Kubernetes secret</a>:</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">with Python</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--1">with Python</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">)</span>
+    <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">image_pull_secrets</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;regcred&#39;</span><span class="p">])</span>
     <span class="o">.</span><span class="n">add</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;indexer&#39;</span><span class="p">,</span>
-        <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://jina-ai/AnnLiteIndexer&#39;</span><span class="p">,</span>
-        <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;dim&#39;</span><span class="p">:</span> <span class="mi">512</span><span class="p">},</span>
+        <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://&lt;user-id&gt;/IndexerPrivate&#39;</span><span class="p">,</span>
         <span class="n">env</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;k1&#39;</span><span class="p">:</span> <span class="s1">&#39;v1&#39;</span><span class="p">,</span> <span class="s1">&#39;k2&#39;</span><span class="p">:</span> <span class="s1">&#39;v2&#39;</span><span class="p">},</span>
         <span class="n">env_from_secret</span><span class="o">=</span><span class="p">{</span>
             <span class="s1">&#39;SECRET_USERNAME&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;mysecret&#39;</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;username&#39;</span><span class="p">},</span>
@@ -625,7 +837,7 @@ You can adapt the Flow from above to work with two replicas for the encoder, and
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">with flow YAML</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--2">with flow YAML</label><div class="tab-content docutils">
 <p>In a <code class="docutils literal notranslate"><span class="pre">flow.yml</span></code> file :</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
 <span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1&#39;</span>
@@ -633,9 +845,7 @@ You can adapt the Flow from above to work with two replicas for the encoder, and
 <span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
 <span class="nt">executors</span><span class="p">:</span>
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer</span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://jina-ai/AnnLiteIndexer</span>
-<span class="w">  </span><span class="nt">uses_with</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">dim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;user-id&gt;/IndexerPrivate</span>
 <span class="w">  </span><span class="nt">env</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">k1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
 <span class="w">    </span><span class="nt">k2</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v2</span>
@@ -689,7 +899,21 @@ sleep<span class="w"> </span><span class="m">60</span><span class="w"> </span><s
 </ul>
 <p>You should configure your Client to connect to the Flow via the external IP address as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
+<span class="kn">from</span> <span class="nn">docarray.typing</span> <span class="kn">import</span> <span class="n">NdArray</span>
+
 <span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">Client</span>
+
+
+<span class="k">class</span> <span class="nc">MyDoc</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">embedding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NdArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">class</span> <span class="nc">MyDocWithMatches</span><span class="p">(</span><span class="n">MyDoc</span><span class="p">):</span>
+    <span class="n">matches</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">scores</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="n">host</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;EXTERNAL_IP&#39;</span><span class="p">]</span>
 <span class="n">port</span> <span class="o">=</span> <span class="mi">80</span>
@@ -697,10 +921,8 @@ sleep<span class="w"> </span><span class="m">60</span><span class="w"> </span><s
 <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
 
 <span class="n">client</span><span class="o">.</span><span class="n">show_progress</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_files</span><span class="p">(</span><span class="s2">&quot;./imgs/*.png&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">convert_uri_to_datauri</span><span class="p">()</span>
-<span class="p">)</span>
-<span class="n">queried_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/search&quot;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">docs</span><span class="p">)</span>
+<span class="n">docs</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">]([</span><span class="n">MyDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;This is document indexed number </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)])</span>
+<span class="n">queried_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/search&quot;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">docs</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">MyDocWithMatches</span><span class="p">])</span>
 
 <span class="n">matches</span> <span class="o">=</span> <span class="n">queried_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">matches</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Matched documents: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -711,7 +933,7 @@ sleep<span class="w"> </span><span class="m">60</span><span class="w"> </span><s
 <section id="update-your-executor-in-kubernetes">
 <h2>Update your Executor in Kubernetes<a class="headerlink" href="#update-your-executor-in-kubernetes" title="Permalink to this heading">#</a></h2>
 <p>In Kubernetes, you can update your Executors by patching the Deployment corresponding to your Executor.</p>
-<p>For instance, in the example above, you can change the CLIPEncoder’s <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> parameter by changing the content of the Deployment inside the <code class="docutils literal notranslate"><span class="pre">executor.yml</span></code> dumped by <code class="docutils literal notranslate"><span class="pre">.to_kubernetes_yaml</span></code>.</p>
+<p>For instance, in the example above, you can change the CLIPEncoderPrivate’s <code class="docutils literal notranslate"><span class="pre">pretrained_model_name_or_path</span></code> parameter by changing the content of the Deployment inside the <code class="docutils literal notranslate"><span class="pre">executor.yml</span></code> dumped by <code class="docutils literal notranslate"><span class="pre">.to_kubernetes_yaml</span></code>.</p>
 <p>You need to add <code class="docutils literal notranslate"><span class="pre">--uses_with</span></code> and pass the batch size argument to it. This is passed to the container inside the Deployment:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
@@ -728,7 +950,7 @@ sleep<span class="w"> </span><span class="m">60</span><span class="w"> </span><s
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--uses-metas</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;{}&#39;</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--uses-with</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;{&quot;batch_size&quot;:</span><span class="nv"> </span><span class="s">64}&#39;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;{&quot;pretrained_model_name_or_path&quot;:</span><span class="nv"> </span><span class="s">&quot;other_model&quot;}&#39;</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--native</span>
 <span class="w">        </span><span class="nt">command</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jina</span>
@@ -800,7 +1022,7 @@ sleep<span class="w"> </span><span class="m">60</span><span class="w"> </span><s
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -834,6 +1056,7 @@ sleep<span class="w"> </span><span class="m">60</span><span class="w"> </span><s
                         <ul>
 <li><a class="reference internal" href="#">Deploy on Kubernetes</a><ul>
 <li><a class="reference internal" href="#preliminaries">Preliminaries</a></li>
+<li><a class="reference internal" href="#build-and-containerize-your-executors">Build and containerize your Executors</a></li>
 <li><a class="reference internal" href="#deploy-a-simple-flow">Deploy a simple Flow</a><ul>
 <li><a class="reference internal" href="#deploy-flow-with-shards-and-replicas">Deploy Flow with shards and replicas</a></li>
 <li><a class="reference internal" href="#deploy-flow-with-custom-environment-variables-and-secrets">Deploy Flow with custom environment variables and secrets</a></li>

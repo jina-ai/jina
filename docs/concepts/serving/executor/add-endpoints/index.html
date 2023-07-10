@@ -6,10 +6,10 @@
 <meta property="og:title" content="Add Endpoints" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/serving/executor/add-endpoints/" />
-<meta property="og:site_name" content="Jina 3.18.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.0 Documentation" />
 <meta property="og:description" content="Methods decorated with@requests are mapped to network endpoints while serving. Decorator: Executor methods decorated with requests are bound to specific network requests, and respond to network queries. Both def or async def methods can be decorated with requests. You can import the@requests deco..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.18.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.0 Documentation" />
 <meta name="description" content="Methods decorated with@requests are mapped to network endpoints while serving. Decorator: Executor methods decorated with requests are bound to specific network requests, and respond to network queries. Both def or async def methods can be decorated with requests. You can import the@requests deco..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/serving/executor/add-endpoints.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Add Endpoints - Jina 3.18.1 documentation</title>
+        <title>Add Endpoints - Jina 3.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.18.1 documentation</div>
+                <div class="brand">Jina 3.19.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -347,8 +347,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../developer-reference/clean-code/"><span class="fas fa-broom"></span> Clean &amp; Efficient Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/docarray-031support/">DocArray&gt;0.30 support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docarray-support/">DocArray support</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -357,7 +356,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -376,7 +374,7 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/finetuner-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/finetuner-dark.svg">
             Finetuner</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
             <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/docarray-dark.svg">
             DocArray</a></li>
@@ -511,46 +509,99 @@ This means it is the fallback handler for endpoints that are not found. <code cl
 <p>If a class has no <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> decorator, the request simply passes through without any processing.</p>
 </section>
 </section>
+<section id="document-type-binding">
+<h2>Document type binding<a class="headerlink" href="#document-type-binding" title="Permalink to this heading">#</a></h2>
+<p>When using <code class="docutils literal notranslate"><span class="pre">docarray&gt;=0.30</span></code>, each endpoint bound by the request endpoints can have different input and output Document types. One can specify these types by adding
+type annotations to the decorated methods or by using the <code class="docutils literal notranslate"><span class="pre">request_schema</span></code> and <code class="docutils literal notranslate"><span class="pre">response_schema</span></code> argument. The design is inspired by <a class="reference external" href="https://fastapi.tiangolo.com/">FastAPI</a>.</p>
+<p>These schemas have to be parametrized <code class="docutils literal notranslate"><span class="pre">DocList</span></code> with valid <code class="docutils literal notranslate"><span class="pre">Documents</span></code> inheriting from <code class="docutils literal notranslate"><span class="pre">BaseDoc</span></code>. The only exception is when <a class="reference internal" href="#streaming-endpoints"><span class="std std-ref">streaming endpoints</span></a> are used, in that case
+the <code class="docutils literal notranslate"><span class="pre">BaseDocs</span></code> are the parameters.</p>
+<p>When no type annotation or argument is provided, Jina assumes that <a class="reference external" href="https://docs.docarray.org/API_reference/documents/documents/#docarray.documents.legacy.LegacyDocument">LegacyDocument</a> is the type used.
+This is intended to ease the transition from using Jina with <code class="docutils literal notranslate"><span class="pre">docarray&lt;0.30.0</span></code> to using with the newer versions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
+<span class="kn">from</span> <span class="nn">docarray.typing</span> <span class="kn">import</span> <span class="n">AnyTensor</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">asyncio</span>
+
+<span class="k">class</span> <span class="nc">BarInputDoc</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">BarOutputDoc</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">embedding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AnyTensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/index&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">BarInputDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">BarOutputDoc</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Calling bar&#39;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">BarOutputDoc</span><span class="p">]()</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BarOutputDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">embedding</span> <span class="o">=</span> <span class="n">embed</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</pre></div>
+</div>
+<p>Note that the type hint is actually more that just a hint – the Executor uses it to infer the actual
+schema of the endpoint.</p>
+<p>You can also explicitly define the schema of the endpoint by using the <code class="docutils literal notranslate"><span class="pre">request_schema</span></code> and
+<code class="docutils literal notranslate"><span class="pre">response_schema</span></code> parameters of the <code class="docutils literal notranslate"><span class="pre">requests</span></code> decorator:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/index&#39;</span><span class="p">,</span> <span class="n">request_schema</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">BarInputDoc</span><span class="p">],</span> <span class="n">response_schema</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">BarOutputDoc</span><span class="p">])</span> 
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Calling bar&#39;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">BarOutputDoc</span><span class="p">]()</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BarOutputDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">embedding</span> <span class="o">=</span> <span class="n">embed</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</pre></div>
+</div>
+<p>If there is no <code class="docutils literal notranslate"><span class="pre">request_schema</span></code> and <code class="docutils literal notranslate"><span class="pre">response_schema</span></code>, the type hint is used to infer the schema. If both exist, <code class="docutils literal notranslate"><span class="pre">request_schema</span></code>
+and <code class="docutils literal notranslate"><span class="pre">response_schema</span></code> will be used.</p>
+</section>
 <section id="arguments">
 <span id="endpoint-arguments"></span><h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this heading">#</a></h2>
 <p>All Executor methods decorated by <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> need to follow the signature below to be usable as a microservice to be orchestrated either using <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code>.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">async</span></code> definition is optional.</p>
 <p>The endpoint signature looks like the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">DocumentArray</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
 
+<span class="n">T_input</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T_input&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s1">&#39;BaseDoc&#39;</span><span class="p">)</span>
+<span class="n">T_output</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T_output&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s1">&#39;BaseDoc&#39;</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span>
+        <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">T_input</span><span class="p">],</span>
         <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
         <span class="n">tracing_context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Context&#39;</span><span class="p">],</span>
         <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="k">pass</span>
-
-    <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span>
-        <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
-        <span class="n">tracing_context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Context&#39;</span><span class="p">],</span>
-        <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">DocList</span><span class="p">[</span><span class="n">T_output</span><span class="p">],</span> <span class="n">Dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="k">pass</span>
 </pre></div>
 </div>
 <p>Let’s take a look at these arguments:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">docs</span></code>: A DocumentArray that is part of the request. Since an Executor wraps functionality related to <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>, it’s usually the main data format inside Executor methods. Note that these <code class="docutils literal notranslate"><span class="pre">docs</span></code> can be also change in place, just like any other <code class="docutils literal notranslate"><span class="pre">list</span></code>-like object in a Python function.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs</span></code>: A DocList that is part of the request. Since an Executor wraps functionality related to <code class="docutils literal notranslate"><span class="pre">DocList</span></code>, it’s usually the main data format inside Executor methods. Note that these <code class="docutils literal notranslate"><span class="pre">docs</span></code> can be also change in place, just like any other <code class="docutils literal notranslate"><span class="pre">list</span></code>-like object in a Python function.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">parameters</span></code>: A Dict object that passes extra parameters to Executor functions.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tracing_context</span></code>: Context needed if you want to add <a class="reference internal" href="../instrumentation/#instrumenting-executor"><span class="std std-ref">custom traces</span></a> in your Executor.</p></li>
 </ul>
 <div class="hint admonition">
 <p class="admonition-title">Flow-specific arguments</p>
-<p>If you use an Executor in a Flow and want to merge incoming DocumentArrays from multiple Executors, you may also be interested in <span class="xref std std-ref">some additional arguments</span>.</p>
+<p>If you use an Executor in a Flow and want to merge incoming DocLists from multiple Executors, you may also be interested in <span class="xref std std-ref">some additional arguments</span>.</p>
 </div>
 <div class="hint admonition">
 <p class="admonition-title">Hint</p>
@@ -581,7 +632,7 @@ This means it is the fallback handler for endpoints that are not found. <code cl
 <h2>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">#</a></h2>
 <p>Every Executor method can <code class="docutils literal notranslate"><span class="pre">return</span></code> in three ways:</p>
 <ul class="simple">
-<li><p>You can directly return a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> object.</p></li>
+<li><p>You can directly return a <code class="docutils literal notranslate"><span class="pre">DocList</span></code> object.</p></li>
 <li><p>If you return <code class="docutils literal notranslate"><span class="pre">None</span></code> or don’t have a <code class="docutils literal notranslate"><span class="pre">return</span></code> in your method, then the original <code class="docutils literal notranslate"><span class="pre">docs</span></code> object (potentially mutated by your function) is returned.</p></li>
 <li><p>If you return a <code class="docutils literal notranslate"><span class="pre">dict</span></code> object, it will be considered as a result and returned on <code class="docutils literal notranslate"><span class="pre">parameters['__results__']</span></code> to the client.</p></li>
 </ul>
@@ -604,7 +655,7 @@ This means it is the fallback handler for endpoints that are not found. <code cl
 </section>
 <section id="streaming-endpoints">
 <span id="id1"></span><h2>Streaming endpoints<a class="headerlink" href="#streaming-endpoints" title="Permalink to this heading">#</a></h2>
-<p>Executors can stream Documents individually rather than as a whole DocumentArray.
+<p>Executors can stream Documents individually rather than as a whole DocList.
 This is useful when you want to return Documents one by one and you want the client to immediately process Documents as
 they arrive. This can be helpful for Generative AI use cases, where a Large Language Model is used to generate text
 token by token and the client displays tokens as they arrive.
@@ -614,13 +665,23 @@ Streaming endpoints receive one Document as input and yields one Document at a t
 <p>Streaming endpoints are only supported for HTTP protocol and for Deployment.</p>
 </div>
 <p>A streaming endpoint has the following signature:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Deployment</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Deployment</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">BaseDoc</span>
 
+<span class="c1"># first define schemas</span>
+<span class="k">class</span> <span class="nc">MyDocument</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="c1"># then define the Executor</span>
 <span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+
     <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-            <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="n">MyDocument</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">()</span>
+        <span class="c1"># for doc in docs:</span>
+        <span class="c1">#     doc.text = &#39;hello world&#39;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">MyDocument</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;hello world </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             
 <span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span>
     <span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span>
@@ -633,13 +694,13 @@ Streaming endpoints receive one Document as input and yields one Document at a t
 </pre></div>
 </div>
 <p>From the client side, any SSE client can be used to receive the Documents, one at a time.
-Jina offers a standard python client to use the streaming endpoint:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Document</span>
+Jina offers a standard python client for using the streaming endpoint:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">stream_doc</span><span class="p">(</span>
-    <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;hello world&#39;</span><span class="p">)</span>
+    <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">MyDocument</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;hello world&#39;</span><span class="p">),</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">MyDocument</span><span class="p">]</span>
 <span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>hello world 0
@@ -647,8 +708,7 @@ hello world 1
 hello world 2
 </pre></div>
 </div>
-<p>You can also implement streaming endpoints in newer versions of DocArray. Refer to <a class="reference internal" href="../../../../tutorials/docarray-031support/#streaming-endpoits-docarray-v2"><span class="std std-ref">this section</span></a> to learn more.
-You can also refer to the following Javascript code to connect with the streaming endpoint from your browser:</p>
+<p>You can also refer to the following Javascript code to connect with the streaming endpoint from your browser:</p>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
 <span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&quot;en&quot;</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
@@ -746,7 +806,7 @@ NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 22, 2023</div>
+                            Last updated on Jul 10, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -784,6 +844,7 @@ NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&
 <li><a class="reference internal" href="#no-binding">No binding</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#document-type-binding">Document type binding</a></li>
 <li><a class="reference internal" href="#arguments">Arguments</a></li>
 <li><a class="reference internal" href="#returns">Returns</a></li>
 <li><a class="reference internal" href="#streaming-endpoints">Streaming endpoints</a></li>
