@@ -66,6 +66,8 @@ class K8sDeploymentConfig:
                 'workspace',
                 'workspace_id',
                 'noblock_on_start',
+                'env_from_secret',
+                'image_pull_secrets',
                 'env',
             }
 
@@ -96,6 +98,7 @@ class K8sDeploymentConfig:
                 port=self.common_args.port,
                 env=cargs.env,
                 env_from_secret=cargs.env_from_secret,
+                image_pull_secrets=cargs.image_pull_secrets,
                 monitoring=self.common_args.monitoring,
                 port_monitoring=self.common_args.port_monitoring,
                 protocol=self.common_args.protocol,
@@ -190,6 +193,7 @@ class K8sDeploymentConfig:
                 shard_id=self.shard_id,
                 env=cargs.env,
                 env_from_secret=cargs.env_from_secret,
+                image_pull_secrets=cargs.image_pull_secrets,
                 gpus=cargs.gpus if hasattr(cargs, 'gpus') else None,
                 monitoring=cargs.monitoring,
                 port_monitoring=cargs.port_monitoring,

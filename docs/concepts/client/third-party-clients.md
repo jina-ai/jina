@@ -3,6 +3,15 @@
 
 This page is about accessing the Flow with other clients, e.g. `curl`, or programming languages other than Python.
 
+````{admonition} Mostly developed for docarray<0.30
+:class: note
+
+Note that most of these clients have been developed for versions of Jina compatible with `docarray<0.30.0`. This means, they will only be able to communicate with services
+using Jina with docarray<0.30.0
+
+````
+
+
 ## Golang
 
 Our [Go Client](https://github.com/jina-ai/client-go) supports gRPC, HTTP and WebSocket protocols, allowing you to connect to Jina from your Go applications.

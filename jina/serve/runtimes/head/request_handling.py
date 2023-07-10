@@ -519,6 +519,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         :param context: grpc context
         :returns: the response request
         """
+        self.logger.debug('got an endpoint discovery request')
         response = jina_pb2.EndpointsProto()
         try:
             if self.uses_before_address:

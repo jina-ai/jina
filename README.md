@@ -68,11 +68,11 @@ Find more install options on [Apple Silicon](https://docs.jina.ai/get-started/in
 
 ### Basic Concepts
 
-Jina has four fundamental concepts:
+Jina has three fundamental layers:
 
-- A [**Document**](https://docarray.jina.ai/) (from [DocArray](https://github.com/docarray/docarray)) is the input/output format in Jina.
-- An [**Executor**](https://docs.jina.ai/concepts/serving/executor/) is a Python class that transforms and processes Documents.
-- A [**Deployment**](https://docs.jina.ai/concepts/orchestration/deployment) serves a single Executor, while a [**Flow**](https://docs.jina.ai/concepts/orchestration/flow/) serves Executors chained into a pipeline.
+- Data layer: [**BaseDoc**](https://docarray.docs.org/) and [**DocList**](https://docarray.docs.org/) (from [DocArray](https://github.com/docarray/docarray)) is the input/output format in Jina.
+- Serving layer: An [**Executor**](https://docs.jina.ai/concepts/serving/executor/) is a Python class that transforms and processes Documents. [**Gateway**](https://docs.jina.ai/concepts/serving/gateway/) is the service making sure connecting all Executors inside a Flow.
+- Orchestration layer:  [**Deployment**](https://docs.jina.ai/concepts/orchestration/deployment) serves a single Executor, while a [**Flow**](https://docs.jina.ai/concepts/orchestration/flow/) serves Executors chained into a pipeline.
 
 
 [The full glossary is explained here](https://docs.jina.ai/concepts/preliminaries/#).
@@ -80,7 +80,7 @@ Jina has four fundamental concepts:
 ### Build AI Services
 <!-- start build-ai-services -->
 
-Let's build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an **[Executor](https://docs.jina.ai/concepts/executor/)**. Our simple Executor will wrap the [StableLM](https://huggingface.co/stabilityai/stablelm-base-alpha-3b) LLM from Stability AI. We'll then use a **Deployment** to serve it.
+Let's build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an **[Executor](https://docs.jina.ai/concepts/serving/executor/)**. Our simple Executor will wrap the [StableLM](https://huggingface.co/stabilityai/stablelm-base-alpha-3b) LLM from Stability AI. We'll then use a **Deployment** to serve it.
 
 ![](./.github/images/deployment-diagram.png)
 
@@ -97,21 +97,36 @@ Let's implement the service's logic:
 
 ```python
 from jina import Executor, requests
-from docarray import DocumentArray
+from docarray import DocList, BaseDoc
 
 from transformers import pipeline
 
 
-class StableLM(Executor):
+class Prompt(BaseDoc):
+    text: str
 
+
+class Generation(BaseDoc):
+    prompt: str
+    text: str
+
+
+class StableLM(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.generator = pipeline('text-generation', model='stablelm-3b')
+        self.generator = pipeline(
+            'text-generation', model='stabilityai/stablelm-base-alpha-3b'
+        )
 
     @requests
-    def generate(self, docs: DocumentArray, **kwargs):
-        generated_text = self.generator(docs.texts)
-        docs.texts = [gen[0]['generated_text'] for gen in generated_text]
+    def generate(self, docs: DocList[Prompt], **kwargs) -> DocList[Generation]:
+        generations = DocList[Generation]()
+        prompts = docs.text
+        llm_outputs = self.generator(prompts)
+        for prompt, output in zip(prompts, llm_outputs):
+            generations.append(Generation(prompt=prompt, text=output))
+        return generations
+
 ```
 
 </td>
@@ -161,15 +176,25 @@ And run the YAML Deployment with the CLI: `jina deployment --uses deployment.yml
 Use [Jina Client](https://docs.jina.ai/concepts/client/) to make requests to the service:
 
 ```python
-from docarray import Document
 from jina import Client
+from docarray import DocList, BaseDoc
 
-prompt = Document(
-    text = 'suggest an interesting image generation prompt for a mona lisa variant'
+
+class Prompt(BaseDoc):
+    text: str
+
+
+class Generation(BaseDoc):
+    prompt: str
+    text: str
+
+
+prompt = Prompt(
+    text='suggest an interesting image generation prompt for a mona lisa variant'
 )
 
 client = Client(port=12345)  # use port from output above
-response = client.post(on='/', inputs=[prompt])
+response = client.post(on='/', inputs=[prompt], return_type=DocList[Generation])
 
 print(response[0].text)
 ```
@@ -187,14 +212,56 @@ a steampunk version of the Mona Lisa, incorporating mechanical gears, brass elem
 
 <!-- start build-pipelines -->
 
-Sometimes you want to chain microservices together into a pipeline. That's where a [Flow](https://docs.jina.ai/concepts/flow/) comes in.
+Sometimes you want to chain microservices together into a pipeline. That's where a [Flow](https://docs.jina.ai/concepts/orchestration/flow/) comes in.
 
-A Flow is a [DAG](https://de.wikipedia.org/wiki/DAG) pipeline, composed of a set of steps, It orchestrates a set of [Executors](https://docs.jina.ai/concepts/executor/) and a [Gateway](https://docs.jina.ai/concepts/gateway/) to offer an end-to-end service.
+A Flow is a [DAG](https://en.wikipedia.org/wiki/Directed_acyclic_graph) pipeline, composed of a set of steps, It orchestrates a set of [Executors](https://docs.jina.ai/concepts/serving/executor/) and a [Gateway](https://docs.jina.ai/concepts/serving/gateway/) to offer an end-to-end service.
 
 > **Note**
 > If you just want to serve a single Executor, you can use a [Deployment](#build-ai--ml-services).
 
-For instance, let's combine [our StableLM language model](#build-ai--ml-services) with a Stable Diffusion image generation service from Jina AI's [Executor Hub](https://cloud.jina.ai/executors). Chaining these services together into a [Flow](https://docs.jina.ai/concepts/flow/) will give us a service that will generate images based on a prompt generated by the LLM.
+For instance, let's combine [our StableLM language model](#build-ai--ml-services) with a Stable Diffusion image generation service. Chaining these services together into a [Flow](https://docs.jina.ai/concepts/orchestration/flow/) will give us a service that will generate images based on a prompt generated by the LLM.
+
+
+<table>
+<tr>
+<th><code>text_to_image.py</code></th> 
+<tr>
+<td>
+
+```python
+import numpy as np
+from jina import Executor, requests
+from docarray import BaseDoc, DocList
+from docarray.documents import ImageDoc
+
+
+class Generation(BaseDoc):
+    prompt: str
+    text: str
+
+
+class TextToImage(Executor):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        from diffusers import StableDiffusionPipeline
+        import torch
+
+        self.pipe = StableDiffusionPipeline.from_pretrained(
+            "CompVis/stable-diffusion-v1-4", torch_dtype=torch.float16
+        ).to("cuda")
+
+    @requests
+    def generate_image(self, docs: DocList[Generation], **kwargs) -> DocList[ImageDoc]:
+        images = self.pipe(
+            docs.text
+        ).images  # image here is in [PIL format](https://pillow.readthedocs.io/en/stable/)
+        docs.tensor = np.array(images)
+```
+
+</td>
+</tr>
+</table>
+
 
 ![](./.github/images/flow-diagram.png)
 
@@ -212,16 +279,13 @@ Build the Flow with either Python or YAML:
 ```python
 from jina import Flow
 from executor import StableLM
+from text_to_image import TextToImage
 
 flow = (
-    Flow()
-    .add(uses=StableLM, timeout_ready=-1, port=12345)
-    .add(
-        uses='jinaai://jina-ai/TextToImage',
-        timeout_ready=-1,
-        install_requirements=True,
-    )
-)  # use the Executor from Jina's Executor hub
+    Flow(port=12345)
+    .add(uses=StableLM, timeout_ready=-1)
+    .add(uses=TextToImage, timeout_ready=-1)
+)
 
 with flow:
     flow.block()
@@ -239,9 +303,10 @@ executors:
     timeout_ready: -1
     py_modules:
       - executor.py
-  - uses: jinaai://jina-ai/TextToImage
+  - uses: TextToImage
     timeout_ready: -1
-    install_requirements: true
+    py_modules:
+      - text_to_image.py
 ```
 
 Then run the YAML Flow with the CLI: `jina flow --uses flow.yml`
@@ -254,43 +319,28 @@ Then run the YAML Flow with the CLI: `jina flow --uses flow.yml`
 Then, use [Jina Client](https://docs.jina.ai/concepts/client/) to make requests to the Flow:
 
 ```python
-from jina import Client, Document
+from jina import Client
+from docarray import DocList, BaseDoc
+from docarray.documents import ImageDoc
 
-client = Client(port=12345)
 
-prompt = Document(
-    text = 'suggest an interesting image generation prompt for a mona lisa variant'
+class Prompt(BaseDoc):
+    text: str
+
+
+prompt = Prompt(
+    text='suggest an interesting image generation prompt for a mona lisa variant'
 )
 
-response = client.post(on='/', inputs=[prompt])
+client = Client(port=12345)  # use port from output above
+response = client.post(on='/', inputs=[prompt], return_type=DocList[ImageDoc])
 
 response[0].display()
 ```
 
 ![](./.github/images/mona-lisa.png)
 
-## Deploy to the cloud
-
-You can also deploy a Flow to JCloud.
-
-First, turn the `flow.yml` file into a [JCloud-compatible YAML](https://docs.jina.ai/concepts/jcloud/yaml-spec/) by specifying resource requirements and using containerized Hub Executors.
-
-Then, use `jina cloud deploy` command to deploy to the cloud:
-
-```shell
-wget https://raw.githubusercontent.com/jina-ai/jina/master/.github/getting-started/jcloud-flow.yml
-jina cloud deploy jcloud-flow.yml
-```
-
-> **Warning**
->
-> Make sure to delete/clean up the Flow once you are done with this tutorial to save resources and credits.
-
-Read more about [deploying Flows to JCloud](https://docs.jina.ai/concepts/jcloud/#deploy).
-
 <!-- end build-pipelines -->
-
-Check [the getting-started project source code](https://github.com/jina-ai/jina/tree/master/.github/getting-started).
 
 ### Easy scalability and concurrency
 
@@ -302,7 +352,7 @@ Let's scale a Stable Diffusion Executor deployment with replicas and dynamic bat
 
 ![](./.github/images/scaled-deployment.png)
 
-* Create two replicas, with [a GPU assigned for each](https://docs.jina.ai/concepts/flow/scale-out/#replicate-on-multiple-gpus).
+* Create two replicas, with [a GPU assigned for each](https://docs.jina.ai/concepts/orchestration/scale-out/#replicate-on-multiple-gpus).
 * Enable dynamic batching to process incoming parallel requests together with the same model inference.
 
 
@@ -318,9 +368,10 @@ Let's scale a Stable Diffusion Executor deployment with replicas and dynamic bat
 ```yaml
 jtype: Deployment
 with:
+  uses: TextToImage
   timeout_ready: -1
-  uses: jinaai://jina-ai/TextToImage
-  install_requirements: true
+  py_modules:
+    - text_to_image.py
 ```
 
 </td>
@@ -329,9 +380,10 @@ with:
 ```yaml
 jtype: Deployment
 with:
+  uses: TextToImage
   timeout_ready: -1
-  uses: jinaai://jina-ai/TextToImage
-  install_requirements: true
+  py_modules:
+    - text_to_image.py
   env:
    CUDA_VISIBLE_DEVICES: RR
   replicas: 2
@@ -348,7 +400,72 @@ with:
 
 Assuming your machine has two GPUs, using the scaled deployment YAML will give better throughput compared to the normal deployment.
 
-These features apply to both [Deployment YAML](https://docs.jina.ai/concepts/executor/deployment-yaml-spec/#deployment-yaml-spec) and [Flow YAML](https://docs.jina.ai/concepts/flow/yaml-spec/). Thanks to the YAML syntax, you can inject deployment configurations regardless of Executor code.
+These features apply to both [Deployment YAML](https://docs.jina.ai/concepts/orchestration/yaml-spec/#example-yaml) and [Flow YAML](https://docs.jina.ai/concepts/orchestration/yaml-spec/#example-yaml). Thanks to the YAML syntax, you can inject deployment configurations regardless of Executor code.
+
+## Deploy to the cloud
+
+### Containerize your Executor
+
+In order to deploy your solutions to the cloud, you need to containerize your services. Jina provides the [Executor Hub](https://docs.jina.ai/concepts/serving/executor/hub/create-hub-executor/), the perfect tool
+to streamline this process taking a lot of the troubles with you. It also lets you share these Executors publicly or privately.
+
+You just need to structure your Executor in a folder:
+
+```shell script
+TextToImage/
+├── executor.py
+├── config.yml
+├── requirements.txt
+```
+<div class="table-wrapper">
+<table>
+<tr>
+<th> <code>config.yml</code> </th>
+<th> <code>requirements.txt</code> </th>
+</tr>
+<tr>
+<td>
+
+```yaml
+jtype: TextToImage
+py_modules:
+  - executor.py
+metas:
+  name: TextToImage
+  description: Text to Image generation Executor based on StableDiffusion
+  url:
+  keywords: []
+```
+
+</td>
+<td>
+
+```requirements.txt
+diffusers
+accelerate
+transformers
+```
+
+</td>
+</tr>
+</table>
+</div>
+
+
+Then push the Executor to the Hub by doing: `jina hub push TextToImage`.
+
+This will give you a URL that you can use in your `Deployment` and `Flow` to use the pushed Executors containers.
+
+
+```yaml
+jtype: Flow
+with:
+    port: 12345
+executors:
+  - uses: jinai+docker://<user-id>/StableLM
+  - uses: jinai+docker://<user-id>/TextToImage
+```
+
 
 ### Get on the fast lane to cloud-native
 
@@ -367,11 +484,30 @@ docker-compose up
 ```
 
 > **Note**
-> You can also export Deployment YAML to [Kubernetes](https://docs.jina.ai/concepts/executor/serve/#serve-via-kubernetes) and [Docker Compose](https://docs.jina.ai/concepts/executor/serve/#serve-via-docker-compose).
+> You can also export Deployment YAML to [Kubernetes](https://docs.jina.ai/concepts/serving/executor/serve/#serve-via-kubernetes) and [Docker Compose](https://docs.jina.ai/concepts/serving/executor/serve/#serve-via-docker-compose).
 
 That's not all. We also support [OpenTelemetry, Prometheus, and Jaeger](https://docs.jina.ai/cloud-nativeness/opentelemetry/).
 
 What cloud-native technology is still challenging to you? [Tell us](https://github.com/jina-ai/jina/issues) and we'll handle the complexity and make it easy for you.
+
+### Deploy to JCloud
+
+You can also deploy a Flow to JCloud, where you can easily enjoy autoscaling, monitoring and more with a single command. 
+
+First, turn the `flow.yml` file into a [JCloud-compatible YAML](https://docs.jina.ai/yaml-spec/) by specifying resource requirements and using containerized Hub Executors.
+
+Then, use `jina cloud deploy` command to deploy to the cloud:
+
+```shell
+wget https://raw.githubusercontent.com/jina-ai/jina/master/.github/getting-started/jcloud-flow.yml
+jina cloud deploy jcloud-flow.yml
+```
+
+> **Warning**
+>
+> Make sure to delete/clean up the Flow once you are done with this tutorial to save resources and credits.
+
+Read more about [deploying Flows to JCloud](https://docs.jina.ai/concepts/jcloud/#deploy).
 
 <!-- start support-pitch -->
 

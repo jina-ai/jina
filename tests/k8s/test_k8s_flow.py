@@ -838,12 +838,11 @@ async def test_flow_with_external_native_deployment(logger, docker_images, tmpdi
     try:
         args = set_deployment_parser().parse_args(['--uses', 'DocReplaceExecutor'])
         with Deployment(args) as external_deployment:
-            ports = [args.port for args in external_deployment.pod_args['pods'][0]]
             flow = Flow(name='k8s_flow-with_external_deployment', port=9090).add(
                 name='external_executor',
                 external=True,
                 host=f'172.17.0.1',
-                port=ports[0],
+                port=external_deployment.port,
             )
 
             dump_path = os.path.join(str(tmpdir), namespace)

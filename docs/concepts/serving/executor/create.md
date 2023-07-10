@@ -4,11 +4,11 @@
 ## Introduction
 
 ```{tip}
-Executors use `docarray.DocumentArray` as their input and output data structure. [Read DocArray's docs](https://docarray.org/legacy-docs/) to see how it works.
+Executors use `docarray.BaseDoc` and docarray.DocList` as their input and output data structure. [Read DocArray's docs](https://docs.docarray.org) to see how it works.
 ```
 
 An {class}`~jina.Executor` is a self-contained microservice exposed using a gRPC or HTTP protocol. 
-It contains functions (decorated with `@requests`) that process `DocumentArray`s. Executors follow three principles:
+It contains functions (decorated with `@requests`) that process `Documents`s. Executors follow three principles:
 
 1. An Executor should subclass directly from the `jina.Executor` class.
 2. An Executor is a Python class; it can contain any number of functions.
@@ -37,14 +37,12 @@ MyExecutor/
 
 - `executor.py` contains your Executor's main logic. The command should generate the following boilerplate code:
 ```python
-from jina import DocumentArray, Executor, requests
-
+from jina import Executor, requests
+from docarray import DocList, BaseDoc
 
 class MyExecutor(Executor):
-    """"""
-
     @requests
-    def foo(self, docs: DocumentArray, **kwargs):
+    def foo(self, docs: DocList[BaseDoc], **kwargs) -> DocList[BaseDoc]:
         pass
 ```
 - `config.yml` is the Executor's {ref}`configuration <executor-yaml-spec>` file, where you can define `__init__` arguments using the `with` keyword.
