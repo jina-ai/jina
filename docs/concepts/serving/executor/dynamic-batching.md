@@ -32,11 +32,19 @@ batching enabled.
 
 ```{code-block} python
 ---
-emphasize-lines: 14
+emphasize-lines: 22
 ---
-from jina import Executor, requests, dynamic_batching, DocumentArray, Document, Deployment
+from jina import Executor, requests, dynamic_batching, Deployment
+from docarray import DocList, BaseDoc
+from docarray.typing import AnyTensor, AnyEmbedding
+from typing import Optional
+
 import numpy as np
 import torch
+
+class MyDoc(BaseDoc):
+    tensor: Optional[AnyTensor[128]] = None
+    embedding: Optional[AnyEmbedding[128]] = None
 
 
 class MyExecutor(Executor):
@@ -48,8 +56,8 @@ class MyExecutor(Executor):
     
     @requests(on='/bar')
     @dynamic_batching(preferred_batch_size=10, timeout=200)
-    def embed(self, docs: DocumentArray, **kwargs):
-        docs.embeddings = self.model(torch.Tensor(docs.tensors))
+    def embed(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDoc]:
+        docs.embedding = self.model(torch.Tensor(docs.tensor))
 
 dep = Deployment(uses=MyExecutor)
 ```
@@ -59,23 +67,31 @@ dep = Deployment(uses=MyExecutor)
 This argument is a dictionary mapping each endpoint to its corresponding configuration:
 ```{code-block} python
 ---
-emphasize-lines: 20
+emphasize-lines: 28
 ---
-from jina import requests, dynamic_batching, Executor, DocumentArray, Deployment
+from jina import Executor, requests, dynamic_batching, Deployment
+from docarray import DocList, BaseDoc
+from docarray.typing import AnyTensor, AnyEmbedding
+from typing import Optional
+
+import numpy as np
+import torch
+
+class MyDoc(BaseDoc):
+    tensor: Optional[AnyTensor[128]] = None
+    embedding: Optional[AnyEmbedding[128]] = None
 
 
 class MyExecutor(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
+        
         # initialize model
-        import torch
-
         self.model = torch.nn.Linear(in_features=128, out_features=128)
-
+    
     @requests(on='/bar')
-    def embed(self, docs: DocumentArray):
-        docs.embeddings = self.model(docs.tensors)
+    def embed(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDoc]:
+        docs.embedding = self.model(torch.Tensor(docs.tensor))
 
 
 dep = Deployment(
@@ -90,21 +106,29 @@ If you use YAML to enable dynamic batching on an Executor, you can use the `dyna
 Executor section. Suppose the Executor is implemented like this:
 `my_executor.py`:
 ```python
-from jina import requests, dynamic_batching, Executor, DocumentArray
+from jina import Executor, requests, dynamic_batching, Deployment
+from docarray import DocList, BaseDoc
+from docarray.typing import AnyTensor, AnyEmbedding
+from typing import Optional
+
+import numpy as np
+import torch
+
+class MyDoc(BaseDoc):
+    tensor: Optional[AnyTensor[128]] = None
+    embedding: Optional[AnyEmbedding[128]] = None
 
 
 class MyExecutor(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
+        
         # initialize model
-        import torch
-
         self.model = torch.nn.Linear(in_features=128, out_features=128)
-
+    
     @requests(on='/bar')
-    def embed(self, docs: DocumentArray):
-        docs.embeddings = self.model(docs.tensors)
+    def embed(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDoc]:
+        docs.embedding = self.model(torch.Tensor(docs.tensor))
 ```
 
 Then, in your `config.yaml` file, you can enable dynamic batching on the `/bar` endpoint like so:

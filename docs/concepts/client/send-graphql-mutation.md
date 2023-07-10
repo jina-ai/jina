@@ -2,6 +2,12 @@
 
 If the Flow is configured with GraphQL endpoint, then you can use Jina {class}`~jina.Client` {meth}`~jina.clients.mixin.MutateMixin.mutate` to fetch data via GraphQL mutations:
 
+````{admonition} Only available for docarray<0.30
+:class: note
+
+This feature is only available when using `docarray<0.30`.
+````
+
 ```python
 from jina import Client
 

@@ -112,7 +112,7 @@ extensions = [
     'sphinx_inline_tabs',
 ]
 
-intersphinx_mapping = {'docarray': ('https://docarray.jina.ai/', None)}
+intersphinx_mapping = {'docarray': ('https://docs.docarray.org/', None)}
 myst_enable_extensions = ['colon_fence']
 autosummary_generate = True
 redirects_file = 'redirects.txt'

@@ -6,22 +6,23 @@ This chapter introduces the basic terminology and concepts you will encounter in
 (dummy-example)=
 ````{tab} Server
 ```python
-from jina import DocumentArray, Executor, Flow, requests
+from jina import Executor, Flow, requests
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class FooExec(Executor):
     @requests
-    async def add_text(self, docs: DocumentArray, **kwargs):
+    async def add_text(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         for d in docs:
             d.text += 'hello, world!'
 
 
 class BarExec(Executor):
     @requests
-    async def add_text(self, docs: DocumentArray, **kwargs):
+    async def add_text(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         for d in docs:
             d.text += 'goodbye!'
-
 
 f = Flow(port=12345).add(uses=FooExec, replicas=3).add(uses=BarExec, replicas=2)
 
@@ -32,11 +33,14 @@ with f:
 
 ````{tab} Client
 ```python
-from jina import Client, DocumentArray
+from jina import Client
+from docarray import DocList
+from docarray.documents import TextDoc
 
 c = Client(port=12345)
-r = c.post('/', DocumentArray.empty(2))
-print(r.texts)
+
+r = c.post(on='/', inputs=DocList[TextDoc](TextDoc()), return_type=DocList[TextDoc])
+print([d.text for d in r])
 ```
 ````
 
@@ -71,24 +75,23 @@ and contains the following concepts:
 
 **DocArray data structure**
 
-Data structures coming from [DocArray](https://docarray.org/legacy-docs/) are the basic fundamental data structure in Jina.
+Data structures coming from [docarray](https://docs.docarray.org/) are the basic fundamental data structure in Jina.
 
 
-- **Document**
-    Document is the basic object for representing multimodal data. More information can be found in [DocArray's Docs](https://docarray.org/legacy-docs/fundamentals/document/). 
+- **BaseDoc**
+    Document is the basic object for representing multimodal data. It can be extended to represent any data you want. More information can be found in [DocArray's Docs](https://docs.docarray.org/user_guide/representing/first_step/). 
 
-- **DocumentArray**
-    DocumentArray is a list-like container of multiple Documents. It is the essential element of IO in Jina services. More information can be found in [DocArray's Docs](https://docarray.org/legacy-docs/fundamentals/documentarray/). 
+- **DocList**
+    DocList is a list-like container of multiple Documents. It is the essential element of IO in Jina services. More information can be found in [DocArray's Docs](https://docs.docarray.org/user_guide/representing/array/). 
 
 **Serving**
 
-This layer contains all the objects and concepts that are used to actually serve the logic and receive and respond to queries. These components are designed to be used
-as microservices ready to be containerized. 
+This layer contains all the objects and concepts that are used to actually serve the logic and receive and respond to queries. These components are designed to be used as microservices ready to be containerized. 
 These components can be orchestrated by Jina's {term}`orchestration` layer or by other container orchestration frameworks such as Kubernetes or Docker Compose.
  
 
 - **Executor**
-    {class}`~jina.Executor` is a Python class that can serve logic using {term}`DocumentArray`. Loosely speaking, each Executor is a microservice.
+    {class}`~jina.Executor` is a Python class that can serve logic using {term}`DocList`. Loosely speaking, each Executor is a microservice.
 
 - **Gateway**
     Gateway is the entrypoint of a {term}`Flow`. It exposes multiple protocols for external communications; it routes all internal traffic.

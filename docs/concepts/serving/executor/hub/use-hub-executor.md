@@ -9,15 +9,17 @@ There are three ways to use Hub {class}`~jina.Executor`s in your project. Each h
 You can use a Hub Executor as-is via `Executor.from_hub()`:
 
 ```python
-from jina import Executor, Document, DocumentArray
+from jina import Executor
+from docarray import DocList
+from docarray.documents.legacy import LegacyDocument
 
 exec = Executor.from_hub('jinaai://jina-ai/DummyHubExecutor')
-da = DocumentArray([Document()])
+da = DocList[LegacyDocument]([LegacyDocument()])
 exec.foo(da)
 assert da.texts == ['hello']
 ```
 
-The Hub Executor will be pulled to your local machine and run as a native Python object. You can use a line-debugger to step in/out `exec` object, set breakpoints, and observe how it behaves. You can directly feed in a `DocumentArray`. After you build some confidence in that Executor, you can move to the next step: Using it as a part of your Flow.
+The Hub Executor will be pulled to your local machine and run as a native Python object. You can use a line-debugger to step in/out `exec` object, set breakpoints, and observe how it behaves. You can directly feed in `Documents`. After you build some confidence in that Executor, you can move to the next step: Using it as a part of your Flow.
 
 ```{caution}
 Not all Executors on the Hub can be directly run in this way - some require extra dependencies. In that case, you can add `.from_hub(..., install_requirements=True)` to install the requirements automatically. Be careful - these dependencies may not be compatible with your local packages and may override your local development environment.
@@ -28,6 +30,32 @@ Hub Executors are cached locally on the first pull. Afterwards, they will not be
 
 To keep up-to-date with upstream, use `.from_hub(..., force_update=True)`.
 ```
+
+(pull-executor)=
+## Pull only
+
+You can also use `jina hub` CLI to pull an Executor without actually using it in the Flow.
+
+````{admonition} Jina and DocArray version
+:class: note
+
+Independently of the Jina and DocArray version existing when the Executor was pushed to the Hub. When pulling, the Hub will try
+to install the Jina and DocArray version that you have installed locally in the pulled docker images.
+````
+
+### Pull the Docker image
+
+```bash
+jina hub pull jinaai+docker://<USERNAME>/<NAME>[:<TAG>]
+```
+
+
+You can find the Executor by running `docker images`. You can also indicate which version of the Executor you want to use by specifying the `:<TAG>`.
+
+```bash
+jina hub pull jinaai+docker://jina-ai/DummyExecutor:v1.0.0
+```
+
 
 ## Use in Flow as container
 
@@ -113,7 +141,7 @@ Use the source code from Executor Hub in your Python code:
 ```python
 from jina import Flow
 
-f = Flow().add(uses='jinaai+docker://<USERNAME>/<NAME>[:<TAG>]')
+f = Flow().add(uses='jinaai://<USERNAME>/<NAME>[:<TAG>]')
 ```
 
 ## Set/override default parameters
@@ -129,25 +157,6 @@ f = Flow().add(
     uses_with={'param1': 'new_value'},
     uses_metas={'name': 'new_name'},
 )
-```
-
-
-(pull-executor)=
-## Pull only
-
-You can also use `jina hub` CLI to pull an Executor without actually using it in the Flow.
-
-### Pull the Docker image
-
-```bash
-jina hub pull jinaai+docker://<USERNAME>/<NAME>[:<TAG>]
-```
-
-
-You can find the Executor by running `docker images`. You can also indicate which version of the Executor you want to use by specifying the `:<TAG>`.
-
-```bash
-jina hub pull jinaai+docker://jina-ai/DummyExecutor:v1.0.0
 ```
 
 ### Platform awareness of Hub images 
@@ -184,6 +193,7 @@ jina hub pull jinaai://<USERNAME>/<NAME>[:<TAG>]
 jina hub list
 ```
 
+<script id="asciicast-z81wi9gwVm7gYjfl5ocBD1RH3" src="https://asciinema.org/a/z81wi9gwVm7gYjfl5ocBD1RH3.js" async></script>
 <script id="asciicast-z81wi9gwVm7gYjfl5ocBD1RH3" src="https://asciinema.org/a/z81wi9gwVm7gYjfl5ocBD1RH3.js" async></script>
 
 ```{tip}

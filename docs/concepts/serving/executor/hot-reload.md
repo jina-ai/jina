@@ -20,11 +20,13 @@ This feature requires watchfiles>=0.18 package to be installed.
 To see how this would work, let's define an Executor in `my_executor.py`
 ```python
 from jina import Executor, requests
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class MyExecutor(Executor):
     @requests
-    def foo(self, docs, **kwargs):
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         for doc in docs:
             doc.text = 'I am coming from the first version of MyExecutor'
 ```
@@ -49,11 +51,13 @@ with dep:
 We can see that the Executor is successfuly serving:
 
 ```python
-from jina import Client, DocumentArray
+from jina import Client
+from docarray import DocList
+from docarray.documents import TextDoc
 
 c = Client(port=12345)
 
-print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
+print(c.post(on='/', inputs=DocList[TextDoc](TextDoc()), return_type=DocList[TextDoc])[0].text)
 ```
 
 ```text
@@ -64,11 +68,13 @@ We can edit the Executor file and save the changes:
 
 ```python
 from jina import Executor, requests
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class MyExecutor(Executor):
     @requests
-    def foo(self, docs, **kwargs):
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         for doc in docs:
             doc.text = 'I am coming from a new version of MyExecutor'
 ```
@@ -82,11 +88,13 @@ INFO   executor0/rep-0@11606 detected changes in: ['XXX/XXX/XXX/my_executor.py']
 And after this, the Executor will start serving with the renewed code.
 
 ```python
-from jina import Client, DocumentArray
+from jina import Client
+from docarray import DocList
+from docarray.documents import TextDoc
 
 c = Client(port=12345)
 
-print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
+print(c.post(on='/', inputs=DocList[TextDoc](TextDoc()), return_type=DocList[TextDoc])[0].text)
 ```
 
 ```text
@@ -106,20 +114,22 @@ Deploy the Executor:
 ```python
 import os
 from jina import Deployment, Executor, requests
+from docarray import DocList
+from docarray.documents import TextDoc
 
 os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
 
 
 class MyExecutorBeforeReload(Executor):
     @requests
-    def foo(self, docs, **kwargs):
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         for doc in docs:
             doc.text = 'MyExecutorBeforeReload'
 
 
 class MyExecutorAfterReload(Executor):
     @requests
-    def foo(self, docs, **kwargs):
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         for doc in docs:
             doc.text = 'MyExecutorAfterReload'
 
@@ -133,11 +143,13 @@ with dep:
 You can see that the Executor is running and serving:
 
 ```python
-from jina import Client, DocumentArray
+from jina import Client
+from docarray import DocList
+from docarray.documents import TextDoc
 
 c = Client(port=12345)
 
-print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
+print(c.post(on='/', inputs=DocList[TextDoc](TextDoc()), return_type=DocList[TextDoc])[0].text)
 ```
 
 ```text
@@ -159,11 +171,13 @@ INFO   Flow@1843 change in Executor configuration YAML /home/user/jina/jina/exec
 And after this, you can see the reloaded Executor being served:
 
 ```python
-from jina import Client, DocumentArray
+from jina import Client
+from docarray import DocList
+from docarray.documents import TextDoc
 
 c = Client(port=12345)
 
-print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
+print(c.post(on='/', inputs=DocList[TextDoc](TextDoc()), return_type=DocList[TextDoc])[0].text)
 ```
 
 ```yaml
