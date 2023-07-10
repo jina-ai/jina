@@ -45,7 +45,7 @@ If you change the Docker images in your Docker Compose generated file, ensure th
 the Gateway are built with the same Jina version to guarantee compatibility.
 ````
 
-## Example: Index and search text using our own build Encoder and Indexer
+## Example: Index and search text using your own built Encoder and Indexer
 
 Install [`Docker Compose`](https://docs.docker.com/compose/install/) locally before starting this tutorial.
 
