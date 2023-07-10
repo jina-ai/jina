@@ -226,14 +226,23 @@ executors:
 
 Below are the defaults and requirements for the configurations:
 
-| Name   | Default     | Allowed                  | Description                                       |
-| ------ | ----------- | ------------------------ | ------------------------------------------------- |
-| min    | 1           | int                      | Minimum number of replicas (`0` means serverless) |
-| max    | 2           | int, up to 5             | Maximum number of replicas                        |
-| metric | concurrency | `concurrency`  /   `rps` | Metric for scaling                                |
-| target | 100         | int                      | Target number the replicas try to maintain        |
+| Name             | Default     | Allowed                                     | Description                                                               |
+| ------           | ----------- | ------------------------                    | -------------------------------------------------                         |
+| min              | 1           | int                                         | Minimum number of replicas (`0` means serverless)                         |
+| max              | 2           | int, up to 5                                | Maximum number of replicas                                                |
+| metric           | concurrency | `concurrency` / `rps` / `cpu` / `memory`    | Metric for scaling                                                        |
+| scale_down_delay | 30s         | str, `0s` <= value <= `1h`                  | Time window which must pass at reduced concurrency before a scaling down  |
+| target           | 100         | int                                         | Target number the replicas try to maintain.                               |
+
+The unit of `target` depends of the metric specified. For `metric` equals:
+- `concurrency`: `target` refers to the number of concurrent requests processed at any given time.
+- `rps`: `target` refers to the number of requests processed per second per replica.
+- `cpu`: `target` refers to average % CPU utilization of each pod (e.g. `60` means replicas will be scaled up when pods on average reach 60% CPU utilization)
+- `memory`: `target` refers to average millibytes of memory used by each pod (e.g. `200` means replicas will be scaled up when the average pods' memory consumption exceeds 200m).
 
 After you make a JCloud deployment using the autoscaling configuration, the Flow serving part is just the same: the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you can deal with the code!
+
+Note, that if `metric` is `cpu` or `memory`, `min` will be reset to 1 if it is set to 0 by the user.
 
 ### Pricing
 At present, pricing for autoscaled Executor/Gateway follows the same {ref}`JCloud pricing rules <jcloud-pricing>` for the most part.
