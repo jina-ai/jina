@@ -5,11 +5,11 @@ from grpc import RpcError
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
 
+from jina._docarray import docarray_v2
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.helper import get_server_side_grpc_options
 from jina.serve.networking.utils import send_health_check_async, send_health_check_sync
 from jina.serve.runtimes.servers import BaseServer
-from jina._docarray import docarray_v2
 
 
 class GRPCServer(BaseServer):
@@ -40,7 +40,10 @@ class GRPCServer(BaseServer):
         setup GRPC server
         """
         if docarray_v2:
-            from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+            from jina.serve.runtimes.gateway.request_handling import (
+                GatewayRequestHandler,
+            )
+
             if isinstance(self._request_handler, GatewayRequestHandler):
                 await self._request_handler.streamer._get_endpoints_input_output_models()
                 self._request_handler.streamer._validate_flow_docarray_compatibility()
@@ -53,6 +56,10 @@ class GRPCServer(BaseServer):
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self._request_handler, self.server)
 
         jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
+            self._request_handler, self.server
+        )
+
+        jina_pb2_grpc.add_JinaSingleDocumentRequestRPCServicer_to_server(
             self._request_handler, self.server
         )
 
@@ -88,8 +95,8 @@ class GRPCServer(BaseServer):
             )
 
         jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(
-                self._request_handler, self.server
-            )
+            self._request_handler, self.server
+        )
 
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,

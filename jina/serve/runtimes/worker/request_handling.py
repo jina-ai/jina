@@ -846,6 +846,54 @@ class WorkerRequestHandler:
         """
         return await self.process_data([request], context, is_generator=is_generator)
 
+    async def stream_doc(
+        self, request: SingleDocumentRequestProto, context: grpc.aio.ServicerContext
+    ) -> SingleDocumentRequestProto:
+        """
+        Process the received requests and return the result as a new request
+
+        :param request: the data request to process
+        :param context: grpc context
+        :param is_generator: whether the request should be handled with streaming
+        :returns: the response request
+        """
+        request_endpoint = self._executor.requests.get(
+            request.header.exec_endpoint
+        ) or self._executor.requests.get(__default_endpoint__)
+        if request_endpoint is None:
+            self.logger.debug(
+                f'skip executor: endpoint mismatch. '
+                f'Request endpoint: `{request.header.exec_endpoint}`. '
+                'Available endpoints: '
+                f'{", ".join(list(self._executor.requests.keys()))}'
+            )
+            yield request
+
+        is_generator = getattr(request_endpoint.fn, '__is_generator__', False)
+        # TODO: better error handling, use add_exception instead
+        if not is_generator:
+            raise ValueError('endpoint must be generator')
+
+        request_schema = request_endpoint.request_schema
+        data_request = DataRequest()
+        data_request.header.exec_endpoint = request.header.exec_endpoint
+        if not docarray_v2:
+            from docarray import Document
+
+            data_request.data.docs = DocumentArray(
+                [Document.from_protobuf(request.document)]
+            )
+        else:
+            data_request.data.docs = DocumentArray(
+                [request_schema.from_protobuf(request.document)]
+            )
+
+        result = await self.process_data([request], context, is_generator=is_generator)
+        async for doc in result:
+            req = SingleDocumentRequestProto()
+            req.doc = doc.to_protobuf()
+            yield req
+
     async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
         """
         Process the the call requested and return the list of Endpoints exposed by the Executor wrapped inside this Runtime
@@ -974,6 +1022,69 @@ class WorkerRequestHandler:
 
                 return requests[0]
 
+    async def stream_single_document(
+        self, request: SingleDocumentRequestProto, context
+    ) -> SingleDocumentRequestProto:
+        """
+        Process the received request document and yield the resulting documents
+
+        :param request: the document request to process
+        :param context: grpc context
+        :yields: the response documents
+        """
+        with MetricsTimer(
+            self._summary, self._receiving_request_seconds, self._metric_attributes
+        ):
+            try:
+                if self.logger.debug_enabled:
+                    self._log_data_request(request)
+
+                if context is not None:
+                    tracing_context = self._extract_tracing_context(
+                        context.invocation_metadata()
+                    )
+                else:
+                    tracing_context = None
+
+                result = await self.handle_generator(
+                    requests=requests, tracing_context=tracing_context
+                )
+
+                if self._successful_requests_metrics:
+                    self._successful_requests_metrics.inc()
+                if self._successful_requests_counter:
+                    self._successful_requests_counter.add(
+                        1, attributes=self._metric_attributes
+                    )
+                return result
+            except (RuntimeError, Exception) as ex:
+                self.logger.error(
+                    f'{ex!r}'
+                    + f'\n add "--quiet-error" to suppress the exception details'
+                    if not self.args.quiet_error
+                    else '',
+                    exc_info=not self.args.quiet_error,
+                )
+
+                requests[0].add_exception(ex, self._executor)
+                if context is not None:
+                    context.set_trailing_metadata((('is-error', 'true'),))
+                if self._failed_requests_metrics:
+                    self._failed_requests_metrics.inc()
+                if self._failed_requests_counter:
+                    self._failed_requests_counter.add(
+                        1, attributes=self._metric_attributes
+                    )
+
+                if (
+                    self.args.exit_on_exceptions
+                    and type(ex).__name__ in self.args.exit_on_exceptions
+                ):
+                    self.logger.info('Exiting because of "--exit-on-exceptions".')
+                    raise RuntimeTerminated
+
+                return requests[0]
+
     async def _status(self, empty, context) -> jina_pb2.JinaInfoProto:
         """
         Process the the call requested and return the JinaInfo of the Runtime
@@ -1004,30 +1115,7 @@ class WorkerRequestHandler:
         :yield: responses to the request
         """
         async for request in request_iterator:
-            request_endpoint = self._executor.requests.get(
-                request.header.exec_endpoint
-            ) or self._executor.requests.get(__default_endpoint__)
-            if request_endpoint is None:
-                self.logger.debug(
-                    f'skip executor: endpoint mismatch. '
-                    f'Request endpoint: `{request.header.exec_endpoint}`. '
-                    'Available endpoints: '
-                    f'{", ".join(list(self._executor.requests.keys()))}'
-                )
-                yield request
-                continue
-
-            is_generator = getattr(request_endpoint.fn, '__is_generator__', False)
-            result = await self.process_data(
-                [request], context, is_generator=is_generator
-            )
-            if is_generator:
-                async for doc in result:
-                    req = DataRequest()
-                    req.data.docs = DocumentArray([doc])
-                    yield req
-            else:
-                yield result
+            yield await self.process_data([request], context)
 
     Call = stream
 
