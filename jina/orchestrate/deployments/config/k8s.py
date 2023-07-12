@@ -172,7 +172,6 @@ class K8sDeploymentConfig:
                 container_args_uses_after = self._get_container_args(
                     uses_after_cargs, PodRoleType.WORKER
                 )
-
             return kubernetes_deployment.get_template_yamls(
                 self.dns_name,
                 namespace=self.k8s_namespace,
@@ -190,6 +189,7 @@ class K8sDeploymentConfig:
                 jina_deployment_name=self.jina_deployment_name,
                 pod_type=self.pod_type,
                 protocol=self.common_args.protocol,
+                port=self.common_args.port if len(self.common_args.protocol) > 1 else None,
                 shard_id=self.shard_id,
                 env=cargs.env,
                 env_from_secret=cargs.env_from_secret,
@@ -223,7 +223,6 @@ class K8sDeploymentConfig:
             # otherwise it will remain with the one from the original Deployment
             self.args.k8s_namespace = k8s_namespace
         self.name = self.args.name
-
         self.deployment_args = self._get_deployment_args(self.args, k8s_port=k8s_port)
 
         if self.deployment_args['head_deployment'] is not None:
@@ -319,7 +318,7 @@ class K8sDeploymentConfig:
             cargs.uses_before = None
             cargs.uses_after = None
             if args.name != 'gateway':
-                cargs.port = k8s_port
+                cargs.port = [k8s_port + i for i in range(len(cargs.protocol))]
                 cargs.port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
 
             cargs.uses_before_address = None
