@@ -169,9 +169,18 @@ class _FunctionWithSchema(NamedTuple):
             request_schema = docs_annotation or DocumentArray[LegacyDocument]
             response_schema = return_annotation or DocumentArray[LegacyDocument]
             from docarray import DocList
-            if not issubclass(request_schema, DocList) or not issubclass(response_schema, DocList):
-                faulty_schema = 'request_schema' if not issubclass(request_schema, DocList) else 'response_schema'
-                raise Exception(f'The {faulty_schema} schema for {fn.__name__}: {request_schema} is not a DocList. Please make sure that your endpoints used DocList for request and response schema')
+
+            if not issubclass(request_schema, DocList) or not issubclass(
+                response_schema, DocList
+            ):
+                faulty_schema = (
+                    'request_schema'
+                    if not issubclass(request_schema, DocList)
+                    else 'response_schema'
+                )
+                raise Exception(
+                    f'The {faulty_schema} schema for {fn.__name__}: {request_schema} is not a DocList. Please make sure that your endpoints used DocList for request and response schema'
+                )
 
         return _FunctionWithSchema(fn, request_schema, response_schema)
 
