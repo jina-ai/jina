@@ -455,7 +455,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         self._include_gateway = include_gateway
         if self._include_gateway:
             # arguments exclusive to the gateway
-            for field in ['port']:
+            for field in ['port', 'ports']:
                 if field in kwargs:
                     self._gateway_kwargs[field] = kwargs.pop(field)
 
