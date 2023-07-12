@@ -215,6 +215,9 @@ class WorkerRequestHandler:
                 f'detected changes in: {changed_files}. Refreshing the Executor'
             )
             self._refresh_executor(changed_files)
+            self.logger.info(
+                f'Executor refreshed'
+            )
 
     def _all_batch_queues(self) -> List[BatchQueue]:
         """Returns a list of all batch queue instances
@@ -400,18 +403,30 @@ class WorkerRequestHandler:
                             'The main module file was changed, cannot reload Executor, please restart '
                             'the application'
                         )
-                    importlib.reload(sys_mod_files_modules[file])
+                    self.logger.debug(f'Reloading {file_module}')
+                    try:
+                        importlib.reload(file_module)
+                    except ModuleNotFoundError:
+                        spec = importlib.util.spec_from_file_location(file_module.__name__, file_module.__file__)
+                        spec.loader.exec_module(file_module)
+
+                    self.logger.debug(f'Reloaded {file_module} successfully')
                 else:
                     self.logger.debug(
                         f'Changed file {file} was not previously imported.'
                     )
         except Exception as exc:
             self.logger.error(
-                f' Exception when refreshing Executor when changes detected in {changed_files}'
+                f'Exception when refreshing Executor when changes detected in {changed_files}: {exc}'
             )
             raise exc
 
-        importlib.reload(inspect.getmodule(self._executor.__class__))
+        executor_module = inspect.getmodule(self._executor.__class__)
+        try:
+            importlib.reload(executor_module)
+        except ModuleNotFoundError:
+            spec = importlib.util.spec_from_file_location(executor_module.__name__, executor_module.__file__)
+            spec.loader.exec_module(file_module)
         requests = copy.copy(self._executor.requests)
         old_cls = self._executor.__class__
         new_cls = getattr(importlib.import_module(old_cls.__module__), old_cls.__name__)

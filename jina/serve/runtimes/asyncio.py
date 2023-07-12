@@ -225,7 +225,7 @@ class AsyncNewLoopRuntime:
         elif self.req_handler_cls.__name__ == 'HeaderRequestHandler':
             runtime_cls_name = 'HeadRuntime'
         else:
-            runtime_cls_name = self.server.__class__
+            runtime_cls_name = self.server.__class__.__name__
             gateway_kwargs['is_custom_gateway'] = self.server.__class__ not in [
                 CompositeGateway,
                 GRPCGateway,
