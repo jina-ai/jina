@@ -716,6 +716,23 @@ def test_flow_incompatible_linear(protocol):
             pass
 
 
+@pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
+def test_wrong_schemas(ctxt_manager):
+    class MyExec(Executor):
+        @requests
+        def foo(self, docs: TextDoc, **kwargs) -> DocList[TextDoc]:
+            pass
+
+    if ctxt_manager == 'flow':
+        ctxt_mgr = Flow().add(uses=MyExec)
+    else:
+        ctxt_mgr = Deployment(uses=MyExec)
+
+    with pytest.raises(RuntimeFailToStart):
+        with ctxt_mgr:
+            pass
+
+
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_flow_incompatible_bifurcation(protocol):
     class First(Executor):
