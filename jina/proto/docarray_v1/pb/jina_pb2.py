@@ -17,7 +17,7 @@ from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 import docarray.proto.pb.docarray_pb2 as docarray__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\njina.proto\x12\x04jina\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x0e\x64ocarray.proto\"\x9f\x01\n\nRouteProto\x12\x10\n\x08\x65xecutor\x18\x01 \x01(\t\x12.\n\nstart_time\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12!\n\x06status\x18\x04 \x01(\x0b\x32\x11.jina.StatusProto\"\xc3\x01\n\rJinaInfoProto\x12+\n\x04jina\x18\x01 \x03(\x0b\x32\x1d.jina.JinaInfoProto.JinaEntry\x12+\n\x04\x65nvs\x18\x02 \x03(\x0b\x32\x1d.jina.JinaInfoProto.EnvsEntry\x1a+\n\tJinaEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x1a+\n\tEnvsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\xc6\x01\n\x0bHeaderProto\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12!\n\x06status\x18\x02 \x01(\x0b\x32\x11.jina.StatusProto\x12\x1a\n\rexec_endpoint\x18\x03 \x01(\tH\x00\x88\x01\x01\x12\x1c\n\x0ftarget_executor\x18\x04 \x01(\tH\x01\x88\x01\x01\x12\x14\n\x07timeout\x18\x05 \x01(\rH\x02\x88\x01\x01\x42\x10\n\x0e_exec_endpointB\x12\n\x10_target_executorB\n\n\x08_timeout\"f\n\x0e\x45ndpointsProto\x12\x11\n\tendpoints\x18\x01 \x03(\t\x12\x17\n\x0fwrite_endpoints\x18\x02 \x03(\t\x12(\n\x07schemas\x18\x03 \x01(\x0b\x32\x17.google.protobuf.Struct\"\xf9\x01\n\x0bStatusProto\x12*\n\x04\x63ode\x18\x01 \x01(\x0e\x32\x1c.jina.StatusProto.StatusCode\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x33\n\texception\x18\x03 \x01(\x0b\x32 .jina.StatusProto.ExceptionProto\x1aN\n\x0e\x45xceptionProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x02 \x03(\t\x12\x0e\n\x06stacks\x18\x03 \x03(\t\x12\x10\n\x08\x65xecutor\x18\x04 \x01(\t\"$\n\nStatusCode\x12\x0b\n\x07SUCCESS\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"^\n\rRelatedEntity\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\r\x12\x15\n\x08shard_id\x18\x04 \x01(\rH\x00\x88\x01\x01\x42\x0b\n\t_shard_id\"\xa0\x02\n\x10\x44\x61taRequestProto\x12!\n\x06header\x18\x01 \x01(\x0b\x32\x11.jina.HeaderProto\x12+\n\nparameters\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12 \n\x06routes\x18\x03 \x03(\x0b\x32\x10.jina.RouteProto\x12\x35\n\x04\x64\x61ta\x18\x04 \x01(\x0b\x32\'.jina.DataRequestProto.DataContentProto\x1a\x63\n\x10\x44\x61taContentProto\x12,\n\x04\x64ocs\x18\x01 \x01(\x0b\x32\x1c.docarray.DocumentArrayProtoH\x00\x12\x14\n\ndocs_bytes\x18\x02 \x01(\x0cH\x00\x42\x0b\n\tdocuments\"\x8a\x01\n\x16\x44\x61taRequestProtoWoData\x12!\n\x06header\x18\x01 \x01(\x0b\x32\x11.jina.HeaderProto\x12+\n\nparameters\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12 \n\x06routes\x18\x03 \x03(\x0b\x32\x10.jina.RouteProto\"@\n\x14\x44\x61taRequestListProto\x12(\n\x08requests\x18\x01 \x03(\x0b\x32\x16.jina.DataRequestProto\"\x1b\n\nSnapshotId\x12\r\n\x05value\x18\x01 \x01(\t\"\x1a\n\tRestoreId\x12\r\n\x05value\x18\x01 \x01(\t\"\xef\x01\n\x13SnapshotStatusProto\x12\x1c\n\x02id\x18\x01 \x01(\x0b\x32\x10.jina.SnapshotId\x12\x30\n\x06status\x18\x02 \x01(\x0e\x32 .jina.SnapshotStatusProto.Status\x12\x15\n\rsnapshot_file\x18\x03 \x01(\t\"q\n\x06Status\x12\x15\n\x11STATE_UNSPECIFIED\x10\x00\x12\n\n\x06QUEUED\x10\x01\x12\r\n\tSCHEDULED\x10\x02\x12\x0b\n\x07RUNNING\x10\x03\x12\r\n\tSUCCEEDED\x10\x04\x12\n\n\x06\x46\x41ILED\x10\x05\x12\r\n\tNOT_FOUND\x10\x06\"\xca\x01\n\x1aRestoreSnapshotStatusProto\x12\x1b\n\x02id\x18\x01 \x01(\x0b\x32\x0f.jina.RestoreId\x12\x37\n\x06status\x18\x02 \x01(\x0e\x32\'.jina.RestoreSnapshotStatusProto.Status\"V\n\x06Status\x12\x15\n\x11STATE_UNSPECIFIED\x10\x00\x12\x0b\n\x07RUNNING\x10\x01\x12\r\n\tSUCCEEDED\x10\x02\x12\n\n\x06\x46\x41ILED\x10\x03\x12\r\n\tNOT_FOUND\x10\x06\"/\n\x16RestoreSnapshotCommand\x12\x15\n\rsnapshot_file\x18\x01 \x01(\t2Z\n\x12JinaDataRequestRPC\x12\x44\n\x0cprocess_data\x12\x1a.jina.DataRequestListProto\x1a\x16.jina.DataRequestProto\"\x00\x32\x63\n\x18JinaSingleDataRequestRPC\x12G\n\x13process_single_data\x12\x16.jina.DataRequestProto\x1a\x16.jina.DataRequestProto\"\x00\x32G\n\x07JinaRPC\x12<\n\x04\x43\x61ll\x12\x16.jina.DataRequestProto\x1a\x16.jina.DataRequestProto\"\x00(\x01\x30\x01\x32`\n\x18JinaDiscoverEndpointsRPC\x12\x44\n\x12\x65ndpoint_discovery\x12\x16.google.protobuf.Empty\x1a\x14.jina.EndpointsProto\"\x00\x32N\n\x14JinaGatewayDryRunRPC\x12\x36\n\x07\x64ry_run\x12\x16.google.protobuf.Empty\x1a\x11.jina.StatusProto\"\x00\x32G\n\x0bJinaInfoRPC\x12\x38\n\x07_status\x12\x16.google.protobuf.Empty\x1a\x13.jina.JinaInfoProto\"\x00\x32W\n\x14JinaExecutorSnapshot\x12?\n\x08snapshot\x12\x16.google.protobuf.Empty\x1a\x19.jina.SnapshotStatusProto\"\x00\x32`\n\x1cJinaExecutorSnapshotProgress\x12@\n\x0fsnapshot_status\x12\x10.jina.SnapshotId\x1a\x19.jina.SnapshotStatusProto\"\x00\x32\x62\n\x13JinaExecutorRestore\x12K\n\x07restore\x12\x1c.jina.RestoreSnapshotCommand\x1a .jina.RestoreSnapshotStatusProto\"\x00\x32\x64\n\x1bJinaExecutorRestoreProgress\x12\x45\n\x0erestore_status\x12\x0f.jina.RestoreId\x1a .jina.RestoreSnapshotStatusProto\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\njina.proto\x12\x04jina\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x0e\x64ocarray.proto\"\x9f\x01\n\nRouteProto\x12\x10\n\x08\x65xecutor\x18\x01 \x01(\t\x12.\n\nstart_time\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12!\n\x06status\x18\x04 \x01(\x0b\x32\x11.jina.StatusProto\"\xc3\x01\n\rJinaInfoProto\x12+\n\x04jina\x18\x01 \x03(\x0b\x32\x1d.jina.JinaInfoProto.JinaEntry\x12+\n\x04\x65nvs\x18\x02 \x03(\x0b\x32\x1d.jina.JinaInfoProto.EnvsEntry\x1a+\n\tJinaEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x1a+\n\tEnvsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\xc6\x01\n\x0bHeaderProto\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12!\n\x06status\x18\x02 \x01(\x0b\x32\x11.jina.StatusProto\x12\x1a\n\rexec_endpoint\x18\x03 \x01(\tH\x00\x88\x01\x01\x12\x1c\n\x0ftarget_executor\x18\x04 \x01(\tH\x01\x88\x01\x01\x12\x14\n\x07timeout\x18\x05 \x01(\rH\x02\x88\x01\x01\x42\x10\n\x0e_exec_endpointB\x12\n\x10_target_executorB\n\n\x08_timeout\"f\n\x0e\x45ndpointsProto\x12\x11\n\tendpoints\x18\x01 \x03(\t\x12\x17\n\x0fwrite_endpoints\x18\x02 \x03(\t\x12(\n\x07schemas\x18\x03 \x01(\x0b\x32\x17.google.protobuf.Struct\"\xf9\x01\n\x0bStatusProto\x12*\n\x04\x63ode\x18\x01 \x01(\x0e\x32\x1c.jina.StatusProto.StatusCode\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x33\n\texception\x18\x03 \x01(\x0b\x32 .jina.StatusProto.ExceptionProto\x1aN\n\x0e\x45xceptionProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x02 \x03(\t\x12\x0e\n\x06stacks\x18\x03 \x03(\t\x12\x10\n\x08\x65xecutor\x18\x04 \x01(\t\"$\n\nStatusCode\x12\x0b\n\x07SUCCESS\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"^\n\rRelatedEntity\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\r\x12\x15\n\x08shard_id\x18\x04 \x01(\rH\x00\x88\x01\x01\x42\x0b\n\t_shard_id\"\xa0\x02\n\x10\x44\x61taRequestProto\x12!\n\x06header\x18\x01 \x01(\x0b\x32\x11.jina.HeaderProto\x12+\n\nparameters\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12 \n\x06routes\x18\x03 \x03(\x0b\x32\x10.jina.RouteProto\x12\x35\n\x04\x64\x61ta\x18\x04 \x01(\x0b\x32\'.jina.DataRequestProto.DataContentProto\x1a\x63\n\x10\x44\x61taContentProto\x12,\n\x04\x64ocs\x18\x01 \x01(\x0b\x32\x1c.docarray.DocumentArrayProtoH\x00\x12\x14\n\ndocs_bytes\x18\x02 \x01(\x0cH\x00\x42\x0b\n\tdocuments\"\xb9\x01\n\x1aSingleDocumentRequestProto\x12!\n\x06header\x18\x01 \x01(\x0b\x32\x11.jina.HeaderProto\x12+\n\nparameters\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12 \n\x06routes\x18\x03 \x03(\x0b\x32\x10.jina.RouteProto\x12)\n\x08\x64ocument\x18\x04 \x01(\x0b\x32\x17.docarray.DocumentProto\"\x8a\x01\n\x16\x44\x61taRequestProtoWoData\x12!\n\x06header\x18\x01 \x01(\x0b\x32\x11.jina.HeaderProto\x12+\n\nparameters\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12 \n\x06routes\x18\x03 \x03(\x0b\x32\x10.jina.RouteProto\"@\n\x14\x44\x61taRequestListProto\x12(\n\x08requests\x18\x01 \x03(\x0b\x32\x16.jina.DataRequestProto\"\x1b\n\nSnapshotId\x12\r\n\x05value\x18\x01 \x01(\t\"\x1a\n\tRestoreId\x12\r\n\x05value\x18\x01 \x01(\t\"\xef\x01\n\x13SnapshotStatusProto\x12\x1c\n\x02id\x18\x01 \x01(\x0b\x32\x10.jina.SnapshotId\x12\x30\n\x06status\x18\x02 \x01(\x0e\x32 .jina.SnapshotStatusProto.Status\x12\x15\n\rsnapshot_file\x18\x03 \x01(\t\"q\n\x06Status\x12\x15\n\x11STATE_UNSPECIFIED\x10\x00\x12\n\n\x06QUEUED\x10\x01\x12\r\n\tSCHEDULED\x10\x02\x12\x0b\n\x07RUNNING\x10\x03\x12\r\n\tSUCCEEDED\x10\x04\x12\n\n\x06\x46\x41ILED\x10\x05\x12\r\n\tNOT_FOUND\x10\x06\"\xca\x01\n\x1aRestoreSnapshotStatusProto\x12\x1b\n\x02id\x18\x01 \x01(\x0b\x32\x0f.jina.RestoreId\x12\x37\n\x06status\x18\x02 \x01(\x0e\x32\'.jina.RestoreSnapshotStatusProto.Status\"V\n\x06Status\x12\x15\n\x11STATE_UNSPECIFIED\x10\x00\x12\x0b\n\x07RUNNING\x10\x01\x12\r\n\tSUCCEEDED\x10\x02\x12\n\n\x06\x46\x41ILED\x10\x03\x12\r\n\tNOT_FOUND\x10\x06\"/\n\x16RestoreSnapshotCommand\x12\x15\n\rsnapshot_file\x18\x01 \x01(\t2Z\n\x12JinaDataRequestRPC\x12\x44\n\x0cprocess_data\x12\x1a.jina.DataRequestListProto\x1a\x16.jina.DataRequestProto\"\x00\x32\x63\n\x18JinaSingleDataRequestRPC\x12G\n\x13process_single_data\x12\x16.jina.DataRequestProto\x1a\x16.jina.DataRequestProto\"\x00\x32t\n\x1cJinaSingleDocumentRequestRPC\x12T\n\nstream_doc\x12 .jina.SingleDocumentRequestProto\x1a .jina.SingleDocumentRequestProto\"\x00\x30\x01\x32G\n\x07JinaRPC\x12<\n\x04\x43\x61ll\x12\x16.jina.DataRequestProto\x1a\x16.jina.DataRequestProto\"\x00(\x01\x30\x01\x32`\n\x18JinaDiscoverEndpointsRPC\x12\x44\n\x12\x65ndpoint_discovery\x12\x16.google.protobuf.Empty\x1a\x14.jina.EndpointsProto\"\x00\x32N\n\x14JinaGatewayDryRunRPC\x12\x36\n\x07\x64ry_run\x12\x16.google.protobuf.Empty\x1a\x11.jina.StatusProto\"\x00\x32G\n\x0bJinaInfoRPC\x12\x38\n\x07_status\x12\x16.google.protobuf.Empty\x1a\x13.jina.JinaInfoProto\"\x00\x32W\n\x14JinaExecutorSnapshot\x12?\n\x08snapshot\x12\x16.google.protobuf.Empty\x1a\x19.jina.SnapshotStatusProto\"\x00\x32`\n\x1cJinaExecutorSnapshotProgress\x12@\n\x0fsnapshot_status\x12\x10.jina.SnapshotId\x1a\x19.jina.SnapshotStatusProto\"\x00\x32\x62\n\x13JinaExecutorRestore\x12K\n\x07restore\x12\x1c.jina.RestoreSnapshotCommand\x1a .jina.RestoreSnapshotStatusProto\"\x00\x32\x64\n\x1bJinaExecutorRestoreProgress\x12\x45\n\x0erestore_status\x12\x0f.jina.RestoreId\x1a .jina.RestoreSnapshotStatusProto\"\x00\x62\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'jina_pb2', globals())
@@ -52,42 +52,46 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _DATAREQUESTPROTO._serialized_end=1430
   _DATAREQUESTPROTO_DATACONTENTPROTO._serialized_start=1331
   _DATAREQUESTPROTO_DATACONTENTPROTO._serialized_end=1430
-  _DATAREQUESTPROTOWODATA._serialized_start=1433
-  _DATAREQUESTPROTOWODATA._serialized_end=1571
-  _DATAREQUESTLISTPROTO._serialized_start=1573
-  _DATAREQUESTLISTPROTO._serialized_end=1637
-  _SNAPSHOTID._serialized_start=1639
-  _SNAPSHOTID._serialized_end=1666
-  _RESTOREID._serialized_start=1668
-  _RESTOREID._serialized_end=1694
-  _SNAPSHOTSTATUSPROTO._serialized_start=1697
-  _SNAPSHOTSTATUSPROTO._serialized_end=1936
-  _SNAPSHOTSTATUSPROTO_STATUS._serialized_start=1823
-  _SNAPSHOTSTATUSPROTO_STATUS._serialized_end=1936
-  _RESTORESNAPSHOTSTATUSPROTO._serialized_start=1939
-  _RESTORESNAPSHOTSTATUSPROTO._serialized_end=2141
-  _RESTORESNAPSHOTSTATUSPROTO_STATUS._serialized_start=2055
-  _RESTORESNAPSHOTSTATUSPROTO_STATUS._serialized_end=2141
-  _RESTORESNAPSHOTCOMMAND._serialized_start=2143
-  _RESTORESNAPSHOTCOMMAND._serialized_end=2190
-  _JINADATAREQUESTRPC._serialized_start=2192
-  _JINADATAREQUESTRPC._serialized_end=2282
-  _JINASINGLEDATAREQUESTRPC._serialized_start=2284
-  _JINASINGLEDATAREQUESTRPC._serialized_end=2383
-  _JINARPC._serialized_start=2385
-  _JINARPC._serialized_end=2456
-  _JINADISCOVERENDPOINTSRPC._serialized_start=2458
-  _JINADISCOVERENDPOINTSRPC._serialized_end=2554
-  _JINAGATEWAYDRYRUNRPC._serialized_start=2556
-  _JINAGATEWAYDRYRUNRPC._serialized_end=2634
-  _JINAINFORPC._serialized_start=2636
-  _JINAINFORPC._serialized_end=2707
-  _JINAEXECUTORSNAPSHOT._serialized_start=2709
-  _JINAEXECUTORSNAPSHOT._serialized_end=2796
-  _JINAEXECUTORSNAPSHOTPROGRESS._serialized_start=2798
-  _JINAEXECUTORSNAPSHOTPROGRESS._serialized_end=2894
-  _JINAEXECUTORRESTORE._serialized_start=2896
-  _JINAEXECUTORRESTORE._serialized_end=2994
-  _JINAEXECUTORRESTOREPROGRESS._serialized_start=2996
-  _JINAEXECUTORRESTOREPROGRESS._serialized_end=3096
+  _SINGLEDOCUMENTREQUESTPROTO._serialized_start=1433
+  _SINGLEDOCUMENTREQUESTPROTO._serialized_end=1618
+  _DATAREQUESTPROTOWODATA._serialized_start=1621
+  _DATAREQUESTPROTOWODATA._serialized_end=1759
+  _DATAREQUESTLISTPROTO._serialized_start=1761
+  _DATAREQUESTLISTPROTO._serialized_end=1825
+  _SNAPSHOTID._serialized_start=1827
+  _SNAPSHOTID._serialized_end=1854
+  _RESTOREID._serialized_start=1856
+  _RESTOREID._serialized_end=1882
+  _SNAPSHOTSTATUSPROTO._serialized_start=1885
+  _SNAPSHOTSTATUSPROTO._serialized_end=2124
+  _SNAPSHOTSTATUSPROTO_STATUS._serialized_start=2011
+  _SNAPSHOTSTATUSPROTO_STATUS._serialized_end=2124
+  _RESTORESNAPSHOTSTATUSPROTO._serialized_start=2127
+  _RESTORESNAPSHOTSTATUSPROTO._serialized_end=2329
+  _RESTORESNAPSHOTSTATUSPROTO_STATUS._serialized_start=2243
+  _RESTORESNAPSHOTSTATUSPROTO_STATUS._serialized_end=2329
+  _RESTORESNAPSHOTCOMMAND._serialized_start=2331
+  _RESTORESNAPSHOTCOMMAND._serialized_end=2378
+  _JINADATAREQUESTRPC._serialized_start=2380
+  _JINADATAREQUESTRPC._serialized_end=2470
+  _JINASINGLEDATAREQUESTRPC._serialized_start=2472
+  _JINASINGLEDATAREQUESTRPC._serialized_end=2571
+  _JINASINGLEDOCUMENTREQUESTRPC._serialized_start=2573
+  _JINASINGLEDOCUMENTREQUESTRPC._serialized_end=2689
+  _JINARPC._serialized_start=2691
+  _JINARPC._serialized_end=2762
+  _JINADISCOVERENDPOINTSRPC._serialized_start=2764
+  _JINADISCOVERENDPOINTSRPC._serialized_end=2860
+  _JINAGATEWAYDRYRUNRPC._serialized_start=2862
+  _JINAGATEWAYDRYRUNRPC._serialized_end=2940
+  _JINAINFORPC._serialized_start=2942
+  _JINAINFORPC._serialized_end=3013
+  _JINAEXECUTORSNAPSHOT._serialized_start=3015
+  _JINAEXECUTORSNAPSHOT._serialized_end=3102
+  _JINAEXECUTORSNAPSHOTPROGRESS._serialized_start=3104
+  _JINAEXECUTORSNAPSHOTPROGRESS._serialized_end=3200
+  _JINAEXECUTORRESTORE._serialized_start=3202
+  _JINAEXECUTORRESTORE._serialized_end=3300
+  _JINAEXECUTORRESTOREPROGRESS._serialized_start=3302
+  _JINAEXECUTORRESTOREPROGRESS._serialized_end=3402
 # @@protoc_insertion_point(module_scope)
