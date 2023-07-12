@@ -26,6 +26,7 @@ from jina.excepts import BadConfigSource, RuntimeTerminated
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2
+from jina.proto.jina_pb2 import SingleDocumentRequestProto
 from jina.serve.executors import BaseExecutor
 from jina.serve.instrumentation import MetricsTimer
 from jina.serve.runtimes.worker.batch_queue import BatchQueue
@@ -854,8 +855,7 @@ class WorkerRequestHandler:
 
         :param request: the data request to process
         :param context: grpc context
-        :param is_generator: whether the request should be handled with streaming
-        :returns: the response request
+        :yields: the response request
         """
         request_endpoint = self._executor.requests.get(
             request.header.exec_endpoint
@@ -986,69 +986,6 @@ class WorkerRequestHandler:
                     result = await self.handle(
                         requests=requests, tracing_context=tracing_context
                     )
-
-                if self._successful_requests_metrics:
-                    self._successful_requests_metrics.inc()
-                if self._successful_requests_counter:
-                    self._successful_requests_counter.add(
-                        1, attributes=self._metric_attributes
-                    )
-                return result
-            except (RuntimeError, Exception) as ex:
-                self.logger.error(
-                    f'{ex!r}'
-                    + f'\n add "--quiet-error" to suppress the exception details'
-                    if not self.args.quiet_error
-                    else '',
-                    exc_info=not self.args.quiet_error,
-                )
-
-                requests[0].add_exception(ex, self._executor)
-                if context is not None:
-                    context.set_trailing_metadata((('is-error', 'true'),))
-                if self._failed_requests_metrics:
-                    self._failed_requests_metrics.inc()
-                if self._failed_requests_counter:
-                    self._failed_requests_counter.add(
-                        1, attributes=self._metric_attributes
-                    )
-
-                if (
-                    self.args.exit_on_exceptions
-                    and type(ex).__name__ in self.args.exit_on_exceptions
-                ):
-                    self.logger.info('Exiting because of "--exit-on-exceptions".')
-                    raise RuntimeTerminated
-
-                return requests[0]
-
-    async def stream_single_document(
-        self, request: SingleDocumentRequestProto, context
-    ) -> SingleDocumentRequestProto:
-        """
-        Process the received request document and yield the resulting documents
-
-        :param request: the document request to process
-        :param context: grpc context
-        :yields: the response documents
-        """
-        with MetricsTimer(
-            self._summary, self._receiving_request_seconds, self._metric_attributes
-        ):
-            try:
-                if self.logger.debug_enabled:
-                    self._log_data_request(request)
-
-                if context is not None:
-                    tracing_context = self._extract_tracing_context(
-                        context.invocation_metadata()
-                    )
-                else:
-                    tracing_context = None
-
-                result = await self.handle_generator(
-                    requests=requests, tracing_context=tracing_context
-                )
 
                 if self._successful_requests_metrics:
                     self._successful_requests_metrics.inc()
