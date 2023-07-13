@@ -7,7 +7,7 @@ if [[ $1 == "local-only" ]]; then
   cp -r ../jina/proto .
   docker run --rm \
     -v $(pwd)/proto:/out \
-    -v $(pwd)/../jina/proto/docarray_v1:/protos \
+    -v $(pwd)/../jina/proto/docarray_v2:/protos \
     ghcr.io/jina-ai/protoc-gen-doc --doc_opt=markdown,docs.md
 
   make dirhtml

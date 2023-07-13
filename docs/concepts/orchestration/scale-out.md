@@ -477,16 +477,18 @@ The following example demonstrates the different behaviors when setting `replica
 ````{tab} Deployment
 ```{code-block} python
 ---
-emphasize-lines: 12
+emphasize-lines: 14
 ---
-from jina import Deployment, Document, Executor, requests
+from jina import Deployment, Executor, requests
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class MyExec(Executor):
 
     @requests
-    def foo(self, docs, **kwargs):
-        print(f'inside: {docs.texts}')
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        print(f'inside: {docs.text}')
 
 
 dep = (
@@ -495,23 +497,25 @@ dep = (
 )
 
 with dep:
-    r = dep.post('/', Document(text='hello'))
-    print(f'return: {r.texts}')
+    r = dep.post('/', TextDoc(text='hello'), return_type=DocList[TextDoc])
+    print(f'return: {r.text}')
 ```
 ````
 ````{tab} Flow
 ```{code-block} python
 ---
-emphasize-lines: 13
+emphasize-lines: 15
 ---
-from jina import Flow, Document, Executor, requests
+from jina import Flow, Executor, requests
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class MyExec(Executor):
 
     @requests
-    def foo(self, docs, **kwargs):
-        print(f'inside: {docs.texts}')
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        print(f'inside: {docs.text}')
 
 
 f = (
@@ -521,8 +525,8 @@ f = (
 )
 
 with f:
-    r = f.post('/', Document(text='hello'))
-    print(f'return: {r.texts}')
+    r = dep.post('/', TextDoc(text='hello'), return_type=DocList[TextDoc])
+    print(f'return: {r.text}')
 ```
 ````
 

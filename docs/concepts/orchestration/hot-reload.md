@@ -31,13 +31,16 @@ Load and expose the Orchestration:
 ```python
 import os
 from jina import Deployment, Executor, requests
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class ConcatenateTextExecutor(Executor):
     @requests
-    def foo(self, docs, **kwargs):
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         for doc in docs:
             doc.text += text_to_concat
+        return docs
 
 
 os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
@@ -52,11 +55,13 @@ with dep:
 You can see that the Orchestration is running and serving:
 
 ```python
-from jina import Client, DocumentArray
+from jina import Client
+from docarray import DocList
+from docarray.documents import TextDoc
 
 c = Client(port=12345)
 
-print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
+print(c.post(on='/', inputs=DocList[TextDoc](TextDoc()), return_type=DocList[TextDoc])[0].text)
 ```
 
 ```text
@@ -84,11 +89,13 @@ INFO   Deployment@28301 change in Deployment YAML deployment.yml observed, resta
 After this, the behavior of the Deployment's Executor will change:
 
 ```python
-from jina import Client, DocumentArray
+from jina import Client
+from docarray import DocList
+from docarray.documents import TextDoc
 
 c = Client(port=12345)
 
-print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
+print(c.post(on='/', inputs=DocList[TextDoc](TextDoc()), return_type=DocList[TextDoc])[0].text)
 ```
 
 ```text
@@ -112,14 +119,17 @@ Load and expose the Orchestration:
 
 ```python
 import os
-from jina import Flow, Executor, requests
+from jina import Deployment, Executor, requests
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class ConcatenateTextExecutor(Executor):
     @requests
-    def foo(self, docs, **kwargs):
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         for doc in docs:
-            doc.text += 'add text '
+            doc.text += text_to_concat
+        return docs
 
 
 os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
@@ -134,11 +144,13 @@ with f:
 You can see that the Flow is running and serving:
 
 ```python
-from jina import Client, DocumentArray
+from jina import Client
+from docarray import DocList
+from docarray.documents import TextDoc
 
 c = Client(port=12345)
 
-print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
+print(c.post(on='/', inputs=DocList[TextDoc](TextDoc()), return_type=DocList[TextDoc])[0].text)
 ```
 
 ```text
@@ -168,11 +180,13 @@ INFO   Flow@28301 change in Flow YAML flow.yml observed, restarting Flow
 After this, the Flow will have two Executors with the new topology:
 
 ```python
-from jina import Client, DocumentArray
+from jina import Client
+from docarray import DocList
+from docarray.documents import TextDoc
 
 c = Client(port=12345)
 
-print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
+print(c.post(on='/', inputs=DocList[TextDoc](TextDoc()), return_type=DocList[TextDoc])[0].text)
 ```
 
 ```text
