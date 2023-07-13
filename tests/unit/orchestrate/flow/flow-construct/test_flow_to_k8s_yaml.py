@@ -111,10 +111,8 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port, gateway_replicas):
     ]
     assert gateway_args[0] == 'gateway'
     assert '--port' in gateway_args
-    assert gateway_args[gateway_args.index('--port') + 1] == (
-        str(flow_port) if flow_port else str(GrpcConnectionPool.K8S_PORT)
-    )
-    assert gateway_args[gateway_args.index('--port') + 1] == str(flow.port)
+    assert gateway_args[gateway_args.index('--port') + 1] == str(GrpcConnectionPool.K8S_PORT)
+    assert gateway_args[gateway_args.index('--port') + 1] == str(GrpcConnectionPool.K8S_PORT)
     assert '--k8s-namespace' in gateway_args
     assert gateway_args[gateway_args.index('--k8s-namespace') + 1] == namespace
     assert '--graph-description' in gateway_args

@@ -111,7 +111,7 @@ def test_parse_args(
         else:
             assert (
                     deployment_config.deployment_args['head_deployment'].uses_before_address
-                    == '127.0.0.1:8081'
+                    == '127.0.0.1:8078'
             )
         if uses_after is None:
             assert (
@@ -121,7 +121,7 @@ def test_parse_args(
         else:
             assert (
                     deployment_config.deployment_args['head_deployment'].uses_after_address
-                    == '127.0.0.1:8082'
+                    == '127.0.0.1:8079'
             )
         candidate_connection_list = {
             str(i): f'executor-{i}.default-namespace.svc:8080' for i in range(shards)
@@ -397,8 +397,8 @@ def test_k8s_yaml_gateway(monkeypatch, deployments_addresses, custom_gateway, po
         actual_port = spec_service['ports'][0]
         assert actual_port['name'] == 'port'
         assert actual_port['protocol'] == 'TCP'
-        assert actual_port['port'] == int(expected_port)
-        assert actual_port['targetPort'] == int(expected_port)
+        assert actual_port['port'] == int(GRPCConnectionPool.K8S_PORT) + i
+        assert actual_port['targetPort'] == int(GRPCConnectionPool.K8S_PORT) + i
         assert spec_service['selector'] == {'app': 'gateway'}
 
         assert spec_service['selector'] == {'app': 'gateway'}
@@ -445,7 +445,7 @@ def test_k8s_yaml_gateway(monkeypatch, deployments_addresses, custom_gateway, po
     assert args[args.index('--k8s-namespace') + 1] == 'default-namespace'
     assert '--port' in args
     for i, _port in enumerate(port):
-        assert args[args.index('--port') + i + 1] == _port
+        assert args[args.index('--port') + i + 1] == str(GRPCConnectionPool.K8S_PORT + i)
     assert '--env' not in args
     if deployments_addresses is not None:
         assert '--deployments-addresses' in args
@@ -708,7 +708,7 @@ def test_k8s_yaml_regular_deployment(
                     uses_before_runtime_container_args[
                         uses_before_runtime_container_args.index('--port') + 1
                         ]
-                    == '8081'
+                    == '8078'
             )
             assert '--env' not in uses_before_runtime_container_args
             assert '--connection-list' not in uses_before_runtime_container_args
@@ -745,7 +745,7 @@ def test_k8s_yaml_regular_deployment(
                     uses_after_runtime_container_args[
                         uses_after_runtime_container_args.index('--port') + 1
                         ]
-                    == '8082'
+                    == '8079'
             )
             assert '--env' not in uses_after_runtime_container_args
             assert '--connection-list' not in uses_after_runtime_container_args

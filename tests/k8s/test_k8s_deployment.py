@@ -197,3 +197,82 @@ async def test_deployment_serve_k8s(
     except Exception as exc:
         logger.error(f' Exception raised {exc}')
         raise exc
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['test-executor', 'jinaai/jina']],
+    indirect=True,
+)
+async def test_deployment_with_multiple_protocols(
+        logger, docker_images, tmpdir, k8s_cluster
+):
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    namespace = f'test-deployment-serve-k8s-multiprotocol'
+    try:
+
+        dep = Deployment(
+            name='test-executor',
+            uses=f'docker://{docker_images[0]}',
+            shards=shards,
+            protocol=['gprc', 'http'],
+        )
+
+        dump_path = os.path.join(
+            str(tmpdir), f'test-deployment-serve-k8s-multiprotocol'
+        )
+        dep.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+        deployment_replicas_expected = {'test-executor': 1}
+        await create_executor_deployment_and_wait_ready(
+            dump_path,
+            namespace=namespace,
+            api_client=api_client,
+            app_client=app_client,
+            core_client=core_client,
+            deployment_replicas_expected=deployment_replicas_expected,
+            logger=logger,
+        )
+
+        dump_path = os.path.join(str(tmpdir), 'k8s-multiprotocol-deployment')
+        namespace = 'flow-multiprotocol-gateway-builtin'
+
+        gateway_pod_name = (
+            core_client.list_namespaced_pod(
+                namespace=namespace, label_selector='app=gateway'
+            )
+                .items[0]
+                .metadata.name
+        )
+
+        # test portforwarding the gateway pod and service using http
+        forward_args = [
+            [gateway_pod_name, http_port, http_port, namespace],
+            ['service/gateway', http_port, http_port, namespace],
+        ]
+        for forward in forward_args:
+            with shell_portforward(k8s_cluster._cluster.kubectl_path, *forward):
+                import requests
+
+                resp = requests.get(f'http://localhost:{http_port}').json()
+                assert resp == {}
+        # test portforwarding the gateway pod and service using grpc
+        forward_args = [
+            [gateway_pod_name, grpc_port, grpc_port, namespace],
+            ['service/gateway-1-grpc', grpc_port, grpc_port, namespace],
+        ]
+        for forward in forward_args:
+            with shell_portforward(k8s_cluster._cluster.kubectl_path, *forward):
+                grpc_client = Client(protocol='grpc', port=grpc_port, asyncio=True)
+                async for _ in grpc_client.post('/', inputs=DocumentArray.empty(5)):
+                    pass
+                assert BaseServer.is_ready(f'localhost:{grpc_port}')
+    except Exception as exc:
+        logger.error(f' Exception raised {exc}')
+        raise exc
