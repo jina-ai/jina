@@ -1150,3 +1150,26 @@ def test_issue_dict_docs_http():
         for doc in res:
             assert doc.aux.a == 'b'
             assert doc.tags == {'a': {'b': 1}}
+
+def test_issue_with_monitoring():
+
+    class InputDocMonitor(BaseDoc):
+        text: str
+
+    class OutputDocMonitor(BaseDoc):
+        price: int
+
+    class MonitorExecTest(Executor):
+        @requests
+        def foo(self, docs: DocList[InputDocMonitor], **kwargs) -> DocList[OutputDocMonitor]:
+            ret = DocList[OutputDocMonitor]()
+            for doc in docs:
+                ret.append(OutputDocMonitor(price=2))
+            return ret
+
+
+    f = Flow(monitoring=True).add(uses=MonitorExecTest, monitoring=True)
+    with f:
+        ret = f.post(on='/', inputs=DocList[InputDocMonitor]([InputDocMonitor(text='2')]), return_type=DocList[OutputDocMonitor])
+        assert len(ret) == 1
+        assert ret[0].price == 2
