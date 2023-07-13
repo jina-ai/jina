@@ -453,13 +453,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         super().__init__()
         self._gateway_kwargs = {}
         self._include_gateway = include_gateway
-        popped_kwargs = {}
         if self._include_gateway:
             # arguments exclusive to the gateway
             for field in ['port', 'ports']:
                 if field in kwargs:
-                    popped_kwargs[field] = kwargs.pop(field)
-                    self._gateway_kwargs[field] = popped_kwargs[field]
+                    self._gateway_kwargs[field] = kwargs.pop(field)
 
             # arguments common to both gateway and the Executor
             for field in ['host', 'log_config']:
@@ -470,9 +468,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         if args is None:
             args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
         self.args = args
-        self._original_args = copy.deepcopy(self.args)
-        for p_kwarg_k, p_kwarg_v in popped_kwargs.items():
-            setattr(self._original_args, p_kwarg_k, p_kwarg_v)
         self._gateway_load_balancer = False
         if self._include_gateway and ProtocolType.HTTP in self.args.protocol:
             self._gateway_load_balancer = True
@@ -1897,17 +1892,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             f'Docker Compose file has been created under [b]{output_path}[/b]. You can use it by running [b]{command}[/b]'
         )
 
-    def _to_kubernetes_yaml_without_gateway(self, *args, **kwargs):
-        return Deployment(
-            args=self._original_args, needs=None, include_gateway=False
-        )._to_kubernetes_yaml(*args, **kwargs)
-
     def _to_kubernetes_yaml(
         self,
         output_base_path: str,
         k8s_namespace: Optional[str] = None,
         k8s_deployments_addresses: Optional[Dict] = None,
-        k8s_port: Optional[int] = GrpcConnectionPool.K8S_PORT,
     ):
         import yaml
 
@@ -1951,7 +1940,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     for i in range(len(self.args.protocol))
                 ]
         k8s_deployment = K8sDeploymentConfig(
-            args=self.args, k8s_namespace=k8s_namespace, k8s_port=k8s_port
+            args=self.args, k8s_namespace=k8s_namespace
         )
 
         configs = k8s_deployment.to_kubernetes_yaml()
@@ -1980,13 +1969,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
         """
         k8s_namespace = k8s_namespace or 'default'
-        k8s_port = self.port[0] if isinstance(self.port, list) else self.port
         # the Deployment conversion needs to be done in a version without Gateway included. Deployment does quite some changes to its args
         # to let some of the args (like ports) go to the gateway locally. In Kubernetes, we want no gateway
-        self._to_kubernetes_yaml_without_gateway(
+        self._to_kubernetes_yaml(
             output_base_path=output_base_path,
             k8s_namespace=k8s_namespace,
-            k8s_port=GrpcConnectionPool.K8S_PORT,
         )
         self.logger.info(
             f'K8s YAML files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'
