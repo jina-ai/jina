@@ -1951,7 +1951,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     for i in range(len(self.args.protocol))
                 ]
         k8s_deployment = K8sDeploymentConfig(
-            args=self.args, k8s_namespace=k8s_namespace, k8s_port=k8s_port
+            args=self.args, k8s_namespace=k8s_namespace
         )
 
         configs = k8s_deployment.to_kubernetes_yaml()

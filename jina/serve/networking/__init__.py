@@ -44,8 +44,8 @@ class GrpcConnectionPool:
     :param compression: The compression algorithm to be used by this GRPCConnectionPool when sending data to GRPC
     """
 
-    K8S_PORT_USES_AFTER = 8082
-    K8S_PORT_USES_BEFORE = 8081
+    K8S_PORT_USES_AFTER = 8079
+    K8S_PORT_USES_BEFORE = 8078
     K8S_PORT = 8080
     K8S_PORT_MONITORING = 9090
 
