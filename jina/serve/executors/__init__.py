@@ -188,9 +188,10 @@ class _FunctionWithSchema(NamedTuple):
                         f'The {faulty_schema} schema for {fn.__name__}: {request_schema} is not a DocList. Please make sure that your endpoints used DocList for request and response schema'
                     )
             else:
-                if not issubclass(request_schema, BaseDoc) or not (issubclass(
-                    response_schema, BaseDoc
-                ) or issubclass(response_schema, BaseDoc)): # response_schema may be a DocList because by default we use LegacyDocument, and for generators we ignore response
+                if not issubclass(request_schema, BaseDoc) or not (
+                    issubclass(response_schema, BaseDoc)
+                    or issubclass(response_schema, BaseDoc)
+                ):  # response_schema may be a DocList because by default we use LegacyDocument, and for generators we ignore response
                     faulty_schema = (
                         'request_schema'
                         if not issubclass(request_schema, BaseDoc)
