@@ -39,12 +39,12 @@ opentelemetry-api>=1.12.0:  core
 opentelemetry-instrumentation-grpc>=0.35b0:  core 
 uvloop:                     perf,standard,devel
 prometheus_client>=0.12.0:  perf,standard,devel
-opentelemetry-sdk>=1.14.0:  perf,standard,devel
-opentelemetry-exporter-otlp>=1.12.0:  perf,standard,devel
+opentelemetry-sdk>=1.14.0,<1.19.0:  perf,standard,devel
+opentelemetry-exporter-otlp>=1.12.0,<1.19.0:  perf,standard,devel
 opentelemetry-exporter-prometheus>=1.12.0rc1:  perf,standard,devel
-opentelemetry-instrumentation-aiohttp-client>=0.33b0:    perf,standard,devel
-opentelemetry-instrumentation-fastapi>=0.33b0: perf,standard,devel
-opentelemetry-exporter-otlp-proto-grpc>=1.13.0: perf,standrad,devel
+opentelemetry-instrumentation-aiohttp-client>=0.33b0,<0.40b0:    perf,standard,devel
+opentelemetry-instrumentation-fastapi>=0.33b0,<0.40b0: perf,standard,devel
+opentelemetry-exporter-otlp-proto-grpc>=1.13.0,<1.19.0: perf,standrad,devel
 fastapi>=0.76.0:            standard,devel
 uvicorn[standard]:          standard,devel
 docker:                     standard,devel
