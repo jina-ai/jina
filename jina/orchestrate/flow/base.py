@@ -1870,6 +1870,7 @@ class Flow(
                             results[_deployment_name] = 'done'
                 except Exception as ex:
                     results[_deployment_name] = repr(ex)
+                    raise ex
 
             def _wait_ready(_deployment_name, _deployment):
                 try:
@@ -1905,6 +1906,7 @@ class Flow(
                     while True:
                         num_done = 0
                         pendings = []
+                        one_failing = False
                         with results_lock:
                             for _k, _v in results.items():
                                 sys.stdout.flush()
@@ -1913,11 +1915,17 @@ class Flow(
                                 elif _v == 'done':
                                     num_done += 1
                                 else:
+                                    one_failing = True
                                     if 'JINA_EARLY_STOP' in os.environ:
                                         self.logger.error(
                                             f'Flow is aborted due to {_k} {_v}.'
                                         )
                                         os._exit(1)
+                                    else:
+                                        break
+
+                        if one_failing:
+                            break
 
                         pending_str = ' '.join(pendings)
 
@@ -1934,7 +1942,17 @@ class Flow(
                 wait_for_ready_coros.append(_async_wait_ready(k, v))
 
             async def _async_wait_all():
-                await asyncio.gather(*wait_for_ready_coros)
+                wrapped_tasks = [asyncio.create_task(coro) for coro in wait_for_ready_coros]
+                done, pending = await asyncio.wait(wrapped_tasks, return_when=asyncio.FIRST_EXCEPTION)
+                try:
+                    for task in done:
+                        try:
+                            task.result()  # This raises an exception if the task had an exception
+                        except Exception as e:
+                            self.logger.error(f"An exception occurred: {str(e)}")
+                finally:
+                    for task in pending:
+                        task.cancel()
 
             # kick off spinner thread
             polling_status_thread = threading.Thread(
@@ -1966,6 +1984,7 @@ class Flow(
             if not running_in_event_loop:
                 asyncio.get_event_loop().run_until_complete(_async_wait_all())
             else:
+                #TODO: the same logic that one fails all other fail should be done also here
                 for k, v in self:
                     wait_ready_threads.append(
                         threading.Thread(target=_wait_ready, args=(k, v), daemon=True)

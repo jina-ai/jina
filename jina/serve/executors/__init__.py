@@ -120,7 +120,8 @@ class _FunctionWithSchema(NamedTuple):
 
         # if it's not a generator function, infer the type annotation from the docs parameter
         # otherwise, infer from the doc parameter (since generator endpoints expect only 1 document as input)
-        if not getattr(fn, '__is_generator__', False):
+        is_generator = getattr(fn, '__is_generator__', False)
+        if not is_generator:
             docs_annotation = fn.__annotations__.get('docs', None)
         else:
             docs_annotation = fn.__annotations__.get('doc', None)
@@ -168,19 +169,32 @@ class _FunctionWithSchema(NamedTuple):
         else:
             request_schema = docs_annotation or DocumentArray[LegacyDocument]
             response_schema = return_annotation or DocumentArray[LegacyDocument]
-            from docarray import DocList
+            from docarray import DocList, BaseDoc
 
-            if not issubclass(request_schema, DocList) or not issubclass(
-                response_schema, DocList
-            ):
-                faulty_schema = (
-                    'request_schema'
-                    if not issubclass(request_schema, DocList)
-                    else 'response_schema'
-                )
-                raise Exception(
-                    f'The {faulty_schema} schema for {fn.__name__}: {request_schema} is not a DocList. Please make sure that your endpoints used DocList for request and response schema'
-                )
+            if not is_generator:
+                if not issubclass(request_schema, DocList) or not issubclass(
+                    response_schema, DocList
+                ):
+                    faulty_schema = (
+                        'request_schema'
+                        if not issubclass(request_schema, DocList)
+                        else 'response_schema'
+                    )
+                    raise Exception(
+                        f'The {faulty_schema} schema for {fn.__name__}: {request_schema} is not a DocList. Please make sure that your endpoints used DocList for request and response schema'
+                    )
+            else:
+                if not issubclass(request_schema, BaseDoc) or not issubclass(
+                        response_schema, BaseDoc
+                ):
+                    faulty_schema = (
+                        'request_schema'
+                        if not issubclass(request_schema, BaseDoc)
+                        else 'response_schema'
+                    )
+                    raise Exception(
+                        f'The {faulty_schema} schema for {fn.__name__}: {request_schema} is not a DocList. Please make sure that your streaming endpoints used BaseDoc for request and response schema'
+                    )
 
         return _FunctionWithSchema(fn, request_schema, response_schema)
 
