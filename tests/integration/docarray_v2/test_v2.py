@@ -717,6 +717,26 @@ def test_flow_incompatible_linear(protocol):
 
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+@pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
+def test_wrong_schemas(ctxt_manager, protocol):
+    if ctxt_manager == 'deployment' and protocol == 'websocket':
+        return
+    with pytest.raises(RuntimeError):
+        class MyExec(Executor):
+            @requests
+            def foo(self, docs: TextDoc, **kwargs) -> DocList[TextDoc]:
+                pass
+
+    if ctxt_manager == 'flow':
+        ctxt_mgr = Flow(protocol=protocol).add(uses='tests.integration.docarray_v2.wrong_schema_executor.WrongSchemaExec')
+    else:
+        ctxt_mgr = Deployment(protocol=protocol, uses='tests.integration.docarray_v2.wrong_schema_executor.WrongSchemaExec')
+
+    with pytest.raises(RuntimeFailToStart):
+        with ctxt_mgr:
+            pass
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_flow_incompatible_bifurcation(protocol):
     class First(Executor):
         @requests
