@@ -111,7 +111,7 @@ def test_parse_args(
         else:
             assert (
                     deployment_config.deployment_args['head_deployment'].uses_before_address
-                    == '127.0.0.1:8081'
+                    == '127.0.0.1:8078'
             )
         if uses_after is None:
             assert (
@@ -121,7 +121,7 @@ def test_parse_args(
         else:
             assert (
                     deployment_config.deployment_args['head_deployment'].uses_after_address
-                    == '127.0.0.1:8082'
+                    == '127.0.0.1:8079'
             )
         candidate_connection_list = {
             str(i): f'executor-{i}.default-namespace.svc:8080' for i in range(shards)
@@ -708,7 +708,7 @@ def test_k8s_yaml_regular_deployment(
                     uses_before_runtime_container_args[
                         uses_before_runtime_container_args.index('--port') + 1
                         ]
-                    == '8081'
+                    == '8078'
             )
             assert '--env' not in uses_before_runtime_container_args
             assert '--connection-list' not in uses_before_runtime_container_args
@@ -745,7 +745,7 @@ def test_k8s_yaml_regular_deployment(
                     uses_after_runtime_container_args[
                         uses_after_runtime_container_args.index('--port') + 1
                         ]
-                    == '8082'
+                    == '8079'
             )
             assert '--env' not in uses_after_runtime_container_args
             assert '--connection-list' not in uses_after_runtime_container_args

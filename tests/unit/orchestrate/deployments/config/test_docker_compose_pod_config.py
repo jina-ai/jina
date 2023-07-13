@@ -109,7 +109,7 @@ def test_parse_args(
         else:
             assert (
                 deployment_config.services_args['head_service'].uses_before_address
-                == 'executor-uses-before:8081'
+                == 'executor-uses-before:8078'
             )
         if uses_after is None:
             assert (
@@ -119,11 +119,11 @@ def test_parse_args(
         else:
             assert (
                 deployment_config.services_args['head_service'].uses_after_address
-                == 'executor-uses-after:8081'
+                == 'executor-uses-after:8078'
             )
         if replicas == 1:
             candidate_connection_list = {
-                str(i): [f'executor-{i}:8081'] for i in range(shards)
+                str(i): [f'executor-{i}:8078'] for i in range(shards)
             }
         else:
             candidate_connection_list = {}
@@ -131,16 +131,16 @@ def test_parse_args(
                 candidate_connection_list[str(shard_id)] = []
                 for replica in range(replicas):  # TODO
                     candidate_connection_list[str(shard_id)].append(
-                        f'executor-{shard_id}-rep-{replica}:8081'
+                        f'executor-{shard_id}-rep-{replica}:8078'
                     )
 
     else:
         if replicas == 1:
-            candidate_connection_list = {'0': [f'executor:8081']}
+            candidate_connection_list = {'0': [f'executor:8078']}
         else:
             candidate_connection_list = {'0': []}
             for replica in range(replicas):  # TODO
-                candidate_connection_list['0'].append(f'executor-rep-{replica}:8081')
+                candidate_connection_list['0'].append(f'executor-rep-{replica}:8078')
 
     if shards > 1:
         assert deployment_config.services_args[
@@ -260,13 +260,13 @@ def test_parse_args_custom_executor(shards: int, replicas: int):
         assert deployment_config.services_args['head_service'].uses_before is None
         assert (
             deployment_config.services_args['head_service'].uses_before_address
-            == 'executor-uses-before:8081'
+            == 'executor-uses-before:8078'
         )
         assert deployment_config.services_args['head_service'].uses is None
         assert deployment_config.services_args['head_service'].uses_after is None
         assert (
             deployment_config.services_args['head_service'].uses_after_address
-            == f'executor-uses-after:8081'
+            == f'executor-uses-after:8078'
         )
 
         assert deployment_config.services_args['head_service'].uses_before is None
@@ -366,7 +366,7 @@ def test_worker_services(name: str, shards: str):
         assert deploy.shard_id == i
 
 
-@pytest.mark.parametrize('deployments_addresses', [None, {'1': 'executor-head:8081'}])
+@pytest.mark.parametrize('deployments_addresses', [None, {'1': 'executor-head:8078'}])
 @pytest.mark.parametrize(
     'port,protocol',
     [
@@ -540,7 +540,7 @@ def test_docker_compose_yaml_regular_deployment(
         assert '--name' in head_args
         assert head_args[head_args.index('--name') + 1] == 'executor/head'
         assert '--port' in head_args
-        assert head_args[head_args.index('--port') + 1] == '8081'
+        assert head_args[head_args.index('--port') + 1] == '8078'
         assert '--env' not in head_args
         assert '--pod-role' in head_args
         assert head_args[head_args.index('--pod-role') + 1] == 'HEAD'
@@ -550,7 +550,7 @@ def test_docker_compose_yaml_regular_deployment(
         if shards > 1:
             if replicas == 1:
                 candidate_connection_list = {
-                    str(shard_id): [f'executor-{shard_id}:8081']
+                    str(shard_id): [f'executor-{shard_id}:8078']
                     for shard_id in range(shards)
                 }
             else:
@@ -559,17 +559,17 @@ def test_docker_compose_yaml_regular_deployment(
                     candidate_connection_list[str(shard_id)] = []
                     for replica in range(replicas):
                         candidate_connection_list[str(shard_id)].append(
-                            f'executor-{shard_id}-rep-{replica}:8081'
+                            f'executor-{shard_id}-rep-{replica}:8078'
                         )
         else:
             if shards == 1:
                 if replicas == 1:
-                    candidate_connection_list = {'0': [f'executor:8081']}
+                    candidate_connection_list = {'0': [f'executor:8078']}
                 else:
                     candidate_connection_list = {'0': []}
                     for replica in range(replicas):
                         candidate_connection_list['0'].append(
-                            f'executor-rep-{replica}:8081'
+                            f'executor-rep-{replica}:8078'
                         )
 
         assert connection_list_string == json.dumps(candidate_connection_list)
@@ -598,7 +598,7 @@ def test_docker_compose_yaml_regular_deployment(
                 == 'executor/uses-before'
             )
             assert '--port' in uses_before_args
-            assert uses_before_args[uses_before_args.index('--port') + 1] == '8081'
+            assert uses_before_args[uses_before_args.index('--port') + 1] == '8078'
             assert '--connection-list' not in uses_before_args
             assert '--polling' not in uses_before_args
 
@@ -622,7 +622,7 @@ def test_docker_compose_yaml_regular_deployment(
                 == 'executor/uses-after'
             )
             assert '--port' in uses_after_args
-            assert uses_after_args[uses_after_args.index('--port') + 1] == '8081'
+            assert uses_after_args[uses_after_args.index('--port') + 1] == '8078'
             assert '--connection-list' not in uses_after_args
             assert '--polling' not in uses_after_args
 
@@ -654,7 +654,7 @@ def test_docker_compose_yaml_regular_deployment(
             assert '--name' in replica_args
             assert replica_args[replica_args.index('--name') + 1] == expected_arg_name
             assert '--port' in replica_args
-            assert replica_args[replica_args.index('--port') + 1] == '8081'
+            assert replica_args[replica_args.index('--port') + 1] == '8078'
             assert '--env' not in replica_args
             assert '--connection-list' not in replica_args
             if uses_with is not None:
