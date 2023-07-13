@@ -1942,8 +1942,12 @@ class Flow(
                 wait_for_ready_coros.append(_async_wait_ready(k, v))
 
             async def _async_wait_all():
-                wrapped_tasks = [asyncio.create_task(coro) for coro in wait_for_ready_coros]
-                done, pending = await asyncio.wait(wrapped_tasks, return_when=asyncio.FIRST_EXCEPTION)
+                wrapped_tasks = [
+                    asyncio.create_task(coro) for coro in wait_for_ready_coros
+                ]
+                done, pending = await asyncio.wait(
+                    wrapped_tasks, return_when=asyncio.FIRST_EXCEPTION
+                )
                 try:
                     for task in done:
                         try:
@@ -1984,7 +1988,7 @@ class Flow(
             if not running_in_event_loop:
                 asyncio.get_event_loop().run_until_complete(_async_wait_all())
             else:
-                #TODO: the same logic that one fails all other fail should be done also here
+                # TODO: the same logic that one fails all other fail should be done also here
                 for k, v in self:
                     wait_ready_threads.append(
                         threading.Thread(target=_wait_ready, args=(k, v), daemon=True)
