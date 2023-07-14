@@ -717,6 +717,26 @@ def test_flow_incompatible_linear(protocol):
 
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+@pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
+def test_wrong_schemas(ctxt_manager, protocol):
+    if ctxt_manager == 'deployment' and protocol == 'websocket':
+        return
+    with pytest.raises(RuntimeError):
+        class MyExec(Executor):
+            @requests
+            def foo(self, docs: TextDoc, **kwargs) -> DocList[TextDoc]:
+                pass
+
+    if ctxt_manager == 'flow':
+        ctxt_mgr = Flow(protocol=protocol).add(uses='tests.integration.docarray_v2.wrong_schema_executor.WrongSchemaExec')
+    else:
+        ctxt_mgr = Deployment(protocol=protocol, uses='tests.integration.docarray_v2.wrong_schema_executor.WrongSchemaExec')
+
+    with pytest.raises(RuntimeFailToStart):
+        with ctxt_mgr:
+            pass
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_flow_incompatible_bifurcation(protocol):
     class First(Executor):
         @requests
@@ -1130,3 +1150,26 @@ def test_issue_dict_docs_http():
         for doc in res:
             assert doc.aux.a == 'b'
             assert doc.tags == {'a': {'b': 1}}
+
+def test_issue_with_monitoring():
+
+    class InputDocMonitor(BaseDoc):
+        text: str
+
+    class OutputDocMonitor(BaseDoc):
+        price: int
+
+    class MonitorExecTest(Executor):
+        @requests
+        def foo(self, docs: DocList[InputDocMonitor], **kwargs) -> DocList[OutputDocMonitor]:
+            ret = DocList[OutputDocMonitor]()
+            for doc in docs:
+                ret.append(OutputDocMonitor(price=2))
+            return ret
+
+
+    f = Flow(monitoring=True).add(uses=MonitorExecTest, monitoring=True)
+    with f:
+        ret = f.post(on='/', inputs=DocList[InputDocMonitor]([InputDocMonitor(text='2')]), return_type=DocList[OutputDocMonitor])
+        assert len(ret) == 1
+        assert ret[0].price == 2

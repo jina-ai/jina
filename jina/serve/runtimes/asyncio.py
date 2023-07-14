@@ -42,7 +42,7 @@ class AsyncNewLoopRuntime:
             cancel_event: Optional[
                 Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
             ] = None,
-            signal_handlers_ïnstalled_event: Optional[
+            signal_handlers_installed_event: Optional[
                 Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
             ] = None,
             req_handler_cls=None,
@@ -60,7 +60,7 @@ class AsyncNewLoopRuntime:
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
         self.is_cancel = cancel_event or asyncio.Event()
-        self.is_signal_handlers_installed = signal_handlers_ïnstalled_event or asyncio.Event()
+        self.is_signal_handlers_installed = signal_handlers_installed_event or asyncio.Event()
 
         self.logger.debug(f'Setting signal handlers')
 

@@ -120,7 +120,8 @@ class _FunctionWithSchema(NamedTuple):
 
         # if it's not a generator function, infer the type annotation from the docs parameter
         # otherwise, infer from the doc parameter (since generator endpoints expect only 1 document as input)
-        if not getattr(fn, '__is_generator__', False):
+        is_generator = getattr(fn, '__is_generator__', False)
+        if not is_generator:
             docs_annotation = fn.__annotations__.get('docs', None)
         else:
             docs_annotation = fn.__annotations__.get('doc', None)
@@ -166,8 +167,39 @@ class _FunctionWithSchema(NamedTuple):
             request_schema = docs_annotation or DocumentArray
             response_schema = return_annotation or DocumentArray
         else:
-            request_schema = docs_annotation or DocumentArray[LegacyDocument]
-            response_schema = return_annotation or DocumentArray[LegacyDocument]
+            from docarray import DocList, BaseDoc
+
+            if not is_generator:
+                request_schema = docs_annotation or DocList[LegacyDocument]
+                response_schema = return_annotation or DocList[LegacyDocument]
+            else:
+                request_schema = docs_annotation or LegacyDocument
+                response_schema = return_annotation or LegacyDocument
+            if not is_generator:
+                if not issubclass(request_schema, DocList) or not issubclass(
+                    response_schema, DocList
+                ):
+                    faulty_schema = (
+                        'request_schema'
+                        if not issubclass(request_schema, DocList)
+                        else 'response_schema'
+                    )
+                    raise Exception(
+                        f'The {faulty_schema} schema for {fn.__name__}: {request_schema} is not a DocList. Please make sure that your endpoints used DocList for request and response schema'
+                    )
+            else:
+                if not issubclass(request_schema, BaseDoc) or not (
+                    issubclass(response_schema, BaseDoc)
+                    or issubclass(response_schema, BaseDoc)
+                ):  # response_schema may be a DocList because by default we use LegacyDocument, and for generators we ignore response
+                    faulty_schema = (
+                        'request_schema'
+                        if not issubclass(request_schema, BaseDoc)
+                        else 'response_schema'
+                    )
+                    raise Exception(
+                        f'The {faulty_schema} schema for {fn.__name__}: {request_schema} is not a BaseDoc. Please make sure that your streaming endpoints used BaseDoc for request and response schema'
+                    )
 
         return _FunctionWithSchema(fn, request_schema, response_schema)
 
@@ -284,9 +316,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 # of the Document
                 if not _is_generator:
                     request_schema = function_with_schema.request_schema.doc_type
+                    response_schema = function_with_schema.response_schema.doc_type
                 else:
                     request_schema = function_with_schema.request_schema
-                response_schema = function_with_schema.response_schema.doc_type
+                    response_schema = function_with_schema.response_schema
             else:
                 request_schema = PydanticDocument
                 response_schema = PydanticDocument
