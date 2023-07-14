@@ -397,8 +397,8 @@ def test_k8s_yaml_gateway(monkeypatch, deployments_addresses, custom_gateway, po
         actual_port = spec_service['ports'][0]
         assert actual_port['name'] == 'port'
         assert actual_port['protocol'] == 'TCP'
-        assert actual_port['port'] == int(GRPCConnectionPool.K8S_PORT) + i
-        assert actual_port['targetPort'] == int(GRPCConnectionPool.K8S_PORT) + i
+        assert actual_port['port'] == int(GrpcConnectionPool.K8S_PORT) + i
+        assert actual_port['targetPort'] == int(GrpcConnectionPool.K8S_PORT) + i
         assert spec_service['selector'] == {'app': 'gateway'}
 
         assert spec_service['selector'] == {'app': 'gateway'}
@@ -445,7 +445,7 @@ def test_k8s_yaml_gateway(monkeypatch, deployments_addresses, custom_gateway, po
     assert args[args.index('--k8s-namespace') + 1] == 'default-namespace'
     assert '--port' in args
     for i, _port in enumerate(port):
-        assert args[args.index('--port') + i + 1] == str(GRPCConnectionPool.K8S_PORT + i)
+        assert args[args.index('--port') + i + 1] == str(GrpcConnectionPool.K8S_PORT + i)
     assert '--env' not in args
     if deployments_addresses is not None:
         assert '--deployments-addresses' in args

@@ -72,7 +72,7 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert '--deployments-addresses' in gateway_args
     assert (
         gateway_args[gateway_args.index('--deployments-addresses') + 1]
-        == '{"executor0": ["executor0:8078"], "executor1": ["executor1-head:8078"], "executor2": ["executor2-head:8078"]}'
+        == '{"executor0": ["executor0:8081"], "executor1": ["executor1-head:8081"], "executor2": ["executor2-head:8081"]}'
     )
     if protocol == 'http':
         assert '--protocol' in gateway_args
@@ -118,7 +118,7 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert '--connection-list' in executor1_head_args
     assert (
         executor1_head_args[executor1_head_args.index('--connection-list') + 1]
-        == '{"0": ["executor1-0:8078"], "1": ["executor1-1:8078"]}'
+        == '{"0": ["executor1-0:8081"], "1": ["executor1-1:8081"]}'
     )
     assert '--uses-with' not in executor1_head_args
     assert '--uses-before' not in executor1_head_args
@@ -192,9 +192,9 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert '--native' in executor2_head_args
     assert '--connection-list' in executor2_head_args
     assert executor2_head_args[executor2_head_args.index('--connection-list') + 1] == (
-        '{"0": ["executor2-0-rep-0:8078", "executor2-0-rep-1:8078"],'
+        '{"0": ["executor2-0-rep-0:8081", "executor2-0-rep-1:8081"],'
         ' "1": '
-        '["executor2-1-rep-0:8078", "executor2-1-rep-1:8078"]}'
+        '["executor2-1-rep-0:8081", "executor2-1-rep-1:8081"]}'
     )
     assert '--uses-with' not in executor2_head_args
     assert '--uses-before' not in executor2_head_args
@@ -203,12 +203,12 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert '--uses-before-address' in executor2_head_args
     assert (
         executor2_head_args[executor2_head_args.index('--uses-before-address') + 1]
-        == 'executor2-uses-before:8078'
+        == 'executor2-uses-before:8081'
     )
     assert '--uses-after-address' in executor2_head_args
     assert (
         executor2_head_args[executor2_head_args.index('--uses-after-address') + 1]
-        == 'executor2-uses-after:8078'
+        == 'executor2-uses-after:8081'
     )
 
     executor2_0_rep_0_service = services['executor2-0-rep-0']
