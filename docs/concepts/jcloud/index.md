@@ -76,6 +76,18 @@ To deploy:
 jc deploy flow.yml
 ```
 
+````{caution}
+When `jcloud` deploys a flow it automatically appends the following global arguments to the `flow.yml``, if not present:
+
+```yaml
+jcloud:
+  version: jina-version
+  docarray: docarray-version
+```
+
+The `jina` and `docarray` corresponds to your development enviornment's `jina` and `docarray` versions.
+````
+
 ````{tip}
 We recommend testing locally before deployment:
 
@@ -91,7 +103,7 @@ jina flow --uses flow.yml
 To create a Secret for a Flow:
 
 ```bash
-jc create secret mysecret -f rich-husky-af14064067 --from-literal "{'env-name': 'secret-value'}"
+jc secret create mysecret rich-husky-af14064067 --from-literal "{'env-name': 'secret-value'}"
 ```
 
 ```{tip}
@@ -107,7 +119,7 @@ If the `--update` flag is not passed then you have to manually update the flow w
 To create a Job for a Flow:
 
 ```bash
-jc create job job-name -f rich-husky-af14064067 image 'job entrypoint' --timeout 600 --backofflimit 2
+jc job create job-name rich-husky-af14064067 image 'job entrypoint' --timeout 600 --backofflimit 2
 ```
 
 ```{tip}
@@ -179,7 +191,7 @@ print(
 
 To get the status of a Flow:
 ```bash
-jc status merry-magpie-82b9c0897f
+jc flow status merry-magpie-82b9c0897f
 ```
 
 ```{figure} img/status.png
@@ -203,7 +215,7 @@ To access the [Grafana](https://grafana.com/)-powered dashboard, first get {ref}
 To list all of your "Starting", "Serving", "Failed", "Updating", and "Paused" Flows:
 
 ```bash
-jc list flows
+jc flows list
 ```
 
 ```{figure} img/list.png
@@ -213,7 +225,7 @@ jc list flows
 You can also filter your Flows by passing a phase:
 
 ```bash
-jc list flows --phase Deleted
+jc flows list --phase Deleted
 ```
 
 
@@ -224,7 +236,7 @@ jc list flows --phase Deleted
 Or see all Flows:
 
 ```bash
-jc list flows --phase all
+jc flows list --phase all
 ```
 
 ```{figure} img/list_all.png
@@ -236,7 +248,7 @@ jc list flows --phase all
 To list all the Secrets created in a Flow's namespace:
 
 ```bash
-jc list secrets -f rich-husky-af14064067
+jc secret list rich-husky-af14064067
 ```
 
 ```{figure} img/list_secrets.png
@@ -248,7 +260,7 @@ jc list secrets -f rich-husky-af14064067
 To listg all Jobs created in a Flow's namespace:
 
 ```bash
-jc list jobs -f rich-husky-af14064067
+jc jobs list rich-husky-af14064067
 ```
 
 ```{figure} img/list_jobs.png
@@ -262,7 +274,7 @@ jc list jobs -f rich-husky-af14064067
 To retrieve a Secret's details:
 
 ```bash
-jc get secret mysecret -f rich-husky-af14064067
+jc secret get mysecret rich-husky-af14064067
 ```
 
 ```{figure} img/get_secret.png
@@ -274,7 +286,7 @@ jc get secret mysecret -f rich-husky-af14064067
 To retrieve a Job's details:
 
 ```bash
-jc get job job-one -f rich-husky-af14064067
+jc job get job-one rich-husky-af14064067
 ```
 
 ```{figure} img/get_job.png
@@ -289,19 +301,19 @@ You can remove a single Flow, multiple Flows or even all Flows by passing differ
 To remove a single Flow:
 
 ```bash
-jc remove flow merry-magpie-82b9c0897f
+jc flow remove merry-magpie-82b9c0897f
 ```
 
 To remove multiple Flows:
 
 ```bash
-jc remove flow merry-magpie-82b9c0897f wondrous-kiwi-b02db6a066
+jc flow remove merry-magpie-82b9c0897f wondrous-kiwi-b02db6a066
 ```
 
 To remove all Flows:
 
 ```bash
-jc remove flow all
+jc flow remove all
 ```
 
 By default, removing multiple or all Flows is an interactive process where you must give confirmation before each Flow is deleted. To make it non-interactive, set the below environment variable before running the command:
@@ -313,12 +325,12 @@ export JCLOUD_NO_INTERACTIVE=1
 #### Remove Secret
 
 ```bash
-jc remove secret -f rich-husky-af14064067 mysecret
+jc secret remove rich-husky-af14064067 mysecret
 ```
 
 #### Remove Job
 ```bash
-jc remove job -f rich-husky-af14064067 job-one
+jc job remove rich-husky-af14064067 job-one
 ```
 
 ### Update Flow or Secret
@@ -329,7 +341,7 @@ You can update a Flow by providing an updated YAML.
 To update a Flow:
 
 ```bash
-jc update flow super-mustang-c6cf06bc5b flow.yml
+jc flow update super-mustang-c6cf06bc5b flow.yml
 ```
 
 ```{figure} img/update_flow.png
@@ -340,7 +352,7 @@ jc update flow super-mustang-c6cf06bc5b flow.yml
 You can update a Secret for a Flow.
 
 ```bash
-jc update secret -f rich-husky-af14064067 mysecret --from-literal "{'env-name': 'secret-value'}"
+jc secret update rich-husky-af14064067 mysecret --from-literal "{'env-name': 'secret-value'}"
 ```
 
 ```{tip}
@@ -358,7 +370,7 @@ You have the option to pause a Flow that is not currently in use but may be need
 To pause a Flow:
 
 ```bash
-jc pause super-mustang-c6cf06bc5b
+jc flow pause super-mustang-c6cf06bc5b
 ```
 
 ```{figure} img/pause_flow.png
@@ -368,7 +380,7 @@ jc pause super-mustang-c6cf06bc5b
 To resume a Flow:
 
 ```bash
-jc resume super-mustang-c6cf06bc5b
+jc flow resume super-mustang-c6cf06bc5b
 ```
 
 ```{figure} img/resume_flow.png
@@ -382,7 +394,7 @@ If you need to restart a Flow, there are two options: restart all Executors and 
 To restart a Flow:
 
 ```bash
-jc restart super-mustang-c6cf06bc5b
+jc flow restart super-mustang-c6cf06bc5b
 ```
 
 ```{figure} img/restart_flow.png
@@ -392,7 +404,7 @@ jc restart super-mustang-c6cf06bc5b
 To restart the Gateway:
 
 ```bash
-jc restart super-mustang-c6cf06bc5b --gateway
+jc flow restart super-mustang-c6cf06bc5b --gateway
 ```
 
 ```{figure} img/restart_gateway.png
@@ -402,7 +414,7 @@ jc restart super-mustang-c6cf06bc5b --gateway
 To restart an Executor:
 
 ```bash
-jc restart super-mustang-c6cf06bc5b --executor executor0
+jc flow restart super-mustang-c6cf06bc5b --executor executor0
 ```
 
 ```{figure} img/restart_executor.png
@@ -414,7 +426,7 @@ jc restart super-mustang-c6cf06bc5b --executor executor0
 To recreate a deleted Flow:
 
 ```bash
-jc recreate profound-rooster-eec4b17c73
+jc flow recreate profound-rooster-eec4b17c73
 ```
 
 ```{figure} img/recreate_flow.png
@@ -425,7 +437,7 @@ jc recreate profound-rooster-eec4b17c73
 You can also manually scale any Executor.
 
 ```bash
-jc scale good-martin-ca6bfdef84 --executor executor0 --replicas 2
+jc flow scale good-martin-ca6bfdef84 --executor executor0 --replicas 2
 ```
 
 ```{figure} img/scale_executor.png
@@ -437,7 +449,7 @@ jc scale good-martin-ca6bfdef84 --executor executor0 --replicas 2
 To get the Gateway logs:
 
 ```bash
-jc logs flow --gateway central-escargot-354a796df5
+jc flow logs --gateway central-escargot-354a796df5
 ```
 
 ```{figure} img/gateway_logs.png
@@ -447,7 +459,7 @@ jc logs flow --gateway central-escargot-354a796df5
 To get the Executor logs:
 
 ```bash
-jc logs flow --executor executor0 central-escargot-354a796df5
+jc flow logs --executor executor0 central-escargot-354a796df5
 ```
 
 ```{figure} img/executor_logs.png
@@ -459,7 +471,7 @@ jc logs flow --executor executor0 central-escargot-354a796df5
 To get the Job logs:
 
 ```bash
-jc logs job job-one -f rich-husky-af14064067
+jc job logs job-one -f rich-husky-af14064067
 ```
 
 ```{figure} img/job_logs.png
