@@ -19,6 +19,7 @@ from typing import (
 )
 
 import grpc
+from google.protobuf.struct_pb2 import Struct
 
 from jina._docarray import DocumentArray, docarray_v2
 from jina.constants import __default_endpoint__
@@ -215,9 +216,7 @@ class WorkerRequestHandler:
                 f'detected changes in: {changed_files}. Refreshing the Executor'
             )
             self._refresh_executor(changed_files)
-            self.logger.info(
-                f'Executor refreshed'
-            )
+            self.logger.info(f'Executor refreshed')
 
     def _all_batch_queues(self) -> List[BatchQueue]:
         """Returns a list of all batch queue instances
@@ -407,7 +406,9 @@ class WorkerRequestHandler:
                     try:
                         importlib.reload(file_module)
                     except ModuleNotFoundError:
-                        spec = importlib.util.spec_from_file_location(file_module.__name__, file_module.__file__)
+                        spec = importlib.util.spec_from_file_location(
+                            file_module.__name__, file_module.__file__
+                        )
                         spec.loader.exec_module(file_module)
 
                     self.logger.debug(f'Reloaded {file_module} successfully')
@@ -425,7 +426,9 @@ class WorkerRequestHandler:
         try:
             importlib.reload(executor_module)
         except ModuleNotFoundError:
-            spec = importlib.util.spec_from_file_location(executor_module.__name__, executor_module.__file__)
+            spec = importlib.util.spec_from_file_location(
+                executor_module.__name__, executor_module.__file__
+            )
             spec.loader.exec_module(file_module)
         requests = copy.copy(self._executor.requests)
         old_cls = self._executor.__class__
@@ -440,9 +443,9 @@ class WorkerRequestHandler:
         self._executor._add_requests(requests)
 
     @staticmethod
-    def _parse_params(parameters: Dict, executor_name: str):
-        parsed_params = parameters
-        specific_parameters = parameters.get(executor_name, None)
+    def _parse_params(parameters: Union[Dict, Struct], executor_name: str):
+        parsed_params = dict(parameters)
+        specific_parameters = parsed_params.get(executor_name, None)
         if specific_parameters:
             parsed_params.update(**specific_parameters)
 
@@ -903,10 +906,11 @@ class WorkerRequestHandler:
                 [request_schema.from_protobuf(request.document)]
             )
 
-        result = await self.process_data([request], context, is_generator=is_generator)
+        result = await self.process_data(
+            [data_request], context, is_generator=is_generator
+        )
         async for doc in result:
-            req = SingleDocumentRequestProto()
-            req.doc = doc.to_protobuf()
+            req = SingleDocumentRequestProto(document=doc.to_protobuf())
             yield req
 
     async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
