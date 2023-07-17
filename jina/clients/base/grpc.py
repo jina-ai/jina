@@ -212,6 +212,29 @@ class GRPCBaseClient(BaseClient):
         else:
             raise BadServerFlow(msg) from err
 
+    async def stream_doc_endpoint(
+        self,
+        request: jina_pb2.SingleDocumentRequestProto,
+        timeout: Optional[float] = None,
+    ):
+        """
+        Use the stream_doc stub to send one document and stream documents back from the Executor
+
+        :param request: The request to be sent
+        :param timeout: defines timeout for sending request
+
+        :yields: response document
+        """
+        async with get_grpc_channel(
+            f'{self.args.host}:{self.args.port}',
+            asyncio=True,
+            tls=self.args.tls,
+            aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
+        ) as channel:
+            stub = jina_pb2_grpc.JinaSingleDocumentRequestRPCStub(channel)
+            async for response in stub.stream_doc(request, timeout=timeout):
+                yield response
+
     async def _get_streaming_results(
         self,
         on: str,
@@ -221,8 +244,13 @@ class GRPCBaseClient(BaseClient):
         timeout: Optional[int] = None,
         **kwargs,
     ):
-        async for docs in self.post(on=on, inputs=[inputs]):
-            yield docs[0]
+        request_proto = jina_pb2.SingleDocumentRequestProto(
+            header=jina_pb2.HeaderProto(exec_endpoint=on), document=inputs.to_protobuf()
+        )
+        async for response in self.stream_doc_endpoint(
+            request=request_proto, timeout=timeout
+        ):
+            yield return_type.from_protobuf(response.document)
 
 
 def client_grpc_options(
