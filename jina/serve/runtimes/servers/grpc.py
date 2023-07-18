@@ -1,5 +1,6 @@
 from typing import Optional
 
+import os
 import grpc
 from grpc import RpcError
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
@@ -20,20 +21,27 @@ class GRPCServer(BaseServer):
         grpc_server_options: Optional[dict] = None,
         ssl_keyfile: Optional[str] = None,
         ssl_certfile: Optional[str] = None,
+        proxy: bool = False,
         **kwargs,
     ):
         """Initialize the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param ssl_keyfile: the path to the key file
         :param ssl_certfile: the path to the certificate file
+        :param proxy: If set, respect the http_proxy and https_proxy environment variables, otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
+        if not proxy and os.name != 'nt':
+            os.unsetenv('http_proxy')
+            os.unsetenv('https_proxy')
+
         self.grpc_server_options = grpc_server_options
         self.grpc_tracing_server_interceptors = self.aio_tracing_server_interceptors()
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
         self.health_servicer = health.aio.HealthServicer()
+
 
     async def setup_server(self):
         """
