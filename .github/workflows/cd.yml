@@ -537,7 +537,7 @@ jobs:
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
 
   k8s-flow-test:
-    needs: [lint-flake-8, code-injection]
+    needs: update-schema
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.5.0
@@ -577,7 +577,7 @@ jobs:
           fail_ci_if_error: false
 
   k8s-deployment-test:
-    needs: [lint-flake-8, code-injection]
+    needs: update-schema
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.5.0
@@ -617,7 +617,7 @@ jobs:
           fail_ci_if_error: false
 
   k8s-graceful-test:
-    needs: [lint-flake-8, code-injection]
+    needs: update-schema
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.5.0
@@ -657,7 +657,7 @@ jobs:
           fail_ci_if_error: false
 
   k8s-failures-test:
-    needs: [ lint-flake-8, code-injection ]
+    needs: update-schema
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.5.0
@@ -698,7 +698,7 @@ jobs:
           fail_ci_if_error: false
 
   k8s-otel-test:
-    needs: [lint-flake-8, code-injection]
+    needs: update-schema
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.5.0

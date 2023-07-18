@@ -314,13 +314,14 @@ async def test_flow_with_monitoring(logger, tmpdir, docker_images, port_generato
             .metadata.name
         )
 
+        port = GrpcConnectionPool.K8S_PORT
         port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
 
         for pod_name in [gateway_pod_name, executor_pod_name]:
             with portforward.forward(
                 namespace, pod_name, port_monitoring, port_monitoring, config_path
             ):
-                resp = req.get(f'http://localhost:{port}/')
+                resp = req.get(f'http://localhost:{port_monitoring}/')
                 assert resp.status_code == 200
 
         core_client.delete_namespace(namespace)
@@ -909,6 +910,7 @@ async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
             name='external_executor',
             external=True,
             host='external-deployment.external-deployment-ns.svc',
+            port=GrpcConnectionPool.K8S_PORT,
         )
 
         dump_path = os.path.join(str(tmpdir), namespace)
@@ -975,6 +977,7 @@ async def test_flow_with_metadata_k8s_deployment(logger, grpc_metadata, tmpdir):
             external=True,
             host='external-deployment.external-deployment-ns.svc',
             grpc_metadata=grpc_metadata,
+            port=GrpcConnectionPool.K8S_PORT,
         )
 
         dump_path = os.path.join(str(tmpdir), namespace)
@@ -1366,8 +1369,6 @@ async def test_flow_multiple_protocols_built_in(
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
     try:
-        http_port = random_port()
-        grpc_port = random_port()
 
         flow = Flow().config_gateway(
             protocol=['http', 'grpc'],
