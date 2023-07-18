@@ -10,7 +10,7 @@ from docarray.documents import TextDoc
 from docarray.documents.legacy import LegacyDocument
 from jina.helper import random_port
 
-from jina import Deployment, Executor, Flow, requests, Client
+from jina import Deployment, Executor, Flow, requests, Client, dynamic_batching
 from jina.excepts import RuntimeFailToStart
 
 
@@ -134,12 +134,27 @@ def test_different_output_input(protocols, replicas):
             )
             return docs_return
 
+        @requests(on='/bar_with_dbatch')
+        @dynamic_batching(preferred_batch_size=4)
+        def bar_with_dbatch(self, docs: DocList[InputDoc], **kwargs) -> DocList[OutputDoc]:
+            docs_return = DocList[OutputDoc](
+                [OutputDoc(embedding=np.zeros((100, 1))) for _ in range(len(docs))]
+            )
+            return docs_return
+
     ports = [random_port() for _ in protocols]
     with Flow(port=ports, protocol=protocols, replicas=replicas).add(uses=MyExec):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             docs = c.post(
                 on='/bar',
+                inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
+                return_type=DocList[OutputDoc],
+            )
+            assert docs[0].embedding.shape == (100, 1)
+            assert docs.__class__.doc_type == OutputDoc
+            docs = c.post(
+                on='/bar_with_dbatch',
                 inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
                 return_type=DocList[OutputDoc],
             )

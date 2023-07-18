@@ -1,21 +1,30 @@
 import asyncio
 from asyncio import Event, Task
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional, TYPE_CHECKING
 
-from jina._docarray import DocumentArray
+from jina._docarray import docarray_v2
+
+if not docarray_v2:
+    from docarray import DocumentArray
+else:
+    from docarray import DocList
 from jina.types.request.data import DataRequest
+
+if TYPE_CHECKING:
+    from jina._docarray import DocumentArray
 
 
 class BatchQueue:
     """A batch queue that holds the data request and the callable to batch requests to."""
 
     def __init__(
-        self,
-        func: Callable,
-        output_array_type: Optional[str] = None,
-        params: Optional[Dict] = None,
-        preferred_batch_size: int = 4,
-        timeout: int = 10_000,
+            self,
+            func: Callable,
+            docarray_cls,
+            output_array_type: Optional[str] = None,
+            params: Optional[Dict] = None,
+            preferred_batch_size: int = 4,
+            timeout: int = 10_000,
     ) -> None:
         self._data_lock = asyncio.Lock()
         self.func = func
@@ -24,6 +33,7 @@ class BatchQueue:
         self._is_closed = False
         self._output_array_type = output_array_type
         self.params = params
+        self._docarray_cls = docarray_cls
 
         self._preferred_batch_size: int = preferred_batch_size
         self._timeout: int = timeout
@@ -40,7 +50,10 @@ class BatchQueue:
         """Set all events and reset the batch queue."""
         self._requests: List[DataRequest] = []
         self._request_lens: List[int] = []
-        self._big_doc: DocumentArray = DocumentArray.empty()
+        if not docarray_v2:
+            self._big_doc: DocumentArray = DocumentArray.empty()
+        else:
+            self._big_doc = self._docarray_cls()
 
         self._flush_trigger: Event = Event()
         self._flush_task: Optional[Task] = None
@@ -48,9 +61,9 @@ class BatchQueue:
 
     def _cancel_timer_if_pending(self):
         if (
-            self._timer_task
-            and not self._timer_task.done()
-            and not self._timer_task.cancelled()
+                self._timer_task
+                and not self._timer_task.done()
+                and not self._timer_task.cancelled()
         ):
             self._timer_task.cancel()
 
@@ -114,19 +127,15 @@ class BatchQueue:
                 )
 
                 # Output validation
-                if isinstance(return_docs, DocumentArray):
-                    if not len(return_docs) == input_len_before_call:
-                        raise ValueError(
-                            f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(return_docs)}'
-                        )
-                elif return_docs is None:
+                if (docarray_v2 and isinstance(return_docs, DocList)) or (not docarray_v2 and isinstance(return_docs, DocumentArray)):
                     if not len(self._big_doc) == input_len_before_call:
                         raise ValueError(
                             f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(self._big_doc)}'
                         )
                 else:
+                    array_name = 'DocumentArray' if not docarray_v2 else 'DocList'
                     raise TypeError(
-                        f'The return type must be DocumentArray / `None` when using dynamic batching, '
+                        f'The return type must be {array_name} / `None` when using dynamic batching, '
                         f'but getting {return_docs!r}'
                     )
 
@@ -135,7 +144,7 @@ class BatchQueue:
             finally:
                 self._reset()
 
-    def _apply_return_docs_to_requests(self, return_docs: Optional[DocumentArray]):
+    def _apply_return_docs_to_requests(self, return_docs: Optional['DocumentArray']):
         consumed_count: int = 0
         for request, request_len in zip(self._requests, self._request_lens):
             left = consumed_count
