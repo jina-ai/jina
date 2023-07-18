@@ -1,9 +1,8 @@
 import asyncio
-import functools
 
 import pytest
 
-from jina import Document, DocumentArray, Executor, requests
+from jina import Document, DocumentArray
 from jina.serve.runtimes.worker.batch_queue import BatchQueue
 from jina.types.request.data import DataRequest
 
@@ -15,6 +14,7 @@ async def test_batch_queue():
 
     bq: BatchQueue = BatchQueue(
         foo,
+        docarray_cls=DocumentArray,
         preferred_batch_size=4,
         timeout=500,
     )
@@ -73,6 +73,7 @@ async def test_exception():
 
     bq: BatchQueue = BatchQueue(
         foo,
+        docarray_cls=DocumentArray,
         preferred_batch_size=4,
         timeout=500,
     )
@@ -100,6 +101,7 @@ async def test_repr_and_str():
 
     bq: BatchQueue = BatchQueue(
         foo,
+        docarray_cls=DocumentArray,
         preferred_batch_size=4,
         timeout=500,
     )

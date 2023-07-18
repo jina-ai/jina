@@ -128,6 +128,11 @@ class BatchQueue:
 
                 # Output validation
                 if (docarray_v2 and isinstance(return_docs, DocList)) or (not docarray_v2 and isinstance(return_docs, DocumentArray)):
+                    if not len(return_docs) == input_len_before_call:
+                        raise ValueError(
+                            f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(self._big_doc)}'
+                        )
+                elif return_docs is None:
                     if not len(self._big_doc) == input_len_before_call:
                         raise ValueError(
                             f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(self._big_doc)}'
