@@ -28,8 +28,21 @@ def _warning_on_one_line(message, category, filename, lineno, *args, **kwargs):
     )
 
 
+def _ignore_google_warnings():
+    import logging
+    import warnings
+
+    logging.captureWarnings(True)
+    warnings.filterwarnings(
+        'ignore',
+        category=DeprecationWarning,
+        message='Deprecated call to `pkg_resources.declare_namespace(\'google\')`.',
+    )
+
+
 _warnings.formatwarning = _warning_on_one_line
 _warnings.simplefilter('always', DeprecationWarning)
+_ignore_google_warnings()
 
 # fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
 _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
@@ -57,13 +70,9 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
 
     try:
         _set_start_method('fork')
-        _warnings.warn(
-            f'multiprocessing start method is set to `fork`'
-        )
+        _warnings.warn(f'multiprocessing start method is set to `fork`')
     except Exception as e:
-        _warnings.warn(
-            f'failed to set multiprocessing start_method to `fork`: {e!r}'
-            )
+        _warnings.warn(f'failed to set multiprocessing start_method to `fork`: {e!r}')
 
 # do not change this line manually
 # this is managed by git tag and updated on every release
