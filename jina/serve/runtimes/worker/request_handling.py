@@ -31,7 +31,7 @@ from jina.proto.jina_pb2 import SingleDocumentRequestProto
 from jina.serve.executors import BaseExecutor
 from jina.serve.instrumentation import MetricsTimer
 from jina.serve.runtimes.worker.batch_queue import BatchQueue
-from jina.types.request.data import DataRequest
+from jina.types.request.data import DataRequest, SingleDocumentRequest
 
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry import metrics, trace
@@ -875,6 +875,7 @@ class WorkerRequestHandler:
         :param context: grpc context
         :yields: the response request
         """
+        request = SingleDocumentRequest(request)
         request_endpoint = self._executor.requests.get(
             request.header.exec_endpoint
         ) or self._executor.requests.get(__default_endpoint__)
@@ -888,30 +889,38 @@ class WorkerRequestHandler:
             yield request
 
         is_generator = getattr(request_endpoint.fn, '__is_generator__', False)
-        # TODO: better error handling, use add_exception instead
         if not is_generator:
             raise ValueError('endpoint must be generator')
-
-        request_schema = request_endpoint.request_schema
-        data_request = DataRequest()
-        data_request.header.exec_endpoint = request.header.exec_endpoint
-        if not docarray_v2:
-            from docarray import Document
-
-            data_request.data.docs = DocumentArray(
-                [Document.from_protobuf(request.document)]
+            ex = ValueError('endpoint must be generator')
+            self.logger.error(
+                f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
+                if not self.args.quiet_error
+                else '',
+                exc_info=not self.args.quiet_error,
             )
+            request.add_exception(ex)
+            yield request.proto
         else:
-            data_request.data.docs = DocumentArray(
-                [request_schema.from_protobuf(request.document)]
-            )
+            request_schema = request_endpoint.request_schema
+            data_request = DataRequest()
+            data_request.header.exec_endpoint = request.header.exec_endpoint
+            if not docarray_v2:
+                from docarray import Document
 
-        result = await self.process_data(
-            [data_request], context, is_generator=is_generator
-        )
-        async for doc in result:
-            req = SingleDocumentRequestProto(document=doc.to_protobuf())
-            yield req
+                data_request.data.docs = DocumentArray(
+                    [Document.from_protobuf(request.document)]
+                )
+            else:
+                data_request.data.docs = DocumentArray(
+                    [request_schema.from_protobuf(request.document)]
+                )
+
+            result = await self.process_data(
+                [data_request], context, is_generator=is_generator
+            )
+            async for doc in result:
+                req = SingleDocumentRequestProto(document=doc.to_protobuf())
+                yield req
 
     async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
         """
