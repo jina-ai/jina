@@ -10,6 +10,7 @@ from jina._docarray import Document
 from jina.clients.base import BaseClient
 from jina.clients.base.stream_rpc import StreamRpc
 from jina.clients.base.unary_rpc import UnaryRpc
+from jina.clients.helper import callback_exec
 from jina.excepts import BadClientInput, BadServerFlow, InternalNetworkError
 from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2, jina_pb2_grpc
@@ -232,8 +233,15 @@ class GRPCBaseClient(BaseClient):
             aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
         ) as channel:
             stub = jina_pb2_grpc.JinaSingleDocumentRequestRPCStub(channel)
-            async for response in stub.stream_doc(request, timeout=timeout):
-                yield response
+            try:
+                async for response in stub.stream_doc(request, timeout=timeout):
+                    callback_exec(
+                        response=response,
+                        logger=self.logger,
+                    )
+                    yield response
+            except (grpc.aio.AioRpcError, InternalNetworkError) as err:
+                await self._handle_error_and_metadata(err)
 
     async def _get_streaming_results(
         self,
