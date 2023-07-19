@@ -2,7 +2,7 @@ import pytest
 
 from jina import Client, Executor, requests
 from jina._docarray import Document, DocumentArray
-from jina.excepts import BadServerFlow
+from jina.excepts import BadServer
 from jina.helper import random_port
 
 
@@ -58,7 +58,7 @@ async def test_streaming_client_non_gen_endpoint(protocol):
     ):
         client = Client(port=port, protocol=protocol, cors=True, asyncio=True)
         i = 0
-        with pytest.raises(BadServerFlow):
+        with pytest.raises(BadServer):
             async for _ in client.stream_doc(
                 on='/world', inputs=Document(text='hello world')
             ):

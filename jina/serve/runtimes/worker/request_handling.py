@@ -895,7 +895,6 @@ class WorkerRequestHandler:
 
         is_generator = getattr(request_endpoint.fn, '__is_generator__', False)
         if not is_generator:
-            raise ValueError('endpoint must be generator')
             ex = ValueError('endpoint must be generator')
             self.logger.error(
                 f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
