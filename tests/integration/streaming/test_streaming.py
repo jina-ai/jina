@@ -2,6 +2,7 @@ import pytest
 
 from jina import Client, Executor, requests
 from jina._docarray import Document, DocumentArray
+from jina.excepts import BadServerFlow
 from jina.helper import random_port
 
 
@@ -10,6 +11,10 @@ class MyExecutor(Executor):
     async def task(self, doc: Document, **kwargs):
         for i in range(100):
             yield Document(text=f'{doc.text} {i}')
+
+    @requests(on='/world')
+    async def non_gen_task(self, doc: Document, **kwargs):
+        return Document(text=f'{doc.text}')
 
 
 @pytest.mark.asyncio
@@ -34,6 +39,30 @@ async def test_streaming_deployment(protocol):
         ):
             assert doc.text == f'hello world {i}'
             i += 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('protocol', ['grpc'])
+async def test_streaming_client_non_gen_endpoint(protocol):
+    from jina import Deployment
+
+    port = random_port()
+
+    with Deployment(
+        uses=MyExecutor,
+        timeout_ready=-1,
+        protocol=protocol,
+        cors=True,
+        port=port,
+        include_gateway=False,
+    ):
+        client = Client(port=port, protocol=protocol, cors=True, asyncio=True)
+        i = 0
+        with pytest.raises(BadServerFlow):
+            async for _ in client.stream_doc(
+                on='/world', inputs=Document(text='hello world')
+            ):
+                pass
 
 
 class Executor1(Executor):
