@@ -3,7 +3,7 @@
 Jina support two versions of protobuf, before 3.19 and after (which is a breaking change for python), therefore we have
 duplicate python file generation from proto based on the installed protobuf version.
 
-Moreover, jina is compatible with docarray v1 and docarray v2 that introduce breaking change in the proto definition.
+Moreover, Jina is compatible with docarray v1 and DocArray >=0.30 that introduce breaking change in the proto definition.
 
 Therefore, we end with 2 proto files, one for each version of docarray that we support. (Note in the future 
 docarray v1 support will be dropped, and we will come back to have proto version)
@@ -43,7 +43,7 @@ docker run -it -v $(pwd)/jina/proto/docarray_v1:/jina/proto jinaai/protogen:loca
 docker run -it -v $(pwd)/jina/proto/docarray_v1:/jina/proto jinaai/protogen-3.21:local
 ```
 
-### For DocArray v2
+### For DocArray >=0.30
 
 ``` cmd
 docker run -it -v $(pwd)/jina/proto/docarray_v2:/jina/proto jinaai/protogen:local

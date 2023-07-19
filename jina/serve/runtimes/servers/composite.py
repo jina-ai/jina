@@ -45,20 +45,24 @@ class CompositeServer(BaseServer):
         """
         setup servers inside CompositeServer
         """
+        self.logger.debug(f'Setting up Composite server')
         tasks = []
         for server in self.servers:
             tasks.append(asyncio.create_task(server.setup_server()))
 
         await asyncio.gather(*tasks)
+        self.logger.debug(f'Composite server setup successful')
 
     async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
+        self.logger.debug(f'Shutting down server')
         await super().shutdown()
         shutdown_tasks = []
         for server in self.servers:
             shutdown_tasks.append(asyncio.create_task(server.shutdown()))
 
         await asyncio.gather(*shutdown_tasks)
+        self.logger.debug(f'Server shutdown finished')
 
     async def run_server(self):
         """Run servers inside CompositeServer forever"""

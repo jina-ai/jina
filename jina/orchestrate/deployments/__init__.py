@@ -63,19 +63,17 @@ class DeploymentType(type(ExitStack), type(JAMLCompatible)):
     pass
 
 
-def _call_add_voters(leader, voters, replica_ids, event_signal=None):
+def _call_add_voters(leader, voters, replica_ids, name, event_signal=None):
     # this method needs to be run in multiprocess, importing jraft in main process
     # makes it impossible to do tests sequentially
 
     import jraft
 
-    logger = JinaLogger(
-        'add_voter',
-    )
-
+    logger = JinaLogger(context=f'add_voter-{name}', name=f'add_voter-{name}')
+    logger.debug(f'Trying to add {len(replica_ids)} voters to leader {leader}')
     for voter_address, replica_id in zip(voters, replica_ids):
         logger.debug(
-            f'Trying to add {str(replica_id)} as voter with address {voter_address} to leader at {leader}'
+            f'Trying to add replica-{str(replica_id)} as voter with address {voter_address} to leader at {leader}'
         )
         success = False
         for i in range(5):
@@ -96,8 +94,9 @@ def _call_add_voters(leader, voters, replica_ids, event_signal=None):
             )
         else:
             logger.success(
-                f'{str(replica_id)} successfully added as voter with address {voter_address} to leader at {leader}'
+                f'Replica-{str(replica_id)} successfully added as voter with address {voter_address} to leader at {leader}'
             )
+    logger.debug(f'Adding voters to leader finished')
     if event_signal:
         event_signal.set()
 
@@ -123,7 +122,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             self._pods = []
             self.head_pod = head_pod
             self.name = name
-            self.logger = JinaLogger(name, **vars(self.deployment_args))
+            logger_kwargs = vars(self.deployment_args)
+            logger_kwargs.pop('name')
+            self.logger = JinaLogger(context=self.name, name=self.name, **logger_kwargs)
 
         def _add_voter_to_leader(self):
             leader_address = f'{self._pods[0].runtime_ctrl_address}'
@@ -137,9 +138,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     'leader': leader_address,
                     'voters': voter_addresses,
                     'replica_ids': replica_ids,
+                    'name': self.name,
                     'event_signal': event_signal,
                 },
-                daemon=True,
             )
             process.start()
             start = time.time()
@@ -152,8 +153,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     time.sleep(1.0)
             if properly_closed:
                 self.logger.debug(f'Add Voters process finished')
+                process.terminate()
             else:
-                self.logger.error(f' Add Voters process did not finish successfully')
+                self.logger.error(f'Add Voters process did not finish successfully')
                 process.kill()
             self.logger.debug(f'Add Voters process finished')
 
@@ -169,9 +171,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     'leader': leader_address,
                     'voters': voter_addresses,
                     'replica_ids': replica_ids,
+                    'name': self.name,
                     'event_signal': event_signal,
                 },
-                daemon=True,
             )
             process.start()
             start = time.time()
@@ -184,8 +186,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     await asyncio.sleep(1.0)
             if properly_closed:
                 self.logger.debug(f'Add Voters process finished')
+                process.terminate()
             else:
-                self.logger.error(f' Add Voters process did not finish successfully')
+                self.logger.error(f'Add Voters process did not finish successfully')
                 process.kill()
 
         @property
@@ -204,21 +207,23 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 pod.join()
 
         def wait_start_success(self):
+            self.logger.debug(f'Waiting for ReplicaSet to start successfully')
             for pod in self._pods:
                 pod.wait_start_success()
             # should this be done only when the cluster is started ?
             if self._pods[0].args.stateful:
                 self._add_voter_to_leader()
-            self.logger.debug(f'ReplicaSet {self.name} started successfully')
+            self.logger.debug(f'ReplicaSet started successfully')
 
         async def async_wait_start_success(self):
+            self.logger.debug(f'Waiting for ReplicaSet to start successfully')
             await asyncio.gather(
                 *[pod.async_wait_start_success() for pod in self._pods]
             )
             # should this be done only when the cluster is started ?
             if self._pods[0].args.stateful:
                 await self._async_add_voter_to_leader()
-            self.logger.debug(f'ReplicaSet {self.name} started successfully')
+            self.logger.debug(f'ReplicaSet started successfully')
 
         def __enter__(self):
             for _args in self.args:
@@ -252,7 +257,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
-        env_from_secret: Optional[dict] = None,
         exit_on_exceptions: Optional[List[str]] = [],
         external: Optional[bool] = False,
         floating: Optional[bool] = False,
@@ -326,7 +330,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
-        :param env_from_secret: The map of environment variables that are read from kubernetes cluster secrets
         :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
@@ -452,7 +455,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         self._include_gateway = include_gateway
         if self._include_gateway:
             # arguments exclusive to the gateway
-            for field in ['port']:
+            for field in ['port', 'ports']:
                 if field in kwargs:
                     self._gateway_kwargs[field] = kwargs.pop(field)
 
@@ -1201,12 +1204,13 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 coros.append(self.uses_before_pod.async_wait_start_success())
             if self.uses_after_pod is not None:
                 coros.append(self.uses_after_pod.async_wait_start_success())
-            if self.head_pod is not None:
-                coros.append(self.head_pod.async_wait_start_success())
             if self.gateway_pod is not None:
                 coros.append(self.gateway_pod.async_wait_start_success())
+            if self.head_pod is not None:
+                coros.append(self.head_pod.async_wait_start_success())
             for shard_id in self.shards:
                 coros.append(self.shards[shard_id].async_wait_start_success())
+
             await asyncio.gather(*coros)
             self.logger.debug(f'Deployment started successfully')
         except:
@@ -1220,13 +1224,13 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 self.uses_before_pod.join()
             if self.uses_after_pod is not None:
                 self.uses_after_pod.join()
+            if self.shards:
+                for shard_id in self.shards:
+                    self.shards[shard_id].join()
             if self.head_pod is not None:
                 self.head_pod.join()
             if self.gateway_pod is not None:
                 self.gateway_pod.join()
-            if self.shards:
-                for shard_id in self.shards:
-                    self.shards[shard_id].join()
         except KeyboardInterrupt:
             pass
         finally:
@@ -1750,7 +1754,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         )
 
         if ProtocolType.HTTP.to_string().lower() in [p.lower() for p in _protocols]:
-
             http_ext_table = self._init_table()
             http_ext_table.add_row(':speech_balloon:', 'Swagger UI', swagger_ui_link)
 
@@ -1768,7 +1771,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             monitor_ext_table = self._init_table()
 
             for replica in self.pod_args['pods'][0]:
-
                 monitor_ext_table.add_row(
                     ':flashlight:',  # upstream issue: they dont have :torch: emoji, so we use :flashlight:
                     # to represent observability of Prometheus (even they have :torch: it will be a war
@@ -1895,7 +1897,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         output_base_path: str,
         k8s_namespace: Optional[str] = None,
         k8s_deployments_addresses: Optional[Dict] = None,
-        k8s_port: Optional[int] = GrpcConnectionPool.K8S_PORT,
     ):
         import yaml
 
@@ -1911,8 +1912,14 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             if self.args.default_port:
                 from jina.serve.networking import GrpcConnectionPool
 
-                self.args.port = [GrpcConnectionPool.K8S_PORT]
-                self.first_pod_args.port = [GrpcConnectionPool.K8S_PORT]
+                self.args.port = [
+                    GrpcConnectionPool.K8S_PORT + i
+                    for i in range(len(self.args.protocol))
+                ]
+                self.first_pod_args.port = [
+                    GrpcConnectionPool.K8S_PORT + i
+                    for i in range(len(self.args.protocol))
+                ]
 
                 self.args.port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
                 self.first_pod_args.port_monitoring = (
@@ -1922,8 +1929,18 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 self.args.default_port = False
 
             self.args.deployments_addresses = k8s_deployments_addresses
+        else:
+            if len(self.args.protocol) > 1 and len(self.args.port) != len(
+                self.args.protocol
+            ):
+                from jina.serve.networking import GrpcConnectionPool
+
+                self.args.port = [
+                    GrpcConnectionPool.K8S_PORT + i
+                    for i in range(len(self.args.protocol))
+                ]
         k8s_deployment = K8sDeploymentConfig(
-            args=self.args, k8s_namespace=k8s_namespace, k8s_port=k8s_port
+            args=self.args, k8s_namespace=k8s_namespace
         )
 
         configs = k8s_deployment.to_kubernetes_yaml()
@@ -1952,11 +1969,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
         """
         k8s_namespace = k8s_namespace or 'default'
-        k8s_port = self.port[0] if isinstance(self.port, list) else self.port
+        # the Deployment conversion needs to be done in a version without Gateway included. Deployment does quite some changes to its args
+        # to let some of the args (like ports) go to the gateway locally. In Kubernetes, we want no gateway
         self._to_kubernetes_yaml(
-            output_base_path,
+            output_base_path=output_base_path,
             k8s_namespace=k8s_namespace,
-            k8s_port=k8s_port or GrpcConnectionPool.K8S_PORT,
         )
         self.logger.info(
             f'K8s YAML files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'

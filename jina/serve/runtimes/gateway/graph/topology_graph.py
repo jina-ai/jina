@@ -76,7 +76,7 @@ class TopologyGraph:
         def _validate_against_outgoing_nodes(self):
             for node in self.outgoing_nodes:
                 # here validate for each endpoint that output of self matches input of node
-                if node._pydantic_models_by_endpoint is not None: # gateway end
+                if node._pydantic_models_by_endpoint is not None:  # gateway end
 
                     for endp in self._pydantic_models_by_endpoint.keys():
                         outgoing_enp = endp
@@ -90,8 +90,11 @@ class TopologyGraph:
                                     raise Exception(
                                         f'The output schema of {self.name} is incompatible with the input schema of {node.name}')
                         else:
-                            raise Exception(
-                                f'{node.name} does not expose {incoming_endp} which makes it impossible to be chained with {self.name} on {outgoing_enp}')
+                            if outgoing_enp != __default_endpoint__:# It could happen that there is an Encoder with default followed by an indexer with [index, search]
+                                raise Exception(
+                                    f'{node.name} does not expose {incoming_endp} which makes it impossible to be chained with {self.name} on {outgoing_enp}')
+                            else:
+                                self.logger.warning(f'{node.name} does not expose {incoming_endp} which could lead to incompatibility when calling non-explicitly bound endpoints')
                 return node._validate_against_outgoing_nodes()
             return True
 
@@ -210,7 +213,7 @@ class TopologyGraph:
                                 }
                         self._endpoints_proto = endpoints_proto
                     else:
-                        raise Exception(' Failed to get endpoints')
+                        raise Exception('Failed to get endpoints')
                 return self._endpoints_proto
 
             return asyncio.create_task(task())
@@ -322,30 +325,32 @@ class TopologyGraph:
                                                  previous_input,
                                                  previous_output,
                                                  endpoint):
+            if self._pydantic_models_by_endpoint is not None:
 
-            if endpoint in self.endpoints:
-                # update output
-                new_input = previous_input
-                if previous_input is None:
-                    new_input = self._pydantic_models_by_endpoint[endpoint]['input']
+                if endpoint in self.endpoints:
+                    # update output
+                    new_input = previous_input
+                    if previous_input is None:
+                        new_input = self._pydantic_models_by_endpoint[endpoint]['input']
 
-                if previous_output and previous_output.schema() == self._pydantic_models_by_endpoint[endpoint][
-                    "output"].schema():
-                    # this is needed to not mix model IDs, otherwise FastAPI gets crazy
-                    return {
-                        'input': new_input,
-                        'output': previous_output,
-                    }
+                    if previous_output and previous_output.schema() == self._pydantic_models_by_endpoint[endpoint][
+                        "output"].schema():
+                        # this is needed to not mix model IDs, otherwise FastAPI gets crazy
+                        return {
+                            'input': new_input,
+                            'output': previous_output,
+                        }
+                    else:
+                        return {
+                            'input': new_input,
+                            'output': self._pydantic_models_by_endpoint[endpoint]['output'],
+                        }
                 else:
                     return {
-                        'input': new_input,
-                        'output': self._pydantic_models_by_endpoint[endpoint]['output'],
+                        'input': previous_input,
+                        'output': previous_output
                     }
-            else:
-                return {
-                    'input': previous_input,
-                    'output': previous_output
-                }
+            return None
 
         def _get_leaf_input_output_model(
                 self,
@@ -357,12 +362,12 @@ class TopologyGraph:
                                                                 previous_output,
                                                                 endpoint)
             if self.leaf:  # I am like a leaf
-                return list([new_map])  # I am the last in the chain
+                return list([new_map] if new_map is not None else [])  # I am the last in the chain
             list_of_outputs = []
             for outgoing_node in self.outgoing_nodes:
                 list_of_maps = outgoing_node._get_leaf_input_output_model(
-                    previous_input=new_map['input'],
-                    previous_output=new_map['output'],
+                    previous_input=new_map['input'] if new_map is not None else None,
+                    previous_output=new_map['output'] if new_map is not None else None,
                     endpoint=endpoint
                 )
                 # We are interested in the last one, that will be the task that awaits all the previous
@@ -573,9 +578,17 @@ class TopologyGraph:
         self.has_filter_conditions = bool(graph_conditions)
         self._all_endpoints = None
 
-    async def _get_all_endpoints(self, connection_pool, retry_forever=False):
+    async def _get_all_endpoints(self, connection_pool, retry_forever=False, is_cancel=None):
+        def _condition():
+            if is_cancel is not None:
+                is_cancelled = is_cancel.is_set()
+                if is_cancelled:
+                    self.logger.debug(f'cancel get all endpoints')
+                return not is_cancelled
+            else:
+                return True
         if not self._all_endpoints:
-            while True:
+            while _condition():
                 try:
                     models_schemas_list = []
                     models_list = []
@@ -585,8 +598,8 @@ class TopologyGraph:
                     await asyncio.gather(*tasks_to_get_endpoints)
                     endpoints = set()
                     for node in self.all_nodes:
-                        if node._pydantic_models_by_endpoint is not None:
-                            endpoints.update(list(node._pydantic_models_by_endpoint.keys()))
+                        if node.endpoints is not None:
+                            endpoints.update(list(node.endpoints))
                     self._all_endpoints = endpoints
                     break
                 except Exception as exc:
@@ -594,6 +607,7 @@ class TopologyGraph:
                         raise exc
                     self.logger.warning(f'Getting endpoints failed: {exc}. Waiting for another trial')
                     await asyncio.sleep(1)
+
         return self._all_endpoints
 
     def add_routes(self, request: 'DataRequest'):

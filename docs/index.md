@@ -52,7 +52,7 @@ Jina supports developers in building AI services and pipelines:
 
 
 ::::{grid-item-card} {octicon}`cross-reference;1.5em` Learn DocArray API
-:link: https://docarray.jina.ai
+:link: https://docarray.docs.org
 
 DocArray is the foundational data structure of Jina. Before starting Jina, first learn DocArray to quickly build a PoC. 
 ::::
@@ -91,7 +91,7 @@ The Gateway is a microservice that serves as the entrypoint of a {term}`Flow`. I
 :class-card: color-gradient-card-1
 
 
-Executor Hub is a marketplace that allows you to share, explore and test Executors.
+Executor Hub allows you to containerize, share, explore and make Executors ready for the cloud.
 
 ::::
 
@@ -122,22 +122,7 @@ get-started/install/index
 get-started/create-app
 ```
 
-```{toctree}
-:caption: Tutorials
-:hidden:
 
-tutorials/before-you-start
-tutorials/deploy-model
-tutorials/deploy-pipeline
-tutorials/gpu-executor
-```
-
-```{toctree}
-:caption: New DocArray support
-:hidden:
-
-docarray-v2
-```
 
 ```{toctree}
 :caption: Concepts
@@ -159,13 +144,10 @@ cloud-nativeness/opentelemetry
 jina-ai-cloud/index
 ```
 
-
-
 ```{toctree}
 :caption: Developer Reference
 :hidden:
 :maxdepth: 1
-
 
 api-rst
 cli/index
@@ -173,7 +155,16 @@ yaml-spec
 envs/index
 telemetry
 proto/docs
-developer-reference/clean-code
+docarray-support
+```
+
+```{toctree}
+:caption: Tutorials
+:hidden:
+
+tutorials/deploy-model
+tutorials/gpu-executor
+tutorials/deploy-pipeline
 ```
 
 ```{toctree}
@@ -181,7 +172,6 @@ developer-reference/clean-code
 :hidden:
 :maxdepth: 1
 
-get-started/migrate
 Jina 2 Documentation <https://docs2.jina.ai/>
 ```
 

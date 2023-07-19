@@ -129,8 +129,10 @@ class GatewayRequestHandler:
         """
         Gratefully closes the object making sure all the floating requests are taken care and the connections are closed gracefully
         """
+        self.logger.debug(f'Closing Request Handler')
         self.cancel_warmup_task()
         await self.streamer.close()
+        self.logger.debug(f'Request Handler closed')
 
     def _http_fastapi_default_app(
         self,
@@ -284,5 +286,31 @@ class GatewayRequestHandler:
         :return: response DataRequest
         """
         return await self.streamer.process_single_data(request, context)
+
+    async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
+        """
+        Uses the connection pool to send a discover endpoint call to the Executors
+
+        :param empty: The service expects an empty protobuf message
+        :param context: grpc context
+        :returns: the response request
+        """
+        from google.protobuf import json_format
+        self.logger.debug('got an endpoint discovery request')
+        response = jina_pb2.EndpointsProto()
+        await self.streamer._get_endpoints_input_output_models(is_cancel=None)
+        request_models_map = self.streamer._endpoints_models_map
+        if request_models_map is not None and len(request_models_map) > 0:
+            schema_maps = {}
+            for k, v in request_models_map.items():
+                schema_maps[k] = {}
+                schema_maps[k]['input'] = v['input'].schema()
+                schema_maps[k]['output'] = v['output'].schema()
+            response.endpoints.extend(schema_maps.keys())
+            json_format.ParseDict(schema_maps, response.schemas)
+        else:
+            endpoints = await self.streamer.topology_graph._get_all_endpoints(self.streamer._connection_pool,  retry_forever=True, is_cancel=None)
+            response.endpoints.extend(list(endpoints))
+        return response
 
     Call = stream

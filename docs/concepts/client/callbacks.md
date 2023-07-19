@@ -106,7 +106,7 @@ end_time {
 ````
 
 ````{tab} docs
-The DocumentArray being passed between and returned by the Executors. These are the Documents usually processed in a callback function, and are often the main payload.
+The DocList being passed between and returned by the Executors. These are the Documents usually processed in a callback function, and are often the main payload.
 
 ```python
 from pprint import pprint
@@ -117,7 +117,7 @@ Client().post(on='/', on_done=lambda x: pprint(x.docs))
 ```
 
 ```console
-<DocumentArray (length=0) at 5044245248>
+<DocList (length=0)>
 
 ```
 ````
@@ -180,7 +180,8 @@ In the example below, our Flow passes the message then prints the result when su
 If something goes wrong, it beeps. Finally, the result is written to output.txt.
 
 ```python
-from jina import Flow, Client, Document
+from jina import Flow, Client
+from docarray import BaseDoc
 
 
 def beep(*args):
@@ -194,7 +195,7 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
     client = Client(port=f.port)
     client.post(
         '/',
-        Document(),
+        BaseDoc(),
         on_done=print,
         on_error=beep,
         on_always=lambda x: x.docs.save(fp),

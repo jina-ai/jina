@@ -231,6 +231,7 @@ def test_create_empty_doc_list_from_schema(transformation):
         u: Union[str, int]
         lu: List[Union[str, int]] = [0, 1, 2]
         tags: Optional[Dict[str, Any]] = None
+        lf: List[float] = [3.0, 4.1]
 
     CustomDocCopy = _create_aux_model_doc_list_to_list(CustomDoc)
     new_custom_doc_model = _create_pydantic_model_from_schema(CustomDocCopy.schema(), 'CustomDoc', {})

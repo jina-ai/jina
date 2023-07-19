@@ -68,7 +68,16 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         action=KVAppendAction,
         metavar='KEY: VALUE',
         nargs='*',
-        help='The map of environment variables that are read from kubernetes cluster secrets',
+        help='The map of environment variables that are read from kubernetes cluster secrets' if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+    gp.add_argument(
+        '--image-pull-secrets',
+        type=str,
+        nargs='+',
+        default=None,
+        help='List of ImagePullSecrets that the Kubernetes Pods need to have access to in order to pull the image. Used in `to_kubernetes_yaml`' if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
     )
 
     # hidden CLI used for internal only
@@ -279,4 +288,3 @@ def mixin_stateful_parser(parser):
         action=CastPeerPorts,
         nargs='+',
     )
-

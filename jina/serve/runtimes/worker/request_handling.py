@@ -475,14 +475,14 @@ class WorkerRequestHandler:
                 )
                 self._request_size_histogram.record(req.nbytes, attributes=attributes)
 
-    def _record_docs_processed_monitoring(self, requests):
+    def _record_docs_processed_monitoring(self, requests, len_docs: int):
         if self._document_processed_metrics:
             self._document_processed_metrics.labels(
                 requests[0].header.exec_endpoint,
                 self._executor.__class__.__name__,
                 self.args.name,
             ).inc(
-                len(requests[0].docs)
+                len_docs
             )  # TODO we can optimize here and access the
             # lenght of the da without loading the da in memory
 
@@ -493,7 +493,7 @@ class WorkerRequestHandler:
                 self.args.name,
             )
             self._document_processed_counter.add(
-                len(requests[0].docs), attributes=attributes
+                len_docs, attributes=attributes
             )  # TODO same as above
 
     def _record_response_size_monitoring(self, requests):
@@ -636,6 +636,7 @@ class WorkerRequestHandler:
             requests, exec_endpoint, tracing_context=tracing_context
         )
 
+        len_docs = len(requests[0].docs)  # TODO we can optimize here and access the
         if exec_endpoint in self._batchqueue_config:
             assert len(requests) == 1, 'dynamic batching does not support no_reduce'
 
@@ -643,6 +644,7 @@ class WorkerRequestHandler:
             if param_key not in self._batchqueue_instances[exec_endpoint]:
                 self._batchqueue_instances[exec_endpoint][param_key] = BatchQueue(
                     functools.partial(self._executor.__acall__, exec_endpoint),
+                    docarray_cls=self._executor.requests[exec_endpoint].request_schema,
                     output_array_type=self.args.output_array_type,
                     params=params,
                     **self._batchqueue_config[exec_endpoint],
@@ -671,14 +673,14 @@ class WorkerRequestHandler:
         for req in requests:
             req.add_executor(self.deployment_name)
 
-        self._record_docs_processed_monitoring(requests)
-        self._record_response_size_monitoring(requests)
+        self._record_docs_processed_monitoring(requests, len_docs)
         try:
             requests[0].document_array_cls = self._executor.requests[
                 exec_endpoint
             ].response_schema
         except AttributeError:
             pass
+        self._record_response_size_monitoring(requests)
 
         return requests[0]
 
@@ -720,12 +722,15 @@ class WorkerRequestHandler:
 
     async def close(self):
         """Close the data request handler, by closing the executor and the batch queues."""
+        self.logger.debug(f'Closing Request Handler')
         if self._hot_reload_task is not None:
             self._hot_reload_task.cancel()
         if not self._is_closed:
+            self.logger.debug(f'Await closing all the batching queues')
             await asyncio.gather(*[q.close() for q in self._all_batch_queues()])
             self._executor.close()
             self._is_closed = True
+        self.logger.debug(f'Request Handler closed')
 
     @staticmethod
     def _get_docs_matrix_from_request(

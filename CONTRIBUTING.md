@@ -88,7 +88,6 @@ For more about our docstring style, refer to [this guide](./.github/DOCSTRINGS.r
 
 Run `git config blame.ignoreRevsFile .github/.git-blame-ignore-revs`
 
-
 <a name="-naming-conventions"></a>
 ## ☑️ Naming Conventions
 
