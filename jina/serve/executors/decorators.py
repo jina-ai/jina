@@ -21,6 +21,19 @@ def _get_locks_root() -> Path:
     return locks_root
 
 
+def _check_endpoint_request_schema_compatibility(fn_with_schema):
+    # 1. the endpoint is generator but the input schema is not a single document
+    # 2. the endpoint is not generator but the input is a single document
+    is_generator = getattr(fn_with_schema.fn, '__is_generator__', False)
+    if (fn_with_schema.request_schema == Document and not is_generator) or (
+        fn_with_schema.request_schema == DocumentArray and is_generator
+    ):
+        raise RuntimeError(
+            'Request schema is incompatible with endpoint type: either the request schema should '
+            'be a single `Document` and the endpoint function should be a generator, or the request schema should be `DocumentArray` and the endpoint function should not be a generator.'
+        )
+
+
 def avoid_concurrent_lock_cls(cls):
     """Wraps a function to lock a filelock for concurrent access with the name of the class to which it applies, to avoid deadlocks
     :param cls: the class to which is applied, only when the class corresponds to the instance type, this filelock will apply
@@ -349,6 +362,8 @@ def requests(
 
             fn_with_schema = _FunctionWithSchema.get_function_with_schema(self.fn)
 
+            # Check the compatibility between the endpoint and the request schema
+            _check_endpoint_request_schema_compatibility(fn_with_schema)
             request_schema_arg = (
                 request_schema_arg
                 if request_schema_arg
