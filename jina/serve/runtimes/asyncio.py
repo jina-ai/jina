@@ -196,6 +196,7 @@ class AsyncNewLoopRuntime:
                 grpc_server_options=self.args.grpc_server_options,
                 ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
                 ssl_certfile=getattr(self.args, 'ssl_certfile', None),
+                proxy=getattr(self.args, 'proxy', None),
             )
 
         elif len(self.args.protocol) == 1 and self.args.protocol[0] == ProtocolType.HTTP:
