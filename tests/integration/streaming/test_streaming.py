@@ -1,6 +1,6 @@
 import pytest
 
-from jina import Client, Executor, requests
+from jina import Client, Deployment, Executor, requests
 from jina._docarray import Document, DocumentArray
 from jina.excepts import BadServer
 from jina.helper import random_port
@@ -12,9 +12,10 @@ class MyExecutor(Executor):
         for i in range(100):
             yield Document(text=f'{doc.text} {i}')
 
+    # TODO: make this a valid non generator endpoint and add another test for invalid endpoints
     @requests(on='/world')
-    async def non_gen_task(self, doc: Document, **kwargs):
-        return Document(text=f'{doc.text}')
+    async def non_gen_task(self, docs: DocumentArray, **kwargs):
+        return docs
 
 
 @pytest.mark.asyncio
@@ -63,6 +64,26 @@ async def test_streaming_client_non_gen_endpoint(protocol):
                 on='/world', inputs=Document(text='hello world')
             ):
                 pass
+
+
+def test_invalid_executor():
+    with pytest.raises(RuntimeError) as exc_info:
+
+        class InvalidExecutor1(Executor):
+            @requests(on='/invalid')
+            async def invalid(self, doc: Document, **kwargs):
+                return doc
+
+    assert type(exc_info.value.__cause__) is AssertionError
+
+    with pytest.raises(RuntimeError) as exc_info:
+
+        class InvalidExecutor2(Executor):
+            @requests(on='/invalid')
+            async def invalid(self, docs: DocumentArray, **kwargs):
+                yield docs[0]
+
+    assert type(exc_info.value.__cause__) is AssertionError
 
 
 class Executor1(Executor):
