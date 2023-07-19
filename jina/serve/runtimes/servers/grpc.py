@@ -11,6 +11,7 @@ from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.helper import get_server_side_grpc_options
 from jina.serve.networking.utils import send_health_check_async, send_health_check_sync
 from jina.serve.runtimes.servers import BaseServer
+from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 
 
 class GRPCServer(BaseServer):
@@ -69,9 +70,10 @@ class GRPCServer(BaseServer):
             self._request_handler, self.server
         )
 
-        jina_pb2_grpc.add_JinaSingleDocumentRequestRPCServicer_to_server(
-            self._request_handler, self.server
-        )
+        if isinstance(self._request_handler, WorkerRequestHandler):
+            jina_pb2_grpc.add_JinaSingleDocumentRequestRPCServicer_to_server(
+                self._request_handler, self.server
+            )
 
         if hasattr(self._request_handler, 'endpoint_discovery'):
             jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server(
