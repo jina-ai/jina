@@ -6,10 +6,10 @@
 <meta property="og:title" content=" Configuration" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/jcloud/configuration/" />
-<meta property="og:site_name" content="Jina 3.19.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.19.2 Documentation" />
 <meta property="og:description" content="Configuration: JCloud extends Jina’s Flow YAML specification by introducing the special field jcloud. This lets you define resources and scaling policies for each Executor and Gateway. Here’s a Flow with two Executors that have specific resource needs: indexer requires a 10 GB ebs disk, whereas e..." />
 <meta property="og:image" content="https://docs.jina.ai/_images/expose-executor.png" />
-<meta property="og:image:alt" content="Jina 3.19.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.19.2 Documentation" />
 <meta name="description" content="Configuration: JCloud extends Jina’s Flow YAML specification by introducing the special field jcloud. This lets you define resources and scaling policies for each Executor and Gateway. Here’s a Flow with two Executors that have specific resource needs: indexer requires a 10 GB ebs disk, whereas e..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/jcloud/configuration.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Configuration - Jina 3.19.1 documentation</title>
+        <title>Configuration - Jina 3.19.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.19.1 documentation</div>
+                <div class="brand">Jina 3.19.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -728,22 +728,52 @@ If shards/replicas are used, we will multiply credits further by the number of s
 </tr>
 <tr class="row-even"><td><p>metric</p></td>
 <td><p>concurrency</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">concurrency</span></code>  /   <code class="docutils literal notranslate"><span class="pre">rps</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">concurrency</span></code> / <code class="docutils literal notranslate"><span class="pre">rps</span></code> / <code class="docutils literal notranslate"><span class="pre">cpu</span></code> / <code class="docutils literal notranslate"><span class="pre">memory</span></code></p></td>
 <td><p>Metric for scaling</p></td>
 </tr>
-<tr class="row-odd"><td><p>target</p></td>
+<tr class="row-odd"><td><p>scale_down_delay</p></td>
+<td><p>30s</p></td>
+<td><p>str, <code class="docutils literal notranslate"><span class="pre">0s</span></code> &lt;= value &lt;= <code class="docutils literal notranslate"><span class="pre">1h</span></code></p></td>
+<td><p>Time window which must pass at reduced concurrency before a scaling down</p></td>
+</tr>
+<tr class="row-even"><td><p>target</p></td>
 <td><p>100</p></td>
 <td><p>int</p></td>
-<td><p>Target number the replicas try to maintain</p></td>
+<td><p>Target number the replicas try to maintain.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The unit of <code class="docutils literal notranslate"><span class="pre">target</span></code> depends of the metric specified. Refer to the table below:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Metric</p></th>
+<th class="head"><p>Target</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">concurrency</span></code></p></td>
+<td><p>Number of concurrent requests processed at any given time.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rps</span></code></p></td>
+<td><p>Number of requests processed per second per replica.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cpu</span></code></p></td>
+<td><p>Average % CPU utilization of each pod<br>(e.g. <code class="docutils literal notranslate"><span class="pre">60</span></code> means replicas will be scaled up when pods on average reach 60% CPU utilization)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">memory</span></code></p></td>
+<td><p>Average mebibytes of memory used by each pod<br>(e.g. <code class="docutils literal notranslate"><span class="pre">200</span></code> means replicas will be scaled up when the average pods’ memory consumption exceeds 200MiB).</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <p>After you make a JCloud deployment using the autoscaling configuration, the Flow serving part is just the same: the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you can deal with the code!</p>
+<p>Note, that if <code class="docutils literal notranslate"><span class="pre">metric</span></code> is <code class="docutils literal notranslate"><span class="pre">cpu</span></code> or <code class="docutils literal notranslate"><span class="pre">memory</span></code>, <code class="docutils literal notranslate"><span class="pre">min</span></code> will be reset to 1 if user sets it to set to 0.</p>
 </section>
 <section id="id2">
 <h3>Pricing<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
-<p>At present, pricing for autoscaled Executor/Gateway follows the same <a class="reference internal" href="#jcloud-pricing"><span class="std std-ref">JCloud pricing rules</span></a> for the most part.
+<p>At present, pricing for autoscaled Executor/Gateway largely follows the same <a class="reference internal" href="#jcloud-pricing"><span class="std std-ref">JCloud pricing rules</span></a> as other Jina AI services.
 We track the minimum number of replicas in autoscale configurations and use it as a multiplier for the replicas used when calculating the
 <code class="docutils literal notranslate"><span class="pre">Credits</span> <span class="pre">Per</span> <span class="pre">Hour</span></code>.</p>
 </section>
@@ -1005,7 +1035,7 @@ We track the minimum number of replicas in autoscale configurations and use it a
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 19, 2023</div>
+                            Last updated on Jul 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
