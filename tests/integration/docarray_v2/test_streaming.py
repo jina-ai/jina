@@ -18,31 +18,26 @@ class OutputDocument(Document):
 
 class MyExecutor(Executor):
     @requests(on='/hello')
-    async def task(self, doc: MyDocument, **kwargs):
+    async def task(self, doc: MyDocument, **kwargs) -> MyDocument:
         for i in range(100):
             yield MyDocument(text=f'{doc.text} {doc.number + i}')
 
 
 class CustomResponseExecutor(Executor):
-    @requests(on='/task1', response_schema=OutputDocument)
-    async def task1(self, doc: MyDocument, **kwargs):
+    @requests(on='/task1')
+    async def task1(self, doc: MyDocument, **kwargs) -> OutputDocument:
         for i in range(100):
             yield OutputDocument(text=f'{doc.text} {doc.number}-{i}-task1')
 
     @requests(on='/task2')
-    async def task2(self, doc: MyDocument, **kwargs) -> OutputDocument:
+    async def task2(
+        self, doc: MyDocument, **kwargs
+    ) -> Generator[OutputDocument, None, None]:
         for i in range(100):
             yield OutputDocument(text=f'{doc.text} {doc.number}-{i}-task2')
 
     @requests(on='/task3')
     async def task3(
-        self, doc: MyDocument, **kwargs
-    ) -> Generator[OutputDocument, None, None]:
-        for i in range(100):
-            yield OutputDocument(text=f'{doc.text} {doc.number}-{i}-task3')
-
-    @requests(on='/task4')
-    async def task4(
         self, doc: MyDocument, **kwargs
     ) -> AsyncGenerator[OutputDocument, None]:
         for i in range(100):
@@ -77,7 +72,7 @@ async def test_streaming_deployment(protocol):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('protocol', ['http', 'grpc'])
-@pytest.mark.parametrize('endpoint', ['task1', 'task2', 'task3', 'task4'])
+@pytest.mark.parametrize('endpoint', ['task1', 'task2', 'task3'])
 async def test_streaming_custom_response(protocol, endpoint):
     from jina import Deployment
 
@@ -104,7 +99,7 @@ async def test_streaming_custom_response(protocol, endpoint):
 
 class Executor1(Executor):
     @requests
-    def generator(self, doc: MyDocument, **kwargs):
+    def generator(self, doc: MyDocument, **kwargs) -> MyDocument:
         yield MyDocument(text='new document')
 
     @requests(on='/non_generator')
