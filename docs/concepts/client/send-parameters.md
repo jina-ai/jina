@@ -5,10 +5,11 @@ The {class}`~jina.Client` can send key-value pairs as parameters to {class}`~jin
 
 ```{code-block} python
 ---
-emphasize-lines: 14
+emphasize-lines: 15
 ---
 
-from jina import Client, Executor, Flow, requests, Document
+from jina import Client, Executor, Flow, requests
+from docarray import BaseDoc
 
 class MyExecutor(Executor):
 
@@ -20,7 +21,7 @@ f = Flow().add(uses=MyExecutor)
 
 with f:
     client = Client(port=f.port)
-    client.post('/', Document(), parameters={'hello': 'world'})
+    client.post('/', BaseDoc(), parameters={'hello': 'world'})
 ```
 
 ````{hint} 
@@ -46,7 +47,8 @@ and none of the other Executors will receive it.
 For instance in the following Flow:
 
 ```python
-from jina import Flow, DocumentArray, Client
+from jina import Flow, Client
+from docarray import BaseDoc, DocList
 
 with Flow().add(name='exec1').add(name='exec2') as f:
 
@@ -54,8 +56,8 @@ with Flow().add(name='exec1').add(name='exec2') as f:
 
     client.post(
         '/index',
-        DocumentArray.empty(size=5),
-        parameters={'exec1__traversal_path': '@r', 'exec2__traversal_path': '@c'},
+        DocList[BaseDoc]([BaseDoc()]),
+        parameters={'exec1__parameter_exec1': 'param_exec1', 'exec2__parameter_exec1': 'param_exec2'},
     )
 ```
 

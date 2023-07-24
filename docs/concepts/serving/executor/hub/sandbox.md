@@ -33,7 +33,7 @@ Sandbox is serverless. It is not removed immediately after the Deployment is clo
 Executor Hub finds existing sandboxes based on three factors: 
 - Executor name
 - Executor tag
-- Jina version of the driver program
+- Jina and DocArray versions of the driver program
 
 If all these three factors match, then Jina reuses the existing sandbox.
 
@@ -44,7 +44,7 @@ If the Jina version of Gateway is later than the latest released Jina version (w
 
 ## Version consistency
 
-The sandboxed Jina version matches your Deployment's Jina version. For example, if you run a Jina 3.13 Deployment on your local machine, then any sandboxed Executors you run will also use Jina 3.13.
+The sandboxed Jina version matches your Deployment's Jina and DocArray versions. For example, if you run a Jina 3.13 Deployment on your local machine, then any sandboxed Executors you run will also use Jina 3.13.
 
 ## Caveats
 

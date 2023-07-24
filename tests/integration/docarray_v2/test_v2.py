@@ -10,7 +10,7 @@ from docarray.documents import TextDoc
 from docarray.documents.legacy import LegacyDocument
 from jina.helper import random_port
 
-from jina import Deployment, Executor, Flow, requests, Client
+from jina import Deployment, Executor, Flow, requests, Client, dynamic_batching
 from jina.excepts import RuntimeFailToStart
 
 
@@ -134,12 +134,27 @@ def test_different_output_input(protocols, replicas):
             )
             return docs_return
 
+        @requests(on='/bar_with_dbatch')
+        @dynamic_batching(preferred_batch_size=4)
+        def bar_with_dbatch(self, docs: DocList[InputDoc], **kwargs) -> DocList[OutputDoc]:
+            docs_return = DocList[OutputDoc](
+                [OutputDoc(embedding=np.zeros((100, 1))) for _ in range(len(docs))]
+            )
+            return docs_return
+
     ports = [random_port() for _ in protocols]
     with Flow(port=ports, protocol=protocols, replicas=replicas).add(uses=MyExec):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             docs = c.post(
                 on='/bar',
+                inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
+                return_type=DocList[OutputDoc],
+            )
+            assert docs[0].embedding.shape == (100, 1)
+            assert docs.__class__.doc_type == OutputDoc
+            docs = c.post(
+                on='/bar_with_dbatch',
                 inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
                 return_type=DocList[OutputDoc],
             )
@@ -680,6 +695,23 @@ def test_any_endpoint(protocol, ctxt_manager):
         assert ret[0].text == 'Foo'
 
 
+def test_flow_compatible_with_default():
+    class FirstCompatible(Executor):
+        @requests
+        def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[ImageDoc]:
+            pass
+
+    class SecondCompatible(Executor):
+        @requests(on=['/index'])
+        def foo(self, docs: DocList[ImageDoc], **kwargs) -> DocList[ImageDoc]:
+            pass
+
+    f = Flow().add(uses=FirstCompatible).add(uses=SecondCompatible)
+
+    with f:
+        pass
+
+
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_flow_incompatible_linear(protocol):
     class First(Executor):
@@ -698,6 +730,26 @@ def test_flow_incompatible_linear(protocol):
         with f:
             pass
 
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+@pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
+def test_wrong_schemas(ctxt_manager, protocol):
+    if ctxt_manager == 'deployment' and protocol == 'websocket':
+        return
+    with pytest.raises(RuntimeError):
+        class MyExec(Executor):
+            @requests
+            def foo(self, docs: TextDoc, **kwargs) -> DocList[TextDoc]:
+                pass
+
+    if ctxt_manager == 'flow':
+        ctxt_mgr = Flow(protocol=protocol).add(uses='tests.integration.docarray_v2.wrong_schema_executor.WrongSchemaExec')
+    else:
+        ctxt_mgr = Deployment(protocol=protocol, uses='tests.integration.docarray_v2.wrong_schema_executor.WrongSchemaExec')
+
+    with pytest.raises(RuntimeFailToStart):
+        with ctxt_mgr:
+            pass
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_flow_incompatible_bifurcation(protocol):
@@ -1113,3 +1165,26 @@ def test_issue_dict_docs_http():
         for doc in res:
             assert doc.aux.a == 'b'
             assert doc.tags == {'a': {'b': 1}}
+
+def test_issue_with_monitoring():
+
+    class InputDocMonitor(BaseDoc):
+        text: str
+
+    class OutputDocMonitor(BaseDoc):
+        price: int
+
+    class MonitorExecTest(Executor):
+        @requests
+        def foo(self, docs: DocList[InputDocMonitor], **kwargs) -> DocList[OutputDocMonitor]:
+            ret = DocList[OutputDocMonitor]()
+            for doc in docs:
+                ret.append(OutputDocMonitor(price=2))
+            return ret
+
+
+    f = Flow(monitoring=True).add(uses=MonitorExecTest, monitoring=True)
+    with f:
+        ret = f.post(on='/', inputs=DocList[InputDocMonitor]([InputDocMonitor(text='2')]), return_type=DocList[OutputDocMonitor])
+        assert len(ret) == 1
+        assert ret[0].price == 2

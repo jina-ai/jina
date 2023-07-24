@@ -39,7 +39,7 @@ Jina **must** be installed inside the Docker image. This can be achieved in one 
 This ensures that everything needed for Jina to run the Executor is installed.
 
 ```dockerfile
-FROM jinaai/jina:3-py37-perf
+FROM jinaai/jina:3-py38-perf
 ```
 
 - Install Jina like any other Python package. You can do this by specifying Jina in `requirements.txt`, 
@@ -77,14 +77,17 @@ We do this here in the `my_executor.py` file:
 ```python
 import torch  # Our Executor has dependency on torch
 from jina import Executor, requests
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class ContainerizedEncoder(Executor):
     @requests
-    def foo(self, docs, **kwargs):
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         for doc in docs:
             doc.text = 'This Document is embedded by ContainerizedEncoder'
             doc.embedding = torch.randn(10)
+        return docs
 ```
 
 ### Write the Executor YAML file
@@ -121,7 +124,7 @@ torch
 The last step is to write a `Dockerfile`, which has to do little more than launching the Executor via the Jina CLI:
 
 ```dockerfile
-FROM jinaai/jina:3-py37-perf
+FROM jinaai/jina:3-py38-perf
 
 # make sure the files are copied into the image
 COPY . /executor_root/
@@ -163,12 +166,14 @@ my_containerized_executor        latest             5cead0161cb5   13 seconds ag
 The containerized Executor can be used like any other, the only difference being the 'docker' prefix in the `uses`
  parameter:
 ```python
-from jina import Deployment, DocumentArray, Document
+from jina import Deployment
+from docarray import DocList
+from docarray.documents import TextDoc
 
 dep = Deployment(uses='docker://my_containerized_executor')
 
 with dep:
-    returned_docs = dep.post(on='/', inputs=DocumentArray([Document()]))
+    returned_docs = dep.post(on='/', inputs=DocList[TextDoc]([TextDoc()]), return_type=DocList[TextDoc])
 
 for doc in returned_docs:
     print(f'Document returned with text: "{doc.text}"')

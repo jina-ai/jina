@@ -124,6 +124,7 @@ async def create_all_flow_deployments_and_wait_ready(
 async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_size=100):
     # start port forwarding
     from jina.clients import Client
+    port = GrpcConnectionPool.K8S_PORT
 
     gateway_pod_name = (
         core_client.list_namespaced_pod(
@@ -136,11 +137,11 @@ async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_si
     import portforward
 
     with portforward.forward(
-        namespace, gateway_pod_name, flow.port, flow.port, config_path
+        namespace, gateway_pod_name, port, port, config_path
     ):
         client_kwargs = dict(
             host='localhost',
-            port=flow.port,
+            port=port,
             asyncio=True,
         )
         client_kwargs.update(flow._common_kwargs)
@@ -161,7 +162,7 @@ async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_si
 
 @pytest.fixture()
 def k8s_flow_with_sharding(docker_images, polling):
-    flow = Flow(name='test-flow-with-sharding', port=9090, protocol='http').add(
+    flow = Flow(name='test-flow-with-sharding', protocol='http').add(
         name='test_executor',
         shards=2,
         replicas=2,
@@ -183,7 +184,7 @@ def jina_k3_env():
 
 @pytest.fixture
 def k8s_flow_configmap(docker_images, jina_k3_env):
-    flow = Flow(name='k8s-flow-configmap', port=9090, protocol='http').add(
+    flow = Flow(name='k8s-flow-configmap', protocol='http').add(
         name='test_executor',
         uses=f'docker://{docker_images[0]}',
         env={'k1': 'v1', 'k2': 'v2'},
@@ -193,7 +194,7 @@ def k8s_flow_configmap(docker_images, jina_k3_env):
 
 @pytest.fixture
 def k8s_flow_env_from_secret(docker_images, jina_k3_env):
-    flow = Flow(name='k8s-flow-env-from-secret', port=9090, protocol='http').add(
+    flow = Flow(name='k8s-flow-env-from-secret', protocol='http').add(
         name='test_executor',
         uses=f'docker://{docker_images[0]}',
         env_from_secret={
@@ -219,7 +220,7 @@ def k8s_dummy_secret():
 
 @pytest.fixture
 def k8s_flow_gpu(docker_images):
-    flow = Flow(name='k8s-flow-gpu', port=9090, protocol='http').add(
+    flow = Flow(name='k8s-flow-gpu', protocol='http').add(
         name='test_executor',
         uses=f'docker://{docker_images[0]}',
         gpus=1,
@@ -232,7 +233,6 @@ def k8s_flow_with_needs(docker_images):
     flow = (
         Flow(
             name='test-flow-with-needs',
-            port=9090,
             protocol='http',
         )
         .add(
@@ -314,14 +314,14 @@ async def test_flow_with_monitoring(logger, tmpdir, docker_images, port_generato
             .metadata.name
         )
 
+        port = GrpcConnectionPool.K8S_PORT
         port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
-        port = port_generator()
 
         for pod_name in [gateway_pod_name, executor_pod_name]:
             with portforward.forward(
-                namespace, pod_name, port, port_monitoring, config_path
+                namespace, pod_name, port_monitoring, port_monitoring, config_path
             ):
-                resp = req.get(f'http://localhost:{port}/')
+                resp = req.get(f'http://localhost:{port_monitoring}/')
                 assert resp.status_code == 200
 
         core_client.delete_namespace(namespace)
@@ -744,7 +744,7 @@ async def test_flow_with_workspace(logger, docker_images, tmpdir):
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
     try:
-        flow = Flow(name='k8s_flow-with_workspace', port=9090, protocol='http').add(
+        flow = Flow(name='k8s_flow-with_workspace', protocol='http').add(
             name='test_executor',
             uses=f'docker://{docker_images[0]}',
             workspace='/shared',
@@ -838,7 +838,7 @@ async def test_flow_with_external_native_deployment(logger, docker_images, tmpdi
     try:
         args = set_deployment_parser().parse_args(['--uses', 'DocReplaceExecutor'])
         with Deployment(args) as external_deployment:
-            flow = Flow(name='k8s_flow-with_external_deployment', port=9090).add(
+            flow = Flow(name='k8s_flow-with_external_deploymentort').add(
                 name='external_executor',
                 external=True,
                 host=f'172.17.0.1',
@@ -906,7 +906,7 @@ async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
     try:
         await _create_external_deployment(api_client, app_client, docker_images, tmpdir)
 
-        flow = Flow(name='k8s_flow-with_external_deployment', port=9090).add(
+        flow = Flow(name='k8s_flow-with_external_deployment').add(
             name='external_executor',
             external=True,
             host='external-deployment.external-deployment-ns.svc',
@@ -972,12 +972,12 @@ async def test_flow_with_metadata_k8s_deployment(logger, grpc_metadata, tmpdir):
 
         await _create_external_deployment(api_client, app_client, docker_images, tmpdir)
 
-        flow = Flow(name='k8s_flow-with_metadata_deployment', port=9090).add(
+        flow = Flow(name='k8s_flow-with_metadata_deployment').add(
             name='external_executor',
             external=True,
             host='external-deployment.external-deployment-ns.svc',
-            port=GrpcConnectionPool.K8S_PORT,
             grpc_metadata=grpc_metadata,
+            port=GrpcConnectionPool.K8S_PORT,
         )
 
         dump_path = os.path.join(str(tmpdir), namespace)
@@ -1082,7 +1082,7 @@ async def test_flow_with_failing_executor(logger, docker_images, tmpdir):
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
     try:
-        flow = Flow(name='failing_flow-with_workspace', port=9090, protocol='http').add(
+        flow = Flow(name='failing_flow-with_workspace', protocol='http').add(
             name='failing_executor',
             uses=f'docker://{docker_images[0]}',
             workspace='/shared',
@@ -1186,7 +1186,6 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
                 name='flow_with_custom_gateway',
             )
             .config_gateway(
-                port=9090,
                 protocol='http',
                 uses=f'docker://{docker_images[0]}',
                 uses_with={'arg1': 'overridden-hello'},
@@ -1295,12 +1294,9 @@ async def test_flow_multiple_protocols_custom_gateway(
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
     try:
-        http_port = random_port()
-        grpc_port = random_port()
 
         flow = Flow().config_gateway(
             uses=f'docker://{docker_images[0]}',
-            port=[http_port, grpc_port],
             protocol=['http', 'grpc'],
         )
 
@@ -1327,7 +1323,8 @@ async def test_flow_multiple_protocols_custom_gateway(
             .items[0]
             .metadata.name
         )
-
+        http_port = GrpcConnectionPool.K8S_PORT
+        grpc_port = GrpcConnectionPool.K8S_PORT + 1
         # test portforwarding the gateway pod and service using http
         forward_args = [
             [gateway_pod_name, http_port, http_port, namespace],
@@ -1372,11 +1369,8 @@ async def test_flow_multiple_protocols_built_in(
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
     try:
-        http_port = random_port()
-        grpc_port = random_port()
 
         flow = Flow().config_gateway(
-            port=[http_port, grpc_port],
             protocol=['http', 'grpc'],
         )
 
@@ -1403,6 +1397,8 @@ async def test_flow_multiple_protocols_built_in(
             .items[0]
             .metadata.name
         )
+        http_port = GrpcConnectionPool.K8S_PORT
+        grpc_port = GrpcConnectionPool.K8S_PORT + 1
 
         # test portforwarding the gateway pod and service using http
         forward_args = [
@@ -1448,7 +1444,7 @@ async def test_flow_with_stateful_executor(
     app_client = client.AppsV1Api(api_client=api_client)
     try:
         dump_path = os.path.join(str(tmpdir), 'test-flow-with-volumes')
-        flow = Flow(name='test-flow-with-volumes', port=9090, protocol='http',).add(
+        flow = Flow(name='test-flow-with-volumes', protocol='http',).add(
             name='statefulexecutor',
             uses=f'docker://{docker_images[0]}',
             workspace=f'{str(tmpdir)}/workspace_path',

@@ -21,6 +21,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port, gateway_replicas):
     gateway_kwargs['env_from_secret'] = {
         'SECRET_GATEWAY_USERNAME': {'name': 'gateway_secret', 'key': 'gateway_username'},
     }
+    gateway_kwargs['image_pull_secrets'] = ['secret1', 'secret2']
 
     flow = (
         Flow(**flow_kwargs).config_gateway(**gateway_kwargs)
@@ -33,6 +34,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port, gateway_replicas):
                 'SECRET_USERNAME': {'name': 'mysecret', 'key': 'username'},
                 'SECRET_PASSWORD': {'name': 'mysecret', 'key': 'password'},
             },
+            image_pull_secrets=['secret3', 'secret4']
         )
         .add(
             name='executor2',
@@ -102,15 +104,15 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port, gateway_replicas):
     assert gateway_objects[2]['metadata']['namespace'] == namespace
     assert gateway_objects[2]['metadata']['name'] == 'gateway'
     assert gateway_objects[2]['spec']['replicas'] == gateway_replicas
+    assert gateway_objects[2]['spec']['template']['spec']['imagePullSecrets'] == [{'name': 'secret1'}, {'name': 'secret2'}]
+
     gateway_args = gateway_objects[2]['spec']['template']['spec']['containers'][0][
         'args'
     ]
     assert gateway_args[0] == 'gateway'
     assert '--port' in gateway_args
-    assert gateway_args[gateway_args.index('--port') + 1] == (
-        str(flow_port) if flow_port else str(GrpcConnectionPool.K8S_PORT)
-    )
-    assert gateway_args[gateway_args.index('--port') + 1] == str(flow.port)
+    assert gateway_args[gateway_args.index('--port') + 1] == str(GrpcConnectionPool.K8S_PORT)
+    assert gateway_args[gateway_args.index('--port') + 1] == str(GrpcConnectionPool.K8S_PORT)
     assert '--k8s-namespace' in gateway_args
     assert gateway_args[gateway_args.index('--k8s-namespace') + 1] == namespace
     assert '--graph-description' in gateway_args
@@ -211,6 +213,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port, gateway_replicas):
     assert executor1_head0_objects[2]['metadata']['namespace'] == namespace
     assert executor1_head0_objects[2]['metadata']['name'] == 'executor1-head'
     assert executor1_head0_objects[2]['spec']['replicas'] == 1
+    assert executor1_head0_objects[2]['spec']['template']['spec']['imagePullSecrets'] == [{'name': 'secret3'}, {'name': 'secret4'}]
     executor1_head0_args = executor1_head0_objects[2]['spec']['template']['spec'][
         'containers'
     ][0]['args']
@@ -279,6 +282,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port, gateway_replicas):
     assert executor1_shard0_objects[2]['metadata']['namespace'] == namespace
     assert executor1_shard0_objects[2]['metadata']['name'] == 'executor1-0'
     assert executor1_shard0_objects[2]['spec']['replicas'] == 1
+    assert executor1_shard0_objects[2]['spec']['template']['spec']['imagePullSecrets'] == [{'name': 'secret3'}, {'name': 'secret4'}]
     executor1_shard0_args = executor1_shard0_objects[2]['spec']['template']['spec'][
         'containers'
     ][0]['args']
@@ -341,6 +345,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port, gateway_replicas):
     assert executor1_shard1_objects[2]['metadata']['namespace'] == namespace
     assert executor1_shard1_objects[2]['metadata']['name'] == 'executor1-1'
     assert executor1_shard1_objects[2]['spec']['replicas'] == 1
+    assert executor1_shard1_objects[2]['spec']['template']['spec']['imagePullSecrets'] == [{'name': 'secret3'}, {'name': 'secret4'}]
     executor1_shard1_args = executor1_shard1_objects[2]['spec']['template']['spec'][
         'containers'
     ][0]['args']

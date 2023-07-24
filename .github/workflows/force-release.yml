@@ -31,6 +31,7 @@ jobs:
     uses: jina-ai/hub-integration/.github/workflows/main.yml@main
     with:
       actions: 'all'
+      python_version: 3.8
     secrets:
       extended_github_token: ${{ secrets.JINA_DEV_BOT }}
       jina_auth_token: ${{ secrets.JINA_AUTH_TOKEN }}

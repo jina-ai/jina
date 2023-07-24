@@ -25,10 +25,15 @@ Here's a minimal working example, written in PyTorch:
 
 ```python
 import torch
-
-from docarray import DocumentArray
+from typing import Optional
+from docarray import DocList, BaseDoc
+from docarray.typing import AnyTensor
 from jina import Executor, requests
 
+
+class MyDoc(BaseDoc):
+    text: str = ''
+    embedding: Optional[AnyTensor[5]] = None
 
 class MyGPUExec(Executor):
     def __init__(self, device: str = 'cpu', *args, **kwargs):
@@ -36,30 +41,32 @@ class MyGPUExec(Executor):
         self.device = device
 
     @requests
-    def encode(self, docs: DocumentArray, **kwargs):
+    def encode(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDoc]:
         with torch.inference_mode():
             # Generate random embeddings
             embeddings = torch.rand((len(docs), 5), device=self.device)
-            docs.embeddings = embeddings
+            docs.embedding = embeddings
             embedding_device = 'GPU' if embeddings.is_cuda else 'CPU'
-            docs.texts = [f'Embeddings calculated on {embedding_device}']
+            docs.text = [f'Embeddings calculated on {embedding_device}']
 ```
 
 
 ````{tab} Use with CPU 
 
 ```python
-from docarray import Document
+from typing import Optional
+from docarray import DocList, BaseDoc
+from docarray.typing import AnyTensor
 from jina import Deployment
 
 dep = Deployment(uses=MyGPUExec, uses_with={'device': 'cpu'})
-docs = DocumentArray(Document())
+docs =  DocList[MyDoc]([MyDoc()])
 
 with dep:
-    docs = dep.post(on='/encode', inputs=docs)
+    docs = dep.post(on='/encode', inputs=docs, return_type=DocList[MyDoc])
 
-print(f'Document embedding: {docs.embeddings}')
-print(docs.texts)
+print(f'Document embedding: {docs.embedding}')
+print(docs.text)
 ```
 
 ```shell
@@ -78,17 +85,19 @@ Document embedding: tensor([[0.1769, 0.1557, 0.9266, 0.8655, 0.6291]])
 ````{tab} Use with GPU
 
 ```python
-from docarray import Document
+from typing import Optional
+from docarray import DocList, BaseDoc
+from docarray.typing import AnyTensor
 from jina import Deployment
 
 dep = Deployment(uses=MyGPUExec, uses_with={'device': 'cuda'})
-docs = DocumentArray(Document())
+docs =  DocList[MyDoc]([MyDoc()])
 
 with dep:
-    docs = dep.post(on='/encode', inputs=docs)
+    docs = dep.post(on='/encode', inputs=docs, return_type=DocList[MyDoc])
 
-print(f'Document embedding: {docs.embeddings}')
-print(docs.texts)
+print(f'Document embedding: {docs.embedding}')
+print(docs.text)
 ```
 
 ```shell
@@ -260,11 +269,16 @@ Now let's fill the `executor.py` file with the actual Executor code:
 ---
 emphasize-lines: 16
 ---
-from docarray import Document, DocumentArray
+import torch
+from typing import Optional
+from docarray import DocList, BaseDoc
+from docarray.typing import AnyTensor
 from jina import Executor, requests
 from sentence_transformers import SentenceTransformer
-import torch
 
+class MyDoc(BaseDoc):
+    text: str = ''
+    embedding: Optional[AnyTensor[5]] = None
 
 class SentenceEncoder(Executor):
     """A simple sentence encoder that can be run on a CPU or a GPU
@@ -278,7 +292,7 @@ class SentenceEncoder(Executor):
         self.model.to(device)  # Move the model to device
 
     @requests
-    def encode(self, docs: DocumentArray, **kwargs):
+    def encode(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDoc]:
         """Add text-based embeddings to all documents"""
         with torch.inference_mode():
             embeddings = self.model.encode(docs.texts, batch_size=32)
@@ -294,15 +308,21 @@ let's create another file - `main.py`, to demonstrate the usage of this
 encoder by encoding 10,000 text documents.
 
 ```python
-from docarray import Document
+from typing import Optional
 from jina import Deployment
-
+from docarray import DocList, BaseDoc
+from docarray.typing import AnyTensor
 from executor import SentenceEncoder
+
+
+class MyDoc(BaseDoc):
+    text: str = ''
+    embedding: Optional[AnyTensor[5]] = None
 
 
 def generate_docs():
     for _ in range(10_000):
-        yield Document(
+        yield MyDoc(
             text='Using a GPU allows you to significantly speed up encoding.'
         )
 
@@ -310,7 +330,7 @@ def generate_docs():
 dep = Deployment(uses=SentenceEncoder, uses_with={'device': 'cpu'})
 
 with dep:
-    dep.post(on='/encode', inputs=generate_docs, show_progress=True, request_size=32)
+    dep.post(on='/encode', inputs=generate_docs, show_progress=True, request_size=32, return_type=DocList[MyDoc])
 ```
 
 ## Running on GPU and CPU locally
@@ -412,24 +432,29 @@ We need to modify our `main.py` script to use a GPU-base containerized Executor:
 
 ```{code-block} python
 ---
-emphasize-lines: 13
+emphasize-lines: 18
 ---
-
-from docarray import Document, DocumentArray
-from jina import Depoyment
-
+from typing import Optional
+from jina import Deployment
+from docarray import DocList, BaseDoc
+from docarray.typing import AnyTensor
 from executor import SentenceEncoder
 
+class MyDoc(BaseDoc):
+    text: str = ''
+    embedding: Optional[AnyTensor[5]] = None
+
+
 def generate_docs():
-    for _ in range(10000):
-        yield Document(
-            text='Using a GPU enables you to significantly speed up encoding'
+    for _ in range(10_000):
+        yield MyDoc(
+            text='Using a GPU allows you to significantly speed up encoding.'
         )
 
 dep = Deployment(uses='docker://sentence-encoder', uses_with={'device': 'cuda'}, gpus='all')
 
 with dep:
-    dep.post(on='/encode', inputs=generate_docs, show_progress=True, request_size=32)
+    dep.post(on='/encode', inputs=generate_docs, show_progress=True, request_size=32, return_type=DocList[MyDoc])
 ```
 
 If we run this with `python main.py`, we'll get the same output as before, except that now we'll also get the output from the Docker container.
