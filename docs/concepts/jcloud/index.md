@@ -73,11 +73,11 @@ executors:
 To deploy:
 
 ```bash
-jc deploy flow.yml
+jc flow deploy flow.yml
 ```
 
 ````{caution}
-When `jcloud` deploys a flow it automatically appends the following global arguments to the `flow.yml``, if not present:
+When `jcloud` deploys a flow it automatically appends the following global arguments to the `flow.yml`, if not present:
 
 ```yaml
 jcloud:
@@ -162,7 +162,7 @@ Where:
 To deploy:
 
 ```bash
-jc deploy hello
+jc flow deploy hello
 ```
 
 The Flow is successfully deployed when you see:
@@ -443,6 +443,18 @@ jc flow scale good-martin-ca6bfdef84 --executor executor0 --replicas 2
 ```{figure} img/scale_executor.png
 :width: 70%
 ```
+
+### Normalize a Flow
+To normalize a Flow:
+
+```bash
+jc flow normalize flow.yml
+```
+
+```{hint}
+Normalizing a Flow is the process of building the Executor image and pushing the image to Hubble.
+```
+
 
 ### Get Executor or Gateway logs
 
