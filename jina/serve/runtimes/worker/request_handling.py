@@ -915,7 +915,9 @@ class WorkerRequestHandler:
                     [Document.from_protobuf(request.document)]
                 )
             else:
-                data_request.data.docs = DocumentArray(
+                from docarray import DocList
+
+                data_request.data.docs = DocList[request_endpoint.response_schema](
                     [request_schema.from_protobuf(request.document)]
                 )
 
