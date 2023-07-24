@@ -925,7 +925,19 @@ class WorkerRequestHandler:
                 [data_request], context, is_generator=is_generator
             )
             async for doc in result:
-                req = SingleDocumentRequestProto(document=doc.to_protobuf())
+                if not isinstance(doc, request_endpoint.response_schema):
+                    ex = ValueError('endpoint must be generator')
+                    self.logger.error(
+                        f'{ex!r}'
+                        + f'\n add "--quiet-error" to suppress the exception details'
+                        if not self.args.quiet_error
+                        else '',
+                        exc_info=not self.args.quiet_error,
+                    )
+                    req = SingleDocumentRequestProto()
+                    req.add_exception(ex)
+                else:
+                    req = SingleDocumentRequestProto(document=doc.to_protobuf())
                 yield req
 
     async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
