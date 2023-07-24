@@ -257,7 +257,7 @@ Streaming endpoints receive one Document as input and yields one Document at a t
 ```{admonition} Note
 :class: note
 
-Streaming endpoints are only supported for the HTTP and gRPC protocols and for Deployment.
+Streaming endpoints are only supported for HTTP and gRPC protocols and for Deployment.
 ```
 
 A streaming endpoint has the following signature:
