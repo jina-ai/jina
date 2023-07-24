@@ -9,6 +9,7 @@ import multiprocessing
 import os
 import threading
 import warnings
+from collections.abc import AsyncGenerator, AsyncIterator, Generator, Iterator
 from types import SimpleNamespace
 from typing import (
     TYPE_CHECKING,
@@ -21,6 +22,7 @@ from typing import (
     Type,
     TypeVar,
     Union,
+    _GenericAlias,
     overload,
 )
 
@@ -162,6 +164,18 @@ class _FunctionWithSchema(NamedTuple):
                 ''
             )
             return_annotation = None
+        elif isinstance(return_annotation, _GenericAlias):
+            from typing import get_args, get_origin
+
+            if get_origin(return_annotation) == Generator:
+                return_annotation = get_args(return_annotation)[0]
+            elif get_origin(return_annotation) == AsyncGenerator:
+                return_annotation = get_args(return_annotation)[0]
+            elif get_origin(return_annotation) == Iterator:
+                return_annotation = get_args(return_annotation)[0]
+            elif get_origin(return_annotation) == AsyncIterator:
+                return_annotation = get_args(return_annotation)[0]
+
         elif not isinstance(return_annotation, type):
             warnings.warn(
                 f'`return` annotation must be a class if you want to use it'
@@ -169,6 +183,7 @@ class _FunctionWithSchema(NamedTuple):
                 ''
             )
             return_annotation = None
+
         if not docarray_v2:
             request_schema = docs_annotation or DocumentArray
             response_schema = return_annotation or DocumentArray

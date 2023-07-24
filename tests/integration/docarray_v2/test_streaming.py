@@ -1,4 +1,4 @@
-from typing import Generator, Optional
+from typing import AsyncGenerator, Generator, Optional
 
 import pytest
 
@@ -41,6 +41,13 @@ class CustomResponseExecutor(Executor):
         for i in range(100):
             yield OutputDocument(text=f'{doc.text} {doc.number}-{i}-task3')
 
+    @requests(on='/task4')
+    async def task4(
+        self, doc: MyDocument, **kwargs
+    ) -> AsyncGenerator[OutputDocument, None]:
+        for i in range(100):
+            yield OutputDocument(text=f'{doc.text} {doc.number}-{i}-task3')
+
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('protocol', ['http', 'grpc'])
@@ -70,7 +77,7 @@ async def test_streaming_deployment(protocol):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('protocol', ['http', 'grpc'])
-@pytest.mark.parametrize('endpoint', ['task1', 'task2', 'task3'])
+@pytest.mark.parametrize('endpoint', ['task1', 'task2', 'task3', 'task4'])
 async def test_streaming_custom_response(protocol, endpoint):
     from jina import Deployment
 
