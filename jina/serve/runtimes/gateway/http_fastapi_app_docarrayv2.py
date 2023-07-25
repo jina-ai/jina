@@ -1,7 +1,5 @@
 from typing import TYPE_CHECKING, Dict, List, Optional
 
-from jina.clients.request import request_generator
-from jina.enums import DataInputType
 from jina.excepts import InternalNetworkError
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
@@ -44,6 +42,7 @@ def get_fastapi_app(
         from fastapi import FastAPI, Response, HTTPException
         from fastapi.middleware.cors import CORSMiddleware
         import pydantic
+        from pydantic import Field
     from docarray.base_doc.docarray_response import DocArrayResponse
     from docarray import DocList, BaseDoc
 
@@ -87,7 +86,7 @@ def get_fastapi_app(
 
     class Header(BaseModel):
         request_id: Optional[str] = None
-        target_executor: Optional[str] = None
+        target_executor: Optional[str] = Field(default=None, example="")
 
         class Config(BaseConfig):
             alias_generator = _to_camel_case
