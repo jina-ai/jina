@@ -274,7 +274,7 @@ class MyDocument(BaseDoc):
 class MyExecutor(Executor):
 
     @requests(on='/hello')
-    async def task(self, doc: MyDocument, **kwargs):
+    async def task(self, doc: MyDocument, **kwargs) -> MyDocument:
         for i in range(100):
             yield MyDocument(text=f'hello world {i}')
             
@@ -293,9 +293,10 @@ Jina offers a standard python client for using the streaming endpoint:
 
 ```python
 from jina import Client
+from docarray import DocList
 client = Client(port=12345, protocol='http', cors=True, asyncio=True) # or protocol='grpc'
 async for doc in client.stream_doc(
-    on='/hello', inputs=MyDocument(text='hello world'), return_type=DocList[MyDocument]
+    on='/hello', inputs=MyDocument(text='hello world'), return_type=MyDocument
 ):
     print(doc.text)
 ```
