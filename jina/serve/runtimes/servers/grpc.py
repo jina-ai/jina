@@ -70,7 +70,7 @@ class GRPCServer(BaseServer):
             self._request_handler, self.server
         )
 
-        if isinstance(self._request_handler, WorkerRequestHandler):
+        if hasattr(self._request_handler, 'stream_doc'):
             jina_pb2_grpc.add_JinaSingleDocumentRequestRPCServicer_to_server(
                 self._request_handler, self.server
             )
