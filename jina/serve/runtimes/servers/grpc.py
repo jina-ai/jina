@@ -11,7 +11,6 @@ from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.helper import get_server_side_grpc_options
 from jina.serve.networking.utils import send_health_check_async, send_health_check_sync
 from jina.serve.runtimes.servers import BaseServer
-from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 
 
 class GRPCServer(BaseServer):
