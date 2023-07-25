@@ -1,12 +1,17 @@
 import asyncio
 import copy
-from typing import Any, List
+from typing import Any, List, TYPE_CHECKING
 
 from jina.serve.runtimes.servers import BaseServer
 
+if TYPE_CHECKING:
+    from jina.logging.logger import JinaLogger
 
-class CompositeServer(BaseServer):
-    """Composite Server implementation"""
+
+class CompositeBaseServer(BaseServer):
+    """Composite Base Server implementation from which u can inherit a specific custom composite one"""
+    servers: List['BaseServer']
+    logger: 'JinaLogger'
 
     def __init__(
             self,
@@ -16,30 +21,32 @@ class CompositeServer(BaseServer):
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
-        from jina.parsers.helper import _get_gateway_class
+        self._kwargs = kwargs
 
-        self.servers: List[BaseServer] = []
+    @property
+    def _server_kwargs(self):
+        ret = []
+        # ignore monitoring and tracing args since they are not copyable
+        ignored_attrs = [
+            'metrics_registry',
+            'tracer_provider',
+            'grpc_tracing_server_interceptors',
+            'aio_tracing_client_interceptors',
+            'tracing_client_interceptor',
+        ]
         for port, protocol in zip(self.ports, self.protocols):
-            server_cls = _get_gateway_class(protocol, works_as_load_balancer=self.works_as_load_balancer)
             # ignore monitoring and tracing args since they are not copyable
-            ignored_attrs = [
-                'metrics_registry',
-                'tracer_provider',
-                'grpc_tracing_server_interceptors',
-                'aio_tracing_client_interceptors',
-                'tracing_client_interceptor',
-            ]
             runtime_args = self._deepcopy_with_ignore_attrs(
                 self.runtime_args, ignored_attrs
             )
-            runtime_args.port = [port]
-            runtime_args.protocol = [protocol]
-            server_kwargs = {k: v for k, v in kwargs.items() if k != 'runtime_args'}
+            runtime_args.port = port
+            runtime_args.protocol = protocol
+            server_kwargs = {k: v for k, v in self._kwargs.items() if k != 'runtime_args'}
             server_kwargs['runtime_args'] = dict(vars(runtime_args))
             server_kwargs['req_handler'] = self._request_handler
-            server = server_cls(**server_kwargs)
-            self.servers.append(server)
-        self.gateways = self.servers # for backwards compatibility
+            ret.append(server_kwargs)
+
+        return ret
 
     async def setup_server(self):
         """
@@ -72,6 +79,34 @@ class CompositeServer(BaseServer):
 
         await asyncio.gather(*run_server_tasks)
 
+    @property
+    def _should_exit(self) -> bool:
+        should_exit_values = [
+            getattr(server, 'should_exit', True) for server in self.servers
+        ]
+        return all(should_exit_values)
+
+
+class CompositeServer(CompositeBaseServer):
+    """Composite Server implementation"""
+
+    def __init__(
+            self,
+            **kwargs,
+    ):
+        """Initialize the gateway
+        :param kwargs: keyword args
+        """
+        super().__init__(**kwargs)
+        from jina.parsers.helper import _get_gateway_class
+
+        self.servers: List[BaseServer] = []
+        for server_kwargs in self._server_kwargs:
+            server_cls = _get_gateway_class(server_kwargs['runtime_args']['protocol'], works_as_load_balancer=self.works_as_load_balancer)
+            server = server_cls(**server_kwargs)
+            self.servers.append(server)
+        self.gateways = self.servers  # for backwards compatibility
+
     @staticmethod
     def _deepcopy_with_ignore_attrs(obj: Any, ignore_attrs: List[str]) -> Any:
         """Deep copy an object and ignore some attributes
@@ -87,10 +122,3 @@ class CompositeServer(BaseServer):
                 memo[id(getattr(obj, k))] = None  # getattr(obj, k)
 
         return copy.deepcopy(obj, memo)
-
-    @property
-    def _should_exit(self) -> bool:
-        should_exit_values = [
-            getattr(server, 'should_exit', True) for server in self.servers
-        ]
-        return all(should_exit_values)
