@@ -9,6 +9,7 @@ import multiprocessing
 import os
 import threading
 import warnings
+from collections.abc import AsyncGenerator, AsyncIterator, Generator, Iterator
 from types import SimpleNamespace
 from typing import (
     TYPE_CHECKING,
@@ -21,6 +22,7 @@ from typing import (
     Type,
     TypeVar,
     Union,
+    _GenericAlias,
     overload,
 )
 
@@ -122,9 +124,15 @@ class _FunctionWithSchema(NamedTuple):
         # otherwise, infer from the doc parameter (since generator endpoints expect only 1 document as input)
         is_generator = getattr(fn, '__is_generator__', False)
         if not is_generator:
+            assert (
+                'doc' not in fn.__annotations__
+            ), f'Cannot specify the `doc` parameter if the endpoint {fn.__name__} is not a generator'
             docs_annotation = fn.__annotations__.get('docs', None)
         else:
             docs_annotation = fn.__annotations__.get('doc', None)
+            assert (
+                'docs' not in fn.__annotations__
+            ), f'Cannot specify the `docs` parameter if the endpoint {fn.__name__} is a generator'
 
         if docs_annotation is None:
             pass
@@ -156,6 +164,18 @@ class _FunctionWithSchema(NamedTuple):
                 ''
             )
             return_annotation = None
+        elif isinstance(return_annotation, _GenericAlias):
+            from typing import get_args, get_origin
+
+            if get_origin(return_annotation) == Generator:
+                return_annotation = get_args(return_annotation)[0]
+            elif get_origin(return_annotation) == AsyncGenerator:
+                return_annotation = get_args(return_annotation)[0]
+            elif get_origin(return_annotation) == Iterator:
+                return_annotation = get_args(return_annotation)[0]
+            elif get_origin(return_annotation) == AsyncIterator:
+                return_annotation = get_args(return_annotation)[0]
+
         elif not isinstance(return_annotation, type):
             warnings.warn(
                 f'`return` annotation must be a class if you want to use it'
@@ -163,11 +183,18 @@ class _FunctionWithSchema(NamedTuple):
                 ''
             )
             return_annotation = None
+
         if not docarray_v2:
-            request_schema = docs_annotation or DocumentArray
-            response_schema = return_annotation or DocumentArray
+            if not is_generator:
+                request_schema = docs_annotation or DocumentArray
+                response_schema = return_annotation or DocumentArray
+            else:
+                from docarray import Document
+
+                request_schema = docs_annotation or Document
+                response_schema = return_annotation or Document
         else:
-            from docarray import DocList, BaseDoc
+            from docarray import BaseDoc, DocList
 
             if not is_generator:
                 request_schema = docs_annotation or DocList[LegacyDocument]

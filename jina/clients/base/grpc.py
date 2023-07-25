@@ -1,14 +1,16 @@
 import asyncio
 import json
 import threading
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type
 
 import grpc
 from grpc import RpcError
 
+from jina._docarray import Document
 from jina.clients.base import BaseClient
 from jina.clients.base.stream_rpc import StreamRpc
 from jina.clients.base.unary_rpc import UnaryRpc
+from jina.clients.helper import callback_exec
 from jina.excepts import BadClientInput, BadServerFlow, InternalNetworkError
 from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2, jina_pb2_grpc
@@ -210,6 +212,53 @@ class GRPCBaseClient(BaseClient):
             ) from err
         else:
             raise BadServerFlow(msg) from err
+
+    async def stream_doc_endpoint(
+        self,
+        request: jina_pb2.SingleDocumentRequestProto,
+        timeout: Optional[float] = None,
+    ):
+        """
+        Use the stream_doc stub to send one document and stream documents back from the Executor
+
+        :param request: The request to be sent
+        :param timeout: defines timeout for sending request
+
+        :yields: response document
+        """
+        async with get_grpc_channel(
+            f'{self.args.host}:{self.args.port}',
+            asyncio=True,
+            tls=self.args.tls,
+            aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
+        ) as channel:
+            stub = jina_pb2_grpc.JinaSingleDocumentRequestRPCStub(channel)
+            try:
+                async for response in stub.stream_doc(request, timeout=timeout):
+                    callback_exec(
+                        response=response,
+                        logger=self.logger,
+                    )
+                    yield response
+            except (grpc.aio.AioRpcError, InternalNetworkError) as err:
+                await self._handle_error_and_metadata(err)
+
+    async def _get_streaming_results(
+        self,
+        on: str,
+        inputs: 'Document',
+        parameters: Optional[Dict] = None,
+        return_type: Type[Document] = Document,
+        timeout: Optional[int] = None,
+        **kwargs,
+    ):
+        request_proto = jina_pb2.SingleDocumentRequestProto(
+            header=jina_pb2.HeaderProto(exec_endpoint=on), document=inputs.to_protobuf()
+        )
+        async for response in self.stream_doc_endpoint(
+            request=request_proto, timeout=timeout
+        ):
+            yield return_type.from_protobuf(response.document)
 
 
 def client_grpc_options(

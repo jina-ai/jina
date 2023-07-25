@@ -279,3 +279,28 @@ class RestoreSnapshotStatusProto:
         rsp.ParseFromString(x)
 
         return rsp
+
+
+class SingleDocumentRequestProto:
+    """Placeholder that delegates the serialization and deserialization to the internal protobuf"""
+
+    @staticmethod
+    def SerializeToString(x):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        return x.SerializeToString()
+
+    @staticmethod
+    def FromString(x: bytes):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        rsp = jina_pb2.SingleDocumentRequestProto()
+        rsp.ParseFromString(x)
+
+        return rsp

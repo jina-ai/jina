@@ -206,11 +206,11 @@ class WebSocketBaseClient(BaseClient):
                 ):
                     callback_exec(
                         response=response,
+                        logger=self.logger,
                         on_error=on_error,
                         on_done=on_done,
                         on_always=on_always,
                         continue_on_error=self.continue_on_error,
-                        logger=self.logger,
                     )
                     if self.show_progress:
                         p_bar.update()

@@ -231,7 +231,7 @@ def requests(
     *,
     on: Optional[Union[str, Sequence[str]]] = None,
     request_schema: Optional[Type[DocumentArray]] = None,
-    response_schema: Optional[Type[DocumentArray]] = None,
+    response_schema: Optional[Union[Type[DocumentArray], Type[Document]]] = None,
 ):
     """
     `@requests` defines the endpoints of an Executor. It has a keyword `on=` to

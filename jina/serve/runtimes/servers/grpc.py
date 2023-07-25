@@ -1,16 +1,17 @@
+import os
 from typing import Optional
 
-import os
 import grpc
 from grpc import RpcError
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
 
+from jina._docarray import docarray_v2
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.helper import get_server_side_grpc_options
 from jina.serve.networking.utils import send_health_check_async, send_health_check_sync
 from jina.serve.runtimes.servers import BaseServer
-from jina._docarray import docarray_v2
+from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 
 
 class GRPCServer(BaseServer):
@@ -42,16 +43,20 @@ class GRPCServer(BaseServer):
         self.ssl_certfile = ssl_certfile
         self.health_servicer = health.aio.HealthServicer()
 
-
     async def setup_server(self):
         """
         setup GRPC server
         """
         self.logger.debug(f'Setting up GRPC server')
         if docarray_v2:
-            from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+            from jina.serve.runtimes.gateway.request_handling import (
+                GatewayRequestHandler,
+            )
+
             if isinstance(self._request_handler, GatewayRequestHandler):
-                await self._request_handler.streamer._get_endpoints_input_output_models(is_cancel=self.is_cancel)
+                await self._request_handler.streamer._get_endpoints_input_output_models(
+                    is_cancel=self.is_cancel
+                )
                 self._request_handler.streamer._validate_flow_docarray_compatibility()
 
         self.server = grpc.aio.server(
@@ -64,6 +69,11 @@ class GRPCServer(BaseServer):
         jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
             self._request_handler, self.server
         )
+
+        if hasattr(self._request_handler, 'stream_doc'):
+            jina_pb2_grpc.add_JinaSingleDocumentRequestRPCServicer_to_server(
+                self._request_handler, self.server
+            )
 
         if hasattr(self._request_handler, 'endpoint_discovery'):
             jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server(
@@ -97,8 +107,8 @@ class GRPCServer(BaseServer):
             )
 
         jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(
-                self._request_handler, self.server
-            )
+            self._request_handler, self.server
+        )
 
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,
@@ -162,7 +172,9 @@ class GRPCServer(BaseServer):
         await self.server.wait_for_termination()
 
     @staticmethod
-    def is_ready(ctrl_address: str, timeout: float = 1.0, logger=None, **kwargs) -> bool:
+    def is_ready(
+        ctrl_address: str, timeout: float = 1.0, logger=None, **kwargs
+    ) -> bool:
         """
         Check if status is ready.
         :param ctrl_address: the address where the control request needs to be sent
@@ -184,7 +196,9 @@ class GRPCServer(BaseServer):
             return False
 
     @staticmethod
-    async def async_is_ready(ctrl_address: str, timeout: float = 1.0, logger=None, **kwargs) -> bool:
+    async def async_is_ready(
+        ctrl_address: str, timeout: float = 1.0, logger=None, **kwargs
+    ) -> bool:
         """
         Async Check if status is ready.
         :param ctrl_address: the address where the control request needs to be sent
