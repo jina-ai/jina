@@ -122,21 +122,21 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         """Gets the first port of the port list argument. To be used in the regular case where a Gateway exposes a single port
         :return: The first port to be exposed
         """
-        return self.runtime_args.port[0]
+        return self.runtime_args.port[0] if isinstance(self.runtime_args.port, list) else self.runtime_args.port
 
     @property
     def ports(self):
         """Gets all the list of ports from the runtime_args as a list.
         :return: The lists of ports to be exposed
         """
-        return self.runtime_args.port
+        return self.runtime_args.port if isinstance(self.runtime_args.port, list) else [self.runtime_args.port]
 
     @property
     def protocols(self):
         """Gets all the list of protocols from the runtime_args as a list.
         :return: The lists of protocols to be exposed
         """
-        return self.runtime_args.protocol
+        return self.runtime_args.protocol if isinstance(self.runtime_args.protocol, list) else [self.runtime_args.protocol]
 
     @property
     def host(self):

@@ -392,3 +392,36 @@ class Response(DataRequest):
     Currently, its sole purpose is to give a more consistent semantic on
     the client API: send a :class:`~jina.types.request.data.DataRequest` and receive a :class:`~jina.types.request.data.Response`.
     """
+
+
+class SingleDocumentRequest(Request):
+    """
+    SingleDocumentRequest represents a request containing only 1 document, which is used for streaming endpoints.
+    Similar to DataRequest but has a `document` field instead of `data`
+    """
+
+    def __init__(
+        self,
+        request: Optional[jina_pb2.SingleDocumentRequestProto] = None,
+    ):
+        self._pb_body = None
+
+        try:
+            if isinstance(request, jina_pb2.SingleDocumentRequestProto):
+                self._pb_body = request
+            else:
+                self._pb_body = jina_pb2.SingleDocumentRequestProto()
+        except Exception as ex:
+            raise BadRequestType(
+                f'fail to construct a {self.__class__} object from {request}'
+            ) from ex
+
+    @property
+    def proto(
+        self,
+    ) -> 'jina_pb2.SingleDocumentRequestProto':
+        """
+        Returns the Request protobuf object
+        :return: SingleDocumentRequestProto protobuf instance
+        """
+        return self._pb_body
