@@ -26,7 +26,7 @@ from typing import (
     overload,
 )
 
-from jina._docarray import DocumentArray, docarray_v2
+from jina._docarray import Document, DocumentArray, docarray_v2
 from jina.constants import __args_executor_init__, __cache_path__, __default_endpoint__
 from jina.enums import BetterEnum
 from jina.helper import (
@@ -185,8 +185,12 @@ class _FunctionWithSchema(NamedTuple):
             return_annotation = None
 
         if not docarray_v2:
-            request_schema = docs_annotation or DocumentArray
-            response_schema = return_annotation or DocumentArray
+            if not is_generator:
+                request_schema = docs_annotation or DocumentArray
+                response_schema = return_annotation or DocumentArray
+            else:
+                request_schema = docs_annotation or Document
+                response_schema = return_annotation or Document
         else:
             from docarray import BaseDoc, DocList
 
