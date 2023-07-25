@@ -275,9 +275,6 @@ class MyExecutor(Executor):
 
     @requests(on='/hello')
     async def task(self, doc: MyDocument, **kwargs):
-        print()
-        # for doc in docs:
-        #     doc.text = 'hello world'
         for i in range(100):
             yield MyDocument(text=f'hello world {i}')
             
