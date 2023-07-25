@@ -934,10 +934,12 @@ class WorkerRequestHandler:
                         else '',
                         exc_info=not self.args.quiet_error,
                     )
-                    req = SingleDocumentRequestProto()
+                    req = SingleDocumentRequest(SingleDocumentRequestProto())
                     req.add_exception(ex)
                 else:
-                    req = SingleDocumentRequestProto(document=doc.to_protobuf())
+                    req = SingleDocumentRequest(
+                        SingleDocumentRequestProto(document=doc.to_protobuf())
+                    )
                 yield req
 
     async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
