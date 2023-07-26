@@ -13,7 +13,7 @@
 ```{admonition} Note
 :class: note
 
-Thanks to DocArray's flexibility, you can actually implement much more flexible services. For instance, you can use 
+Thanks to DocArray's flexibility, you can implement very flexible services. For instance, you can use 
 Tensor types to efficiently stream token logits back to the client and implement complex token sampling strategies on 
 the client side.
 ```
