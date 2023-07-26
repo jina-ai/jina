@@ -353,7 +353,7 @@ In this tutorial, we will discuss how to achieve this with Streaming Endpoints i
 <!-- end llm-streaming-intro -->
 
 #### Service Schemas
-<!-- begin llm-streaming-schemas -->
+<!-- start llm-streaming-schemas -->
 The first step is to define the streaming service schemas, as you would do in any other serving framework.
 The input of the service is the prompt and the maximum number of tokens to generate, while the output is simply the 
 token ID:
@@ -372,7 +372,7 @@ class TokenDocument(BaseDoc):
 <!-- end llm-streaming-schemas -->
 
 #### Service initialization
-<!-- begin llm-streaming-init -->
+<!-- start llm-streaming-init -->
 Our service depends on a large language model. As an example, we will use the `gpt2` model. This is how you would load 
 such a model in your executor
 ```python
@@ -392,7 +392,7 @@ class TokenStreamingExecutor(Executor):
 
 
 #### Implement the streaming endpoint
-<!-- begin llm-streaming-endpoint -->
+<!-- start llm-streaming-endpoint -->
 Our streaming endpoint accepts a `PromptDocument` as input and streams `TokenDocument`s. To stream a document back to 
 the client, you can use the `yield` keyword in the endpoint implementation. Therefore, we use the model to generate 
 `max_tokens` tokens and yield them until the generation stops: 
@@ -416,7 +416,7 @@ Learn more about {ref}`streaming endpoints <streaming-endpoints>`.
 
 
 #### Serve and send requests
-<!-- begin llm-streaming-serve -->
+<!-- start llm-streaming-serve -->
 ```
 The final step is to serve the Executor and send requests using the client.
 To serve the Executor using gRPC:
