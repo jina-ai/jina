@@ -48,6 +48,22 @@ class CompositeBaseServer(BaseServer):
 
         return ret
 
+    @staticmethod
+    def _deepcopy_with_ignore_attrs(obj: Any, ignore_attrs: List[str]) -> Any:
+        """Deep copy an object and ignore some attributes
+
+        :param obj: the object to copy
+        :param ignore_attrs: the attributes to ignore
+        :return: the copied object
+        """
+
+        memo = {}
+        for k in ignore_attrs:
+            if hasattr(obj, k):
+                memo[id(getattr(obj, k))] = None  # getattr(obj, k)
+
+        return copy.deepcopy(obj, memo)
+
     async def setup_server(self):
         """
         setup servers inside CompositeServer
@@ -102,23 +118,8 @@ class CompositeServer(CompositeBaseServer):
 
         self.servers: List[BaseServer] = []
         for server_kwargs in self._server_kwargs:
-            server_cls = _get_gateway_class(server_kwargs['runtime_args']['protocol'], works_as_load_balancer=self.works_as_load_balancer)
+            server_cls = _get_gateway_class(server_kwargs['runtime_args']['protocol'],
+                                            works_as_load_balancer=self.works_as_load_balancer)
             server = server_cls(**server_kwargs)
             self.servers.append(server)
         self.gateways = self.servers  # for backwards compatibility
-
-    @staticmethod
-    def _deepcopy_with_ignore_attrs(obj: Any, ignore_attrs: List[str]) -> Any:
-        """Deep copy an object and ignore some attributes
-
-        :param obj: the object to copy
-        :param ignore_attrs: the attributes to ignore
-        :return: the copied object
-        """
-
-        memo = {}
-        for k in ignore_attrs:
-            if hasattr(obj, k):
-                memo[id(getattr(obj, k))] = None  # getattr(obj, k)
-
-        return copy.deepcopy(obj, memo)
