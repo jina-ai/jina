@@ -165,6 +165,7 @@ docarray-support
 tutorials/deploy-model
 tutorials/gpu-executor
 tutorials/deploy-pipeline
+tutorials/llm-serve
 ```
 
 ```{toctree}
