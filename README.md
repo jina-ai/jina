@@ -417,7 +417,7 @@ Learn more about {ref}`streaming endpoints <streaming-endpoints>`.
 
 #### Serve and send requests
 <!-- start llm-streaming-serve -->
-```
+
 The final step is to serve the Executor and send requests using the client.
 To serve the Executor using gRPC:
 ```python
