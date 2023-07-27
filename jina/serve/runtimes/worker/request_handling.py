@@ -926,7 +926,9 @@ class WorkerRequestHandler:
             )
             async for doc in result:
                 if not isinstance(doc, request_endpoint.response_schema):
-                    ex = ValueError('endpoint must be generator')
+                    ex = ValueError(
+                        f'output document type {doc.__class__.__name__} does not match the endpoint output type {request_endpoint.response_schema.__name__}'
+                    )
                     self.logger.error(
                         f'{ex!r}'
                         + f'\n add "--quiet-error" to suppress the exception details'
