@@ -424,7 +424,7 @@ To serve the Executor using gRPC:
 from jina import Deployment
 
 with Deployment(
-    uses=TokenStreamingExecutor, port=12345, protocol='grpc', include_gateway=False
+    uses=TokenStreamingExecutor, port=12345, protocol='grpc'
 ) as dep:
     dep.block()
 ```
