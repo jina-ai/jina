@@ -18,7 +18,6 @@ from typing import (
     Union,
 )
 
-import grpc
 from google.protobuf.struct_pb2 import Struct
 
 from jina._docarray import DocumentArray, docarray_v2
@@ -34,6 +33,7 @@ from jina.serve.runtimes.worker.batch_queue import BatchQueue
 from jina.types.request.data import DataRequest, SingleDocumentRequest
 
 if TYPE_CHECKING:  # pragma: no cover
+    import grpc
     from opentelemetry import metrics, trace
     from opentelemetry.context.context import Context
     from opentelemetry.propagate import Context
@@ -871,10 +871,10 @@ class WorkerRequestHandler:
         return await self.process_data([request], context, is_generator=is_generator)
 
     async def stream_doc(
-        self, request: SingleDocumentRequestProto, context: grpc.aio.ServicerContext
+        self, request: SingleDocumentRequestProto, context: 'grpc.aio.ServicerContext'
     ) -> SingleDocumentRequestProto:
         """
-        Process the received requests and return the result as a new request
+        Process the received requests and return the result as a new request, used for streaming behavior, one doc IN, several out
 
         :param request: the data request to process
         :param context: grpc context
@@ -988,7 +988,7 @@ class WorkerRequestHandler:
         return endpoints_proto
 
     def _extract_tracing_context(
-        self, metadata: grpc.aio.Metadata
+        self, metadata: 'grpc.aio.Metadata'
     ) -> Optional['Context']:
         if self.tracer:
             from opentelemetry.propagate import extract

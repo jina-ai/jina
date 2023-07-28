@@ -25,6 +25,7 @@ class _ConnectionStubs:
     STUB_MAPPING = {
         'jina.JinaDataRequestRPC': jina_pb2_grpc.JinaDataRequestRPCStub,
         'jina.JinaSingleDataRequestRPC': jina_pb2_grpc.JinaSingleDataRequestRPCStub,
+        'jina.JinaSingleDocumentRequestRPC': jina_pb2_grpc.JinaSingleDocumentRequestRPCStub,
         'jina.JinaDiscoverEndpointsRPC': jina_pb2_grpc.JinaDiscoverEndpointsRPCStub,
         'jina.JinaRPC': jina_pb2_grpc.JinaRPCStub,
         'jina.JinaInfoRPC': jina_pb2_grpc.JinaInfoRPCStub,
@@ -61,6 +62,7 @@ class _ConnectionStubs:
                 stubs[service] = self.STUB_MAPPING[service](self.channel)
         self.data_list_stub = stubs['jina.JinaDataRequestRPC']
         self.single_data_stub = stubs['jina.JinaSingleDataRequestRPC']
+        self.stream_doc_stub = stubs['jina.JinaSingleDocumentRequestRPC']
         self.stream_stub = stubs['jina.JinaRPC']
         self.endpoints_discovery_stub = stubs['jina.JinaDiscoverEndpointsRPC']
         self.info_rpc_stub = stubs['jina.JinaInfoRPC']
