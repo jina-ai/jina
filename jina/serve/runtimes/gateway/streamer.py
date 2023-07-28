@@ -14,7 +14,7 @@ from typing import (
     Type
 )
 
-from jina._docarray import DocumentArray
+from jina._docarray import DocumentArray, Document
 from jina.excepts import ExecutorError
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2
@@ -25,7 +25,7 @@ from jina.serve.runtimes.gateway.async_request_response_handling import (
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.stream import RequestStreamer
 from jina.types.request import Request
-from jina.types.request.data import DataRequest
+from jina.types.request.data import DataRequest, SingleDocumentRequest
 from jina._docarray import docarray_v2
 
 if docarray_v2:
@@ -256,8 +256,6 @@ class GatewayStreamer:
         :param request_id: Request ID to add to the request streamed to Executor. Only applicable if request_size is equal or less to the length of the docs
         :yield: Yields DocumentArrays or Responses from the Executors
         """
-        from jina.types.request.data import DataRequest
-
         request_id = request_id if len(docs) <= request_size else None
 
         def _req_generator():
@@ -459,3 +457,24 @@ class _ExecutorStreamer:
                 resp.document_array_cls = return_type
                 docs.extend(resp.docs)
         return docs
+
+    async def stream_doc(
+            self,
+            inputs: 'Document',
+            on: Optional[str] = None,
+            parameters: Optional[Dict] = None,
+            return_type: Type['Document'] = Document,
+            **kwargs,
+    ):
+        req = SingleDocumentRequest(inputs.to_protobuf())
+        req.header.exec_endpoint = on
+        req.header.target_executor = self.executor_name
+        req.parameters = parameters
+        async_generator = self._connection_pool.send_single_document_request(
+            request=req, deployment=self.executor_name, head=True, endpoint=on
+        )
+
+        async for resp, _ in async_generator:
+            # TODO: Make sure return_type is the one
+            resp.
+            yield resp
