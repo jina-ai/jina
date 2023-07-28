@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Dict, Optional, Tuple, Type
 from jina._docarray import Document, DocumentArray, docarray_v2
 from jina.clients.base import BaseClient
 from jina.clients.base.helper import (
-    AioHttpClientlet,
     HTTPClientlet,
     handle_response_status,
 )

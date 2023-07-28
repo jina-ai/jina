@@ -210,7 +210,8 @@ class TopologyGraph:
 
                                 self._pydantic_models_by_endpoint[endpoint] = {
                                     'input': input_model,
-                                    'output': output_model
+                                    'output': output_model,
+                                    'is_generator':  inner_dict['is_generator']
                                 }
                         self._endpoints_proto = endpoints_proto
                     else:
@@ -237,6 +238,9 @@ class TopologyGraph:
                 if issubclass(type(resp), BaseException):
                     raise resp
                 else:
+                    if docarray_v2:
+                        if self.endpoints and endpoint in self.endpoints:
+                            resp.document_cls = self._pydantic_models_by_endpoint[endpoint]['output']
                     yield resp
 
         async def _wait_previous_and_send(
@@ -360,16 +364,19 @@ class TopologyGraph:
                         return {
                             'input': new_input,
                             'output': previous_output,
+                            'is_generator': self._pydantic_models_by_endpoint[endpoint]['is_generator'],
                         }
                     else:
                         return {
                             'input': new_input,
                             'output': self._pydantic_models_by_endpoint[endpoint]['output'],
+                            'is_generator': self._pydantic_models_by_endpoint[endpoint]['is_generator'],
                         }
                 else:
                     return {
                         'input': previous_input,
-                        'output': previous_output
+                        'output': previous_output,
+                        'is_generator': False
                     }
             return None
 
@@ -377,6 +384,7 @@ class TopologyGraph:
                 self,
                 previous_input,
                 previous_output,
+                is_generator,
                 endpoint: Optional[str] = None,
         ):
             new_map = self._get_input_output_model_for_endpoint(previous_input,
@@ -389,6 +397,7 @@ class TopologyGraph:
                 list_of_maps = outgoing_node._get_leaf_input_output_model(
                     previous_input=new_map['input'] if new_map is not None else None,
                     previous_output=new_map['output'] if new_map is not None else None,
+                    is_generator=new_map['is_generator'] if new_map is not None else False,
                     endpoint=endpoint
                 )
                 # We are interested in the last one, that will be the task that awaits all the previous
@@ -532,10 +541,12 @@ class TopologyGraph:
                 self,
                 previous_input,
                 previous_output,
+                is_generator,
                 endpoint: Optional[str] = None,
         ):
             return [{'input': previous_input,
-                     'output': previous_output}]
+                     'output': previous_output,
+                     'is_generator': is_generator}]
 
     def __init__(
             self,
