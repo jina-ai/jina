@@ -1,13 +1,10 @@
 (kubernetes)=
 # Deploy on Kubernetes
 
-This how-to will go through deploying a simple Flow using Kubernetes, customizing the Kubernetes configuration
+This how-to will go through deploying a Deployment and a simple Flow using Kubernetes, customizing the Kubernetes configuration
 to your needs, and scaling Executors using replicas and shards.
 
-Deploying a {class}`~jina.Flow` in Kubernetes is the recommended way to use Jina in production.
-
-Since a {class}`~jina.Flow` is composed of {class}`~jina.Executor`s which can run in different runtimes depending on how you deploy
-the Flow, Kubernetes can easily take over the lifetime management of Executors.  
+Deploying Jina services in Kubernetes is the recommended way to use Jina in production because Kubernetes can easily take over the lifetime management of Executors and Gateways.  
 
 ```{seelaso}
 This page is a step by step guide, refer to the {ref}`Kubernetes support documentation <kubernetes-docs>` for more details
@@ -251,9 +248,110 @@ Finally, we add a secret to be used as [imagePullSecrets](https://kubernetes.io/
 kubectl -n custom-namespace create secret generic regcred --from-file=.dockerconfigjson=config.json --type=kubernetes.io/dockerconfigjson
 ```
 
+## Deploy an embedding model inside a Deployment
+
+Now we are ready to first deploy our embedding model as an embedding service in Kubernetes.
+
+For now, define a Deployment,
+either in {ref}`YAML <deployment-yaml-spec>` or directly in Python, as we do here:
+
+```python
+from jina import Deployment
+
+d = Deployment(port=8080, name='encoder', uses='jinaai+docker://<user-id>/EncoderPrivate', image_pull_secrets=['regcred'])
+```
+
+You can serve any Deployment you want.
+Just ensure that the Executor is containerized, either by using *'jinaai+docker'*, or by {ref}`containerizing your local
+Executors <dockerize-exec>`.
+
+Next, generate Kubernetes YAML configs from the Flow. Notice, that this step may be a little slow, because [Executor Hub](https://cloud.jina.ai/) may 
+adapt the image to your Jina and docarray version.
+
+```python
+d.to_kubernetes_yaml('./k8s_deployment', k8s_namespace='custom-namespace')
+```
+
+The following file structure will be generated - don't worry if it's slightly different -- there can be 
+changes from one Jina version to another:
+
+```
+.
+└── k8s_deployment
+    └── encoder.yml
+```
+
+You can inspect these files to see how Deployment and Executor concepts are mapped to Kubernetes entities.
+And as always, feel free to modify these files as you see fit for your use case.
+
+````{admonition} Caution: Executor YAML configurations
+:class: caution
+
+As a general rule, the configuration files produced by `to_kubernets_yaml()` should run out of the box, and if you strictly
+follow this how-to they will.
+
+However, there is an exception to this: If you use a local dockerized Executor, and this Executors configuration is stored
+in a file other than `config.yaml`, you will have to adapt this Executor's Kubernetes YAML.
+To do this, open the file and replace `config.yaml` with the actual path to the Executor configuration.
+
+This is because when a Flow contains a Docker image, it can't see what Executor
+configuration was used to create that image.
+Since all of our tutorials use `config.yaml` for that purpose, the Flow uses this as a best guess.
+Please adapt this if you named your Executor configuration file differently.
+````
+
+Next you can actually apply these configuration files to your cluster, using `kubectl`.
+This launches the Deployment service.
+
+Now, deploy this Deployment to your cluster:
+```shell
+kubectl apply -R -f ./k8s_deployment
+```
+
+Check that the Pods were created:
+```shell
+kubectl get pods -n custom-namespace
+```
+
+```text
+NAME                              READY   STATUS    RESTARTS   AGE
+encoder-81a5b3cf9-ls2m3           1/1     Running   0          60m
+```
+
+Once you see that the Deployment ready, you can start embedding documents:
+
+```python
+from typing import Optional
+import portforward
+from docarray import DocList, BaseDoc
+from docarray.typing import NdArray
+
+from jina.clients import Client
+
+
+class MyDoc(BaseDoc):
+    text: str
+    embedding: Optional[NdArray] = None
+
+
+with portforward.forward('custom-namespace', 'encoder-81a5b3cf9-ls2m3', 8080, 8080):
+    client = Client(host='localhost', port=8080)
+    client.show_progress = True
+    docs = client.post(
+        '/encode',
+        inputs=DocList[MyDoc]([MyDoc(text=f'This is document indexed number {i}') for i in range(100)]),
+        return_type=DocList[MyDoc],
+        request_size=10
+    )
+
+    for doc in docs:
+        print(f'{doc.text}: {doc.embedding}')
+
+```
+
 ## Deploy a simple Flow
 
-Now we are ready to build our Flow.
+Now we are ready to build a Flow composed of multiple Executors.
 
 By *simple* in this context we mean a Flow without replicated or sharded Executors - you can see how to use those in
 Kubernetes {ref}`later on <kubernetes-replicas>`.
@@ -275,7 +373,7 @@ f = (
 ```
 
 You can essentially define any Flow of your liking.
-Just ensure that all Executors are containerized, either by using *'jinahub+docker'*, or by {ref}`containerizing your local
+Just ensure that all Executors are containerized, either by using *'jinaai+docker'*, or by {ref}`containerizing your local
 Executors <dockerize-exec>`.
 
 The example Flow here simply encodes and indexes text data using two Executors pushed to the [Executor Hub](https://cloud.jina.ai/).
@@ -303,22 +401,6 @@ changes from one Jina version to another:
 
 You can inspect these files to see how Flow concepts are mapped to Kubernetes entities.
 And as always, feel free to modify these files as you see fit for your use case.
-
-````{admonition} Caution: Executor YAML configurations
-:class: caution
-
-As a general rule, the configuration files produced by `to_kubernets_yaml()` should run out of the box, and if you strictly
-follow this how-to they will.
-
-However, there is an exception to this: If you use a local dockerized Executor, and this Executors configuration is stored
-in a file other than `config.yaml`, you will have to adapt this Executor's Kubernetes YAML.
-To do this, open the file and replace `config.yaml` with the actual path to the Executor configuration.
-
-This is because when a Flow contains a Docker image, it can't see what Executor
-configuration was used to create that image.
-Since all of our tutorials use `config.yaml` for that purpose, the Flow uses this as a best guess.
-Please adapt this if you named your Executor configuration file differently.
-````
 
 Next you can actually apply these configuration files to your cluster, using `kubectl`.
 This launches all Flow microservices.
@@ -385,7 +467,7 @@ with portforward.forward('custom-namespace', 'gateway-66d5f45ff5-4q7sw', 8080, 8
 
 ```
 
-### Deploy Flow with shards and replicas
+### Deploy with shards and replicas
 
 After your service mesh is installed, your cluster is ready to run a Flow with scaled Executors.
 You can adapt the Flow from above to work with two replicas for the encoder, and two shards for the indexer:
@@ -436,7 +518,7 @@ If you already have the simple Flow from the first example running on your clust
 kubectl apply -R -f ./k8s_flow
 ```
 
-### Deploy Flow with custom environment variables and secrets
+### Deploy with custom environment variables and secrets
 
 You can customize the environment variables that are available inside runtime, either defined directly or read from a [Kubernetes secret](https://kubernetes.io/docs/concepts/configuration/secret/):
 
@@ -498,34 +580,34 @@ Then you can apply your configuration.
 
 
 (kubernetes-expose)=
-## Exposing the Flow
-The previous examples use port-forwarding to index documents to the Flow. 
+## Exposing the service
+The previous examples use port-forwarding to send documents to the services. 
 In real world applications, 
 you may want to expose your service to make it reachable by users so that you can serve search requests.
 
 ```{caution}
-Exposing the Flow only works if the environment of your `Kubernetes cluster` supports `External Loadbalancers`.
+Exposing the Deployment or Flow only works if the environment of your `Kubernetes cluster` supports `External Loadbalancers`.
 ```
 
-Once the Flow is deployed, you can expose a service:
+Once the service is deployed, you can expose a service. In this case we give an example of exposing the encoder when using a Deployment,
+but you can expose the gateway service when using a Flow:
 ```bash
-kubectl expose deployment gateway --name=gateway-exposed --type LoadBalancer --port 80 --target-port 8080 -n custom-namespace
+kubectl expose deployment executor --name=executor-exposed --type LoadBalancer --port 80 --target-port 8080 -n custom-namespace
 sleep 60 # wait until the external ip is configured
 ```
 
 Export the external IP address. This is needed for the client when sending Documents to the Flow in the next section. 
 ```bash
-export EXTERNAL_IP=`kubectl get service gateway-exposed -n custom-namespace -o=jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+export EXTERNAL_IP=`kubectl get service executor-expose -n custom-namespace -o=jsonpath='{.status.loadBalancer.ingress[0].ip}'`
 ```
 
 ### Client
 The client:
 
-- Sends an image to the exposed `Flow` on `$EXTERNAL_IP` 
-- Retrieves the matches from the Flow.
-- Prints the uris of the closest matches.
+- Sends Documents to the exposed service on `$EXTERNAL_IP` 
+- Gets the responses.
 
-You should configure your Client to connect to the Flow via the external IP address as follows:
+You should configure your Client to connect to the service via the external IP address as follows:
 
 ```python
 import os
@@ -591,13 +673,13 @@ You need to add `--uses_with` and pass the batch size argument to it. This is pa
 After doing so, re-apply your configuration so the new Executor will be deployed without affecting the other unchanged Deployments:
 
 ```shell script
-kubectl apply -R -f ./k8s_flow
+kubectl apply -R -f ./k8s_deployment
 ```
 
 ````{admonition} Other patching options
 :class: seealso
 
-In Kubernetes Executors are ordinary Deployments, so you can use other patching options provided by Kubernetes:
+In Kubernetes Executors are ordinary Kubernetes Deployments, so you can use other patching options provided by Kubernetes:
 
 
 - `kubectl replace` to replace an Executor using a complete configuration file
@@ -609,14 +691,14 @@ You can find more information about these commands in the [official Kubernetes d
 
 ## Key takeaways
 
-In short, there are just three key steps to deploy a Jina Flow on Kubernetes:
+In short, there are just three key steps to deploy Jina on Kubernetes:
 
-1. Use `f.to_kubernetes_yaml()` to generate Kubernetes configuration files from a Jina Flow object.
+1. Use `.to_kubernetes_yaml()` to generate Kubernetes configuration files from a Jina Deployment or Flow object.
 2. Apply the generated file via `kubectl`(Modify the generated files if necessary)
-3. Expose your Flow outside the K8s cluster
+3. Expose your service outside the K8s cluster
 
 ## See also
 - {ref}`Kubernetes support documentation <kubernetes-docs>`
-- {ref}`Monitor the Flow once it is deployed <monitoring>`
+- {ref}`Monitor service once it is deployed <monitoring>`
 - {ref}`See how failures and retries are handled <flow-error-handling>`
-- {ref}`Learn more about scaling Executors <flow-complex-topologies>`
+- {ref}`Learn more about scaling Executors <scale-out>`
