@@ -880,10 +880,10 @@ class WorkerRequestHandler:
         :param context: grpc context
         :yields: the response request
         """
-        request = SingleDocumentRequest(request)
         request_endpoint = self._executor.requests.get(
             request.header.exec_endpoint
         ) or self._executor.requests.get(__default_endpoint__)
+
         if request_endpoint is None:
             self.logger.debug(
                 f'skip executor: endpoint mismatch. '

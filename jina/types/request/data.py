@@ -1,16 +1,13 @@
 import copy
-from typing import TYPE_CHECKING, Dict, Optional, Type, TypeVar, Union
+from typing import Dict, Optional, Type, TypeVar, Union
 
 from google.protobuf import json_format
 
-from jina._docarray import DocumentArray, docarray_v2
+from jina._docarray import DocumentArray, Document, docarray_v2
 from jina.excepts import BadRequestType
 from jina.helper import random_identity, typename
 from jina.proto import jina_pb2
 from jina.types.request import Request
-
-if TYPE_CHECKING:
-    from jina._docarray import Document
 
 RequestSourceType = TypeVar(
     'RequestSourceType', jina_pb2.DataRequestProto, str, Dict, bytes
@@ -70,7 +67,6 @@ class DataRequest(Request):
             """
             if value is not None:
                 self._loaded_doc_array = None
-
                 if docarray_v2:
                     self._content.docs.CopyFrom(value.to_protobuf())
                 else:
@@ -403,7 +399,7 @@ class SingleDocumentRequest(Request):
     class _DataContent:
         def __init__(
                 self,
-                content: 'jina_pb2.DataRequestProto.DataContentProto',
+                content: 'jina_pb2.SingleDocumentRequestProto.DataContentProto',
                 document_cls: Type['Document'],
         ):
             self._content = content
@@ -435,7 +431,7 @@ class SingleDocumentRequest(Request):
             """
             if value is not None:
                 self._loaded_document = None
-                self._content.docs.CopyFrom(value.to_protobuf())
+                self._content.CopyFrom(value.to_protobuf())
 
         @property
         def doc_bytes(self) -> bytes:
@@ -634,7 +630,7 @@ class SingleDocumentRequest(Request):
         """
         if self._data is None:
             self._data = SingleDocumentRequest._DataContent(
-                self.proto_with_data.data, document_cls=self.document_cls
+                self.proto_with_data.document, document_cls=self.document_cls
             )
 
         return self._data

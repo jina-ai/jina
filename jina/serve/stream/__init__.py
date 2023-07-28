@@ -37,9 +37,6 @@ class RequestStreamer:
                 ['Request'], Tuple[Awaitable['Request'], Optional[Awaitable['Request']]]
             ],
             result_handler: Callable[['Request'], Optional['Request']],
-            single_doc_request_handler: Callable[
-                ['Request'], Tuple[Awaitable['Request'], Optional[Awaitable['Request']]]
-            ],
             prefetch: int = 0,
             iterate_sync_in_thread: bool = True,
             end_of_iter_handler: Optional[Callable[[], None]] = None,
@@ -60,7 +57,6 @@ class RequestStreamer:
         self._prefetch = prefetch
         self._request_handler = request_handler
         self._result_handler = result_handler
-        self._single_doc_request_handler = single_doc_request_handler
         self._end_of_iter_handler = end_of_iter_handler
         self._iterate_sync_in_thread = iterate_sync_in_thread
         self.total_num_floating_tasks_alive = 0

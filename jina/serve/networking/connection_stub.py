@@ -60,6 +60,7 @@ class _ConnectionStubs:
         for service in available_services:
             if service in self.STUB_MAPPING:
                 stubs[service] = self.STUB_MAPPING[service](self.channel)
+
         self.data_list_stub = stubs['jina.JinaDataRequestRPC']
         self.single_data_stub = stubs['jina.JinaSingleDataRequestRPC']
         self.stream_doc_stub = stubs['jina.JinaSingleDocumentRequestRPC']
@@ -145,7 +146,7 @@ class _ConnectionStubs:
             self._record_request_bytes_metric(request.nbytes)
 
             with timer:
-                async for response in self.stream_doc_stub.Call(
+                async for response in self.stream_doc_stub.stream_doc(
                         request,
                         compression=compression,
                         timeout=timeout,

@@ -290,7 +290,7 @@ class GrpcConnectionPool:
         """
         replicas = self._connections.get_replicas(deployment, head)
         if replicas:
-            result_generator_task = self._send_single_doc_request(
+            result_async_generator = self._send_single_doc_request(
                 request,
                 replicas,
                 endpoint=endpoint,
@@ -298,7 +298,7 @@ class GrpcConnectionPool:
                 timeout=timeout,
                 retries=retries,
             )
-            return result_generator_task
+            return result_async_generator
         else:
             self._logger.debug(
                 f'no available connections for deployment {deployment}'
@@ -445,7 +445,7 @@ class GrpcConnectionPool:
         if metadata:
             metadata = tuple(metadata.items())
 
-        async def task_wrapper():
+        async def async_generator_wrapper():
             tried_addresses = set()
             num_replicas = len(connections.get_all_connections())
             if retries is None or retries < 0:
@@ -477,6 +477,7 @@ class GrpcConnectionPool:
                             timeout=timeout,
                     ):
                         yield resp, metadata_resp
+                    return
                 except AioRpcError as e:
                     error = await self._handle_aiorpcerror(
                         error=e,
@@ -491,10 +492,12 @@ class GrpcConnectionPool:
                     )
                     if error:
                         yield error, None
+                        return
                 except Exception as e:
                     yield e, None
+                    return
 
-        return asyncio.create_task(task_wrapper())
+        return async_generator_wrapper()
 
     def _send_requests(
             self,

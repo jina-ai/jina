@@ -217,8 +217,7 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
         :param connection_pool: The connection pool to be used to send messages to specific nodes of the graph
         :return: Return a Function that given a Request will return a Future from where to extract the response
         """
-
-        def _handle_request(request: 'Request') -> 'Tuple[Future, Optional[Future]]':
+        async def _handle_request(request: 'Request') -> 'Tuple[Future, Optional[Future]]':
             self._update_start_request_metrics(request)
             # important that the gateway needs to have an instance of the graph per request
             request_graph = copy.deepcopy(graph)
@@ -228,7 +227,6 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
             # If the request is targeting a specific deployment, we can send directly to the deployment instead of
             # querying the graph
             # reset it in case we send to an external gateway
-            request.header.target_executor = ''
             exec_endpoint = request.header.exec_endpoint
 
             node = request_graph.all_nodes[0]  # this assumes there is only one Executor behind this Gateway

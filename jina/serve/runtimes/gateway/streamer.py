@@ -278,9 +278,6 @@ class GatewayStreamer:
 
         async for result in self.rpc_stream_doc(
                 request=req,
-                exec_endpoint=exec_endpoint,
-                target_executor=target_executor,
-                parameters=parameters,
         ):
             error = None
             if jina_pb2.StatusProto.ERROR == result.status.code:
@@ -530,7 +527,6 @@ class _ExecutorStreamer:
             return_type: Type['Document'] = None,
             **kwargs,
     ):
-        print(f' hey here Joan')
         req: SingleDocumentRequest = SingleDocumentRequest(inputs.to_protobuf())
         req.header.exec_endpoint = on
         req.header.target_executor = self.executor_name
