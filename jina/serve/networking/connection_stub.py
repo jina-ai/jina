@@ -136,7 +136,7 @@ class _ConnectionStubs:
         :param compression: defines if compression should be used
         :param timeout: defines timeout for sending request
 
-        :returns: Tuple of response and metadata about the response
+        :yields: Tuple of response and metadata about the response
         """
         if not self._initialized:
             await self._init_stubs()

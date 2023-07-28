@@ -871,8 +871,8 @@ class WorkerRequestHandler:
         return await self.process_data([request], context, is_generator=is_generator)
 
     async def stream_doc(
-        self, request: SingleDocumentRequestProto, context: 'grpc.aio.ServicerContext'
-    ) -> SingleDocumentRequestProto:
+        self, request: SingleDocumentRequest, context: 'grpc.aio.ServicerContext'
+    ) -> SingleDocumentRequest:
         """
         Process the received requests and return the result as a new request, used for streaming behavior, one doc IN, several out
 
@@ -903,7 +903,7 @@ class WorkerRequestHandler:
                 exc_info=not self.args.quiet_error,
             )
             request.add_exception(ex)
-            yield request.proto
+            yield request
         else:
             request_schema = request_endpoint.request_schema
             data_request = DataRequest()
@@ -936,12 +936,13 @@ class WorkerRequestHandler:
                         else '',
                         exc_info=not self.args.quiet_error,
                     )
-                    req = SingleDocumentRequest(SingleDocumentRequestProto())
+                    req = SingleDocumentRequest()
                     req.add_exception(ex)
                 else:
-                    req = SingleDocumentRequest(
-                        SingleDocumentRequestProto(document=doc.to_protobuf())
-                    )
+                    req = SingleDocumentRequest()
+                    req.document_cls = doc.__class__
+                    req.data.doc = doc
+
                 yield req
 
     async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:

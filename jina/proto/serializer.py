@@ -285,7 +285,7 @@ class SingleDocumentRequestProto:
     """Placeholder that delegates the serialization and deserialization to the internal protobuf"""
 
     @staticmethod
-    def SerializeToString(x):
+    def SerializeToString(x: 'SingleDocumentRequest'):
         """
         # noqa: DAR101
         # noqa: DAR102

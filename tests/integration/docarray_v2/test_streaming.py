@@ -46,7 +46,8 @@ class CustomResponseExecutor(Executor):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('protocol', ['http', 'grpc'])
-async def test_streaming_deployment(protocol):
+@pytest.mark.parametrize('include_gateway', [False, True])
+async def test_streaming_deployment(protocol, include_gateway):
     from jina import Deployment
 
     port = random_port()
@@ -57,7 +58,7 @@ async def test_streaming_deployment(protocol):
         protocol=protocol,
         cors=True,
         port=port,
-        include_gateway=False,
+        include_gateway=include_gateway,
     ):
         client = Client(port=port, protocol=protocol, cors=True, asyncio=True)
         i = 10
@@ -73,7 +74,8 @@ async def test_streaming_deployment(protocol):
 @pytest.mark.asyncio
 @pytest.mark.parametrize('protocol', ['http', 'grpc'])
 @pytest.mark.parametrize('endpoint', ['task1', 'task2', 'task3'])
-async def test_streaming_custom_response(protocol, endpoint):
+@pytest.mark.parametrize('include_gateway', [False, True])
+async def test_streaming_custom_response(protocol, endpoint, include_gateway):
     from jina import Deployment
 
     port = random_port()
@@ -84,7 +86,7 @@ async def test_streaming_custom_response(protocol, endpoint):
         protocol=protocol,
         cors=True,
         port=port,
-        include_gateway=False,
+        include_gateway=include_gateway,
     ):
         client = Client(port=port, protocol=protocol, cors=True, asyncio=True)
         i = 0
