@@ -1,9 +1,13 @@
 from typing import TYPE_CHECKING, Dict, List, Optional
+import inspect
 
 from jina.excepts import InternalNetworkError
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
+from jina.serve.networking.sse import EventSourceResponse
+from jina.types.request.data import DataRequest
+from jina._docarray import docarray_v2
 
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry import trace
@@ -166,7 +170,7 @@ def get_fastapi_app(
         header_dict = {'request_id': error.request_id, 'status': status_dict}
         return header_dict
 
-    def add_route(endpoint_path, input_model, output_model, input_doc_list_model=None, output_doc_list_model=None):
+    def add_post_route(endpoint_path, input_model, output_model, input_doc_list_model=None, output_doc_list_model=None):
         app_kwargs = dict(path=f'/{endpoint_path.strip("/")}',
                           methods=['POST'],
                           summary=f'Endpoint {endpoint_path}',
@@ -215,10 +219,32 @@ def get_fastapi_app(
                 )
                 return result
 
+    def add_streaming_get_route(
+            endpoint_path,
+            input_doc_model=None,
+    ):
+        from fastapi import Request
+
+        @app.api_route(
+            path=f'/{endpoint_path.strip("/")}',
+            methods=['GET'],
+            summary=f'Streaming Endpoint {endpoint_path}',
+        )
+        async def streaming_get(request: Request):
+            query_params = dict(request.query_params)
+            async def event_generator():
+                async for doc, error in streamer.stream_doc(doc=input_doc_model(**query_params), exec_endpoint=endpoint_path):
+                    if error:
+                        raise HTTPException(status_code=499, detail=str(error))
+                    yield {'event': 'update', 'data': doc.dict()}
+                yield {'event': 'end'}
+            return EventSourceResponse(event_generator())
+
     for endpoint, input_output_map in request_models_map.items():
         if endpoint != '_jina_dry_run_':
             input_doc_model = input_output_map['input']
             output_doc_model = input_output_map['output']
+            is_generator = input_output_map['is_generator']
 
             endpoint_input_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_input_model',
@@ -234,11 +260,18 @@ def get_fastapi_app(
                 parameters=(Optional[Dict], None),
                 __config__=output_doc_model.__config__
             )
-
-            add_route(endpoint,
-                      input_model=endpoint_input_model,
-                      output_model=endpoint_output_model,
-                      input_doc_list_model=input_doc_model,
-                      output_doc_list_model=output_doc_model)
+            if is_generator:
+                add_streaming_get_route(
+                    endpoint,
+                    input_doc_model=input_doc_model,
+                )
+            else:
+                add_post_route(
+                    endpoint,
+                    input_model=endpoint_input_model,
+                    output_model=endpoint_output_model,
+                    input_doc_list_model=input_doc_model,
+                    output_doc_list_model=output_doc_model,
+                )
 
     return app

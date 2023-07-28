@@ -399,7 +399,7 @@ class SingleDocumentRequest(Request):
     class _DataContent:
         def __init__(
                 self,
-                content: 'jina_pb2.SingleDocumentRequestProto.DataContentProto',
+                content,
                 document_cls: Type['Document'],
         ):
             self._content = content
@@ -412,16 +412,11 @@ class SingleDocumentRequest(Request):
 
             .. # noqa: DAR201"""
             if not self._loaded_document:
-                if self._content.WhichOneof('document') == 'doc_bytes':
-                    self.document_cls = self.document_cls.from_bytes(
-                        self._content.doc_bytes
-                    )
-                else:
-                    self.document_cls = self.document_cls.from_protobuf(
-                        self._content.doc
-                    )
+                self._loaded_document = self.document_cls.from_protobuf(
+                    self._content
+                )
 
-            return self.document_cls
+            return self._loaded_document
 
         @doc.setter
         def doc(self, value: 'Document'):
@@ -432,23 +427,6 @@ class SingleDocumentRequest(Request):
             if value is not None:
                 self._loaded_document = None
                 self._content.CopyFrom(value.to_protobuf())
-
-        @property
-        def doc_bytes(self) -> bytes:
-            """Get the :class: `DocumentArray` with sequence `data.docs` as content.
-
-            .. # noqa: DAR201"""
-            return self._content.doc_bytes
-
-        @doc_bytes.setter
-        def doc_bytes(self, value: bytes):
-            """Override the DocumentArray with the provided one
-
-            :param value: a DocumentArray
-            """
-            if value:
-                self._loaded_document = None
-                self._content.doc_bytes = value
 
     def __init__(
             self,

@@ -85,6 +85,7 @@ class RequestStreamer:
                 for origin_node in topology_graph.origin_nodes:
                     leaf_input_output_model = origin_node._get_leaf_input_output_model(previous_input=None,
                                                                                        previous_output=None,
+                                                                                       is_generator=False,
                                                                                        endpoint=endp)
                     if leaf_input_output_model is not None and len(leaf_input_output_model) > 0:
                         _endpoints_models_map[endp] = leaf_input_output_model[0]

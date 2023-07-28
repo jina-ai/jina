@@ -202,8 +202,6 @@ class HTTPClientlet(AioHttpClientlet):
         else:
             req_dict = doc.to_dict()
 
-        req_dict['exec_endpoint'] = on
-
         request_kwargs = {
             'url': self.url,
             'headers': {'Accept': 'text/event-stream'},
