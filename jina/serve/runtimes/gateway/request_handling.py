@@ -289,8 +289,8 @@ class GatewayRequestHandler:
         :param context: grpc context
         :yields: the response request
         """
-        async for resp in ...:
-            yield resp
+        print(f' hey here JOAN')
+        pass
 
     async def process_single_data(
         self, request: DataRequest, context=None

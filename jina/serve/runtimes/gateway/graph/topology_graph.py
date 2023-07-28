@@ -13,7 +13,7 @@ from jina.logging.logger import JinaLogger
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.helper import _parse_specific_params
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
-from jina.types.request.data import DataRequest
+from jina.types.request.data import DataRequest, SingleDocumentRequest
 from jina._docarray import docarray_v2
 
 if docarray_v2:
@@ -90,11 +90,12 @@ class TopologyGraph:
                                     raise Exception(
                                         f'The output schema of {self.name} is incompatible with the input schema of {node.name}')
                         else:
-                            if outgoing_enp != __default_endpoint__:# It could happen that there is an Encoder with default followed by an indexer with [index, search]
+                            if outgoing_enp != __default_endpoint__:  # It could happen that there is an Encoder with default followed by an indexer with [index, search]
                                 raise Exception(
                                     f'{node.name} does not expose {incoming_endp} which makes it impossible to be chained with {self.name} on {outgoing_enp}')
                             else:
-                                self.logger.warning(f'{node.name} does not expose {incoming_endp} which could lead to incompatibility when calling non-explicitly bound endpoints')
+                                self.logger.warning(
+                                    f'{node.name} does not expose {incoming_endp} which could lead to incompatibility when calling non-explicitly bound endpoints')
                 return node._validate_against_outgoing_nodes()
             return True
 
@@ -217,6 +218,26 @@ class TopologyGraph:
                 return self._endpoints_proto
 
             return asyncio.create_task(task())
+
+        async def stream_single_doc(self,
+                                    request: SingleDocumentRequest,
+                                    connection_pool: GrpcConnectionPool,
+                                    endpoint: Optional[str]):
+            if docarray_v2:
+                if self.endpoints and endpoint in self.endpoints:
+                    request.document_cls = self._pydantic_models_by_endpoint[endpoint]['input']
+
+            async for resp, _ in connection_pool.send_single_document_request(request=request,
+                                                                              deployment=self.name,
+                                                                              metadata=self._metadata,
+                                                                              head=True,
+                                                                              endpoint=endpoint,
+                                                                              timeout=self._timeout_send,
+                                                                              retries=self._retries):
+                if issubclass(type(resp), BaseException):
+                    raise resp
+                else:
+                    yield resp
 
         async def _wait_previous_and_send(
                 self,
@@ -587,6 +608,7 @@ class TopologyGraph:
                 return not is_cancelled
             else:
                 return True
+
         if not self._all_endpoints:
             while _condition():
                 try:

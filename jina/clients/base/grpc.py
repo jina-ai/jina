@@ -234,7 +234,9 @@ class GRPCBaseClient(BaseClient):
         ) as channel:
             stub = jina_pb2_grpc.JinaSingleDocumentRequestRPCStub(channel)
             try:
+                print(f'HEY HERE JOAN')
                 async for response in stub.stream_doc(request, timeout=timeout):
+                    print(f'HEY HERE JOAN-2')
                     callback_exec(
                         response=response,
                         logger=self.logger,

@@ -116,7 +116,8 @@ class GatewayStreamer:
         request_handler = AsyncRequestResponseHandler(
             metrics_registry, meter, runtime_name, logger
         )
-
+        self._single_doc_request_handler = request_handler.handle_single_document_request(graph=self.topology_graph,
+                                                                                          connection_pool=self._connection_pool)
         self._streamer = RequestStreamer(
             request_handler=request_handler.handle_request(
                 graph=self.topology_graph, connection_pool=self._connection_pool
@@ -167,6 +168,16 @@ class GatewayStreamer:
         :return: An iterator over the responses from the Executors
         """
         return self._streamer.stream(*args, **kwargs)
+
+    def rpc_stream_doc(self, *args, **kwargs):
+        """
+        stream requests from client iterator and stream responses back.
+
+        :param args: positional arguments to be passed to inner RequestStreamer
+        :param kwargs: keyword arguments to be passed to inner RequestStreamer
+        :return: An iterator over the responses from the Executors
+        """
+        return self._single_doc_request_handler(*args, **kwargs)
 
     async def _get_endpoints_input_output_models(self, is_cancel):
         """
@@ -231,6 +242,59 @@ class GatewayStreamer:
                 yield result, error
             else:
                 yield result.data.docs, error
+
+    async def stream_doc(
+            self,
+            doc: 'Document',
+            return_results: bool = False,
+            exec_endpoint: Optional[str] = None,
+            target_executor: Optional[str] = None,
+            parameters: Optional[Dict] = None,
+            request_id: Optional[str] = None
+    ) -> AsyncIterator[Tuple[Union[DocumentArray, 'Request'], 'ExecutorError']]:
+        """
+        stream Documents and yield Documents or Responses and unpacked Executor error if any.
+
+        :param doc: The Documents to be sent to all the Executors
+        :param return_results: If set to True, the generator will yield Responses and not `DocumentArrays`
+        :param exec_endpoint: The Executor endpoint to which to send the Documents
+        :param target_executor: A regex expression indicating the Executors that should receive the Request
+        :param parameters: Parameters to be attached to the Requests
+        :param request_id: Request ID to add to the request streamed to Executor. Only applicable if request_size is equal or less to the length of the docs
+        :yield: tuple of Documents or Responses and unpacked error from Executors if any
+        """
+        req = SingleDocumentRequest()
+        if docarray_v2:
+            req.document_cls = type(doc)
+        req.data.doc = doc
+        if request_id:
+            req.header.request_id = request_id
+        if exec_endpoint:
+            req.header.exec_endpoint = exec_endpoint
+        if target_executor:
+            req.header.target_executor = target_executor
+        if parameters:
+            req.parameters = parameters
+
+        async for result in self.rpc_stream_doc(
+                request=req,
+                exec_endpoint=exec_endpoint,
+                target_executor=target_executor,
+                parameters=parameters,
+        ):
+            error = None
+            if jina_pb2.StatusProto.ERROR == result.status.code:
+                exception = result.status.exception
+                error = ExecutorError(
+                    name=exception.name,
+                    args=exception.args,
+                    stacks=exception.stacks,
+                    executor=exception.executor,
+                )
+            if return_results:
+                yield result, error
+            else:
+                yield result.data.doc, error
 
     async def stream_docs(
             self,
@@ -463,10 +527,11 @@ class _ExecutorStreamer:
             inputs: 'Document',
             on: Optional[str] = None,
             parameters: Optional[Dict] = None,
-            return_type: Type['Document'] = Document,
+            return_type: Type['Document'] = None,
             **kwargs,
     ):
-        req = SingleDocumentRequest(inputs.to_protobuf())
+        print(f' hey here Joan')
+        req: SingleDocumentRequest = SingleDocumentRequest(inputs.to_protobuf())
         req.header.exec_endpoint = on
         req.header.target_executor = self.executor_name
         req.parameters = parameters
@@ -475,6 +540,5 @@ class _ExecutorStreamer:
         )
 
         async for resp, _ in async_generator:
-            # TODO: Make sure return_type is the one
-            resp.
+            resp.document_cls = return_type
             yield resp

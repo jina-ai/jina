@@ -10,7 +10,7 @@ from jina.proto import jina_pb2
 from jina.types.request import Request
 
 if TYPE_CHECKING:
-    from jina._docarray import Document, DocumentArray, docarray_v2
+    from jina._docarray import Document
 
 RequestSourceType = TypeVar(
     'RequestSourceType', jina_pb2.DataRequestProto, str, Dict, bytes
@@ -404,7 +404,7 @@ class SingleDocumentRequest(Request):
         def __init__(
                 self,
                 content: 'jina_pb2.DataRequestProto.DataContentProto',
-                document_cls: Type[Document],
+                document_cls: Type['Document'],
         ):
             self._content = content
             self._loaded_document = None
@@ -428,7 +428,7 @@ class SingleDocumentRequest(Request):
             return self.document_cls
 
         @doc.setter
-        def doc(self, value: Document):
+        def doc(self, value: 'Document'):
             """Override the DocumentArray with the provided one
 
             :param value: a DocumentArray
@@ -445,7 +445,7 @@ class SingleDocumentRequest(Request):
             return self._content.doc_bytes
 
         @doc_bytes.setter
-        def docs_bytes(self, value: bytes):
+        def doc_bytes(self, value: bytes):
             """Override the DocumentArray with the provided one
 
             :param value: a DocumentArray
@@ -487,14 +487,14 @@ class SingleDocumentRequest(Request):
             ) from ex
 
     @property
-    def document_cls(self) -> Type[Document]:
+    def document_cls(self) -> Type['Document']:
         """Get the DocumentArray class to be used for deserialization.
 
         .. # noqa: DAR201"""
         return self._document_cls
 
     @document_cls.setter
-    def document_cls(self, item_type: Type[Document]):
+    def document_cls(self, item_type: Type['Document']):
         """Get the DocumentArray class to be used for deserialization.
         .. # noqa: DAR101"""
         self._document_cls = item_type

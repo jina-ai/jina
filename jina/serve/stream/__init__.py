@@ -37,6 +37,9 @@ class RequestStreamer:
                 ['Request'], Tuple[Awaitable['Request'], Optional[Awaitable['Request']]]
             ],
             result_handler: Callable[['Request'], Optional['Request']],
+            single_doc_request_handler: Callable[
+                ['Request'], Tuple[Awaitable['Request'], Optional[Awaitable['Request']]]
+            ],
             prefetch: int = 0,
             iterate_sync_in_thread: bool = True,
             end_of_iter_handler: Optional[Callable[[], None]] = None,
@@ -57,6 +60,7 @@ class RequestStreamer:
         self._prefetch = prefetch
         self._request_handler = request_handler
         self._result_handler = result_handler
+        self._single_doc_request_handler = single_doc_request_handler
         self._end_of_iter_handler = end_of_iter_handler
         self._iterate_sync_in_thread = iterate_sync_in_thread
         self.total_num_floating_tasks_alive = 0
@@ -79,7 +83,7 @@ class RequestStreamer:
         self.logger.debug(f'Get all endpoints from TopologyGraph')
         endpoints = await topology_graph._get_all_endpoints(connection_pool, retry_forever=True, is_cancel=is_cancel)
         self.logger.debug(f'Got all endpoints from TopologyGraph {endpoints}')
-       
+
         if endpoints is not None:
             for endp in endpoints:
                 for origin_node in topology_graph.origin_nodes:
@@ -89,6 +93,49 @@ class RequestStreamer:
                     if leaf_input_output_model is not None and len(leaf_input_output_model) > 0:
                         _endpoints_models_map[endp] = leaf_input_output_model[0]
         return _endpoints_models_map
+
+    async def stream_doc(
+            self,
+            request,
+            context=None,
+            *args,
+    ) -> AsyncIterator['Request']:
+        """
+        stream requests from client iterator and stream responses back.
+
+        :param request: iterator of requests
+        :param context: context of the grpc call
+        :param args: positional arguments
+        :yield: responses from Executors
+        """
+        try:
+            async_iter: AsyncIterator = self._stream_doc_request(
+                request=request,
+            )
+            async for response in async_iter:
+                yield response
+        except InternalNetworkError as err:
+            if (
+                    context is not None
+            ):  # inside GrpcGateway we can handle the error directly here through the grpc context
+                context.set_details(err.details())
+                context.set_code(err.code())
+                context.set_trailing_metadata(err.trailing_metadata())
+                self.logger.error(
+                    f'Error while getting responses from deployments: {err.details()}'
+                )
+                r = Response()
+                if err.request_id:
+                    r.header.request_id = err.request_id
+                yield r
+            else:  # HTTP and WS need different treatment further up the stack
+                self.logger.error(
+                    f'Error while getting responses from deployments: {err.details()}'
+                )
+                raise
+        except Exception as err:  # HTTP and WS need different treatment further up the stack
+            self.logger.error(f'Error while getting responses from deployments: {err}')
+            raise err
 
     async def stream(
             self,
