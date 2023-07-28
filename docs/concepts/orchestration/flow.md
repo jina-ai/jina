@@ -331,7 +331,7 @@ This will generate a single `docker-compose.yml` file.
 
 For advanced utilization of Docker Compose with Jina, refer to {ref}`How to <docker-compose>` 
 
-(kubernetes-export)=
+(flow-kubernetes-export)=
 ### Kubernetes
 
 ````{tab} Python
@@ -366,6 +366,12 @@ You can control the access mode, storage class name and capacity of the attached
 ```{admonition} See also
 :class: seealso
 For more in-depth guides on Flow deployment, check our how-tos for {ref}`Docker compose <docker-compose>` and {ref}`Kubernetes <kubernetes>`.
+```
+
+```{caution}
+The port or ports arguments are ignored when calling the Kubernetes YAML, Jina will start the services binding to the ports 8080, except when multiple protocols
+need to be served when the consecutive ports (8081, ...) will be used. This is because the Kubernetes service will direct the traffic from you and it is irrelevant
+to the services around because in Kubernetes services communicate via the service names irrespective of the internal port.
 ```
 
 
