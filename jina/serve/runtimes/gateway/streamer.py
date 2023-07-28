@@ -264,8 +264,7 @@ class GatewayStreamer:
         :yield: tuple of Documents or Responses and unpacked error from Executors if any
         """
         req = SingleDocumentRequest()
-        if docarray_v2:
-            req.document_cls = type(doc)
+        req.document_cls = doc.__class__
         req.data.doc = doc
         if request_id:
             req.header.request_id = request_id
@@ -302,7 +301,7 @@ class GatewayStreamer:
             target_executor: Optional[str] = None,
             parameters: Optional[Dict] = None,
             results_in_order: bool = False,
-            request_id: Optional[str] = None
+            request_id: Optional[str] = None,
     ):
         """
         stream documents and stream responses back.
@@ -524,7 +523,6 @@ class _ExecutorStreamer:
             inputs: 'Document',
             on: Optional[str] = None,
             parameters: Optional[Dict] = None,
-            return_type: Type['Document'] = None,
             **kwargs,
     ):
         req: SingleDocumentRequest = SingleDocumentRequest(inputs.to_protobuf())
@@ -536,5 +534,4 @@ class _ExecutorStreamer:
         )
 
         async for resp, _ in async_generator:
-            resp.document_cls = return_type
             yield resp

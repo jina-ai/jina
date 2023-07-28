@@ -2,7 +2,7 @@ from typing import AsyncGenerator, Generator, Optional
 
 import pytest
 
-from jina import Client, Executor, requests
+from jina import Client, Executor, requests, Flow, Deployment
 from jina._docarray import Document, DocumentArray
 from jina.helper import random_port
 
@@ -48,13 +48,10 @@ class CustomResponseExecutor(Executor):
 @pytest.mark.parametrize('protocol', ['http', 'grpc'])
 @pytest.mark.parametrize('include_gateway', [False, True])
 async def test_streaming_deployment(protocol, include_gateway):
-    from jina import Deployment
-
     port = random_port()
 
     with Deployment(
         uses=MyExecutor,
-        timeout_ready=-1,
         protocol=protocol,
         cors=True,
         port=port,
@@ -70,19 +67,34 @@ async def test_streaming_deployment(protocol, include_gateway):
             assert doc.text == f'hello world {i}'
             i += 1
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize('protocol', ['http', 'grpc'])
+async def test_streaming_flow(protocol):
+    port = random_port()
+
+    with Flow(protocol=protocol, port=port, cors=True).add(
+            uses=MyExecutor,
+    ):
+        client = Client(port=port, protocol=protocol, asyncio=True)
+        i = 10
+        async for doc in client.stream_doc(
+                on='/hello',
+                inputs=MyDocument(text='hello world', number=i),
+                return_type=MyDocument,
+        ):
+            assert doc.text == f'hello world {i}'
+            i += 1
+
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('protocol', ['http', 'grpc'])
 @pytest.mark.parametrize('endpoint', ['task1', 'task2', 'task3'])
 @pytest.mark.parametrize('include_gateway', [False, True])
 async def test_streaming_custom_response(protocol, endpoint, include_gateway):
-    from jina import Deployment
-
     port = random_port()
 
     with Deployment(
         uses=CustomResponseExecutor,
-        timeout_ready=-1,
         protocol=protocol,
         cors=True,
         port=port,
@@ -98,6 +110,27 @@ async def test_streaming_custom_response(protocol, endpoint, include_gateway):
             assert doc.text == f'hello world 5-{i}-{endpoint}'
             i += 1
 
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('protocol', ['http', 'grpc'])
+@pytest.mark.parametrize('endpoint', ['task1', 'task2', 'task3'])
+async def test_streaming_custom_response_flow_one_executor(protocol, endpoint):
+    port = random_port()
+
+    with Flow(
+            protocol=protocol,
+            cors=True,
+            port=port,
+    ).add(uses=CustomResponseExecutor):
+        client = Client(port=port, protocol=protocol, cors=True, asyncio=True)
+        i = 0
+        async for doc in client.stream_doc(
+                on=f'/{endpoint}',
+                inputs=MyDocument(text='hello world', number=5),
+                return_type=OutputDocument,
+        ):
+            assert doc.text == f'hello world 5-{i}-{endpoint}'
+            i += 1
 
 class Executor1(Executor):
     @requests

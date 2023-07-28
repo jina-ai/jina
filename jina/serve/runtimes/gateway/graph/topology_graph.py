@@ -238,6 +238,9 @@ class TopologyGraph:
                 if issubclass(type(resp), BaseException):
                     raise resp
                 else:
+                    if docarray_v2:
+                        if self.endpoints and endpoint in self.endpoints:
+                            resp.document_cls = self._pydantic_models_by_endpoint[endpoint]['output']
                     yield resp
 
         async def _wait_previous_and_send(
