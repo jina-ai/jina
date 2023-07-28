@@ -18,7 +18,6 @@ from typing import (
     Union,
 )
 
-import grpc
 from google.protobuf.struct_pb2 import Struct
 
 from jina._docarray import DocumentArray, docarray_v2
@@ -34,6 +33,7 @@ from jina.serve.runtimes.worker.batch_queue import BatchQueue
 from jina.types.request.data import DataRequest, SingleDocumentRequest
 
 if TYPE_CHECKING:  # pragma: no cover
+    import grpc
     from opentelemetry import metrics, trace
     from opentelemetry.context.context import Context
     from opentelemetry.propagate import Context
@@ -871,19 +871,19 @@ class WorkerRequestHandler:
         return await self.process_data([request], context, is_generator=is_generator)
 
     async def stream_doc(
-        self, request: SingleDocumentRequestProto, context: grpc.aio.ServicerContext
-    ) -> SingleDocumentRequestProto:
+        self, request: SingleDocumentRequest, context: 'grpc.aio.ServicerContext'
+    ) -> SingleDocumentRequest:
         """
-        Process the received requests and return the result as a new request
+        Process the received requests and return the result as a new request, used for streaming behavior, one doc IN, several out
 
         :param request: the data request to process
         :param context: grpc context
         :yields: the response request
         """
-        request = SingleDocumentRequest(request)
         request_endpoint = self._executor.requests.get(
             request.header.exec_endpoint
         ) or self._executor.requests.get(__default_endpoint__)
+
         if request_endpoint is None:
             self.logger.debug(
                 f'skip executor: endpoint mismatch. '
@@ -903,7 +903,7 @@ class WorkerRequestHandler:
                 exc_info=not self.args.quiet_error,
             )
             request.add_exception(ex)
-            yield request.proto
+            yield request
         else:
             request_schema = request_endpoint.request_schema
             data_request = DataRequest()
@@ -936,12 +936,13 @@ class WorkerRequestHandler:
                         else '',
                         exc_info=not self.args.quiet_error,
                     )
-                    req = SingleDocumentRequest(SingleDocumentRequestProto())
+                    req = SingleDocumentRequest()
                     req.add_exception(ex)
                 else:
-                    req = SingleDocumentRequest(
-                        SingleDocumentRequestProto(document=doc.to_protobuf())
-                    )
+                    req = SingleDocumentRequest()
+                    req.document_cls = doc.__class__
+                    req.data.doc = doc
+
                 yield req
 
     async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
@@ -988,7 +989,7 @@ class WorkerRequestHandler:
         return endpoints_proto
 
     def _extract_tracing_context(
-        self, metadata: grpc.aio.Metadata
+        self, metadata: 'grpc.aio.Metadata'
     ) -> Optional['Context']:
         if self.tracer:
             from opentelemetry.propagate import extract

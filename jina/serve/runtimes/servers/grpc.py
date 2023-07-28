@@ -73,17 +73,14 @@ class GRPCServer(BaseServer):
             jina_pb2_grpc.add_JinaSingleDocumentRequestRPCServicer_to_server(
                 self._request_handler, self.server
             )
-
         if hasattr(self._request_handler, 'endpoint_discovery'):
             jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server(
                 self._request_handler, self.server
             )
-
         if hasattr(self._request_handler, 'process_data'):
             jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server(
                 self._request_handler, self.server
             )
-
         if hasattr(self._request_handler, 'dry_run'):
             jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(
                 self._request_handler, self.server
@@ -114,6 +111,7 @@ class GRPCServer(BaseServer):
             jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaGatewayDryRunRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDocumentRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDiscoverEndpointsRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaInfoRPC'].full_name,
             reflection.SERVICE_NAME,

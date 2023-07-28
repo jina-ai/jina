@@ -19,7 +19,8 @@ class MyExecutor(Executor):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('protocol', ['http', 'grpc'])
-async def test_streaming_deployment(protocol):
+@pytest.mark.parametrize('include_gateway', [False, True])
+async def test_streaming_deployment(protocol, include_gateway):
     from jina import Deployment
 
     port = random_port()
@@ -30,7 +31,7 @@ async def test_streaming_deployment(protocol):
         protocol=protocol,
         cors=True,
         port=port,
-        include_gateway=False,
+        include_gateway=include_gateway,
     ):
         client = Client(port=port, protocol=protocol, cors=True, asyncio=True)
         i = 0

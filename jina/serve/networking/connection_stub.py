@@ -11,7 +11,7 @@ from jina.serve.networking.instrumentation import (
 )
 from jina.serve.networking.utils import get_available_services, get_grpc_channel
 from jina.types.request import Request
-from jina.types.request.data import DataRequest
+from jina.types.request.data import DataRequest, SingleDocumentRequest
 
 if TYPE_CHECKING:  # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor
@@ -25,6 +25,7 @@ class _ConnectionStubs:
     STUB_MAPPING = {
         'jina.JinaDataRequestRPC': jina_pb2_grpc.JinaDataRequestRPCStub,
         'jina.JinaSingleDataRequestRPC': jina_pb2_grpc.JinaSingleDataRequestRPCStub,
+        'jina.JinaSingleDocumentRequestRPC': jina_pb2_grpc.JinaSingleDocumentRequestRPCStub,
         'jina.JinaDiscoverEndpointsRPC': jina_pb2_grpc.JinaDiscoverEndpointsRPCStub,
         'jina.JinaRPC': jina_pb2_grpc.JinaRPCStub,
         'jina.JinaInfoRPC': jina_pb2_grpc.JinaInfoRPCStub,
@@ -59,8 +60,10 @@ class _ConnectionStubs:
         for service in available_services:
             if service in self.STUB_MAPPING:
                 stubs[service] = self.STUB_MAPPING[service](self.channel)
+
         self.data_list_stub = stubs['jina.JinaDataRequestRPC']
         self.single_data_stub = stubs['jina.JinaSingleDataRequestRPC']
+        self.stream_doc_stub = stubs['jina.JinaSingleDocumentRequestRPC']
         self.stream_stub = stubs['jina.JinaRPC']
         self.endpoints_discovery_stub = stubs['jina.JinaDiscoverEndpointsRPC']
         self.info_rpc_stub = stubs['jina.JinaInfoRPC']
@@ -118,6 +121,43 @@ class _ConnectionStubs:
         self._histograms.record_received_response_bytes(
             nbytes, self.stub_specific_labels
         )
+
+    async def send_single_doc_request(self,
+                                      request: SingleDocumentRequest,
+                                      metadata,
+                                      compression,
+                                      timeout: Optional[float] = None):
+        """
+        Send requests and uses the appropriate grpc stub for this
+        Stub is chosen based on availability and type of requests
+
+        :param request: the requests to send
+        :param metadata: the metadata to send alongside the requests
+        :param compression: defines if compression should be used
+        :param timeout: defines timeout for sending request
+
+        :yields: Tuple of response and metadata about the response
+        """
+        if not self._initialized:
+            await self._init_stubs()
+
+        timer = self._get_metric_timer()
+        if self.stream_doc_stub:
+            self._record_request_bytes_metric(request.nbytes)
+
+            with timer:
+                async for response in self.stream_doc_stub.stream_doc(
+                        request,
+                        compression=compression,
+                        timeout=timeout,
+                        metadata=metadata,
+                ):
+                    self._record_received_bytes_metric(response.nbytes)
+                    yield response, None
+        else:
+            raise ValueError(
+                'Can not send SingleDocumentRequest. gRPC endpoint not available.'
+            )
 
     async def send_requests(
         self,

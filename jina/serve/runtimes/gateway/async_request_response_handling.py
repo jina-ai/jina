@@ -1,6 +1,6 @@
 import asyncio
 import copy
-from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
+from typing import TYPE_CHECKING, Callable, List, Optional, Tuple, AsyncGenerator
 
 import grpc.aio
 
@@ -204,6 +204,36 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
                 if len(floating_tasks) > 0
                 else None,
             )
+
+        return _handle_request
+
+    def handle_single_document_request(
+        self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
+    ) -> Callable[['Request'], 'AsyncGenerator']:
+        """
+        Function that handles the requests arriving to the gateway. This will be passed to the streamer.
+
+        :param graph: The TopologyGraph of the Flow.
+        :param connection_pool: The connection pool to be used to send messages to specific nodes of the graph
+        :return: Return a Function that given a Request will return a Future from where to extract the response
+        """
+        async def _handle_request(request: 'Request') -> 'Tuple[Future, Optional[Future]]':
+            self._update_start_request_metrics(request)
+            # important that the gateway needs to have an instance of the graph per request
+            request_graph = copy.deepcopy(graph)
+            r = request.routes.add()
+            r.executor = 'gateway'
+            r.start_time.GetCurrentTime()
+            # If the request is targeting a specific deployment, we can send directly to the deployment instead of
+            # querying the graph
+            # reset it in case we send to an external gateway
+            exec_endpoint = request.header.exec_endpoint
+
+            node = request_graph.all_nodes[0]  # this assumes there is only one Executor behind this Gateway
+            async for resp in node.stream_single_doc(request=request,
+                                                     connection_pool=connection_pool,
+                                                     endpoint=exec_endpoint):
+                yield resp
 
         return _handle_request
 

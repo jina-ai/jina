@@ -2,7 +2,7 @@ import os
 from typing import Iterable, List, Union
 
 from jina.proto import jina_pb2
-from jina.types.request.data import DataRequest
+from jina.types.request.data import DataRequest, SingleDocumentRequest
 
 
 class DataRequestProto:
@@ -285,13 +285,20 @@ class SingleDocumentRequestProto:
     """Placeholder that delegates the serialization and deserialization to the internal protobuf"""
 
     @staticmethod
-    def SerializeToString(x):
+    def SerializeToString(x: 'SingleDocumentRequest'):
         """
         # noqa: DAR101
         # noqa: DAR102
         # noqa: DAR201
         """
-        return x.SerializeToString()
+        if not x.is_decompressed:
+            r = x.buffer
+        else:
+            r = x.proto.SerializePartialToString()
+        os.environ['JINA_GRPC_SEND_BYTES'] = str(
+            len(r) + int(os.environ.get('JINA_GRPC_SEND_BYTES', 0))
+        )
+        return r
 
     @staticmethod
     def FromString(x: bytes):
@@ -300,7 +307,12 @@ class SingleDocumentRequestProto:
         # noqa: DAR102
         # noqa: DAR201
         """
-        rsp = jina_pb2.SingleDocumentRequestProto()
-        rsp.ParseFromString(x)
+        import os
+        if x:
+            os.environ['JINA_GRPC_RECV_BYTES'] = str(
+                len(x) + int(os.environ.get('JINA_GRPC_RECV_BYTES', 0))
+            )
+            return SingleDocumentRequest(x)
+        else:
+            return SingleDocumentRequest()
 
-        return rsp

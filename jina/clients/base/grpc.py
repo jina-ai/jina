@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type
 import grpc
 from grpc import RpcError
 
-from jina._docarray import Document
+from jina._docarray import Document, docarray_v2
 from jina.clients.base import BaseClient
 from jina.clients.base.stream_rpc import StreamRpc
 from jina.clients.base.unary_rpc import UnaryRpc
@@ -16,6 +16,7 @@ from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.helper import extract_trailing_metadata, get_default_grpc_options
 from jina.serve.networking.utils import get_grpc_channel
+from jina.types.request.data import SingleDocumentRequest
 
 if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
@@ -215,7 +216,7 @@ class GRPCBaseClient(BaseClient):
 
     async def stream_doc_endpoint(
         self,
-        request: jina_pb2.SingleDocumentRequestProto,
+        request: SingleDocumentRequest,
         timeout: Optional[float] = None,
     ):
         """
@@ -252,11 +253,12 @@ class GRPCBaseClient(BaseClient):
         timeout: Optional[int] = None,
         **kwargs,
     ):
-        request_proto = jina_pb2.SingleDocumentRequestProto(
-            header=jina_pb2.HeaderProto(exec_endpoint=on), document=inputs.to_protobuf()
-        )
+        req = SingleDocumentRequest()
+        req.header.exec_endpoint = on
+        req.document_cls = inputs.__class__
+        req.data.doc = inputs
         async for response in self.stream_doc_endpoint(
-            request=request_proto, timeout=timeout
+            request=req, timeout=timeout
         ):
             yield return_type.from_protobuf(response.document)
 
