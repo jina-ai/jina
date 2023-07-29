@@ -1472,3 +1472,37 @@ def test_issue_with_monitoring():
         )
         assert len(ret) == 1
         assert ret[0].price == 2
+
+
+@pytest.mark.parametrize('ctxt_manager', ['flow', 'deployment'])
+@pytest.mark.parametrize('include_gateway', [False, True])
+def test_doc_with_examples(ctxt_manager, include_gateway):
+    if ctxt_manager == 'flow' and include_gateway:
+        return
+    import string
+    import random
+
+    random_example = ''.join(random.choices(string.ascii_letters, k=10))
+    random_description = ''.join(random.choices(string.ascii_letters, k=10))
+    from pydantic.fields import Field
+    class MyDocWithExample(BaseDoc):
+        t: str = Field(examples=[random_example], description=random_description)
+
+    class MyExecDocWithExample(Executor):
+        @requests
+        def foo(self, docs: DocList[MyDocWithExample], **kwargs) -> DocList[MyDocWithExample]:
+            pass
+
+    port = random_port()
+
+    if ctxt_manager == 'flow':
+        ctxt = Flow(protocol='http', port=port).add(uses=MyExecDocWithExample)
+    else:
+        ctxt = Deployment(uses=MyExecDocWithExample, protocol='http', port=port, include_gateway=include_gateway)
+
+    with ctxt:
+        import requests as general_requests
+        resp = general_requests.get(f'http://localhost:{port}/openapi.json')
+        resp_str = str(resp.json())
+        assert random_example in resp_str
+        assert random_description in resp_str
