@@ -139,6 +139,10 @@ def get_fastapi_app(
             input_doc_model = input_output_map['input']['model']
             output_doc_model = input_output_map['output']['model']
             is_generator = input_output_map['is_generator']
+            is_singleton_doc = input_output_map['is_singleton_doc']
+
+            data_input_model = List[input_doc_model] if not is_singleton_doc else input_doc_model
+            data_input_default = [] if not is_singleton_doc else {}
 
             endpoint_input_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_input_model',

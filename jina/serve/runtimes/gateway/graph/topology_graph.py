@@ -211,7 +211,8 @@ class TopologyGraph:
                                 self._pydantic_models_by_endpoint[endpoint] = {
                                     'input': input_model,
                                     'output': output_model,
-                                    'is_generator':  inner_dict['is_generator']
+                                    'is_generator':  inner_dict['is_generator'],
+                                    'is_singleton_doc':  inner_dict['is_singleton_doc']
                                 }
                         self._endpoints_proto = endpoints_proto
                     else:
@@ -349,14 +350,22 @@ class TopologyGraph:
         def _get_input_output_model_for_endpoint(self,
                                                  previous_input,
                                                  previous_output,
+                                                 previous_is_generator,
+                                                 previous_is_singleton_doc,
                                                  endpoint):
             if self._pydantic_models_by_endpoint is not None:
 
                 if endpoint in self.endpoints:
                     # update output
+                    # the only important for the gateway to know if is singleton is the first (so the last/ ignore previous is_singleton)
+                    # the only important for the gateway to know if is generator is the last (so the first/previous precedence)
                     new_input = previous_input
                     if previous_input is None:
                         new_input = self._pydantic_models_by_endpoint[endpoint]['input']
+
+                    is_generator = previous_is_generator
+                    if previous_is_generator is None:
+                        is_generator = self._pydantic_models_by_endpoint[endpoint]['is_generator']
 
                     if previous_output and previous_output.schema() == self._pydantic_models_by_endpoint[endpoint][
                         "output"].schema():
@@ -364,19 +373,22 @@ class TopologyGraph:
                         return {
                             'input': new_input,
                             'output': previous_output,
-                            'is_generator': self._pydantic_models_by_endpoint[endpoint]['is_generator'],
+                            'is_generator': is_generator,
+                            'is_singleton_doc': self._pydantic_models_by_endpoint[endpoint]['is_singleton_doc'],
                         }
                     else:
                         return {
                             'input': new_input,
                             'output': self._pydantic_models_by_endpoint[endpoint]['output'],
-                            'is_generator': self._pydantic_models_by_endpoint[endpoint]['is_generator'],
+                            'is_generator': is_generator,
+                            'is_singleton_doc': self._pydantic_models_by_endpoint[endpoint]['is_singleton_doc'],
                         }
                 else:
                     return {
                         'input': previous_input,
                         'output': previous_output,
-                        'is_generator': False
+                        'is_generator': previous_is_generator,
+                        'is_singleton_doc': False
                     }
             return None
 
@@ -384,11 +396,14 @@ class TopologyGraph:
                 self,
                 previous_input,
                 previous_output,
-                is_generator,
+                previous_is_generator,
+                previous_is_singleton_doc,
                 endpoint: Optional[str] = None,
         ):
             new_map = self._get_input_output_model_for_endpoint(previous_input,
                                                                 previous_output,
+                                                                previous_is_generator,
+                                                                previous_is_singleton_doc,
                                                                 endpoint)
             if self.leaf:  # I am like a leaf
                 return list([new_map] if new_map is not None else [])  # I am the last in the chain
@@ -397,7 +412,8 @@ class TopologyGraph:
                 list_of_maps = outgoing_node._get_leaf_input_output_model(
                     previous_input=new_map['input'] if new_map is not None else None,
                     previous_output=new_map['output'] if new_map is not None else None,
-                    is_generator=new_map['is_generator'] if new_map is not None else False,
+                    previous_is_generator=new_map['is_generator'] if new_map is not None else None,
+                    previous_is_singleton_doc=new_map['is_singleton_doc'] if new_map is not None else None,
                     endpoint=endpoint
                 )
                 # We are interested in the last one, that will be the task that awaits all the previous
@@ -541,12 +557,14 @@ class TopologyGraph:
                 self,
                 previous_input,
                 previous_output,
-                is_generator,
+                previous_is_generator,
+                previous_is_singleton_doc,
                 endpoint: Optional[str] = None,
         ):
             return [{'input': previous_input,
                      'output': previous_output,
-                     'is_generator': is_generator}]
+                     'is_generator': previous_is_generator,
+                     'is_singleton_doc': previous_is_singleton_doc}]
 
     def __init__(
             self,

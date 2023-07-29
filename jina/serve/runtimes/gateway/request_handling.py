@@ -322,6 +322,8 @@ class GatewayRequestHandler:
                 schema_maps[k] = {}
                 schema_maps[k]['input'] = v['input'].schema()
                 schema_maps[k]['output'] = v['output'].schema()
+                schema_maps[k]['is_generator'] = v['is_generator']
+                schema_maps[k]['is_singleton_doc'] = v['is_singleton_doc']
             response.endpoints.extend(schema_maps.keys())
             json_format.ParseDict(schema_maps, response.schemas)
         else:
