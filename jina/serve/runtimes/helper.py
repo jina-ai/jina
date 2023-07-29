@@ -42,7 +42,7 @@ def _is_param_for_specific_executor(key_name: str) -> bool:
     """
     if _SPECIFIC_EXECUTOR_SEPARATOR in key_name:
         if key_name.startswith(_SPECIFIC_EXECUTOR_SEPARATOR) or key_name.endswith(
-            _SPECIFIC_EXECUTOR_SEPARATOR
+                _SPECIFIC_EXECUTOR_SEPARATOR
         ):
             return False
         return True
@@ -85,6 +85,18 @@ if docarray_v2:
     from pydantic import create_model
     from pydantic.fields import FieldInfo
 
+    RESERVED_KEYS = [
+        'type',
+        'anyOf',
+        '$ref',
+        'additionalProperties',
+        'allOf',
+        'items',
+        'definitions',
+        'properties',
+        'default',
+    ]
+
 
     def _create_aux_model_doc_list_to_list(model):
         fields: Dict[str, Any] = {}
@@ -102,6 +114,7 @@ if docarray_v2:
             model.__name__, __base__=model, __validators__=model.__validators__, **fields
         )
 
+
     def _get_field_from_type(field_schema, field_name, root_schema, cached_models, is_tensor=False, num_recursions=0):
         field_type = field_schema.get('type', None)
         tensor_shape = field_schema.get('tensor/array shape', None)
@@ -111,9 +124,14 @@ if docarray_v2:
                 if '$ref' in any_of_schema:
                     obj_ref = any_of_schema.get('$ref')
                     ref_name = obj_ref.split('/')[-1]
-                    any_of_types.append(_create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name, cached_models=cached_models))
+                    any_of_types.append(
+                        _create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name,
+                                                           cached_models=cached_models))
                 else:
-                    any_of_types.append(_get_field_from_type(any_of_schema, field_name, root_schema=root_schema, cached_models=cached_models, is_tensor=tensor_shape is not None, num_recursions=0)) # No Union of Lists
+                    any_of_types.append(_get_field_from_type(any_of_schema, field_name, root_schema=root_schema,
+                                                             cached_models=cached_models,
+                                                             is_tensor=tensor_shape is not None,
+                                                             num_recursions=0))  # No Union of Lists
             ret = Union[tuple(any_of_types)]
             for rec in range(num_recursions):
                 ret = List[ret]
@@ -144,7 +162,8 @@ if docarray_v2:
             if 'additionalProperties' in field_schema:  # handle Dictionaries
                 additional_props = field_schema['additionalProperties']
                 if additional_props.get('type') == 'object':
-                    ret = Dict[str, _create_pydantic_model_from_schema(additional_props, field_name, cached_models=cached_models)]
+                    ret = Dict[str, _create_pydantic_model_from_schema(additional_props, field_name,
+                                                                       cached_models=cached_models)]
                 else:
                     ret = Dict[str, Any]
             else:
@@ -152,18 +171,22 @@ if docarray_v2:
                 if num_recursions == 0:  # single object reference
                     if obj_ref:
                         ref_name = obj_ref.split('/')[-1]
-                        ret = _create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name, cached_models=cached_models)
+                        ret = _create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name,
+                                                                 cached_models=cached_models)
                     else:
                         ret = Any
                 else:  # object reference in definitions
                     if obj_ref:
                         ref_name = obj_ref.split('/')[-1]
-                        ret = DocList[_create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name, cached_models=cached_models)]
+                        ret = DocList[_create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name,
+                                                                         cached_models=cached_models)]
                     else:
-                        ret = DocList[_create_pydantic_model_from_schema(field_schema, field_name, cached_models=cached_models)]
+                        ret = DocList[
+                            _create_pydantic_model_from_schema(field_schema, field_name, cached_models=cached_models)]
         elif field_type == 'array':
             ret = _get_field_from_type(field_schema=field_schema.get('items', {}), field_name=field_name,
-                                       root_schema=root_schema, cached_models=cached_models, is_tensor=tensor_shape is not None, num_recursions=num_recursions + 1)
+                                       root_schema=root_schema, cached_models=cached_models,
+                                       is_tensor=tensor_shape is not None, num_recursions=num_recursions + 1)
         else:
             if num_recursions > 0:
                 raise ValueError(f"Unknown array item type: {field_type} for field_name {field_name}")
@@ -178,7 +201,6 @@ if docarray_v2:
         if model_name in cached_models:
             return cached_models[model_name]
         for field_name, field_schema in schema.get('properties', {}).items():
-
             field_type = _get_field_from_type(
                 field_schema=field_schema,
                 field_name=field_name,
@@ -190,5 +212,11 @@ if docarray_v2:
             fields[field_name] = (field_type, FieldInfo(default=field_schema.pop('default', None), **field_schema))
 
         model = create_model(model_name, __base__=BaseDoc, **fields)
+        model.__config__.title = schema.get('title', model.__config__.title)
+
+        for k in RESERVED_KEYS:
+            if k in schema:
+                schema.pop(k)
+        model.__config__.schema_extra = schema
         cached_models[model_name] = model
         return model
