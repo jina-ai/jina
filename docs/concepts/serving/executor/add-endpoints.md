@@ -257,7 +257,7 @@ Streaming endpoints receive one Document as input and yields one Document at a t
 ```{admonition} Note
 :class: note
 
-Streaming endpoints are only supported for HTTP and gRPC protocols and for Deployment.
+Streaming endpoints are only supported for HTTP and gRPC protocols and for Deployment and Flow with one single Executor.
 ```
 
 A streaming endpoint has the following signature:
@@ -293,7 +293,6 @@ Jina offers a standard python client for using the streaming endpoint:
 
 ```python
 from jina import Client
-from docarray import DocList
 client = Client(port=12345, protocol='http', cors=True, asyncio=True) # or protocol='grpc'
 async for doc in client.stream_doc(
     on='/hello', inputs=MyDocument(text='hello world'), return_type=MyDocument
