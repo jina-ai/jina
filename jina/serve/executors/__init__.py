@@ -130,7 +130,7 @@ class _FunctionWithSchema(NamedTuple):
         if docarray_v2:
             from docarray import DocList, BaseDoc
 
-            if not is_generator:
+            if not self.is_generator:
                 if self.is_batch_docs and (
                     not issubclass(self.request_schema, DocList)
                     or not issubclass(self.response_schema, DocList)
@@ -176,7 +176,7 @@ class _FunctionWithSchema(NamedTuple):
         # otherwise, infer from the doc parameter (since generator endpoints expect only 1 document as input)
         is_generator = getattr(fn, '__is_generator__', False)
         is_singleton_doc = 'doc' in fn.__annotations__
-        is_batch_docs = 'docs' in fn.__annotations__
+        is_batch_docs = not is_singleton_doc # some tests just use **kwargs and should work as before
         assert not (
             is_singleton_doc and is_batch_docs
         ), f'Cannot specify both the `doc` and the `docs` paramater for {fn.__name__}'
@@ -644,7 +644,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     else:
                         ret = DocumentArray()
                     for doc in docs:
-                        f_ret = await original_func(*args, doc=doc, **kwargs)
+                        f_ret = await original_func(*args, doc=doc,**kwargs)
                         if f_ret is None:
                             ret.append(doc)  # this means change in place
                         else:

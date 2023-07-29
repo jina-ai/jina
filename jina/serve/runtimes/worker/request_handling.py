@@ -26,11 +26,13 @@ from jina.excepts import BadConfigSource, RuntimeTerminated
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2
-from jina.proto.jina_pb2 import SingleDocumentRequestProto
 from jina.serve.executors import BaseExecutor
 from jina.serve.instrumentation import MetricsTimer
 from jina.serve.runtimes.worker.batch_queue import BatchQueue
 from jina.types.request.data import DataRequest, SingleDocumentRequest
+
+if docarray_v2:
+    from docarray import DocList
 
 if TYPE_CHECKING:  # pragma: no cover
     import grpc
@@ -530,7 +532,7 @@ class WorkerRequestHandler:
 
             else:
                 raise TypeError(
-                    f'The return type must be DocumentArray / Dict / `None`, '
+                    f'The return type must be DocList / Dict / `None`, '
                     f'but getting {return_data!r}'
                 )
 
@@ -555,19 +557,22 @@ class WorkerRequestHandler:
 
         self._record_request_size_monitoring(requests)
 
-        params = self._parse_params(requests[0].parameters, self._executor.metas.name)
         endpoint_info = self._executor.requests[exec_endpoint]
-        try:
-            if not getattr(endpoint_info.fn, '__is_generator__', False):
-                requests[0].document_array_cls = endpoint_info.request_schema
-            elif docarray_v2:
-                requests[0].document_array_cls = DocumentArray[
-                    endpoint_info.request_schema
-                ]
-            else:
-                requests[0].document_array_cls = DocumentArray
-        except AttributeError:
-            pass
+        params = self._parse_params(requests[0].parameters, self._executor.metas.name)
+
+        for req in requests:
+            try:
+                if not docarray_v2:
+                    req.document_array_cls = DocumentArray
+                else:
+                    if not endpoint_info.is_generator:
+                        req.document_array_cls = endpoint_info.request_schema
+                    else:
+                        req.document_array_cls = DocList[
+                            endpoint_info.request_schema
+                        ]
+            except AttributeError:
+                pass
 
         return requests, params
 
