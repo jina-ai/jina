@@ -1486,7 +1486,11 @@ def test_doc_with_examples(ctxt_manager, include_gateway):
     random_description = ''.join(random.choices(string.ascii_letters, k=10))
     from pydantic.fields import Field
     class MyDocWithExample(BaseDoc):
+        """This test should be in description"""
         t: str = Field(examples=[random_example], description=random_description)
+        class Config:
+            title: str = 'MyDocWithExampleTitle'
+            schema_extra: Dict = {'extra_key': 'extra_value'}
 
     class MyExecDocWithExample(Executor):
         @requests
@@ -1506,3 +1510,6 @@ def test_doc_with_examples(ctxt_manager, include_gateway):
         resp_str = str(resp.json())
         assert random_example in resp_str
         assert random_description in resp_str
+        assert 'This test should be in description' in resp_str
+        assert 'MyDocWithExampleTitle' in resp_str
+        assert 'extra_key' in resp_str
