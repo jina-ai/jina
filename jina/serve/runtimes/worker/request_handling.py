@@ -908,6 +908,7 @@ class WorkerRequestHandler:
             request_schema = request_endpoint.request_schema
             data_request = DataRequest()
             data_request.header.exec_endpoint = request.header.exec_endpoint
+            data_request.header.request_id = request.header.request_id
             if not docarray_v2:
                 from docarray import Document
 
