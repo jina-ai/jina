@@ -1489,6 +1489,7 @@ def test_doc_with_examples(ctxt_manager, include_gateway):
         """This test should be in description"""
         t: str = Field(examples=[random_example], description=random_description)
         class Config:
+            title: str = 'MyDocWithExampleTitle'
             schema_extra: Dict = {'extra_key': 'extra_value'}
 
     class MyExecDocWithExample(Executor):
@@ -1510,4 +1511,5 @@ def test_doc_with_examples(ctxt_manager, include_gateway):
         assert random_example in resp_str
         assert random_description in resp_str
         assert 'This test should be in description' in resp_str
+        assert 'MyDocWithExampleTitle' in resp_str
         assert 'extra_key' in resp_str
