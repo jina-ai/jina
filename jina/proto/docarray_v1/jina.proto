@@ -179,20 +179,29 @@ service JinaSingleDataRequestRPC {
 }
 
 /**
- * jina gRPC service for DataRequests.
- * This is used to send requests to Executors when a list of requests is not needed
+ * jina gRPC service for Single Document Request.
+ * This is used to send a single request to the Executor when
  */
 service JinaSingleDocumentRequestRPC {
-    // Used for streaming one document to the Executors
+    // Used for sending one document to the Executors which stream multiple ones
     rpc stream_doc (SingleDocumentRequestProto) returns (stream SingleDocumentRequestProto) {
     }
 }
 
 /**
+ * jina gRPC service for Single Document Requests.
+ * This is used to stream documents to and from gateways and executors without batches
+ */
+service JinaSingletonRPC {
+    rpc CallSingle (stream SingleDocumentRequestProto) returns (stream SingleDocumentRequestProto) {
+    }
+}
+
+/**
  * jina streaming gRPC service.
+ This is used to stream documents to and from gateways and executors with batches
  */
 service JinaRPC {
-    // Pass in a Request and a filled Request with matches will be returned.
     rpc Call (stream DataRequestProto) returns (stream DataRequestProto) {
     }
 }

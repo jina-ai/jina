@@ -147,8 +147,8 @@ class JinaSingleDataRequestRPC(object):
 
 class JinaSingleDocumentRequestRPCStub(object):
     """*
-    jina gRPC service for DataRequests.
-    This is used to send requests to Executors when a list of requests is not needed
+    jina gRPC service for Single Document Request.
+    This is used to send a single request to the Executor when
     """
 
     def __init__(self, channel):
@@ -166,12 +166,12 @@ class JinaSingleDocumentRequestRPCStub(object):
 
 class JinaSingleDocumentRequestRPCServicer(object):
     """*
-    jina gRPC service for DataRequests.
-    This is used to send requests to Executors when a list of requests is not needed
+    jina gRPC service for Single Document Request.
+    This is used to send a single request to the Executor when
     """
 
     def stream_doc(self, request, context):
-        """Used for streaming one document to the Executors
+        """Used for sending one document to the Executors which stream multiple ones
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -194,8 +194,8 @@ def add_JinaSingleDocumentRequestRPCServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class JinaSingleDocumentRequestRPC(object):
     """*
-    jina gRPC service for DataRequests.
-    This is used to send requests to Executors when a list of requests is not needed
+    jina gRPC service for Single Document Request.
+    This is used to send a single request to the Executor when
     """
 
     @staticmethod
@@ -216,9 +216,80 @@ class JinaSingleDocumentRequestRPC(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
 
+class JinaSingletonRPCStub(object):
+    """*
+    jina gRPC service for Single Document Requests.
+    This is used to stream documents to and from gateways and executors without batches
+    """
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.CallSingle = channel.stream_stream(
+                '/jina.JinaSingletonRPC/CallSingle',
+                request_serializer=jina__pb2.SingleDocumentRequestProto.SerializeToString,
+                response_deserializer=jina__pb2.SingleDocumentRequestProto.FromString,
+                )
+
+
+class JinaSingletonRPCServicer(object):
+    """*
+    jina gRPC service for Single Document Requests.
+    This is used to stream documents to and from gateways and executors without batches
+    """
+
+    def CallSingle(self, request_iterator, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_JinaSingletonRPCServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'CallSingle': grpc.stream_stream_rpc_method_handler(
+                    servicer.CallSingle,
+                    request_deserializer=jina__pb2.SingleDocumentRequestProto.FromString,
+                    response_serializer=jina__pb2.SingleDocumentRequestProto.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'jina.JinaSingletonRPC', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+ # This class is part of an EXPERIMENTAL API.
+class JinaSingletonRPC(object):
+    """*
+    jina gRPC service for Single Document Requests.
+    This is used to stream documents to and from gateways and executors without batches
+    """
+
+    @staticmethod
+    def CallSingle(request_iterator,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.stream_stream(request_iterator, target, '/jina.JinaSingletonRPC/CallSingle',
+            jina__pb2.SingleDocumentRequestProto.SerializeToString,
+            jina__pb2.SingleDocumentRequestProto.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+
 class JinaRPCStub(object):
     """*
     jina streaming gRPC service.
+    This is used to stream documents to and from gateways and executors with batches
     """
 
     def __init__(self, channel):
@@ -237,11 +308,11 @@ class JinaRPCStub(object):
 class JinaRPCServicer(object):
     """*
     jina streaming gRPC service.
+    This is used to stream documents to and from gateways and executors with batches
     """
 
     def Call(self, request_iterator, context):
-        """Pass in a Request and a filled Request with matches will be returned.
-        """
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -264,6 +335,7 @@ def add_JinaRPCServicer_to_server(servicer, server):
 class JinaRPC(object):
     """*
     jina streaming gRPC service.
+    This is used to stream documents to and from gateways and executors with batches
     """
 
     @staticmethod

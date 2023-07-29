@@ -597,12 +597,11 @@ class WorkerRequestHandler:
             warnings.warn(
                 'Batching is not supported for generator executors endpoints. Ignoring batch size.'
             )
-        doc = requests[0].data.docs[0]
+        doc = requests[0].docs[0]
         docs_matrix, docs_map = None, None
         return await self._executor.__acall__(
             req_endpoint=exec_endpoint,
             doc=doc,
-            docs=None,
             parameters=params,
             docs_matrix=docs_matrix,
             docs_map=docs_map,
@@ -907,6 +906,7 @@ class WorkerRequestHandler:
         else:
             request_schema = request_endpoint.request_schema
             data_request = DataRequest()
+            data_request.header.request_id = request.header.request_id
             data_request.header.exec_endpoint = request.header.exec_endpoint
             if not docarray_v2:
                 from docarray import Document

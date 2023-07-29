@@ -361,8 +361,9 @@ def requests(
             )
 
             fn_with_schema = _FunctionWithSchema(
-                fn_with_schema.fn, request_schema_arg, response_schema_arg
+                fn=fn_with_schema.fn, is_generator=fn_with_schema.is_generator, is_singleton_doc=fn_with_schema.is_singleton_doc, is_batch_docs=fn_with_schema.is_batch_docs, request_schema=request_schema_arg, response_schema=response_schema_arg
             )
+            fn_with_schema.validate()
 
             if isinstance(on, (list, tuple)):
                 for o in on:
