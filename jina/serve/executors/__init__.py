@@ -121,14 +121,20 @@ class _FunctionWithSchema(NamedTuple):
     response_schema: Type[DocumentArray] = DocumentArray
 
     def validate(self):
-        assert not (self.is_singleton_doc and self.is_batch_docs), f'Cannot specify both the `doc` and the `docs` paramater for {self.fn.__name__}'
-        assert not (self.is_generator and self.is_batch_docs), f'Cannot specify the `docs` parameter if the endpoint {self.fn.__name__} is a generator'
+        assert not (
+            self.is_singleton_doc and self.is_batch_docs
+        ), f'Cannot specify both the `doc` and the `docs` paramater for {self.fn.__name__}'
+        assert not (
+            self.is_generator and self.is_batch_docs
+        ), f'Cannot specify the `docs` parameter if the endpoint {self.fn.__name__} is a generator'
         if docarray_v2:
             from docarray import DocList, BaseDoc
+
             if not is_generator:
-                if self.is_batch_docs and (not issubclass(self.request_schema, DocList) or not issubclass(
-                        self.response_schema, DocList
-                )):
+                if self.is_batch_docs and (
+                    not issubclass(self.request_schema, DocList)
+                    or not issubclass(self.response_schema, DocList)
+                ):
                     faulty_schema = (
                         'request_schema'
                         if not issubclass(self.request_schema, DocList)
@@ -137,9 +143,10 @@ class _FunctionWithSchema(NamedTuple):
                     raise Exception(
                         f'The {faulty_schema} schema for {self.fn.__name__}: {self.request_schema} is not a DocList. Please make sure that your endpoint used DocList for request and response schema'
                     )
-                if self.is_singleton_doc and (not issubclass(self.request_schema, BaseDoc) or not issubclass(
-                        self.response_schema, BaseDoc
-                )):
+                if self.is_singleton_doc and (
+                    not issubclass(self.request_schema, BaseDoc)
+                    or not issubclass(self.response_schema, BaseDoc)
+                ):
                     faulty_schema = (
                         'request_schema'
                         if not issubclass(self.request_schema, BaseDoc)
@@ -150,8 +157,8 @@ class _FunctionWithSchema(NamedTuple):
                     )
             else:
                 if not issubclass(self.request_schema, BaseDoc) or not (
-                        issubclass(self.response_schema, BaseDoc)
-                        or issubclass(self.response_schema, BaseDoc)
+                    issubclass(self.response_schema, BaseDoc)
+                    or issubclass(self.response_schema, BaseDoc)
                 ):  # response_schema may be a DocList because by default we use LegacyDocument, and for generators we ignore response
                     faulty_schema = (
                         'request_schema'
@@ -170,14 +177,24 @@ class _FunctionWithSchema(NamedTuple):
         is_generator = getattr(fn, '__is_generator__', False)
         is_singleton_doc = 'doc' in fn.__annotations__
         is_batch_docs = 'docs' in fn.__annotations__
-        assert not (is_singleton_doc and is_batch_docs), f'Cannot specify both the `doc` and the `docs` paramater for {fn.__name__}'
-        assert not (is_generator and is_batch_docs), f'Cannot specify the `docs` parameter if the endpoint {fn.__name__} is a generator'
-        docs_annotation = fn.__annotations__.get('docs', fn.__annotations__.get('doc', None))
+        assert not (
+            is_singleton_doc and is_batch_docs
+        ), f'Cannot specify both the `doc` and the `docs` paramater for {fn.__name__}'
+        assert not (
+            is_generator and is_batch_docs
+        ), f'Cannot specify the `docs` parameter if the endpoint {fn.__name__} is a generator'
+        docs_annotation = fn.__annotations__.get(
+            'docs', fn.__annotations__.get('doc', None)
+        )
         if docarray_v2:
             from docarray import BaseDoc, DocList
-            default_annotations = DocList[LegacyDocument] if is_batch_docs else LegacyDocument
+
+            default_annotations = (
+                DocList[LegacyDocument] if is_batch_docs else LegacyDocument
+            )
         else:
             from jina import Document, DocumentArray
+
             default_annotations = DocumentArray if is_batch_docs else Document
 
         if docs_annotation is None:
@@ -232,7 +249,14 @@ class _FunctionWithSchema(NamedTuple):
 
         request_schema = docs_annotation or default_annotations
         response_schema = return_annotation or default_annotations
-        fn_with_schema = _FunctionWithSchema(fn=fn, is_generator=is_generator, is_singleton_doc=is_singleton_doc, is_batch_docs=is_batch_docs, request_schema=request_schema, response_schema=response_schema)
+        fn_with_schema = _FunctionWithSchema(
+            fn=fn,
+            is_generator=is_generator,
+            is_singleton_doc=is_singleton_doc,
+            is_batch_docs=is_batch_docs,
+            request_schema=request_schema,
+            response_schema=response_schema,
+        )
         fn_with_schema.validate()
         return fn_with_schema
 
@@ -350,8 +374,16 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 # otherwise, since generator endpoints only accept a Document as input, the request_schema is the schema
                 # of the Document
                 if not _is_generator:
-                    request_schema = function_with_schema.request_schema.doc_type if _is_batch_docs else function_with_schema.request_schema
-                    response_schema = function_with_schema.response_schema.doc_type if _is_batch_docs else function_with_schema.response_schema
+                    request_schema = (
+                        function_with_schema.request_schema.doc_type
+                        if _is_batch_docs
+                        else function_with_schema.request_schema
+                    )
+                    response_schema = (
+                        function_with_schema.response_schema.doc_type
+                        if _is_batch_docs
+                        else function_with_schema.response_schema
+                    )
                 else:
                     request_schema = function_with_schema.request_schema
                     response_schema = function_with_schema.response_schema
@@ -602,35 +634,41 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         elif kwargs.get('docs', None) is not None:
             # This means I need to pass every doc (most likely 1, but potentially more)
             if iscoroutinefunction(original_func):
+
                 async def loop_func(*args, **kwargs):
                     docs = kwargs.pop('docs')
                     if docarray_v2:
                         from docarray import DocList
+
                         ret = DocList[response_schema]()
                     else:
                         ret = DocumentArray()
                     for doc in docs:
                         f_ret = await original_func(*args, doc=doc, **kwargs)
                         if f_ret is None:
-                            ret.append(doc) # this means change in place
+                            ret.append(doc)  # this means change in place
                         else:
                             ret.append(f_ret)
                     return ret
+
             else:
+
                 def loop_func(*args, **kwargs):
                     docs = kwargs.pop('docs')
                     if docarray_v2:
                         from docarray import DocList
+
                         ret = DocList[response_schema]()
                     else:
                         ret = DocumentArray()
                     for doc in docs:
                         f_ret = original_func(*args, doc=doc, **kwargs)
                         if f_ret is None:
-                            ret.append(doc) # this means change in place
+                            ret.append(doc)  # this means change in place
                         else:
                             ret.append(f_ret)
                     return ret
+
             func = loop_func
 
         async def exec_func(
