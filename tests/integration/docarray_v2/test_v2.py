@@ -1120,10 +1120,10 @@ def test_deployments(protocols, replicas):
 @pytest.mark.parametrize('replicas', [1, 3])
 @pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
 def test_serve_complex_model(protocols, replicas, ctxt_manager):
-    class InputDoc(BaseDoc):
+    class InputComplexDoc(BaseDoc):
         img: ImageDoc
 
-    class OutputDoc(BaseDoc):
+    class OutputComplexDoc(BaseDoc):
         tensor: Optional[AnyTensor]
         url: ImageUrl
         lll: List[List[List[int]]] = [[[5]]]
@@ -1136,10 +1136,10 @@ def test_serve_complex_model(protocols, replicas, ctxt_manager):
 
     class MyExec(Executor):
         @requests(on='/bar')
-        def bar(self, docs: DocList[InputDoc], **kwargs) -> DocList[OutputDoc]:
-            docs_return = DocList[OutputDoc](
+        def bar(self, docs: DocList[InputComplexDoc], **kwargs) -> DocList[OutputComplexDoc]:
+            docs_return = DocList[OutputComplexDoc](
                 [
-                    OutputDoc(
+                    OutputComplexDoc(
                         url='photo.jpg',
                         lll=[[[40]]],
                         fff=[[[40.2]]],
@@ -1168,8 +1168,8 @@ def test_serve_complex_model(protocols, replicas, ctxt_manager):
             c = Client(port=port, protocol=protocol)
             docs = c.post(
                 on='/bar',
-                inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
-                return_type=DocList[OutputDoc],
+                inputs=InputComplexDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
+                return_type=DocList[OutputComplexDoc],
             )
             assert docs[0].url == 'photo.jpg'
             assert docs[0].lll == [[[40]]]
