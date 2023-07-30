@@ -1118,7 +1118,8 @@ def test_deployments(protocols, replicas):
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])
 @pytest.mark.parametrize('replicas', [1, 3])
-def test_deployments_complex_model(protocols, replicas):
+@pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
+def test_serve_complex_model(protocols, replicas, ctxt_manager):
     class InputDoc(BaseDoc):
         img: ImageDoc
 
@@ -1158,7 +1159,11 @@ def test_deployments_complex_model(protocols, replicas):
             return docs_return
 
     ports = [random_port() for _ in protocols]
-    with Deployment(port=ports, protocol=protocols, replicas=replicas, uses=MyExec):
+    if ctxt_manager == 'flow':
+        ctxt = Flow(port=ports, protocol=protocols).add(replicas=replicas, uses=MyExec)
+    else:
+        ctxt = Deployment(port=ports, protocol=protocols, replicas=replicas, uses=MyExec)
+    with ctxt:
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             docs = c.post(
