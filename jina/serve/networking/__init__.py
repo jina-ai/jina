@@ -1,6 +1,6 @@
 import asyncio
 import time
-from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Set, Tuple, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Set, Tuple, Union, AsyncGenerator
 
 import grpc
 from grpc.aio import AioRpcError
@@ -21,6 +21,7 @@ from jina.serve.networking.instrumentation import (
 from jina.serve.networking.replica_list import _ReplicaList
 from jina.serve.networking.utils import DEFAULT_MINIMUM_RETRIES
 from jina.types.request import Request
+from jina.types.request.data import SingleDocumentRequest
 
 if TYPE_CHECKING:  # pragma: no cover
     import threading
@@ -266,6 +267,44 @@ class GrpcConnectionPool:
             )
             return None
 
+    def send_single_document_request(
+            self,
+            request: SingleDocumentRequest,
+            deployment: str,
+            metadata: Optional[Dict[str, str]] = None,
+            head: bool = False,
+            endpoint: Optional[str] = None,
+            timeout: Optional[float] = None,
+            retries: Optional[int] = -1,
+    ) -> Optional[AsyncGenerator]:
+        """Send a request to target via only one of the pooled connections
+
+        :param request: request to send
+        :param deployment: name of the Jina deployment to send the request to
+        :param metadata: metadata to send with the request
+        :param head: If True it is send to the head, otherwise to the worker pods
+        :param endpoint: endpoint to target with the requests
+        :param timeout: timeout for sending the requests
+        :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
+        :return: asyncio.Task representing the send call
+        """
+        replicas = self._connections.get_replicas(deployment, head)
+        if replicas:
+            result_async_generator = self._send_single_doc_request(
+                request,
+                replicas,
+                endpoint=endpoint,
+                metadata=metadata,
+                timeout=timeout,
+                retries=retries,
+            )
+            return result_async_generator
+        else:
+            self._logger.debug(
+                f'no available connections for deployment {deployment}'
+            )
+            return None
+
     def add_connection(
             self,
             deployment: str,
@@ -386,6 +425,79 @@ class GrpcConnectionPool:
                     current_address, current_deployment
                 )
             return None
+
+    def _send_single_doc_request(
+            self,
+            request: SingleDocumentRequest,
+            connections: _ReplicaList,
+            endpoint: Optional[str] = None,
+            metadata: Optional[Dict[str, str]] = None,
+            timeout: Optional[float] = None,
+            retries: Optional[int] = -1,
+    ) -> 'asyncio.Task[Union[Tuple, AioRpcError, InternalNetworkError]]':
+        # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
+        # the grpc call function is not a coroutine but some _AioCall
+
+        if endpoint:
+            metadata = metadata or {}
+            metadata['endpoint'] = endpoint
+
+        if metadata:
+            metadata = tuple(metadata.items())
+
+        async def async_generator_wrapper():
+            tried_addresses = set()
+            num_replicas = len(connections.get_all_connections())
+            if retries is None or retries < 0:
+                total_num_tries = (
+                        max(DEFAULT_MINIMUM_RETRIES, len(connections.get_all_connections()))
+                        + 1
+                )
+            else:
+                total_num_tries = 1 + retries  # try once, then do all the retries
+            for i in range(total_num_tries):
+                current_connection = None
+                while (
+                        current_connection is None
+                        or current_connection.address in tried_addresses
+                ):
+                    current_connection = await connections.get_next_connection(
+                        num_retries=total_num_tries
+                    )
+                    # if you request to retry more than the amount of replicas, we just skip, we could balance the
+                    # retries in the future
+                    if len(tried_addresses) >= num_replicas:
+                        break
+                tried_addresses.add(current_connection.address)
+                try:
+                    async for resp, metadata_resp in current_connection.send_single_doc_request(
+                            request=request,
+                            metadata=metadata,
+                            compression=self.compression,
+                            timeout=timeout,
+                    ):
+                        yield resp, metadata_resp
+                    return
+                except AioRpcError as e:
+                    error = await self._handle_aiorpcerror(
+                        error=e,
+                        retry_i=i,
+                        request_id=request.request_id,
+                        tried_addresses=tried_addresses,
+                        total_num_tries=total_num_tries,
+                        current_address=current_connection.address,
+                        current_deployment=current_connection.deployment_name,
+                        connection_list=connections,
+                        task_type='SingleDocumentRequest'
+                    )
+                    if error:
+                        yield error, None
+                        return
+                except Exception as e:
+                    yield e, None
+                    return
+
+        return async_generator_wrapper()
 
     def _send_requests(
             self,

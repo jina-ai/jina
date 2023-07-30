@@ -83,20 +83,24 @@ if docarray_v2:
     from docarray import DocList, BaseDoc
     from docarray.typing import AnyTensor
     from pydantic import create_model
+    from pydantic.fields import FieldInfo
 
 
     def _create_aux_model_doc_list_to_list(model):
-        fields = {}
+        fields: Dict[str, Any] = {}
         for field_name, field in model.__annotations__.items():
+            field_info = model.__fields__[field_name].field_info
             try:
                 if issubclass(field, DocList):
-                    fields[field_name] = (List[field.doc_type], {})
+                    t: Any = field.doc_type
+                    fields[field_name] = (List[t], field_info)
                 else:
-                    fields[field_name] = (field, {})
+                    fields[field_name] = (field, field_info)
             except TypeError:
-                fields[field_name] = (field, {})
-        return create_model(model.__name__, __base__=model, __validators__=model.__validators__,
-                            **fields)
+                fields[field_name] = (field, field_info)
+        return create_model(
+            model.__name__, __base__=model, __validators__=model.__validators__, **fields
+        )
 
     def _get_field_from_type(field_schema, field_name, root_schema, cached_models, is_tensor=False, num_recursions=0):
         field_type = field_schema.get('type', None)
@@ -169,12 +173,21 @@ if docarray_v2:
 
 
     def _create_pydantic_model_from_schema(schema: Dict[str, any], model_name: str, cached_models: Dict) -> type:
-        fields = {}
+        cached_models = cached_models if cached_models is not None else {}
+        fields: Dict[str, Any] = {}
         if model_name in cached_models:
             return cached_models[model_name]
         for field_name, field_schema in schema.get('properties', {}).items():
-            field_type = _get_field_from_type(field_schema=field_schema, field_name=field_name, root_schema=schema, cached_models=cached_models, is_tensor=False, num_recursions=0)
-            fields[field_name] = (field_type, field_schema.get('description'))
+
+            field_type = _get_field_from_type(
+                field_schema=field_schema,
+                field_name=field_name,
+                root_schema=schema,
+                cached_models=cached_models,
+                is_tensor=False,
+                num_recursions=0,
+            )
+            fields[field_name] = (field_type, FieldInfo(default=field_schema.pop('default', None), **field_schema))
 
         model = create_model(model_name, __base__=BaseDoc, **fields)
         cached_models[model_name] = model

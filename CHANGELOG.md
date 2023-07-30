@@ -248,6 +248,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -624,6 +625,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.17.0`)](#release-note-3170)
 - [Release Note (`3.18.0`)](#release-note-3180)
 - [Release Note (`3.19.0`)](#release-note-3190)
+- [Release Note (`3.19.1`)](#release-note-3191)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -15993,4 +15995,28 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```5e3d0b02```](https://github.com/jina-ai/jina/commit/5e3d0b023f6ca431342bc2e8106709bb063c55b7)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```701c9b6e```](https://github.com/jina-ai/jina/commit/701c9b6e9815f04af3adfbcff3a975089e9ea47e)] __-__ replace docarray v1v2 to version number (*Han Xiao*)
  - [[```de6cc7a0```](https://github.com/jina-ai/jina/commit/de6cc7a08afcb3537c6be893d8b9702beec05bfd)] __-__ __version__: the next version will be 3.18.1 (*Jina Dev Bot*)
+
+<a name=release-note-3-19-1></a>
+## Release Note (`3.19.1`)
+
+> Release time: 2023-07-19 07:54:28
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```eda0fbb0```](https://github.com/jina-ai/jina/commit/eda0fbb00cc7ce41e04eef0655f6bc631188928c)] __-__ unset http proxy (#5972) (*Joan Fontanals*)
+ - [[```a8997b6f```](https://github.com/jina-ai/jina/commit/a8997b6fb890adce8850fbed1d12f4fbee0bf0f4)] __-__ dynamic batching with new docarray (#5970) (*Joan Fontanals*)
+ - [[```9cb5f10e```](https://github.com/jina-ai/jina/commit/9cb5f10ea9b8ee5a1142bda1c64c30b15bf072bc)] __-__ properly handle mulitprotocol Deployment to Kubernetes (#5961) (*Joan Fontanals*)
+ - [[```242692e9```](https://github.com/jina-ai/jina/commit/242692e970e7a010012f0ea09ec0a1bbd911b9fc)] __-__ monitoring validation error (#5965) (*Joan Fontanals*)
+ - [[```871a5f2e```](https://github.com/jina-ai/jina/commit/871a5f2e2998e8127f8d5f6f567588a680f5598e)] __-__ fail fast when no valid schemas (#5962) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```fb0b0c0f```](https://github.com/jina-ai/jina/commit/fb0b0c0f6e51655c57b59c95c1db0eafc3973306)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```18dcbb0d```](https://github.com/jina-ai/jina/commit/18dcbb0d1d9cfad65801388247feb61b35a218d5)] __-__ __version__: the next version will be 3.19.1 (*Jina Dev Bot*)
 

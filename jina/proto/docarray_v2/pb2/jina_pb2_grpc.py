@@ -145,6 +145,77 @@ class JinaSingleDataRequestRPC(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
 
+class JinaSingleDocumentRequestRPCStub(object):
+    """*
+    jina gRPC service for DataRequests.
+    This is used to send requests to Executors when a list of requests is not needed
+    """
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.stream_doc = channel.unary_stream(
+                '/jina.JinaSingleDocumentRequestRPC/stream_doc',
+                request_serializer=jina__pb2.SingleDocumentRequestProto.SerializeToString,
+                response_deserializer=jina__pb2.SingleDocumentRequestProto.FromString,
+                )
+
+
+class JinaSingleDocumentRequestRPCServicer(object):
+    """*
+    jina gRPC service for DataRequests.
+    This is used to send requests to Executors when a list of requests is not needed
+    """
+
+    def stream_doc(self, request, context):
+        """Used for streaming one document to the Executors
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_JinaSingleDocumentRequestRPCServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'stream_doc': grpc.unary_stream_rpc_method_handler(
+                    servicer.stream_doc,
+                    request_deserializer=jina__pb2.SingleDocumentRequestProto.FromString,
+                    response_serializer=jina__pb2.SingleDocumentRequestProto.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'jina.JinaSingleDocumentRequestRPC', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+ # This class is part of an EXPERIMENTAL API.
+class JinaSingleDocumentRequestRPC(object):
+    """*
+    jina gRPC service for DataRequests.
+    This is used to send requests to Executors when a list of requests is not needed
+    """
+
+    @staticmethod
+    def stream_doc(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(request, target, '/jina.JinaSingleDocumentRequestRPC/stream_doc',
+            jina__pb2.SingleDocumentRequestProto.SerializeToString,
+            jina__pb2.SingleDocumentRequestProto.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+
 class JinaRPCStub(object):
     """*
     jina streaming gRPC service.

@@ -6,11 +6,12 @@ from typing import TYPE_CHECKING, AsyncIterator, Dict
 from jina.enums import ProtocolType
 from jina.helper import get_full_version
 from jina.proto import jina_pb2
-from jina.types.request.data import DataRequest
+from jina.types.request.data import DataRequest, SingleDocumentRequest
 from jina.types.request.status import StatusMessage
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import SimpleNamespace
+    import grpc
 
     from jina.logging.logger import JinaLogger
     from jina.serve.runtimes.gateway.streamer import GatewayStreamer
@@ -276,6 +277,21 @@ class GatewayRequestHandler:
             request_iterator=request_iterator, context=context, *args, **kwargs
         ):
             yield resp
+
+    async def stream_doc(
+            self, request: SingleDocumentRequest, context: 'grpc.aio.ServicerContext'
+    ) -> SingleDocumentRequest:
+        """
+        Process the received requests and return the result as a new request
+
+        :param request: the data request to process
+        :param context: grpc context
+        :yields: the response request
+        """
+        async for result in self.streamer.rpc_stream_doc(
+                request=request,
+        ):
+            yield result
 
     async def process_single_data(
         self, request: DataRequest, context=None

@@ -111,7 +111,7 @@ def get_fastapi_app(
 
     def add_streaming_get_route(
         endpoint_path,
-        input_doc_list_model=None,
+        input_doc_model=None,
     ):
         from fastapi import Request
 
@@ -122,15 +122,15 @@ def get_fastapi_app(
         )
         async def streaming_get(request: Request):
             query_params = dict(request.query_params)
-            endpoint = query_params.pop('exec_endpoint')
             req = DataRequest()
-            req.header.exec_endpoint = endpoint
+            req.header.exec_endpoint = endpoint_path
             if not docarray_v2:
                 from docarray import Document
 
                 req.data.docs = DocumentArray([Document.from_dict(query_params)])
             else:
-                req.data.docs = DocumentArray([input_doc_list_model(**query_params)])
+                req.document_array_cls = DocList[input_doc_model]
+                req.data.docs = DocList[input_doc_model]([input_doc_model(**query_params)])
             event_generator = _gen_dict_documents(await caller(req))
             return EventSourceResponse(event_generator)
 
@@ -158,7 +158,7 @@ def get_fastapi_app(
             if is_generator:
                 add_streaming_get_route(
                     endpoint,
-                    input_doc_list_model=input_doc_model,
+                    input_doc_model=input_doc_model,
                 )
             else:
                 add_post_route(
