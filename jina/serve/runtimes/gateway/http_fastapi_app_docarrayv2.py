@@ -170,7 +170,7 @@ def get_fastapi_app(
         header_dict = {'request_id': error.request_id, 'status': status_dict}
         return header_dict
 
-    def add_post_route(endpoint_path, input_model, output_model, input_doc_list_model=None, output_doc_list_model=None):
+    def add_post_route(endpoint_path, input_model, output_model, input_doc_list_model=None, output_doc_list_model=None, is_singleton_doc=False):
         app_kwargs = dict(path=f'/{endpoint_path.strip("/")}',
                           methods=['POST'],
                           summary=f'Endpoint {endpoint_path}',
@@ -181,7 +181,10 @@ def get_fastapi_app(
             **app_kwargs
         )
         async def post(body: input_model, response: Response):
-            docs = DocList[input_doc_list_model](body.data)
+            if not is_singleton_doc:
+                docs = DocList[input_doc_list_model](body.data)
+            else:
+                docs = DocList[input_doc_list_model]([body.document])
             target_executor = None
             req_id = None
             if body.header is not None:
@@ -245,21 +248,40 @@ def get_fastapi_app(
             input_doc_model = input_output_map['input']
             output_doc_model = input_output_map['output']
             is_generator = input_output_map['is_generator']
+            is_singleton_doc = input_output_map['is_singleton_doc']
 
-            endpoint_input_model = pydantic.create_model(
-                f'{endpoint.strip("/")}_input_model',
-                data=(List[input_doc_model], []),
-                parameters=(Optional[Dict], None),
-                header=(Optional[Header], None),
-                __config__=inherit_config(InnerConfig, input_doc_model.__config__)
-            )
+            _config = inherit_config(InnerConfig, BaseDoc.__config__)
 
-            endpoint_output_model = pydantic.create_model(
-                f'{endpoint.strip("/")}_output_model',
-                data=(List[output_doc_model], []),
-                parameters=(Optional[Dict], None),
-                __config__=output_doc_model.__config__
-            )
+            if is_singleton_doc:
+                endpoint_input_model = pydantic.create_model(
+                    f'{endpoint.strip("/")}_input_model',
+                    document=(input_doc_model, {}),
+                    parameters=(Optional[Dict], None),
+                    header=(Optional[Header], None),
+                    __config__=inherit_config(InnerConfig, input_doc_model.__config__),
+                )
+
+                endpoint_output_model = pydantic.create_model(
+                    f'{endpoint.strip("/")}_output_model',
+                    document=(output_doc_model, {}),
+                    parameters=(Optional[Dict], None),
+                    __config__=output_doc_model.__config__,
+                )
+            else:
+                endpoint_input_model = pydantic.create_model(
+                    f'{endpoint.strip("/")}_input_model',
+                    data=(List[input_doc_model], []),
+                    parameters=(Optional[Dict], None),
+                    header=(Optional[Header], None),
+                    __config__=inherit_config(InnerConfig, input_doc_model.__config__),
+                )
+
+                endpoint_output_model = pydantic.create_model(
+                    f'{endpoint.strip("/")}_output_model',
+                    data=(List[output_doc_model], []),
+                    parameters=(Optional[Dict], None),
+                    __config__=output_doc_model.__config__,
+                )
             if is_generator:
                 add_streaming_get_route(
                     endpoint,
