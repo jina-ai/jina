@@ -1134,7 +1134,7 @@ def test_serve_complex_model(protocols, replicas, ctxt_manager):
         u: Union[str, int]
         lu: List[Union[str, int]] = [0, 1, 2]
 
-    class MyExec(Executor):
+    class MyComplexServeExec(Executor):
         @requests(on='/bar')
         def bar(self, docs: DocList[InputComplexDoc], **kwargs) -> DocList[OutputComplexDoc]:
             docs_return = DocList[OutputComplexDoc](
@@ -1160,9 +1160,9 @@ def test_serve_complex_model(protocols, replicas, ctxt_manager):
 
     ports = [random_port() for _ in protocols]
     if ctxt_manager == 'flow':
-        ctxt = Flow(port=ports, protocol=protocols).add(replicas=replicas, uses=MyExec)
+        ctxt = Flow(port=ports, protocol=protocols).add(replicas=replicas, uses=MyComplexServeExec)
     else:
-        ctxt = Deployment(port=ports, protocol=protocols, replicas=replicas, uses=MyExec)
+        ctxt = Deployment(port=ports, protocol=protocols, replicas=replicas, uses=MyComplexServeExec)
     with ctxt:
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
