@@ -87,9 +87,10 @@ def get_fastapi_app(
 
     from pydantic.config import BaseConfig, inherit_config
     from pydantic import BaseModel
+    import os
 
     class Header(BaseModel):
-        request_id: Optional[str] = None
+        request_id: Optional[str] = Field(description='Request ID', example=os.urandom(16).hex())
         target_executor: Optional[str] = Field(default=None, example="")
 
         class Config(BaseConfig):
@@ -248,7 +249,7 @@ def get_fastapi_app(
 
             endpoint_input_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_input_model',
-                data=(List[input_doc_model], []),
+                data=(List[input_doc_model], ...),
                 parameters=(Optional[Dict], None),
                 header=(Optional[Header], None),
                 __config__=inherit_config(InnerConfig, BaseDoc.__config__),
@@ -256,10 +257,11 @@ def get_fastapi_app(
 
             endpoint_output_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_output_model',
-                data=(List[output_doc_model], []),
+                data=(List[output_doc_model], ...),
                 parameters=(Optional[Dict], None),
                 __config__=inherit_config(InnerConfig, BaseDoc.__config__),
             )
+
             if is_generator:
                 add_streaming_get_route(
                     endpoint,

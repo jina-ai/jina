@@ -35,14 +35,15 @@ def get_fastapi_app(
         from fastapi import FastAPI, Response, HTTPException
         import pydantic
         from fastapi.middleware.cors import CORSMiddleware
-    from pydantic import BaseModel
+    from pydantic import BaseModel, Field
     from pydantic.config import BaseConfig, inherit_config
 
     from jina.proto import jina_pb2
     from jina.serve.runtimes.gateway.models import _to_camel_case
+    import os
 
     class Header(BaseModel):
-        request_id: Optional[str] = None
+        request_id: Optional[str] = Field(description='Request ID', example=os.urandom(16).hex())
 
         class Config(BaseConfig):
             alias_generator = _to_camel_case
@@ -147,7 +148,7 @@ def get_fastapi_app(
 
             endpoint_input_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_input_model',
-                data=(List[input_doc_model], []),
+                data=(List[input_doc_model], ...),
                 parameters=(Optional[Dict], None),
                 header=(Optional[Header], None),
                 __config__=_config,
@@ -155,7 +156,7 @@ def get_fastapi_app(
 
             endpoint_output_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_output_model',
-                data=(List[output_doc_model], []),
+                data=(List[output_doc_model], ...),
                 parameters=(Optional[Dict], None),
                 __config__=_config,
             )
