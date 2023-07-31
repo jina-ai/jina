@@ -258,14 +258,14 @@ def get_fastapi_app(
                     document=(input_doc_model, {}),
                     parameters=(Optional[Dict], None),
                     header=(Optional[Header], None),
-                    __config__=inherit_config(InnerConfig, input_doc_model.__config__),
+                    __config__=inherit_config(InnerConfig, BaseDoc.__config__),
                 )
 
                 endpoint_output_model = pydantic.create_model(
                     f'{endpoint.strip("/")}_output_model',
                     document=(output_doc_model, {}),
                     parameters=(Optional[Dict], None),
-                    __config__=output_doc_model.__config__,
+                    __config__=inherit_config(InnerConfig, BaseDoc.__config__),
                 )
             else:
                 endpoint_input_model = pydantic.create_model(
@@ -273,15 +273,16 @@ def get_fastapi_app(
                     data=(List[input_doc_model], []),
                     parameters=(Optional[Dict], None),
                     header=(Optional[Header], None),
-                    __config__=inherit_config(InnerConfig, input_doc_model.__config__),
+                    __config__=inherit_config(InnerConfig, BaseDoc.__config__),
                 )
 
                 endpoint_output_model = pydantic.create_model(
                     f'{endpoint.strip("/")}_output_model',
                     data=(List[output_doc_model], []),
                     parameters=(Optional[Dict], None),
-                    __config__=output_doc_model.__config__,
+                    __config__=inherit_config(InnerConfig, BaseDoc.__config__),
                 )
+
             if is_generator:
                 add_streaming_get_route(
                     endpoint,

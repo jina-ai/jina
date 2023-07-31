@@ -1118,11 +1118,12 @@ def test_deployments(protocols, replicas):
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])
 @pytest.mark.parametrize('replicas', [1, 3])
-def test_deployments_complex_model(protocols, replicas):
-    class InputDoc(BaseDoc):
+@pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
+def test_serve_complex_model(protocols, replicas, ctxt_manager):
+    class InputComplexDoc(BaseDoc):
         img: ImageDoc
 
-    class OutputDoc(BaseDoc):
+    class OutputComplexDoc(BaseDoc):
         tensor: Optional[AnyTensor]
         url: ImageUrl
         lll: List[List[List[int]]] = [[[5]]]
@@ -1133,12 +1134,12 @@ def test_deployments_complex_model(protocols, replicas):
         u: Union[str, int]
         lu: List[Union[str, int]] = [0, 1, 2]
 
-    class MyExec(Executor):
+    class MyComplexServeExec(Executor):
         @requests(on='/bar')
-        def bar(self, docs: DocList[InputDoc], **kwargs) -> DocList[OutputDoc]:
-            docs_return = DocList[OutputDoc](
+        def bar(self, docs: DocList[InputComplexDoc], **kwargs) -> DocList[OutputComplexDoc]:
+            docs_return = DocList[OutputComplexDoc](
                 [
-                    OutputDoc(
+                    OutputComplexDoc(
                         url='photo.jpg',
                         lll=[[[40]]],
                         fff=[[[40.2]]],
@@ -1158,13 +1159,17 @@ def test_deployments_complex_model(protocols, replicas):
             return docs_return
 
     ports = [random_port() for _ in protocols]
-    with Deployment(port=ports, protocol=protocols, replicas=replicas, uses=MyExec):
+    if ctxt_manager == 'flow':
+        ctxt = Flow(port=ports, protocol=protocols).add(replicas=replicas, uses=MyComplexServeExec)
+    else:
+        ctxt = Deployment(port=ports, protocol=protocols, replicas=replicas, uses=MyComplexServeExec)
+    with ctxt:
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             docs = c.post(
                 on='/bar',
-                inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
-                return_type=DocList[OutputDoc],
+                inputs=InputComplexDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
+                return_type=DocList[OutputComplexDoc],
             )
             assert docs[0].url == 'photo.jpg'
             assert docs[0].lll == [[[40]]]
@@ -1486,7 +1491,11 @@ def test_doc_with_examples(ctxt_manager, include_gateway):
     random_description = ''.join(random.choices(string.ascii_letters, k=10))
     from pydantic.fields import Field
     class MyDocWithExample(BaseDoc):
+        """This test should be in description"""
         t: str = Field(examples=[random_example], description=random_description)
+        class Config:
+            title: str = 'MyDocWithExampleTitle'
+            schema_extra: Dict = {'extra_key': 'extra_value'}
 
     class MyExecDocWithExample(Executor):
         @requests
@@ -1506,3 +1515,6 @@ def test_doc_with_examples(ctxt_manager, include_gateway):
         resp_str = str(resp.json())
         assert random_example in resp_str
         assert random_description in resp_str
+        assert 'This test should be in description' in resp_str
+        assert 'MyDocWithExampleTitle' in resp_str
+        assert 'extra_key' in resp_str
