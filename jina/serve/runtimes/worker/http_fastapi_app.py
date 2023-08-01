@@ -1,5 +1,5 @@
 import inspect
-from typing import TYPE_CHECKING, Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Union
 
 from jina import DocumentArray, Document
 from jina._docarray import docarray_v2
@@ -35,14 +35,15 @@ def get_fastapi_app(
         from fastapi import FastAPI, Response, HTTPException
         import pydantic
         from fastapi.middleware.cors import CORSMiddleware
-    from pydantic import BaseModel
+    from pydantic import BaseModel, Field
     from pydantic.config import BaseConfig, inherit_config
 
     from jina.proto import jina_pb2
     from jina.serve.runtimes.gateway.models import _to_camel_case
+    import os
 
     class Header(BaseModel):
-        request_id: Optional[str] = None
+        request_id: Optional[str] = Field(description='Request ID', example=os.urandom(16).hex())
 
         class Config(BaseConfig):
             alias_generator = _to_camel_case
@@ -69,8 +70,7 @@ def get_fastapi_app(
             input_model,
             output_model,
             input_doc_list_model=None,
-            output_doc_list_model=None,
-            is_singleton_doc=False,
+            output_doc_list_model=None
     ):
         app_kwargs = dict(
             path=f'/{endpoint_path.strip("/")}',
@@ -87,22 +87,25 @@ def get_fastapi_app(
         async def post(body: input_model, response: Response):
 
             req = DataRequest()
-            if not is_singleton_doc:
-                if not docarray_v2:
-                    req.data.docs = DocumentArray.from_pydantic_model(body.data)
-                else:
-                    req.data.docs = DocList[input_doc_list_model](body.data)
-            else:
-                if not docarray_v2:
-                    req.data.docs = DocumentArray([Document.from_pydantic_model(body.document)])
-                else:
-                    req.data.docs = DocList[input_doc_list_model]([input_doc_list_model(**body.document)])
-
             if body.header is not None:
                 req.header.request_id = body.header.request_id
 
             req.parameters = body.parameters
             req.header.exec_endpoint = endpoint_path
+            data = body.data
+            if isinstance(data, list):
+                if not docarray_v2:
+                    req.data.docs = DocumentArray.from_pydantic_model(data)
+                else:
+                    req.data.docs = DocList[input_doc_list_model](data)
+            else:
+                if not docarray_v2:
+                    req.data.docs = DocumentArray([Document.from_pydantic_model(data)])
+                else:
+                    req.data.docs = DocList[input_doc_list_model]([input_doc_list_model(**data)])
+                if body.header is None:
+                    req.header.request_id = req.docs[0].id
+
             resp = await caller(req)
             status = resp.header.status
 
@@ -146,43 +149,26 @@ def get_fastapi_app(
             input_doc_model = input_output_map['input']['model']
             output_doc_model = input_output_map['output']['model']
             is_generator = input_output_map['is_generator']
-            is_singleton_doc = input_output_map['is_singleton_doc']
 
             if docarray_v2:
                 _config = inherit_config(InnerConfig, BaseDoc.__config__)
             else:
                 _config = input_doc_model.__config__
 
-            if is_singleton_doc:
-                endpoint_input_model = pydantic.create_model(
-                    f'{endpoint.strip("/")}_input_model',
-                    document=(input_doc_model, {}),
-                    parameters=(Optional[Dict], None),
-                    header=(Optional[Header], None),
-                    __config__=_config,
-                )
+            endpoint_input_model = pydantic.create_model(
+                f'{endpoint.strip("/")}_input_model',
+                data=(Union[input_doc_model, List[input_doc_model]], ...),
+                parameters=(Optional[Dict], None),
+                header=(Optional[Header], None),
+                __config__=_config,
+            )
 
-                endpoint_output_model = pydantic.create_model(
-                    f'{endpoint.strip("/")}_output_model',
-                    document=(output_doc_model, {}),
-                    parameters=(Optional[Dict], None),
-                    __config__=_config,
-                )
-            else:
-                endpoint_input_model = pydantic.create_model(
-                    f'{endpoint.strip("/")}_input_model',
-                    data=(List[input_doc_model], []),
-                    parameters=(Optional[Dict], None),
-                    header=(Optional[Header], None),
-                    __config__=_config,
-                )
-
-                endpoint_output_model = pydantic.create_model(
-                    f'{endpoint.strip("/")}_output_model',
-                    data=(List[output_doc_model], []),
-                    parameters=(Optional[Dict], None),
-                    __config__=_config,
-                )
+            endpoint_output_model = pydantic.create_model(
+                f'{endpoint.strip("/")}_output_model',
+                data=(Union[output_doc_model, List[output_doc_model]], ...),
+                parameters=(Optional[Dict], None),
+                __config__=_config,
+            )
 
             if is_generator:
                 add_streaming_get_route(
@@ -196,7 +182,6 @@ def get_fastapi_app(
                     output_model=endpoint_output_model,
                     input_doc_list_model=input_doc_model,
                     output_doc_list_model=output_doc_model,
-                    is_singleton_doc=is_singleton_doc
                 )
 
     from jina.serve.runtimes.gateway.health_model import JinaHealthModel
