@@ -306,7 +306,12 @@ class DataRequest(Request):
         :param value: a Python dict
         """
         self.proto_wo_data.parameters.Clear()
-        self.proto_wo_data.parameters.update(value)
+        parameters = value
+        if docarray_v2:
+            from pydantic import BaseModel
+            if isinstance(value, BaseModel):
+                parameters = dict(value)
+        self.proto_wo_data.parameters.update(parameters)
 
     @property
     def response(self):
@@ -655,7 +660,12 @@ class SingleDocumentRequest(Request):
         :param value: a Python dict
         """
         self.proto_wo_data.parameters.Clear()
-        self.proto_wo_data.parameters.update(value)
+        parameters = value
+        if docarray_v2:
+            from pydantic import BaseModel
+            if isinstance(value, BaseModel):
+                parameters = dict(value)
+        self.proto_wo_data.parameters.update(parameters)
 
     def __copy__(self):
         return SingleDocumentRequest(request=self.proto_with_data)
