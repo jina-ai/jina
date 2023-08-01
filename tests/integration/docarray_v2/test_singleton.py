@@ -362,10 +362,73 @@ def test_invalid_singleton_batch_combination():
             async def foo(self, docs: DocList[ImageDoc], **kwargs) -> ImageDoc:
                 pass
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
+@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http']])
+@pytest.mark.parametrize('return_type', ['batch', 'singleton'])
+@pytest.mark.parametrize('include_gateway', [True, False])
+async def test_async_client(ctxt_manager, protocols, return_type, include_gateway):
+    if 'websocket' in protocols and ctxt_manager != 'flow':
+        return
+    if not include_gateway and ctxt_manager == 'flow':
+        return
 
-async def test_async_client():
-    pass
+    class MySingletonReturnInputDoc(BaseDoc):
+        text: str
+        price: int
 
+    class MySingletonReturnOutputDoc(BaseDoc):
+        text: str
+        category: str
 
-def test_openapi_json():
-    pass
+    class MySingletonExecutorReturn(Executor):
+
+        @requests(on='/foo')
+        def foo(self, docs: DocList[MySingletonReturnInputDoc], **kwargs) -> DocList[MySingletonReturnOutputDoc]:
+            return DocList[MySingletonReturnOutputDoc](
+                [MySingletonReturnOutputDoc(text=docs[0].text + '_changed', category=str(docs[0].price + 1))])
+
+        @requests(on='/foo_single')
+        def foo_single(self, doc: MySingletonReturnInputDoc, **kwargs) -> MySingletonReturnOutputDoc:
+            return MySingletonReturnOutputDoc(text=doc.text + '_changed', category=str(doc.price + 1))
+
+    ports = [random_port() for _ in protocols]
+
+    if ctxt_manager == 'flow':
+        ctxt = Flow(ports=ports, protocol=protocols).add(uses=MySingletonExecutorReturn)
+    else:
+        ctxt = Deployment(ports=ports, protocol=protocols, uses=MySingletonExecutorReturn,
+                          include_gateway=include_gateway)
+
+    with ctxt:
+        for port, protocol in zip(ports, protocols):
+            c = Client(port=port, protocol=protocol, asyncio=True)
+
+            async for doc in c.post(
+                    on='/foo', inputs=MySingletonReturnInputDoc(text='hello', price=2), return_type=DocList[
+                        MySingletonReturnOutputDoc] if return_type == 'batch' else MySingletonReturnOutputDoc
+            ):
+                if return_type == 'batch':
+                    assert isinstance(doc, DocList)
+                    assert len(doc) == 1
+                    assert doc[0].text == 'hello_changed'
+                    assert doc[0].category == str(3)
+                else:
+                    assert isinstance(doc, BaseDoc)
+                    assert doc.text == 'hello_changed'
+                    assert doc.category == str(3)
+
+            async for doc in c.post(
+                    on='/foo_single', inputs=MySingletonReturnInputDoc(text='hello', price=2), return_type=DocList[
+                        MySingletonReturnOutputDoc] if return_type == 'batch' else MySingletonReturnOutputDoc
+            ):
+                if return_type == 'batch':
+                    assert isinstance(doc, DocList)
+                    assert len(doc) == 1
+                    assert doc[0].text == 'hello_changed'
+                    assert doc[0].category == str(3)
+                else:
+                    assert isinstance(doc, BaseDoc)
+                    assert doc.text == 'hello_changed'
+                    assert doc.category == str(3)
+

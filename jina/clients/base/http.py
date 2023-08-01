@@ -202,9 +202,12 @@ class HTTPBaseClient(BaseClient):
                     if not docarray_v2:
                         da = DocumentArray.from_dict(r_str['data'])
                     else:
-                        da = return_type(
-                            [return_type.doc_type(**v) for v in r_str['data']]
-                        )
+                        from docarray import DocList
+                        if issubclass(return_type, DocList):
+                            da = return_type(
+                                [return_type.doc_type(**v) for v in r_str['data']])
+                        else:
+                            da = DocList[return_type]([return_type(**v) for v in r_str['data']])
                     del r_str['data']
 
                 resp = DataRequest(r_str)
