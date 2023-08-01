@@ -62,10 +62,10 @@ __dry_run_endpoint__ = '_jina_dry_run_'
 __all__ = ['BaseExecutor', __dry_run_endpoint__]
 
 
-
 def is_pydantic_model(annotation: Type) -> bool:
     from pydantic import BaseModel
     from typing import Type, Optional, get_args, get_origin, Union
+
     origin = get_origin(annotation) or annotation
     args = get_args(annotation)
 
@@ -84,6 +84,7 @@ def get_inner_pydantic_model(annotation: Type) -> bool:
     try:
         from pydantic import BaseModel
         from typing import Type, Optional, get_args, get_origin, Union
+
         origin = get_origin(annotation) or annotation
         args = get_args(annotation)
 
@@ -227,10 +228,13 @@ class _FunctionWithSchema(NamedTuple):
         docs_annotation = fn.__annotations__.get(
             'docs', fn.__annotations__.get('doc', None)
         )
-        parameters_model = fn.__annotations__.get('parameters', None) if docarray_v2 else None
+        parameters_model = (
+            fn.__annotations__.get('parameters', None) if docarray_v2 else None
+        )
         parameters_is_pydantic_model = False
         if parameters_model is not None and docarray_v2:
             from pydantic import BaseModel
+
             parameters_is_pydantic_model = is_pydantic_model(parameters_model)
             parameters_model = get_inner_pydantic_model(parameters_model)
 
@@ -453,9 +457,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 'is_generator': _is_generator,
                 'is_singleton_doc': _is_singleton_doc,
                 'parameters': {
-                    'name': _parameters_model.__name__ if _parameters_model is not None else None,
-                    'model': _parameters_model
-                }
+                    'name': _parameters_model.__name__
+                    if _parameters_model is not None
+                    else None,
+                    'model': _parameters_model,
+                },
             }
         return endpoint_models
 
@@ -690,6 +696,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     kwargs['parameters'] = parameters
                 result = func(*args, **kwargs)
                 return result
+
             return wrapper
 
         # Decorator to make sure that `docs` are fed one by one to method using singleton document serving
@@ -710,6 +717,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     else:
                         ret.append(f_ret)
                 return ret
+
             return wrapper
 
         def async_loop_docs_decorator(func):
@@ -718,6 +726,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 docs = kwargs.pop('docs')
                 if docarray_v2:
                     from docarray import DocList
+
                     ret = DocList[response_schema]()
                 else:
                     ret = DocumentArray()
@@ -728,8 +737,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     else:
                         ret.append(f_ret)
                 return ret
-            return wrapper
 
+            return wrapper
 
         fn_info = self.requests[req_endpoint]
         original_func = fn_info.fn
