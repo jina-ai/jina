@@ -93,7 +93,6 @@ def get_fastapi_app(
             req.parameters = body.parameters
             req.header.exec_endpoint = endpoint_path
             data = body.data
-            print(f'data {data}')
             if isinstance(data, list):
                 if not docarray_v2:
                     req.data.docs = DocumentArray.from_pydantic_model(data)
