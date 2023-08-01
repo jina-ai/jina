@@ -541,39 +541,45 @@ class WorkerRequestHandler:
         )
         return docs
 
-    async def _setup_requests(
-        self,
-        requests: List['DataRequest'],
-        exec_endpoint: str,
-        tracing_context: Optional['Context'] = None,
-    ):
-        """Execute a request using the executor.
+    def _setup_req_doc_array_cls(self, requests, exec_endpoint, is_response=False):
+        """Set the request document_array_cls.
 
         :param requests: the requests to execute
         :param exec_endpoint: the execution endpoint to use
         :param tracing_context: Optional OpenTelemetry tracing context from the originating request.
         :return: the result of the execution
         """
-
-        self._record_request_size_monitoring(requests)
-
         endpoint_info = self._executor.requests[exec_endpoint]
-        params = self._parse_params(requests[0].parameters, self._executor.metas.name)
-
         for req in requests:
             try:
                 if not docarray_v2:
                     req.document_array_cls = DocumentArray
                 else:
-                    if not endpoint_info.is_generator:
-                        req.document_array_cls = endpoint_info.request_schema
+                    if not endpoint_info.is_generator and not endpoint_info.is_singleton_doc:
+                        req.document_array_cls = endpoint_info.request_schema if not is_response else endpoint_info.response_schema
                     else:
                         req.document_array_cls = DocList[
                             endpoint_info.request_schema
-                        ]
+                        ] if not is_response else DocList[endpoint_info.response_schema]
             except AttributeError:
                 pass
 
+    def _setup_requests(
+        self,
+        requests: List['DataRequest'],
+        exec_endpoint: str,
+    ):
+        """Execute a request using the executor.
+
+        :param requests: the requests to execute
+        :param exec_endpoint: the execution endpoint to use
+        :return: the result of the execution
+        """
+
+        self._record_request_size_monitoring(requests)
+
+        params = self._parse_params(requests[0].parameters, self._executor.metas.name)
+        self._setup_req_doc_array_cls(requests, exec_endpoint, is_response=False)
         return requests, params
 
     async def handle_generator(
@@ -595,8 +601,8 @@ class WorkerRequestHandler:
                     f'Request endpoint must match one of the available endpoints.'
                 )
 
-        requests, params = await self._setup_requests(
-            requests, exec_endpoint, tracing_context=tracing_context
+        requests, params = self._setup_requests(
+            requests, exec_endpoint
         )
         if exec_endpoint in self._batchqueue_config:
             warnings.warn(
@@ -636,10 +642,9 @@ class WorkerRequestHandler:
                 )
                 return requests[0]
 
-        requests, params = await self._setup_requests(
-            requests, exec_endpoint, tracing_context=tracing_context
+        requests, params = self._setup_requests(
+            requests, exec_endpoint
         )
-
         len_docs = len(requests[0].docs)  # TODO we can optimize here and access the
         if exec_endpoint in self._batchqueue_config:
             assert len(requests) == 1, 'dynamic batching does not support no_reduce'
@@ -671,7 +676,6 @@ class WorkerRequestHandler:
                 docs_map=docs_map,
                 tracing_context=tracing_context,
             )
-
             _ = self._set_result(requests, return_data, docs)
 
         for req in requests:
@@ -679,9 +683,7 @@ class WorkerRequestHandler:
 
         self._record_docs_processed_monitoring(requests, len_docs)
         try:
-            requests[0].document_array_cls = self._executor.requests[
-                exec_endpoint
-            ].response_schema
+            self._setup_req_doc_array_cls(requests, exec_endpoint, is_response=True)
         except AttributeError:
             pass
         self._record_response_size_monitoring(requests)
@@ -872,6 +874,7 @@ class WorkerRequestHandler:
         :param is_generator: whether the request should be handled with streaming
         :returns: the response request
         """
+        self.logger.debug('recv a process_single_data request')
         return await self.process_data([request], context, is_generator=is_generator)
 
     async def stream_doc(
@@ -884,6 +887,7 @@ class WorkerRequestHandler:
         :param context: grpc context
         :yields: the response request
         """
+        self.logger.debug('recv an stream_doc request')
         request_endpoint = self._executor.requests.get(
             request.header.exec_endpoint
         ) or self._executor.requests.get(__default_endpoint__)
@@ -960,7 +964,7 @@ class WorkerRequestHandler:
         """
         from google.protobuf import json_format
 
-        self.logger.debug('got an endpoint discovery request')
+        self.logger.debug('recv an endpoint discovery request')
         endpoints_proto = jina_pb2.EndpointsProto()
         endpoints_proto.endpoints.extend(list(self._executor.requests.keys()))
         endpoints_proto.write_endpoints.extend(list(self._executor.write_endpoints))
@@ -1020,6 +1024,7 @@ class WorkerRequestHandler:
         :param is_generator: whether the request should be handled with streaming
         :returns: the response request
         """
+        self.logger.debug('recv a process_data request')
         with MetricsTimer(
             self._summary, self._receiving_request_seconds, self._metric_attributes
         ):
@@ -1107,6 +1112,7 @@ class WorkerRequestHandler:
         :param kwargs: keyword arguments
         :yield: responses to the request
         """
+        self.logger.debug('recv a stream request')
         async for request in request_iterator:
             yield await self.process_data([request], context)
 

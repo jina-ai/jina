@@ -16,7 +16,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
     from jina.types.request.data import Response
 
-from jina._docarray import Document, DocumentArray
+from jina._docarray import Document, DocumentArray, docarray_v2
 
 
 def _include_results_field_in_param(parameters: Optional['Dict']) -> 'Dict':
@@ -397,16 +397,28 @@ class PostMixin:
         return_results = (on_always is None) and (on_done is None)
 
         async def _get_results(*args, **kwargs):
-            result = [] if return_responses else return_type([])
+            is_singleton = False
+            inferred_return_type = return_type
+            if docarray_v2:
+                from docarray import DocList
+                if not issubclass(return_type, DocList):
+                    is_singleton = True
+                    inferred_return_type = DocList[return_type]
+            result = [] if return_responses else inferred_return_type([])
+
             async for resp in c._get_results(*args, **kwargs):
+
                 if return_results:
-                    resp.document_array_cls = return_type
+                    resp.document_array_cls = inferred_return_type
                     if return_responses:
                         result.append(resp)
                     else:
                         result.extend(resp.data.docs)
             if return_results:
-                return result
+                if not return_responses and is_singleton and len(result) == 1:
+                    return result[0]
+                else:
+                    return result
 
         return self._with_retry(
             func=_get_results,
@@ -515,9 +527,20 @@ class AsyncPostMixin:
             return_type=return_type,
             **kwargs,
         ):
-            result.document_array_cls = return_type
+            is_singleton = False
+            if docarray_v2:
+                from docarray import DocList
+                if issubclass(return_type, DocList):
+                    result.document_array_cls = return_type
+                else:
+                    is_singleton = True
+                    result.document_array_cls = DocList[return_type]
             if not return_responses:
-                yield result.data.docs
+                ret_docs = result.data.docs
+                if is_singleton and len(ret_docs) == 1:
+                    yield ret_docs[0]
+                else:
+                    yield ret_docs
             else:
                 yield result
 

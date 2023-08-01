@@ -184,7 +184,6 @@ def get_fastapi_app(
                 target_executor = body.header.target_executor
                 req_id = body.header.request_id
             data = body.data
-            print(f'data {data}')
             if isinstance(data, list):
                 docs = DocList[input_doc_list_model](data)
             else:
