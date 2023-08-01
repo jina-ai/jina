@@ -114,8 +114,60 @@ T = TypeVar('T', bound='_FunctionWithSchema')
 
 class _FunctionWithSchema(NamedTuple):
     fn: Callable
+    is_generator: False
+    is_batch_docs: False
+    is_singleton_doc: False
     request_schema: Type[DocumentArray] = DocumentArray
     response_schema: Type[DocumentArray] = DocumentArray
+
+    def validate(self):
+        assert not (
+            self.is_singleton_doc and self.is_batch_docs
+        ), f'Cannot specify both the `doc` and the `docs` paramater for {self.fn.__name__}'
+        assert not (
+            self.is_generator and self.is_batch_docs
+        ), f'Cannot specify the `docs` parameter if the endpoint {self.fn.__name__} is a generator'
+        if docarray_v2:
+            from docarray import DocList, BaseDoc
+
+            if not self.is_generator:
+                if self.is_batch_docs and (
+                    not issubclass(self.request_schema, DocList)
+                    or not issubclass(self.response_schema, DocList)
+                ):
+                    faulty_schema = (
+                        'request_schema'
+                        if not issubclass(self.request_schema, DocList)
+                        else 'response_schema'
+                    )
+                    raise Exception(
+                        f'The {faulty_schema} schema for {self.fn.__name__}: {self.request_schema} is not a DocList. Please make sure that your endpoint used DocList for request and response schema'
+                    )
+                if self.is_singleton_doc and (
+                    not issubclass(self.request_schema, BaseDoc)
+                    or not issubclass(self.response_schema, BaseDoc)
+                ):
+                    faulty_schema = (
+                        'request_schema'
+                        if not issubclass(self.request_schema, BaseDoc)
+                        else 'response_schema'
+                    )
+                    raise Exception(
+                        f'The {faulty_schema} schema for {self.fn.__name__}: {self.request_schema} is not a BaseDoc. Please make sure that your endpoint used BaseDoc for request and response schema'
+                    )
+            else:
+                if not issubclass(self.request_schema, BaseDoc) or not (
+                    issubclass(self.response_schema, BaseDoc)
+                    or issubclass(self.response_schema, BaseDoc)
+                ):  # response_schema may be a DocList because by default we use LegacyDocument, and for generators we ignore response
+                    faulty_schema = (
+                        'request_schema'
+                        if not issubclass(self.request_schema, BaseDoc)
+                        else 'response_schema'
+                    )
+                    raise Exception(
+                        f'The {faulty_schema} schema for {self.fn.__name__}: {self.request_schema} is not a BaseDoc. Please make sure that your streaming endpoints used BaseDoc for request and response schema'
+                    )
 
     @staticmethod
     def get_function_with_schema(fn: Callable) -> T:
@@ -123,16 +175,29 @@ class _FunctionWithSchema(NamedTuple):
         # if it's not a generator function, infer the type annotation from the docs parameter
         # otherwise, infer from the doc parameter (since generator endpoints expect only 1 document as input)
         is_generator = getattr(fn, '__is_generator__', False)
-        if not is_generator:
-            assert (
-                'doc' not in fn.__annotations__
-            ), f'Cannot specify the `doc` parameter if the endpoint {fn.__name__} is not a generator'
-            docs_annotation = fn.__annotations__.get('docs', None)
+        is_singleton_doc = 'doc' in fn.__annotations__
+        is_batch_docs = (
+            not is_singleton_doc
+        )  # some tests just use **kwargs and should work as before
+        assert not (
+            is_singleton_doc and is_batch_docs
+        ), f'Cannot specify both the `doc` and the `docs` paramater for {fn.__name__}'
+        assert not (
+            is_generator and is_batch_docs
+        ), f'Cannot specify the `docs` parameter if the endpoint {fn.__name__} is a generator'
+        docs_annotation = fn.__annotations__.get(
+            'docs', fn.__annotations__.get('doc', None)
+        )
+        if docarray_v2:
+            from docarray import BaseDoc, DocList
+
+            default_annotations = (
+                DocList[LegacyDocument] if is_batch_docs else LegacyDocument
+            )
         else:
-            docs_annotation = fn.__annotations__.get('doc', None)
-            assert (
-                'docs' not in fn.__annotations__
-            ), f'Cannot specify the `docs` parameter if the endpoint {fn.__name__} is a generator'
+            from jina import Document, DocumentArray
+
+            default_annotations = DocumentArray if is_batch_docs else Document
 
         if docs_annotation is None:
             pass
@@ -184,51 +249,18 @@ class _FunctionWithSchema(NamedTuple):
             )
             return_annotation = None
 
-        if not docarray_v2:
-            if not is_generator:
-                request_schema = docs_annotation or DocumentArray
-                response_schema = return_annotation or DocumentArray
-            else:
-                from docarray import Document
-
-                request_schema = docs_annotation or Document
-                response_schema = return_annotation or Document
-        else:
-            from docarray import BaseDoc, DocList
-
-            if not is_generator:
-                request_schema = docs_annotation or DocList[LegacyDocument]
-                response_schema = return_annotation or DocList[LegacyDocument]
-            else:
-                request_schema = docs_annotation or LegacyDocument
-                response_schema = return_annotation or LegacyDocument
-            if not is_generator:
-                if not issubclass(request_schema, DocList) or not issubclass(
-                    response_schema, DocList
-                ):
-                    faulty_schema = (
-                        'request_schema'
-                        if not issubclass(request_schema, DocList)
-                        else 'response_schema'
-                    )
-                    raise Exception(
-                        f'The {faulty_schema} schema for {fn.__name__}: {request_schema} is not a DocList. Please make sure that your endpoints used DocList for request and response schema'
-                    )
-            else:
-                if not issubclass(request_schema, BaseDoc) or not (
-                    issubclass(response_schema, BaseDoc)
-                    or issubclass(response_schema, BaseDoc)
-                ):  # response_schema may be a DocList because by default we use LegacyDocument, and for generators we ignore response
-                    faulty_schema = (
-                        'request_schema'
-                        if not issubclass(request_schema, BaseDoc)
-                        else 'response_schema'
-                    )
-                    raise Exception(
-                        f'The {faulty_schema} schema for {fn.__name__}: {request_schema} is not a BaseDoc. Please make sure that your streaming endpoints used BaseDoc for request and response schema'
-                    )
-
-        return _FunctionWithSchema(fn, request_schema, response_schema)
+        request_schema = docs_annotation or default_annotations
+        response_schema = return_annotation or default_annotations
+        fn_with_schema = _FunctionWithSchema(
+            fn=fn,
+            is_generator=is_generator,
+            is_singleton_doc=is_singleton_doc,
+            is_batch_docs=is_batch_docs,
+            request_schema=request_schema,
+            response_schema=response_schema,
+        )
+        fn_with_schema.validate()
+        return fn_with_schema
 
 
 class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
@@ -335,15 +367,25 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         endpoint_models = {}
         for endpoint, function_with_schema in self.requests.items():
-            _is_generator = getattr(function_with_schema.fn, '__is_generator__', False)
+            _is_generator = function_with_schema.is_generator
+            _is_singleton_doc = function_with_schema.is_singleton_doc
+            _is_batch_docs = function_with_schema.is_batch_docs
             if docarray_v2:
                 # if the endpoint is not a generator endpoint, then the request schema is a DocumentArray and we need
                 # to get the doc_type from the schema
                 # otherwise, since generator endpoints only accept a Document as input, the request_schema is the schema
                 # of the Document
                 if not _is_generator:
-                    request_schema = function_with_schema.request_schema.doc_type
-                    response_schema = function_with_schema.response_schema.doc_type
+                    request_schema = (
+                        function_with_schema.request_schema.doc_type
+                        if _is_batch_docs
+                        else function_with_schema.request_schema
+                    )
+                    response_schema = (
+                        function_with_schema.response_schema.doc_type
+                        if _is_batch_docs
+                        else function_with_schema.response_schema
+                    )
                 else:
                     request_schema = function_with_schema.request_schema
                     response_schema = function_with_schema.response_schema
@@ -360,6 +402,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     'model': response_schema,
                 },
                 'is_generator': _is_generator,
+                'is_singleton_doc': _is_singleton_doc,
             }
         return endpoint_models
 
@@ -583,7 +626,52 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     async def __acall_endpoint__(
         self, req_endpoint, tracing_context: Optional['Context'], **kwargs
     ):
-        func, input_doc, output_doc = self.requests[req_endpoint]
+        fn_info = self.requests[req_endpoint]
+        original_func = fn_info.fn
+        is_generator = fn_info.is_generator
+        is_batch_docs = fn_info.is_batch_docs
+        response_schema = fn_info.response_schema
+        if is_generator or is_batch_docs:
+            func = original_func
+        elif kwargs.get('docs', None) is not None:
+            # This means I need to pass every doc (most likely 1, but potentially more)
+            if iscoroutinefunction(original_func):
+
+                async def loop_func(*args, **kwargs):
+                    docs = kwargs.pop('docs')
+                    if docarray_v2:
+                        from docarray import DocList
+
+                        ret = DocList[response_schema]()
+                    else:
+                        ret = DocumentArray()
+                    for doc in docs:
+                        f_ret = await original_func(*args, doc=doc, **kwargs)
+                        if f_ret is None:
+                            ret.append(doc)  # this means change in place
+                        else:
+                            ret.append(f_ret)
+                    return ret
+
+            else:
+
+                def loop_func(*args, **kwargs):
+                    docs = kwargs.pop('docs')
+                    if docarray_v2:
+                        from docarray import DocList
+
+                        ret = DocList[response_schema]()
+                    else:
+                        ret = DocumentArray()
+                    for doc in docs:
+                        f_ret = original_func(*args, doc=doc, **kwargs)
+                        if f_ret is None:
+                            ret.append(doc)  # this means change in place
+                        else:
+                            ret.append(f_ret)
+                    return ret
+
+            func = loop_func
 
         async def exec_func(
             summary, histogram, histogram_metric_labels, tracing_context

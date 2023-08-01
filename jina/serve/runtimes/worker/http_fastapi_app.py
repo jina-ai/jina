@@ -1,7 +1,7 @@
 import inspect
-from typing import TYPE_CHECKING, Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Union
 
-from jina import DocumentArray
+from jina import DocumentArray, Document
 from jina._docarray import docarray_v2
 from jina.importer import ImportExtensions
 from jina.serve.networking.sse import EventSourceResponse
@@ -15,11 +15,11 @@ if docarray_v2:
 
 
 def get_fastapi_app(
-    request_models_map: Dict,
-    caller: Callable,
-    logger: 'JinaLogger',
-    cors: bool = False,
-    **kwargs,
+        request_models_map: Dict,
+        caller: Callable,
+        logger: 'JinaLogger',
+        cors: bool = False,
+        **kwargs,
 ):
     """
     Get the app from FastAPI as the REST interface.
@@ -66,11 +66,11 @@ def get_fastapi_app(
         logger.warning('CORS is enabled. This service is accessible from any website!')
 
     def add_post_route(
-        endpoint_path,
-        input_model,
-        output_model,
-        input_doc_list_model=None,
-        output_doc_list_model=None,
+            endpoint_path,
+            input_model,
+            output_model,
+            input_doc_list_model=None,
+            output_doc_list_model=None,
     ):
         app_kwargs = dict(
             path=f'/{endpoint_path.strip("/")}',
@@ -87,16 +87,26 @@ def get_fastapi_app(
         async def post(body: input_model, response: Response):
 
             req = DataRequest()
-            if not docarray_v2:
-                req.data.docs = DocumentArray.from_pydantic_model(body.data)
-            else:
-                req.data.docs = DocList[input_doc_list_model](body.data)
-
             if body.header is not None:
                 req.header.request_id = body.header.request_id
 
-            req.parameters = body.parameters
+            if body.parameters is not None:
+                req.parameters = body.parameters
             req.header.exec_endpoint = endpoint_path
+            data = body.data
+            if isinstance(data, list):
+                if not docarray_v2:
+                    req.data.docs = DocumentArray.from_pydantic_model(data)
+                else:
+                    req.data.docs = DocList[input_doc_list_model](data)
+            else:
+                if not docarray_v2:
+                    req.data.docs = DocumentArray([Document.from_pydantic_model(data)])
+                else:
+                    req.data.docs = DocList[input_doc_list_model]([data])
+                if body.header is None:
+                    req.header.request_id = req.docs[0].id
+
             resp = await caller(req)
             status = resp.header.status
 
@@ -111,8 +121,8 @@ def get_fastapi_app(
                 return ret
 
     def add_streaming_get_route(
-        endpoint_path,
-        input_doc_model=None,
+            endpoint_path,
+            input_doc_model=None,
     ):
         from fastapi import Request
 
@@ -140,7 +150,7 @@ def get_fastapi_app(
             input_doc_model = input_output_map['input']['model']
             output_doc_model = input_output_map['output']['model']
             is_generator = input_output_map['is_generator']
-            _config = None
+
             if docarray_v2:
                 _config = inherit_config(InnerConfig, BaseDoc.__config__)
             else:
@@ -148,7 +158,7 @@ def get_fastapi_app(
 
             endpoint_input_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_input_model',
-                data=(List[input_doc_model], ...),
+                data=(Union[List[input_doc_model], input_doc_model], ...),
                 parameters=(Optional[Dict], None),
                 header=(Optional[Header], None),
                 __config__=_config,
@@ -156,7 +166,7 @@ def get_fastapi_app(
 
             endpoint_output_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_output_model',
-                data=(List[output_doc_model], ...),
+                data=(Union[List[output_doc_model], output_doc_model], ...),
                 parameters=(Optional[Dict], None),
                 __config__=_config,
             )

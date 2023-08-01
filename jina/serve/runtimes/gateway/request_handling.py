@@ -228,6 +228,7 @@ class GatewayRequestHandler:
         :param context: grpc context
         :returns: the response request
         """
+        self.logger.debug('recv a dry_run request')
         from jina._docarray import Document, DocumentArray
         from jina.serve.executors import __dry_run_endpoint__
 
@@ -253,6 +254,7 @@ class GatewayRequestHandler:
         :param context: grpc context
         :returns: the response request
         """
+        self.logger.debug('recv a _status request')
         info_proto = jina_pb2.JinaInfoProto()
         version, env_info = get_full_version()
         for k, v in version.items():
@@ -273,6 +275,7 @@ class GatewayRequestHandler:
         :param kwargs: keyword arguments
         :yield: responses to the request after streaming to Executors in Flow
         """
+        self.logger.debug('recv a stream request')
         async for resp in self.streamer.rpc_stream(
             request_iterator=request_iterator, context=context, *args, **kwargs
         ):
@@ -288,6 +291,7 @@ class GatewayRequestHandler:
         :param context: grpc context
         :yields: the response request
         """
+        self.logger.debug('recv a stream_doc request')
         async for result in self.streamer.rpc_stream_doc(
                 request=request,
         ):
@@ -301,6 +305,7 @@ class GatewayRequestHandler:
         :param context: grpc context
         :return: response DataRequest
         """
+        self.logger.debug(f'recv a process_single_data request')
         return await self.streamer.process_single_data(request, context)
 
     async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
@@ -322,6 +327,8 @@ class GatewayRequestHandler:
                 schema_maps[k] = {}
                 schema_maps[k]['input'] = v['input'].schema()
                 schema_maps[k]['output'] = v['output'].schema()
+                schema_maps[k]['is_generator'] = v['is_generator']
+                schema_maps[k]['is_singleton_doc'] = v['is_singleton_doc']
             response.endpoints.extend(schema_maps.keys())
             json_format.ParseDict(schema_maps, response.schemas)
         else:

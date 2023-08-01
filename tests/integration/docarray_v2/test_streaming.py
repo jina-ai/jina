@@ -3,16 +3,16 @@ from typing import AsyncGenerator, Generator, Optional
 import pytest
 
 from jina import Client, Executor, requests, Flow, Deployment
-from jina._docarray import Document, DocumentArray
+from docarray import DocList, BaseDoc
 from jina.helper import random_port
 
 
-class MyDocument(Document):
+class MyDocument(BaseDoc):
     text: str
     number: Optional[int]
 
 
-class OutputDocument(Document):
+class OutputDocument(BaseDoc):
     text: str
 
 
@@ -138,13 +138,13 @@ class Executor1(Executor):
         yield MyDocument(text='new document')
 
     @requests(on='/non_generator')
-    def non_generator(self, docs: DocumentArray, **kwargs):
+    def non_generator(self, docs: DocList[BaseDoc], **kwargs):
         return docs
 
 
 class Executor2(Executor):
     @requests
-    def non_generator(self, docs: DocumentArray, **kwargs):
+    def non_generator(self, docs: DocList[BaseDoc], **kwargs):
         return docs
 
     @requests(on='/generator')
@@ -154,7 +154,7 @@ class Executor2(Executor):
 
 class Executor3(Executor):
     @requests(on='/non_generator')
-    def non_generator(self, docs: DocumentArray, **kwargs):
+    def non_generator(self, docs: DocList[BaseDoc], **kwargs):
         return docs
 
     @requests(on='/generator')

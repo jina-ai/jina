@@ -67,23 +67,6 @@ async def test_streaming_client_non_gen_endpoint(protocol):
 
 
 def test_invalid_executor():
-    with pytest.raises(RuntimeError) as exc_info:
-
-        class InvalidExecutor1(Executor):
-            @requests(on='/invalid')
-            async def invalid(self, doc: Document, **kwargs):
-                return doc
-
-    assert type(exc_info.value.__cause__) is AssertionError
-
-    with pytest.raises(RuntimeError) as exc_info:
-
-        class InvalidExecutor2(Executor):
-            @requests(on='/invalid')
-            def invalid(self, doc: Document, **kwargs):
-                return doc
-
-    assert type(exc_info.value.__cause__) is AssertionError
 
     with pytest.raises(RuntimeError) as exc_info:
 
@@ -102,59 +85,3 @@ def test_invalid_executor():
                 yield docs[0]
 
     assert type(exc_info.value.__cause__) is AssertionError
-
-
-class Executor1(Executor):
-    @requests
-    def generator(self, **kwargs):
-        yield Document(text='new document')
-
-    @requests(on='/non_generator')
-    def non_generator(self, docs: DocumentArray, **kwargs):
-        return docs
-
-
-class Executor2(Executor):
-    @requests
-    def non_generator(self, docs: DocumentArray, **kwargs):
-        return docs
-
-    @requests(on='/generator')
-    def generator(self, **kwargs):
-        yield Document(text='new document')
-
-
-class Executor3(Executor):
-    @requests(on='/non_generator')
-    def non_generator(self, docs: DocumentArray, **kwargs):
-        return docs
-
-    @requests(on='/generator')
-    def generator(self, **kwargs):
-        yield Document(text='new document')
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    'executor,expected',
-    [
-        ('Executor1', {'/default': True, '/non_generator': False}),
-        ('Executor2', {'/default': False, '/generator': True}),
-        ('Executor3', {'/generator': True, '/non_generator': False}),
-    ],
-)
-async def test_endpoint_discovery(executor, expected):
-    from google.protobuf import json_format
-
-    from jina.logging.logger import JinaLogger
-    from jina.parsers import set_pod_parser
-    from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
-
-    args = set_pod_parser().parse_args(['--uses', executor])
-    handler = WorkerRequestHandler(args, JinaLogger('data request handler'))
-    res = await handler.endpoint_discovery(None, None)
-    for endpoint, is_generator in expected.items():
-        assert (
-            json_format.MessageToDict(res.schemas)[endpoint]['is_generator']
-            == is_generator
-        )

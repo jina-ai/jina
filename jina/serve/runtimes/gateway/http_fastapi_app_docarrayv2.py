@@ -1,5 +1,4 @@
-from typing import TYPE_CHECKING, Dict, List, Optional
-import inspect
+from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 from jina.excepts import InternalNetworkError
 from jina.helper import get_full_version
@@ -7,7 +6,6 @@ from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.serve.networking.sse import EventSourceResponse
 from jina.types.request.data import DataRequest
-from jina._docarray import docarray_v2
 
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry import trace
@@ -154,8 +152,6 @@ def get_fastapi_app(
     def _generate_exception_header(error: InternalNetworkError):
         import traceback
 
-        from jina.proto.serializer import DataRequest
-
         exception_dict = {
             'name': str(error.__class__),
             'stacks': [
@@ -182,12 +178,18 @@ def get_fastapi_app(
             **app_kwargs
         )
         async def post(body: input_model, response: Response):
-            docs = DocList[input_doc_list_model](body.data)
             target_executor = None
             req_id = None
             if body.header is not None:
                 target_executor = body.header.target_executor
                 req_id = body.header.request_id
+            data = body.data
+            if isinstance(data, list):
+                docs = DocList[input_doc_list_model](data)
+            else:
+                docs = DocList[input_doc_list_model]([data])
+                if body.header is None:
+                    req_id = docs[0].id
 
             try:
                 async for resp in streamer.stream_docs(docs, exec_endpoint=endpoint_path, parameters=body.parameters,
@@ -247,19 +249,22 @@ def get_fastapi_app(
             output_doc_model = input_output_map['output']
             is_generator = input_output_map['is_generator']
 
+            _config = inherit_config(InnerConfig, BaseDoc.__config__)
+
             endpoint_input_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_input_model',
-                data=(List[input_doc_model], ...),
+                data=(Union[List[input_doc_model], input_doc_model], ...),
                 parameters=(Optional[Dict], None),
                 header=(Optional[Header], None),
-                __config__=inherit_config(InnerConfig, BaseDoc.__config__),
+                __config__=_config,
             )
 
             endpoint_output_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_output_model',
-                data=(List[output_doc_model], ...),
+                data=(Union[List[output_doc_model], output_doc_model], ...),
                 parameters=(Optional[Dict], None),
-                __config__=inherit_config(InnerConfig, BaseDoc.__config__),
+                header=(Optional[Header], None),
+                __config__=_config,
             )
 
             if is_generator:
