@@ -70,7 +70,7 @@ def get_fastapi_app(
             input_model,
             output_model,
             input_doc_list_model=None,
-            output_doc_list_model=None
+            output_doc_list_model=None,
     ):
         app_kwargs = dict(
             path=f'/{endpoint_path.strip("/")}',
@@ -90,7 +90,8 @@ def get_fastapi_app(
             if body.header is not None:
                 req.header.request_id = body.header.request_id
 
-            req.parameters = body.parameters
+            if body.parameters is not None:
+                req.parameters = body.parameters
             req.header.exec_endpoint = endpoint_path
             data = body.data
             if isinstance(data, list):

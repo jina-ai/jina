@@ -546,8 +546,7 @@ class WorkerRequestHandler:
 
         :param requests: the requests to execute
         :param exec_endpoint: the execution endpoint to use
-        :param tracing_context: Optional OpenTelemetry tracing context from the originating request.
-        :return: the result of the execution
+        :param is_response: flag indicating if the schema needs to come from request or response
         """
         endpoint_info = self._executor.requests[exec_endpoint]
         for req in requests:
