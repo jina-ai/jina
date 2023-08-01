@@ -150,6 +150,7 @@ def get_fastapi_app(
             input_doc_model = input_output_map['input']['model']
             output_doc_model = input_output_map['output']['model']
             is_generator = input_output_map['is_generator']
+            parameters_model = input_output_map['parameters']['model'] or Optional[Dict]
 
             if docarray_v2:
                 _config = inherit_config(InnerConfig, BaseDoc.__config__)
@@ -159,7 +160,7 @@ def get_fastapi_app(
             endpoint_input_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_input_model',
                 data=(Union[List[input_doc_model], input_doc_model], ...),
-                parameters=(Optional[Dict], None),
+                parameters=(parameters_model, ...),
                 header=(Optional[Header], None),
                 __config__=_config,
             )

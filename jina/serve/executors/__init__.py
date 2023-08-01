@@ -33,7 +33,6 @@ from jina.helper import (
     ArgNamespace,
     T,
     get_or_reuse_loop,
-    is_generator,
     iscoroutinefunction,
     typename,
 )
@@ -61,6 +60,45 @@ if TYPE_CHECKING:  # pragma: no cover
 __dry_run_endpoint__ = '_jina_dry_run_'
 
 __all__ = ['BaseExecutor', __dry_run_endpoint__]
+
+
+
+def is_pydantic_model(annotation: Type) -> bool:
+    from pydantic import BaseModel
+    from typing import Type, Optional, get_args, get_origin, Union
+    origin = get_origin(annotation) or annotation
+    args = get_args(annotation)
+
+    # If the origin itself is a Pydantic model, return True
+    if isinstance(origin, type) and issubclass(origin, BaseModel):
+        return True
+
+    # Check the arguments (for the actual types inside Union, Optional, etc.)
+    if args:
+        return any(is_pydantic_model(arg) for arg in args)
+
+    return False
+
+
+def get_inner_pydantic_model(annotation: Type) -> bool:
+    try:
+        from pydantic import BaseModel
+        from typing import Type, Optional, get_args, get_origin, Union
+        origin = get_origin(annotation) or annotation
+        args = get_args(annotation)
+
+        # If the origin itself is a Pydantic model, return True
+        if isinstance(origin, type) and issubclass(origin, BaseModel):
+            return origin
+
+        # Check the arguments (for the actual types inside Union, Optional, etc.)
+        if args:
+            for arg in args:
+                if is_pydantic_model(arg):
+                    return arg
+    except:
+        pass
+    return None
 
 
 class ExecutorType(type(JAMLCompatible), type):
@@ -114,9 +152,11 @@ T = TypeVar('T', bound='_FunctionWithSchema')
 
 class _FunctionWithSchema(NamedTuple):
     fn: Callable
-    is_generator: False
-    is_batch_docs: False
+    is_generator: bool
+    is_batch_docs: bool
     is_singleton_doc: False
+    parameters_is_pydantic_model: bool
+    parameters_model: Type
     request_schema: Type[DocumentArray] = DocumentArray
     response_schema: Type[DocumentArray] = DocumentArray
 
@@ -171,7 +211,6 @@ class _FunctionWithSchema(NamedTuple):
 
     @staticmethod
     def get_function_with_schema(fn: Callable) -> T:
-
         # if it's not a generator function, infer the type annotation from the docs parameter
         # otherwise, infer from the doc parameter (since generator endpoints expect only 1 document as input)
         is_generator = getattr(fn, '__is_generator__', False)
@@ -188,6 +227,13 @@ class _FunctionWithSchema(NamedTuple):
         docs_annotation = fn.__annotations__.get(
             'docs', fn.__annotations__.get('doc', None)
         )
+        parameters_model = fn.__annotations__.get('parameters', None) if docarray_v2 else None
+        parameters_is_pydantic_model = False
+        if parameters_model is not None and docarray_v2:
+            from pydantic import BaseModel
+            parameters_is_pydantic_model = is_pydantic_model(parameters_model)
+            parameters_model = get_inner_pydantic_model(parameters_model)
+
         if docarray_v2:
             from docarray import BaseDoc, DocList
 
@@ -256,6 +302,8 @@ class _FunctionWithSchema(NamedTuple):
             is_generator=is_generator,
             is_singleton_doc=is_singleton_doc,
             is_batch_docs=is_batch_docs,
+            parameters_model=parameters_model,
+            parameters_is_pydantic_model=parameters_is_pydantic_model,
             request_schema=request_schema,
             response_schema=response_schema,
         )
@@ -370,6 +418,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             _is_generator = function_with_schema.is_generator
             _is_singleton_doc = function_with_schema.is_singleton_doc
             _is_batch_docs = function_with_schema.is_batch_docs
+            _parameters_model = function_with_schema.parameters_model
             if docarray_v2:
                 # if the endpoint is not a generator endpoint, then the request schema is a DocumentArray and we need
                 # to get the doc_type from the schema
@@ -403,6 +452,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 },
                 'is_generator': _is_generator,
                 'is_singleton_doc': _is_singleton_doc,
+                'parameters': {
+                    'name': _parameters_model.__name__ if _parameters_model is not None else None,
+                    'model': _parameters_model
+                }
             }
         return endpoint_models
 
@@ -626,52 +679,78 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     async def __acall_endpoint__(
         self, req_endpoint, tracing_context: Optional['Context'], **kwargs
     ):
+
+        # Decorator to make sure that `parameters` are passed as PydanticModels if needed
+        def parameters_as_pydantic_models_decorator(func, parameters_pydantic_model):
+            @functools.wraps(func)  # Step 2: Use functools.wraps to preserve metadata
+            def wrapper(*args, **kwargs):
+                parameters = kwargs.get('parameters', None)
+                if parameters is not None:
+                    parameters = parameters_pydantic_model(**parameters)
+                    kwargs['parameters'] = parameters
+                result = func(*args, **kwargs)
+                return result
+            return wrapper
+
+        # Decorator to make sure that `docs` are fed one by one to method using singleton document serving
+        def loop_docs_decorator(func):
+            @functools.wraps(func)  # Step 2: Use functools.wraps to preserve metadata
+            def wrapper(*args, **kwargs):
+                docs = kwargs.pop('docs')
+                if docarray_v2:
+                    from docarray import DocList
+
+                    ret = DocList[response_schema]()
+                else:
+                    ret = DocumentArray()
+                for doc in docs:
+                    f_ret = func(*args, doc=doc, **kwargs)
+                    if f_ret is None:
+                        ret.append(doc)  # this means change in place
+                    else:
+                        ret.append(f_ret)
+                return ret
+            return wrapper
+
+        def async_loop_docs_decorator(func):
+            @functools.wraps(func)  # Step 2: Use functools.wraps to preserve metadata
+            async def wrapper(*args, **kwargs):
+                docs = kwargs.pop('docs')
+                if docarray_v2:
+                    from docarray import DocList
+                    ret = DocList[response_schema]()
+                else:
+                    ret = DocumentArray()
+                for doc in docs:
+                    f_ret = await original_func(*args, doc=doc, **kwargs)
+                    if f_ret is None:
+                        ret.append(doc)  # this means change in place
+                    else:
+                        ret.append(f_ret)
+                return ret
+            return wrapper
+
+
         fn_info = self.requests[req_endpoint]
         original_func = fn_info.fn
         is_generator = fn_info.is_generator
         is_batch_docs = fn_info.is_batch_docs
         response_schema = fn_info.response_schema
+        parameters_model = fn_info.parameters_model
+        is_parameters_pydantic_model = fn_info.parameters_is_pydantic_model
+
+        func = original_func
         if is_generator or is_batch_docs:
-            func = original_func
+            pass
         elif kwargs.get('docs', None) is not None:
             # This means I need to pass every doc (most likely 1, but potentially more)
             if iscoroutinefunction(original_func):
-
-                async def loop_func(*args, **kwargs):
-                    docs = kwargs.pop('docs')
-                    if docarray_v2:
-                        from docarray import DocList
-
-                        ret = DocList[response_schema]()
-                    else:
-                        ret = DocumentArray()
-                    for doc in docs:
-                        f_ret = await original_func(*args, doc=doc, **kwargs)
-                        if f_ret is None:
-                            ret.append(doc)  # this means change in place
-                        else:
-                            ret.append(f_ret)
-                    return ret
-
+                func = async_loop_docs_decorator(original_func)
             else:
+                func = loop_docs_decorator(original_func)
 
-                def loop_func(*args, **kwargs):
-                    docs = kwargs.pop('docs')
-                    if docarray_v2:
-                        from docarray import DocList
-
-                        ret = DocList[response_schema]()
-                    else:
-                        ret = DocumentArray()
-                    for doc in docs:
-                        f_ret = original_func(*args, doc=doc, **kwargs)
-                        if f_ret is None:
-                            ret.append(doc)  # this means change in place
-                        else:
-                            ret.append(f_ret)
-                    return ret
-
-            func = loop_func
+        if is_parameters_pydantic_model:
+            func = parameters_as_pydantic_models_decorator(func, parameters_model)
 
         async def exec_func(
             summary, histogram, histogram_metric_labels, tracing_context
