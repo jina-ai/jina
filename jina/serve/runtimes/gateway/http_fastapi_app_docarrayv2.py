@@ -184,10 +184,11 @@ def get_fastapi_app(
                 target_executor = body.header.target_executor
                 req_id = body.header.request_id
             data = body.data
+            print(f'data {data}')
             if isinstance(data, list):
                 docs = DocList[input_doc_list_model](data)
             else:
-                docs = DocList[input_doc_list_model]([input_doc_list_model(**data)])
+                docs = DocList[input_doc_list_model]([data])
                 if body.header is None:
                     req_id = docs[0].id
 
@@ -253,7 +254,7 @@ def get_fastapi_app(
 
             endpoint_input_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_input_model',
-                data=(Union[input_doc_model, List[input_doc_model]], ...),
+                data=(Union[List[input_doc_model], input_doc_model], ...),
                 parameters=(Optional[Dict], None),
                 header=(Optional[Header], None),
                 __config__=_config,
@@ -261,8 +262,9 @@ def get_fastapi_app(
 
             endpoint_output_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_output_model',
-                data=(Union[output_doc_model, List[output_doc_model]], ...),
+                data=(Union[List[output_doc_model], output_doc_model], ...),
                 parameters=(Optional[Dict], None),
+                header=(Optional[Header], None),
                 __config__=_config,
             )
 
