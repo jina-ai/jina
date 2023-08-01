@@ -98,11 +98,13 @@ def get_fastapi_app(
                 if not docarray_v2:
                     req.data.docs = DocumentArray.from_pydantic_model(data)
                 else:
+                    req.document_array_cls = DocList[input_doc_model]
                     req.data.docs = DocList[input_doc_list_model](data)
             else:
                 if not docarray_v2:
                     req.data.docs = DocumentArray([Document.from_pydantic_model(data)])
                 else:
+                    req.document_array_cls = DocList[input_doc_model]
                     req.data.docs = DocList[input_doc_list_model]([data])
                 if body.header is None:
                     req.header.request_id = req.docs[0].id
@@ -150,6 +152,8 @@ def get_fastapi_app(
             input_doc_model = input_output_map['input']['model']
             output_doc_model = input_output_map['output']['model']
             is_generator = input_output_map['is_generator']
+            parameters_model = input_output_map['parameters']['model'] or Optional[Dict]
+            default_parameters = ... if input_output_map['parameters']['model'] else None
 
             if docarray_v2:
                 _config = inherit_config(InnerConfig, BaseDoc.__config__)
@@ -159,7 +163,7 @@ def get_fastapi_app(
             endpoint_input_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_input_model',
                 data=(Union[List[input_doc_model], input_doc_model], ...),
-                parameters=(Optional[Dict], None),
+                parameters=(parameters_model, default_parameters),
                 header=(Optional[Header], None),
                 __config__=_config,
             )

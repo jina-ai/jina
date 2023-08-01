@@ -12,7 +12,7 @@ from jina.helper import deprecate_by, get_or_reuse_loop, run_async
 from jina.importer import ImportExtensions
 
 if TYPE_CHECKING:  # pragma: no cover
-
+    from pydantic import BaseModel
     from jina.clients.base import CallbackFnType, InputType
     from jina.types.request.data import Response
 
@@ -344,7 +344,7 @@ class PostMixin:
         on_done: Optional['CallbackFnType'] = None,
         on_error: Optional['CallbackFnType'] = None,
         on_always: Optional['CallbackFnType'] = None,
-        parameters: Optional[Dict] = None,
+        parameters: Union[Dict, 'BaseModel', None] = None,
         target_executor: Optional[str] = None,
         request_size: int = 100,
         show_progress: bool = False,
@@ -362,12 +362,12 @@ class PostMixin:
     ) -> Optional[Union['DocumentArray', List['Response']]]:
         """Post a general data request to the Flow.
 
-        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document.
+        :param inputs: input data which can be a DocList, a BaseDoc, an Iterable, a function which returns an Iterable.
         :param on: the endpoint which is invoked. All the functions in the executors decorated by `@requests(on=...)` with the same endpoint are invoked.
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is either resolved or rejected.
-        :param parameters: the kwargs that will be sent to the executor
+        :param parameters: the parameters that will be sent to the executor, this can be a Dict or a Pydantic model
         :param target_executor: a regex string. Only matching Executors will process the request.
         :param request_size: the number of Documents per request. <=0 means all inputs in one request.
         :param show_progress: if set, client will show a progress bar on receiving every request.
@@ -380,7 +380,7 @@ class PostMixin:
         :param results_in_order: return the results in the same order as the inputs
         :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.
         :param prefetch: How many Requests are processed from the Client at the same time. If not provided then Gateway prefetch value will be used.
-        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.
+        :param return_type: the DocList or BaseDoc type to be returned. By default, it is `DocumentArray`.
         :param kwargs: additional parameters
         :return: None or DocumentArray containing all response Documents
 
@@ -458,7 +458,7 @@ class AsyncPostMixin:
         on_done: Optional['CallbackFnType'] = None,
         on_error: Optional['CallbackFnType'] = None,
         on_always: Optional['CallbackFnType'] = None,
-        parameters: Optional[Dict] = None,
+        parameters: Union[Dict, 'BaseModel', None] = None,
         target_executor: Optional[str] = None,
         request_size: int = 100,
         show_progress: bool = False,
@@ -476,12 +476,12 @@ class AsyncPostMixin:
     ) -> AsyncGenerator[None, Union['DocumentArray', 'Response']]:
         """Async Post a general data request to the Flow.
 
-        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document.
+        :param inputs: input data which can be a DocList, a BaseDoc, an Iterable, a function which returns an Iterable.
         :param on: the endpoint which is invoked. All the functions in the executors decorated by `@requests(on=...)` with the same endpoint are invoked.
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is either resolved or rejected.
-        :param parameters: the kwargs that will be sent to the executor
+        :param parameters: the parameters that will be sent to the executor, this can be a Dict or a Pydantic model
         :param target_executor: a regex string. Only matching Executors will process the request.
         :param request_size: the number of Documents per request. <=0 means all inputs in one request.
         :param show_progress: if set, client will show a progress bar on receiving every request.
@@ -494,7 +494,7 @@ class AsyncPostMixin:
         :param results_in_order: return the results in the same order as the inputs
         :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.
         :param prefetch: How many Requests are processed from the Client at the same time. If not provided then Gateway prefetch value will be used.
-        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.
+        :param return_type: the DocList or BaseDoc type to be returned. By default, it is `DocumentArray`.
         :param kwargs: additional parameters, can be used to pass metadata or authentication information in the server call
         :yield: Response object
 

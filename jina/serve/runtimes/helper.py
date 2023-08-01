@@ -115,7 +115,7 @@ if docarray_v2:
         )
 
 
-    def _get_field_from_type(field_schema, field_name, root_schema, cached_models, is_tensor=False, num_recursions=0):
+    def _get_field_from_type(field_schema, field_name, root_schema, cached_models, is_tensor=False, num_recursions=0, base_class=BaseDoc):
         field_type = field_schema.get('type', None)
         tensor_shape = field_schema.get('tensor/array shape', None)
         if 'anyOf' in field_schema:
@@ -126,12 +126,13 @@ if docarray_v2:
                     ref_name = obj_ref.split('/')[-1]
                     any_of_types.append(
                         _create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name,
-                                                           cached_models=cached_models))
+                                                           cached_models=cached_models, base_class=base_class))
                 else:
                     any_of_types.append(_get_field_from_type(any_of_schema, field_name, root_schema=root_schema,
                                                              cached_models=cached_models,
                                                              is_tensor=tensor_shape is not None,
-                                                             num_recursions=0))  # No Union of Lists
+                                                             num_recursions=0,
+                                                             base_class=base_class))  # No Union of Lists
             ret = Union[tuple(any_of_types)]
             for rec in range(num_recursions):
                 ret = List[ret]
@@ -163,7 +164,7 @@ if docarray_v2:
                 additional_props = field_schema['additionalProperties']
                 if additional_props.get('type') == 'object':
                     ret = Dict[str, _create_pydantic_model_from_schema(additional_props, field_name,
-                                                                       cached_models=cached_models)]
+                                                                       cached_models=cached_models, base_class=base_class)]
                 else:
                     ret = Dict[str, Any]
             else:
@@ -172,21 +173,21 @@ if docarray_v2:
                     if obj_ref:
                         ref_name = obj_ref.split('/')[-1]
                         ret = _create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name,
-                                                                 cached_models=cached_models)
+                                                                 cached_models=cached_models, base_class=base_class)
                     else:
                         ret = Any
                 else:  # object reference in definitions
                     if obj_ref:
                         ref_name = obj_ref.split('/')[-1]
                         ret = DocList[_create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name,
-                                                                         cached_models=cached_models)]
+                                                                         cached_models=cached_models, base_class=base_class)]
                     else:
                         ret = DocList[
-                            _create_pydantic_model_from_schema(field_schema, field_name, cached_models=cached_models)]
+                            _create_pydantic_model_from_schema(field_schema, field_name, cached_models=cached_models, base_class=base_class)]
         elif field_type == 'array':
             ret = _get_field_from_type(field_schema=field_schema.get('items', {}), field_name=field_name,
                                        root_schema=root_schema, cached_models=cached_models,
-                                       is_tensor=tensor_shape is not None, num_recursions=num_recursions + 1)
+                                       is_tensor=tensor_shape is not None, num_recursions=num_recursions + 1, base_class=base_class)
         else:
             if num_recursions > 0:
                 raise ValueError(f"Unknown array item type: {field_type} for field_name {field_name}")
@@ -195,7 +196,7 @@ if docarray_v2:
         return ret
 
 
-    def _create_pydantic_model_from_schema(schema: Dict[str, any], model_name: str, cached_models: Dict) -> type:
+    def _create_pydantic_model_from_schema(schema: Dict[str, any], model_name: str, cached_models: Dict, base_class=BaseDoc) -> type:
         cached_models = cached_models if cached_models is not None else {}
         fields: Dict[str, Any] = {}
         if model_name in cached_models:
@@ -208,10 +209,11 @@ if docarray_v2:
                 cached_models=cached_models,
                 is_tensor=False,
                 num_recursions=0,
+                base_class=base_class
             )
             fields[field_name] = (field_type, FieldInfo(default=field_schema.pop('default', None), **field_schema))
 
-        model = create_model(model_name, __base__=BaseDoc, **fields)
+        model = create_model(model_name, __base__=base_class, **fields)
         model.__config__.title = schema.get('title', model.__config__.title)
 
         for k in RESERVED_KEYS:

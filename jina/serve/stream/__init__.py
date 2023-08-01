@@ -87,6 +87,7 @@ class RequestStreamer:
                                                                                        previous_output=None,
                                                                                        previous_is_generator=None,
                                                                                        previous_is_singleton_doc=None,
+                                                                                       previous_parameters=None,
                                                                                        endpoint=endp)
                     if leaf_input_output_model is not None and len(leaf_input_output_model) > 0:
                         _endpoints_models_map[endp] = leaf_input_output_model[0]
