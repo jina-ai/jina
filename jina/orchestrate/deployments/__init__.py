@@ -158,6 +158,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 self.logger.error(f'Add Voters process did not finish successfully')
                 process.kill()
             import os
+
             os.waitpid(process.pid)
             self.logger.debug(f'Add Voters process termination finished')
 
@@ -193,6 +194,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 self.logger.error(f'Add Voters process did not finish successfully')
                 process.kill()
             import os
+
             os.waitpid(process.pid)
             self.logger.debug(f'Add Voters process termination finished')
 
