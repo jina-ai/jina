@@ -22,17 +22,19 @@ if TYPE_CHECKING:  # pragma: no cover
     from jina._docarray.document import DocumentSourceType
     from jina._docarray.document.mixins.content import DocumentContentType
     from jina.types.request import Request
+    from docarray import DocList, BaseDoc
 
     SingletonDataType = Union[
         DocumentContentType,
         DocumentSourceType,
         Document,
+        BaseDoc,
         Tuple[DocumentContentType, DocumentContentType],
         Tuple[DocumentSourceType, DocumentSourceType],
     ]
 
     GeneratorSourceType = Union[
-        Document, Iterable[SingletonDataType], AsyncIterable[SingletonDataType]
+        Document, Iterable[SingletonDataType], AsyncIterable[SingletonDataType], DocList
     ]
 
 

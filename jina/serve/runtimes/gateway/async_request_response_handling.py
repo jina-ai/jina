@@ -120,6 +120,7 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
                     from docarray.base_doc import AnyDoc
 
                     prev_doc_array_cls = request.data.document_array_cls
+                    print(f' hey here I am JOAN')
                     request.data.document_array_cls = DocList[AnyDoc]
                     request_doc_ids = request.data.docs.id
                     request.data._loaded_doc_array = None

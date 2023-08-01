@@ -98,11 +98,13 @@ def get_fastapi_app(
                 if not docarray_v2:
                     req.data.docs = DocumentArray.from_pydantic_model(data)
                 else:
+                    req.document_array_cls = DocList[input_doc_model]
                     req.data.docs = DocList[input_doc_list_model](data)
             else:
                 if not docarray_v2:
                     req.data.docs = DocumentArray([Document.from_pydantic_model(data)])
                 else:
+                    req.document_array_cls = DocList[input_doc_model]
                     req.data.docs = DocList[input_doc_list_model]([data])
                 if body.header is None:
                     req.header.request_id = req.docs[0].id

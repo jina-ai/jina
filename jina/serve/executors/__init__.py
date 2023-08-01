@@ -63,7 +63,11 @@ __all__ = ['BaseExecutor', __dry_run_endpoint__]
 
 
 def is_pydantic_model(annotation: Type) -> bool:
-    """Method to detect if parameter annotation corresponds to a Pydantic model"""
+    """Method to detect if parameter annotation corresponds to a Pydantic model
+
+    :param annotation: The annotation from which to extract PydantiModel.
+    :return: boolean indicating if a Pydantic model is inside the annotation
+    """
     from pydantic import BaseModel
     from typing import get_args, get_origin
 
@@ -82,7 +86,11 @@ def is_pydantic_model(annotation: Type) -> bool:
 
 
 def get_inner_pydantic_model(annotation: Type) -> bool:
-    """Method to get the Pydantic model corresponding, in case there is optional or something"""
+    """Method to get the Pydantic model corresponding, in case there is optional or something
+
+    :param annotation: The annotation from which to extract PydantiModel.
+    :return: The inner Pydantic model expected
+    """
     try:
         from pydantic import BaseModel
         from typing import Type, Optional, get_args, get_origin, Union
