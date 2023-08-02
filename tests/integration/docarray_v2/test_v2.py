@@ -1518,3 +1518,22 @@ def test_doc_with_examples(ctxt_manager, include_gateway):
         assert 'This test should be in description' in resp_str
         assert 'MyDocWithExampleTitle' in resp_str
         assert 'extra_key' in resp_str
+
+
+def test_issue_fastapi_multiple_models_same_name():
+    class MyRandomModel(BaseDoc):
+        a: str
+
+    class MyInputModel(BaseDoc):
+        b: Optional[MyRandomModel] = None
+
+
+    class MyFailingExecutor(Executor):
+        @requests(on='/generate')
+        def generate(self, docs: DocList[MyInputModel], **kwargs) -> DocList[MyRandomModel]:
+            return DocList[MyRandomModel]([doc.b for doc in docs])
+
+    with Flow(protocol='http').add(uses=MyFailingExecutor) as f:
+        input_doc = MyRandomModel(a='hello world')
+        res = f.post(on='/generate', inputs=[MyInputModel(b=MyRandomModel(a='hey'))], return_type=DocList[MyRandomModel])
+        assert res[0].a == 'hey'

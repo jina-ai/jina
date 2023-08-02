@@ -185,7 +185,7 @@ class TopologyGraph:
                                         else:
                                             input_model = _create_pydantic_model_from_schema(input_model_schema,
                                                                                              input_model_name,
-                                                                                             {})
+                                                                                             models_created_by_name)
                                         models_created_by_name[input_model_name] = input_model
                                     input_model = models_created_by_name[input_model_name]
                                     models_schema_list.append(input_model_schema)
@@ -203,7 +203,7 @@ class TopologyGraph:
                                         else:
                                             output_model = _create_pydantic_model_from_schema(output_model_schema,
                                                                                               output_model_name,
-                                                                                              {})
+                                                                                              models_created_by_name)
                                         models_created_by_name[output_model_name] = output_model
                                     output_model = models_created_by_name[output_model_name]
                                     models_schema_list.append(output_model)
@@ -221,7 +221,7 @@ class TopologyGraph:
                                             from pydantic import BaseModel
                                             parameters_model = _create_pydantic_model_from_schema(parameters_model_schema,
                                                                                                   parameters_model_name,
-                                                                                                  {},
+                                                                                                  models_created_by_name,
                                                                                                   base_class=BaseModel)
                                             models_created_by_name[parameters_model_name] = parameters_model
                                     parameters_model = models_created_by_name[parameters_model_name]
