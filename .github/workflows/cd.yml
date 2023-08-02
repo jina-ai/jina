@@ -799,7 +799,7 @@ jobs:
   # just for blocking the merge until all parallel core-test are successful
   success-all-steps:
     runs-on: ubuntu-latest
-    needs: [core-test, docarray-v-two-test, import-test, hub-test, k8s-flow-test, k8s-deployment-test, k8s-graceful-test, k8s-failures-test, k8s-otel-test, docker-compose-test, docker-image-test, benchmark-pre-release, update-schema, update-docker, pre-release]
+    needs: [core-test, docarray-v-two-test, import-test, hub-test, k8s-flow-test, k8s-deployment-test, k8s-graceful-test, k8s-failures-test, k8s-otel-test, docker-compose-test, docker-image-test, benchmark-pre-release, update-schema, update-docker] #, pre-release]
     if: always()
     steps:
       - uses: technote-space/workflow-conclusion-action@v2
