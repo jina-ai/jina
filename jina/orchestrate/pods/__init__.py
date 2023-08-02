@@ -58,7 +58,7 @@ class BasePod(ABC):
         self._timeout_ctrl = self.args.timeout_ctrl
 
     def _get_control_address(self):
-        return f'{self.args.host}:{self.args.port[0]}'
+        return f'127.0.0.1:{self.args.port[0]}'
 
     def close(self) -> None:
         """Close the Pod
