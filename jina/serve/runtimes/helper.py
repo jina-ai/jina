@@ -128,7 +128,9 @@ if docarray_v2:
                         _create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name,
                                                            cached_models=cached_models, base_class=base_class))
                 else:
-                    any_of_types.append(_get_field_from_type(any_of_schema, field_name, root_schema=root_schema,
+                    any_of_types.append(_get_field_from_type(any_of_schema,
+                                                             field_name,
+                                                             root_schema=root_schema,
                                                              cached_models=cached_models,
                                                              is_tensor=tensor_shape is not None,
                                                              num_recursions=0,
@@ -148,7 +150,7 @@ if docarray_v2:
             if num_recursions <= 1:
                 # This is a hack because AnyTensor is more generic than a simple List and it comes as simple List
                 if is_tensor:
-                    ret = AnyTensor
+                    ret = AnyTensor if tensor_shape is None else AnyTensor[tensor_shape]
                 else:
                     ret = List[float]
             else:
