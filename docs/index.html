@@ -353,6 +353,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/deploy-model/">Deploy a model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/gpu-executor/">Build a GPU Executor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/llm-serve/">Build a Streaming API for a Large Language Model</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -531,7 +532,6 @@ A Deployment serves just one Executor. To combine multiple Executors into a pipe
         <span class="k">for</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">output</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">prompts</span><span class="p">,</span> <span class="n">llm_outputs</span><span class="p">):</span>
             <span class="n">generations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Generation</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">output</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">generations</span>
-
 </pre></div>
 </div>
 </td>
@@ -831,7 +831,7 @@ If you just want to serve a single Executor, you can use a <a class="reference i
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 20, 2023</div>
+                            Last updated on Aug 02, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

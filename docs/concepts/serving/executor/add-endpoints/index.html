@@ -353,6 +353,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/deploy-model/">Deploy a model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/llm-serve/">Build a Streaming API for a Large Language Model</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -662,7 +663,7 @@ token by token and the client displays tokens as they arrive.
 Streaming endpoints receive one Document as input and yields one Document at a time.</p>
 <div class="note admonition">
 <p class="admonition-title">Note</p>
-<p>Streaming endpoints are only supported for HTTP protocol and for Deployment.</p>
+<p>Streaming endpoints are only supported for HTTP and gRPC protocols and for Deployment and Flow with one single Executor.</p>
 </div>
 <p>A streaming endpoint has the following signature:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Deployment</span>
@@ -676,17 +677,14 @@ Streaming endpoints receive one Document as input and yields one Document at a t
 <span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
 
     <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="n">MyDocument</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">()</span>
-        <span class="c1"># for doc in docs:</span>
-        <span class="c1">#     doc.text = &#39;hello world&#39;</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="n">MyDocument</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MyDocument</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
             <span class="k">yield</span> <span class="n">MyDocument</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;hello world </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             
 <span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span>
     <span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span>
     <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span>
-    <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span>
+    <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="c1"># or &#39;grpc&#39;</span>
     <span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">include_gateway</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
@@ -696,9 +694,9 @@ Streaming endpoints receive one Document as input and yields one Document at a t
 <p>From the client side, any SSE client can be used to receive the Documents, one at a time.
 Jina offers a standard python client for using the streaming endpoint:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># or protocol=&#39;grpc&#39;</span>
 <span class="k">async</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">stream_doc</span><span class="p">(</span>
-    <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">MyDocument</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;hello world&#39;</span><span class="p">),</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">MyDocument</span><span class="p">]</span>
+    <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">MyDocument</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;hello world&#39;</span><span class="p">),</span> <span class="n">return_type</span><span class="o">=</span><span class="n">MyDocument</span>
 <span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
@@ -806,7 +804,7 @@ NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 20, 2023</div>
+                            Last updated on Aug 02, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

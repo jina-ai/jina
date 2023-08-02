@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/cloud-nativeness/kubernetes/" />
 <meta property="og:site_name" content="Jina 3.19.2 Documentation" />
-<meta property="og:description" content="This how-to will go through deploying a simple Flow using Kubernetes, customizing the Kubernetes configuration to your needs, and scaling Executors using replicas and shards. Deploying a Flow in Kubernetes is the recommended way to use Jina in production. Since a Flow is composed of Executor s wh..." />
+<meta property="og:description" content="This how-to will go through deploying a Deployment and a simple Flow using Kubernetes, customizing the Kubernetes configuration to your needs, and scaling Executors using replicas and shards. Deploying Jina services in Kubernetes is the recommended way to use Jina in production because Kubernetes..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.19.2 Documentation" />
-<meta name="description" content="This how-to will go through deploying a simple Flow using Kubernetes, customizing the Kubernetes configuration to your needs, and scaling Executors using replicas and shards. Deploying a Flow in Kubernetes is the recommended way to use Jina in production. Since a Flow is composed of Executor s wh..." />
+<meta name="description" content="This how-to will go through deploying a Deployment and a simple Flow using Kubernetes, customizing the Kubernetes configuration to your needs, and scaling Executors using replicas and shards. Deploying Jina services in Kubernetes is the recommended way to use Jina in production because Kubernetes..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -353,6 +353,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/deploy-model/">Deploy a model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/llm-serve/">Build a Streaming API for a Large Language Model</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -435,11 +436,9 @@
                 <article role="main">
                     <section id="deploy-on-kubernetes">
 <span id="kubernetes"></span><h1>Deploy on Kubernetes<a class="headerlink" href="#deploy-on-kubernetes" title="Permalink to this heading">#</a></h1>
-<p>This how-to will go through deploying a simple Flow using Kubernetes, customizing the Kubernetes configuration
+<p>This how-to will go through deploying a Deployment and a simple Flow using Kubernetes, customizing the Kubernetes configuration
 to your needs, and scaling Executors using replicas and shards.</p>
-<p>Deploying a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> in Kubernetes is the recommended way to use Jina in production.</p>
-<p>Since a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> is composed of <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s which can run in different runtimes depending on how you deploy
-the Flow, Kubernetes can easily take over the lifetime management of Executors.</p>
+<p>Deploying Jina services in Kubernetes is the recommended way to use Jina in production because Kubernetes can easily take over the lifetime management of Executors and Gateways.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>This guide is designed for users who want to <strong>manually</strong> deploy a Jina project on Kubernetes.</p>
@@ -659,9 +658,91 @@ from the private registry:</p>
 </pre></div>
 </div>
 </section>
+<section id="deploy-an-embedding-model-inside-a-deployment">
+<h2>Deploy an embedding model inside a Deployment<a class="headerlink" href="#deploy-an-embedding-model-inside-a-deployment" title="Permalink to this heading">#</a></h2>
+<p>Now we are ready to first deploy our embedding model as an embedding service in Kubernetes.</p>
+<p>For now, define a Deployment,
+either in <a class="reference internal" href="../../concepts/serving/executor/deployment-yaml-spec/#deployment-yaml-spec"><span class="std std-ref">YAML</span></a> or directly in Python, as we do here:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;encoder&#39;</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://&lt;user-id&gt;/EncoderPrivate&#39;</span><span class="p">,</span> <span class="n">image_pull_secrets</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;regcred&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>You can serve any Deployment you want.
+Just ensure that the Executor is containerized, either by using <em>‘jinaai+docker’</em>, or by <a class="reference internal" href="../../concepts/serving/executor/containerize/#dockerize-exec"><span class="std std-ref">containerizing your local Executors</span></a>.</p>
+<p>Next, generate Kubernetes YAML configs from the Flow. Notice, that this step may be a little slow, because <a class="reference external" href="https://cloud.jina.ai/">Executor Hub</a> may
+adapt the image to your Jina and docarray version.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">to_kubernetes_yaml</span><span class="p">(</span><span class="s1">&#39;./k8s_deployment&#39;</span><span class="p">,</span> <span class="n">k8s_namespace</span><span class="o">=</span><span class="s1">&#39;custom-namespace&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The following file structure will be generated - don’t worry if it’s slightly different – there can be
+changes from one Jina version to another:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
+└── k8s_deployment
+    └── encoder.yml
+</pre></div>
+</div>
+<p>You can inspect these files to see how Deployment and Executor concepts are mapped to Kubernetes entities.
+And as always, feel free to modify these files as you see fit for your use case.</p>
+<div class="caution admonition">
+<p class="admonition-title">Caution: Executor YAML configurations</p>
+<p>As a general rule, the configuration files produced by <code class="docutils literal notranslate"><span class="pre">to_kubernets_yaml()</span></code> should run out of the box, and if you strictly
+follow this how-to they will.</p>
+<p>However, there is an exception to this: If you use a local dockerized Executor, and this Executors configuration is stored
+in a file other than <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>, you will have to adapt this Executor’s Kubernetes YAML.
+To do this, open the file and replace <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> with the actual path to the Executor configuration.</p>
+<p>This is because when a Flow contains a Docker image, it can’t see what Executor
+configuration was used to create that image.
+Since all of our tutorials use <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> for that purpose, the Flow uses this as a best guess.
+Please adapt this if you named your Executor configuration file differently.</p>
+</div>
+<p>Next you can actually apply these configuration files to your cluster, using <code class="docutils literal notranslate"><span class="pre">kubectl</span></code>.
+This launches the Deployment service.</p>
+<p>Now, deploy this Deployment to your cluster:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>apply<span class="w"> </span>-R<span class="w"> </span>-f<span class="w"> </span>./k8s_deployment
+</pre></div>
+</div>
+<p>Check that the Pods were created:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>custom-namespace
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>NAME                              READY   STATUS    RESTARTS   AGE
+encoder-81a5b3cf9-ls2m3           1/1     Running   0          60m
+</pre></div>
+</div>
+<p>Once you see that the Deployment ready, you can start embedding documents:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">import</span> <span class="nn">portforward</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
+<span class="kn">from</span> <span class="nn">docarray.typing</span> <span class="kn">import</span> <span class="n">NdArray</span>
+
+<span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">Client</span>
+
+
+<span class="k">class</span> <span class="nc">MyDoc</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">embedding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NdArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">with</span> <span class="n">portforward</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="s1">&#39;custom-namespace&#39;</span><span class="p">,</span> <span class="s1">&#39;encoder-81a5b3cf9-ls2m3&#39;</span><span class="p">,</span> <span class="mi">8080</span><span class="p">,</span> <span class="mi">8080</span><span class="p">):</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">show_progress</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="s1">&#39;/encode&#39;</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">]([</span><span class="n">MyDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;This is document indexed number </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)]),</span>
+        <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">MyDoc</span><span class="p">],</span>
+        <span class="n">request_size</span><span class="o">=</span><span class="mi">10</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">embedding</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</section>
 <section id="deploy-a-simple-flow">
 <h2>Deploy a simple Flow<a class="headerlink" href="#deploy-a-simple-flow" title="Permalink to this heading">#</a></h2>
-<p>Now we are ready to build our Flow.</p>
+<p>Now we are ready to build a Flow composed of multiple Executors.</p>
 <p>By <em>simple</em> in this context we mean a Flow without replicated or sharded Executors - you can see how to use those in
 Kubernetes <a class="reference internal" href="../k8s/#kubernetes-replicas"><span class="std std-ref">later on</span></a>.</p>
 <p>For now, define a Flow,
@@ -679,7 +760,7 @@ either in <a class="reference internal" href="../../concepts/orchestration/yaml-
 </pre></div>
 </div>
 <p>You can essentially define any Flow of your liking.
-Just ensure that all Executors are containerized, either by using <em>‘jinahub+docker’</em>, or by <a class="reference internal" href="../../concepts/serving/executor/containerize/#dockerize-exec"><span class="std std-ref">containerizing your local Executors</span></a>.</p>
+Just ensure that all Executors are containerized, either by using <em>‘jinaai+docker’</em>, or by <a class="reference internal" href="../../concepts/serving/executor/containerize/#dockerize-exec"><span class="std std-ref">containerizing your local Executors</span></a>.</p>
 <p>The example Flow here simply encodes and indexes text data using two Executors pushed to the <a class="reference external" href="https://cloud.jina.ai/">Executor Hub</a>.</p>
 <p>Next, generate Kubernetes YAML configs from the Flow. Notice, that this step may be a little slow, because <a class="reference external" href="https://cloud.jina.ai/">Executor Hub</a> may
 adapt the image to your Jina and docarray version.</p>
@@ -700,18 +781,6 @@ changes from one Jina version to another:</p>
 </div>
 <p>You can inspect these files to see how Flow concepts are mapped to Kubernetes entities.
 And as always, feel free to modify these files as you see fit for your use case.</p>
-<div class="caution admonition">
-<p class="admonition-title">Caution: Executor YAML configurations</p>
-<p>As a general rule, the configuration files produced by <code class="docutils literal notranslate"><span class="pre">to_kubernets_yaml()</span></code> should run out of the box, and if you strictly
-follow this how-to they will.</p>
-<p>However, there is an exception to this: If you use a local dockerized Executor, and this Executors configuration is stored
-in a file other than <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>, you will have to adapt this Executor’s Kubernetes YAML.
-To do this, open the file and replace <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> with the actual path to the Executor configuration.</p>
-<p>This is because when a Flow contains a Docker image, it can’t see what Executor
-configuration was used to create that image.
-Since all of our tutorials use <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> for that purpose, the Flow uses this as a best guess.
-Please adapt this if you named your Executor configuration file differently.</p>
-</div>
 <p>Next you can actually apply these configuration files to your cluster, using <code class="docutils literal notranslate"><span class="pre">kubectl</span></code>.
 This launches all Flow microservices.</p>
 <p>Now, deploy this Flow to your cluster:</p>
@@ -770,8 +839,8 @@ indexer-8f676fc9d-4fh52           1/1     Running   0          60m
 
 </pre></div>
 </div>
-<section id="deploy-flow-with-shards-and-replicas">
-<h3>Deploy Flow with shards and replicas<a class="headerlink" href="#deploy-flow-with-shards-and-replicas" title="Permalink to this heading">#</a></h3>
+<section id="deploy-with-shards-and-replicas">
+<h3>Deploy with shards and replicas<a class="headerlink" href="#deploy-with-shards-and-replicas" title="Permalink to this heading">#</a></h3>
 <p>After your service mesh is installed, your cluster is ready to run a Flow with scaled Executors.
 You can adapt the Flow from above to work with two replicas for the encoder, and two shards for the indexer:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -813,8 +882,8 @@ You can adapt the Flow from above to work with two replicas for the encoder, and
 </pre></div>
 </div>
 </section>
-<section id="deploy-flow-with-custom-environment-variables-and-secrets">
-<h3>Deploy Flow with custom environment variables and secrets<a class="headerlink" href="#deploy-flow-with-custom-environment-variables-and-secrets" title="Permalink to this heading">#</a></h3>
+<section id="deploy-with-custom-environment-variables-and-secrets">
+<h3>Deploy with custom environment variables and secrets<a class="headerlink" href="#deploy-with-custom-environment-variables-and-secrets" title="Permalink to this heading">#</a></h3>
 <p>You can customize the environment variables that are available inside runtime, either defined directly or read from a <a class="reference external" href="https://kubernetes.io/docs/concepts/configuration/secret/">Kubernetes secret</a>:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--1">with Python</label><div class="tab-content docutils">
@@ -871,33 +940,33 @@ You can adapt the Flow from above to work with two replicas for the encoder, and
 <p>Then you can apply your configuration.</p>
 </section>
 </section>
-<section id="exposing-the-flow">
-<span id="kubernetes-expose"></span><h2>Exposing the Flow<a class="headerlink" href="#exposing-the-flow" title="Permalink to this heading">#</a></h2>
-<p>The previous examples use port-forwarding to index documents to the Flow.
+<section id="exposing-the-service">
+<span id="kubernetes-expose"></span><h2>Exposing the service<a class="headerlink" href="#exposing-the-service" title="Permalink to this heading">#</a></h2>
+<p>The previous examples use port-forwarding to send documents to the services.
 In real world applications,
 you may want to expose your service to make it reachable by users so that you can serve search requests.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
-<p>Exposing the Flow only works if the environment of your <code class="docutils literal notranslate"><span class="pre">Kubernetes</span> <span class="pre">cluster</span></code> supports <code class="docutils literal notranslate"><span class="pre">External</span> <span class="pre">Loadbalancers</span></code>.</p>
+<p>Exposing the Deployment or Flow only works if the environment of your <code class="docutils literal notranslate"><span class="pre">Kubernetes</span> <span class="pre">cluster</span></code> supports <code class="docutils literal notranslate"><span class="pre">External</span> <span class="pre">Loadbalancers</span></code>.</p>
 </div>
-<p>Once the Flow is deployed, you can expose a service:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>expose<span class="w"> </span>deployment<span class="w"> </span>gateway<span class="w"> </span>--name<span class="o">=</span>gateway-exposed<span class="w"> </span>--type<span class="w"> </span>LoadBalancer<span class="w"> </span>--port<span class="w"> </span><span class="m">80</span><span class="w"> </span>--target-port<span class="w"> </span><span class="m">8080</span><span class="w"> </span>-n<span class="w"> </span>custom-namespace
+<p>Once the service is deployed, you can expose a service. In this case we give an example of exposing the encoder when using a Deployment,
+but you can expose the gateway service when using a Flow:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>expose<span class="w"> </span>deployment<span class="w"> </span>executor<span class="w"> </span>--name<span class="o">=</span>executor-exposed<span class="w"> </span>--type<span class="w"> </span>LoadBalancer<span class="w"> </span>--port<span class="w"> </span><span class="m">80</span><span class="w"> </span>--target-port<span class="w"> </span><span class="m">8080</span><span class="w"> </span>-n<span class="w"> </span>custom-namespace
 sleep<span class="w"> </span><span class="m">60</span><span class="w"> </span><span class="c1"># wait until the external ip is configured</span>
 </pre></div>
 </div>
 <p>Export the external IP address. This is needed for the client when sending Documents to the Flow in the next section.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">EXTERNAL_IP</span><span class="o">=</span><span class="sb">`</span>kubectl<span class="w"> </span>get<span class="w"> </span>service<span class="w"> </span>gateway-exposed<span class="w"> </span>-n<span class="w"> </span>custom-namespace<span class="w"> </span>-o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.status.loadBalancer.ingress[0].ip}&#39;</span><span class="sb">`</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">EXTERNAL_IP</span><span class="o">=</span><span class="sb">`</span>kubectl<span class="w"> </span>get<span class="w"> </span>service<span class="w"> </span>executor-expose<span class="w"> </span>-n<span class="w"> </span>custom-namespace<span class="w"> </span>-o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.status.loadBalancer.ingress[0].ip}&#39;</span><span class="sb">`</span>
 </pre></div>
 </div>
 <section id="client">
 <h3>Client<a class="headerlink" href="#client" title="Permalink to this heading">#</a></h3>
 <p>The client:</p>
 <ul class="simple">
-<li><p>Sends an image to the exposed <code class="docutils literal notranslate"><span class="pre">Flow</span></code> on <code class="docutils literal notranslate"><span class="pre">$EXTERNAL_IP</span></code></p></li>
-<li><p>Retrieves the matches from the Flow.</p></li>
-<li><p>Prints the uris of the closest matches.</p></li>
+<li><p>Sends Documents to the exposed service on <code class="docutils literal notranslate"><span class="pre">$EXTERNAL_IP</span></code></p></li>
+<li><p>Gets the responses.</p></li>
 </ul>
-<p>You should configure your Client to connect to the Flow via the external IP address as follows:</p>
+<p>You should configure your Client to connect to the service via the external IP address as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
@@ -957,12 +1026,12 @@ sleep<span class="w"> </span><span class="m">60</span><span class="w"> </span><s
 </pre></div>
 </div>
 <p>After doing so, re-apply your configuration so the new Executor will be deployed without affecting the other unchanged Deployments:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>apply<span class="w"> </span>-R<span class="w"> </span>-f<span class="w"> </span>./k8s_flow
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>apply<span class="w"> </span>-R<span class="w"> </span>-f<span class="w"> </span>./k8s_deployment
 </pre></div>
 </div>
 <div class="seealso admonition">
 <p class="admonition-title">Other patching options</p>
-<p>In Kubernetes Executors are ordinary Deployments, so you can use other patching options provided by Kubernetes:</p>
+<p>In Kubernetes Executors are ordinary Kubernetes Deployments, so you can use other patching options provided by Kubernetes:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">replace</span></code> to replace an Executor using a complete configuration file</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">patch</span></code> to patch an Executor using only a partial configuration file</p></li>
@@ -973,20 +1042,20 @@ sleep<span class="w"> </span><span class="m">60</span><span class="w"> </span><s
 </section>
 <section id="key-takeaways">
 <h2>Key takeaways<a class="headerlink" href="#key-takeaways" title="Permalink to this heading">#</a></h2>
-<p>In short, there are just three key steps to deploy a Jina Flow on Kubernetes:</p>
+<p>In short, there are just three key steps to deploy Jina on Kubernetes:</p>
 <ol class="arabic simple">
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">f.to_kubernetes_yaml()</span></code> to generate Kubernetes configuration files from a Jina Flow object.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">.to_kubernetes_yaml()</span></code> to generate Kubernetes configuration files from a Jina Deployment or Flow object.</p></li>
 <li><p>Apply the generated file via <code class="docutils literal notranslate"><span class="pre">kubectl</span></code>(Modify the generated files if necessary)</p></li>
-<li><p>Expose your Flow outside the K8s cluster</p></li>
+<li><p>Expose your service outside the K8s cluster</p></li>
 </ol>
 </section>
 <section id="see-also">
 <h2>See also<a class="headerlink" href="#see-also" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../k8s/#kubernetes-docs"><span class="std std-ref">Kubernetes support documentation</span></a></p></li>
-<li><p><a class="reference internal" href="../monitoring/#monitoring"><span class="std std-ref">Monitor the Flow once it is deployed</span></a></p></li>
+<li><p><a class="reference internal" href="../monitoring/#monitoring"><span class="std std-ref">Monitor service once it is deployed</span></a></p></li>
 <li><p><a class="reference internal" href="../../concepts/orchestration/handle-exceptions/#flow-error-handling"><span class="std std-ref">See how failures and retries are handled</span></a></p></li>
-<li><p><span class="xref std std-ref">Learn more about scaling Executors</span></p></li>
+<li><p><a class="reference internal" href="../../concepts/orchestration/scale-out/#scale-out"><span class="std std-ref">Learn more about scaling Executors</span></a></p></li>
 </ul>
 </section>
 </section>
@@ -1022,7 +1091,7 @@ sleep<span class="w"> </span><span class="m">60</span><span class="w"> </span><s
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 20, 2023</div>
+                            Last updated on Aug 02, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -1057,12 +1126,13 @@ sleep<span class="w"> </span><span class="m">60</span><span class="w"> </span><s
 <li><a class="reference internal" href="#">Deploy on Kubernetes</a><ul>
 <li><a class="reference internal" href="#preliminaries">Preliminaries</a></li>
 <li><a class="reference internal" href="#build-and-containerize-your-executors">Build and containerize your Executors</a></li>
+<li><a class="reference internal" href="#deploy-an-embedding-model-inside-a-deployment">Deploy an embedding model inside a Deployment</a></li>
 <li><a class="reference internal" href="#deploy-a-simple-flow">Deploy a simple Flow</a><ul>
-<li><a class="reference internal" href="#deploy-flow-with-shards-and-replicas">Deploy Flow with shards and replicas</a></li>
-<li><a class="reference internal" href="#deploy-flow-with-custom-environment-variables-and-secrets">Deploy Flow with custom environment variables and secrets</a></li>
+<li><a class="reference internal" href="#deploy-with-shards-and-replicas">Deploy with shards and replicas</a></li>
+<li><a class="reference internal" href="#deploy-with-custom-environment-variables-and-secrets">Deploy with custom environment variables and secrets</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#exposing-the-flow">Exposing the Flow</a><ul>
+<li><a class="reference internal" href="#exposing-the-service">Exposing the service</a><ul>
 <li><a class="reference internal" href="#client">Client</a></li>
 </ul>
 </li>

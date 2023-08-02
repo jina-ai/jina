@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/proto/docs/" />
 <meta property="og:site_name" content="Jina 3.19.2 Documentation" />
-<meta property="og:description" content="Table of Contents: docarray.proto- DocListProto., jina.proto- DataRequestListProto, DataRequestProto, DataRequestProto.DataContentProto, DataRequestProtoWoData, EndpointsProto, HeaderProto, JinaInfoProto, JinaInfoProto.EnvsEntry, JinaInfoProto.JinaEntry, RelatedEntity, RestoreId, RestoreSnapshotC..." />
+<meta property="og:description" content="Table of Contents: docarray.proto- DocListProto, DocProto., jina.proto- DataRequestListProto, DataRequestProto, DataRequestProto.DataContentProto, DataRequestProtoWoData, EndpointsProto, HeaderProto, JinaInfoProto, JinaInfoProto.EnvsEntry, JinaInfoProto.JinaEntry, RelatedEntity, RestoreId, Restor..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.19.2 Documentation" />
-<meta name="description" content="Table of Contents: docarray.proto- DocListProto., jina.proto- DataRequestListProto, DataRequestProto, DataRequestProto.DataContentProto, DataRequestProtoWoData, EndpointsProto, HeaderProto, JinaInfoProto, JinaInfoProto.EnvsEntry, JinaInfoProto.JinaEntry, RelatedEntity, RestoreId, RestoreSnapshotC..." />
+<meta name="description" content="Table of Contents: docarray.proto- DocListProto, DocProto., jina.proto- DataRequestListProto, DataRequestProto, DataRequestProto.DataContentProto, DataRequestProtoWoData, EndpointsProto, HeaderProto, JinaInfoProto, JinaInfoProto.EnvsEntry, JinaInfoProto.JinaEntry, RelatedEntity, RestoreId, Restor..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -353,6 +353,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/deploy-model/">Deploy a model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/llm-serve/">Build a Streaming API for a Large Language Model</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -442,6 +443,7 @@
 <li><p><a class="reference internal" href="#docarray-proto"><span class="xref myst">docarray.proto</span></a></p>
 <ul>
 <li><p><a class="reference internal" href="#docarray-DocListProto"><span class="xref myst">DocListProto</span></a></p></li>
+<li><p><a class="reference internal" href="#docarray-DocProto"><span class="xref myst">DocProto</span></a></p></li>
 </ul>
 </li>
 <li><p><a class="reference internal" href="#jina-proto"><span class="xref myst">jina.proto</span></a></p>
@@ -460,6 +462,7 @@
 <li><p><a class="reference internal" href="#jina-RestoreSnapshotCommand"><span class="xref myst">RestoreSnapshotCommand</span></a></p></li>
 <li><p><a class="reference internal" href="#jina-RestoreSnapshotStatusProto"><span class="xref myst">RestoreSnapshotStatusProto</span></a></p></li>
 <li><p><a class="reference internal" href="#jina-RouteProto"><span class="xref myst">RouteProto</span></a></p></li>
+<li><p><a class="reference internal" href="#jina-SingleDocumentRequestProto"><span class="xref myst">SingleDocumentRequestProto</span></a></p></li>
 <li><p><a class="reference internal" href="#jina-SnapshotId"><span class="xref myst">SnapshotId</span></a></p></li>
 <li><p><a class="reference internal" href="#jina-SnapshotStatusProto"><span class="xref myst">SnapshotStatusProto</span></a></p></li>
 <li><p><a class="reference internal" href="#jina-StatusProto"><span class="xref myst">StatusProto</span></a></p></li>
@@ -477,6 +480,7 @@
 <li><p><a class="reference internal" href="#jina-JinaInfoRPC"><span class="xref myst">JinaInfoRPC</span></a></p></li>
 <li><p><a class="reference internal" href="#jina-JinaRPC"><span class="xref myst">JinaRPC</span></a></p></li>
 <li><p><a class="reference internal" href="#jina-JinaSingleDataRequestRPC"><span class="xref myst">JinaSingleDataRequestRPC</span></a></p></li>
+<li><p><a class="reference internal" href="#jina-JinaSingleDocumentRequestRPC"><span class="xref myst">JinaSingleDocumentRequestRPC</span></a></p></li>
 </ul>
 </li>
 <li><p><a class="reference internal" href="#scalar-value-types"><span class="xref myst">Scalar Value Types</span></a></p></li>
@@ -490,6 +494,10 @@
 <section id="doclistproto">
 <h3>DocListProto<a class="headerlink" href="#doclistproto" title="Permalink to this heading">#</a></h3>
 <p>this file is just a placeholder for the DA coming from jina._docarray dependency</p>
+<p><a name="docarray-DocProto"></a></p>
+</section>
+<section id="docproto">
+<h3>DocProto<a class="headerlink" href="#docproto" title="Permalink to this heading">#</a></h3>
 <p><a name="jina-proto"></a></p>
 <p align="right"><a href="#top">Top</a></p>
 </section>
@@ -929,6 +937,44 @@ thus end_time - start_time includes Executor computation, runtime overhead, seri
 <td><p><a class="reference internal" href="#jina-StatusProto"><span class="xref myst">StatusProto</span></a></p></td>
 <td><p></p></td>
 <td><p>the status of the execution</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a name="jina-SingleDocumentRequestProto"></a></p>
+</section>
+<section id="singledocumentrequestproto">
+<h3>SingleDocumentRequestProto<a class="headerlink" href="#singledocumentrequestproto" title="Permalink to this heading">#</a></h3>
+<p>Represents a Single Document DataRequest</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>header</p></td>
+<td><p><a class="reference internal" href="#jina-HeaderProto"><span class="xref myst">HeaderProto</span></a></p></td>
+<td><p></p></td>
+<td><p>header contains meta info defined by the user</p></td>
+</tr>
+<tr class="row-odd"><td><p>parameters</p></td>
+<td><p><a class="reference internal" href="#google-protobuf-Struct"><span class="xref myst">google.protobuf.Struct</span></a></p></td>
+<td><p></p></td>
+<td><p>extra kwargs that will be used in executor</p></td>
+</tr>
+<tr class="row-even"><td><p>routes</p></td>
+<td><p><a class="reference internal" href="#jina-RouteProto"><span class="xref myst">RouteProto</span></a></p></td>
+<td><p>repeated</p></td>
+<td><p>status info on every routes</p></td>
+</tr>
+<tr class="row-odd"><td><p>document</p></td>
+<td><p><a class="reference internal" href="#docarray-DocProto"><span class="xref myst">docarray.DocProto</span></a></p></td>
+<td><p></p></td>
+<td><p>the document in this request</p></td>
 </tr>
 </tbody>
 </table>
@@ -1394,6 +1440,30 @@ This is used to send requests to Executors when a list of requests is not needed
 </tbody>
 </table>
 </div>
+<p><a name="jina-JinaSingleDocumentRequestRPC"></a></p>
+</section>
+<section id="jinasingledocumentrequestrpc">
+<h3>JinaSingleDocumentRequestRPC<a class="headerlink" href="#jinasingledocumentrequestrpc" title="Permalink to this heading">#</a></h3>
+<p>jina gRPC service for DataRequests.
+This is used to send requests to Executors when a list of requests is not needed</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method Name</p></th>
+<th class="head"><p>Request Type</p></th>
+<th class="head"><p>Response Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>stream_doc</p></td>
+<td><p><a class="reference internal" href="#jina-SingleDocumentRequestProto"><span class="xref myst">SingleDocumentRequestProto</span></a></p></td>
+<td><p><a class="reference internal" href="#jina-SingleDocumentRequestProto"><span class="xref myst">SingleDocumentRequestProto</span></a> stream</p></td>
+<td><p>Used for streaming one document to the Executors</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 </section>
 <section id="scalar-value-types">
@@ -1600,7 +1670,7 @@ This is used to send requests to Executors when a list of requests is not needed
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 20, 2023</div>
+                            Last updated on Aug 02, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -1636,6 +1706,7 @@ This is used to send requests to Executors when a list of requests is not needed
 <li><a class="reference internal" href="#table-of-contents">Table of Contents</a></li>
 <li><a class="reference internal" href="#docarray-proto">docarray.proto</a><ul>
 <li><a class="reference internal" href="#doclistproto">DocListProto</a></li>
+<li><a class="reference internal" href="#docproto">DocProto</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#jina-proto">jina.proto</a><ul>
@@ -1653,6 +1724,7 @@ This is used to send requests to Executors when a list of requests is not needed
 <li><a class="reference internal" href="#restoresnapshotcommand">RestoreSnapshotCommand</a></li>
 <li><a class="reference internal" href="#restoresnapshotstatusproto">RestoreSnapshotStatusProto</a></li>
 <li><a class="reference internal" href="#routeproto">RouteProto</a></li>
+<li><a class="reference internal" href="#singledocumentrequestproto">SingleDocumentRequestProto</a></li>
 <li><a class="reference internal" href="#snapshotid">SnapshotId</a></li>
 <li><a class="reference internal" href="#snapshotstatusproto">SnapshotStatusProto</a></li>
 <li><a class="reference internal" href="#statusproto">StatusProto</a></li>
@@ -1670,6 +1742,7 @@ This is used to send requests to Executors when a list of requests is not needed
 <li><a class="reference internal" href="#jinainforpc">JinaInfoRPC</a></li>
 <li><a class="reference internal" href="#jinarpc">JinaRPC</a></li>
 <li><a class="reference internal" href="#jinasingledatarequestrpc">JinaSingleDataRequestRPC</a></li>
+<li><a class="reference internal" href="#jinasingledocumentrequestrpc">JinaSingleDocumentRequestRPC</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#scalar-value-types">Scalar Value Types</a></li>

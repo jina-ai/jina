@@ -5,6 +5,7 @@
 
 - [docarray.proto](#docarray-proto)
     - [DocListProto](#docarray-DocListProto)
+    - [DocProto](#docarray-DocProto)
   
 - [jina.proto](#jina-proto)
     - [DataRequestListProto](#jina-DataRequestListProto)
@@ -21,6 +22,7 @@
     - [RestoreSnapshotCommand](#jina-RestoreSnapshotCommand)
     - [RestoreSnapshotStatusProto](#jina-RestoreSnapshotStatusProto)
     - [RouteProto](#jina-RouteProto)
+    - [SingleDocumentRequestProto](#jina-SingleDocumentRequestProto)
     - [SnapshotId](#jina-SnapshotId)
     - [SnapshotStatusProto](#jina-SnapshotStatusProto)
     - [StatusProto](#jina-StatusProto)
@@ -40,6 +42,7 @@
     - [JinaInfoRPC](#jina-JinaInfoRPC)
     - [JinaRPC](#jina-JinaRPC)
     - [JinaSingleDataRequestRPC](#jina-JinaSingleDataRequestRPC)
+    - [JinaSingleDocumentRequestRPC](#jina-JinaSingleDocumentRequestRPC)
   
 - [Scalar Value Types](#scalar-value-types)
 
@@ -56,6 +59,16 @@
 
 ### DocListProto
 this file is just a placeholder for the DA coming from jina._docarray dependency
+
+
+
+
+
+
+<a name="docarray-DocProto"></a>
+
+### DocProto
+
 
 
 
@@ -320,6 +333,24 @@ thus end_time - start_time includes Executor computation, runtime overhead, seri
 
 
 
+<a name="jina-SingleDocumentRequestProto"></a>
+
+### SingleDocumentRequestProto
+Represents a Single Document DataRequest
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| header | [HeaderProto](#jina-HeaderProto) |  | header contains meta info defined by the user |
+| parameters | [google.protobuf.Struct](#google-protobuf-Struct) |  | extra kwargs that will be used in executor |
+| routes | [RouteProto](#jina-RouteProto) | repeated | status info on every routes |
+| document | [docarray.DocProto](#docarray-DocProto) |  | the document in this request |
+
+
+
+
+
+
 <a name="jina-SnapshotId"></a>
 
 ### SnapshotId
@@ -536,6 +567,17 @@ This is used to send requests to Executors when a list of requests is not needed
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | process_single_data | [DataRequestProto](#jina-DataRequestProto) | [DataRequestProto](#jina-DataRequestProto) | Used for passing DataRequests to the Executors |
+
+
+<a name="jina-JinaSingleDocumentRequestRPC"></a>
+
+### JinaSingleDocumentRequestRPC
+jina gRPC service for DataRequests.
+This is used to send requests to Executors when a list of requests is not needed
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| stream_doc | [SingleDocumentRequestProto](#jina-SingleDocumentRequestProto) | [SingleDocumentRequestProto](#jina-SingleDocumentRequestProto) stream | Used for streaming one document to the Executors |
 
  
 

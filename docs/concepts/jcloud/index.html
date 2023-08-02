@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/jcloud/" />
 <meta property="og:site_name" content="Jina 3.19.2 Documentation" />
-<meta property="og:description" content="After building a Jina project, the next step is to deploy and host it on the cloud. Jina AI Cloud is Jina’s reliable, scalable and production-ready cloud-hosting solution that manages your project lifecycle without surprises or hidden development costs. Basics: Jina AI Cloud provides a CLI that y..." />
+<meta property="og:description" content="After building a Jina project, the next step is to deploy and host it on the cloud. Jina AI Cloud is Jina’s reliable, scalable and production-ready cloud-hosting solution that manages your project lifecycle without surprises or hidden development costs. In addition to deploying Flows, jcloud supp..." />
 <meta property="og:image" content="https://docs.jina.ai/_images/jcloud-banner.png" />
 <meta property="og:image:alt" content="Jina 3.19.2 Documentation" />
-<meta name="description" content="After building a Jina project, the next step is to deploy and host it on the cloud. Jina AI Cloud is Jina’s reliable, scalable and production-ready cloud-hosting solution that manages your project lifecycle without surprises or hidden development costs. Basics: Jina AI Cloud provides a CLI that y..." />
+<meta name="description" content="After building a Jina project, the next step is to deploy and host it on the cloud. Jina AI Cloud is Jina’s reliable, scalable and production-ready cloud-hosting solution that manages your project lifecycle without surprises or hidden development costs. In addition to deploying Flows, jcloud supp..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -353,6 +353,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/deploy-model/">Deploy a model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/llm-serve/">Build a Streaming API for a Large Language Model</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -448,6 +449,7 @@
 <p class="admonition-title">Tip</p>
 <p>Are you ready to unlock the power of AI with Jina AI Cloud? Take a look at our <a class="reference external" href="https://cloud.jina.ai/pricing">pricing options</a> now!</p>
 </div>
+<p>In addition to deploying Flows, <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> supports the creation of secrets and jobs which are created in the Flow’s namespace.</p>
 <section id="basics">
 <h2>Basics<a class="headerlink" href="#basics" title="Permalink to this heading">#</a></h2>
 <p>Jina AI Cloud provides a CLI that you can use via <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">cloud</span></code> from the terminal (or <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> or simply <code class="docutils literal notranslate"><span class="pre">jc</span></code> for minimalists.)</p>
@@ -462,17 +464,16 @@ jc<span class="w"> </span>-h
 <p>In case the command <code class="docutils literal notranslate"><span class="pre">jc</span></code> is already occupied by another tool, use <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> instead. If your pip install doesn’t register bash commands for you, you can run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">jcloud</span> <span class="pre">-h</span></code>.</p>
 </div>
 <p>For the rest of this section, we use <code class="docutils literal notranslate"><span class="pre">jc</span></code> or <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>. But again they are interchangable with <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">cloud</span></code>.</p>
+</section>
+<section id="flows">
+<h2>Flows<a class="headerlink" href="#flows" title="Permalink to this heading">#</a></h2>
 <section id="deploy">
 <h3>Deploy<a class="headerlink" href="#deploy" title="Permalink to this heading">#</a></h3>
-<p>In Jina’s idiom, a project is a <a class="reference external" href="https://docs.jina.ai/concepts/flow/">Flow</a>, which represents an end-to-end task such as indexing, searching or recommending. In this document, we use “project” and “Flow” interchangeably.</p>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>Flows have a maximum lifetime after which they are automatically deleted.</p>
-</div>
+<p>In Jina’s idiom, a project is a <a class="reference external" href="https://docs.jina.ai/concepts/orchestration/flow/">Flow</a>, which represents an end-to-end task such as indexing, searching or recommending. In this document, we use “project” and “Flow” interchangeably.</p>
 <p>A Flow can have two types of file structure: a single YAML file or a project folder.</p>
 <section id="single-yaml-file">
 <h4>Single YAML file<a class="headerlink" href="#single-yaml-file" title="Permalink to this heading">#</a></h4>
-<p>A self-contained YAML file, consisting of all configuration at the <a class="reference external" href="https://docs.jina.ai/concepts/flow/">Flow</a>-level and <a class="reference external" href="https://docs.jina.ai/concepts/executor/">Executor</a>-level.</p>
+<p>A self-contained YAML file, consisting of all configuration at the <a class="reference external" href="https://docs.jina.ai/concepts/orchestration/flow/">Flow</a>-level and <a class="reference external" href="https://docs.jina.ai/concepts/serving/executor/">Executor</a>-level.</p>
 <blockquote>
 <div><p>All Executors’ <code class="docutils literal notranslate"><span class="pre">uses</span></code> must follow the format <code class="docutils literal notranslate"><span class="pre">jinaai+docker://&lt;username&gt;/MyExecutor</span></code> (from <a class="reference external" href="https://cloud.jina.ai">Executor Hub</a>) to avoid any local file dependencies:</p>
 </div></blockquote>
@@ -484,8 +485,18 @@ jc<span class="w"> </span>-h
 </pre></div>
 </div>
 <p>To deploy:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deploy<span class="w"> </span>flow.yml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flow<span class="w"> </span>deploy<span class="w"> </span>flow.yml
 </pre></div>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> deploys a flow it automatically appends the following global arguments to the <code class="docutils literal notranslate"><span class="pre">flow.yml</span></code>, if not present:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jcloud</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jina-version</span>
+<span class="w">  </span><span class="nt">docarray</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docarray-version</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">jina</span></code> and <code class="docutils literal notranslate"><span class="pre">docarray</span></code> corresponds to your development enviornment’s <code class="docutils literal notranslate"><span class="pre">jina</span></code> and <code class="docutils literal notranslate"><span class="pre">docarray</span></code> versions.</p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -519,12 +530,12 @@ jc<span class="w"> </span>-h
 <p>Where:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">hello/</span></code> is your top-level project folder.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">executor1</span></code> directory has all Executor related code/configuration. You can read the best practices for <a class="reference external" href="https://docs.jina.ai/concepts/executor/executor-files/">file structures</a>. Multiple Executor directories can be created.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">executor1</span></code> directory has all Executor related code/configuration. You can read the best practices for <a class="reference external" href="https://docs.jina.ai/concepts/serving/executor/file-structure/">file structures</a>. Multiple Executor directories can be created.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">flow.yml</span></code> Your Flow YAML.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">.env</span></code> All environment variables used during deployment.</p></li>
 </ul>
 <p>To deploy:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deploy<span class="w"> </span>hello
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flow<span class="w"> </span>deploy<span class="w"> </span>hello
 </pre></div>
 </div>
 <p>The Flow is successfully deployed when you see:</p>
@@ -548,7 +559,7 @@ jc<span class="w"> </span>-h
 <section id="get-status">
 <span id="jcloud-flow-status"></span><h3>Get status<a class="headerlink" href="#get-status" title="Permalink to this heading">#</a></h3>
 <p>To get the status of a Flow:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>status<span class="w"> </span>merry-magpie-82b9c0897f
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flow<span class="w"> </span>status<span class="w"> </span>merry-magpie-82b9c0897f
 </pre></div>
 </div>
 <figure class="align-default">
@@ -565,22 +576,22 @@ jc<span class="w"> </span>-h
 </section>
 <section id="list-flows">
 <h3>List Flows<a class="headerlink" href="#list-flows" title="Permalink to this heading">#</a></h3>
-<p>To list all of your “Serving” Flows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>list
+<p>To list all of your “Starting”, “Serving”, “Failed”, “Updating”, and “Paused” Flows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flows<span class="w"> </span>list
 </pre></div>
 </div>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../_images/list.png"><img alt="../../_images/list.png" src="../../_images/list.png" style="width: 90%;" /></a>
 </figure>
 <p>You can also filter your Flows by passing a phase:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>list<span class="w"> </span>--phase<span class="w"> </span>Deleted
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flows<span class="w"> </span>list<span class="w"> </span>--phase<span class="w"> </span>Deleted
 </pre></div>
 </div>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../_images/list_deleted.png"><img alt="../../_images/list_deleted.png" src="../../_images/list_deleted.png" style="width: 90%;" /></a>
 </figure>
 <p>Or see all Flows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>list<span class="w"> </span>--phase<span class="w"> </span>all
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flows<span class="w"> </span>list<span class="w"> </span>--phase<span class="w"> </span>all
 </pre></div>
 </div>
 <figure class="align-default">
@@ -591,15 +602,15 @@ jc<span class="w"> </span>-h
 <h3>Remove Flows<a class="headerlink" href="#remove-flows" title="Permalink to this heading">#</a></h3>
 <p>You can remove a single Flow, multiple Flows or even all Flows by passing different identifiers.</p>
 <p>To remove a single Flow:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>remove<span class="w"> </span>merry-magpie-82b9c0897f
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flow<span class="w"> </span>remove<span class="w"> </span>merry-magpie-82b9c0897f
 </pre></div>
 </div>
 <p>To remove multiple Flows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>remove<span class="w"> </span>merry-magpie-82b9c0897f<span class="w"> </span>wondrous-kiwi-b02db6a066
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flow<span class="w"> </span>remove<span class="w"> </span>merry-magpie-82b9c0897f<span class="w"> </span>wondrous-kiwi-b02db6a066
 </pre></div>
 </div>
 <p>To remove all Flows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>remove<span class="w"> </span>all
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flow<span class="w"> </span>remove<span class="w"> </span>all
 </pre></div>
 </div>
 <p>By default, removing multiple or all Flows is an interactive process where you must give confirmation before each Flow is deleted. To make it non-interactive, set the below environment variable before running the command:</p>
@@ -607,11 +618,11 @@ jc<span class="w"> </span>-h
 </pre></div>
 </div>
 </section>
-<section id="update-flow">
-<h3>Update Flow<a class="headerlink" href="#update-flow" title="Permalink to this heading">#</a></h3>
+<section id="update-a-flow">
+<h3>Update a Flow<a class="headerlink" href="#update-a-flow" title="Permalink to this heading">#</a></h3>
 <p>You can update a Flow by providing an updated YAML.</p>
 <p>To update a Flow:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>update<span class="w"> </span>super-mustang-c6cf06bc5b<span class="w"> </span>flow.yml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flow<span class="w"> </span>update<span class="w"> </span>super-mustang-c6cf06bc5b<span class="w"> </span>flow.yml
 </pre></div>
 </div>
 <figure class="align-default">
@@ -622,14 +633,14 @@ jc<span class="w"> </span>-h
 <h3>Pause / Resume Flow<a class="headerlink" href="#pause-resume-flow" title="Permalink to this heading">#</a></h3>
 <p>You have the option to pause a Flow that is not currently in use but may be needed later. This will allow the Flow to be resumed later when it is needed again by using <code class="docutils literal notranslate"><span class="pre">resume</span></code>.</p>
 <p>To pause a Flow:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>pause<span class="w"> </span>super-mustang-c6cf06bc5b
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flow<span class="w"> </span>pause<span class="w"> </span>super-mustang-c6cf06bc5b
 </pre></div>
 </div>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../_images/pause_flow.png"><img alt="../../_images/pause_flow.png" src="../../_images/pause_flow.png" style="width: 70%;" /></a>
 </figure>
 <p>To resume a Flow:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>resume<span class="w"> </span>super-mustang-c6cf06bc5b
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flow<span class="w"> </span>resume<span class="w"> </span>super-mustang-c6cf06bc5b
 </pre></div>
 </div>
 <figure class="align-default">
@@ -640,21 +651,21 @@ jc<span class="w"> </span>-h
 <h3>Restart Flow, Executor or Gateway<a class="headerlink" href="#restart-flow-executor-or-gateway" title="Permalink to this heading">#</a></h3>
 <p>If you need to restart a Flow, there are two options: restart all Executors and the Gateway associated with the Flow, or selectively restart only a specific Executor or the Gateway.</p>
 <p>To restart a Flow:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>restart<span class="w"> </span>super-mustang-c6cf06bc5b
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flow<span class="w"> </span>restart<span class="w"> </span>super-mustang-c6cf06bc5b
 </pre></div>
 </div>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../_images/restart_flow.png"><img alt="../../_images/restart_flow.png" src="../../_images/restart_flow.png" style="width: 70%;" /></a>
 </figure>
 <p>To restart the Gateway:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>restart<span class="w"> </span>super-mustang-c6cf06bc5b<span class="w"> </span>--gateway
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flow<span class="w"> </span>restart<span class="w"> </span>super-mustang-c6cf06bc5b<span class="w"> </span>--gateway
 </pre></div>
 </div>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../_images/restart_gateway.png"><img alt="../../_images/restart_gateway.png" src="../../_images/restart_gateway.png" style="width: 70%;" /></a>
 </figure>
 <p>To restart an Executor:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>restart<span class="w"> </span>super-mustang-c6cf06bc5b<span class="w"> </span>--executor<span class="w"> </span>executor0
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flow<span class="w"> </span>restart<span class="w"> </span>super-mustang-c6cf06bc5b<span class="w"> </span>--executor<span class="w"> </span>executor0
 </pre></div>
 </div>
 <figure class="align-default">
@@ -664,7 +675,7 @@ jc<span class="w"> </span>-h
 <section id="recreate-a-deleted-flow">
 <h3>Recreate a Deleted Flow<a class="headerlink" href="#recreate-a-deleted-flow" title="Permalink to this heading">#</a></h3>
 <p>To recreate a deleted Flow:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>recreate<span class="w"> </span>profound-rooster-eec4b17c73
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flow<span class="w"> </span>recreate<span class="w"> </span>profound-rooster-eec4b17c73
 </pre></div>
 </div>
 <figure class="align-default">
@@ -674,28 +685,148 @@ jc<span class="w"> </span>-h
 <section id="scale-an-executor">
 <h3>Scale an Executor<a class="headerlink" href="#scale-an-executor" title="Permalink to this heading">#</a></h3>
 <p>You can also manually scale any Executor.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>scale<span class="w"> </span>good-martin-ca6bfdef84<span class="w"> </span>--executor<span class="w"> </span>executor0<span class="w"> </span>--replicas<span class="w"> </span><span class="m">2</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flow<span class="w"> </span>scale<span class="w"> </span>good-martin-ca6bfdef84<span class="w"> </span>--executor<span class="w"> </span>executor0<span class="w"> </span>--replicas<span class="w"> </span><span class="m">2</span>
 </pre></div>
 </div>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../_images/scale_executor.png"><img alt="../../_images/scale_executor.png" src="../../_images/scale_executor.png" style="width: 70%;" /></a>
 </figure>
 </section>
+<section id="normalize-a-flow">
+<h3>Normalize a Flow<a class="headerlink" href="#normalize-a-flow" title="Permalink to this heading">#</a></h3>
+<p>To normalize a Flow:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flow<span class="w"> </span>normalize<span class="w"> </span>flow.yml
+</pre></div>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Normalizing a Flow is the process of building the Executor image and pushing the image to Hubble.</p>
+</div>
+</section>
 <section id="get-executor-or-gateway-logs">
 <h3>Get Executor or Gateway logs<a class="headerlink" href="#get-executor-or-gateway-logs" title="Permalink to this heading">#</a></h3>
 <p>To get the Gateway logs:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>logs<span class="w"> </span>--gateway<span class="w"> </span>central-escargot-354a796df5
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flow<span class="w"> </span>logs<span class="w"> </span>--gateway<span class="w"> </span>central-escargot-354a796df5
 </pre></div>
 </div>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../_images/gateway_logs.png"><img alt="../../_images/gateway_logs.png" src="../../_images/gateway_logs.png" style="width: 70%;" /></a>
 </figure>
 <p>To get the Executor logs:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>logs<span class="w"> </span>--executor<span class="w"> </span>executor0<span class="w"> </span>central-escargot-354a796df5
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>flow<span class="w"> </span>logs<span class="w"> </span>--executor<span class="w"> </span>executor0<span class="w"> </span>central-escargot-354a796df5
 </pre></div>
 </div>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../_images/executor_logs.png"><img alt="../../_images/executor_logs.png" src="../../_images/executor_logs.png" style="width: 70%;" /></a>
+</figure>
+</section>
+</section>
+<section id="secrets">
+<h2>Secrets<a class="headerlink" href="#secrets" title="Permalink to this heading">#</a></h2>
+<section id="create-a-secret">
+<h3>Create a Secret<a class="headerlink" href="#create-a-secret" title="Permalink to this heading">#</a></h3>
+<p>To create a Secret for a Flow:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>secret<span class="w"> </span>create<span class="w"> </span>mysecret<span class="w"> </span>rich-husky-af14064067<span class="w"> </span>--from-literal<span class="w"> </span><span class="s2">&quot;{&#39;env-name&#39;: &#39;secret-value&#39;}&quot;</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can optionally pass the <code class="docutils literal notranslate"><span class="pre">--update</span></code> flag to automatically update the Flow spec with the updated secret information. This flag will update the Flow which is hosted on the cloud. Finally, you can also optionally pass a Flow’s yaml file path with <code class="docutils literal notranslate"><span class="pre">--path</span></code> to update the yaml file locally.  Refer to <a class="reference external" href="https://docs.jina.ai/cloud-nativeness/kubernetes/#deploy-flow-with-custom-environment-variables-and-secrets">this</a> section for more information.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>If the <code class="docutils literal notranslate"><span class="pre">--update</span></code> flag is not passed then you have to manually update the flow with <code class="docutils literal notranslate"><span class="pre">jc</span> <span class="pre">update</span> <span class="pre">flow</span> <span class="pre">rich-husky-af14064067</span> <span class="pre">updated-flow.yml</span></code></p>
+</div>
+</section>
+<section id="list-secrets">
+<h3>List Secrets<a class="headerlink" href="#list-secrets" title="Permalink to this heading">#</a></h3>
+<p>To list all the Secrets created in a Flow’s namespace:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>secret<span class="w"> </span>list<span class="w"> </span>rich-husky-af14064067
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/list_secrets.png"><img alt="../../_images/list_secrets.png" src="../../_images/list_secrets.png" style="width: 90%;" /></a>
+</figure>
+</section>
+<section id="get-a-secret">
+<h3>Get a Secret<a class="headerlink" href="#get-a-secret" title="Permalink to this heading">#</a></h3>
+<p>To retrieve a Secret’s details:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>secret<span class="w"> </span>get<span class="w"> </span>mysecret<span class="w"> </span>rich-husky-af14064067
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/get_secret.png"><img alt="../../_images/get_secret.png" src="../../_images/get_secret.png" style="width: 90%;" /></a>
+</figure>
+</section>
+<section id="remove-secret">
+<h3>Remove Secret<a class="headerlink" href="#remove-secret" title="Permalink to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>secret<span class="w"> </span>remove<span class="w"> </span>rich-husky-af14064067<span class="w"> </span>mysecret
+</pre></div>
+</div>
+</section>
+<section id="update-a-secret">
+<h3>Update a Secret<a class="headerlink" href="#update-a-secret" title="Permalink to this heading">#</a></h3>
+<p>You can update a Secret for a Flow.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>secret<span class="w"> </span>update<span class="w"> </span>rich-husky-af14064067<span class="w"> </span>mysecret<span class="w"> </span>--from-literal<span class="w"> </span><span class="s2">&quot;{&#39;env-name&#39;: &#39;secret-value&#39;}&quot;</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can optionally pass the <code class="docutils literal notranslate"><span class="pre">--update</span></code> flag to automatically update the Flow spec with the updated secret information. This flag will update the Flow which is hosted on the cloud. Finally, you can also optionally pass a Flow’s yaml file path with <code class="docutils literal notranslate"><span class="pre">--path</span></code> to update the yaml file locally. Refer to <a class="reference external" href="https://docs.jina.ai/cloud-nativeness/kubernetes/#deploy-flow-with-custom-environment-variables-and-secrets">this</a> section for more information.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Updating a Secret automatically restarts a Flow.</p>
+</div>
+</section>
+</section>
+<section id="jobs">
+<h2>Jobs<a class="headerlink" href="#jobs" title="Permalink to this heading">#</a></h2>
+<section id="create-a-job">
+<h3>Create a Job<a class="headerlink" href="#create-a-job" title="Permalink to this heading">#</a></h3>
+<p>To create a Job for a Flow:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>job<span class="w"> </span>create<span class="w"> </span>job-name<span class="w"> </span>rich-husky-af14064067<span class="w"> </span>image<span class="w"> </span><span class="s1">&#39;job entrypoint&#39;</span><span class="w"> </span>--timeout<span class="w"> </span><span class="m">600</span><span class="w"> </span>--backofflimit<span class="w"> </span><span class="m">2</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><code class="docutils literal notranslate"><span class="pre">image</span></code> can be any Executor image passed to a Flow’s Executor <code class="docutils literal notranslate"><span class="pre">uses</span></code> or any normal docker image prefixed with <code class="docutils literal notranslate"><span class="pre">docker://</span></code></p>
+</div>
+</section>
+<section id="list-jobs">
+<h3>List Jobs<a class="headerlink" href="#list-jobs" title="Permalink to this heading">#</a></h3>
+<p>To listg all Jobs created in a Flow’s namespace:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span><span class="nb">jobs</span><span class="w"> </span>list<span class="w"> </span>rich-husky-af14064067
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/list_jobs.png"><img alt="../../_images/list_jobs.png" src="../../_images/list_jobs.png" style="width: 90%;" /></a>
+</figure>
+</section>
+<section id="get-a-job">
+<h3>Get a Job<a class="headerlink" href="#get-a-job" title="Permalink to this heading">#</a></h3>
+<p>To retrieve a Job’s details:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>job<span class="w"> </span>get<span class="w"> </span>myjob1<span class="w"> </span>rich-husky-af14064067
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/get_job.png"><img alt="../../_images/get_job.png" src="../../_images/get_job.png" style="width: 90%;" /></a>
+</figure>
+</section>
+<section id="remove-job">
+<h3>Remove Job<a class="headerlink" href="#remove-job" title="Permalink to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>job<span class="w"> </span>remove<span class="w"> </span>rich-husky-af14064067<span class="w"> </span>myjob1
+</pre></div>
+</div>
+</section>
+<section id="get-job-logs">
+<h3>Get Job Logs<a class="headerlink" href="#get-job-logs" title="Permalink to this heading">#</a></h3>
+<p>To get the Job logs:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>job<span class="w"> </span>logs<span class="w"> </span>myjob1<span class="w"> </span>-f<span class="w"> </span>rich-husky-af14064067
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/job_logs.png"><img alt="../../_images/job_logs.png" src="../../_images/job_logs.png" style="width: 90%;" /></a>
 </figure>
 </section>
 </section>
@@ -746,7 +877,7 @@ jc<span class="w"> </span>-h
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 20, 2023</div>
+                            Last updated on Aug 02, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -779,7 +910,8 @@ jc<span class="w"> </span>-h
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Jina AI Cloud Hosting</a><ul>
-<li><a class="reference internal" href="#basics">Basics</a><ul>
+<li><a class="reference internal" href="#basics">Basics</a></li>
+<li><a class="reference internal" href="#flows">Flows</a><ul>
 <li><a class="reference internal" href="#deploy">Deploy</a><ul>
 <li><a class="reference internal" href="#single-yaml-file">Single YAML file</a></li>
 <li><a class="reference internal" href="#project-folder">Project folder</a></li>
@@ -789,12 +921,29 @@ jc<span class="w"> </span>-h
 <li><a class="reference internal" href="#monitoring">Monitoring</a></li>
 <li><a class="reference internal" href="#list-flows">List Flows</a></li>
 <li><a class="reference internal" href="#remove-flows">Remove Flows</a></li>
-<li><a class="reference internal" href="#update-flow">Update Flow</a></li>
+<li><a class="reference internal" href="#update-a-flow">Update a Flow</a></li>
 <li><a class="reference internal" href="#pause-resume-flow">Pause / Resume Flow</a></li>
 <li><a class="reference internal" href="#restart-flow-executor-or-gateway">Restart Flow, Executor or Gateway</a></li>
 <li><a class="reference internal" href="#recreate-a-deleted-flow">Recreate a Deleted Flow</a></li>
 <li><a class="reference internal" href="#scale-an-executor">Scale an Executor</a></li>
+<li><a class="reference internal" href="#normalize-a-flow">Normalize a Flow</a></li>
 <li><a class="reference internal" href="#get-executor-or-gateway-logs">Get Executor or Gateway logs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#secrets">Secrets</a><ul>
+<li><a class="reference internal" href="#create-a-secret">Create a Secret</a></li>
+<li><a class="reference internal" href="#list-secrets">List Secrets</a></li>
+<li><a class="reference internal" href="#get-a-secret">Get a Secret</a></li>
+<li><a class="reference internal" href="#remove-secret">Remove Secret</a></li>
+<li><a class="reference internal" href="#update-a-secret">Update a Secret</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jobs">Jobs</a><ul>
+<li><a class="reference internal" href="#create-a-job">Create a Job</a></li>
+<li><a class="reference internal" href="#list-jobs">List Jobs</a></li>
+<li><a class="reference internal" href="#get-a-job">Get a Job</a></li>
+<li><a class="reference internal" href="#remove-job">Remove Job</a></li>
+<li><a class="reference internal" href="#get-job-logs">Get Job Logs</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#configuration">Configuration</a></li>

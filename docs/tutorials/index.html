@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/tutorials/" />
 <meta property="og:site_name" content="Jina 3.19.2 Documentation" />
-<meta property="og:description" content="Deploy a model- Introduction, Understand: Executors and Deployments, Install prerequisites, Executor: Implement logic- Imports, Document types, Executor class, Requests decorator., Deployment: Deploy the Executor, Client: Send and receive requests to your service, Scale up the microservice.. Inde..." />
+<meta property="og:description" content="Deploy a model- Introduction, Understand: Executors and Deployments, Install prerequisites, Executor: Implement logic- Imports, Document types, Executor class, Requests decorator., Deployment: Deploy the Executor, Client: Send and receive requests to your service, Scale up the microservice., Buil..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.19.2 Documentation" />
-<meta name="description" content="Deploy a model- Introduction, Understand: Executors and Deployments, Install prerequisites, Executor: Implement logic- Imports, Document types, Executor class, Requests decorator., Deployment: Deploy the Executor, Client: Send and receive requests to your service, Scale up the microservice.. Inde..." />
+<meta name="description" content="Deploy a model- Introduction, Understand: Executors and Deployments, Install prerequisites, Executor: Implement logic- Imports, Document types, Executor class, Requests decorator., Deployment: Deploy the Executor, Client: Send and receive requests to your service, Scale up the microservice., Buil..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -353,6 +353,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="deploy-model/">Deploy a model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gpu-executor/">Build a GPU Executor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="llm-serve/">Build a Streaming API for a Large Language Model</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -453,6 +454,13 @@
 <li class="toctree-l2"><a class="reference internal" href="deploy-model/#scale-up-the-microservice">Scale up the microservice</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="llm-serve/">Build a Streaming API for a Large Language Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="llm-serve/#service-schemas">Service Schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="llm-serve/#service-initialization">Service initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="llm-serve/#implement-the-streaming-endpoint">Implement the streaming endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="llm-serve/#serve-and-send-requests">Serve and send requests</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <hr class="docutils" />
@@ -472,7 +480,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 20, 2023</div>
+                            Last updated on Aug 02, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

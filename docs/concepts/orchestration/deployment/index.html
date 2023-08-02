@@ -353,6 +353,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/deploy-model/">Deploy a model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/llm-serve/">Build a Streaming API for a Large Language Model</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -728,7 +729,7 @@ The script entrypoint (starting the flow) <a class="reference external" href="ht
 <p>For advanced utilization of Docker Compose with Jina, refer to <a class="reference internal" href="../../../cloud-nativeness/docker-compose/#docker-compose"><span class="std std-ref">How to</span></a></p>
 </section>
 <section id="kubernetes">
-<span id="kubernetes-export"></span><h3>Kubernetes<a class="headerlink" href="#kubernetes" title="Permalink to this heading">#</a></h3>
+<span id="deployment-kubernetes-export"></span><h3>Kubernetes<a class="headerlink" href="#kubernetes" title="Permalink to this heading">#</a></h3>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--6-input--1" name="tab-set--6" type="radio"><label class="tab-label" for="tab-set--6-input--1">Python</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
@@ -760,6 +761,12 @@ You can control the access mode, storage class name and capacity of the attached
 <div class="seealso admonition">
 <p class="admonition-title">See also</p>
 <p>For more in-depth guides on deployment, check our how-tos for <a class="reference internal" href="../../../cloud-nativeness/docker-compose/#docker-compose"><span class="std std-ref">Docker compose</span></a> and <a class="reference internal" href="../../../cloud-nativeness/kubernetes/#kubernetes"><span class="std std-ref">Kubernetes</span></a>.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>The port or ports arguments are ignored when calling the Kubernetes YAML, Jina will start the services binding to the ports 8080, except when multiple protocols
+need to be served when the consecutive ports (8081, …) will be used. This is because the Kubernetes service will direct the traffic from you and it is irrelevant
+to the services around because in Kubernetes services communicate via the service names irrespective of the internal port.</p>
 </div>
 </section>
 </section>
@@ -924,7 +931,7 @@ You can control the access mode, storage class name and capacity of the attached
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 20, 2023</div>
+                            Last updated on Aug 02, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
