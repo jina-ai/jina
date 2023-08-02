@@ -24,7 +24,7 @@ ARG PIP_INSTALL_PERF
 LABEL org.opencontainers.image.vendor="Jina AI Limited" \
       org.opencontainers.image.licenses="Apache 2.0" \
       org.opencontainers.image.title="Jina" \
-      org.opencontainers.image.description="Build cross-modal and multi-modal applications on the cloud" \
+      org.opencontainers.image.description="Build multimodal AI services via cloud native technologies" \
       org.opencontainers.image.authors="hello@jina.ai" \
       org.opencontainers.image.url="https://github.com/jina-ai/jina" \
       org.opencontainers.image.documentation="https://docs.jina.ai"
@@ -38,11 +38,13 @@ ENV PIP_NO_CACHE_DIR=1 \
 # change on extra-requirements.txt, setup.py will invalid the cache
 COPY extra-requirements.txt setup.py /tmp/
 
+
 RUN cd /tmp/ && \
     # apt latest security packages should be install before pypi package
     if [ -n "${APT_PACKAGES}" ]; then apt-get update && apt-get upgrade -y && \
-    apt-get --only-upgrade install openssl libssl1.1 -y && \
+    apt-get --only-upgrade install openssl -y && \
     apt-get install --no-install-recommends -y ${APT_PACKAGES}; fi && \
+    if [ $PY_VERSION==3.11 ]; then apt-get install --no-install-recommends -y build-essential ; fi && \
     if [ -n "${PIP_TAG}" ]; then pip install --default-timeout=1000 --compile --extra-index-url $PIP_EXTRA_INDEX_URL ".[${PIP_TAG}]" ; fi && \
     pip install --default-timeout=1000 --compile --extra-index-url ${PIP_EXTRA_INDEX_URL} . && \
     # now remove apt packages

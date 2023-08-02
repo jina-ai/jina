@@ -1,19 +1,15 @@
-import os
-
 import grpc
 import pytest
 
-from jina import Flow, __default_host__
+from jina import Flow
 from jina.clients import Client
-from jina.excepts import PortAlreadyUsed
-from jina.helper import is_port_free
+from jina.serve.helper import get_server_side_grpc_options
 from jina.serve.runtimes.gateway.grpc import GRPCGateway
-from jina.serve.runtimes.helper import _get_grpc_server_options
 from tests import random_docs
 
 
 @pytest.fixture(scope='function')
-def flow_with_grpc(monkeypatch):
+def flow_with_grpc():
     class AuthInterceptor(grpc.aio.ServerInterceptor):
         def __init__(self, key):
             self._valid_metadata = ('rpc-auth-header', key)
@@ -43,7 +39,7 @@ def flow_with_grpc(monkeypatch):
             super(AlternativeGRPCGateway, self).__init__(*args, **kwargs)
             self.server = grpc.aio.server(
                 interceptors=(AuthInterceptor('access_key'),),
-                options=_get_grpc_server_options(self.grpc_server_options),
+                options=get_server_side_grpc_options(self.grpc_server_options),
             )
 
     return Flow(protocol='grpc', uses=AlternativeGRPCGateway).add()

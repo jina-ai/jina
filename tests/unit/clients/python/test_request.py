@@ -1,26 +1,12 @@
 import os
-import sys
 
 import numpy as np
 import pytest
-
 from docarray import Document
-from jina import Flow
+
 from jina.clients.request import request_generator
 from jina.clients.request.helper import _new_doc_from_data
 from jina.enums import DataInputType
-
-
-@pytest.mark.skipif(
-    sys.version_info < (3, 8, 0),
-    reason='somehow this does not work on Github workflow with Py3.7, '
-    'but Py 3.8 is fine, local Py3.7 is fine',
-)
-def test_on_bad_iterator():
-    # this should not stuck the server as request_generator's error is handled on the client side
-    f = Flow().add()
-    with f:
-        f.index([1, 2, 3])
 
 
 @pytest.mark.parametrize(
@@ -43,22 +29,22 @@ def test_data_type_builder_doc(builder, input_data_type, output_data_type):
     assert t == output_data_type
 
 
-@pytest.mark.parametrize('input_type', [DataInputType.AUTO, DataInputType.CONTENT])
-def test_data_type_builder_auto(input_type):
+@pytest.mark.parametrize('request_schema', [DataInputType.AUTO, DataInputType.CONTENT])
+def test_data_type_builder_auto(request_schema):
     if 'JINA_ARRAY_QUANT' in os.environ:
         print(f'quant is on: {os.environ["JINA_ARRAY_QUANT"]}')
         del os.environ['JINA_ARRAY_QUANT']
 
-    d, t = _new_doc_from_data('123', input_type)
+    d, t = _new_doc_from_data('123', request_schema)
     assert d.text == '123'
     assert t == DataInputType.CONTENT
 
-    d, t = _new_doc_from_data(b'123', input_type)
+    d, t = _new_doc_from_data(b'123', request_schema)
     assert t == DataInputType.CONTENT
     assert d.blob == b'123'
 
     c = np.random.random([10, 10])
-    d, t = _new_doc_from_data(c, input_type)
+    d, t = _new_doc_from_data(c, request_schema)
     np.testing.assert_equal(d.tensor, c)
     assert t == DataInputType.CONTENT
 

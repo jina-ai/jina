@@ -1,0 +1,4 @@
+jtype: PlaceHolderGateway
+py_modules: gateway.py
+metas:
+  name: JinaGateway

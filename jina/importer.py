@@ -5,7 +5,7 @@ import warnings
 from types import SimpleNamespace
 from typing import Optional
 
-from jina import __resources_path__
+from jina.constants import __resources_path__
 
 IMPORTED = SimpleNamespace()
 IMPORTED.executors = False
@@ -43,7 +43,7 @@ class ImportExtensions:
     def __exit__(self, exc_type, exc_val, traceback):
         if exc_type == ModuleNotFoundError:
             missing_module = self._pkg_name or exc_val.name
-            with open(os.path.join(__resources_path__, 'extra-requirements.txt')) as fp:
+            with open(os.path.join(__resources_path__, 'extra-requirements.txt'), encoding='utf-8') as fp:
                 for v in fp:
                     if (
                         v.strip()
@@ -147,8 +147,10 @@ class PathImporter:
             if not os.path.isfile(path):
                 try:
                     importlib.import_module(path)
-                except:
+                except ModuleNotFoundError:
                     not_python_module_paths.append(path)
+                except:
+                    raise
             else:
                 not_python_module_paths.append(path)
 

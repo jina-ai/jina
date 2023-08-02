@@ -1,35 +1,17 @@
-import os
-import time
-
 import pytest
 
 from jina import Client, Document, DocumentArray, Flow
 
-cur_dir = os.path.dirname(os.path.abspath(__file__))
-
-img_name = 'jina/replica-exec'
-
-
-@pytest.fixture(scope='function')
-def docker_image_built():
-    import docker
-
-    client = docker.from_env()
-    client.images.build(path=os.path.join(cur_dir, 'replica-exec'), tag=img_name)
-    client.close()
-    yield
-    time.sleep(2)
-    client = docker.from_env()
-    client.containers.prune()
-
 
 @pytest.mark.parametrize('shards', [1, 2])
 @pytest.mark.parametrize('replicas', [1, 3, 4])
-def test_containerruntime_args(docker_image_built, shards, replicas, port_generator):
+def test_containerruntime_args(
+    docker_image_name, docker_image_built, shards, replicas, port_generator
+):
     exposed_port = port_generator()
     f = Flow(port=exposed_port).add(
         name='executor_container',
-        uses=f'docker://{img_name}',
+        uses=f'docker://{docker_image_name}',
         replicas=replicas,
         shards=shards,
         polling='ANY',

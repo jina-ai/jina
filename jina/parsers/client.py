@@ -1,19 +1,19 @@
 """Module for argparse for Client"""
 
 
-def mixin_comm_protocol_parser(parser):
-    """Add the arguments for the protocol to the parser
+def mixin_client_protocol_parser(parser):
+    """Add the arguments for the protocol to the client parser
 
     :param parser: the parser configure
     """
 
-    from jina.enums import GatewayProtocolType
+    from jina.enums import ProtocolType
 
     parser.add_argument(
         '--protocol',
-        type=GatewayProtocolType.from_string,
-        choices=list(GatewayProtocolType),
-        default=GatewayProtocolType.GRPC,
+        type=ProtocolType.from_string,
+        choices=list(ProtocolType),
+        default=ProtocolType.GRPC,
         help='Communication protocol between server and client.',
     )
 
@@ -73,4 +73,11 @@ def mixin_client_features_parser(parser):
         type=int,
         default=None,
         help='If tracing is enabled, this port will be used to configure the metrics exporter agent.',
+    )
+
+    parser.add_argument(
+        '--log-config',
+        type=str,
+        default='default',
+        help='The config name or the absolute path to the YAML config file of the logger used in this object.',
     )

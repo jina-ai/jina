@@ -9,13 +9,14 @@ import pytest
 from jina import Client, Document, Executor, requests
 from jina.enums import PodRoleType, PollingType
 from jina.orchestrate.pods import Pod
-from jina.parsers import set_gateway_parser, set_pod_parser
+from jina.parsers import set_gateway_parser
 from jina.resources.health_check.gateway import (
     check_health_http,
     check_health_websocket,
 )
 from jina.resources.health_check.pod import check_health_pod
-from jina.serve.networking import GrpcConnectionPool
+from jina.serve.networking.utils import send_request_sync
+from tests.helper import _generate_pod_args
 
 
 @pytest.mark.asyncio
@@ -496,15 +497,6 @@ class FastSlowExecutor(Executor):
                 time.sleep(1.0)
 
 
-async def _activate_worker(head_port, worker_port, shard_id=None):
-    # this would be done by the Pod, its adding the worker to the head
-    activate_msg = ControlRequest(command='ACTIVATE')
-    activate_msg.add_related_entity(
-        'worker', '127.0.0.1', worker_port, shard_id=shard_id
-    )
-    GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
-
-
 async def _start_create_pod(pod, port_generator, type='worker', executor=None):
     port = port_generator()
     pod = _create_worker_pod(port, f'{pod}/{type}', executor)
@@ -514,8 +506,8 @@ async def _start_create_pod(pod, port_generator, type='worker', executor=None):
 
 
 def _create_worker_pod(port, name='', executor=None):
-    args = set_pod_parser().parse_args([])
-    args.port = port
+    args = _generate_pod_args()
+    args.port = [port]
     args.name = name
     args.no_block_on_start = True
     if executor:
@@ -531,10 +523,10 @@ def _create_head_pod(
     uses_before=None,
     uses_after=None,
 ):
-    args = set_pod_parser().parse_args([])
-    args.port = port
+    args = _generate_pod_args()
+    args.port = [port]
     args.name = name
-    args.pod_cls = 'HeadRuntime'
+    args.runtime_cls = 'HeadRuntime'
     args.pod_role = PodRoleType.HEAD
     args.no_block_on_start = True
     args.polling = PollingType.ANY if polling == 'ANY' else PollingType.ALL

@@ -4,7 +4,8 @@ import os
 import pytest
 import yaml
 
-from jina import Flow, __default_executor__, requests
+from jina import Deployment, Flow, requests
+from jina.constants import __default_executor__
 from jina.excepts import BadConfigSource
 from jina.jaml import JAML, JAMLCompatible
 from jina.serve.executors import BaseExecutor
@@ -204,24 +205,43 @@ def test_exception_invalid_yaml():
 
 def test_jtype(tmpdir):
     flow_path = os.path.join(tmpdir, 'flow.yml')
-    exec_path = os.path.join(tmpdir, 'exec.yml')
 
     f = Flow()
     f.save_config(flow_path)
-    with open(flow_path, 'r') as file:
+    with open(flow_path, 'r', encoding='utf-8') as file:
         conf = yaml.safe_load(file)
         assert 'jtype' in conf
         assert conf['jtype'] == 'Flow'
+    assert type(Flow.load_config(flow_path)) == Flow
+
+    exec_path = os.path.join(tmpdir, 'exec.yml')
 
     e = BaseExecutor()
     e.save_config(exec_path)
-    with open(exec_path, 'r') as file:
+    with open(exec_path, 'r', encoding='utf-8') as file:
         conf = yaml.safe_load(file)
         assert 'jtype' in conf
         assert conf['jtype'] == 'BaseExecutor'
 
     assert type(BaseExecutor.load_config(exec_path)) == BaseExecutor
-    assert type(Flow.load_config(flow_path)) == Flow
+
+    dep_path = os.path.join(tmpdir, 'dep.yml')
+
+    dep = Deployment(uses='YourExecutor', port=12345, replicas=3, shards=2)
+    dep.save_config(dep_path)
+    with open(dep_path, 'r', encoding='utf-8') as file:
+        conf = yaml.safe_load(file)
+        assert 'jtype' in conf
+        assert conf['jtype'] == 'Deployment'
+        assert conf['with']['shards'] == 2
+        assert conf['with']['replicas'] == 3
+        assert conf['with']['port'] == 12345
+
+    loaded_deployment = Deployment.load_config(dep_path)
+    assert type(loaded_deployment) == Deployment
+    assert loaded_deployment.port == 12345
+    assert loaded_deployment.args.shards == 2
+    assert loaded_deployment.args.replicas == 3
 
 
 def test_load_dataclass_executor():
@@ -238,6 +258,6 @@ def test_load_dataclass_executor():
 
     exec = BaseExecutor.load_config(executor_yaml)
     assert exec.my_field == 'this is my field'
-    assert exec.requests['/foo'] == MyDataClassExecutor.baz
+    assert exec.requests['/foo'].fn == MyDataClassExecutor.baz
     assert exec.metas.name == 'test-name-updated'
     assert exec.metas.workspace == 'test-work-space-updated'

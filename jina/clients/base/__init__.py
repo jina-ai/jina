@@ -11,7 +11,7 @@ from jina.helper import T, parse_client, send_telemetry_event, typename
 from jina.logging.logger import JinaLogger
 from jina.logging.predefined import default_logger
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.request import GeneratorSourceType
     from jina.types.request import Request, Response
 
@@ -58,7 +58,25 @@ class BaseClient(InstrumentationMixin, ABC):
             metrics_exporter_host=self.args.metrics_exporter_host,
             metrics_exporter_port=self.args.metrics_exporter_port,
         )
-        send_telemetry_event(event='start', obj=self)
+        send_telemetry_event(event='start', obj_cls_name=self.__class__.__name__)
+
+    def teardown_instrumentation(self):
+        """Shut down the OpenTelemetry tracer and meter if available. This ensures that the daemon threads for
+        exporting metrics data is properly cleaned up.
+        """
+        try:
+            if self.tracing and self.tracer_provider:
+                if hasattr(self.tracer_provider, 'force_flush'):
+                    self.tracer_provider.force_flush()
+                if hasattr(self.tracer_provider, 'shutdown'):
+                    self.tracer_provider.shutdown()
+            if self.metrics and self.meter_provider:
+                if hasattr(self.meter_provider, 'force_flush'):
+                    self.meter_provider.force_flush()
+                if hasattr(self.meter_provider, 'shutdown'):
+                    self.meter_provider.shutdown()
+        except Exception as ex:
+            self.logger.warning(f'Exception during instrumentation teardown, {str(ex)}')
 
     @staticmethod
     def check_input(inputs: Optional['InputType'] = None, **kwargs) -> None:
@@ -180,3 +198,12 @@ class BaseClient(InstrumentationMixin, ABC):
         :return: the Client object
         """
         return self
+
+    async def _get_streaming_results(self, **kwargs):
+        """Get the results from the Flow
+
+        :param kwargs: potential kwargs received passed from the public interface
+        """
+        raise NotImplementedError(
+            f'Streaming endpoints are not supported yet for {self.__class__.__name__}'
+        )

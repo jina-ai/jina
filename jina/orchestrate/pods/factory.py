@@ -19,15 +19,18 @@ class PodFactory:
     """
 
     @staticmethod
-    def build_pod(args: 'Namespace') -> Type['BasePod']:
+    def build_pod(args: 'Namespace', gateway_load_balancer: bool = False) -> Type['BasePod']:
         """Build an implementation of a `BasePod` interface
 
         :param args: deployment arguments parsed from the CLI.
+        :param gateway_load_balancer: flag indicating if this Pod is supposed to be a Gateway Load Balancer
 
-        :return: the created BaseDeployment
+        :return: the created Deployment
         """
         # copy to update but forward original
+
         cargs = deepcopy(args)
+        cargs.gateway_load_balancer = gateway_load_balancer
 
         if is_valid_huburi(cargs.uses):
             _hub_args = deepcopy(args)
@@ -36,10 +39,10 @@ class PodFactory:
             cargs.uses = HubIO(_hub_args).pull()
 
         if (
-                cargs.pod_role != PodRoleType.HEAD
-                and cargs.uses
-                and cargs.uses.startswith('docker://')
+            cargs.pod_role != PodRoleType.HEAD
+            and cargs.uses
+            and cargs.uses.startswith('docker://')
         ):
             return ContainerPod(cargs)
         else:
-            return Pod(args)
+            return Pod(cargs)

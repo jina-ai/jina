@@ -151,3 +151,6 @@ output/
 # kubernetes testing
 .pytest-kind
 .kube
+
+# dynamically generated protobuf docs
+docs/proto/docs.md

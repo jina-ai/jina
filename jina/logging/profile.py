@@ -7,7 +7,7 @@ if typing.TYPE_CHECKING:
     from jina.logging.logger import JinaLogger
 
 
-from jina import __windows__
+from jina.constants import __windows__
 from jina.helper import get_readable_size, get_readable_time, colored, get_rich_console
 
 from rich.progress import (

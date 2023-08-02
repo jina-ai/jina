@@ -1,0 +1,74 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+    component: prometheus
+spec:
+  ports:
+  - name: prometheus
+    port: 9090
+  selector:
+    component: prometheus
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-cm
+  labels:
+    app: prometheus
+    component: prometheus-cm
+data:
+  prometheus-config: |
+    scrape_configs:
+    - job_name: 'otel-collector'
+      scrape_interval: 500ms
+      static_configs:
+        - targets: ['otel-collector:8889']
+        - targets: ['otel-collector:8888']
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+    component: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: prometheus
+      component: prometheus
+  minReadySeconds: 5
+  progressDeadlineSeconds: 120
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        component: prometheus
+    spec:
+      containers:
+      - image: prom/prometheus
+        name: prometheus
+        resources:
+          limits:
+            cpu: 1
+            memory: 2Gi
+          requests:
+            cpu: 200m
+            memory: 400Mi
+        ports:
+        - containerPort: 9090
+        volumeMounts:
+        - name: prometheus-vol
+          mountPath: /etc/prometheus
+      volumes:
+        - name: prometheus-vol
+          configMap:
+            name: prometheus-cm
+            items:
+              - key: prometheus-config
+                path: prometheus.yml

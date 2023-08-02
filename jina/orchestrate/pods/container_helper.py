@@ -1,7 +1,6 @@
 import os
 import socket
-
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 
 def get_docker_network(client) -> Optional[str]:
@@ -15,7 +14,7 @@ def get_docker_network(client) -> Optional[str]:
     """
     import docker
 
-    if TYPE_CHECKING: # pragma: no cover
+    if TYPE_CHECKING:  # pragma: no cover
         from docker.models.containers import Container
 
     container: 'Container' = None
@@ -25,7 +24,7 @@ def get_docker_network(client) -> Optional[str]:
     except docker.errors.NotFound:
         try:
             # https://stackoverflow.com/a/52988227/15683245
-            with open('/proc/1/cpuset') as f:
+            with open('/proc/1/cpuset', encoding='utf-8') as f:
                 hostname = os.path.basename(f.read().rstrip())
             container = client.containers.get(hostname)
         except Exception:

@@ -1,7 +1,13 @@
 """Argparser module for WorkerRuntime"""
 
 from jina.parsers.helper import KVAppendAction, add_arg_group
-from jina.parsers.orchestrate.runtimes.runtime import mixin_base_runtime_parser
+from jina.parsers.orchestrate.runtimes.grpc_channel import (
+    mixin_grpc_channel_options_parser,
+)
+from jina.parsers.orchestrate.runtimes.runtime import (
+    mixin_base_runtime_parser,
+    mixin_raft_parser,
+)
 
 
 def mixin_worker_runtime_parser(parser):
@@ -10,7 +16,7 @@ def mixin_worker_runtime_parser(parser):
     """
 
     gp = add_arg_group(parser, title='WorkerRuntime')
-    from jina import __default_executor__
+    from jina.constants import __default_executor__
 
     gp.add_argument(
         '--uses',
@@ -58,6 +64,15 @@ def mixin_worker_runtime_parser(parser):
         ''',
     )
     gp.add_argument(
+        '--uses-dynamic-batching',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='''
+        Dictionary of keyword arguments that will override the `dynamic_batching` configuration in `uses`
+        ''',
+    )
+    gp.add_argument(
         '--py-modules',
         type=str,
         nargs='*',
@@ -68,7 +83,7 @@ The customized python modules need to be imported before loading the executor
 Note that the recommended way is to only import a single module - a simple python file, if your
 executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
 which should be structured as a python package. For more details, please see the
-`Executor cookbook <https://docs.jina.ai/fundamentals/executor/executor-files/>`__
+`Executor cookbook <https://docs.jina.ai/concepts/executor/executor-files/>`__
 ''',
     )
 
@@ -98,7 +113,17 @@ Defaults to retaining whatever type is returned by the Executor.
         '--disable-reduce',
         action='store_true',
         default=False,
-        help='Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a `docs_matrix` or `docs_map`',
+        help='Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor '
+        'itself by operating on a `docs_matrix` or `docs_map`',
+    )
+
+    gp.add_argument(
+        '--allow-concurrent',
+        action='store_true',
+        default=False,
+        help='Allow concurrent requests to be processed by the Executor. This is only recommended if the Executor is thread-safe.',
     )
 
     mixin_base_runtime_parser(gp)
+    mixin_raft_parser(gp)
+    mixin_grpc_channel_options_parser(gp)

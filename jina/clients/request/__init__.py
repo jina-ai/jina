@@ -1,43 +1,46 @@
 """Module for Jina Requests."""
 
 from typing import (
-    Iterator,
-    Union,
-    Tuple,
-    AsyncIterable,
-    Iterable,
-    Optional,
-    Dict,
     TYPE_CHECKING,
+    AsyncIterable,
+    Dict,
+    Iterable,
+    Iterator,
+    Optional,
+    Tuple,
+    Union,
 )
 
-from jina.clients.request.helper import _new_data_request_from_batch, _new_data_request
+from jina._docarray import Document
+from jina.clients.request.helper import _new_data_request, _new_data_request_from_batch
 from jina.enums import DataInputType
 from jina.helper import batch_iterator
 from jina.logging.predefined import default_logger
 
-if TYPE_CHECKING: # pragma: no cover
-    from jina import Document
-    from docarray.document import DocumentSourceType
-    from docarray.document.mixins.content import DocumentContentType
+if TYPE_CHECKING:  # pragma: no cover
+    from jina._docarray import Document
+    from jina._docarray.document import DocumentSourceType
+    from jina._docarray.document.mixins.content import DocumentContentType
     from jina.types.request import Request
+    from docarray import DocList, BaseDoc
 
     SingletonDataType = Union[
         DocumentContentType,
         DocumentSourceType,
         Document,
+        BaseDoc,
         Tuple[DocumentContentType, DocumentContentType],
         Tuple[DocumentSourceType, DocumentSourceType],
     ]
 
     GeneratorSourceType = Union[
-        Document, Iterable[SingletonDataType], AsyncIterable[SingletonDataType]
+        Document, Iterable[SingletonDataType], AsyncIterable[SingletonDataType], DocList
     ]
 
 
 def request_generator(
     exec_endpoint: str,
-    data: 'GeneratorSourceType',
+    data: Optional['GeneratorSourceType'] = None,
     request_size: int = 0,
     data_type: DataInputType = DataInputType.AUTO,
     target_executor: Optional[str] = None,
@@ -57,8 +60,6 @@ def request_generator(
     :yield: request
     """
 
-    _kwargs = dict(extra_kwargs=kwargs)
-
     try:
         if data is None:
             # this allows empty inputs, i.e. a data request with only parameters
@@ -66,11 +67,10 @@ def request_generator(
                 endpoint=exec_endpoint, target=target_executor, parameters=parameters
             )
         else:
-            if not isinstance(data, Iterable):
+            if not isinstance(data, Iterable) or isinstance(data, Document):
                 data = [data]
             for batch in batch_iterator(data, request_size):
                 yield _new_data_request_from_batch(
-                    _kwargs=kwargs,
                     batch=batch,
                     data_type=data_type,
                     endpoint=exec_endpoint,

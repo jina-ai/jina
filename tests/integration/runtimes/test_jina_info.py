@@ -5,22 +5,24 @@ import grpc
 import pytest
 import requests
 
-from jina import __jina_env__, __version__
-from jina.parsers import set_pod_parser
+from jina import __version__
+from jina.constants import __jina_env__
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.worker import WorkerRuntime
+from jina.serve.runtimes.servers import BaseServer
+from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
+from tests.helper import _generate_pod_args
 
 from .test_runtimes import _create_gateway_runtime, _create_head_runtime
 
 
 def _create_worker_runtime(port, name='', executor=None):
-    args = set_pod_parser().parse_args([])
-    args.port = port
+    args = _generate_pod_args()
+    args.port = [port]
     args.name = name
     if executor:
         args.uses = executor
-    with WorkerRuntime(args) as runtime:
+    with AsyncNewLoopRuntime(args, req_handler_cls=WorkerRequestHandler) as runtime:
         runtime.run_forever()
 
 
@@ -67,7 +69,7 @@ def test_jina_info_grpc_based_runtimes(runtime, port_generator):
         p = _create_worker(port)
 
     try:
-        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        BaseServer.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=f'0.0.0.0:{port}',
             ready_or_shutdown_event=multiprocessing.Event(),
@@ -96,7 +98,7 @@ def test_jina_info_gateway_http(protocol, port_generator):
     p = _create_gateway(port, graph_description, pod_addresses, protocol)
 
     try:
-        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        BaseServer.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=f'0.0.0.0:{port}',
             ready_or_shutdown_event=multiprocessing.Event(),

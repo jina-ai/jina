@@ -2,7 +2,7 @@ import functools
 from timeit import default_timer
 from typing import TYPE_CHECKING, Dict, Optional, Sequence
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor, ServerInterceptor
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
@@ -10,9 +10,30 @@ if TYPE_CHECKING: # pragma: no cover
     from opentelemetry.metrics import Histogram
     from prometheus_client import Summary
 
+ENV_RESOURCE_ATTRIBUTES = [
+    'K8S_NAMESPACE_NAME',
+    'K8S_DEPLOYMENT_NAME',
+    'K8S_STATEFULSET_NAME',
+    'K8S_CLUSTER_NAME',
+    'K8S_NODE_NAME',
+    'K8S_POD_NAME',
+]
+
+
+def _get_resource_attributes(service_name: str):
+    import os
+
+    from opentelemetry.semconv.resource import ResourceAttributes
+
+    attributes = {ResourceAttributes.SERVICE_NAME: service_name}
+    for attribute in ENV_RESOURCE_ATTRIBUTES:
+        if attribute in os.environ:
+            attributes[ResourceAttributes.__dict__[attribute]] = os.environ[attribute]
+    return attributes
+
 
 class InstrumentationMixin:
-    '''Instrumentation mixin for OpenTelemetery Tracing and Metrics handling'''
+    """Instrumentation mixin for OpenTelemetery Tracing and Metrics handling"""
 
     def _setup_instrumentation(
         self,
@@ -32,16 +53,15 @@ class InstrumentationMixin:
             from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
                 OTLPSpanExporter,
             )
-            from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+            from opentelemetry.sdk.resources import Resource
             from opentelemetry.sdk.trace import TracerProvider
             from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-            resource = Resource(attributes={SERVICE_NAME: name})
+            resource = Resource(attributes=_get_resource_attributes(name))
             provider = TracerProvider(resource=resource)
             processor = BatchSpanProcessor(
                 OTLPSpanExporter(
                     endpoint=f'{traces_exporter_host}:{traces_exporter_port}',
-                    insecure=True,
                 )
             )
             provider.add_span_processor(processor)
@@ -57,14 +77,13 @@ class InstrumentationMixin:
             )
             from opentelemetry.sdk.metrics import MeterProvider
             from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
-            from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+            from opentelemetry.sdk.resources import Resource
 
-            resource = Resource(attributes={SERVICE_NAME: name})
+            resource = Resource(attributes=_get_resource_attributes(name))
 
             metric_reader = PeriodicExportingMetricReader(
                 OTLPMetricExporter(
                     endpoint=f'{metrics_exporter_host}:{metrics_exporter_port}',
-                    insecure=True,
                 )
             )
             meter_provider = MeterProvider(
@@ -79,11 +98,11 @@ class InstrumentationMixin:
     def aio_tracing_server_interceptors(
         self,
     ) -> Optional[Sequence['ServerInterceptor']]:
-        '''Create a gRPC aio server interceptor.
+        """Create a gRPC aio server interceptor.
         :returns: A service-side aio interceptor object.
-        '''
+        """
         if self.tracing:
-            from jina.serve.instrumentation._aio_server import (
+            from opentelemetry.instrumentation.grpc._aio_server import (
                 OpenTelemetryAioServerInterceptor,
             )
 
@@ -94,12 +113,12 @@ class InstrumentationMixin:
     def aio_tracing_client_interceptors(
         self,
     ) -> Optional[Sequence['ClientInterceptor']]:
-        '''Create a gRPC client aio channel interceptor.
+        """Create a gRPC client aio channel interceptor.
         :returns: An invocation-side list of aio interceptor objects.
-        '''
+        """
 
         if self.tracing:
-            from jina.serve.instrumentation._aio_client import (
+            from opentelemetry.instrumentation.grpc._aio_client import (
                 StreamStreamAioClientInterceptor,
                 StreamUnaryAioClientInterceptor,
                 UnaryStreamAioClientInterceptor,
@@ -116,9 +135,9 @@ class InstrumentationMixin:
             return None
 
     def tracing_client_interceptor(self) -> Optional['OpenTelemetryClientInterceptor']:
-        '''
+        """
         :returns: a gRPC client interceptor with the global tracing provider.
-        '''
+        """
         if self.tracing:
             from opentelemetry.instrumentation.grpc import (
                 client_interceptor as grpc_client_interceptor,
@@ -130,9 +149,10 @@ class InstrumentationMixin:
 
 
 class MetricsTimer:
-    '''Helper dataclass that accepts optional Summary or Histogram recorders which are used to record the time take to execute
+    """
+    Helper dataclass that accepts optional Summary or Histogram recorders which are used to record the time take to execute
     the decorated or context managed function
-    '''
+    """
 
     def __init__(
         self,
@@ -147,7 +167,9 @@ class MetricsTimer:
         self._histogram_metric_labels = histogram_metric_labels
 
     def _new_timer(self):
-        return self.__class__(self._summary_metric, self._histogram, self._histogram_metric_labels)
+        return self.__class__(
+            self._summary_metric, self._histogram, self._histogram_metric_labels
+        )
 
     def __enter__(self):
         self._start = default_timer()
@@ -161,10 +183,10 @@ class MetricsTimer:
             self._histogram.record(duration, attributes=self._histogram_metric_labels)
 
     def __call__(self, f):
-        '''function that gets called when this class is used as a decortor
+        """function that gets called when this class is used as a decortor
         :param f: function that is decorated
         :return: wrapped function
-        '''
+        """
 
         @functools.wraps(f)
         def wrapped(*args, **kwargs):

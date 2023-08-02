@@ -34,6 +34,8 @@ def _cli_to_schema(
         pv['default_literal'] = pv['default']
         if isinstance(pv['default'], str):
             pv['default_literal'] = "'" + pv['default'] + "'"
+        elif isinstance(pv['default'], list):
+            pv['default_literal'] = [str(item) for item in pv['default']]
         if p['default_random']:
             pv['default_literal'] = None
 
@@ -42,6 +44,8 @@ def _cli_to_schema(
             pv['default_literal'] = None
         if p['name'] in {'uses', 'uses_before', 'uses_after'} and target != 'flow':
             pv['type'] = 'Union[str, Type[\'BaseExecutor\'], dict]'
+        if p['name'] == 'protocol':
+            pv['type'] = 'Union[str, List[str]]'
 
         pv['description'] = pv['description'].replace('\n', '\n' + ' ' * 10)
 
@@ -119,7 +123,7 @@ def fill_overload(
             re.DOTALL,
         )
 
-    with open(filepath, 'w') as fp:
+    with open(filepath, 'w', encoding='utf-8') as fp:
         fp.write(final_code)
     return {regex_tag or cli_entrypoint: doc_str}
 
@@ -225,7 +229,7 @@ def fill_implementation_stub(
             re.DOTALL,
         )
 
-    with open(filepath, 'w') as fp:
+    with open(filepath, 'w', encoding='utf-8') as fp:
         fp.write(final_code)
 
 
@@ -287,6 +291,26 @@ entries = [
         overload_fn='config_gateway',
         class_method=True,
         regex_tag='config_gateway',
+    ),
+    dict(
+        cli_entrypoint='deployment',
+        doc_str_title='Serve this Executor in a temporary Flow. Useful in testing an Executor in remote settings.',
+        doc_str_return='None',
+        return_type=None,
+        filepath='../jina/serve/executors/__init__.py',
+        overload_fn='serve',
+        class_method=True,
+        regex_tag='executor_serve',
+    ),
+    dict(
+        cli_entrypoint='deployment',
+        doc_str_title='Create a Deployment to serve or deploy and Executor or Gateway',
+        doc_str_return='None',
+        return_type=None,
+        filepath='../jina/orchestrate/deployments/__init__.py',
+        overload_fn='__init__',
+        class_method=True,
+        regex_tag='deployment',
     ),
 ]
 

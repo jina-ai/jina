@@ -10,14 +10,32 @@ from jina.serve.networking import GrpcConnectionPool
 
 @pytest.mark.parametrize('protocol', ['http', 'grpc'])
 @pytest.mark.parametrize('flow_port', [1234, None])
-def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
+@pytest.mark.parametrize('gateway_replicas', [1, 2])
+def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port, gateway_replicas):
     flow_kwargs = {'name': 'test-flow', 'protocol': protocol}
+    gateway_kwargs = {'protocol': protocol}
     if flow_port:
         flow_kwargs['port'] = flow_port
+        gateway_kwargs['port'] = flow_port
+    gateway_kwargs['replicas'] = gateway_replicas
+    gateway_kwargs['env_from_secret'] = {
+        'SECRET_GATEWAY_USERNAME': {'name': 'gateway_secret', 'key': 'gateway_username'},
+    }
+    gateway_kwargs['image_pull_secrets'] = ['secret1', 'secret2']
+
     flow = (
-        Flow(**flow_kwargs)
-        .add(name='executor0', uses_with={'param': 0})
-        .add(name='executor1', shards=2, uses_with={'param': 0})
+        Flow(**flow_kwargs).config_gateway(**gateway_kwargs)
+        .add(name='executor0', uses_with={'param': 0}, timeout_ready=60000)
+        .add(
+            name='executor1',
+            shards=2,
+            uses_with={'param': 0},
+            env_from_secret={
+                'SECRET_USERNAME': {'name': 'mysecret', 'key': 'username'},
+                'SECRET_PASSWORD': {'name': 'mysecret', 'key': 'password'},
+            },
+            image_pull_secrets=['secret3', 'secret4']
+        )
         .add(
             name='executor2',
             uses_before='docker://image',
@@ -67,7 +85,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     for pod_name in set(os.listdir(dump_path)):
         file_set = set(os.listdir(os.path.join(dump_path, pod_name)))
         for file in file_set:
-            with open(os.path.join(dump_path, pod_name, file)) as f:
+            with open(os.path.join(dump_path, pod_name, file), encoding='utf-8') as f:
                 yml_document_all = list(yaml.safe_load_all(f))
             yaml_dicts_per_deployment[file[:-4]] = yml_document_all
 
@@ -85,16 +103,16 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     assert gateway_objects[2]['kind'] == 'Deployment'
     assert gateway_objects[2]['metadata']['namespace'] == namespace
     assert gateway_objects[2]['metadata']['name'] == 'gateway'
-    assert gateway_objects[2]['spec']['replicas'] == 1
+    assert gateway_objects[2]['spec']['replicas'] == gateway_replicas
+    assert gateway_objects[2]['spec']['template']['spec']['imagePullSecrets'] == [{'name': 'secret1'}, {'name': 'secret2'}]
+
     gateway_args = gateway_objects[2]['spec']['template']['spec']['containers'][0][
         'args'
     ]
     assert gateway_args[0] == 'gateway'
     assert '--port' in gateway_args
-    assert gateway_args[gateway_args.index('--port') + 1] == (
-        str(flow_port) if flow_port else str(GrpcConnectionPool.K8S_PORT)
-    )
-    assert gateway_args[gateway_args.index('--port') + 1] == str(flow.port)
+    assert gateway_args[gateway_args.index('--port') + 1] == str(GrpcConnectionPool.K8S_PORT)
+    assert gateway_args[gateway_args.index('--port') + 1] == str(GrpcConnectionPool.K8S_PORT)
     assert '--k8s-namespace' in gateway_args
     assert gateway_args[gateway_args.index('--k8s-namespace') + 1] == namespace
     assert '--graph-description' in gateway_args
@@ -113,6 +131,21 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     else:
         assert '--protocol' not in gateway_args
     assert '--uses-with' not in gateway_args
+    gateway_env = gateway_objects[2]['spec']['template']['spec']['containers'][0]['env']
+    assert gateway_env == [
+        {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
+        {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'gateway'},
+        {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'gateway'},
+        {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
+        {
+            'name': 'K8S_POD_NAME',
+            'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
+        {
+            'name': 'SECRET_GATEWAY_USERNAME',
+            'valueFrom': {'secretKeyRef': {'name': 'gateway_secret', 'key': 'gateway_username'}},
+        },
+    ]
 
     executor0_objects = yaml_dicts_per_deployment['executor0']
     assert len(executor0_objects) == 3  # config-map, service, deployment
@@ -130,6 +163,13 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     assert executor0_objects[2]['metadata']['namespace'] == namespace
     assert executor0_objects[2]['metadata']['name'] == 'executor0'
     assert executor0_objects[2]['spec']['replicas'] == 1
+
+    executor0_startup_probe = executor0_objects[2]['spec']['template']['spec'][
+        'containers'
+    ][0]['startupProbe']
+    assert executor0_startup_probe['failureThreshold'] == 12
+    assert executor0_startup_probe['periodSeconds'] == 5
+
     executor0_args = executor0_objects[2]['spec']['template']['spec']['containers'][0][
         'args'
     ]
@@ -144,6 +184,19 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     assert '--pod-role' not in executor0_args
     assert '--runtime-cls' not in executor0_args
     assert '--connection-list' not in executor0_args
+    executor0_env = executor0_objects[2]['spec']['template']['spec']['containers'][0][
+        'env'
+    ]
+    assert executor0_env == [
+        {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
+        {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor0'},
+        {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor0'},
+        {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
+        {
+            'name': 'K8S_POD_NAME',
+            'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
+    ]
 
     executor1_head0_objects = yaml_dicts_per_deployment['executor1-head']
     assert len(executor1_head0_objects) == 3  # config-map, service, deployment
@@ -160,6 +213,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     assert executor1_head0_objects[2]['metadata']['namespace'] == namespace
     assert executor1_head0_objects[2]['metadata']['name'] == 'executor1-head'
     assert executor1_head0_objects[2]['spec']['replicas'] == 1
+    assert executor1_head0_objects[2]['spec']['template']['spec']['imagePullSecrets'] == [{'name': 'secret3'}, {'name': 'secret4'}]
     executor1_head0_args = executor1_head0_objects[2]['spec']['template']['spec'][
         'containers'
     ][0]['args']
@@ -190,6 +244,27 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     )
 
     assert '--uses-with' not in executor1_head0_args
+    executor1_head0_env = executor1_head0_objects[2]['spec']['template']['spec'][
+        'containers'
+    ][0]['env']
+    assert executor1_head0_env == [
+        {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
+        {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor1'},
+        {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor1-head'},
+        {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
+        {
+            'name': 'K8S_POD_NAME',
+            'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
+        {
+            'name': 'SECRET_USERNAME',
+            'valueFrom': {'secretKeyRef': {'name': 'mysecret', 'key': 'username'}},
+        },
+        {
+            'name': 'SECRET_PASSWORD',
+            'valueFrom': {'secretKeyRef': {'name': 'mysecret', 'key': 'password'}},
+        },
+    ]
 
     executor1_shard0_objects = yaml_dicts_per_deployment['executor1-0']
     assert len(executor1_shard0_objects) == 3  # config-map, service, deployment
@@ -207,6 +282,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     assert executor1_shard0_objects[2]['metadata']['namespace'] == namespace
     assert executor1_shard0_objects[2]['metadata']['name'] == 'executor1-0'
     assert executor1_shard0_objects[2]['spec']['replicas'] == 1
+    assert executor1_shard0_objects[2]['spec']['template']['spec']['imagePullSecrets'] == [{'name': 'secret3'}, {'name': 'secret4'}]
     executor1_shard0_args = executor1_shard0_objects[2]['spec']['template']['spec'][
         'containers'
     ][0]['args']
@@ -231,6 +307,27 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     assert '--pod-role' not in executor1_shard0_args
     assert '--runtime-cls' not in executor1_shard0_args
     assert '--connection-list' not in executor1_shard0_args
+    executor1_shard0_env = executor1_shard0_objects[2]['spec']['template']['spec'][
+        'containers'
+    ][0]['env']
+    assert executor1_shard0_env == [
+        {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
+        {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor1'},
+        {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor1-0'},
+        {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
+        {
+            'name': 'K8S_POD_NAME',
+            'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
+        {
+            'name': 'SECRET_USERNAME',
+            'valueFrom': {'secretKeyRef': {'name': 'mysecret', 'key': 'username'}},
+        },
+        {
+            'name': 'SECRET_PASSWORD',
+            'valueFrom': {'secretKeyRef': {'name': 'mysecret', 'key': 'password'}},
+        },
+    ]
 
     executor1_shard1_objects = yaml_dicts_per_deployment['executor1-1']
     assert len(executor1_shard1_objects) == 3  # config-map, service, deployment
@@ -248,6 +345,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     assert executor1_shard1_objects[2]['metadata']['namespace'] == namespace
     assert executor1_shard1_objects[2]['metadata']['name'] == 'executor1-1'
     assert executor1_shard1_objects[2]['spec']['replicas'] == 1
+    assert executor1_shard1_objects[2]['spec']['template']['spec']['imagePullSecrets'] == [{'name': 'secret3'}, {'name': 'secret4'}]
     executor1_shard1_args = executor1_shard1_objects[2]['spec']['template']['spec'][
         'containers'
     ][0]['args']
@@ -271,6 +369,27 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     assert '--pod-role' not in executor1_shard1_args
     assert '--runtime-cls' not in executor1_shard1_args
     assert '--connection-list' not in executor1_shard1_args
+    executor1_shard1_env = executor1_shard1_objects[2]['spec']['template']['spec'][
+        'containers'
+    ][0]['env']
+    assert executor1_shard1_env == [
+        {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
+        {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor1'},
+        {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor1-1'},
+        {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
+        {
+            'name': 'K8S_POD_NAME',
+            'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
+        {
+            'name': 'SECRET_USERNAME',
+            'valueFrom': {'secretKeyRef': {'name': 'mysecret', 'key': 'username'}},
+        },
+        {
+            'name': 'SECRET_PASSWORD',
+            'valueFrom': {'secretKeyRef': {'name': 'mysecret', 'key': 'password'}},
+        },
+    ]
 
     executor2_head0_objects = yaml_dicts_per_deployment['executor2-head']
     assert len(executor2_head0_objects) == 3  # config-map, service, deployment
@@ -318,6 +437,17 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
         == '{"0": "executor2-0.test-flow-ns.svc:8080", "1": "executor2-1.test-flow-ns.svc:8080"}'
     )
     assert '--uses-with' not in executor2_head0_args
+    executor2_head0_env = executor2_head_containers[0]['env']
+    assert executor2_head0_env == [
+        {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
+        {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor2'},
+        {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor2-head'},
+        {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
+        {
+            'name': 'K8S_POD_NAME',
+            'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
+    ]
 
     executor2_uses_before_args = executor2_head_containers[1]['args']
     assert executor2_uses_before_args[0] == 'executor'
@@ -343,6 +473,17 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     assert '--pod-role' not in executor2_uses_before_args
     assert '--runtime-cls' not in executor2_uses_before_args
     assert '--connection-list' not in executor2_uses_before_args
+    executor2_uses_before_env = executor2_head_containers[1]['env']
+    assert executor2_uses_before_env == [
+        {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
+        {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor2'},
+        {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor2-head'},
+        {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
+        {
+            'name': 'K8S_POD_NAME',
+            'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
+    ]
 
     executor2_uses_after_args = executor2_head_containers[2]['args']
     assert executor2_uses_after_args[0] == 'executor'
@@ -368,6 +509,17 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     assert '--pod-role' not in executor2_uses_after_args
     assert '--runtime-cls' not in executor2_uses_after_args
     assert '--connection-list' not in executor2_uses_after_args
+    executor2_uses_after_env = executor2_head_containers[2]['env']
+    assert executor2_uses_after_env == [
+        {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
+        {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor2'},
+        {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor2-head'},
+        {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
+        {
+            'name': 'K8S_POD_NAME',
+            'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
+    ]
 
     executor2_objects = yaml_dicts_per_deployment['executor2-0']
     assert len(executor2_objects) == 3  # config-map, service, deployment
@@ -399,6 +551,19 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     assert '--pod-role' not in executor2_args
     assert '--runtime-cls' not in executor2_args
     assert '--connection-list' not in executor2_args
+    executor2_env = executor2_objects[2]['spec']['template']['spec']['containers'][0][
+        'env'
+    ]
+    assert executor2_env == [
+        {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
+        {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor2'},
+        {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor2-0'},
+        {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
+        {
+            'name': 'K8S_POD_NAME',
+            'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
+    ]
 
 
 @pytest.mark.parametrize('has_external', [False, True])
@@ -431,7 +596,7 @@ def test_flow_to_k8s_yaml_external_pod(tmpdir, has_external):
     for pod_name in set(os.listdir(dump_path)):
         file_set = set(os.listdir(os.path.join(dump_path, pod_name)))
         for file in file_set:
-            with open(os.path.join(dump_path, pod_name, file)) as f:
+            with open(os.path.join(dump_path, pod_name, file), encoding='utf-8') as f:
                 yml_document_all = list(yaml.safe_load_all(f))
             yaml_dicts_per_deployment[file[:-4]] = yml_document_all
 
@@ -466,11 +631,15 @@ def test_raise_exception_invalid_executor(tmpdir):
         f.to_kubernetes_yaml(str(tmpdir))
 
 
-def test_flow_to_k8s_yaml_sandbox(tmpdir):
+@pytest.mark.parametrize(
+    'uses',
+    [
+        f'jinaai+sandbox://jina-ai/DummyHubExecutor',
+    ],
+)
+def test_flow_to_k8s_yaml_sandbox(tmpdir, uses):
 
-    flow = Flow(name='test-flow', port=8080).add(
-        uses=f'jinahub+sandbox://DummyHubExecutor'
-    )
+    flow = Flow(name='test-flow', port=8080).add(uses=uses)
 
     dump_path = os.path.join(str(tmpdir), 'test_flow_k8s')
 
@@ -486,7 +655,7 @@ def test_flow_to_k8s_yaml_sandbox(tmpdir):
     for pod_name in set(os.listdir(dump_path)):
         file_set = set(os.listdir(os.path.join(dump_path, pod_name)))
         for file in file_set:
-            with open(os.path.join(dump_path, pod_name, file)) as f:
+            with open(os.path.join(dump_path, pod_name, file), encoding='utf-8') as f:
                 yml_document_all = list(yaml.safe_load_all(f))
             yaml_dicts_per_deployment[file[:-4]] = yml_document_all
 

@@ -1,0 +1,6 @@
+jtype: Deployment
+with:
+  uses: executor1/config.yml
+  name: toyExecutor
+  protocol: [grpc, http]
+  port: [54321, 54322]

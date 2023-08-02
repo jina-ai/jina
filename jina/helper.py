@@ -37,7 +37,7 @@ from typing import (
 
 from rich.console import Console
 
-from jina import __windows__
+from jina.constants import __windows__
 
 __all__ = [
     'batch_iterator',
@@ -520,6 +520,10 @@ def random_port() -> Optional[int]:
         return _random_port()
 
 
+def random_ports(n_ports):
+    return [random_port() for _ in range(n_ports)]
+
+
 def random_identity(use_uuid1: bool = False) -> str:
     """
     Generate random UUID.
@@ -801,7 +805,7 @@ class ArgNamespace:
         """
         args = []
         from jina.serve.executors import BaseExecutor
-        from jina.serve.gateway import BaseGateway
+        from jina.serve.runtimes.gateway.gateway import BaseGateway
 
         for k, v in kwargs.items():
             k = k.replace('_', '-')
@@ -904,7 +908,6 @@ class ArgNamespace:
 
 
 def is_valid_local_config_source(path: str) -> bool:
-    # TODO: this function must be refactored before 1.0 (Han 12.22)
     """
     Check if the path is valid.
 
@@ -935,6 +938,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     import yaml
     from google.protobuf.internal import api_implementation
     from grpc import _grpcio_metadata
+
     try:
         from hubble import __version__ as __hubble_version__
     except:
@@ -944,14 +948,8 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     except:
         __jcloud_version__ = 'not-available'
 
-    from jina import (
-        __docarray_version__,
-        __jina_env__,
-        __proto_version__,
-        __unset_msg__,
-        __uptime__,
-        __version__,
-    )
+    from jina import __docarray_version__, __proto_version__, __version__
+    from jina.constants import __jina_env__, __unset_msg__, __uptime__
     from jina.logging.predefined import default_logger
 
     try:
@@ -1215,14 +1213,12 @@ def get_public_ip(timeout: float = 0.3):
     """
     import urllib.request
 
-    results = []
-
     def _get_ip(url):
         try:
             req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
             with urllib.request.urlopen(req, timeout=timeout) as fp:
                 _ip = fp.read().decode().strip()
-                results.append(_ip)
+                return _ip
 
         except:
             pass  # intentionally ignored, public ip is not showed
@@ -1233,17 +1229,8 @@ def get_public_ip(timeout: float = 0.3):
         'https://checkip.amazonaws.com/',
     ]
 
-    threads = []
-
     for idx, ip in enumerate(ip_server_list):
-        t = threading.Thread(target=_get_ip, args=(ip,))
-        threads.append(t)
-        t.start()
-
-    for t in threads:
-        t.join(timeout)
-
-    for r in results:
+        r = _get_ip(ip)
         if r:
             return r
 
@@ -1317,25 +1304,16 @@ def run_async(func, *args, **kwargs):
     if loop and loop.is_running():
         # eventloop already exist
         # running inside Jupyter
-        if is_jupyter():
-            thread = _RunThread()
-            thread.start()
-            thread.join()
-            try:
-                return thread.result
-            except AttributeError:
-                from jina.excepts import BadClient
+        thread = _RunThread()
+        thread.start()
+        thread.join()
+        try:
+            return thread.result
+        except AttributeError:
+            from jina.excepts import BadClient
 
-                raise BadClient(
-                    'something wrong when running the eventloop, result can not be retrieved'
-                )
-        else:
-
-            raise RuntimeError(
-                'you have an eventloop running but not using Jupyter/ipython, '
-                'this may mean you are using Jina with other integration? if so, then you '
-                'may want to use Client/Flow(asyncio=True). If not, then '
-                'please report this issue here: https://github.com/jina-ai/jina'
+            raise BadClient(
+                'something wrong when running the eventloop, result can not be retrieved'
             )
     else:
         return asyncio.run(func(*args, **kwargs))
@@ -1396,7 +1374,7 @@ def find_request_binding(target):
     import ast
     import inspect
 
-    from jina import __default_endpoint__
+    from jina.constants import __default_endpoint__
 
     res = {}
 
@@ -1487,9 +1465,11 @@ def extend_rest_interface(app: 'FastAPI') -> 'FastAPI':
 
 
 def get_ci_vendor() -> Optional[str]:
-    from jina import __resources_path__
+    from jina.constants import __resources_path__
 
-    with open(os.path.join(__resources_path__, 'ci-vendors.json')) as fp:
+    with open(
+        os.path.join(__resources_path__, 'ci-vendors.json'), encoding='utf-8'
+    ) as fp:
         all_cis = json.load(fp)
         for c in all_cis:
             if isinstance(c['env'], str) and c['env'] in os.environ:
@@ -1630,11 +1610,7 @@ def _parse_url(host):
     return scheme, host, port
 
 
-def is_port_free(host: str, port: Union[int, str]) -> bool:
-    try:
-        port = int(port)
-    except ValueError:
-        raise ValueError(f'port {port} is not an integer and cannot be cast to one')
+def _single_port_free(host: str, port: int) -> bool:
     with socket(AF_INET, SOCK_STREAM) as session:
         if session.connect_ex((host, port)) == 0:
             return False
@@ -1642,58 +1618,23 @@ def is_port_free(host: str, port: Union[int, str]) -> bool:
             return True
 
 
-def _parse_ports(port: str) -> Union[int, List]:
-    """Parse port
-
-    EXAMPLE USAGE
-
-    .. code-block:: python
-
-
-        _parse_port('8000')
-        8000
-
-        _parse_port('8001,8002,8005')
-        [80001, 8002, 8005]
-
-    :param port: the string to parse
-    :return: the port or the iterable ports
-    """
-    try:
-        port = int(port)
-    except ValueError as e:
-        if ',' in port:
-            port = [int(port_) for port_ in port.split(',')]
+def is_port_free(host: Union[str, List[str]], port: Union[int, List[int]]) -> bool:
+    if isinstance(port, list):
+        if isinstance(host, str):
+            return all([_single_port_free(host, _p) for _p in port])
         else:
-            raise e
-    return port
+            return all([all([_single_port_free(_h, _p) for _p in port]) for _h in host])
+    else:
+        if isinstance(host, str):
+            return _single_port_free(host, port)
+        else:
+            return all([_single_port_free(_h, port) for _h in host])
 
 
-def _parse_hosts(host: str) -> Union[str, List[str]]:
-    """Parse port
-
-    EXAMPLE USAGE
-
-    .. code-block:: python
-
-
-        _parse_hosts('localhost')
-        'localhost'
-
-        _parse_port('localhost,91.198.174.192')
-        ['localhost', '91.198.174.192']
-
-    :param host: the string to parse
-    :return: the host or the iterable of hosts
-    """
-    hosts = host.split(',')
-    return hosts[0] if len(hosts) == 1 else hosts
-
-
-def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
+def send_telemetry_event(event: str, obj_cls_name: Any, **kwargs) -> None:
     """Sends in a thread a request with telemetry for a given event
     :param event: Event leading to the telemetry entry
-    :param obj: Object to be tracked
+    :param obj_cls_name: Class name of the object to be tracked
     :param kwargs: Extra kwargs to be passed to the data sent
     """
 
@@ -1708,7 +1649,7 @@ def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
             metas, _ = get_full_version()
             data = base64.urlsafe_b64encode(
                 json.dumps(
-                    {**metas, 'event': f'{obj.__class__.__name__}.{event}', **kwargs}
+                    {**metas, 'event': f'{obj_cls_name}.{event}', **kwargs}
                 ).encode('utf-8')
             )
 
@@ -1723,34 +1664,6 @@ def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
     threading.Thread(target=_telemetry, daemon=True).start()
 
 
-def make_iterable(o: object) -> Iterable:
-    """
-    Make an object an iterable by wrapping it as a singleton list.
-    If the input is already an iterable (except str and bytes), it will be returned as is.
-    Str and bytes are treated as non-iterable, and thus wrapped in a list.
-
-    EXAMPLE USAGE
-
-    .. code-block:: python
-
-
-        make_iter(1)
-        [1]
-
-        make_iter('a')
-        ['a']
-
-        make_iter([1, 2, 3])
-        [1, 2, 3]
-
-        make_iter((1, 2, 3))
-        (1, 2, 3)
-
-
-    :param o: the object to be converted to an iterable
-    :return: the iterable
-    """
-    if isinstance(o, Iterable) and not isinstance(o, (str, bytes)):
-        return o
-    else:
-        return [o]
+def is_generator(func):
+    import inspect
+    return inspect.isgeneratorfunction(func) or inspect.isasyncgenfunction(func)

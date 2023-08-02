@@ -52,3 +52,23 @@ def test_query():
     )
     with f:
         _validate_flow(f)
+
+
+@pytest.mark.parametrize('override_executor_log_config', [False, True])
+def test_custom_logging(monkeypatch, override_executor_log_config):
+    monkeypatch.delenv('JINA_LOG_LEVEL', raising=True)  # ignore global env
+    log_config_path = os.path.join(cur_dir, '../../../logging/yaml/file.yml')
+    f = Flow(log_config=log_config_path)
+    if override_executor_log_config:
+        f = f.add(log_config='default')
+    else:
+        f = f.add()
+
+    with f:
+        assert f.args.log_config.endswith('logging/yaml/file.yml')
+        for name, pod in f:
+            print(name, pod)
+            if override_executor_log_config and name.startswith('executor'):
+                assert pod.args.log_config == 'default'
+            else:
+                assert pod.args.log_config.endswith('logging/yaml/file.yml')

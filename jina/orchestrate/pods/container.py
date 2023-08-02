@@ -3,14 +3,15 @@ import asyncio
 import copy
 import multiprocessing
 import os
+import platform
 import re
 import signal
 import threading
 import time
 from typing import TYPE_CHECKING, Dict, Optional, Union
 
-from jina import __docker_host__, __windows__
-from jina.enums import PodRoleType
+from jina.constants import __docker_host__, __windows__
+from jina.enums import PodRoleType, DockerNetworkMode
 from jina.excepts import BadImageNameError, DockerVersionError
 from jina.helper import random_name, slugify
 from jina.importer import ImportExtensions
@@ -21,8 +22,7 @@ from jina.orchestrate.pods.container_helper import (
     get_docker_network,
     get_gpu_device_requests,
 )
-from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.gateway import GatewayRuntime
+from jina.parsers import set_gateway_parser
 
 if TYPE_CHECKING:  # pragma: no cover
     from docker.client import DockerClient
@@ -74,9 +74,15 @@ def _docker_run(
 
     args.native = True
 
+    parser = (
+        set_gateway_parser()
+        if args.pod_role == PodRoleType.GATEWAY
+        else set_pod_parser()
+    )
+
     non_defaults = ArgNamespace.get_non_defaults_args(
         args,
-        set_pod_parser(),
+        parser,
         taboo={
             'uses',
             'entrypoint',
@@ -92,7 +98,18 @@ def _docker_run(
         client.images.get(uses_img)
     except docker.errors.ImageNotFound:
         logger.error(f'can not find local image: {uses_img}')
-        img_not_found = True
+        # try to pull the image
+        try:
+            logger.debug(f'pulling image: {uses_img}')
+            client.images.pull(uses_img)
+            logger.debug(f'pulled image: {uses_img}')
+            logger.debug(f'getting image: {uses_img}')
+            client.images.get(uses_img)
+            logger.debug(f'successfully got image: {uses_img}')
+            img_not_found = False
+        except docker.errors.ImageNotFound:
+            logger.error(f'can not find remote image: {uses_img}')
+            img_not_found = True
 
     if img_not_found:
         raise BadImageNameError(f'image: {uses_img} can not be found local & remote.')
@@ -130,8 +147,16 @@ def _docker_run(
         del args.gpus
 
     _args = ArgNamespace.kwargs2list(non_defaults)
-    ports = {f'{args.port}/tcp': args.port} if not net_mode else None
 
+    ports = {f'{_port}/tcp': _port for _port in args.port} if not net_mode else None
+
+    if platform.system() == 'Darwin':
+        image_architecture = client.images.get(uses_img).attrs.get('Architecture', '')
+        if not image_architecture.startswith('arm'):
+            logger.warning(
+                'The pulled image container does not support ARM architecture while the host machine relies on MacOS (Darwin).'
+                'The image may run with poor performance or fail if run via emulation.'
+            )
     docker_kwargs = args.docker_kwargs or {}
     container = client.containers.run(
         uses_img,
@@ -161,6 +186,7 @@ def run(
     is_started: Union['multiprocessing.Event', 'threading.Event'],
     is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
     is_ready: Union['multiprocessing.Event', 'threading.Event'],
+    is_signal_handlers_installed: Union['multiprocessing.Event', 'threading.Event'],
 ):
     """Method to be run in a process that stream logs from a Container
 
@@ -182,6 +208,7 @@ def run(
     :param runtime_ctrl_address: The control address of the runtime in the container
     :param envs: Dictionary of environment variables to be set in the docker image
     :param is_started: concurrency event to communicate runtime is properly started. Used for better logging
+    :param is_signal_handlers_installed: concurrency event to communicate runtime is ready to get SIGTERM from orchestration
     :param is_shutdown: concurrency event to communicate runtime is terminated
     :param is_ready: concurrency event to communicate runtime is ready to receive messages
     """
@@ -200,7 +227,7 @@ def run(
                 signal.signal(signame, lambda *args, **kwargs: cancel.set())
         except (ValueError, RuntimeError) as exc:
             logger.warning(
-                f' The process starting the container for {name} will not be able to handle termination signals. '
+                f'The process starting the container for {name} will not be able to handle termination signals. '
                 f' {repr(exc)}'
             )
     else:
@@ -214,6 +241,7 @@ def run(
 
         win32api.SetConsoleCtrlHandler(lambda *args, **kwargs: cancel.set(), True)
 
+    is_signal_handlers_installed.set()
     client = docker.from_env()
 
     try:
@@ -228,12 +256,10 @@ def run(
         client.close()
 
         def _is_ready():
-            if args.pod_role == PodRoleType.GATEWAY:
-                return GatewayRuntime.is_ready(
-                    runtime_ctrl_address, protocol=args.protocol
-                )
-            else:
-                return AsyncNewLoopRuntime.is_ready(runtime_ctrl_address)
+            from jina.serve.runtimes.servers import BaseServer
+            return BaseServer.is_ready(
+                ctrl_address=runtime_ctrl_address, protocol=getattr(args, 'protocol', ["grpc"])[0]
+            )
 
         def _is_container_alive(container) -> bool:
             import docker.errors
@@ -278,7 +304,7 @@ def run(
         client.close()
         if not is_started.is_set():
             logger.error(
-                f' Process terminated, the container fails to start, check the arguments or entrypoint'
+                f'Process terminated, the container fails to start, check the arguments or entrypoint'
             )
         is_shutdown.set()
         logger.debug(f'process terminated')
@@ -286,8 +312,7 @@ def run(
 
 class ContainerPod(BasePod):
     """
-    :class:`ContainerPod` starts a runtime of :class:`BaseRuntime` inside a container. It leverages :class:`threading.Thread`
-    or :class:`multiprocessing.Process` to manage the logs and the lifecycle of docker container object in a robust way.
+    :class:`ContainerPod` starts a runtime of :class:`BaseRuntime` inside a container. It leverages :class:`multiprocessing.Process` to manage the logs and the lifecycle of docker container object in a robust way.
     """
 
     def __init__(self, args: 'argparse.Namespace'):
@@ -327,15 +352,15 @@ class ContainerPod(BasePod):
             else:
                 ctrl_host = self.args.host
 
-            ctrl_address = f'{ctrl_host}:{self.args.port}'
+            ctrl_address = f'{ctrl_host}:{self.args.port[0]}'
 
-            net_node, runtime_ctrl_address = self._get_network_for_dind_linux(
+            net_mode, runtime_ctrl_address = self._get_network_for_dind_linux(
                 client, ctrl_address
             )
         finally:
             client.close()
 
-        return net_node, runtime_ctrl_address
+        return net_mode, runtime_ctrl_address
 
     def _get_network_for_dind_linux(self, client: 'DockerClient', ctrl_address: str):
         import sys
@@ -344,18 +369,25 @@ class ContainerPod(BasePod):
         # Related to potential docker-in-docker communication. If `Runtime` lives already inside a container.
         # it will need to communicate using the `bridge` network.
         # In WSL, we need to set ports explicitly
-        net_mode, runtime_ctrl_address = None, ctrl_address
+        net_mode, runtime_ctrl_address = getattr(self.args, 'force_network_mode', DockerNetworkMode.AUTO), ctrl_address
         if sys.platform in ('linux', 'linux2') and 'microsoft' not in uname().release:
-            net_mode = 'host'
-            try:
-                bridge_network = client.networks.get('bridge')
-                if bridge_network:
-                    runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port}'
-            except Exception as ex:
-                self.logger.warning(
-                    f'Unable to set control address from "bridge" network: {ex!r}'
-                    f' Control address set to {runtime_ctrl_address}'
-                )
+            if net_mode == DockerNetworkMode.AUTO:
+                net_mode = DockerNetworkMode.HOST
+            if net_mode != DockerNetworkMode.NONE:
+                try:
+                    bridge_network = client.networks.get('bridge')
+                    if bridge_network:
+                        runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port[0]}'
+                except Exception as ex:
+                    self.logger.warning(
+                        f'Unable to set control address from "bridge" network: {ex!r}'
+                        f' Control address set to {runtime_ctrl_address}'
+                    )
+
+        if net_mode in {DockerNetworkMode.AUTO, DockerNetworkMode.NONE}:
+            net_mode = None
+        else:
+            net_mode = net_mode.to_string().lower()
 
         return net_mode, runtime_ctrl_address
 
@@ -373,7 +405,6 @@ class ContainerPod(BasePod):
 
     def start(self):
         """Start the ContainerPod.
-        This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
         self.worker = multiprocessing.Process(
@@ -386,6 +417,7 @@ class ContainerPod(BasePod):
                 'runtime_ctrl_address': self.runtime_ctrl_address,
                 'envs': self._envs,
                 'is_started': self.is_started,
+                'is_signal_handlers_installed': self.is_signal_handlers_installed,
                 'is_shutdown': self.is_shutdown,
                 'is_ready': self.is_ready,
             },
@@ -398,11 +430,11 @@ class ContainerPod(BasePod):
 
     def _terminate(self):
         """Terminate the Pod.
-        This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+        This method kills the container inside the Pod
         """
         # terminate the docker
         try:
-            self._container.kill(signal='SIGTERM')
+            self._container.stop()
         finally:
             self.is_shutdown.wait(self.args.timeout_ctrl)
             self.logger.debug(f'terminating the runtime process')
@@ -411,7 +443,6 @@ class ContainerPod(BasePod):
 
     def join(self, *args, **kwargs):
         """Joins the Pod.
-        This method calls :meth:`join` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
 
         :param args: extra positional arguments to pass to join
         :param kwargs: extra keyword arguments to pass to join
@@ -429,5 +460,5 @@ class ContainerPod(BasePod):
         except docker.errors.NotFound:
             pass
         self.logger.debug(f'joining the process')
-        self.worker.join(*args, **kwargs)
+        self.worker.join(timeout=10, *args, **kwargs)
         self.logger.debug(f'successfully joined the process')

@@ -7,14 +7,16 @@ from jina.helper import random_identity
 from jina.parsers.helper import _SHOW_ALL_ARGS, add_arg_group
 
 
-def mixin_essential_parser(parser):
+def mixin_essential_parser(parser, default_name=None):
     """Mixing in arguments required by every module into the given parser.
     :param parser: the parser instance to which we add arguments
+    :param default_name: default pod name
     """
     gp = add_arg_group(parser, title='Essential')
     gp.add_argument(
         '--name',
         type=str,
+        default=default_name,
         help='''
     The name of this object.
 
@@ -40,7 +42,7 @@ def mixin_essential_parser(parser):
         '--log-config',
         type=str,
         default='default',
-        help='The YAML config of the logger used in this object.',
+        help='The config name or the absolute path to the YAML config file of the logger used in this object.',
     )
 
     gp.add_argument(
@@ -69,15 +71,16 @@ def mixin_essential_parser(parser):
     )
 
 
-def mixin_base_deployment_parser(parser, title='Base Deployment'):
+def mixin_base_deployment_parser(parser, title='Base Deployment', default_name=None):
     """Mixing in arguments required by a deployment into the given parser.
     The Deployment doesn't have scalable features like shards, replicas and polling
     :param parser: the parser instance to which we add arguments
     :param title: the title of the create args group
+    :param default_name: default pod name
     :return: returns the created arg group
     """
 
-    mixin_essential_parser(parser)
+    mixin_essential_parser(parser, default_name=default_name)
 
     gp = add_arg_group(parser, title=title)
 
@@ -105,15 +108,19 @@ def mixin_base_deployment_parser(parser, title='Base Deployment'):
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
+
     return gp
 
 
-def mixin_scalable_deployment_parser(parser):
+def mixin_scalable_deployment_parser(parser, default_name=None):
     """Mixing in arguments required by a scalable deployment into the given parser.
     The deployment is scalable and can have shards, replicas and polling
     :param parser: the parser instance to which we add arguments
+    :param default_name: default pod name
     """
-    gp = mixin_base_deployment_parser(parser, title='Scalable Deployment')
+    gp = mixin_base_deployment_parser(
+        parser, title='Scalable Deployment', default_name=default_name
+    )
 
     gp.add_argument(
         '--polling',
@@ -137,7 +144,7 @@ def mixin_scalable_deployment_parser(parser):
         type=int,
         default=1,
         help='The number of shards in the deployment running at the same time. For more details check '
-        'https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies',
+        'https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies',
     )
 
     gp.add_argument(

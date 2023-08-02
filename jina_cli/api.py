@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from jina.parsers.helper import _set_gateway_uses
+from jina.parsers.helper import _update_gateway_args
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -14,11 +14,12 @@ def deployment(args: 'Namespace'):
     """
     from jina.orchestrate.deployments import Deployment
 
-    try:
-        with Deployment(args) as d:
-            d.join()
-    except KeyboardInterrupt:
-        pass
+    if args.uses:
+        dep = Deployment.load_config(args.uses)
+        with dep:
+            dep.block()
+    else:
+        raise ValueError('starting a Deployment from CLI requires a valid `--uses`')
 
 
 def pod(args: 'Namespace'):
@@ -42,28 +43,26 @@ def executor_native(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-
-    if args.runtime_cls == 'WorkerRuntime':
-        from jina.serve.runtimes.worker import WorkerRuntime
-
-        runtime_cls = WorkerRuntime
-    elif args.runtime_cls == 'HeadRuntime':
-        from jina.serve.runtimes.head import HeadRuntime
-
-        runtime_cls = HeadRuntime
+    from jina.serve.executors.run import run, run_stateful
+    import multiprocessing
+    from jina.jaml import JAML
+    envs = {}
+    envs.update(args.env or {})
+    if not args.stateful:
+        run(name=args.name,
+            args=args,
+            runtime_cls=args.runtime_cls,
+            envs=envs,
+            is_started=multiprocessing.Event(),
+            is_signal_handlers_installed=multiprocessing.Event(),
+            is_shutdown=multiprocessing.Event(),
+            is_ready=multiprocessing.Event(),
+            jaml_classes=JAML.registered_classes())
     else:
-        raise RuntimeError(
-            f' runtime_cls {args.runtime_cls} is not supported with `--native` argument. `WorkerRuntime` is supported'
-        )
-
-    with runtime_cls(args) as rt:
-        name = (
-            rt._worker_request_handler._executor.metas.name
-            if hasattr(rt, '_worker_request_handler')
-            else rt.name
-        )
-        rt.logger.info(f'Executor {name} started')
-        rt.run_forever()
+        run_stateful(name=args.name,
+                     args=args,
+                     runtime_cls=args.runtime_cls,
+                     envs=envs)
 
 
 def executor(args: 'Namespace'):
@@ -74,25 +73,13 @@ def executor(args: 'Namespace'):
 
     :returns: return the same as `pod` or `worker_runtime`
     """
+    args.host = args.host[0]
+    args.port_monitoring = args.port_monitoring[0]
+
     if args.native:
         return executor_native(args)
     else:
         return pod(args)
-
-
-def worker_runtime(args: 'Namespace'):
-    """
-    Starts a WorkerRuntime
-
-    :param args: arguments coming from the CLI.
-    """
-    from jina.serve.runtimes.worker import WorkerRuntime
-
-    with WorkerRuntime(args) as runtime:
-        runtime.logger.info(
-            f'Executor {runtime._worker_request_handler._executor.metas.name} started'
-        )
-        runtime.run_forever()
 
 
 def gateway(args: 'Namespace'):
@@ -101,13 +88,13 @@ def gateway(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.serve.runtimes import get_runtime
+    from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+    from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 
-    _set_gateway_uses(args)
+    args.port_monitoring = args.port_monitoring[0]
+    _update_gateway_args(args)
 
-    runtime_cls = get_runtime('GatewayRuntime')
-
-    with runtime_cls(args) as runtime:
+    with AsyncNewLoopRuntime(args, req_handler_cls=GatewayRequestHandler) as runtime:
         runtime.logger.info(f'Gateway started')
         runtime.run_forever()
 
@@ -169,7 +156,7 @@ def flow(args: 'Namespace'):
         with f:
             f.block()
     else:
-        raise ValueError('start a flow from CLI requires a valid `--uses`')
+        raise ValueError('starting a Flow from CLI requires a valid `--uses`')
 
 
 def hub(args: 'Namespace'):
@@ -190,11 +177,16 @@ def new(args: 'Namespace'):
     import os
     import shutil
 
-    from jina import __resources_path__
+    from jina.constants import __resources_path__
 
-    shutil.copytree(
-        os.path.join(__resources_path__, 'project-template'), os.path.abspath(args.name)
-    )
+    if args.type == 'deployment':
+        shutil.copytree(
+            os.path.join(__resources_path__, 'project-template', 'deployment'), os.path.abspath(args.name)
+        )
+    else:
+        shutil.copytree(
+            os.path.join(__resources_path__, 'project-template', 'flow'), os.path.abspath(args.name)
+        )
 
 
 def help(args: 'Namespace'):

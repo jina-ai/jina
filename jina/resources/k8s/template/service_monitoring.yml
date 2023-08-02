@@ -4,7 +4,7 @@ metadata:
   name: {name}
   namespace: {namespace}
   labels:
-    app: {target}
+    app: {name}
 spec:
   type: {type}
   ports:

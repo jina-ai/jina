@@ -9,7 +9,7 @@ from typing import Optional
 from rich.logging import LogRender as _LogRender
 from rich.logging import RichHandler as _RichHandler
 
-from jina import __resources_path__, __uptime__, __windows__
+from jina.constants import __resources_path__, __uptime__, __windows__
 from jina.enums import LogVerbosity
 from jina.jaml import JAML
 from jina.logging import formatter
@@ -19,15 +19,15 @@ class _MyLogRender(_LogRender):
     """Override the original rich log record for more compact layout."""
 
     def __call__(
-            self,
-            console,
-            renderables,
-            log_time=None,
-            time_format=None,
-            level=None,
-            path=None,
-            line_no=None,
-            link_path=None,
+        self,
+        console,
+        renderables,
+        log_time=None,
+        time_format=None,
+        level=None,
+        path=None,
+        line_no=None,
+        link_path=None,
     ):
         from rich.containers import Renderables
         from rich.table import Table
@@ -105,19 +105,18 @@ class JinaLogger:
 
     :param context: The context identifier of the class, module or method.
     :param log_config: The configuration file for the logger.
-    configuration to group logs by deployment.
     :return:: an executor object.
     """
 
     supported = {'FileHandler', 'StreamHandler', 'SysLogHandler', 'RichHandler'}
 
     def __init__(
-            self,
-            context: str,
-            name: Optional[str] = None,
-            log_config: Optional[str] = None,
-            quiet: bool = False,
-            **kwargs,
+        self,
+        context: str,
+        name: Optional[str] = None,
+        log_config: Optional[str] = None,
+        quiet: bool = False,
+        **kwargs,
     ):
 
         log_config = os.getenv(
@@ -130,10 +129,6 @@ class JinaLogger:
 
         if not name:
             name = os.getenv('JINA_DEPLOYMENT_NAME', context)
-
-        # Remove all handlers associated with the root logger object.
-        for handler in logging.root.handlers[:]:
-            logging.root.removeHandler(handler)
 
         self.logger = logging.getLogger(context)
         self.logger.propagate = False
@@ -204,7 +199,7 @@ class JinaLogger:
             if not os.path.exists(config_path):
                 config_path = old_config_path
 
-        with open(config_path) as fp:
+        with open(config_path, encoding='utf-8') as fp:
             config = JAML.load(fp)
 
         for h in config['handlers']:

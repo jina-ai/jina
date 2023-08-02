@@ -17,7 +17,7 @@ def set_ping_parser(parser=None):
         type=str,
         choices=['flow', 'executor', 'gateway'],
         help='The target type to ping. For `executor` and `gateway`, checks the readiness of the individual service. '
-             'For `flow` it checks the connectivity of the complete microservice architecture.',
+        'For `flow` it checks the connectivity of the complete microservice architecture.',
         default='executor',
     )
 
@@ -33,7 +33,7 @@ def set_ping_parser(parser=None):
         default=3000,
         help='''
 Timeout in millisecond of one check
--1 for waiting forever
+Use -1 for waiting forever
 ''',
     )
     parser.add_argument(

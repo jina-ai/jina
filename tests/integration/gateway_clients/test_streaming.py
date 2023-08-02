@@ -5,16 +5,17 @@ import os
 import time
 from datetime import datetime
 from functools import partial
-from typing import Dict
+from typing import Dict, List
 
 import pytest
+from docarray import Document, DocumentArray
 
-from jina import Document, DocumentArray
 from jina.clients import Client
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
 from jina.serve import networking
-from jina.serve.runtimes.gateway import GatewayRuntime
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 
 INPUT_LEN = 4
 INPUT_GEN_SLEEP_TIME = 1
@@ -48,7 +49,7 @@ def simple_graph_dict_indexer():
 class DummyMockConnectionPool:
     def send_discover_endpoint(self, *args, **kwargs):
         async def task_wrapper():
-            from jina import __default_endpoint__
+            from jina.constants import __default_endpoint__
             from jina.proto import jina_pb2
 
             ep = jina_pb2.EndpointsProto()
@@ -184,7 +185,7 @@ def create_runtime(graph_dict: Dict, protocol: str, port: int, prefetch: int = 0
             protocol,
         ]
     )
-    with GatewayRuntime(args) as runtime:
+    with AsyncNewLoopRuntime(args, req_handler_cls=GatewayRequestHandler) as runtime:
         runtime.run_forever()
 
 
@@ -325,12 +326,51 @@ def test_disable_prefetch_fast_client_slow_executor(
     assert first_on_done_time < last_executor_time
 
 
+def _search_first_and_last_prefix_occurrence(
+    search_prefix: str, search_list: List[str]
+):
+    first_idx, last_idx = None, None
+    for idx, value in enumerate(search_list):
+        if value.startswith(search_prefix):
+            if not first_idx:
+                first_idx = idx
+            else:
+                last_idx = idx
+
+    return first_idx, last_idx
+
+
 @pytest.mark.parametrize('prefetch', [0, 5])
 @pytest.mark.parametrize('protocol', ['websocket', 'http', 'grpc'])
-def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_indexer):
+@pytest.mark.parametrize('use_stream', [True, False])
+@pytest.mark.parametrize('prefetch_implementation', ['gateway', 'client'])
+def test_multiple_clients(
+    prefetch,
+    protocol,
+    monkeypatch,
+    simple_graph_dict_indexer,
+    use_stream,
+    prefetch_implementation,
+):
+    if not use_stream and protocol != 'grpc':
+        return
+
     GOOD_CLIENTS = 5
     GOOD_CLIENT_NUM_DOCS = 20
     MALICIOUS_CLIENT_NUM_DOCS = 50
+
+    port = random_port()
+    gateway_kwargs = {
+        'protocol': protocol,
+        'port': port,
+        'graph_dict': simple_graph_dict_indexer,
+    }
+    client_prefetch = None
+
+    if prefetch_implementation == 'gateway':
+        gateway_kwargs['prefetch'] = prefetch
+    else:
+        client_prefetch = prefetch
 
     def get_document(i):
         return Document(
@@ -349,7 +389,11 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
 
     def client(gen, port):
         Client(protocol=protocol, port=port).post(
-            on='/index', inputs=gen, request_size=1
+            on='/index',
+            inputs=gen,
+            request_size=1,
+            stream=use_stream,
+            prefetch=client_prefetch,
         )
 
     monkeypatch.setattr(
@@ -362,17 +406,12 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
         'send_discover_endpoint',
         DummyMockConnectionPool.send_discover_endpoint,
     )
-    port = random_port()
 
     pool = []
+
     runtime_process = multiprocessing.Process(
         target=create_runtime,
-        kwargs={
-            'protocol': protocol,
-            'port': port,
-            'graph_dict': simple_graph_dict_indexer,
-            'prefetch': prefetch,
-        },
+        kwargs=gateway_kwargs,
     )
     runtime_process.start()
     time.sleep(1.0)
@@ -399,7 +438,7 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
 
     order_of_ids = list(
         Client(protocol=protocol, port=port)
-        .post(on='/status', inputs=[Document()])[0]
+        .post(on='/status', inputs=[Document()], stream=use_stream)[0]
         .tags['ids']
     )
     # There must be total 150 docs indexed.
@@ -410,21 +449,46 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
         len(order_of_ids)
         == GOOD_CLIENTS * GOOD_CLIENT_NUM_DOCS + MALICIOUS_CLIENT_NUM_DOCS
     )
+    (
+        malicious_client_first_response_idx,
+        malicious_client_last_response_idx,
+    ) = _search_first_and_last_prefix_occurrence('badguy', order_of_ids)
 
     """
-    If prefetch is set, each Client is allowed (max) 5 requests at a time.
-    Since requests are controlled, `badguy` has to do the last 20 requests.
-
     If prefetch is disabled, clients can freeflow requests. No client is blocked.
     Hence last 20 requests go from `goodguy`.
     (Ideally last 30 requests should be validated, to avoid flaky CI, we test last 20)
 
     When there are no rules, badguy wins! With rule, you find balance in the world.
     """
-    if protocol == 'http':
-        # There's no prefetch for http.
-        assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'goodguy'}
-    elif prefetch == 5:
-        assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'badguy'}
-    elif prefetch == 0:
-        assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'goodguy'}
+    # first response will always be from one of the good clients
+    assert order_of_ids[0].split('_')[0] == 'goodguy'
+    # first response from malicilious client will (mostly) appear after the first response from a good client
+    assert malicious_client_first_response_idx >= 0
+    if prefetch == 0:
+        # mailicious client will finish before all the good clients
+        assert malicious_client_last_response_idx < (len(order_of_ids) - 1)
+
+    if prefetch == 5:
+        if prefetch_implementation == 'gateway' and not use_stream:
+            # gateway with prefetch will complete the full iteration from the gateway recieves
+            # the full malicious client request iterator which is processed with prefetch
+            assert set(map(lambda x: x.split('_')[0], order_of_ids[-10:])) == {
+                'goodguy'
+            }
+            # mailicious client will finish before all the good clients
+            assert malicious_client_last_response_idx < (len(order_of_ids) - 1)
+        elif prefetch_implementation == 'gateway' and protocol == 'http':
+            # gateway with prefetch will complete the full iteration from the gateway recieves
+            # the full malicious client request iterator which is processed with prefetch
+            # and due to the request <-> response coupling
+            assert set(map(lambda x: x.split('_')[0], order_of_ids[-10:])) == {
+                'goodguy'
+            }
+            # mailicious client will finish before all the good clients
+            assert malicious_client_last_response_idx < (len(order_of_ids) - 1)
+
+        else:
+            assert set(map(lambda x: x.split('_')[0], order_of_ids[-10:])) == {'badguy'}
+            # mailicious client will finish last
+            assert malicious_client_last_response_idx == (len(order_of_ids) - 1)

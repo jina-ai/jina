@@ -4,7 +4,7 @@ import time
 import pytest
 import requests
 
-from jina import Executor, Flow, helper
+from jina import Deployment, Executor, Flow, helper
 from jina import requests as req
 from jina.clients import Client
 from jina.orchestrate.pods.factory import PodFactory
@@ -58,7 +58,7 @@ def test_gateway_ready(port, route, status_code):
     )
     with PodFactory.build_pod(p):
         time.sleep(0.5)
-        a = requests.get(f'http://localhost:{p.port}{route}')
+        a = requests.get(f'http://localhost:{port}{route}')
     assert a.status_code == status_code
 
 
@@ -130,7 +130,8 @@ class MyExec(Executor):
 
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
-def test_all_sync_clients(protocol, mocker):
+@pytest.mark.parametrize('use_stream', [True, False])
+def test_all_sync_clients(protocol, mocker, use_stream):
     f = Flow(protocol=protocol).add(uses=MyExec)
     docs = list(random_docs(1000))
     m1 = mocker.Mock()
@@ -143,10 +144,39 @@ def test_all_sync_clients(protocol, mocker):
             port=f.port,
             protocol=protocol,
         )
-        c.post('/', on_done=m1)
-        c.post('/foo', docs, on_done=m2)
-        c.post('/foo', on_done=m3)
-        c.post('/foo', docs, parameters={'hello': 'world'}, on_done=m4)
+        c.post('/', on_done=m1, stream=use_stream)
+        c.post('/foo', docs, on_done=m2, stream=use_stream)
+        c.post('/foo', on_done=m3, stream=use_stream)
+        c.post(
+            '/foo', docs, parameters={'hello': 'world'}, on_done=m4, stream=use_stream
+        )
+
+    m1.assert_called_once()
+    m2.assert_called()
+    m3.assert_called_once()
+    m4.assert_called()
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize('use_stream', [True, False])
+def test_deployment_sync_client(mocker, use_stream):
+    dep = Deployment(uses=MyExec)
+    docs = list(random_docs(1000))
+    m1 = mocker.Mock()
+    m2 = mocker.Mock()
+    m3 = mocker.Mock()
+    m4 = mocker.Mock()
+    with dep:
+        c = Client(
+            host='localhost',
+            port=dep.port,
+        )
+        c.post('/', on_done=m1, stream=use_stream)
+        c.post('/foo', docs, on_done=m2, stream=use_stream)
+        c.post('/foo', on_done=m3, stream=use_stream)
+        c.post(
+            '/foo', docs, parameters={'hello': 'world'}, on_done=m4, stream=use_stream
+        )
 
     m1.assert_called_once()
     m2.assert_called()

@@ -1,7 +1,5 @@
-import asyncio
-import copy
 import time
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Union
 
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2
@@ -16,23 +14,25 @@ if TYPE_CHECKING:  # pragma: no cover
 class MonitoringMixin:
     """The Monitoring Mixin for pods"""
 
-    def _setup_monitoring(self):
+    def _setup_monitoring(self, monitoring: bool, port_monitoring: Union[int, str]):
         """
         Wait for the monitoring server to start
+        :param monitoring: flag indicating whether monitoring has to be activated
+        :param port_monitoring: port where to expose the monitoring
         """
 
-        if self.args.monitoring:
+        if monitoring:
             from prometheus_client import CollectorRegistry
 
             self.metrics_registry = CollectorRegistry()
         else:
             self.metrics_registry = None
 
-        if self.args.monitoring:
+        if monitoring:
             from prometheus_client import start_http_server
 
             start_http_server(
-                int(self.args.port_monitoring), registry=self.metrics_registry
+                int(port_monitoring), registry=self.metrics_registry
             )
 
 
@@ -45,10 +45,10 @@ class MonitoringRequestMixin:
     """
 
     def __init__(
-            self,
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            meter: Optional['Meter'] = None,
-            runtime_name: Optional[str] = None,
+        self,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        meter: Optional['Meter'] = None,
+        runtime_name: Optional[str] = None,
     ):
 
         self._request_init_time = {} if metrics_registry else None
@@ -56,8 +56,8 @@ class MonitoringRequestMixin:
 
         if metrics_registry:
             with ImportExtensions(
-                    required=True,
-                    help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+                required=True,
+                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
                 from prometheus_client import Counter, Gauge, Summary
 
@@ -181,14 +181,14 @@ class MonitoringRequestMixin:
 
     def _update_end_successful_requests_metrics(self, result: 'Request'):
         if (
-                self._receiving_request_metrics
+            self._receiving_request_metrics
         ):  # this one should only be observed when the metrics is succesful
             init_time = self._request_init_time.pop(
                 result.request_id
             )  # need to pop otherwise it stays in memory forever
             self._receiving_request_metrics.observe(time.time() - init_time)
         if (
-                self._receiving_request_histogram
+            self._receiving_request_histogram
         ):  # this one should only be observed when the metrics is succesful
             init_time = self._meter_request_init_time.pop(
                 result.request_id

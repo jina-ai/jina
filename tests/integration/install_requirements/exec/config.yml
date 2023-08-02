@@ -1,0 +1,3 @@
+jtype: InstallReqsExecutor
+py_modules:
+  - my_executor.py

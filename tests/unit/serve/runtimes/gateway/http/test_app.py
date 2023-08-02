@@ -10,12 +10,14 @@ from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
-from jina.serve.runtimes.gateway import GatewayRuntime
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.servers import BaseServer
+from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 
 
 class ExecutorTest(Executor):
     @requests
-    def empty(self, docs: 'DocumentArray', **kwargs):
+    def empty(self, docs: DocumentArray, **kwargs):
         print(f"# docs {docs}")
 
 
@@ -165,7 +167,7 @@ def test_uvicorn_ssl_deprecated(cert_pem, key_pem, uses):
             'ssl_keyfile_password: abcd',
         ]
     )
-    with GatewayRuntime(args):
+    with AsyncNewLoopRuntime(args, req_handler_cls=GatewayRequestHandler):
         pass
 
 
@@ -183,7 +185,7 @@ def test_uvicorn_ssl(cert_pem, key_pem, uses):
             f'{key_pem}',
         ]
     )
-    with GatewayRuntime(args):
+    with AsyncNewLoopRuntime(args, req_handler_cls=GatewayRequestHandler):
         pass
 
 
@@ -202,7 +204,7 @@ def test_uvicorn_ssl_wrong_password(cert_pem, key_pem, uses):
         ]
     )
     with pytest.raises(ssl.SSLError):
-        with GatewayRuntime(args):
+        with AsyncNewLoopRuntime(args, req_handler_cls=GatewayRequestHandler):
             pass
 
 
@@ -221,7 +223,7 @@ def test_uvicorn_ssl_wrong_password(cert_pem, key_pem, uses):
         ]
     )
     with pytest.raises(ssl.SSLError):
-        with GatewayRuntime(args):
+        with AsyncNewLoopRuntime(args, req_handler_cls=GatewayRequestHandler):
             pass
 
 

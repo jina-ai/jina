@@ -14,7 +14,7 @@ from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2
 from jina.serve.stream import RequestStreamer
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
     from jina.types.request import Request
 
@@ -86,6 +86,8 @@ class WebSocketBaseClient(BaseClient):
         initial_backoff: float = 0.5,
         max_backoff: float = 0.1,
         backoff_multiplier: float = 1.5,
+        results_in_order: bool = False,
+        prefetch: Optional[int] = None,
         **kwargs,
     ):
         """
@@ -97,11 +99,13 @@ class WebSocketBaseClient(BaseClient):
         :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
         :param max_backoff: The maximum accepted backoff after the exponential incremental delay
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
+        :param results_in_order: return the results in the same order as the inputs
+        :param prefetch: How many Requests are processed from the Client at the same time.
         :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `WebsocketClientlet`
         :yields: generator over results
         """
         with ImportExtensions(required=True):
-            import aiohttp
+            pass
 
         self.inputs = inputs
         request_iterator = self._get_requests(**kwargs)
@@ -167,7 +171,7 @@ class WebSocketBaseClient(BaseClient):
                 """
                 For each request in the iterator, we send the `Message` using `iolet.send_message()`.
                 For websocket requests from client, for each request in the iterator, we send the request in `bytes`
-                using using `iolet.send_message()`.
+                using `iolet.send_message()`.
                 Then add {<request-id>: <an-empty-future>} to the request buffer.
                 This empty future is used to track the `result` of this request during `receive`.
                 :param request: current request in the iterator
@@ -178,13 +182,15 @@ class WebSocketBaseClient(BaseClient):
                 asyncio.create_task(iolet.send_message(request))
                 return future, None
 
+            streamer_args = vars(self.args)
+            if prefetch:
+                streamer_args['prefetch'] = prefetch
             streamer = RequestStreamer(
                 request_handler=_request_handler,
                 result_handler=_result_handler,
                 end_of_iter_handler=_handle_end_of_iter,
-                prefetch=getattr(self.args, 'prefetch', 0),
                 logger=self.logger,
-                **vars(self.args),
+                **streamer_args,
             )
 
             receive_task = asyncio.create_task(_receive())
@@ -194,14 +200,17 @@ class WebSocketBaseClient(BaseClient):
             if receive_task.done():
                 raise RuntimeError('receive task not running, can not send messages')
             try:
-                async for response in streamer.stream(request_iterator):
+                async for response in streamer.stream(
+                    request_iterator=request_iterator,
+                    results_in_order=results_in_order,
+                ):
                     callback_exec(
                         response=response,
+                        logger=self.logger,
                         on_error=on_error,
                         on_done=on_done,
                         on_always=on_always,
                         continue_on_error=self.continue_on_error,
-                        logger=self.logger,
                     )
                     if self.show_progress:
                         p_bar.update()

@@ -1,80 +1,60 @@
 <p align="center">
-<br><br><br>
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native" width="150px"></a>
-<br><br><br>
+<!-- survey banner start -->
+<a href="https://10sw1tcpld4.typeform.com/to/EGAEReM7?utm_source=readme&utm_medium=github&utm_campaign=user%20experience&utm_term=feb2023&utm_content=survey">
+  <img src="./.github/banner.svg?raw=true">
+</a>
+<!-- survey banner start -->
+
+<p align="center">
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · Cloud Native" width="150px"></a>
 </p>
 
 <p align="center">
-<b>Build cross-modal and multi-modal applications<sup><a href="https://docs.jina.ai/get-started/what-is-cross-modal-multi-modal/">[?]</a></sup> on the cloud</b>
+<b>Build multimodal AI services with cloud native technologies</b>
 </p>
-
 
 <p align=center>
 <a href="https://pypi.org/project/jina/"><img alt="PyPI" src="https://img.shields.io/pypi/v/jina?label=Release&style=flat-square"></a>
-<a href="https://codecov.io/gh/jina-ai/jina"><img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/jina-ai/jina/master?&logo=Codecov&logoColor=white&style=flat-square"></a>
-<a href="https://jina.ai/slack"><img src="https://img.shields.io/badge/Slack-3.6k-blueviolet?logo=slack&amp;logoColor=white&style=flat-square"></a>
+<!--<a href="https://codecov.io/gh/jina-ai/jina"><img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/jina-ai/jina/master?&logo=Codecov&logoColor=white&style=flat-square"></a>-->
+<a href="https://discord.jina.ai"><img src="https://img.shields.io/discord/1106542220112302130?logo=discord&logoColor=white&style=flat-square"></a>
 <a href="https://pypistats.org/packages/jina"><img alt="PyPI - Downloads from official pypistats" src="https://img.shields.io/pypi/dm/jina?style=flat-square"></a>
 <a href="https://github.com/jina-ai/jina/actions/workflows/cd.yml"><img alt="Github CD status" src="https://github.com/jina-ai/jina/actions/workflows/cd.yml/badge.svg"></a>
 </p>
 
 <!-- start jina-description -->
 
-Jina is a MLOps framework that empowers anyone to build cross-modal and multi-modal applications on the cloud. It uplifts a PoC into a production-ready service. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer. 
+Jina lets you build multimodal [**AI services**](#build-ai-services) and [**pipelines**](#build-a-pipeline) that communicate via gRPC, HTTP and WebSockets, then scale them up and deploy to production. You can focus on your logic and algorithms, without worrying about the infrastructure complexity.
 
-Applications built with Jina enjoy the following features out of the box:
+![](./.github/images/build-deploy.png)
 
-🌌 **Universal**
-  - Build applications that deliver fresh insights from multiple data types such as text, image, audio, video, 3D mesh, PDF with [Jina AI's DocArray](https://docarray.jina.ai).
-  - Support all mainstream deep learning frameworks.
-  - Polyglot gateway that supports gRPC, Websockets, HTTP, GraphQL protocols with TLS.
+Jina provides a smooth Pythonic experience transitioning from local deployment to advanced orchestration frameworks like Docker-Compose, Kubernetes, or Jina AI Cloud. Jina makes advanced solution engineering and cloud-native technologies accessible to every developer.
 
-⚡ **Performance**
-  - Intuitive design pattern for high-performance microservices.
-  - Scaling at ease: set replicas, sharding in one line. 
-  - Duplex streaming between client and server.
-  - Async and non-blocking data processing over dynamic flows.
+- Build applications for any [data type](https://docs.docarray.org/data_types/first_steps/), any mainstream [deep learning framework](), and any [protocol](https://docs.jina.ai/concepts/serving/gateway/#set-protocol-in-python).
+- Design high-performance microservices, with [easy scaling](https://docs.jina.ai/concepts/orchestration/scale-out/), duplex client-server streaming, and async/non-blocking data processing over dynamic flows.
+- Docker container integration via [Executor Hub](https://cloud.jina.ai), OpenTelemetry/Prometheus observability, and fast Kubernetes/Docker-Compose deployment.
+- CPU/GPU hosting via [Jina AI Cloud](https://cloud.jina.ai).
 
-☁️ **Cloud-native**
-  - Seamless Docker container integration: sharing, exploring, sandboxing, versioning and dependency control via [Executor Hub](https://cloud.jina.ai).
-  - Full observability via Prometheus and Grafana.
-  - Fast deployment to Kubernetes, Docker Compose.
+<details>
+    <summary><strong>Wait, how is Jina different from FastAPI?</strong></summary>
+Jina's value proposition may seem quite similar to that of FastAPI. However, there are several fundamental differences:
 
-🍱 **Ecosystem**
-  - Improved engineering efficiency thanks to the Jina AI ecosystem, so you can focus on innovating with the data applications you build.
-  - Free CPU/GPU hosting via [Jina Cloud](https://docs.jina.ai/fundamentals/jcloud/).
+ **Data structure and communication protocols**
+  - FastAPI communication relies on Pydantic and Jina relies on [DocArray](https://github.com/docarray/docarray) allowing Jina to support multiple protocols
+  to expose its services.
 
+ **Advanced orchestration and scaling capabilities**
+  - Jina lets you deploy applications formed from multiple microservices that can be containerized and scaled independently.
+  - Jina allows you to easily containerize and orchestrate your services, providing concurrency and scalability.
 
-<p align="center">
-<a href="#"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/core-tree-graph.svg?raw=true" alt="Jina in Jina AI neural search ecosystem" width="100%"></a>
-</p>
+ **Journey to the cloud**
+  - Jina provides a smooth transition from local development (using [DocArray](https://github.com/docarray/docarray)) to local serving using (Jina's orchestration layer)
+  to having production-ready services by using Kubernetes capacity to orchestrate the lifetime of containers.
+  - By using [Jina AI Cloud](https://cloud.jina.ai) you have access to scalable and serverless deployments of your applications in one command.
+</details>
 
 <!-- end jina-description -->
 
-
 ## [Documentation](https://docs.jina.ai)
-
-<table align=center>
-<thead>
-  <tr>
-    <th colspan="4">Understand Jina better</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><a href="https://docs.jina.ai/get-started/what-is-jina/" target="_blank" rel="noopener noreferrer">📗 What is Jina?</a></td>
-    <td><a href="https://docs.jina.ai/get-started/what-is-jina/#relation-to-mlops" target="_blank" rel="noopener noreferrer">🔍 Is Jina MLOps for search?</a></td>
-    <td><a href="https://docs.jina.ai/get-started/comparing-alternatives/" target="_blank" rel="noopener noreferrer">🆚 How Jina compares to alternatives?</a></td>
-    <td><a href="https://docs.jina.ai/get-started/what-is-jina/#why-cloud-native" target="_blank" rel="noopener noreferrer">☁️ What is Cloud-Native?</a></td>
-  </tr>
-  <tr>
-    <td><a href="https://docs.jina.ai/get-started/what-is-cross-modal-multi-modal/" target="_blank" rel="noopener noreferrer">🔮 What is cross-modal and multimodal？</a></td>
-    <td><a href="https://docs.jina.ai/get-started/what-is-cross-modal-multi-modal/#neural-search" target="_blank" rel="noopener noreferrer">🧬 What is neural search?</a></td>
-    <td><a href="https://docs.jina.ai/get-started/what-is-cross-modal-multi-modal/#creative-ai" target="_blank" rel="noopener noreferrer">🎨 What is creative AI?</a></td>
-    <td></td>
-  </tr>
-</tbody>
-</table>
-
 
 ## Install 
 
@@ -82,180 +62,199 @@ Applications built with Jina enjoy the following features out of the box:
 pip install jina
 ```
 
-[More install options on Apple Silicon and Windows can be found here](https://docs.jina.ai/get-started/install/).
-
+Find more install options on [Apple Silicon](https://docs.jina.ai/get-started/install/apple-silicon-m1-m2/)/[Windows](https://docs.jina.ai/get-started/install/windows/).
 
 ## Get Started
 
-
 ### Basic Concepts
 
-Document, Executor and Flow are three fundamental concepts in Jina.
+Jina has three fundamental layers:
 
-- [**Document**](https://docarray.jina.ai/) is the fundamental data structure.
-- [**Executor**](https://docs.jina.ai/fundamentals/executor/) is a Python class with functions that use Documents as IO.
-- [**Flow**](https://docs.jina.ai/fundamentals/flow/) ties Executors together into a pipeline and exposes it with an API gateway.
-
-[The full glossary is explained here.](https://docs.jina.ai/fundamentals/architecture-overview/)
+- Data layer: [**BaseDoc**](https://docarray.docs.org/) and [**DocList**](https://docarray.docs.org/) (from [DocArray](https://github.com/docarray/docarray)) is the input/output format in Jina.
+- Serving layer: An [**Executor**](https://docs.jina.ai/concepts/serving/executor/) is a Python class that transforms and processes Documents. [**Gateway**](https://docs.jina.ai/concepts/serving/gateway/) is the service making sure connecting all Executors inside a Flow.
+- Orchestration layer:  [**Deployment**](https://docs.jina.ai/concepts/orchestration/deployment) serves a single Executor, while a [**Flow**](https://docs.jina.ai/concepts/orchestration/flow/) serves Executors chained into a pipeline.
 
 
----
+[The full glossary is explained here](https://docs.jina.ai/concepts/preliminaries/#).
 
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/streamline-banner.png?raw=true" alt="Jina: Streamline AI & ML Product Delivery" width="100%"></a>
-</p>
+### Build AI Services
+<!-- start build-ai-services -->
 
-### Streamline AI & ML Product Delivery
+Let's build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an **[Executor](https://docs.jina.ai/concepts/serving/executor/)**. Our simple Executor will wrap the [StableLM](https://huggingface.co/stabilityai/stablelm-base-alpha-3b) LLM from Stability AI. We'll then use a **Deployment** to serve it.
 
-A new project starts from local. With Jina, you can easily leverage existing deep learning stacks, improve the quality and quickly build the POC.
+![](./.github/images/deployment-diagram.png)
+
+> **Note**
+> A Deployment serves just one Executor. To combine multiple Executors into a pipeline and serve that, use a [Flow](#build-a-pipeline).
+
+Let's implement the service's logic:
+
+<table>
+<tr>
+<th><code>executor.py</code></th> 
+<tr>
+<td>
 
 ```python
-import torch
-from jina import DocumentArray
+from jina import Executor, requests
+from docarray import DocList, BaseDoc
 
-model = torch.nn.Sequential(
-    torch.nn.Linear(
-        in_features=128,
-        out_features=128,
-    ),
-    torch.nn.ReLU(),
-    torch.nn.Linear(in_features=128, out_features=32),
+from transformers import pipeline
+
+
+class Prompt(BaseDoc):
+    text: str
+
+
+class Generation(BaseDoc):
+    prompt: str
+    text: str
+
+
+class StableLM(Executor):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.generator = pipeline(
+            'text-generation', model='stabilityai/stablelm-base-alpha-3b'
+        )
+
+    @requests
+    def generate(self, docs: DocList[Prompt], **kwargs) -> DocList[Generation]:
+        generations = DocList[Generation]()
+        prompts = docs.text
+        llm_outputs = self.generator(prompts)
+        for prompt, output in zip(prompts, llm_outputs):
+            generations.append(Generation(prompt=prompt, text=output))
+        return generations
+```
+
+</td>
+</tr>
+</table>
+
+Then we deploy it with either the Python API or YAML:
+<div class="table-wrapper">
+<table>
+<tr>
+<th> Python API: <code>deployment.py</code> </th> 
+<th> YAML: <code>deployment.yml</code> </th>
+</tr>
+<tr>
+<td>
+
+```python
+from jina import Deployment
+from executor import StableLM
+
+dep = Deployment(uses=StableLM, timeout_ready=-1, port=12345)
+
+with dep:
+    dep.block()
+```
+
+</td>
+<td>
+
+```yaml
+jtype: Deployment
+with:
+  uses: StableLM
+  py_modules:
+    - executor.py
+  timeout_ready: -1
+  port: 12345
+```
+
+And run the YAML Deployment with the CLI: `jina deployment --uses deployment.yml`
+
+</td>
+</tr>
+</table>
+</div>
+
+Use [Jina Client](https://docs.jina.ai/concepts/client/) to make requests to the service:
+
+```python
+from jina import Client
+from docarray import DocList, BaseDoc
+
+
+class Prompt(BaseDoc):
+    text: str
+
+
+class Generation(BaseDoc):
+    prompt: str
+    text: str
+
+
+prompt = Prompt(
+    text='suggest an interesting image generation prompt for a mona lisa variant'
 )
 
+client = Client(port=12345)  # use port from output above
+response = client.post(on='/', inputs=[prompt], return_type=DocList[Generation])
 
-docs = DocumentArray.from_files('left/*.jpg')
-docs.embed(model)
+print(response[0].text)
 ```
 
-Moving to production, Jina enhances the POC with service endpoint, scalability and adds cloud-native features, making it ready for production without refactoring.
+```text
+a steampunk version of the Mona Lisa, incorporating mechanical gears, brass elements, and Victorian era clothing details
+```
+
+<!-- end build-ai-services -->
+
+> **Note**
+> In a notebook, you can't use `deployment.block()` and then make requests to the client. Please refer to the Colab link above for reproducible Jupyter Notebook code snippets.
+
+### Build a pipeline
+
+<!-- start build-pipelines -->
+
+Sometimes you want to chain microservices together into a pipeline. That's where a [Flow](https://docs.jina.ai/concepts/orchestration/flow/) comes in.
+
+A Flow is a [DAG](https://en.wikipedia.org/wiki/Directed_acyclic_graph) pipeline, composed of a set of steps, It orchestrates a set of [Executors](https://docs.jina.ai/concepts/serving/executor/) and a [Gateway](https://docs.jina.ai/concepts/serving/gateway/) to offer an end-to-end service.
+
+> **Note**
+> If you just want to serve a single Executor, you can use a [Deployment](#build-ai--ml-services).
+
+For instance, let's combine [our StableLM language model](#build-ai--ml-services) with a Stable Diffusion image generation service. Chaining these services together into a [Flow](https://docs.jina.ai/concepts/orchestration/flow/) will give us a service that will generate images based on a prompt generated by the LLM.
+
 
 <table>
+<tr>
+<th><code>text_to_image.py</code></th> 
 <tr>
 <td>
 
 ```python
-from jina import DocumentArray, Executor, requests
-from .embedding import model
+import numpy as np
+from jina import Executor, requests
+from docarray import BaseDoc, DocList
+from docarray.documents import ImageDoc
 
 
-class MyExec(Executor):
-    @requests(on='/embed')
-    async def embed(self, docs: DocumentArray, **kwargs):
-        docs.embed(model)
-```
-
-</td>
-<td>
-    
-```yaml
-jtype: Flow
-with:
-  port: 12345
-executors:
-- uses: MyExec
-  replicas: 2
-```
-</td>
-</tr>
-</table>
+class Generation(BaseDoc):
+    prompt: str
+    text: str
 
 
-Finally, the project can be easily deployed to the cloud and serve real traffic.
+class TextToImage(Executor):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        from diffusers import StableDiffusionPipeline
+        import torch
 
-```bash
-jina cloud deploy ./
-```
+        self.pipe = StableDiffusionPipeline.from_pretrained(
+            "CompVis/stable-diffusion-v1-4", torch_dtype=torch.float16
+        ).to("cuda")
 
----
-
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/no-complexity-banner.png?raw=true" alt="Jina: No Infrastructure Complexity, High Engineering Efficiency" width="100%"></a>
-</p>
-
-### Hello world example
-
-Leveraging these three concepts, let's look at a simple example below:
-
-```python
-from jina import DocumentArray, Executor, Flow, requests
-
-
-class MyExec(Executor):
     @requests
-    async def add_text(self, docs: DocumentArray, **kwargs):
-        for d in docs:
-            d.text += 'hello, world!'
-
-
-f = Flow().add(uses=MyExec).add(uses=MyExec)
-
-with f:
-    r = f.post('/', DocumentArray.empty(2))
-    print(r.texts)
-```
-
-- The first line imports three concepts we just introduced;
-- `MyExec` defines an async function `add_text` that receives `DocumentArray` from network requests and appends `"hello, world"` to `.text`;
-- `f` defines a Flow streamlined two Executors in a chain;
-- The `with` block opens the Flow, sends an empty DocumentArray to the Flow, and prints the result.
-
-Running it gives you:
-
-<p align="center">
-<a href="#"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/run-hello-world.gif?raw=true" alt="Running a simple hello-world program" width="70%"></a>
-</p>
-
-At the last line we see its output `['hello, world!hello, world!', 'hello, world!hello, world!']`.
-
-
-While you could use standard Python with the same number of lines and get the same output, Jina accelerates time to market of your application by making it more scalable and cloud-native. Jina also handles the infrastructure complexity in production and other Day-2 operations so that you can focus on the data application itself.  
-
----
-
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/scalability-banner.png?raw=true" alt="Jina: Scalability and concurrency at ease" width="100%"></a>
-</p>
-
-### Scalability and concurrency at ease
-
-The example above can be refactored into a Python Executor file and a Flow YAML file:
-
-<table>
-<tr>
-<th> <code>toy.yml</code> </th> 
-<th> executor.py </th>
-</tr>
-<tr>
-<td> 
-
-```yaml
-jtype: Flow
-with:
-  port: 51000
-  protocol: grpc
-executors:
-- uses: MyExec
-  name: foo
-  py_modules:
-    - executor.py
-- uses: MyExec
-  name: bar
-  py_modules:
-    - executor.py
-```
-     
-</td>
-<td>
-
-```python
-from jina import DocumentArray, Executor, requests
-
-
-class MyExec(Executor):
-    @requests
-    async def add_text(self, docs: DocumentArray, **kwargs):
-        for d in docs:
-            d.text += 'hello, world!'
+    def generate_image(self, docs: DocList[Generation], **kwargs) -> DocList[ImageDoc]:
+        images = self.pipe(
+            docs.text
+        ).images  # image here is in [PIL format](https://pillow.readthedocs.io/en/stable/)
+        docs.tensor = np.array(images)
 ```
 
 </td>
@@ -263,183 +262,375 @@ class MyExec(Executor):
 </table>
 
 
-Run the following command in the terminal:
+![](./.github/images/flow-diagram.png)
 
-```bash
-jina flow --uses toy.yml
-```
+Build the Flow with either Python or YAML:
 
-<p align="center">
-<a href="#"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/flow-block.png?raw=true" alt="Running a simple hello-world program" width="50%"></a>
-</p>
-
-The server is successfully started, and you can now use a client to query it.
-
-```python
-from jina import Client, Document
-
-c = Client(host='grpc://0.0.0.0:51000')
-c.post('/', Document())
-```
-
-This simple refactoring allows developers to write an application in the client-server style. The separation of Flow YAML and Executor Python file does not only make the project more maintainable but also brings scalability and concurrency to the next level:
-- The data flow on the server is non-blocking and async. New request is handled immediately when an Executor is free, regardless if previous request is still being processed.
-- Scalability can be easily achieved by the keywords `replicas` and `needs` in YAML/Python. Load-balancing is automatically added when necessary to ensure the maximum throughput.
-
+<div class="table-wrapper">
 <table>
 <tr>
-<th> <code>toy.yml</code> </th> 
-<th> Flowchart </th>
+<th> Python API: <code>flow.py</code> </th> 
+<th> YAML: <code>flow.yml</code> </th>
 </tr>
 <tr>
-<td> 
+<td>
+
+```python
+from jina import Flow
+from executor import StableLM
+from text_to_image import TextToImage
+
+flow = (
+    Flow(port=12345)
+    .add(uses=StableLM, timeout_ready=-1)
+    .add(uses=TextToImage, timeout_ready=-1)
+)
+
+with flow:
+    flow.block()
+```
+
+</td>
+<td>
 
 ```yaml
 jtype: Flow
 with:
-  port: 51000
-  protocol: grpc
+    port: 12345
 executors:
-- uses: MyExec
-  name: foo
+  - uses: StableLM
+    timeout_ready: -1
+    py_modules:
+      - executor.py
+  - uses: TextToImage
+    timeout_ready: -1
+    py_modules:
+      - text_to_image.py
+```
+
+Then run the YAML Flow with the CLI: `jina flow --uses flow.yml`
+
+</td>
+</tr>
+</table>
+</div>
+
+Then, use [Jina Client](https://docs.jina.ai/concepts/client/) to make requests to the Flow:
+
+```python
+from jina import Client
+from docarray import DocList, BaseDoc
+from docarray.documents import ImageDoc
+
+
+class Prompt(BaseDoc):
+    text: str
+
+
+prompt = Prompt(
+    text='suggest an interesting image generation prompt for a mona lisa variant'
+)
+
+client = Client(port=12345)  # use port from output above
+response = client.post(on='/', inputs=[prompt], return_type=DocList[ImageDoc])
+
+response[0].display()
+```
+
+![](./.github/images/mona-lisa.png)
+
+<!-- end build-pipelines -->
+
+### Streaming for LLMs
+<!-- start llm-streaming-intro -->
+Large Language Models can power a wide range of applications from chatbots to assistants and intelligent systems.
+However, these models can be heavy and slow and your users want systems that are both intelligent _and_ fast!
+
+Large language models work by turning your questions into tokens and then generating new token one at a 
+time until it decides that generation should stop.
+This means you want to **stream** the output tokens generated by a large language model to the client. 
+In this tutorial, we will discuss how to achieve this with Streaming Endpoints in Jina.
+<!-- end llm-streaming-intro -->
+
+#### Service Schemas
+<!-- start llm-streaming-schemas -->
+The first step is to define the streaming service schemas, as you would do in any other service framework.
+The input to the service is the prompt and the maximum number of tokens to generate, while the output is simply the 
+token ID:
+```python
+from docarray import BaseDoc
+
+
+class PromptDocument(BaseDoc):
+    prompt: str
+    max_tokens: int
+
+
+class TokenDocument(BaseDoc):
+    token_id: int
+```
+<!-- end llm-streaming-schemas -->
+
+#### Service initialization
+<!-- start llm-streaming-init -->
+Our service depends on a large language model. As an example, we will use the `gpt2` model. This is how you would load 
+such a model in your executor
+```python
+from jina import Executor, requests
+from transformers import GPT2Tokenizer, GPT2LMHeadModel
+import torch
+
+tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
+
+
+class TokenStreamingExecutor(Executor):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.model = GPT2LMHeadModel.from_pretrained('gpt2')
+```
+<!-- end llm-streaming-init -->
+
+
+#### Implement the streaming endpoint
+<!-- start llm-streaming-endpoint -->
+Our streaming endpoint accepts a `PromptDocument` as input and streams `TokenDocument`s. To stream a document back to 
+the client, use the `yield` keyword in the endpoint implementation. Therefore, we use the model to generate 
+up to `max_tokens` tokens and yield them until the generation stops: 
+```python
+@requests(on='/stream')
+async def task(self, doc: PromptDocument, **kwargs) -> TokenDocument:
+    encoded_input = tokenizer(doc.prompt, return_tensors='pt')
+    for _ in range(doc.max_tokens):
+        output = self.model.generate(**encoded_input, max_new_tokens=1)
+        if output[0][-1] == tokenizer.eos_token_id:
+            break
+        yield TokenDocument(token_id=output[0][-1])
+        encoded_input = {
+            'input_ids': output,
+            'attention_mask': torch.ones(1, len(output[0])),
+        }
+```
+
+Learn more about {ref}`streaming endpoints <streaming-endpoints>` from the `Executor` documentation.
+<!-- end llm-streaming-endpoint -->
+
+
+#### Serve and send requests
+<!-- start llm-streaming-serve -->
+
+The final step is to serve the Executor and send requests using the client.
+To serve the Executor using gRPC:
+```python
+from jina import Deployment
+
+with Deployment(
+    uses=TokenStreamingExecutor, port=12345, protocol='grpc'
+) as dep:
+    dep.block()
+```
+
+To send requests from a client:
+```python
+import asyncio
+from jina import Client
+
+
+async def main():
+    client = Client(port=12345, protocol='grpc', asyncio=True)
+    tokens = []
+    async for doc in client.stream_doc(
+        on='/stream',
+        inputs=PromptDocument(prompt='what is the capital of France ?', max_tokens=10),
+        return_type=TokenDocument,
+    ):
+        tokens.append(doc.token_id)
+        print(tokenizer.decode(tokens, skip_special_tokens=True))
+
+
+asyncio.run(main())
+```
+
+```text
+The capital of France is Paris.
+```
+<!-- end llm-streaming-serve -->
+
+### Easy scalability and concurrency
+
+Why not just use standard Python to build that microservice and pipeline? Jina accelerates time to market of your application by making it more scalable and cloud-native. Jina also handles the infrastructure complexity in production and other Day-2 operations so that you can focus on the data application itself.
+
+Increase your application's throughput with scalability features out of the box, like [replicas](https://docs.jina.ai/concepts/orchestration/scale-out/#replicate-executors), [shards](https://docs.jina.ai/concepts/orchestration/scale-out/#customize-polling-behaviors) and [dynamic batching](https://docs.jina.ai/concepts/serving/executor/dynamic-batching/).
+
+Let's scale a Stable Diffusion Executor deployment with replicas and dynamic batching:
+
+![](./.github/images/scaled-deployment.png)
+
+* Create two replicas, with [a GPU assigned for each](https://docs.jina.ai/concepts/orchestration/scale-out/#replicate-on-multiple-gpus).
+* Enable dynamic batching to process incoming parallel requests together with the same model inference.
+
+
+<div class="table-wrapper">
+<table>
+<tr>
+<th> Normal Deployment </th> 
+<th> Scaled Deployment </th>
+</tr>
+<tr>
+<td>
+
+```yaml
+jtype: Deployment
+with:
+  uses: TextToImage
+  timeout_ready: -1
   py_modules:
-    - executor.py
+    - text_to_image.py
+```
+
+</td>
+<td>
+
+```yaml
+jtype: Deployment
+with:
+  uses: TextToImage
+  timeout_ready: -1
+  py_modules:
+    - text_to_image.py
+  env:
+   CUDA_VISIBLE_DEVICES: RR
   replicas: 2
-- uses: MyExec
-  name: bar
-  py_modules:
-    - executor.py
-  replicas: 3
-  needs: gateway
-- needs: [foo, bar]
-  name: baz
+  uses_dynamic_batching: # configure dynamic batching
+    /default:
+      preferred_batch_size: 10
+      timeout: 200
 ```
-     
-</td>
-<td>
-
-<p align="center">
-<a href="#"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/scale-flow.svg?raw=true" alt="Running a simple hello-world program" width="70%"></a>
-</p>
 
 </td>
 </tr>
 </table>
+</div>
 
-- You now have an API gateway that supports gRPC (default), Websockets, and HTTP protocols with TLS.
-- The communication between clients and the API gateway is duplex.
-- The API gateway allows you to route request to a specific Executor while other parts of the Flow are still busy, via `.post(..., target_executor=...)`
+Assuming your machine has two GPUs, using the scaled deployment YAML will give better throughput compared to the normal deployment.
 
----
+These features apply to both [Deployment YAML](https://docs.jina.ai/concepts/orchestration/yaml-spec/#example-yaml) and [Flow YAML](https://docs.jina.ai/concepts/orchestration/yaml-spec/#example-yaml). Thanks to the YAML syntax, you can inject deployment configurations regardless of Executor code.
 
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/container-banner.png?raw=true" alt="Jina: Seamless Container Integration" width="100%"></a>
-</p>
+## Deploy to the cloud
 
-### Seamless Container integration
+### Containerize your Executor
 
-Without having to worry about dependencies, you can easily share your Executors with others; or use public/private Executors in your project thanks to [Executor Hub](https://cloud.jina.ai).
+In order to deploy your solutions to the cloud, you need to containerize your services. Jina provides the [Executor Hub](https://docs.jina.ai/concepts/serving/executor/hub/create-hub-executor/), the perfect tool
+to streamline this process taking a lot of the troubles with you. It also lets you share these Executors publicly or privately.
 
-To create an Executor:
+You just need to structure your Executor in a folder:
 
-```bash
-jina hub new 
+```shell script
+TextToImage/
+├── executor.py
+├── config.yml
+├── requirements.txt
+```
+<div class="table-wrapper">
+<table>
+<tr>
+<th> <code>config.yml</code> </th>
+<th> <code>requirements.txt</code> </th>
+</tr>
+<tr>
+<td>
+
+```yaml
+jtype: TextToImage
+py_modules:
+  - executor.py
+metas:
+  name: TextToImage
+  description: Text to Image generation Executor based on StableDiffusion
+  url:
+  keywords: []
 ```
 
-To push it to Executor Hub:
+</td>
+<td>
 
-```bash
-jina hub push .
+```requirements.txt
+diffusers
+accelerate
+transformers
 ```
 
-To use a Hub Executor in your Flow:
+</td>
+</tr>
+</table>
+</div>
 
-|        | Docker container                           | Sandbox                                     | Source                              |
-|--------|--------------------------------------------|---------------------------------------------|-------------------------------------|
-| YAML   | `uses: jinahub+docker://MyExecutor`        | `uses: jinahub+sandbox://MyExecutor`        | `uses: jinahub://MyExecutor`        |
-| Python | `.add(uses='jinahub+docker://MyExecutor')` | `.add(uses='jinahub+sandbox://MyExecutor')` | `.add(uses='jinahub://MyExecutor')` |
 
-Behind this smooth experience is advanced management of Executors:
-- Automated builds on the cloud
-- Store, deploy, and deliver Executors cost-efficiently;
-- Automatically resolve version conflicts and dependencies;
-- Instant delivery of any Executor via Sandbox without pulling anything to local.
+Then push the Executor to the Hub by doing: `jina hub push TextToImage`.
 
----
+This will give you a URL that you can use in your `Deployment` and `Flow` to use the pushed Executors containers.
 
-<p align="center">
-<a href="https://docs.jina.ai"><img src=".github/readme/cloud-native-banner.png?raw=true" alt="Jina: Seamless Container Integration" width="100%"></a>
-</p>
 
-### Fast-lane to cloud-native
+```yaml
+jtype: Flow
+with:
+    port: 12345
+executors:
+  - uses: jinai+docker://<user-id>/StableLM
+  - uses: jinai+docker://<user-id>/TextToImage
+```
 
-Using Kubernetes becomes easy:
+
+### Get on the fast lane to cloud-native
+
+Using Kubernetes with Jina is easy:
 
 ```bash
 jina export kubernetes flow.yml ./my-k8s
 kubectl apply -R -f my-k8s
 ```
 
-Using Docker Compose becomes easy:
+And so is Docker Compose:
 
 ```bash
 jina export docker-compose flow.yml docker-compose.yml
 docker-compose up
 ```
 
-Tracing and monitoring with OpenTelemetry is straightforward:
+> **Note**
+> You can also export Deployment YAML to [Kubernetes](https://docs.jina.ai/concepts/serving/executor/serve/#serve-via-kubernetes) and [Docker Compose](https://docs.jina.ai/concepts/serving/executor/serve/#serve-via-docker-compose).
 
-```python
-from jina import Executor, requests, DocumentArray
+That's not all. We also support [OpenTelemetry, Prometheus, and Jaeger](https://docs.jina.ai/cloud-nativeness/opentelemetry/).
 
+What cloud-native technology is still challenging to you? [Tell us](https://github.com/jina-ai/jina/issues) and we'll handle the complexity and make it easy for you.
 
-class MyExec(Executor):
-    @requests
-    def encode(self, docs: DocumentArray, **kwargs):
-        with self.tracer.start_as_current_span(
-            'encode', context=tracing_context
-        ) as span:
-            with self.monitor(
-                'preprocessing_seconds', 'Time preprocessing the requests'
-            ):
-                docs.tensors = preprocessing(docs)
-            with self.monitor(
-                'model_inference_seconds', 'Time doing inference the requests'
-            ):
-                docs.embedding = model_inference(docs.tensors)
+### Deploy to JCloud
+
+You can also deploy a Flow to JCloud, where you can easily enjoy autoscaling, monitoring and more with a single command. 
+
+First, turn the `flow.yml` file into a [JCloud-compatible YAML](https://docs.jina.ai/yaml-spec/) by specifying resource requirements and using containerized Hub Executors.
+
+Then, use `jina cloud deploy` command to deploy to the cloud:
+
+```shell
+wget https://raw.githubusercontent.com/jina-ai/jina/master/.github/getting-started/jcloud-flow.yml
+jina cloud deploy jcloud-flow.yml
 ```
 
-You can integrate Jaeger or any other distributed tracing tools to collect and visualize request-level and application level service operation attributes. This helps you analyze request-response lifecycle, application behavior and performance.
+> **Warning**
+>
+> Make sure to delete/clean up the Flow once you are done with this tutorial to save resources and credits.
 
-To use Grafana, [download this JSON](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow-histogram-metrics.json) and import it into Grafana:
-
-<p align="center">
-<a href="https://docs.jina.ai"><img src=".github/readme/grafana-histogram-metrics.png?raw=true" alt="Jina: Seamless Container Integration" width="70%"></a>
-</p>
-
-To trace requests with Jaeger:
-<p align="center">
-<a href="https://docs.jina.ai"><img src=".github/readme/jaeger-tracing-example.png?raw=true" alt="Jina: Seamless Container Integration" width="70%"></a>
-</p>
-
-
-What cloud-native technology is still challenging to you? [Tell us](https://github.com/jina-ai/jina/issues), we will handle the complexity and make it easy for you.
+Read more about [deploying Flows to JCloud](https://docs.jina.ai/concepts/jcloud/#deploy).
 
 <!-- start support-pitch -->
 
 ## Support
 
-- Join our [Slack community](https://jina.ai/slack) and chat with other community members about ideas.
-- Join our [Engineering All Hands](https://youtube.com/playlist?list=PL3UBBWOUVhFYRUa_gpYYKBqEAkO4sxmne) meet-up to discuss your use case and learn Jina's new features.
-    - **When?** The second Tuesday of every month
-    - **Where?**
-      Zoom ([see our public events calendar](https://calendar.google.com/calendar/embed?src=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&ctz=Europe%2FBerlin)/[.ical](https://calendar.google.com/calendar/ical/c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com/public/basic.ics))
-      and [live stream on YouTube](https://youtube.com/c/jina-ai)
+- Join our [Discord community](https://discord.jina.ai) and chat with other community members about ideas.
 - Subscribe to the latest video tutorials on our [YouTube channel](https://youtube.com/c/jina-ai)
 
 ## Join Us
 
 Jina is backed by [Jina AI](https://jina.ai) and licensed under [Apache-2.0](./LICENSE).
-[We are actively hiring](https://jobs.jina.ai) AI engineers, solution engineers to build the next neural search ecosystem in open source.
 
 <!-- end support-pitch -->

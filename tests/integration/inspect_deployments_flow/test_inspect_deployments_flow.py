@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from jina import Flow, Executor, DocumentArray, Client, requests
+from jina import Client, DocumentArray, Executor, Flow, requests
 from tests import random_docs
 
 
@@ -12,7 +12,7 @@ class DummyEvaluator1(Executor):
     @requests(on=['/index'])
     def craft(self, docs, *args, **kwargs):
         tmp_dir = os.environ.get('TEST_EVAL_FLOW_TMPDIR')
-        with open(f'{tmp_dir}/{self.tag}.txt', 'a') as fp:
+        with open(f'{tmp_dir}/{self.tag}.txt', 'a', encoding='utf-8') as fp:
             fp.write(f'{docs[0].id}')
         return None
 
@@ -36,7 +36,7 @@ def validate(ids, expect):
         fname = f'{tmp_dir}/{j}.txt'
         assert os.path.exists(fname) == expect
         if expect:
-            with open(fname) as fp:
+            with open(fname, encoding='utf-8') as fp:
                 assert fp.read() != ''
 
 
@@ -66,8 +66,8 @@ def test_flow1(inspect, protocol, temp_folder):
 def test_flow2(inspect, protocol, temp_folder):
     f = (
         Flow(protocol=protocol, inspect=inspect)
-            .add()
-            .inspect(
+        .add()
+        .inspect(
             uses=DummyEvaluator1,
             env={'TEST_EVAL_FLOW_TMPDIR': os.environ.get('TEST_EVAL_FLOW_TMPDIR')},
         )
@@ -87,11 +87,11 @@ def test_flow3(inspect, protocol, temp_folder):
 
     f = (
         Flow(protocol=protocol, inspect=inspect)
-            .add(name='p1')
-            .inspect(uses='DummyEvaluator1', env=env)
-            .add(name='p2', needs='gateway')
-            .needs(['p1', 'p2'])
-            .inspect(uses='DummyEvaluator2', env=env)
+        .add(name='p1')
+        .inspect(uses='DummyEvaluator1', env=env)
+        .add(name='p2', needs='gateway')
+        .needs(['p1', 'p2'])
+        .inspect(uses='DummyEvaluator2', env=env)
     )
 
     with f:
@@ -108,13 +108,13 @@ def test_flow4(inspect, protocol, temp_folder):
 
     f = (
         Flow(protocol=protocol, inspect=inspect)
-            .add()
-            .inspect(uses='DummyEvaluator1', env=env)
-            .add()
-            .inspect(uses='DummyEvaluator2', env=env)
-            .add()
-            .inspect(uses='DummyEvaluator3', env=env)
-            .plot(build=True)
+        .add()
+        .inspect(uses='DummyEvaluator1', env=env)
+        .add()
+        .inspect(uses='DummyEvaluator2', env=env)
+        .add()
+        .inspect(uses='DummyEvaluator3', env=env)
+        .plot(build=True)
     )
 
     with f:
@@ -153,16 +153,16 @@ def test_flow_returned_collect(protocol, port_generator):
 
     f = (
         Flow(protocol=protocol, inspect='COLLECT', port=exposed_port)
-            .add()
-            .inspect(
+        .add()
+        .inspect(
             uses=AddEvaluationExecutor,
         )
     )
 
     with f:
-        response = Client(
-            port=exposed_port, protocol=protocol
-        ).index(inputs=docs, return_responses=True)
+        response = Client(port=exposed_port, protocol=protocol).index(
+            inputs=docs, return_responses=True
+        )
     validate_func(response[0])
 
 
@@ -178,8 +178,8 @@ def test_flow_not_returned(inspect, protocol, port_generator):
 
     f = (
         Flow(protocol=protocol, inspect=inspect, port=exposed_port)
-            .add()
-            .inspect(
+        .add()
+        .inspect(
             uses=AddEvaluationExecutor,
         )
     )

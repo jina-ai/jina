@@ -42,16 +42,39 @@ spec:
                   fieldPath: metadata.uid
             - name: JINA_DEPLOYMENT_NAME
               value: {jina_deployment_name}
-          readinessProbe:
+            - name: K8S_STATEFULSET_NAME
+              value: {name}
+            - name: K8S_NAMESPACE_NAME
+              value: {namespace}
+            - name: K8S_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          startupProbe:
             exec:
               command:
                 - jina
                 - ping
                 - executor
-                - 127.0.0.1:{port}
+                - {protocol}://127.0.0.1:{port}
             initialDelaySeconds: 5
-            periodSeconds: 20
+            periodSeconds: {period_seconds}
+            failureThreshold: {failure_threshold}
             timeoutSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+                - jina
+                - ping
+                - executor
+                - {protocol}://127.0.0.1:{port}
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 10
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 2"]
           volumeMounts:
             - name: {name}-volume
               mountPath: "{volume_path}"

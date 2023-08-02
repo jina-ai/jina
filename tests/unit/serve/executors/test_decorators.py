@@ -4,7 +4,7 @@ import pytest
 
 from jina.helper import iscoroutinefunction
 from jina.serve.executors import get_executor_taboo
-from jina.serve.executors.decorators import requests
+from jina.serve.executors.decorators import dynamic_batching, requests
 from jina.serve.helper import store_init_kwargs
 
 
@@ -56,6 +56,29 @@ def test_async_requests():
         pass
 
     @requests
+    async def fn_3(*args, **kwargs):
+        pass
+
+    assert hasattr(fn_2, 'fn')
+    assert not iscoroutinefunction(getattr(fn_2, 'fn'))
+    assert hasattr(fn_3, 'fn')
+    assert iscoroutinefunction(getattr(fn_3, 'fn'))
+
+
+def test_dynamic_batching():
+    @dynamic_batching()
+    def fn_2(*args, **kwargs):
+        pass
+
+    assert hasattr(fn_2, 'fn')
+
+
+def test_async_dynamic_batching():
+    @dynamic_batching
+    def fn_2(*args, **kwargs):
+        pass
+
+    @dynamic_batching
     async def fn_3(*args, **kwargs):
         pass
 

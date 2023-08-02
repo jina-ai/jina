@@ -7,6 +7,7 @@ from jina import Document, DocumentArray, Executor, Flow, requests
 from jina.helper import random_port
 from jina.orchestrate.deployments import Deployment
 from jina.parsers import set_deployment_parser
+from jina.serve.helper import get_server_side_grpc_options
 
 
 def validate_response(docs, expected_docs=50):
@@ -74,7 +75,6 @@ def test_flow_with_external_deployment(
         del external_args['name']
         del external_args['external']
         del external_args['deployment_role']
-        print(external_args)
         flow = Flow().add(
             **external_args,
             name='external_fake',
@@ -352,13 +352,11 @@ def test_external_flow_with_target_executor():
 
 def test_external_flow_with_grpc_metadata():
     import grpc
-    from grpc_health.v1 import health, health_pb2, health_pb2_grpc
+    from grpc_health.v1 import health_pb2, health_pb2_grpc
     from grpc_reflection.v1alpha import reflection
 
-    from jina import __default_host__
     from jina.proto import jina_pb2, jina_pb2_grpc
-    from jina.serve.runtimes.gateway import GRPCGateway
-    from jina.serve.runtimes.helper import _get_grpc_server_options
+    from jina.serve.runtimes.gateway.grpc import GRPCGateway
 
     class DummyInterceptor(grpc.aio.ServerInterceptor):
         def __init__(self):
@@ -396,7 +394,7 @@ def test_external_flow_with_grpc_metadata():
                 server_interceptors.extend(extra_interceptors)
 
             self.server = grpc.aio.server(
-                options=_get_grpc_server_options(self.grpc_server_options),
+                options=get_server_side_grpc_options(self.grpc_server_options),
                 interceptors=server_interceptors,
             )
 
@@ -404,8 +402,12 @@ def test_external_flow_with_grpc_metadata():
                 self.streamer._streamer, self.server
             )
 
-            jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self, self.server)
-            jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self.server)
+            jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(
+                self._request_handler, self.server
+            )
+            jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(
+                self._request_handler, self.server
+            )
 
             service_names = (
                 jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,
@@ -419,12 +421,12 @@ def test_external_flow_with_grpc_metadata():
             )
 
             for service in service_names:
-                self.health_servicer.set(
+                await self.health_servicer.set(
                     service, health_pb2.HealthCheckResponse.SERVING
                 )
             reflection.enable_server_reflection(service_names, self.server)
 
-            bind_addr = f'{__default_host__}:{self.port}'
+            bind_addr = f'{self.host}:{self.port}'
 
             if self.ssl_keyfile and self.ssl_certfile:
                 with open(self.ssl_keyfile, 'rb') as f:

@@ -1,4 +1,4 @@
-# {octicon}`flame` Jina AI Cloud
+# {octicon}`beaker` Jina AI Cloud
 
 
 
@@ -7,7 +7,7 @@
 
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Explore Executor Hub
-:link: ../fundamentals/executor/hub/index
+:link: ../concepts/serving/executor/hub/index
 :link-type: doc
 
 
@@ -17,10 +17,10 @@ Executor Hub is an Executor marketplace that allows you to share, explore and te
 
 
 ::::{grid-item-card} {octicon}`cpu;1.5em` Deploy a Flow to JCloud
-:link: ../fundamentals/jcloud/index
+:link: ../concepts/jcloud/index
 :link-type: doc
 
-JCloud is a free CPU/GPU hosting platform for Jina projects.
+JCloud is a cost-efficient hosting platform specifically designed for Jina projects.
 ::::
 
 
@@ -29,27 +29,22 @@ JCloud is a free CPU/GPU hosting platform for Jina projects.
 
 Jina AI Cloud is the **portal** and **single entrypoint** to manage **all** your Jina AI resources, including: 
 - Data
-  - [DocumentArray](https://docarray.jina.ai/fundamentals/documentarray/serialization/#from-to-cloud)
+  - [docarray](https://docs.docarray.org/user_guide/storing/doc_store/store_jac/)
   - [Finetuner artifacts](https://finetuner.jina.ai/walkthrough/save-model/#save-artifact)
-- [Executors](../fundamentals/executor/index.md)
-- [Flows](../fundamentals/flow/index.md)
+- [Executors](../concepts/serving/executor/index.md)
+- [Flows](../concepts/orchestration/flow.md)
 - [Apps](https://now.jina.ai)
 
 _Manage_ in this context means: CRUD, access control, personal access tokens, and subscription.
 
-
-```{admonition} Under Development
-:class: danger
-
-Jina AI Cloud is under a heavy developement. Features and user experiences may change over time. 
-
-We are actively working on the GUI for Jina AI Cloud. You may not see the full features right now. 
+```{tip}
+Are you ready to unlock the power of AI with Jina AI Cloud? Take a look at our [pricing options](https://cloud.jina.ai/pricing) now!
 ```
 
 ```{toctree}
 :hidden:
 
 login
-../fundamentals/executor/hub/index
-../fundamentals/jcloud/index
+../concepts/serving/executor/hub/index
+../concepts/jcloud/index
 ```

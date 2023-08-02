@@ -5,21 +5,20 @@ import numpy as np
 import psutil
 import pytest
 
-from jina import Executor, Flow, __default_endpoint__
+from jina import Executor, Flow
 from jina.clients.helper import _safe_callback, pprint_routes
+from jina.constants import __default_endpoint__
 from jina.excepts import BadClientCallback, NotSupportedError
 from jina.helper import (
-    _parse_hosts,
-    _parse_ports,
     cached_property,
     convert_tuple_to_list,
     deprecated_alias,
     dunder_get,
     find_request_binding,
     get_ci_vendor,
+    is_generator,
     is_port_free,
     is_yaml_filepath,
-    make_iterable,
     parse_arg,
     random_port,
     reset_ports,
@@ -365,35 +364,6 @@ def test_run_async():
 
 
 @pytest.mark.parametrize(
-    'port, output',
-    [('8080', 8080), ('1,2,6', [1, 2, 6])],
-)
-def test_parse_port(port, output):
-    assert _parse_ports(port) == output
-
-
-@pytest.mark.parametrize(
-    'host, output',
-    [('1234', '1234'), ('1,2,6', ['1', '2', '6'])],
-)
-def test_parse_host(host, output):
-    assert _parse_hosts(host) == output
-
-
-@pytest.mark.parametrize(
-    'o, expected',
-    [
-        (1, [1]),
-        ('a', ['a']),
-        (bytes('hello', 'utf-8'), [bytes('hello', 'utf-8')]),
-        ([1, 2], [1, 2]),
-    ],
-)
-def test_make_iterable(o, expected):
-    assert make_iterable(o) == expected
-
-
-@pytest.mark.parametrize(
     'input, expected',
     [
         ('12', 12),
@@ -407,3 +377,48 @@ def test_make_iterable(o, expected):
 )
 def test_parse_arg(input, expected):
     assert parse_arg(input) == expected
+
+
+def yield_generator_func():
+    for _ in range(10):
+        # no yield
+        pass
+    yield 1
+    yield 2
+
+async def async_yield_generator_func():
+    import asyncio
+    for _ in range(10):
+        # no yield
+        pass
+    await asyncio.sleep(0.5)
+    yield 1
+    yield 2
+
+
+def normal_func():
+    for _ in range(10):
+        # no yield
+        pass
+
+
+async def async_normal_func():
+    import asyncio
+    await asyncio.sleep(0.5)
+    for _ in range(10):
+        # no yield
+        pass
+
+def yield_from_generator_func():
+    for _ in range(10):
+        # no yield
+        pass
+    yield from yield_generator_func()
+
+
+def test_is_generator():
+    assert is_generator(yield_generator_func)
+    assert not is_generator(normal_func)
+    assert not is_generator(async_normal_func)
+    assert is_generator(yield_from_generator_func)
+    assert is_generator(async_yield_generator_func)

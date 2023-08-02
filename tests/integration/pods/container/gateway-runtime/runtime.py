@@ -1,20 +1,16 @@
 import sys
 
 from jina.parsers import set_gateway_parser
-from jina.parsers.helper import _set_gateway_uses
-from jina.serve.runtimes.gateway import GatewayRuntime
+from jina.parsers.helper import _update_gateway_args
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 
 
 def run(*args, **kwargs):
-    runtime_cls = GatewayRuntime
-    print(f' args {args}')
     runtime_args = set_gateway_parser().parse_args(args)
-    print(f' protocol {runtime_args.protocol}')
-    _set_gateway_uses(runtime_args)
+    _update_gateway_args(runtime_args)
 
-    print(f' runtime_cls {runtime_cls}')
-    with runtime_cls(runtime_args) as runtime:
-        print(f' Lets run forever')
+    with AsyncNewLoopRuntime(runtime_args, req_handler_cls=GatewayRequestHandler) as runtime:
         runtime.run_forever()
 
 

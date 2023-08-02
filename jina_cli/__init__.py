@@ -10,7 +10,7 @@ def _get_run_args(print_args: bool = True):
 
     console = get_rich_console()
 
-    silent_print = {'help', 'hub', 'export', 'auth', 'cloud'}
+    silent_print = {'help', 'hub', 'export', 'auth', 'cloud', 'ping'}
 
     parser = get_main_parser()
     if len(sys.argv) > 1:
@@ -28,7 +28,7 @@ def _get_run_args(print_args: bool = True):
             warn_unknown_args(unknown)
 
         if args.cli not in silent_print and print_args:
-            from jina import __resources_path__
+            from jina.constants import __resources_path__
 
             p = parser._actions[-1].choices[sys.argv[1]]
             default_args = {
@@ -37,7 +37,7 @@ def _get_run_args(print_args: bool = True):
                 if isinstance(a, (_StoreAction, _StoreTrueAction))
             }
 
-            with open(os.path.join(__resources_path__, 'jina.logo')) as fp:
+            with open(os.path.join(__resources_path__, 'jina.logo'), encoding='utf-8') as fp:
                 logo_str = fp.read()
 
             param_str = Table(

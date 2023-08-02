@@ -76,7 +76,7 @@ def write_signature(
         0,
         re.DOTALL,
     )
-    with open(filepath, 'w') as fp:
+    with open(filepath, 'w', encoding='utf-8') as fp:
         fp.write(final_code)
 
 

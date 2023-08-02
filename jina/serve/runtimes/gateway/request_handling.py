@@ -1,215 +1,339 @@
 import asyncio
-import copy
-from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
+import itertools
+import threading
+from typing import TYPE_CHECKING, AsyncIterator, Dict
 
-import grpc.aio
-
-from docarray import DocumentArray
-from jina.excepts import InternalNetworkError
-from jina.helper import GATEWAY_NAME
-from jina.serve.networking import GrpcConnectionPool
-from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
-from jina.serve.runtimes.helper import _is_param_for_specific_executor
-from jina.serve.runtimes.monitoring import MonitoringRequestMixin
-from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
+from jina.enums import ProtocolType
+from jina.helper import get_full_version
+from jina.proto import jina_pb2
+from jina.types.request.data import DataRequest, SingleDocumentRequest
+from jina.types.request.status import StatusMessage
 
 if TYPE_CHECKING:  # pragma: no cover
-    from asyncio import Future
+    from types import SimpleNamespace
+    import grpc
 
-    from opentelemetry.metrics import Meter
-    from prometheus_client import CollectorRegistry
-
+    from jina.logging.logger import JinaLogger
+    from jina.serve.runtimes.gateway.streamer import GatewayStreamer
     from jina.types.request import Request
 
 
-class GatewayRequestHandler(MonitoringRequestMixin):
-    """
-    Class that handles the requests arriving to the gateway and the result extracted from the requests future.
-
-    :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler
-    :param runtime_name: optional runtime_name that will be registered during monitoring
-    """
+class GatewayRequestHandler:
+    """Object to encapsulate the code related to handle the data requests in the Gateway"""
 
     def __init__(
         self,
-        metrics_registry: Optional['CollectorRegistry'] = None,
-        meter: Optional['Meter'] = None,
-        runtime_name: Optional[str] = None,
+        args: 'SimpleNamespace',
+        logger: 'JinaLogger',
+        metrics_registry=None,
+        meter=None,
+        aio_tracing_client_interceptors=None,
+        tracing_client_interceptor=None,
+        works_as_load_balancer: bool = False,
+        **kwargs,
     ):
-        super().__init__(metrics_registry, meter, runtime_name)
-        self._executor_endpoint_mapping = None
-        self._gathering_endpoints = False
+        import json
 
-    def handle_request(
-        self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
-    ) -> Callable[['Request'], 'Tuple[Future, Optional[Future]]']:
-        """
-        Function that handles the requests arriving to the gateway. This will be passed to the streamer.
+        from jina.serve.runtimes.gateway.streamer import (
+            GatewayStreamer,
+            _ExecutorStreamer,
+        )
 
-        :param graph: The TopologyGraph of the Flow.
-        :param connection_pool: The connection pool to be used to send messages to specific nodes of the graph
-        :return: Return a Function that given a Request will return a Future from where to extract the response
-        """
+        self.runtime_args = args
+        self.logger = logger
+        graph_description = json.loads(self.runtime_args.graph_description)
+        graph_conditions = json.loads(self.runtime_args.graph_conditions)
+        deployments_addresses = json.loads(self.runtime_args.deployments_addresses)
+        deployments_metadata = json.loads(self.runtime_args.deployments_metadata)
+        deployments_no_reduce = json.loads(self.runtime_args.deployments_no_reduce)
 
-        async def gather_endpoints(request_graph):
-            nodes = request_graph.all_nodes
+        deployment_grpc_addresses = {}
+        for deployment_name, addresses in deployments_addresses.items():
+            if isinstance(addresses, Dict):
+                deployment_grpc_addresses[deployment_name] = addresses.get(
+                    ProtocolType.GRPC.to_string(), []
+                )
+            else:
+                deployment_grpc_addresses[deployment_name] = addresses
+
+        self.streamer = GatewayStreamer(
+            graph_representation=graph_description,
+            executor_addresses=deployment_grpc_addresses,
+            graph_conditions=graph_conditions,
+            deployments_metadata=deployments_metadata,
+            deployments_no_reduce=deployments_no_reduce,
+            timeout_send=self.runtime_args.timeout_send,
+            retries=self.runtime_args.retries,
+            compression=self.runtime_args.compression,
+            runtime_name=self.runtime_args.runtime_name,
+            prefetch=self.runtime_args.prefetch,
+            logger=self.logger,
+            metrics_registry=metrics_registry,
+            meter=meter,
+            aio_tracing_client_interceptors=aio_tracing_client_interceptors,
+            tracing_client_interceptor=tracing_client_interceptor,
+            grpc_channel_options=self.runtime_args.grpc_channel_options
+            if hasattr(self.runtime_args, 'grpc_channel_options')
+            else None,
+        )
+
+        GatewayStreamer._set_env_streamer_args(
+            graph_representation=graph_description,
+            executor_addresses=deployment_grpc_addresses,
+            graph_conditions=graph_conditions,
+            deployments_metadata=deployments_metadata,
+            deployments_no_reduce=deployments_no_reduce,
+            timeout_send=self.runtime_args.timeout_send,
+            retries=self.runtime_args.retries,
+            compression=self.runtime_args.compression,
+            runtime_name=self.runtime_args.runtime_name,
+            prefetch=self.runtime_args.prefetch,
+        )
+
+        self.executor = {
+            executor_name: _ExecutorStreamer(
+                self.streamer._connection_pool, executor_name=executor_name
+            )
+            for executor_name in deployment_grpc_addresses.keys()
+        }
+        servers = []
+        for addresses in deployments_addresses.values():
+            if isinstance(addresses, Dict):
+                servers.extend(addresses.get(ProtocolType.HTTP.to_string(), []))
+        self.load_balancer_servers = itertools.cycle(servers)
+        self.warmup_stop_event = threading.Event()
+        self.warmup_task = None
+        if not works_as_load_balancer:
             try:
-                tasks_to_get_endpoints = [
-                    node.get_endpoints(connection_pool) for node in nodes
-                ]
-                endpoints = await asyncio.gather(*tasks_to_get_endpoints)
-            except InternalNetworkError as err:
-                err_code = err.code()
-                if err_code == grpc.StatusCode.UNAVAILABLE:
-                    err._details = (
-                        err.details()
-                        + f' |Gateway: Communication error with deployment at address(es) {err.dest_addr}. Head or worker(s) may be down.'
-                    )
-                    raise err
-                else:
-                    raise
-
-            self._executor_endpoint_mapping = {}
-            for node, (endp, _) in zip(nodes, endpoints):
-                self._executor_endpoint_mapping[node.name] = endp.endpoints
-
-        def _handle_request(request: 'Request') -> 'Tuple[Future, Optional[Future]]':
-            self._update_start_request_metrics(request)
-
-            # important that the gateway needs to have an instance of the graph per request
-            request_graph = copy.deepcopy(graph)
-
-            if graph.has_filter_conditions:
-                request_doc_ids = request.data.docs[
-                    :, 'id'
-                ]  # used to maintain order of docs that are filtered by executors
-            responding_tasks = []
-            floating_tasks = []
-            endpoint = request.header.exec_endpoint
-            r = request.routes.add()
-            r.executor = 'gateway'
-            r.start_time.GetCurrentTime()
-            # If the request is targeting a specific deployment, we can send directly to the deployment instead of
-            # querying the graph
-            num_outgoing_nodes = len(request_graph.origin_nodes)
-            has_specific_params = False
-            request_input_parameters = request.parameters
-            for key in request_input_parameters:
-                if _is_param_for_specific_executor(key):
-                    has_specific_params = True
-                    break
-
-            target_executor = request.header.target_executor
-            # reset it in case we send to an external gateway
-            request.header.target_executor = ''
-
-            for origin_node in request_graph.origin_nodes:
-                leaf_tasks = origin_node.get_leaf_tasks(
-                    connection_pool=connection_pool,
-                    request_to_send=request,
-                    previous_task=None,
-                    endpoint=endpoint,
-                    executor_endpoint_mapping=self._executor_endpoint_mapping,
-                    target_executor_pattern=target_executor or None,
-                    request_input_parameters=request_input_parameters,
-                    request_input_has_specific_params=has_specific_params,
-                    copy_request_at_send=num_outgoing_nodes > 1 and has_specific_params,
+                self.warmup_task = asyncio.create_task(
+                    self.streamer.warmup(self.warmup_stop_event)
                 )
-                # Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their
-                # subtrees that unwrap all the previous tasks. It starts like a chain of waiting for tasks from previous
-                # nodes
-                responding_tasks.extend([task for ret, task in leaf_tasks if ret])
-                floating_tasks.extend([task for ret, task in leaf_tasks if not ret])
+            except RuntimeError:
+                # when Gateway is started locally, it may not have loop
+                pass
 
-            def _sort_response_docs(response):
-                # sort response docs according to their order in the initial request
-                def sort_by_request_order(doc):
-                    if doc.id in request_doc_ids:
-                        return request_doc_ids.index(doc.id)
-                    else:
-                        return len(request_doc_ids)  # put new/unknown docs at the end
+    def cancel_warmup_task(self):
+        """Cancel warmup task if exists and is not completed. Cancellation is required if the Flow is being terminated before the
+        task is successful or hasn't reached the max timeout.
+        """
+        if self.warmup_task:
+            try:
+                if not self.warmup_task.done():
+                    self.logger.debug(f'Cancelling warmup task.')
+                    self.warmup_stop_event.set()  # this event is useless if simply cancel
+                    self.warmup_task.cancel()
+            except Exception as ex:
+                self.logger.debug(f'exception during warmup task cancellation: {ex}')
+                pass
 
-                sorted_docs = sorted(response.data.docs, key=sort_by_request_order)
-                response.data.docs = DocumentArray(sorted_docs)
+    async def close(self):
+        """
+        Gratefully closes the object making sure all the floating requests are taken care and the connections are closed gracefully
+        """
+        self.logger.debug(f'Closing Request Handler')
+        self.cancel_warmup_task()
+        await self.streamer.close()
+        self.logger.debug(f'Request Handler closed')
 
-            async def _process_results_at_end_gateway(
-                tasks: List[asyncio.Task], request_graph: TopologyGraph
-            ) -> asyncio.Future:
-                try:
-                    if (
-                        self._executor_endpoint_mapping is None
-                        and not self._gathering_endpoints
-                    ):
-                        self._gathering_endpoints = True
-                        asyncio.create_task(gather_endpoints(request_graph))
+    def _http_fastapi_default_app(
+        self,
+        title,
+        description,
+        no_debug_endpoints,
+        no_crud_endpoints,
+        expose_endpoints,
+        expose_graphql_endpoint,
+        cors,
+        tracing,
+        tracer_provider,
+        **kwargs,
+    ):
+        from jina._docarray import docarray_v2
+        from jina.helper import extend_rest_interface
 
-                    partial_responses = await asyncio.gather(*tasks)
-                except Exception:
-                    # update here failed request
-                    self._update_end_failed_requests_metrics()
-                    raise
-                partial_responses, metadatas = zip(*partial_responses)
-                filtered_partial_responses = list(
-                    filter(lambda x: x is not None, partial_responses)
-                )
-
-                response = filtered_partial_responses[0]
-                # JoanFM: to keep the docs_map feature, need to add the routes in the WorkerRuntime but clear it here
-                # so that routes are properly done. not very clean but refactoring would be costly for such a small
-                # thing, `docs_map` reuses routes potentially not in the best way but works for now
-                for i in reversed(range(len(response.routes))):
-                    if response.routes[i].executor != GATEWAY_NAME:
-                        del response.routes[i]
-                request_graph.add_routes(response)
-
-                if graph.has_filter_conditions:
-                    _sort_response_docs(response)
-
-                collect_results = request_graph.collect_all_results()
-                resp_params = response.parameters
-                if len(collect_results) > 0:
-                    resp_params[WorkerRequestHandler._KEY_RESULT] = collect_results
-                    response.parameters = resp_params
-                return response
-
-            # In case of empty topologies
-            if not responding_tasks:
-                r.end_time.GetCurrentTime()
-                future = asyncio.Future()
-                future.set_result((request, {}))
-                responding_tasks.append(future)
-
-            return (
-                asyncio.ensure_future(
-                    _process_results_at_end_gateway(responding_tasks, request_graph)
-                ),
-                asyncio.ensure_future(asyncio.gather(*floating_tasks))
-                if len(floating_tasks) > 0
-                else None,
+        if not docarray_v2:
+            from jina.serve.runtimes.gateway.http_fastapi_app import get_fastapi_app
+        else:
+            from jina.serve.runtimes.gateway.http_fastapi_app_docarrayv2 import (
+                get_fastapi_app,
             )
 
-        return _handle_request
+        return extend_rest_interface(
+            get_fastapi_app(
+                streamer=self.streamer,
+                title=title,
+                description=description,
+                no_debug_endpoints=no_debug_endpoints,
+                no_crud_endpoints=no_crud_endpoints,
+                expose_endpoints=expose_endpoints,
+                expose_graphql_endpoint=expose_graphql_endpoint,
+                cors=cors,
+                logger=self.logger,
+                tracing=tracing,
+                tracer_provider=tracer_provider,
+            )
+        )
 
-    def handle_result(self) -> Callable[['Request'], 'Request']:
+    async def _load_balance(self, request):
+        import aiohttp
+        from aiohttp import web
+
+        target_server = next(self.load_balancer_servers)
+        target_url = f'{target_server}{request.path_qs}'
+
+        try:
+            async with aiohttp.ClientSession() as session:
+                if request.method == 'GET':
+                    async with session.get(target_url) as response:
+                        content = await response.read()
+                        return web.Response(
+                            body=content,
+                            status=response.status,
+                            content_type=response.content_type,
+                        )
+                elif request.method == 'POST':
+                    d = await request.read()
+                    import json
+
+                    async with session.post(
+                        url=target_url, json=json.loads(d.decode())
+                    ) as response:
+                        content = await response.read()
+                        return web.Response(
+                            body=content,
+                            status=response.status,
+                            content_type=response.content_type,
+                        )
+        except aiohttp.ClientError as e:
+            return web.Response(text=f'Error: {str(e)}', status=500)
+
+    def _websocket_fastapi_default_app(self, tracing, tracer_provider):
+        from jina.helper import extend_rest_interface
+        from jina.serve.runtimes.gateway.websocket_fastapi_app import get_fastapi_app
+
+        return extend_rest_interface(
+            get_fastapi_app(
+                streamer=self.streamer,
+                logger=self.logger,
+                tracing=tracing,
+                tracer_provider=tracer_provider,
+            )
+        )
+
+    async def dry_run(self, empty, context) -> jina_pb2.StatusProto:
         """
-        Function that handles the result when extracted from the request future
+        Process the call requested by having a dry run call to every Executor in the graph
 
-        :return: Return a Function that returns a request to be returned to the client
+        :param empty: The service expects an empty protobuf message
+        :param context: grpc context
+        :returns: the response request
         """
+        self.logger.debug('recv a dry_run request')
+        from jina._docarray import Document, DocumentArray
+        from jina.serve.executors import __dry_run_endpoint__
 
-        def _handle_result(result: 'Request'):
-            """
-            Function that handles the result when extracted from the request future
+        da = DocumentArray([Document()])
+        try:
+            async for _ in self.streamer.stream_docs(
+                docs=da, exec_endpoint=__dry_run_endpoint__, request_size=1
+            ):
+                pass
+            status_message = StatusMessage()
+            status_message.set_code(jina_pb2.StatusProto.SUCCESS)
+            return status_message.proto
+        except Exception as ex:
+            status_message = StatusMessage()
+            status_message.set_exception(ex)
+            return status_message.proto
 
-            :param result: The result returned to the gateway. It extracts the request to be returned to the client
-            :return: Returns a request to be returned to the client
-            """
-            for route in result.routes:
-                if route.executor == 'gateway':
-                    route.end_time.GetCurrentTime()
+    async def _status(self, empty, context) -> jina_pb2.JinaInfoProto:
+        """
+        Process the the call requested and return the JinaInfo of the Runtime
 
-            self._update_end_request_metrics(result)
+        :param empty: The service expects an empty protobuf message
+        :param context: grpc context
+        :returns: the response request
+        """
+        self.logger.debug('recv a _status request')
+        info_proto = jina_pb2.JinaInfoProto()
+        version, env_info = get_full_version()
+        for k, v in version.items():
+            info_proto.jina[k] = str(v)
+        for k, v in env_info.items():
+            info_proto.envs[k] = str(v)
+        return info_proto
 
-            return result
+    async def stream(
+        self, request_iterator, context=None, *args, **kwargs
+    ) -> AsyncIterator['Request']:
+        """
+        stream requests from client iterator and stream responses back.
 
-        return _handle_result
+        :param request_iterator: iterator of requests
+        :param context: context of the grpc call
+        :param args: positional arguments
+        :param kwargs: keyword arguments
+        :yield: responses to the request after streaming to Executors in Flow
+        """
+        self.logger.debug('recv a stream request')
+        async for resp in self.streamer.rpc_stream(
+            request_iterator=request_iterator, context=context, *args, **kwargs
+        ):
+            yield resp
+
+    async def stream_doc(
+            self, request: SingleDocumentRequest, context: 'grpc.aio.ServicerContext'
+    ) -> SingleDocumentRequest:
+        """
+        Process the received requests and return the result as a new request
+
+        :param request: the data request to process
+        :param context: grpc context
+        :yields: the response request
+        """
+        self.logger.debug('recv a stream_doc request')
+        async for result in self.streamer.rpc_stream_doc(
+                request=request,
+        ):
+            yield result
+
+    async def process_single_data(
+        self, request: DataRequest, context=None
+    ) -> DataRequest:
+        """Implements request and response handling of a single DataRequest
+        :param request: DataRequest from Client
+        :param context: grpc context
+        :return: response DataRequest
+        """
+        self.logger.debug(f'recv a process_single_data request')
+        return await self.streamer.process_single_data(request, context)
+
+    async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
+        """
+        Uses the connection pool to send a discover endpoint call to the Executors
+
+        :param empty: The service expects an empty protobuf message
+        :param context: grpc context
+        :returns: the response request
+        """
+        from google.protobuf import json_format
+        self.logger.debug('got an endpoint discovery request')
+        response = jina_pb2.EndpointsProto()
+        await self.streamer._get_endpoints_input_output_models(is_cancel=None)
+        request_models_map = self.streamer._endpoints_models_map
+        if request_models_map is not None and len(request_models_map) > 0:
+            schema_maps = {}
+            for k, v in request_models_map.items():
+                schema_maps[k] = {}
+                schema_maps[k]['input'] = v['input'].schema()
+                schema_maps[k]['output'] = v['output'].schema()
+                schema_maps[k]['is_generator'] = v['is_generator']
+                schema_maps[k]['is_singleton_doc'] = v['is_singleton_doc']
+            response.endpoints.extend(schema_maps.keys())
+            json_format.ParseDict(schema_maps, response.schemas)
+        else:
+            endpoints = await self.streamer.topology_graph._get_all_endpoints(self.streamer._connection_pool,  retry_forever=True, is_cancel=None)
+            response.endpoints.extend(list(endpoints))
+        return response
+
+    Call = stream

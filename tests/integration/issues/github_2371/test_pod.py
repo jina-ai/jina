@@ -1,9 +1,9 @@
-from jina.parsers import set_pod_parser
 from jina.orchestrate.pods.factory import PodFactory
+from tests.helper import _generate_pod_args
 
 
 def test_pod_instantiate_start_same_context():
-    arg = set_pod_parser().parse_args([])
+    arg = _generate_pod_args()
     pod_args = [arg, arg]
 
     for args in pod_args:
@@ -13,7 +13,7 @@ def test_pod_instantiate_start_same_context():
 
 
 def test_pod_instantiate_start_different_context():
-    arg = set_pod_parser().parse_args([])
+    arg = _generate_pod_args()
     pod_args = [arg, arg]
     pods = []
     for args in pod_args:

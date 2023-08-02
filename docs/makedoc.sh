@@ -4,10 +4,10 @@ set -ex
 
 if [[ $1 == "local-only" ]]; then 
   rm -rf api && make clean
-
+  cp -r ../jina/proto .
   docker run --rm \
     -v $(pwd)/proto:/out \
-    -v $(pwd)/../jina/proto:/protos \
+    -v $(pwd)/../jina/proto/docarray_v2:/protos \
     ghcr.io/jina-ai/protoc-gen-doc --doc_opt=markdown,docs.md
 
   make dirhtml
@@ -46,7 +46,7 @@ else
 
   docker run --rm \
     -v $(pwd)/proto:/out \
-    -v $(pwd)/../jina/proto:/protos \
+    -v $(pwd)/../jina/proto/docarray_v1:/protos \
     ghcr.io/jina-ai/protoc-gen-doc --doc_opt=markdown,docs.md
 
   sphinx-multiversion . ${BUILD_DIR} -b dirhtml

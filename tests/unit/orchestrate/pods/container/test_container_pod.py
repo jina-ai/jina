@@ -2,13 +2,17 @@ import os
 import time
 
 import pytest
+import requests
 
-from jina import Flow, __cache_path__
+from jina import Flow
+from jina.constants import __cache_path__
+from jina.enums import ProtocolType
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port
 from jina.orchestrate.pods.container import ContainerPod
-from jina.parsers import set_gateway_parser, set_pod_parser
-from tests.helper import _validate_dummy_custom_gateway_response
+from jina.serve.runtimes import servers
+from jina.parsers import set_gateway_parser
+from tests.helper import _generate_pod_args, _validate_dummy_custom_gateway_response
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -42,18 +46,17 @@ def dummy_exec_docker_image_built():
 def test_container_pod_pass_envs(env_checker_docker_image_built):
     import docker
 
-    with ContainerPod(
-        set_pod_parser().parse_args(
-            [
-                '--uses',
-                'docker://env-checker',
-                '--env',
-                'key1=value1',
-                '--env',
-                'key2=value2',
-            ]
-        )
-    ) as pod:
+    args = _generate_pod_args(
+        [
+            '--uses',
+            'docker://env-checker',
+            '--env',
+            'key1=value1',
+            '--env',
+            'key2=value2',
+        ]
+    )
+    with ContainerPod(args) as pod:
         container = pod._container
         status = container.status
         time.sleep(
@@ -98,7 +101,7 @@ def test_container_pod_volume_setting(
 
     default_workspace = __cache_path__
 
-    with ContainerPod(set_pod_parser().parse_args(pod_args)) as pod:
+    with ContainerPod(_generate_pod_args(pod_args)) as pod:
         container = pod._container
         source = container.attrs['Mounts'][0]['Source']
         destination = container.attrs['Mounts'][0]['Destination']
@@ -135,7 +138,7 @@ def fail_start_docker_image_built():
 def test_failing_executor(fail_start_docker_image_built):
     import docker
 
-    args = set_pod_parser().parse_args(
+    args = _generate_pod_args(
         [
             '--uses',
             'docker://fail-start',
@@ -154,9 +157,12 @@ def test_failing_executor(fail_start_docker_image_built):
 def test_pass_arbitrary_kwargs(monkeypatch, mocker):
     import docker
 
-    mocker.patch(
-        'jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.is_ready',
-        return_value=True,
+    def _mock_is_ready(*args, **kwargs):
+        return True
+    monkeypatch.setattr(
+        servers.BaseServer,
+        'is_ready',
+        _mock_is_ready,
     )
 
     class MockContainers:
@@ -174,9 +180,9 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             def reload(self):
                 pass
 
-            def kill(self, signal, *args):
-                assert signal == 'SIGTERM'
-
+            def stop(self, *args, **kwargs):
+                pass
+        
         def __init__(self):
             pass
 
@@ -222,7 +228,7 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             return {}
 
     monkeypatch.setattr(docker, 'from_env', MockClient)
-    args = set_pod_parser().parse_args(
+    args = _generate_pod_args(
         [
             '--uses',
             'docker://jinahub/pod',
@@ -272,6 +278,11 @@ def test_container_pod_custom_gateway(dummy_custom_gateway_docker_image_built):
         _validate_dummy_custom_gateway_response(
             port, {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'}
         )
+
+        # validate protocol inside the gateway
+        resp = requests.get(f'http://127.0.0.1:{port}/runtime_info').json()
+        assert resp['protocols'] == [ProtocolType.HTTP]
+        assert resp['ports'] == [int(port)]
 
         time.sleep(
             2

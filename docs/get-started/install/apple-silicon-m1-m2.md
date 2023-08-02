@@ -88,6 +88,12 @@ Now we can install Jina via `pip`. Ensure you use the correct `pip`:
 
 `grpcio` requires building the wheels, it will take some time.
 
+Note: If the previous step fails, adding the environment variables below might solve the problem:
+
+```bash
+export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=1
+export GRPC_PYTHON_BUILD_SYSTEM_ZLIB=1
+```
 
 After all the dependencies are installed, you can run Jina CLI and check the system information.
 

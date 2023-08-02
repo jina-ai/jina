@@ -8,7 +8,7 @@ The Prometheus-only based feature will soon be deprecated in favor of the OpenTe
 Refer to the {ref}`OpenTelemetry migration guide <opentelemetry-migration>` for updating your existing Prometheus and Grafana configurations.
 ```
 
-We recommend the Prometheus/Grafana stack to leverage the {ref}`metrics <monitoring-flow>` exposed by Jina. In this setup, Jina exposes different {ref}`metrics endpoints <monitoring-flow>`, and Prometheus scrapes these endpoints, as well as
+We recommend the Prometheus/Grafana stack to leverage the metrics exposed by Jina. In this setup, Jina exposes different metrics, and Prometheus scrapes these endpoints, as well as
 collecting, aggregating, and storing the metrics. 
 
 External entities (like Grafana) can access these aggregated metrics via the query language [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/) and let users visualize the metrics with dashboards.
@@ -24,7 +24,6 @@ In this guide, we deploy the Prometheus/Grafana stack and use it to monitor a Fl
 ## Deploying the Flow and the monitoring stack
 
 ### Deploying on Kubernetes
-
 
 One challenge of monitoring a {class}`~jina.Flow` is communicating its different metrics endpoints to Prometheus.
 Fortunately, the [Prometheus operator for Kubernetes](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/getting-started.md) makes this fairly easy because it can automatically discover new metrics endpoints to scrape.
@@ -44,6 +43,9 @@ setting the `serviceMonitorSelectorNilUsesHelmValues` to false allows the Promet
 
 Deploy the Flow that we want to monitor:
 
+For this example we recommend reading {ref}`how to build and containerize the Executors to be run in Kubernetes. <build-containerize-for-k8s>`
+
+
 ````{tab} via YAML
 This example shows how to start a Flow with monitoring enabled via YAML:
 
@@ -53,7 +55,7 @@ jtype: Flow
 with:
   monitoring: true
 executors:
-- uses: jinahub://SimpleIndexer
+- uses: jinaai+docker://<user-id>/EncoderPrivate
 ```
 
 ```bash
@@ -64,7 +66,7 @@ jina export kubernetes flow.yml ./config ```
 ```python
 from jina import Flow
 
-f = Flow(monitoring=True).add(uses='jinahub+docker://SimpleIndexer')
+f = Flow(monitoring=True).add(uses='jinaai+docker://<user-id>/EncoderPrivate')
 f.to_kubernetes_yaml('config')
 ```
 ````
@@ -126,7 +128,7 @@ Deploy the Flow that we want to monitor:
 from jina import Flow
 
 with Flow(monitoring=True, port_monitoring=8000, port=8080).add(
-    uses='jinahub://SimpleIndexer', port_monitoring=9000
+    uses='jinaai+docker://<user-id>/EncoderPrivate', port_monitoring=9000
 ) as f:
     f.block()
 ```
@@ -137,7 +139,7 @@ with Flow(monitoring=True, port_monitoring=8000, port=8080).add(
 from jina import Flow
 
 Flow(monitoring=True, port_monitoring=8000, port=8080).add(
-    uses='jinahub+docker://SimpleIndexer', port_monitoring=9000
+    uses='jinaai+docker://<user-id>/EncoderPrivate', port_monitoring=9000
 ).to_docker_compose_yaml('config.yaml')
 ```
 ```bash
@@ -195,15 +197,21 @@ You should query your Flow to generate the first metrics. Otherwise the dashboar
 You can query the Flow by running:
 
 ```python
-from jina import Client, DocumentArray
+from typing import Optional
+from docarray import DocList, BaseDoc
+from docarray.typing import NdArray
+from jina import Client
 
+
+class MyDoc(BaseDoc):
+    text: str
+    embedding: Optional[NdArray] = None
 client = Client(port=51000)
-client.index(inputs=DocumentArray.empty(size=4))
-client.search(inputs=DocumentArray.empty(size=4))
+
+client.post(on='/', inputs=DocList[MyDoc]([MyDoc(text=f'Text for document {i}') for in range(100)]), return_type=DocList[MyDoc], request_size=10,)
 ```
 
 ## See also
 
-- {ref}`List of available metrics <monitoring-flow>`
 - [Using Grafana to visualize Prometheus metrics](https://grafana.com/docs/grafana/latest/getting-started/getting-started-prometheus/)
-- {ref}`Defining custom metrics in an Executor <monitoring-executor>`
+- {ref}`Defining custom metrics in an Executor <monitoring>`

@@ -1,7 +1,10 @@
 """Argparser module for remote runtime"""
 
-from jina import __default_host__, helper
-from jina.parsers.helper import KVAppendAction, add_arg_group
+from jina.constants import __default_host__
+from jina.parsers.helper import CastHostAction, KVAppendAction, add_arg_group
+from jina.parsers.orchestrate.runtimes.grpc_channel import (
+    mixin_grpc_channel_options_parser,
+)
 from jina.parsers.orchestrate.runtimes.runtime import mixin_base_runtime_parser
 
 
@@ -10,7 +13,17 @@ def mixin_remote_runtime_parser(parser):
     :param parser: the parser
     """
     gp = add_arg_group(parser, title='RemoteRuntime')
-    _add_host(gp)
+
+    gp.add_argument(
+        '--host',
+        '--host-in',
+        nargs='+',
+        default=[__default_host__],
+        action=CastHostAction,
+        help=f'The host of the Gateway, which the client should connect to, by default it is {__default_host__}.'
+             ' In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts. '
+             ' Then, every resulting address will be considered as one replica of the Executor.',
+    )
 
 
 def mixin_client_gateway_parser(parser):
@@ -18,8 +31,15 @@ def mixin_client_gateway_parser(parser):
     :param parser: the parser
     """
     gp = add_arg_group(parser, title='ClientGateway')
-    _add_host(gp)
     _add_proxy(gp)
+
+    gp.add_argument(
+        '--host',
+        '--host-in',
+        type=str,
+        default=__default_host__,
+        help=f'The host of the Gateway, which the client should connect to, by default it is {__default_host__}.',
+    )
 
     gp.add_argument(
         '--port',
@@ -33,6 +53,61 @@ def mixin_client_gateway_parser(parser):
         action='store_true',
         default=False,
         help='If set, connect to gateway using tls encryption',
+    )
+
+
+def mixin_gateway_streamer_parser(arg_group):
+    """Mixin for gateway stream arguments.
+    :param arg_group: args group
+    """
+    arg_group.add_argument(
+        '--graph-description',
+        type=str,
+        help='Routing graph for the gateway',
+        default='{}',
+    )
+
+    arg_group.add_argument(
+        '--graph-conditions',
+        type=str,
+        help='Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.',
+        default='{}',
+    )
+
+    arg_group.add_argument(
+        '--deployments-addresses',
+        type=str,
+        help='JSON dictionary with the input addresses of each Deployment',
+        default='{}',
+    )
+
+    arg_group.add_argument(
+        '--deployments-metadata',
+        type=str,
+        help='JSON dictionary with the request metadata for each Deployment',
+        default='{}',
+    )
+
+    arg_group.add_argument(
+        '--deployments-no-reduce',
+        '--deployments-disable-reduce',
+        type=str,
+        help='list JSON disabling the built-in merging mechanism for each Deployment listed',
+        default='[]',
+    )
+
+    arg_group.add_argument(
+        '--compression',
+        choices=['NoCompression', 'Deflate', 'Gzip'],
+        help='The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, '
+             'check https://grpc.github.io/grpc/python/grpc.html#compression.',
+    )
+
+    arg_group.add_argument(
+        '--timeout-send',
+        type=int,
+        default=None,
+        help='The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default',
     )
 
 
@@ -87,65 +162,16 @@ which should be structured as a python package.
 ''',
     )
 
+    gp.add_argument(
+        '--replicas',
+        type=int,
+        default=1,
+        help='The number of replicas of the Gateway. This replicas will only be applied when converted into Kubernetes YAML',
+    )
+
     mixin_base_runtime_parser(gp)
-
-    gp.add_argument(
-        '--port-expose',
-        type=int,
-        dest='port',
-        default=helper.random_port(),
-        help='The port that the gateway exposes for clients for GRPC connections.',
-    )
-
-    parser.add_argument(
-        '--graph-description',
-        type=str,
-        help='Routing graph for the gateway',
-        default='{}',
-    )
-
-    parser.add_argument(
-        '--graph-conditions',
-        type=str,
-        help='Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.',
-        default='{}',
-    )
-
-    parser.add_argument(
-        '--deployments-addresses',
-        type=str,
-        help='JSON dictionary with the input addresses of each Deployment',
-        default='{}',
-    )
-
-    parser.add_argument(
-        '--deployments-metadata',
-        type=str,
-        help='JSON dictionary with the request metadata for each Deployment',
-        default='{}',
-    )
-
-    parser.add_argument(
-        '--deployments-no-reduce',
-        '--deployments-disable-reduce',
-        type=str,
-        help='list JSON disabling the built-in merging mechanism for each Deployment listed',
-        default='[]',
-    )
-
-    gp.add_argument(
-        '--compression',
-        choices=['NoCompression', 'Deflate', 'Gzip'],
-        help='The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, '
-        'check https://grpc.github.io/grpc/python/grpc.html#compression.',
-    )
-
-    gp.add_argument(
-        '--timeout-send',
-        type=int,
-        default=None,
-        help='The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default',
-    )
+    mixin_grpc_channel_options_parser(gp)
+    mixin_gateway_streamer_parser(gp)
 
 
 def _add_host(arg_group):
@@ -154,21 +180,18 @@ def _add_host(arg_group):
         '--host-in',
         type=str,
         default=__default_host__,
-        help=f'The host address of the runtime, by default it is {__default_host__}.'
-        ' In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas.'
-        ' Then, every resulting address will be considered as one replica of the Executor.',
+        help=f'The host address of the runtime, by default it is {__default_host__}.',
     )
 
 
 def _add_proxy(arg_group):
-
     arg_group.add_argument(
         '--proxy',
         action='store_true',
         default=False,
         help='If set, respect the http_proxy and https_proxy environment variables. '
-        'otherwise, it will unset these proxy variables before start. '
-        'gRPC seems to prefer no proxy',
+             'otherwise, it will unset these proxy variables before start. '
+             'gRPC seems to prefer no proxy',
     )
 
 
@@ -194,26 +217,7 @@ def mixin_http_gateway_parser(parser=None):
     """
     gp = add_arg_group(parser, title='HTTP Gateway')
 
-    gp.add_argument(
-        '--title',
-        type=str,
-        help='The title of this HTTP server. It will be used in automatics docs such as Swagger UI.',
-    )
-
-    gp.add_argument(
-        '--description',
-        type=str,
-        help='The description of this HTTP server. It will be used in automatics docs such as Swagger UI.',
-    )
-
-    gp.add_argument(
-        '--cors',
-        action='store_true',
-        default=False,
-        help='''
-        If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
-        ''',
-    )
+    _mixin_http_server_parser(gp)
 
     gp.add_argument(
         '--no-debug-endpoints',
@@ -241,7 +245,29 @@ def mixin_http_gateway_parser(parser=None):
         ''',
     )
 
-    gp.add_argument(
+
+def _mixin_http_server_parser(arg_group):
+    arg_group.add_argument(
+        '--title',
+        type=str,
+        help='The title of this HTTP server. It will be used in automatics docs such as Swagger UI.',
+    )
+
+    arg_group.add_argument(
+        '--description',
+        type=str,
+        help='The description of this HTTP server. It will be used in automatics docs such as Swagger UI.',
+    )
+
+    arg_group.add_argument(
+        '--cors',
+        action='store_true',
+        default=False,
+        help='''
+        If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
+        ''',
+    )
+    arg_group.add_argument(
         '--uvicorn-kwargs',
         action=KVAppendAction,
         metavar='KEY: VALUE',
@@ -253,8 +279,7 @@ More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
 
 ''',
     )
-
-    gp.add_argument(
+    arg_group.add_argument(
         '--ssl-certfile',
         type=str,
         help='''
@@ -263,12 +288,12 @@ More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         dest='ssl_certfile',
     )
 
-    gp.add_argument(
+    arg_group.add_argument(
         '--ssl-keyfile',
         type=str,
         help='''
-        the path to the key file
-        ''',
+            the path to the key file
+            ''',
         dest='ssl_keyfile',
     )
 

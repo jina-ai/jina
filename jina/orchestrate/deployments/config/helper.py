@@ -1,17 +1,46 @@
 import os
-from typing import Dict
+from typing import Dict, Optional
 
-from hubble.executor.helper import parse_hub_uri
+from hubble.executor.helper import is_valid_docker_uri, parse_hub_uri
 from hubble.executor.hubio import HubIO
 
-from jina import (
+from jina.constants import (
+    __default_composite_gateway__,
     __default_executor__,
     __default_grpc_gateway__,
     __default_http_gateway__,
     __default_websocket_gateway__,
-    __version__,
+    __dynamic_base_gateway_hubble__
 )
 from jina.enums import PodRoleType
+
+
+def resolve_image_name(uses: Optional[str]):
+    """Resolves the image name to be used instead of uses (resolving docker images)
+
+    :param uses: image name
+
+    :return: image name equivalent
+    """
+    if uses in [__default_http_gateway__,
+                __default_websocket_gateway__,
+                __default_grpc_gateway__,
+                __default_composite_gateway__]:
+        image_name = os.getenv(
+            'JINA_GATEWAY_IMAGE', None
+        )
+        if image_name is None:
+            image_name = get_image_name(__dynamic_base_gateway_hubble__)
+    elif uses is not None and uses != __default_executor__:
+        image_name = get_image_name(uses)
+    else:
+        image_name = os.getenv(
+            'JINA_GATEWAY_IMAGE', None
+        )
+        if image_name is None:
+            image_name = get_image_name(__dynamic_base_gateway_hubble__)
+
+    return image_name
 
 
 def get_image_name(uses: str) -> str:
@@ -58,6 +87,7 @@ def get_base_executor_version():
     import requests
 
     try:
+        from jina import __version__
         url = 'https://registry.hub.docker.com/v2/repositories/jinaai/jina/tags'
         result: Dict = requests.get(url, params={'name': __version__}).json()
         if result.get('count', 0) > 0:
@@ -89,9 +119,10 @@ def construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type):
         'uses_before',
         'uses_after',
         'workspace_id',
-        'upload_files',
         'noblock_on_start',
         'env',
+        'env_from_secret',
+        'image_pull_secrets',
     }
 
     if pod_type == PodRoleType.HEAD:
@@ -127,21 +158,20 @@ def validate_uses(uses: str):
     # default gateway class or default executor => deployment uses base container and sets uses in command
     # container images => deployment uses the specified container image and uses is defined by container
     if (
-        uses is None
-        or uses
-        in [
-            __default_http_gateway__,
-            __default_websocket_gateway__,
-            __default_grpc_gateway__,
-            __default_executor__,
-        ]
-        or uses.startswith('docker://')
+            uses is None
+            or uses
+            in [
+        __default_http_gateway__,
+        __default_websocket_gateway__,
+        __default_grpc_gateway__,
+        __default_composite_gateway__,
+        __default_executor__,
+    ]
+            or uses.startswith('docker://')
     ):
         return True
 
     try:
-        scheme, _, _, _ = parse_hub_uri(uses)
-        if scheme in {'jinahub+docker', 'jinahub+sandbox'}:
-            return True
+        return is_valid_docker_uri(uses)
     except ValueError:
         return False

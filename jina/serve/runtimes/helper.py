@@ -1,5 +1,6 @@
 import copy
-from typing import Any, Dict, List, Tuple
+from typing import Dict, Tuple, List, Any, Union
+from jina._docarray import docarray_v2
 
 _SPECIFIC_EXECUTOR_SEPARATOR = '__'
 
@@ -41,7 +42,7 @@ def _is_param_for_specific_executor(key_name: str) -> bool:
     """
     if _SPECIFIC_EXECUTOR_SEPARATOR in key_name:
         if key_name.startswith(_SPECIFIC_EXECUTOR_SEPARATOR) or key_name.endswith(
-            _SPECIFIC_EXECUTOR_SEPARATOR
+                _SPECIFIC_EXECUTOR_SEPARATOR
         ):
             return False
         return True
@@ -77,35 +78,147 @@ def _parse_specific_params(parameters: Dict, executor_name: str):
     return parsed_params
 
 
-_DEFAULT_GRPC_OPTION = {
-    'grpc.max_send_message_length': -1,
-    'grpc.max_receive_message_length': -1,
-    # for the following see this blog post for the choice of default value https://cs.mcgill.ca/~mxia3/2019/02/23/Using-gRPC-in-Production/
-    'grpc.keepalive_time_ms': 10000,
-    # send keepalive ping every 10 second, default is 2 hours.
-    'grpc.keepalive_timeout_ms': 5000,
-    # keepalive ping time out after 5 seconds, default is 20 seconds
-    'grpc.keepalive_permit_without_calls': True,
-    # allow keepalive pings when there's no gRPC calls
-    'grpc.http2.max_pings_without_data': 0,
-    # allow unlimited amount of keepalive pings without data
-    'grpc.http2.min_time_between_pings_ms': 10000,
-    # allow grpc pings from client every 10 seconds
-    'grpc.http2.min_ping_interval_without_data_ms': 5000,
-    # allow grpc pings from client without data every 5 seconds
-}
+if docarray_v2:
+    from jina._docarray import docarray_v2
+    from docarray import DocList, BaseDoc
+    from docarray.typing import AnyTensor
+    from pydantic import create_model
+    from pydantic.fields import FieldInfo
+
+    RESERVED_KEYS = [
+        'type',
+        'anyOf',
+        '$ref',
+        'additionalProperties',
+        'allOf',
+        'items',
+        'definitions',
+        'properties',
+        'default',
+    ]
 
 
-def _get_grpc_server_options(option_from_args: Dict) -> List[Tuple[str, Any]]:
-    """transform dict of args into grpc option, will merge the args wit the default args
-    :param option_from_args: a dict of argument
-    :return: grpc option i.e a list of tuple of key value
-    """
+    def _create_aux_model_doc_list_to_list(model):
+        fields: Dict[str, Any] = {}
+        for field_name, field in model.__annotations__.items():
+            field_info = model.__fields__[field_name].field_info
+            try:
+                if issubclass(field, DocList):
+                    t: Any = field.doc_type
+                    fields[field_name] = (List[t], field_info)
+                else:
+                    fields[field_name] = (field, field_info)
+            except TypeError:
+                fields[field_name] = (field, field_info)
+        return create_model(
+            model.__name__, __base__=model, __validators__=model.__validators__, **fields
+        )
 
-    option_from_args = (
-        {**_DEFAULT_GRPC_OPTION, **option_from_args}
-        if option_from_args
-        else _DEFAULT_GRPC_OPTION
-    )  # merge new and default args
 
-    return list(option_from_args.items())
+    def _get_field_from_type(field_schema, field_name, root_schema, cached_models, is_tensor=False, num_recursions=0, base_class=BaseDoc):
+        field_type = field_schema.get('type', None)
+        tensor_shape = field_schema.get('tensor/array shape', None)
+        if 'anyOf' in field_schema:
+            any_of_types = []
+            for any_of_schema in field_schema['anyOf']:
+                if '$ref' in any_of_schema:
+                    obj_ref = any_of_schema.get('$ref')
+                    ref_name = obj_ref.split('/')[-1]
+                    any_of_types.append(
+                        _create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name,
+                                                           cached_models=cached_models, base_class=base_class))
+                else:
+                    any_of_types.append(_get_field_from_type(any_of_schema, field_name, root_schema=root_schema,
+                                                             cached_models=cached_models,
+                                                             is_tensor=tensor_shape is not None,
+                                                             num_recursions=0,
+                                                             base_class=base_class))  # No Union of Lists
+            ret = Union[tuple(any_of_types)]
+            for rec in range(num_recursions):
+                ret = List[ret]
+        elif field_type == 'string':
+            ret = str
+            for rec in range(num_recursions):
+                ret = List[ret]
+        elif field_type == 'integer':
+            ret = int
+            for rec in range(num_recursions):
+                ret = List[ret]
+        elif field_type == 'number':
+            if num_recursions <= 1:
+                # This is a hack because AnyTensor is more generic than a simple List and it comes as simple List
+                if is_tensor:
+                    ret = AnyTensor
+                else:
+                    ret = List[float]
+            else:
+                ret = float
+                for rec in range(num_recursions):
+                    ret = List[ret]
+        elif field_type == 'boolean':
+            ret = bool
+            for rec in range(num_recursions):
+                ret = List[ret]
+        elif field_type == 'object' or field_type is None:
+            if 'additionalProperties' in field_schema:  # handle Dictionaries
+                additional_props = field_schema['additionalProperties']
+                if additional_props.get('type') == 'object':
+                    ret = Dict[str, _create_pydantic_model_from_schema(additional_props, field_name,
+                                                                       cached_models=cached_models, base_class=base_class)]
+                else:
+                    ret = Dict[str, Any]
+            else:
+                obj_ref = field_schema.get('$ref') or field_schema.get('allOf', [{}])[0].get('$ref', None)
+                if num_recursions == 0:  # single object reference
+                    if obj_ref:
+                        ref_name = obj_ref.split('/')[-1]
+                        ret = _create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name,
+                                                                 cached_models=cached_models, base_class=base_class)
+                    else:
+                        ret = Any
+                else:  # object reference in definitions
+                    if obj_ref:
+                        ref_name = obj_ref.split('/')[-1]
+                        ret = DocList[_create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name,
+                                                                         cached_models=cached_models, base_class=base_class)]
+                    else:
+                        ret = DocList[
+                            _create_pydantic_model_from_schema(field_schema, field_name, cached_models=cached_models, base_class=base_class)]
+        elif field_type == 'array':
+            ret = _get_field_from_type(field_schema=field_schema.get('items', {}), field_name=field_name,
+                                       root_schema=root_schema, cached_models=cached_models,
+                                       is_tensor=tensor_shape is not None, num_recursions=num_recursions + 1, base_class=base_class)
+        else:
+            if num_recursions > 0:
+                raise ValueError(f"Unknown array item type: {field_type} for field_name {field_name}")
+            else:
+                raise ValueError(f"Unknown field type: {field_type} for field_name {field_name}")
+        return ret
+
+
+    def _create_pydantic_model_from_schema(schema: Dict[str, any], model_name: str, cached_models: Dict, base_class=BaseDoc) -> type:
+        cached_models = cached_models if cached_models is not None else {}
+        fields: Dict[str, Any] = {}
+        if model_name in cached_models:
+            return cached_models[model_name]
+        for field_name, field_schema in schema.get('properties', {}).items():
+            field_type = _get_field_from_type(
+                field_schema=field_schema,
+                field_name=field_name,
+                root_schema=schema,
+                cached_models=cached_models,
+                is_tensor=False,
+                num_recursions=0,
+                base_class=base_class
+            )
+            fields[field_name] = (field_type, FieldInfo(default=field_schema.pop('default', None), **field_schema))
+
+        model = create_model(model_name, __base__=base_class, **fields)
+        model.__config__.title = schema.get('title', model.__config__.title)
+
+        for k in RESERVED_KEYS:
+            if k in schema:
+                schema.pop(k)
+        model.__config__.schema_extra = schema
+        cached_models[model_name] = model
+        return model

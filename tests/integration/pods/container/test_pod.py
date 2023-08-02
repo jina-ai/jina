@@ -10,9 +10,9 @@ from jina.enums import PodRoleType, PollingType
 from jina.helper import random_port
 from jina.orchestrate.pods import Pod
 from jina.orchestrate.pods.container import ContainerPod
-from jina.parsers import set_gateway_parser, set_pod_parser
-from jina.serve.runtimes.head import HeadRuntime
-from jina.serve.runtimes.worker import WorkerRuntime
+from jina.parsers import set_gateway_parser
+from jina.serve.runtimes.servers import BaseServer
+from tests.helper import _generate_pod_args
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -72,13 +72,16 @@ async def test_pods_trivial_topology(
     with gateway_pod, head_pod, worker_pod:
         await asyncio.sleep(1.0)
 
-        assert HeadRuntime.wait_for_ready_or_shutdown(
+        print(f' runtime_ctrls_address {head_pod.runtime_ctrl_address}')
+
+        assert BaseServer.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=head_pod.runtime_ctrl_address,
             ready_or_shutdown_event=head_pod.ready_or_shutdown.event,
         )
+        print(f' runtime_ctrls_address {worker_pod.runtime_ctrl_address}')
 
-        assert WorkerRuntime.wait_for_ready_or_shutdown(
+        assert BaseServer.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=worker_pod.runtime_ctrl_address,
             ready_or_shutdown_event=worker_pod.ready_or_shutdown.event,
@@ -102,16 +105,16 @@ async def test_pods_trivial_topology(
 
 
 def _create_worker_pod(port):
-    args = set_pod_parser().parse_args([])
-    args.port = port
+    args = _generate_pod_args()
+    args.port = [port]
     args.name = 'worker'
     args.uses = 'docker://worker-runtime'
     return ContainerPod(args)
 
 
 def _create_head_pod(port, connection_list_dict):
-    args = set_pod_parser().parse_args([])
-    args.port = port
+    args = _generate_pod_args()
+    args.port = [port]
     args.name = 'head'
     args.pod_role = PodRoleType.HEAD
     args.polling = PollingType.ANY

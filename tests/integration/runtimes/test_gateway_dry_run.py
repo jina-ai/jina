@@ -3,24 +3,26 @@ import multiprocessing
 import pytest
 
 from jina import Client
-from jina.parsers import set_gateway_parser, set_pod_parser
+from jina.parsers import set_gateway_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.gateway import GatewayRuntime
-from jina.serve.runtimes.worker import WorkerRuntime
+from jina.serve.runtimes.servers import BaseServer
+from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
+from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+from tests.helper import _generate_pod_args
 
 
 def _create_worker_runtime(port, name='', executor=None):
-    args = set_pod_parser().parse_args([])
-    args.port = port
+    args = _generate_pod_args()
+    args.port = [port]
     args.name = name
     if executor:
         args.uses = executor
-    with WorkerRuntime(args) as runtime:
+    with AsyncNewLoopRuntime(args, req_handler_cls=WorkerRequestHandler) as runtime:
         runtime.run_forever()
 
 
 def _create_gateway_runtime(graph_description, pod_addresses, port, protocol='grpc'):
-    with GatewayRuntime(
+    with AsyncNewLoopRuntime(
         set_gateway_parser().parse_args(
             [
                 '--graph-description',
@@ -32,7 +34,7 @@ def _create_gateway_runtime(graph_description, pod_addresses, port, protocol='gr
                 '--protocol',
                 protocol,
             ]
-        )
+        ), req_handler_cls=GatewayRequestHandler
     ) as runtime:
         runtime.run_forever()
 
@@ -54,12 +56,12 @@ def _setup(worker_port, port, protocol):
     )
     gateway_process.start()
 
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{worker_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    BaseServer.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{port}',
         ready_or_shutdown_event=multiprocessing.Event(),

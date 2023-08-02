@@ -10,6 +10,7 @@ from jina.helper import Namespace
 from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
 from jina.parsers import set_deployment_parser, set_gateway_parser
 from jina.serve.networking import GrpcConnectionPool
+import jina
 
 
 def namespace_equal(
@@ -28,7 +29,13 @@ def namespace_equal(
 
 
 @pytest.mark.parametrize('shards', [1, 5])
-@pytest.mark.parametrize('uses_before', [None, 'jinahub+docker://HubBeforeExecutor'])
+@pytest.mark.parametrize(
+    'uses_before',
+    [
+        None,
+        'jinaai+docker://jina-ai/HubBeforeExecutor',
+    ],
+)
 @pytest.mark.parametrize('uses_after', [None, 'docker://docker_after_image:latest'])
 @pytest.mark.parametrize('uses_with', ['{"paramkey": "paramvalue"}', None])
 @pytest.mark.parametrize('uses_metas', ['{"workspace": "workspacevalue"}', None])
@@ -53,6 +60,7 @@ def test_parse_args(
         args_list.extend(['--uses-metas', uses_metas])
     args = set_deployment_parser().parse_args(args_list)
     deployment_config = K8sDeploymentConfig(args, 'default-namespace')
+    args.host = args.host[0]
 
     if shards > 1:
         assert namespace_equal(
@@ -103,7 +111,7 @@ def test_parse_args(
         else:
             assert (
                     deployment_config.deployment_args['head_deployment'].uses_before_address
-                    == '127.0.0.1:8081'
+                    == '127.0.0.1:8078'
             )
         if uses_after is None:
             assert (
@@ -113,7 +121,7 @@ def test_parse_args(
         else:
             assert (
                     deployment_config.deployment_args['head_deployment'].uses_after_address
-                    == '127.0.0.1:8082'
+                    == '127.0.0.1:8079'
             )
         candidate_connection_list = {
             str(i): f'executor-{i}.default-namespace.svc:8080' for i in range(shards)
@@ -166,6 +174,7 @@ def test_parse_args_custom_executor(shards: int):
         ]
     )
     deployment_config = K8sDeploymentConfig(args, 'default-namespace')
+    args.host = args.host[0]
 
     if shards > 1:
         assert (
@@ -237,6 +246,7 @@ def test_deployments(name: str, shards: str, gpus):
         ['--name', name, '--shards', shards, '--gpus', gpus]
     )
     deployment_config = K8sDeploymentConfig(args, 'ns')
+    args.host = args.host[0]
 
     if name != 'gateway' and int(shards) > int(1):
         head_deployment = deployment_config.head_deployment
@@ -266,62 +276,141 @@ def assert_config_map_config(
     assert config_map['data'] == expected_config_map_data
 
 
+def _custom_patched_resolve_image_name(uses: str):
+    """Resolves the image name to be used instead of uses (resolving docker images)
+
+    :param uses: image name
+
+    :return: image name equivalent
+    """
+    from jina.constants import __default_executor__, __default_http_gateway__, __default_composite_gateway__, \
+        __default_grpc_gateway__, __default_websocket_gateway__
+    from jina.orchestrate.deployments.config.helper import get_image_name
+    import os
+    if uses == 'jinaai+docker://jina/custom-gateway':
+        return 'jinaai+docker://jina/custom-gateway'
+    if uses in [__default_http_gateway__,
+                __default_websocket_gateway__,
+                __default_grpc_gateway__,
+                __default_composite_gateway__]:
+        image_name = os.getenv(
+            'JINA_GATEWAY_IMAGE', None
+        )
+        if image_name is None:
+            image_name = get_image_name('jinaai+docker://JinaGateway:latest')
+    elif uses is not None and uses != __default_executor__:
+        image_name = get_image_name(uses)
+    else:
+        image_name = os.getenv(
+            'JINA_GATEWAY_IMAGE', None
+        )
+        if image_name is None:
+            image_name = get_image_name('jinaai+docker://JinaGateway:latest')
+
+    return image_name
+
+
 @pytest.mark.parametrize('deployments_addresses', [None, {'1': 'address.svc'}])
-@pytest.mark.parametrize('custom_gateway', ['jinaai/jina:custom-gateway', None])
-def test_k8s_yaml_gateway(deployments_addresses, custom_gateway):
+@pytest.mark.parametrize(
+    'port,protocol',
+    [
+        (['12345'], None),
+        (['12345'], ['grpc']),
+        (['12345', '12344'], ['grpc', 'http']),
+        (['12345', '12344', '12343'], ['grpc', 'http', 'websocket']),
+    ],
+)
+@pytest.mark.parametrize('custom_gateway', ['jinaai+docker://jina/custom-gateway'])
+@pytest.mark.parametrize('replicas', [1, 2])
+def test_k8s_yaml_gateway(monkeypatch, deployments_addresses, custom_gateway, port, protocol, replicas):
+    from hubble.executor.hubio import HubExecutor, HubIO
+
+    def _mock_fetch(
+            name,
+            *args,
+            **kwargs,
+    ):
+        return (
+            HubExecutor(
+                uuid='hello',
+                name='custom-gateway',
+                tag='v0',
+                image_name='jina/custom-gateway',
+                md5sum=None,
+                visibility=True,
+                archive_url=None,
+            ),
+            False,
+        )
+
+    monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
+
+    args_list = [
+        '--env',
+        'ENV_VAR:ENV_VALUE',
+        '--port',
+        *port,
+        '--replicas',
+        str(replicas)
+    ]
+    if deployments_addresses:
+        args_list.extend(['--deployments-addresses', json.dumps(deployments_addresses)])
+    if protocol:
+        args_list.extend(['--protocol', *protocol])
     if custom_gateway:
-        os.environ['JINA_GATEWAY_IMAGE'] = custom_gateway
-    elif 'JINA_GATEWAY_IMAGE' in os.environ:
-        del os.environ['JINA_GATEWAY_IMAGE']
-    args = set_gateway_parser().parse_args(
-        ['--env', 'ENV_VAR:ENV_VALUE', '--port', '32465']
-    )  # envs are
+        args_list.extend(['--uses', custom_gateway])
+    args = set_gateway_parser().parse_args(args_list)  # envs are
     # ignored for gateway
-    deployment_config = K8sDeploymentConfig(
-        args, 'default-namespace', deployments_addresses
-    )
+    deployment_config = K8sDeploymentConfig(args, 'default-namespace')
     yaml_configs = deployment_config.to_kubernetes_yaml()
     assert len(yaml_configs) == 1
     name, configs = yaml_configs[0]
     assert name == 'gateway'
-    assert len(configs) == 3  # 3 configs per yaml (configmap, service and deployment)
+    assert len(configs) == 2 + len(port)  # configmap, deployment and 1 service per port
     config_map = configs[0]
     assert_config_map_config(
         config_map,
         'gateway',
         {
             'ENV_VAR': 'ENV_VALUE',
-            'JINA_LOG_LEVEL': 'INFO',
+            'JINA_LOG_LEVEL': 'DEBUG',
             'pythonunbuffered': '1',
             'worker_class': 'uvicorn.workers.UvicornH11Worker',
         },
     )
 
-    service = configs[1]
-    assert service['kind'] == 'Service'
-    assert service['metadata'] == {
-        'name': 'gateway',
-        'namespace': 'default-namespace',
-        'labels': {'app': 'gateway'},
-    }
-    spec_service = service['spec']
-    assert spec_service['type'] == 'ClusterIP'
-    assert len(spec_service['ports']) == 1
-    port = spec_service['ports'][0]
-    assert port['name'] == 'port'
-    assert port['protocol'] == 'TCP'
-    assert port['port'] == 32465
-    assert port['targetPort'] == 32465
-    assert spec_service['selector'] == {'app': 'gateway'}
+    for i, (expected_port, service) in enumerate(zip(port, configs[1: 1 + len(port)])):
+        assert service['kind'] == 'Service'
+        service_gateway_name = (
+            'gateway'
+            if i == 0
+            else f'gateway-{i}-{protocol[i] if protocol else "grpc"}'
+        )
+        assert service['metadata'] == {
+            'name': service_gateway_name,
+            'namespace': 'default-namespace',
+            'labels': {'app': service_gateway_name},
+        }
+        spec_service = service['spec']
+        assert spec_service['type'] == 'ClusterIP'
+        assert len(spec_service['ports']) == 1
+        actual_port = spec_service['ports'][0]
+        assert actual_port['name'] == 'port'
+        assert actual_port['protocol'] == 'TCP'
+        assert actual_port['port'] == int(GrpcConnectionPool.K8S_PORT) + i
+        assert actual_port['targetPort'] == int(GrpcConnectionPool.K8S_PORT) + i
+        assert spec_service['selector'] == {'app': 'gateway'}
 
-    deployment = configs[2]
+        assert spec_service['selector'] == {'app': 'gateway'}
+
+    deployment = configs[1 + len(port)]
     assert deployment['kind'] == 'Deployment'
     assert deployment['metadata'] == {
         'name': 'gateway',
         'namespace': 'default-namespace',
     }
     spec_deployment = deployment['spec']
-    assert spec_deployment['replicas'] == 1  # no gateway replication for now
+    assert spec_deployment['replicas'] == replicas  # gateway replication is only enabled for k8s
     assert spec_deployment['strategy'] == {
         'type': 'RollingUpdate',
         'rollingUpdate': {'maxSurge': 1, 'maxUnavailable': 0},
@@ -344,9 +433,9 @@ def test_k8s_yaml_gateway(deployments_addresses, custom_gateway):
     container = containers[0]
     assert container['name'] == 'gateway'
     assert (
-        container['image'] == custom_gateway
+        container['image'] == 'jina/custom-gateway'
         if custom_gateway
-        else f'jinaai/jina:{deployment_config.worker_deployments[0].version}-py38-standard'
+        else f'jinaai/jina:test-pip'
     )
     assert container['imagePullPolicy'] == 'IfNotPresent'
     assert container['command'] == ['jina']
@@ -355,7 +444,8 @@ def test_k8s_yaml_gateway(deployments_addresses, custom_gateway):
     assert '--k8s-namespace' in args
     assert args[args.index('--k8s-namespace') + 1] == 'default-namespace'
     assert '--port' in args
-    assert args[args.index('--port') + 1] == '32465'
+    for i, _port in enumerate(port):
+        assert args[args.index('--port') + i + 1] == str(GrpcConnectionPool.K8S_PORT + i)
     assert '--env' not in args
     if deployments_addresses is not None:
         assert '--deployments-addresses' in args
@@ -373,10 +463,26 @@ def assert_port_config(port_dict: Dict, name: str, port: int):
 
 @pytest.mark.parametrize('shards', [3, 1])
 @pytest.mark.parametrize(
-    'uses', ['jinahub+docker://HubExecutor', 'docker://docker_image:latest']
+    'uses',
+    [
+        'docker://docker_image:latest',
+        'jinaai+docker://jina-ai/HubExecutor',
+    ],
 )
-@pytest.mark.parametrize('uses_before', [None, 'jinahub+docker://HubBeforeExecutor'])
-@pytest.mark.parametrize('uses_after', [None, 'jinahub+docker://HubAfterExecutor'])
+@pytest.mark.parametrize(
+    'uses_before',
+    [
+        None,
+        'jinaai+docker://jina-ai/HubBeforeExecutor',
+    ],
+)
+@pytest.mark.parametrize(
+    'uses_after',
+    [
+        None,
+        'jinaai+docker://jina-ai/HubAfterExecutor',
+    ],
+)
 @pytest.mark.parametrize('uses_with', ['{"paramkey": "paramvalue"}', None])
 @pytest.mark.parametrize('uses_metas', ['{"workspace": "workspacevalue"}', None])
 @pytest.mark.parametrize('polling', ['ANY', 'ALL'])
@@ -392,12 +498,8 @@ def test_k8s_yaml_regular_deployment(
 ):
     def _mock_fetch(
             name,
-            tag,
-            image_required=True,
-            rebuild_image=True,
-            *,
-            secret=None,
-            force=False,
+            *args,
+            **kwargs,
     ):
         return (
             HubExecutor(
@@ -457,7 +559,7 @@ def test_k8s_yaml_regular_deployment(
             'executor-head',
             {
                 'ENV_VAR': 'ENV_VALUE',
-                'JINA_LOG_LEVEL': 'INFO',
+                'JINA_LOG_LEVEL': 'DEBUG',
                 'pythonunbuffered': '1',
                 'worker_class': 'uvicorn.workers.UvicornH11Worker',
             },
@@ -512,7 +614,7 @@ def test_k8s_yaml_regular_deployment(
         assert head_runtime_container['name'] == 'executor'
         assert (
                 head_runtime_container['image']
-                == f'jinaai/jina:{deployment_config.head_deployment.version}-py38-standard'
+                == f'jinaai/jina:test-pip'
         )
         assert head_runtime_container['imagePullPolicy'] == 'IfNotPresent'
         assert head_runtime_container['command'] == ['jina']
@@ -577,7 +679,10 @@ def test_k8s_yaml_regular_deployment(
         if uses_before is not None:
             uses_before_container = head_containers[1]
             assert uses_before_container['name'] == 'uses-before'
-            assert uses_before_container['image'] == 'jinahub/HubBeforeExecutor'
+            assert uses_before_container['image'] in {
+                'jinahub/HubBeforeExecutor',
+                'jinahub/jina-ai/HubBeforeExecutor',
+            }
             assert uses_before_container['imagePullPolicy'] == 'IfNotPresent'
             assert uses_before_container['command'] == ['jina']
             uses_before_runtime_container_args = uses_before_container['args']
@@ -603,7 +708,7 @@ def test_k8s_yaml_regular_deployment(
                     uses_before_runtime_container_args[
                         uses_before_runtime_container_args.index('--port') + 1
                         ]
-                    == '8081'
+                    == '8078'
             )
             assert '--env' not in uses_before_runtime_container_args
             assert '--connection-list' not in uses_before_runtime_container_args
@@ -611,7 +716,10 @@ def test_k8s_yaml_regular_deployment(
         if uses_after is not None:
             uses_after_container = head_containers[-1]
             assert uses_after_container['name'] == 'uses-after'
-            assert uses_after_container['image'] == 'jinahub/HubAfterExecutor'
+            assert uses_after_container['image'] in {
+                'jinahub/HubAfterExecutor',
+                'jinahub/jina-ai/HubAfterExecutor',
+            }
             assert uses_after_container['imagePullPolicy'] == 'IfNotPresent'
             assert uses_after_container['command'] == ['jina']
             uses_after_runtime_container_args = uses_after_container['args']
@@ -637,7 +745,7 @@ def test_k8s_yaml_regular_deployment(
                     uses_after_runtime_container_args[
                         uses_after_runtime_container_args.index('--port') + 1
                         ]
-                    == '8082'
+                    == '8079'
             )
             assert '--env' not in uses_after_runtime_container_args
             assert '--connection-list' not in uses_after_runtime_container_args
@@ -654,7 +762,7 @@ def test_k8s_yaml_regular_deployment(
             name,
             {
                 'ENV_VAR': 'ENV_VALUE',
-                'JINA_LOG_LEVEL': 'INFO',
+                'JINA_LOG_LEVEL': 'DEBUG',
                 'pythonunbuffered': '1',
                 'worker_class': 'uvicorn.workers.UvicornH11Worker',
             },
@@ -705,6 +813,7 @@ def test_k8s_yaml_regular_deployment(
         assert shard_container['name'] == 'executor'
         assert shard_container['image'] in {
             'jinahub/HubExecutor',
+            'jinahub/jina-ai/HubExecutor',
             'docker_image:latest',
         }
         assert shard_container['imagePullPolicy'] == 'IfNotPresent'
@@ -757,12 +866,7 @@ def test_k8s_yaml_regular_deployment(
 
 
 def test_executor_with_volumes_stateful_set():
-    args_list = [
-        '--name',
-        'executor',
-        '--volumes',
-        'path/volumes'
-    ]
+    args_list = ['--name', 'executor', '--volumes', 'path/volumes']
 
     args = set_deployment_parser().parse_args(args_list)
     deployment_config = K8sDeploymentConfig(args, 'default-namespace')
@@ -771,5 +875,13 @@ def test_executor_with_volumes_stateful_set():
     sset = list(yaml_configs[0][1])[-1]
     assert sset['kind'] == 'StatefulSet'
     assert 'volumeClaimTemplates' in list(sset['spec'].keys())
-    assert sset['spec']['template']['spec']['containers'][0]['volumeMounts'][0]['name'] == 'executor-volume'
-    assert sset['spec']['template']['spec']['containers'][0]['volumeMounts'][0]['mountPath'] == 'path/volumes'
+    assert (
+            sset['spec']['template']['spec']['containers'][0]['volumeMounts'][0]['name']
+            == 'executor-volume'
+    )
+    assert (
+            sset['spec']['template']['spec']['containers'][0]['volumeMounts'][0][
+                'mountPath'
+            ]
+            == 'path/volumes'
+    )

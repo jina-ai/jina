@@ -7,17 +7,18 @@ import pytest
 from jina.checker import NetworkChecker
 from jina.jaml import JAML
 from jina.orchestrate.pods.factory import PodFactory
-from jina.parsers import set_deployment_parser, set_pod_parser
+from jina.parsers import set_deployment_parser
 from jina.parsers.ping import set_ping_parser
 from jina_cli.autocomplete import ac_table
 from jina_cli.export import api_to_dict
 from jina_cli.lookup import _build_lookup_table, lookup_and_print
+from tests.helper import _generate_pod_args
 
 
 def test_export_api(tmpdir):
-    with open(tmpdir / 'test.yml', 'w', encoding='utf8') as fp:
+    with open(tmpdir / 'test.yml', 'w', encoding='utf-8') as fp:
         JAML.dump(api_to_dict(), fp)
-    with open(tmpdir / 'test.json', 'w', encoding='utf8') as fp:
+    with open(tmpdir / 'test.json', 'w', encoding='utf-8') as fp:
         json.dump(api_to_dict(), fp)
 
 
@@ -39,11 +40,14 @@ def test_cli_help():
     subprocess.check_call(['jina', 'help', 'deployment'])
 
 
-def test_cli_hub():
+@pytest.mark.parametrize(
+    'uses', ['jinaai://jina-ai/DummyHubExecutor']
+)
+def test_cli_hub(uses):
     subprocess.check_call(['jina', 'hub', '--help'])
     for cmd in ['new', 'status', 'pull', 'push']:
         subprocess.check_call(['jina', 'hub', cmd, '--help'])
-    subprocess.check_call(['jina', 'hub', 'pull', 'jinahub://DummyHubExecutor'])
+    subprocess.check_call(['jina', 'hub', 'pull', uses])
 
 
 def test_cli_warn_unknown_args():
@@ -96,11 +100,11 @@ def test_parse_env_map():
 
 @pytest.mark.slow
 def test_ping():
-    a1 = set_pod_parser().parse_args([])
-    a2 = set_ping_parser().parse_args(['executor', f'0.0.0.0:{a1.port}'])
+    a1 = _generate_pod_args()
+    a2 = set_ping_parser().parse_args(['executor', f'0.0.0.0:{a1.port[0]}'])
 
     a3 = set_ping_parser().parse_args(
-        ['executor', f'0.0.0.1:{a1.port}', '--timeout', '1000']
+        ['executor', f'0.0.0.1:{a1.port[0]}', '--timeout', '1000']
     )
 
     with pytest.raises(SystemExit) as cm:
@@ -115,3 +119,24 @@ def test_ping():
             NetworkChecker(a3)
 
     assert cm.value.code == 1
+
+
+@pytest.mark.parametrize(
+    'cmd',
+    [
+        ['jina', 'ping', 'flow', '127.0.0.1:8080'],
+        ['jina', 'help', 'port'],
+        ['jina', 'hub'],
+    ],
+)
+def test_logo_silence(cmd):
+    from jina.constants import __resources_path__
+
+    with open(os.path.join(__resources_path__, 'jina.logo'), encoding='utf-8') as fp:
+        logo_str = fp.read()
+
+    s = subprocess.run(
+        cmd,
+        stdout=subprocess.PIPE,
+    )
+    assert logo_str not in s.stdout.decode()

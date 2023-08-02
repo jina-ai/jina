@@ -97,6 +97,8 @@ exporters:
   
   prometheus:
     endpoint: "0.0.0.0:8889"
+    resource_to_telemetry_conversion:
+      enabled: true
     # can be used to add additional labels
     const_labels:
       label1: value1
@@ -136,18 +138,50 @@ The Prometheus configuration now only needs to scrape from the OpenTelemetry Col
 
 Run the Flow and a sample request that we want to instrument locally. If the backends are running successfully the Flow has exported data to the Collector which can be queried and viewed.
 
+First start a Flow:
+
 ```python
-from jina import Flow, Document, DocumentArray
+from jina import Flow, Executor, requests
+from docarray import DocList, BaseDoc
+import time
+
+class MyExecutor(Executor):
+    
+    @requests
+    def foo(self, docs: DocList[BaseDoc], **kwargs) -> DocList[BaseDoc]:
+        time.sleep(0.5)
+        return docs
 
 with Flow(
+    port=54321,
     tracing=True,
-    traces_exporter_host='localhost',
+    traces_exporter_host='http://localhost',
     traces_exporter_port=4317,
     metrics=True,
-    metrics_exporter_host='localhost',
+    metrics_exporter_host='http://localhost',
     metrics_exporter_port=4317,
-).add(uses='jinahub://SimpleIndexer') as f:
-    f.post('/', DocumentArray([Document(text='hello')]))
+).add(uses=MyExecutor) as f:
+    f.block()
+```
+
+Second execute requests using the instrumented {class}`jina.Client`:
+
+```python
+from jina import Client
+from docarray import DocList, BaseDoc
+
+client = Client(
+    host='grpc://localhost:54321',
+    tracing=True,
+    traces_exporter_host='http://localhost',
+    traces_exporter_port=4317,
+)
+client.post('/', DocList[BaseDoc]([BaseDoc()]), return_type=DocList[BaseDoc])
+client.teardown_instrumentation()
+```
+
+```{hint}
+The {class}`jina.Client` currently only supports OpenTelemetry Tracing.
 ```
 
 ## Viewing Traces in Jaeger UI
@@ -174,6 +208,3 @@ A list of available metrics is in the {ref}`Flow Instrumentation <instrumenting-
 To update your existing Prometheus and Grafana configurations, refer to the {ref}`OpenTelemetry migration guide <opentelemetry-migration>`.
 ```
 
-## JCloud Support
-
-JCloud doesn't currently support OpenTelemetry. We'll make these features available soon. Until then, you can use the deprecated Prometheus-based {ref}`monitoring setup <monitoring-flow>`.

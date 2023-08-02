@@ -6,8 +6,7 @@ import pytest
 from urllib import request
 
 from jina import Flow
-from jina.serve.runtimes.gateway.http.models import _to_camel_case
-from jina import Document
+from docarray import Document
 from jina import helper
 from jina import Executor, requests
 from tests import validate_callback
@@ -51,7 +50,6 @@ def test_no_matches_rest(query_dict):
     with Flow(
         protocol='http',
         port=port,
-        including_default_value_fields=True,
     ).add(uses=MockExecutor):
         # temporarily adding sleep
         time.sleep(0.5)

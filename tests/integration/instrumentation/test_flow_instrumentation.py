@@ -2,7 +2,8 @@ import time
 
 import pytest
 
-from jina import Flow
+from jina import Client, Flow
+from jina.helper import random_port
 from tests.integration.instrumentation import (
     ExecutorFailureWithTracing,
     ExecutorTestWithTracing,
@@ -37,22 +38,22 @@ def test_gateway_instrumentation(
     f = Flow(
         protocol=protocol,
         tracing=True,
-        traces_exporter_host='localhost',
+        traces_exporter_host='http://localhost',
         traces_exporter_port=otlp_receiver_port,
     ).add(
         uses=ExecutorTestWithTracing,
         tracing=True,
-        traces_exporter_host='localhost',
+        traces_exporter_host='http://localhost',
         traces_exporter_port=otlp_receiver_port,
     )
 
     with f:
-        from jina import DocumentArray
+        from docarray import DocumentArray
 
         f.post(f'/search', DocumentArray.empty(), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
-        time.sleep(8)
+        time.sleep(20)
 
     services = get_services(jaeger_port)
     expected_services = ['executor0/rep-0', 'gateway/rep-0', client_type]
@@ -71,20 +72,87 @@ def test_gateway_instrumentation(
     assert len(trace_ids) == 1
 
 
+def test_multiprotocol_gateway_instrumentation(
+    jaeger_port,
+    otlp_collector,
+    otlp_receiver_port,
+):
+    grpc_port, http_port, websocket_port = random_port(), random_port(), random_port()
+    f = Flow(
+        protocol=['grpc', 'http', 'websocket'],
+        port=[grpc_port, http_port, websocket_port],
+        tracing=True,
+        traces_exporter_host='http://localhost',
+        traces_exporter_port=otlp_receiver_port,
+    ).add(
+        uses=ExecutorTestWithTracing,
+        tracing=True,
+        traces_exporter_host='http://localhost',
+        traces_exporter_port=otlp_receiver_port,
+    )
+
+    with f:
+        from docarray import DocumentArray
+
+        Client(
+            protocol='grpc',
+            port=grpc_port,
+            tracing=True,
+            traces_exporter_host='http://localhost',
+            traces_exporter_port=otlp_receiver_port,
+        ).post(f'/search', DocumentArray.empty(), continue_on_error=True)
+        Client(
+            protocol='http',
+            port=http_port,
+            tracing=True,
+            traces_exporter_host='http://localhost',
+            traces_exporter_port=otlp_receiver_port,
+        ).post(f'/search', DocumentArray.empty(), continue_on_error=True)
+        Client(
+            protocol='websocket',
+            port=websocket_port,
+            tracing=True,
+            traces_exporter_host='http://localhost',
+            traces_exporter_port=otlp_receiver_port,
+        ).post(f'/search', DocumentArray.empty(), continue_on_error=True)
+
+        # give some time for the tracing and metrics exporters to finish exporting.
+        # the client is slow to export the data
+        time.sleep(20)
+
+    services = get_services(jaeger_port)
+    expected_services = [
+        'executor0/rep-0',
+        'gateway/rep-0',
+        'GRPCClient',
+        'HTTPClient',
+        'WebSocketClient',
+    ]
+    assert len(services) == 5
+    assert set(services).issubset(expected_services)
+
+    gateway_traces = get_traces(jaeger_port, 'gateway/rep-0')
+    (server_spans, client_spans, executor_spans) = partition_spans_by_kind(
+        gateway_traces
+    )
+    assert len(client_spans) == 11
+    assert len(server_spans) == 12
+
+
 def test_executor_instrumentation(jaeger_port, otlp_collector, otlp_receiver_port):
     f = Flow(
         tracing=True,
-        traces_exporter_host='localhost',
+        traces_exporter_host='http://localhost',
         traces_exporter_port=otlp_receiver_port,
     ).add(uses=ExecutorFailureWithTracing)
 
     with f:
-        from jina import DocumentArray
+        from docarray import DocumentArray
 
         f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
-        time.sleep(8)
+        time.sleep(20)
 
     client_type = 'GRPCClient'
     client_traces = get_traces(jaeger_port, client_type)
@@ -104,17 +172,17 @@ def test_executor_instrumentation(jaeger_port, otlp_collector, otlp_receiver_por
 def test_head_instrumentation(jaeger_port, otlp_collector, otlp_receiver_port):
     f = Flow(
         tracing=True,
-        traces_exporter_host='localhost',
+        traces_exporter_host='http://localhost',
         traces_exporter_port=otlp_receiver_port,
     ).add(uses=ExecutorTestWithTracing, shards=2)
 
     with f:
-        from jina import DocumentArray
+        from docarray import DocumentArray
 
         f.post(f'/search', DocumentArray.empty(), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
-        time.sleep(8)
+        time.sleep(20)
 
     client_type = 'GRPCClient'
     client_traces = get_traces(jaeger_port, client_type)
@@ -150,24 +218,24 @@ def test_flow_metrics(
 ):
     f = Flow(
         metrics=True,
-        metrics_exporter_host='localhost',
+        metrics_exporter_host='http://localhost',
         metrics_exporter_port=otlp_receiver_port,
     ).add(
         uses=ExecutorFailureWithTracing,
         shards=2,
         metrics=True,
-        metrics_exporter_host='localhost',
+        metrics_exporter_host='http://localhost',
         metrics_exporter_port=otlp_receiver_port,
     )
 
     with f:
-        from jina import DocumentArray
+        from docarray import DocumentArray
 
         f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)
         f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
-        time.sleep(8)
+        time.sleep(20)
 
     exported_jobs = get_exported_jobs(prometheus_client)
     assert exported_jobs.issubset(instrumented_services_sharded)
@@ -192,10 +260,10 @@ def test_flow_metrics(
     )
     assert len(receiving_request_seconds_metrics) > 0
     assert receiving_request_seconds_exported_jobs == {
-            'gateway/rep-0',
-            'executor0/head',
-            'executor0/shard-0/rep-0',
-            'executor0/shard-1/rep-0',
+        'gateway/rep-0',
+        'executor0/head',
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
     }
 
     (
@@ -224,10 +292,10 @@ def test_flow_metrics(
     )
     assert len(sent_response_bytes_metrics) > 0
     assert sent_response_bytes_exported_jobs == {
-            'gateway/rep-0',
-            'executor0/shard-0/rep-0',
-            'executor0/shard-1/rep-0',
-            'executor0/head'
+        'gateway/rep-0',
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+        'executor0/head',
     }
 
     (
@@ -237,7 +305,10 @@ def test_flow_metrics(
         prometheus_client, 'jina_number_of_pending_requests'
     )
     assert len(number_of_pending_requests_metrics) > 0
-    assert number_of_pending_requests_exported_jobs == {'gateway/rep-0', 'executor0/head'}
+    assert number_of_pending_requests_exported_jobs == {
+        'gateway/rep-0',
+        'executor0/head',
+    }
 
     (
         failed_requests_metrics,
@@ -245,10 +316,10 @@ def test_flow_metrics(
     ) = get_metrics_and_exported_jobs_by_name(prometheus_client, 'jina_failed_requests')
     assert len(failed_requests_metrics) > 0
     assert failed_requests_exported_jobs == {
-            'gateway/rep-0',
-            'executor0/head',
-            'executor0/shard-0/rep-0',
-            'executor0/shard-1/rep-0',
+        'gateway/rep-0',
+        'executor0/head',
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
     }
 
     (
@@ -258,7 +329,12 @@ def test_flow_metrics(
         prometheus_client, 'jina_successful_requests'
     )
     assert len(successful_requests_metrics) > 0
-    assert successful_requests_exported_jobs == {'gateway/rep-0', 'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0', 'executor0/head'}
+    assert successful_requests_exported_jobs == {
+        'gateway/rep-0',
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+        'executor0/head',
+    }
 
     (
         received_request_bytes_metrics,
@@ -267,7 +343,12 @@ def test_flow_metrics(
         prometheus_client, 'jina_received_request_bytes'
     )
     assert len(received_request_bytes_metrics) > 0
-    assert received_request_bytes_exported_jobs == {'gateway/rep-0', 'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0', 'executor0/head'}
+    assert received_request_bytes_exported_jobs == {
+        'gateway/rep-0',
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+        'executor0/head',
+    }
 
     (
         process_requests_seconds_metrics,
@@ -276,7 +357,10 @@ def test_flow_metrics(
         prometheus_client, 'jina_process_request_seconds'
     )
     assert len(process_requests_seconds_metrics) > 0
-    assert process_requests_seconds_exported_jobs == {'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0'}
+    assert process_requests_seconds_exported_jobs == {
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+    }
 
     # filter by attributes/labels
     (
@@ -288,7 +372,10 @@ def test_flow_metrics(
         {'executor_endpoint': '/search'},
     )
     assert len(process_requests_seconds_search_endpoint) > 0
-    assert process_requests_seconds_search_endpoint_exported_jobs == {'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0'}
+    assert process_requests_seconds_search_endpoint_exported_jobs == {
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+    }
 
     (
         process_requests_seconds_executor,
@@ -299,7 +386,10 @@ def test_flow_metrics(
         {'executor': 'ExecutorFailureWithTracing'},
     )
     assert len(process_requests_seconds_executor) > 0
-    assert process_requests_seconds_executor_exported_jobs == {'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0'}
+    assert process_requests_seconds_executor_exported_jobs == {
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+    }
 
     (
         process_requests_seconds_runtime,

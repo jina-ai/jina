@@ -1,10 +1,10 @@
 import glob
 import os
-from datetime import datetime
 
 import pytest
 
-from jina import Document, Flow, __uptime__, __windows__
+from jina import Document, Flow
+from jina.constants import __uptime__, __windows__
 from jina.enums import LogVerbosity
 from jina.helper import colored
 from jina.logging.logger import JinaLogger
@@ -41,9 +41,18 @@ def test_logging_syslog():
 
 
 def test_logging_default():
+    import logging
+    import sys
+
     with JinaLogger('test_logger') as logger:
         log(logger)
         assert len(logger.handlers) == 1
+
+    # test whether suppress root handlers
+    logging.root.handlers.append(logging.StreamHandler(sys.stdout))
+    with JinaLogger('test_logger', suppress_root_logging=False) as logger:
+        log(logger)
+        assert len(logging.root.handlers) > 0
 
 
 def test_logging_level_yaml(monkeypatch):
@@ -69,7 +78,7 @@ def test_logging_file(monkeypatch):
     ) as file_logger:
         log(file_logger)
         assert os.path.exists(fn)
-        with open(fn) as fp:
+        with open(fn, encoding='utf-8') as fp:
             assert len(fp.readlines()) == 5
     for f in glob.glob(cur_dir + '/*.log'):
         os.remove(f)
@@ -80,18 +89,6 @@ def test_logging_quiet(caplog):
     # no way to capture logs in multiprocessing
     # see discussion here: https://github.com/pytest-dev/pytest/issues/3037#issuecomment-745050393
 
-    f = Flow().add().add()
-    with f:
-        f.index(Document())
-
     f = Flow().add(quiet=True).add()
-    with f:
-        f.index(Document())
-
-    f = Flow().add(quiet=True).add(quiet=True)
-    with f:
-        f.index(Document())
-
-    f = Flow(quiet=True).add().add()
     with f:
         f.index(Document())

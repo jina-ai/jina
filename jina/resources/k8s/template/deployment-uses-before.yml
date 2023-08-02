@@ -42,12 +42,40 @@ spec:
               fieldPath: metadata.uid
         - name: JINA_DEPLOYMENT_NAME
           value: {jina_deployment_name}
-
-        readinessProbe:
-          tcpSocket:
-            port: {port}
+        - name: K8S_DEPLOYMENT_NAME
+          value: {name}
+        - name: K8S_NAMESPACE_NAME
+          value: {namespace}
+        - name: K8S_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        startupProbe:
+          exec:
+            command:
+              - jina
+              - ping
+              - executor
+              - 127.0.0.1:{port}
           initialDelaySeconds: 5
-          periodSeconds: 10
+          periodSeconds: {period_seconds}
+          failureThreshold: {failure_threshold}
+          timeoutSeconds: 10
+        livenessProbe:
+          exec:
+            command:
+              - jina
+              - ping
+              - executor
+              - 127.0.0.1:{port}
+                - --timeout 9500
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 10
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 2"]
       - name: uses-before
         image: {image_uses_before}
         imagePullPolicy: {pull_policy}
@@ -65,8 +93,15 @@ spec:
               fieldPath: metadata.uid
         - name: JINA_DEPLOYMENT_NAME
           value: {jina_deployment_name}
-
-        readinessProbe:
+        - name: K8S_DEPLOYMENT_NAME
+          value: {name}
+        - name: K8S_NAMESPACE_NAME
+          value: {namespace}
+        - name: K8S_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        startupProbe:
           exec:
             command:
               - jina
@@ -74,5 +109,20 @@ spec:
               - executor
               - 127.0.0.1:{port_uses_before}
           initialDelaySeconds: 5
-          periodSeconds: 20
+          periodSeconds: {period_seconds}
+          failureThreshold: {failure_threshold}
           timeoutSeconds: 10
+        livenessProbe:
+          exec:
+            command:
+              - jina
+              - ping
+              - executor
+              - 127.0.0.1:{port_uses_before}
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 10
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 2"]

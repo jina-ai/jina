@@ -7,9 +7,10 @@ import pytest
 
 from jina import Document, DocumentArray, Executor, requests
 from jina.clients.request import request_generator
-from jina.parsers import set_gateway_parser, set_pod_parser
-from jina.serve.networking import GrpcConnectionPool
+from jina.parsers import set_gateway_parser
+from jina.serve.networking.utils import send_request_sync
 from jina_cli.api import executor_native, gateway
+from tests.helper import _generate_pod_args
 
 
 class DummyExecutor(Executor):
@@ -25,7 +26,7 @@ class DummyExecutor(Executor):
 
     def close(self):
         super().close()
-        with open(f'{self.dir}/test.txt', 'w') as fp:
+        with open(f'{self.dir}/test.txt', 'w', encoding='utf-8') as fp:
             fp.write(f'proper close;{self.request_count}')
 
 
@@ -42,7 +43,7 @@ def _create_test_data_message():
 def test_executor_runtimes(signal, tmpdir):
     import time
 
-    args = set_pod_parser().parse_args([])
+    args = _generate_pod_args()
 
     def run(args):
 
@@ -57,15 +58,13 @@ def test_executor_runtimes(signal, tmpdir):
     process.start()
     time.sleep(0.5)
 
-    GrpcConnectionPool.send_request_sync(
-        _create_test_data_message(), target=f'{args.host}:{args.port}'
-    )
+    send_request_sync(_create_test_data_message(), target=f'{args.host}:{args.port[0]}')
 
     time.sleep(0.1)
 
     os.kill(process.pid, signal)
     process.join()
-    with open(f'{tmpdir}/test.txt', 'r') as fp:
+    with open(f'{tmpdir}/test.txt', 'r', encoding='utf-8') as fp:
         output = fp.read()
     split = output.split(';')
     assert split[0] == 'proper close'

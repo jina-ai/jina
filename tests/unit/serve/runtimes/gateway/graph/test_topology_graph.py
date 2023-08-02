@@ -5,7 +5,7 @@ from typing import List
 
 import pytest
 
-from jina import Document, DocumentArray
+from docarray import Document, DocumentArray
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
@@ -603,7 +603,7 @@ class DummyMockGatewayRuntime:
         tasks_to_respond = []
         tasks_to_ignore = []
         for origin_node in graph.origin_nodes:
-            leaf_tasks = origin_node.get_leaf_tasks(self.connection_pool, msg, None)
+            leaf_tasks = origin_node.get_leaf_req_response_tasks(self.connection_pool, msg, None)
             # Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their subtrees that unwrap all the previous tasks.
             # It starts like a chain of waiting for tasks from previous nodes
             tasks_to_respond.extend([task for ret, task in leaf_tasks if ret])

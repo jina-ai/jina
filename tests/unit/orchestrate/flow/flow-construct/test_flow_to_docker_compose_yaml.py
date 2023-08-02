@@ -6,7 +6,8 @@ from unittest import mock
 import pytest
 import yaml
 
-from jina import Flow, __cache_path__
+from jina import Flow
+from jina.constants import __cache_path__
 
 
 @pytest.mark.parametrize('protocol', ['http', 'grpc'])
@@ -32,7 +33,7 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     )
 
     configuration = None
-    with open(dump_path) as f:
+    with open(dump_path, encoding='utf-8') as f:
         configuration = yaml.safe_load(f)
 
     assert set(configuration.keys()) == {'version', 'services', 'networks'}
@@ -57,7 +58,7 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
 
     gateway_service = services['gateway']
     assert gateway_service['entrypoint'] == ['jina']
-    assert gateway_service['expose'] == ['9090']
+    assert gateway_service['expose'] == [9090]
     assert gateway_service['ports'] == ['9090:9090']
     gateway_args = gateway_service['command']
     assert gateway_args[0] == 'gateway'
@@ -328,7 +329,7 @@ def test_docker_compose_set_volume(tmpdir):
     )
 
     configuration = None
-    with open(dump_path) as f:
+    with open(dump_path, encoding='utf-8') as f:
         configuration = yaml.safe_load(f)
 
     assert set(configuration.keys()) == {'version', 'services', 'networks'}
@@ -376,7 +377,7 @@ def test_disable_auto_volume(tmpdir):
     flow.to_docker_compose_yaml(output_path=dump_path)
 
     configuration = None
-    with open(dump_path) as f:
+    with open(dump_path, encoding='utf-8') as f:
         configuration = yaml.safe_load(f)
 
     assert set(configuration.keys()) == {'version', 'services', 'networks'}
@@ -391,10 +392,12 @@ def test_disable_auto_volume(tmpdir):
     assert 'volumes' not in services['executor0']
 
 
-def test_flow_to_docker_compose_sandbox(tmpdir):
-    flow = Flow(name='test-flow', port=8080).add(
-        uses=f'jinahub+sandbox://DummyHubExecutor'
-    )
+@pytest.mark.parametrize(
+    'uses',
+    ['jinaai+sandbox://jina-ai/DummyHubExecutor'],
+)
+def test_flow_to_docker_compose_sandbox(tmpdir, uses):
+    flow = Flow(name='test-flow', port=8080).add(uses=uses)
 
     dump_path = os.path.join(str(tmpdir), 'test_flow_docker_compose.yml')
 
@@ -403,7 +406,7 @@ def test_flow_to_docker_compose_sandbox(tmpdir):
     )
 
     configuration = None
-    with open(dump_path) as f:
+    with open(dump_path, encoding='utf-8') as f:
         configuration = yaml.safe_load(f)
 
     services = configuration['services']
@@ -426,7 +429,7 @@ def test_flow_to_docker_compose_gpus(tmpdir, count):
     )
 
     configuration = None
-    with open(dump_path) as f:
+    with open(dump_path, encoding='utf-8') as f:
         configuration = yaml.safe_load(f)
 
     services = configuration['services']
