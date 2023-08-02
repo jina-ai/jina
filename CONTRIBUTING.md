@@ -1,4 +1,4 @@
-> The best way to know more about contributing and how to get started is to **[join us on Slack](https://jina.ai/slack)** and ask questions in our public channels.
+> The best way to know more about contributing and how to get started is to **[join us on Discord](https://discord.jina.ai)** and ask questions in our public channels.
 
 # Contributing to Jina
 
@@ -87,7 +87,6 @@ For more about our docstring style, refer to [this guide](./.github/DOCSTRINGS.r
 #### Restoring correct git blame
 
 Run `git config blame.ignoreRevsFile .github/.git-blame-ignore-revs`
-
 
 <a name="-naming-conventions"></a>
 ## ☑️ Naming Conventions

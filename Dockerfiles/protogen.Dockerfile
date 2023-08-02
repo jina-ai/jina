@@ -1,4 +1,4 @@
-FROM python:3.7-slim
+FROM --platform=linux/amd64 python:3.7-slim
 
 RUN apt-get update && apt-get install --no-install-recommends -y
 
@@ -18,7 +18,7 @@ ADD jina ./jina/
 
 WORKDIR /jina/proto
 
-ENTRYPOINT ["bash", "./build-proto.sh", "/builder/grpc/cmake/build/grpc_python_plugin"]
+ENTRYPOINT ["bash", "./build-proto.sh", "/builder/grpc/cmake/build/grpc_python_plugin", "pb2"]
 
 
 

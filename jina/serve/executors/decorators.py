@@ -7,7 +7,7 @@ from typing import Callable, Dict, List, Optional, Sequence, Type, Union
 
 from jina._docarray import Document, DocumentArray, docarray_v2
 from jina.constants import __cache_path__
-from jina.helper import iscoroutinefunction
+from jina.helper import is_generator, iscoroutinefunction
 from jina.importer import ImportExtensions
 
 
@@ -90,6 +90,131 @@ def _init_requests_by_class(cls):
         _inherit_from_parent_class_inner(cls)
 
 
+def write(
+    func: Optional[
+        Callable[
+            [
+                'DocumentArray',
+                Dict,
+                'DocumentArray',
+                List['DocumentArray'],
+                List['DocumentArray'],
+            ],
+            Optional[Union['DocumentArray', Dict]],
+        ]
+    ] = None
+):
+    """
+    `@write` is a decorator indicating that the function decorated will change the Executor finite state machine
+
+    Calls to methods decorated with `write` will be handled by `RAFT` consensus algorithm to guarantee the consensus of the Executor between replicas when used as a `StatefulDeployment`
+
+    EXAMPLE USAGE
+
+    .. code-block:: python
+
+        from jina import Deployment, Executor, requests
+        from jina.serve.executors.decorators import write
+        from docarray import DocList
+        from docarray.documents import TextDoc
+
+
+        class MyStateStatefulExecutor(Executor):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self._docs_dict = {}
+
+            @requests(on=['/index'])
+            @write
+            def index(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+                for doc in docs:
+                    self._docs_dict[doc.id] = doc
+
+            @requests(on=['/search'])
+            def search(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+                for doc in docs:
+                    self.logger.debug(f'Searching against {len(self._docs_dict)} documents')
+                    doc.text = self._docs_dict[doc.id].text
+
+
+        d = Deployment(
+            name='stateful_executor',
+            uses=MyStateStatefulExecutor,
+            replicas=3,
+            stateful=True,
+            workspace='./raft',
+            peer_ports=[12345, 12346, 12347],
+        )
+        with d:
+            d.post(
+                on='/index', inputs=TextDoc(text='I am here!')
+            )  # send doc to `index` method which will be replicated using RAFT
+            d.post(
+                on='/search', inputs=TextDoc(text='Who is there?')
+            )  # send doc to `search` method, that will bypass the RAFT apply
+
+
+    :param func: the method to decorate
+    :return: decorated function
+    """
+
+    class WriteMethodDecorator:
+        def __init__(self, fn):
+            self._requests_decorator = None
+            fn = self._unwrap_requests_decorator(fn)
+            if iscoroutinefunction(fn):
+
+                @functools.wraps(fn)
+                async def arg_wrapper(
+                    executor_instance, *args, **kwargs
+                ):  # we need to get the summary from the executor, so we need to access the self
+                    with executor_instance._write_lock:
+                        return await fn(executor_instance, *args, **kwargs)
+
+                self.fn = arg_wrapper
+            else:
+
+                @functools.wraps(fn)
+                def arg_wrapper(
+                    executor_instance, *args, **kwargs
+                ):  # we need to get the summary from the executor, so we need to access the self
+                    with executor_instance._write_lock:
+                        return fn(executor_instance, *args, **kwargs)
+
+                self.fn = arg_wrapper
+
+        def _unwrap_requests_decorator(self, fn):
+            if type(fn).__name__ == 'FunctionMapper':
+                self._requests_decorator = fn
+                return fn.fn
+            else:
+                return fn
+
+        def _inject_owner_attrs(self, owner, name):
+            if not hasattr(owner, '_write_methods'):
+                owner._write_methods = []
+
+            owner._write_methods.append(self.fn.__name__)
+
+        def __set_name__(self, owner, name):
+            _init_requests_by_class(owner)
+            if self._requests_decorator:
+                self._requests_decorator._inject_owner_attrs(owner, name, None, None)
+
+            self._inject_owner_attrs(owner, name)
+
+            setattr(owner, name, self.fn)
+
+        def __call__(self, *args, **kwargs):
+            # this is needed to make this decorator work in combination with `@requests`
+            return self.fn(*args, **kwargs)
+
+    if func:
+        return WriteMethodDecorator(func)
+    else:
+        return WriteMethodDecorator
+
+
 def requests(
     func: Optional[
         Callable[
@@ -106,7 +231,7 @@ def requests(
     *,
     on: Optional[Union[str, Sequence[str]]] = None,
     request_schema: Optional[Type[DocumentArray]] = None,
-    response_schema: Optional[Type[DocumentArray]] = None,
+    response_schema: Optional[Union[Type[DocumentArray], Type[Document]]] = None,
 ):
     """
     `@requests` defines the endpoints of an Executor. It has a keyword `on=` to
@@ -160,10 +285,18 @@ def requests(
     """
     from jina.constants import __args_executor_func__, __default_endpoint__
 
+    if func:
+        setattr(func, '__is_generator__', is_generator(func))
+
     class FunctionMapper:
         def __init__(self, fn):
+
+            if fn:
+                setattr(fn, '__is_generator__', is_generator(fn))
             self._batching_decorator = None
+            self._write_decorator = None
             fn = self._unwrap_batching_decorator(fn)
+            fn = self._unwrap_write_decorator(fn)
             arg_spec = inspect.getfullargspec(fn)
             if not arg_spec.varkw and not __args_executor_func__.issubset(
                 arg_spec.args
@@ -199,6 +332,13 @@ def requests(
             else:
                 return fn
 
+        def _unwrap_write_decorator(self, fn):
+            if type(fn).__name__ == 'WriteMethodDecorator':
+                self._write_decorator = fn
+                return fn.fn
+            else:
+                return fn
+
         def _inject_owner_attrs(
             self, owner, name, request_schema_arg, response_schema_arg
         ):
@@ -221,8 +361,16 @@ def requests(
             )
 
             fn_with_schema = _FunctionWithSchema(
-                fn_with_schema.fn, request_schema_arg, response_schema_arg
+                fn=fn_with_schema.fn,
+                is_generator=fn_with_schema.is_generator,
+                is_singleton_doc=fn_with_schema.is_singleton_doc,
+                is_batch_docs=fn_with_schema.is_batch_docs,
+                parameters_is_pydantic_model=fn_with_schema.parameters_is_pydantic_model,
+                parameters_model=fn_with_schema.parameters_model,
+                request_schema=request_schema_arg,
+                response_schema=response_schema_arg
             )
+            fn_with_schema.validate()
 
             if isinstance(on, (list, tuple)):
                 for o in on:
@@ -238,6 +386,8 @@ def requests(
             _init_requests_by_class(owner)
             if self._batching_decorator:
                 self._batching_decorator._inject_owner_attrs(owner, name)
+            if self._write_decorator:
+                self._write_decorator._inject_owner_attrs(owner, name)
             self.fn.class_name = owner.__name__
             self._inject_owner_attrs(owner, name, request_schema, response_schema)
 

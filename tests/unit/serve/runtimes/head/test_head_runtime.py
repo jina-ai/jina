@@ -103,46 +103,6 @@ def test_uses_before_uses_after():
     _destroy_runtime(args, cancel_event, runtime_thread)
 
 
-def test_decompress(monkeypatch):
-    call_counts = multiprocessing.Manager().Queue()
-
-    def decompress(self):
-        call_counts.put_nowait('called')
-        from jina.proto import jina_pb2
-
-        self._pb_body = jina_pb2.DataRequestProto()
-        self._pb_body.ParseFromString(self.buffer)
-        self.buffer = None
-
-    monkeypatch.setattr(
-        DataRequest,
-        '_decompress',
-        decompress,
-    )
-
-    args = _generate_pod_args()
-    args.polling = PollingType.ANY
-    connection_list_dict = {0: [f'fake_ip:8080']}
-    args.connection_list = json.dumps(connection_list_dict)
-    cancel_event, handle_queue, runtime_thread = _create_runtime(args)
-
-    with grpc.insecure_channel(
-        f'{args.host}:{args.port[0]}',
-        options=get_default_grpc_options(),
-    ) as channel:
-        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
-        response, call = stub.process_single_data.with_call(_create_test_data_message())
-
-    assert response
-    assert 'is-error' in dict(call.trailing_metadata())
-    assert _queue_length_copy(call_counts) == 0
-    assert len(response.docs) == 1
-    assert _queue_length_copy(call_counts) == 1
-    assert not handle_queue.empty()
-
-    _destroy_runtime(args, cancel_event, runtime_thread)
-
-
 @pytest.mark.parametrize('polling', ['any', 'all'])
 def test_dynamic_polling(polling):
     args = _generate_pod_args(

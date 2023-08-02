@@ -195,7 +195,8 @@ def build_docker_image(image_name: str, image_name_tag_map: Dict[str, str]) -> s
 def set_test_pip_version() -> None:
     os.environ['JINA_GATEWAY_IMAGE'] = 'jinaai/jina:test-pip'
     yield
-    del os.environ['JINA_GATEWAY_IMAGE']
+    if 'JINA_GATEWAY_IMAGE' in os.environ: # maybe another fixture has already removed
+        del os.environ['JINA_GATEWAY_IMAGE']
 
 
 def load_cluster_config() -> None:

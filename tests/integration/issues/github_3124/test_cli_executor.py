@@ -29,12 +29,3 @@ def test_executor_cli_docker(docker_image):
     process.terminate()
     assert poll is None
 
-
-def test_zed_runtime_cli_docker(docker_image):
-    process = subprocess.Popen(
-        ['jina', 'executor', '--native', '--uses', 'docker://clitest:latest']
-    )
-    time.sleep(5)
-    poll = process.poll()
-    process.terminate()
-    assert poll == 1  # failed

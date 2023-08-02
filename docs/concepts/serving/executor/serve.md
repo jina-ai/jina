@@ -25,8 +25,10 @@ It can also be used as part of a Flow.
 
 - A **shared Executor** is launched using the [Jina CLI](../../cli/index.rst) and does *not* sit behind a Gateway.
 It is intended to be used in one or more Flows. However, it can be also accessed by a {ref}`Client <client>`.
-Because a shared Executor does not reside behind a Gataway, it requires fewer networking hops when used inside of a Flow.
-However, it is not suitable for exposing a standalone service, outside the scope of a Flow.
+Because a shared Executor does not reside behind a Gateway, it requires fewer networking hops when used inside of a Flow.
+However, it is not suitable for exposing a standalone service without gRPC protocol.
+
+In any case, the user needs to make sure that the Document types bound to each endpoint are compatible inside a Flow.
 ````
 
 (deployment)=
@@ -44,19 +46,20 @@ served in multiple ways/configurations using Deployment.
 ````{tab} Python class
 
 ```python
-from docarray import DocumentArray, Document
+from docarray import DocList
+from docarray.documents import TextDoc
 from jina import Executor, requests, Deployment
 
 
 class MyExec(Executor):
     @requests
-    def foo(self, docs: DocumentArray, **kwargs):
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         docs[0].text = 'executed MyExec'  # custom logic goes here
 
 
 with Deployment(uses=MyExec, port=12345, replicas=2) as dep:
-    docs = dep.post(on='/foo', inputs=DocumentArray.empty(1))
-    print(docs.texts)
+    docs = dep.post(on='/foo', inputs=DocList[TextDoc](TextDoc()), return_type=DocList[TextDoc])
+    print(docs.text)
 ```
 ````
 
@@ -72,8 +75,8 @@ py_modules:
 from jina import Deployment
 
 with Deployment(uses='executor.yaml', port=12345, replicas=2) as dep:
-    docs = dep.post(on='/foo', inputs=DocumentArray.empty(1))
-    print(docs.texts)
+    docs = dep.post(on='/foo', inputs=DocList[TextDoc](TextDoc()), return_type=DocList[TextDoc])
+    print(docs.text)
 ```
 ````
 
@@ -83,8 +86,8 @@ with Deployment(uses='executor.yaml', port=12345, replicas=2) as dep:
 from jina import Deployment
 
 with Deployment(uses='jinaai://my-username/MyExec/', port=12345, replicas=2) as dep:
-    docs = dep.post(on='/foo', inputs=DocumentArray.empty(1))
-    print(docs.texts)
+    docs = dep.post(on='/foo', inputs=DocList[TextDoc](TextDoc()), return_type=DocList[TextDoc])
+    print(docs.text)
 ```
 
 ````
@@ -95,8 +98,8 @@ with Deployment(uses='jinaai://my-username/MyExec/', port=12345, replicas=2) as 
 from jina import Deployment
 
 with Deployment(uses='docker://my-executor-image', port=12345, replicas=2) as dep:
-    docs = dep.post(on='/foo', inputs=DocumentArray.empty(1))
-    print(docs.texts)
+    docs = dep.post(on='/foo', inputs=DocList[TextDoc](TextDoc()), return_type=DocList[TextDoc])
+    print(docs.text)
 ```
 
 ````
@@ -264,14 +267,16 @@ Then, we can send requests using {meth}`~jina.Client`. Since Kubernetes load bal
 gRPC requests, it is recommended to set `stream=False` when using gRPC (note that this is only applicable for Kubernetes deployments of Executors):
 ```python
 import os
-from jina import Client, Document
+from jina import Client
+from docarray import DocList
+from docarray.documents import TextDoc
 
 host = os.environ['EXTERNAL_IP']
 port = 80
 
 client = Client(host=host, port=port)
 
-print(client.post(on='/', inputs=Document(), stream=False).texts)
+print(client.post(on='/', inputs=TextDoc(), return_type=DocList[TextDoc], stream=False).text)
 ```
 
 ```text
@@ -292,7 +297,7 @@ This type of standalone Executor can be either *external* or *shared*. By defaul
 - A shared Executor has no Gateway.
 
 Although both types can join a {class}`~jina.Flow`, use a shared Executor if the Executor is only intended to join Flows 
-to have less network hops and save the costs of running running the Gateway in Kubernetes.
+to have less network hops and save the costs of running the Gateway in Kubernetes.
 
 ## Serve via Docker Compose
 

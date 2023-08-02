@@ -1,5 +1,4 @@
 import multiprocessing
-import re
 from copy import deepcopy
 from functools import partial
 from typing import TYPE_CHECKING
@@ -16,7 +15,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 def _get_event(obj) -> multiprocessing.Event:
     if isinstance(obj, multiprocessing.Process) or isinstance(
-            obj, multiprocessing.context.ForkProcess
+        obj, multiprocessing.context.ForkProcess
     ):
         return multiprocessing.Event()
     elif isinstance(obj, multiprocessing.context.SpawnProcess):

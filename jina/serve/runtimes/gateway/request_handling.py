@@ -3,14 +3,15 @@ import itertools
 import threading
 from typing import TYPE_CHECKING, AsyncIterator, Dict
 
+from jina.enums import ProtocolType
 from jina.helper import get_full_version
 from jina.proto import jina_pb2
-from jina.types.request.data import DataRequest
+from jina.types.request.data import DataRequest, SingleDocumentRequest
 from jina.types.request.status import StatusMessage
-from jina.enums import ProtocolType
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import SimpleNamespace
+    import grpc
 
     from jina.logging.logger import JinaLogger
     from jina.serve.runtimes.gateway.streamer import GatewayStreamer
@@ -21,15 +22,15 @@ class GatewayRequestHandler:
     """Object to encapsulate the code related to handle the data requests in the Gateway"""
 
     def __init__(
-            self,
-            args: 'SimpleNamespace',
-            logger: 'JinaLogger',
-            metrics_registry=None,
-            meter=None,
-            aio_tracing_client_interceptors=None,
-            tracing_client_interceptor=None,
-            works_as_load_balancer: bool = False,
-            **kwargs,
+        self,
+        args: 'SimpleNamespace',
+        logger: 'JinaLogger',
+        metrics_registry=None,
+        meter=None,
+        aio_tracing_client_interceptors=None,
+        tracing_client_interceptor=None,
+        works_as_load_balancer: bool = False,
+        **kwargs,
     ):
         import json
 
@@ -49,7 +50,9 @@ class GatewayRequestHandler:
         deployment_grpc_addresses = {}
         for deployment_name, addresses in deployments_addresses.items():
             if isinstance(addresses, Dict):
-                deployment_grpc_addresses[deployment_name] = addresses.get(ProtocolType.GRPC.to_string(), [])
+                deployment_grpc_addresses[deployment_name] = addresses.get(
+                    ProtocolType.GRPC.to_string(), []
+                )
             else:
                 deployment_grpc_addresses[deployment_name] = addresses
 
@@ -127,8 +130,10 @@ class GatewayRequestHandler:
         """
         Gratefully closes the object making sure all the floating requests are taken care and the connections are closed gracefully
         """
+        self.logger.debug(f'Closing Request Handler')
         self.cancel_warmup_task()
         await self.streamer.close()
+        self.logger.debug(f'Request Handler closed')
 
     def _http_fastapi_default_app(
         self,
@@ -141,9 +146,17 @@ class GatewayRequestHandler:
         cors,
         tracing,
         tracer_provider,
+        **kwargs,
     ):
+        from jina._docarray import docarray_v2
         from jina.helper import extend_rest_interface
-        from jina.serve.runtimes.gateway.http_fastapi_app import get_fastapi_app
+
+        if not docarray_v2:
+            from jina.serve.runtimes.gateway.http_fastapi_app import get_fastapi_app
+        else:
+            from jina.serve.runtimes.gateway.http_fastapi_app_docarrayv2 import (
+                get_fastapi_app,
+            )
 
         return extend_rest_interface(
             get_fastapi_app(
@@ -173,13 +186,24 @@ class GatewayRequestHandler:
                 if request.method == 'GET':
                     async with session.get(target_url) as response:
                         content = await response.read()
-                        return web.Response(body=content, status=response.status, content_type=response.content_type)
+                        return web.Response(
+                            body=content,
+                            status=response.status,
+                            content_type=response.content_type,
+                        )
                 elif request.method == 'POST':
                     d = await request.read()
                     import json
-                    async with session.post(url=target_url, json=json.loads(d.decode())) as response:
+
+                    async with session.post(
+                        url=target_url, json=json.loads(d.decode())
+                    ) as response:
                         content = await response.read()
-                        return web.Response(body=content, status=response.status, content_type=response.content_type)
+                        return web.Response(
+                            body=content,
+                            status=response.status,
+                            content_type=response.content_type,
+                        )
         except aiohttp.ClientError as e:
             return web.Response(text=f'Error: {str(e)}', status=500)
 
@@ -204,6 +228,7 @@ class GatewayRequestHandler:
         :param context: grpc context
         :returns: the response request
         """
+        self.logger.debug('recv a dry_run request')
         from jina._docarray import Document, DocumentArray
         from jina.serve.executors import __dry_run_endpoint__
 
@@ -229,6 +254,7 @@ class GatewayRequestHandler:
         :param context: grpc context
         :returns: the response request
         """
+        self.logger.debug('recv a _status request')
         info_proto = jina_pb2.JinaInfoProto()
         version, env_info = get_full_version()
         for k, v in version.items():
@@ -249,10 +275,27 @@ class GatewayRequestHandler:
         :param kwargs: keyword arguments
         :yield: responses to the request after streaming to Executors in Flow
         """
+        self.logger.debug('recv a stream request')
         async for resp in self.streamer.rpc_stream(
             request_iterator=request_iterator, context=context, *args, **kwargs
         ):
             yield resp
+
+    async def stream_doc(
+            self, request: SingleDocumentRequest, context: 'grpc.aio.ServicerContext'
+    ) -> SingleDocumentRequest:
+        """
+        Process the received requests and return the result as a new request
+
+        :param request: the data request to process
+        :param context: grpc context
+        :yields: the response request
+        """
+        self.logger.debug('recv a stream_doc request')
+        async for result in self.streamer.rpc_stream_doc(
+                request=request,
+        ):
+            yield result
 
     async def process_single_data(
         self, request: DataRequest, context=None
@@ -262,6 +305,35 @@ class GatewayRequestHandler:
         :param context: grpc context
         :return: response DataRequest
         """
+        self.logger.debug(f'recv a process_single_data request')
         return await self.streamer.process_single_data(request, context)
+
+    async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
+        """
+        Uses the connection pool to send a discover endpoint call to the Executors
+
+        :param empty: The service expects an empty protobuf message
+        :param context: grpc context
+        :returns: the response request
+        """
+        from google.protobuf import json_format
+        self.logger.debug('got an endpoint discovery request')
+        response = jina_pb2.EndpointsProto()
+        await self.streamer._get_endpoints_input_output_models(is_cancel=None)
+        request_models_map = self.streamer._endpoints_models_map
+        if request_models_map is not None and len(request_models_map) > 0:
+            schema_maps = {}
+            for k, v in request_models_map.items():
+                schema_maps[k] = {}
+                schema_maps[k]['input'] = v['input'].schema()
+                schema_maps[k]['output'] = v['output'].schema()
+                schema_maps[k]['is_generator'] = v['is_generator']
+                schema_maps[k]['is_singleton_doc'] = v['is_singleton_doc']
+            response.endpoints.extend(schema_maps.keys())
+            json_format.ParseDict(schema_maps, response.schemas)
+        else:
+            endpoints = await self.streamer.topology_graph._get_all_endpoints(self.streamer._connection_pool,  retry_forever=True, is_cancel=None)
+            response.endpoints.extend(list(endpoints))
+        return response
 
     Call = stream

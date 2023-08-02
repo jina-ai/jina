@@ -1,7 +1,7 @@
 """Helper functions for clients in Jina."""
 
 from functools import wraps
-from typing import Callable
+from typing import Callable, Optional
 
 from jina.excepts import BadClientCallback, BadServer
 from jina.helper import get_rich_console
@@ -57,11 +57,11 @@ def _safe_callback(func: Callable, continue_on_error: bool, logger) -> Callable:
 
 def callback_exec(
     response,
-    on_done: Callable,
-    on_error: Callable,
-    on_always: Callable,
-    continue_on_error: bool,
     logger: JinaLogger,
+    on_done: Optional[Callable] = None,
+    on_error: Optional[Callable] = None,
+    on_always: Optional[Callable] = None,
+    continue_on_error: bool = False,
 ) -> None:
     """Execute the callback with the response.
 

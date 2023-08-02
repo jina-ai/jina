@@ -3,6 +3,7 @@
 ```{toctree}
 deploy-model
 deploy-pipeline
+llm-serve
 ```
 
 

@@ -29,10 +29,10 @@ JCloud is a cost-efficient hosting platform specifically designed for Jina proje
 
 Jina AI Cloud is the **portal** and **single entrypoint** to manage **all** your Jina AI resources, including: 
 - Data
-  - [DocumentArray](https://docarray.jina.ai/fundamentals/documentarray/serialization/#from-to-cloud)
+  - [docarray](https://docs.docarray.org/user_guide/storing/doc_store/store_jac/)
   - [Finetuner artifacts](https://finetuner.jina.ai/walkthrough/save-model/#save-artifact)
-- [Executors](../concepts/executor/index.md)
-- [Flows](../concepts/flow/index.md)
+- [Executors](../concepts/serving/executor/index.md)
+- [Flows](../concepts/orchestration/flow.md)
 - [Apps](https://now.jina.ai)
 
 _Manage_ in this context means: CRUD, access control, personal access tokens, and subscription.

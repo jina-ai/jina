@@ -362,41 +362,6 @@ different_name
 ```
 ````
 
-### Unify output `ndarray` types
-
-Different {class}`~jina.Executor`s may depend on different `types` for array-like data such as `doc.tensor` and `doc.embedding`,
-often because they were written with different machine learning frameworks.
-As the builder of an Orchestration you don't always have control over this, for example when using Executors from Executor Hub.
-
-To ease the integration of different Executors, an Orchestration allows you to convert `tensor` and `embedding`:
-
-
-````{tab} Deployment
-```python
-from jina import Deployment
-
-dep = Deployment(uses=MyExecutor, output_array_type='numpy')
-```
-````
-````{tab} Flow
-```python
-from jina import Flow
-
-f = Flow().add(uses=MyExecutor, output_array_type='numpy').add(uses=NeedsNumpyExecutor)
-```
-````
-
-This converts the `.tensor` and `.embedding` fields of all output Documents of `MyExecutor` to `numpy.ndarray`, making the data
-usable by `NeedsNumpyExecutor`. This works whether `MyExecutor` populates these fields with arrays/tensors from
-PyTorch, TensorFlow, or any other popular ML framework.
-
-````{admonition} Output types
-:class: note
-
-`output_array_type=` supports more types than `'numpy'`. For the full specification and further details, check the
-[protobuf serialization docs](https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf).
-````
-
 (external-executors)=
 ## Use external Executors
 

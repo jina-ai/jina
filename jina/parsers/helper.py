@@ -326,6 +326,37 @@ class CastToIntAction(argparse.Action):
         setattr(args, self.dest, d)
 
 
+class CastPeerPorts(argparse.Action):
+    """argparse action to cast potential inputs to `peer-ports` argument"""
+
+    def __call__(self, parser, args, values, option_string=None):
+        """
+        call the CastPeerPorts
+
+
+        .. # noqa: DAR401
+        :param parser: the parser
+        :param args: args to initialize the values
+        :param values: the values to add to the parser
+        :param option_string: inherited, not used
+        """
+        import json
+        d = {0: []}
+        for value in values:
+            if isinstance(value, str):
+                value = json.loads(value)
+            if isinstance(value, dict):
+                for k, vlist in value.items():
+                    d[k] = []
+                    for v in vlist:
+                        d[k].append(_port_to_int(v))
+            elif isinstance(value, int):
+                d[0].append(value)
+            else:
+                d[0] = [_port_to_int(port) for port in value]
+        setattr(args, self.dest, d)
+
+
 def _port_to_int(port):
     try:
         return int(port)

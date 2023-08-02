@@ -16,19 +16,21 @@ For example, {ref}`the server-side code<dummy-example>` above follows {term}`Pyt
 
 ````{tab} executor.py
 ```python
-from jina import DocumentArray, Executor, requests
+from jina import Executor, requests
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class FooExec(Executor):
     @requests
-    async def add_text(self, docs: DocumentArray, **kwargs):
+    async def add_text(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         for d in docs:
             d.text += 'hello, world!'
 
 
 class BarExec(Executor):
     @requests
-    async def add_text(self, docs: DocumentArray, **kwargs):
+    async def add_text(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         for d in docs:
             d.text += 'goodbye!'
 ```

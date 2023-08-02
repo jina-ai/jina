@@ -75,7 +75,15 @@ from jina.parsers.flow import set_flow_parser
 
 __all__ = ['Flow']
 GATEWAY_ARGS_BLACKLIST = ['uses', 'uses_with']
-EXECUTOR_ARGS_BLACKLIST = ['port', 'port_monitoring', 'uses', 'uses_with', 'protocol']
+EXECUTOR_ARGS_BLACKLIST = [
+    'port',
+    'ports',
+    'port_monitoring',
+    'uses',
+    'uses_with',
+    'protocol',
+    'protocols',
+]
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
@@ -174,7 +182,6 @@ class Flow(
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
-        env_from_secret: Optional[dict] = None,
         expose_endpoints: Optional[str] = None,
         expose_graphql_endpoint: Optional[bool] = False,
         floating: Optional[bool] = False,
@@ -205,6 +212,7 @@ class Flow(
         runtime_cls: Optional[str] = 'GatewayRuntime',
         ssl_certfile: Optional[str] = None,
         ssl_keyfile: Optional[str] = None,
+        stateful: Optional[bool] = False,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
@@ -232,7 +240,6 @@ class Flow(
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
-        :param env_from_secret: The map of environment variables that are read from kubernetes cluster secrets
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
@@ -279,6 +286,7 @@ class Flow(
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
+        :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -422,7 +430,6 @@ class Flow(
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
-        :param env_from_secret: The map of environment variables that are read from kubernetes cluster secrets
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
@@ -469,6 +476,7 @@ class Flow(
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
+        :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -834,7 +842,6 @@ class Flow(
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
-        env_from_secret: Optional[dict] = None,
         exit_on_exceptions: Optional[List[str]] = [],
         external: Optional[bool] = False,
         floating: Optional[bool] = False,
@@ -862,6 +869,7 @@ class Flow(
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
+        raft_configuration: Optional[dict] = None,
         reload: Optional[bool] = False,
         replicas: Optional[int] = 1,
         retries: Optional[int] = -1,
@@ -869,6 +877,7 @@ class Flow(
         shards: Optional[int] = 1,
         ssl_certfile: Optional[str] = None,
         ssl_keyfile: Optional[str] = None,
+        stateful: Optional[bool] = False,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
@@ -906,7 +915,6 @@ class Flow(
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
-        :param env_from_secret: The map of environment variables that are read from kubernetes cluster secrets
         :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
@@ -965,6 +973,7 @@ class Flow(
           `Executor cookbook <https://docs.jina.ai/concepts/executor/executor-files/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param raft_configuration: Dictionary of kwargs arguments that will be passed to the RAFT node as configuration options when starting the RAFT node.
         :param reload: If set, the Executor will restart while serving if YAML configuration source or Executor modules are changed. If YAML configuration is changed, the whole deployment is reloaded and new processes will be restarted. If only Python modules of the Executor have changed, they will be reloaded to the interpreter without restarting process.
         :param replicas: The number of replicas in the deployment
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
@@ -972,6 +981,7 @@ class Flow(
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
+        :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -1067,7 +1077,6 @@ class Flow(
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
-        :param env_from_secret: The map of environment variables that are read from kubernetes cluster secrets
         :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
@@ -1126,6 +1135,7 @@ class Flow(
           `Executor cookbook <https://docs.jina.ai/concepts/executor/executor-files/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param raft_configuration: Dictionary of kwargs arguments that will be passed to the RAFT node as configuration options when starting the RAFT node.
         :param reload: If set, the Executor will restart while serving if YAML configuration source or Executor modules are changed. If YAML configuration is changed, the whole deployment is reloaded and new processes will be restarted. If only Python modules of the Executor have changed, they will be reloaded to the interpreter without restarting process.
         :param replicas: The number of replicas in the deployment
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
@@ -1133,6 +1143,7 @@ class Flow(
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
+        :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -1288,7 +1299,6 @@ class Flow(
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
-        env_from_secret: Optional[dict] = None,
         expose_endpoints: Optional[str] = None,
         expose_graphql_endpoint: Optional[bool] = False,
         floating: Optional[bool] = False,
@@ -1319,6 +1329,7 @@ class Flow(
         runtime_cls: Optional[str] = 'GatewayRuntime',
         ssl_certfile: Optional[str] = None,
         ssl_keyfile: Optional[str] = None,
+        stateful: Optional[bool] = False,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
@@ -1346,7 +1357,6 @@ class Flow(
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
-        :param env_from_secret: The map of environment variables that are read from kubernetes cluster secrets
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
@@ -1393,6 +1403,7 @@ class Flow(
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
+        :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -1445,7 +1456,6 @@ class Flow(
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
-        :param env_from_secret: The map of environment variables that are read from kubernetes cluster secrets
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
@@ -1492,6 +1502,7 @@ class Flow(
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
+        :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -1859,6 +1870,7 @@ class Flow(
                             results[_deployment_name] = 'done'
                 except Exception as ex:
                     results[_deployment_name] = repr(ex)
+                    raise ex
 
             def _wait_ready(_deployment_name, _deployment):
                 try:
@@ -1894,6 +1906,7 @@ class Flow(
                     while True:
                         num_done = 0
                         pendings = []
+                        one_failing = False
                         with results_lock:
                             for _k, _v in results.items():
                                 sys.stdout.flush()
@@ -1902,11 +1915,17 @@ class Flow(
                                 elif _v == 'done':
                                     num_done += 1
                                 else:
+                                    one_failing = True
                                     if 'JINA_EARLY_STOP' in os.environ:
                                         self.logger.error(
                                             f'Flow is aborted due to {_k} {_v}.'
                                         )
                                         os._exit(1)
+                                    else:
+                                        break
+
+                        if one_failing:
+                            break
 
                         pending_str = ' '.join(pendings)
 
@@ -1923,7 +1942,21 @@ class Flow(
                 wait_for_ready_coros.append(_async_wait_ready(k, v))
 
             async def _async_wait_all():
-                await asyncio.gather(*wait_for_ready_coros)
+                wrapped_tasks = [
+                    asyncio.create_task(coro) for coro in wait_for_ready_coros
+                ]
+                done, pending = await asyncio.wait(
+                    wrapped_tasks, return_when=asyncio.FIRST_EXCEPTION
+                )
+                try:
+                    for task in done:
+                        try:
+                            task.result()  # This raises an exception if the task had an exception
+                        except Exception as e:
+                            self.logger.error(f"An exception occurred: {str(e)}")
+                finally:
+                    for task in pending:
+                        task.cancel()
 
             # kick off spinner thread
             polling_status_thread = threading.Thread(
@@ -1955,6 +1988,7 @@ class Flow(
             if not running_in_event_loop:
                 asyncio.get_event_loop().run_until_complete(_async_wait_all())
             else:
+                # TODO: the same logic that one fails all other fail should be done also here
                 for k, v in self:
                     wait_ready_threads.append(
                         threading.Thread(target=_wait_ready, args=(k, v), daemon=True)
@@ -2063,8 +2097,7 @@ class Flow(
       "tertiaryBorderColor": "none",
       "lineColor": "#a6d8da"
       }
-}}%%
-            '''.replace(
+}}%%'''.replace(
                 '\n', ''
             ),
             'flowchart LR;',
@@ -2314,6 +2347,9 @@ class Flow(
         else:
             _ports = [str(_p) for _p in self.port]
 
+        swagger_ui_link = None
+        redoc_link = None
+        graphql_ui_link = None
         for _port, _protocol in zip(_ports, _protocols):
             if self.gateway_args.ssl_certfile and self.gateway_args.ssl_keyfile:
                 _protocol = f'{_protocol}S'
@@ -2343,6 +2379,11 @@ class Flow(
                     f'[link={_protocol}://{self.address_public}:{_port}]{self.address_public}:{_port}[/]',
                 )
 
+            if _protocol.lower() == ProtocolType.HTTP.to_string().lower():
+                swagger_ui_link = f'[link={_protocol}://{self.host}:{_port}/docs]{self.host}:{_port}/docs'
+                redoc_link = f'[link={_protocol}://{self.host}:{_port}/redoc]{self.host}:{_port}/redoc'
+                graphql_ui_link = f'[link={_protocol}://{self.host}:{_port}/graphql]{self.host}:{_port}/graphql'
+
         all_panels.append(
             Panel(
                 address_table,
@@ -2359,22 +2400,14 @@ class Flow(
             http_ext_table.add_row(
                 ':speech_balloon:',
                 'Swagger UI',
-                f'[link={_protocol}://{self.host}:{self.port}/docs]{self.host}:{self.port}/docs',
+                swagger_ui_link,
             )
 
-            http_ext_table.add_row(
-                ':books:',
-                'Redoc',
-                f'[link={_protocol}://{self.host}:{self.port}/redoc]{self.host}:{self.port}/redoc',
-            )
+            http_ext_table.add_row(':books:', 'Redoc', redoc_link)
 
             if self.gateway_args.expose_graphql_endpoint:
 
-                http_ext_table.add_row(
-                    ':strawberry:',
-                    'GraphQL UI',
-                    f'[link={_protocol}://{self.host}:{self.port}/graphql]{self.host}:{self.port}/graphql',
-                )
+                http_ext_table.add_row(':strawberry:', 'GraphQL UI', graphql_ui_link)
 
             all_panels.append(
                 Panel(

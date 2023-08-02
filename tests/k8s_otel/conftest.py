@@ -21,7 +21,8 @@ def build_and_load_images(k8s_cluster_v2: KindClusterWrapperV2) -> None:
     k8s_cluster_v2.load_docker_image(image_name='jinaai/jina', tag='test-pip')
     os.environ['JINA_GATEWAY_IMAGE'] = 'jinaai/jina:test-pip'
     yield
-    del os.environ['JINA_GATEWAY_IMAGE']
+    if 'JINA_GATEWAY_IMAGE' in os.environ: # maybe another fixture has already removed
+        del os.environ['JINA_GATEWAY_IMAGE']
     k8s_cluster_v2.remove_docker_image('test-instrumentation', 'test-pip')
 
 

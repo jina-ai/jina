@@ -15,6 +15,7 @@ from jina.clients.request import request_generator
 from jina.constants import __cache_path__
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port
+from jina.serve.executors.decorators import write
 from jina.serve.executors.metas import get_default_metas
 from jina.serve.networking.utils import send_request_async
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
@@ -446,7 +447,6 @@ def test_default_workspace(tmpdir):
 def test_to_k8s_yaml(tmpdir, exec_type, uses):
     Executor.to_kubernetes_yaml(
         output_base_path=tmpdir,
-        port_expose=2020,
         uses=uses,
         executor_type=exec_type,
     )
@@ -473,12 +473,12 @@ def test_to_k8s_yaml(tmpdir, exec_type, uses):
                 gatewayyaml['spec']['template']['spec']['containers'][0]['ports'][0][
                     'containerPort'
                 ]
-                == 2020
+                == 8080
             )
             gateway_args = gatewayyaml['spec']['template']['spec']['containers'][0][
                 'args'
             ]
-            assert gateway_args[gateway_args.index('--port') + 1] == '2020'
+            assert gateway_args[gateway_args.index('--port') + 1] == '8080'
 
 
 @pytest.mark.parametrize(
@@ -663,3 +663,39 @@ def test_combined_decorators(inputs, expected_values):
 
     exec = MyExecutor2()
     assert exec.dynamic_batching['foo'] == expected_values
+
+
+def test_write_decorator():
+    class WriteExecutor(Executor):
+        @write
+        @requests(on='/delete')
+        def delete(self, **kwargs):
+            pass
+
+        @requests(on='/bar')
+        @write
+        def bar(self, **kwargs):
+            pass
+
+        @requests(on='/index')
+        @write()
+        def index(self, **kwargs):
+            pass
+
+        @write()
+        @requests(on='/update')
+        def update(self, **kwargs):
+            pass
+
+
+
+        @requests(on='/search')
+        def search(self, **kwargs):
+            pass
+
+        @requests
+        def foo(self, **kwargs):
+            pass
+
+    exec = WriteExecutor()
+    assert set(exec.write_endpoints) == {'/index', '/update', '/delete', '/bar'}

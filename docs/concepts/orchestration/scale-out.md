@@ -4,7 +4,7 @@
 By default, all Executors in an Orchestration run with a single instance. If an Executor is particularly slow, then it will reduce the overall throughput. To solve this, you can specify the number of `replicas` to scale out an Executor.
 
 (replicate-executors)=
-## Replicate Executors
+## Replicate stateless Executors
 
 Replication creates multiple copies of the same {class}`~jina.Executor`. Each request in the Orchestration is then passed to only one replica (instance) of that Executor. **All replicas compete for a request. The idle replica gets the request first.**
 
@@ -54,6 +54,227 @@ executors:
 :align: center
 Flow with three replicas of `slow_encoder` and one replica of `fast_indexer`
 ```
+
+(scale-consensus)=
+## Replicate stateful Executors with consensus using RAFT (Beta)
+
+````{admonition} Python3.8 or newer version required on MacOS
+:class: note
+
+This feature requires at least Python3.8 version when working on MacOS.
+
+````
+
+````{admonition} Feature not supported on Windows
+:class: note
+
+This feature is not supported when using Windows
+
+````
+
+````{admonition} DocArray 0.30
+:class: note
+
+Starting from DocArray version 0.30, DocArray changed its interface and implementation drastically. We intend to support these new versions in the near future, but not every feature is yet available. Check {ref}`here <docarray-v2>` for more information. This feature has been added with the new DocArray support.
+
+````
+
+````{admonition} gRPC protocol
+:class: note
+
+This feature is only available when using gRPC as the protocol for the Deployment or when the Deployment is part of a Flow
+````
+
+Replication is used to scale out Executors by creating copies of them that can handle requests in parallel, providing better RPS.
+However, when an Executor maintains some sort of state, then it is not simple to guarantee that each copy of the Executor maintains the *same* state,
+which can lead to undesired behavior, since each replica can provide different results depending on the specific state they hold.
+
+In Jina, you can also have replication while guaranteeing the consensus between Executors. For this, we rely on [RAFT](https://raft.github.io/), which is
+an algorithm that guarantees eventual consistency between replicas. 
+
+Consensus-based replication using RAFT is a distributed algorithm designed to provide fault tolerance and consistency in a distributed system. In a distributed system, the nodes may fail, and messages may be lost or delayed, which can lead to inconsistencies in the system.
+The problem with traditional replication methods is that they can't guarantee consistency in a distributed system in the presence of failures. This is where consensus-based replication using RAFT comes in.
+With this approach, each Executor can be considered as a Finite State Machine, meaning it has a set of potential states and a set of transitions that it can make between those states. Each request that is sent to the Executor can be considered as a log entry that needs to be replicated across the cluster.
+
+To enable this kind of replication, we need to consider:
+
+- Specify which methods of the Executor {ref}` can update its internal state <stateful-executor>`.
+- Tell the Deployment to use the RAFT consensus algorithm by setting the `--stateful` argument.
+- Set values of replicas compatible with RAFT. RAFT requires at least three replicas to guarantee consistency.
+- Pass the `--peer-ports` argument so that the RAFT cluster can recover from a previous configuration of replicas if existed.
+- Optionally you can pass `--raft-configuration` parameter to tweak the behavior of the consensus module. You can understand the values to pass from
+[Hashicorp's RAFT library](https://github.com/ongardie/hashicorp-raft/blob/master/config.go).
+
+```python
+from jina import Deployment, Executor, requests
+from jina.serve.executors.decorators import write
+from docarray import DocList
+from docarray.documents import TextDoc
+
+
+class MyStateStatefulExecutor(Executor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._docs_dict = {}
+
+    @requests(on=['/index'])
+    @write
+    def index(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        for doc in docs:
+            self._docs_dict[doc.id] = doc
+
+    @requests(on=['/search'])
+    def search(self,  docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        for doc in docs:
+            self.logger.debug(f'Searching against {len(self._docs_dict)} documents')
+            doc.text = self._docs_dict[doc.id].text
+
+
+
+d = Deployment(name='stateful_executor', 
+               uses=MyStateStatefulExecutor,
+               replicas=3, 
+               stateful=True,
+               workspace='./raft',
+               peer_ports=[12345, 12346, 12347])
+with d:
+    d.block()
+```
+
+This capacity allows you not only to have replicas that work with robustness and availability, it also can help achieve higher throughput in some cases.
+
+Let's imagine we write an Executor that is used to index and query documents from a vector index.
+
+For this, we will use an in-memory solution from [DocArray](https://docs.docarray.org/user_guide/storing/index_in_memory/) that performs exact vector search.
+
+```python
+from jina import Deployment, Executor, requests
+from jina.serve.executors.decorators import write
+from docarray import DocList
+from docarray.documents import TextDoc
+from docarray.index.backends.in_memory import InMemoryExactNNIndex
+
+
+class QueryDoc(TextDoc):
+    matches: DocList[TextDoc] = DocList[TextDoc]()
+
+
+class ExactNNSearch(Executor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._index = InMemoryExactNNIndex[TextDoc]()
+
+    @requests(on=['/index'])
+    @write # I add write decorator to indicate that calling this endpoint updates the inner state
+    def index(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        self.logger.info(f'Indexing Document in index with {len(self._index)} documents indexed')
+        self._index.index(docs)
+
+    @requests(on=['/search'])
+    def search(self,  docs: DocList[QueryDoc], **kwargs) -> DocList[QueryDoc]:
+        self.logger.info(f'Searching Document in index with {len(self._index)} documents indexed')
+        for query in docs:
+            docs, scores = self._index.find(query, search_field='embedding', limit=100)
+            query.matches = docs
+
+d = Deployment(name='indexer',
+               port=5555,
+               uses=ExactNNSearch,
+               workspace='./raft',
+               replicas=3,
+               stateful=True,
+               peer_ports=[12345, 12346, 12347])
+with d:
+    d.block()
+```
+
+Then in another terminal, we will send index and search requests:
+
+```python
+from jina import Client
+from docarray import DocList
+from docarray.documents import TextDoc
+import time
+import numpy as np
+
+
+class QueryDoc(TextDoc):
+    matches: DocList[TextDoc] = DocList[TextDoc]()
+
+
+NUM_DOCS_TO_INDEX = 100000
+NUM_QUERIES = 1000
+
+c = Client(port=5555)
+
+index_docs = DocList[TextDoc](
+    [TextDoc(text=f'I am document {i}', embedding=np.random.rand(128)) for i in range(NUM_DOCS_TO_INDEX)])
+start_indexing_time = time.time()
+c.post(on='/index', inputs=index_docs, request_size=100)
+print(f'Indexing {NUM_DOCS_TO_INDEX} Documents took {time.time() - start_indexing_time}s')
+time.sleep(2)  # let some time for the data to be replicated
+
+search_da = DocList[QueryDoc](
+    [QueryDoc(text=f'I am document {i}', embedding=np.random.rand(128)) for i in range(NUM_QUERIES)])
+start_querying_time = time.time()
+responses = c.post(on='/search', inputs=search_da, request_size=1)
+print(f'Searching {NUM_QUERIES} Queries took {time.time() - start_querying_time}s')
+for res in responses:
+    print(f'{res.matches}')
+```
+
+In the logs of the `server` you can see how `index` requests reach every replica while `search` requests only reach one replica in a 
+`round robin` fashion.
+
+Eventually every Indexer replica ends up with the same Documents indexed. 
+
+```text
+INFO   indexer/rep-2@923 Indexing Document in index with 99900 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99200 documents indexed                                                                                                                                   
+INFO   indexer/rep-1@910 Indexing Document in index with 99700 documents indexed                                                                                                                                   
+INFO   indexer/rep-1@910 Indexing Document in index with 99800 documents indexed                                                                                                                [04/28/23 16:51:06]
+INFO   indexer/rep-0@902 Indexing Document in index with 99300 documents indexed                                                                                                                [04/28/23 16:51:06]
+INFO   indexer/rep-1@910 Indexing Document in index with 99900 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99400 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99500 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99600 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99700 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99800 documents indexed                                                                                                                                   
+INFO   indexer/rep-0@902 Indexing Document in index with 99900 documents indexed 
+```
+
+But at search time, the consensus module does not affect, and only one replica serves the queries.
+```text
+INFO   indexer/rep-0@902 Searching Document in index with 100000 documents indexed                                                                                                              [04/28/23 16:59:21]
+INFO   indexer/rep-1@910 Searching Document in index with 100000 documents indexed                                                                                                              [04/28/23 16:59:21]
+INFO   indexer/rep-2@923 Searching Document in index with 100000 documents indexed 
+```
+
+If you run the same example by setting `replicas` to `1` without the consensus module, you can see the benefits it has in the QPS at search time,
+while there is a little cost on the time used for indexing.
+
+```python
+d = Deployment(name='indexer',
+               port=5555,
+               uses=ExactNNSearch,
+               workspace='./raft',
+               replicas=1)
+```
+
+With one replica:
+
+```text
+Indexing 100000 Documents took 18.93274688720703s
+Searching 1000 Queries took 385.96641397476196s
+```
+
+With three replicas and consensus:
+```text
+Indexing 100000 Documents took 35.066415548324585s
+Searching 1000 Queries took 202.07950615882874s
+```
+
+This increases QPS from 2.5 to 5.
 
 ## Replicate on multiple GPUs
 
@@ -256,16 +477,18 @@ The following example demonstrates the different behaviors when setting `replica
 ````{tab} Deployment
 ```{code-block} python
 ---
-emphasize-lines: 12
+emphasize-lines: 14
 ---
-from jina import Deployment, Document, Executor, requests
+from jina import Deployment, Executor, requests
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class MyExec(Executor):
 
     @requests
-    def foo(self, docs, **kwargs):
-        print(f'inside: {docs.texts}')
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        print(f'inside: {docs.text}')
 
 
 dep = (
@@ -274,23 +497,25 @@ dep = (
 )
 
 with dep:
-    r = dep.post('/', Document(text='hello'))
-    print(f'return: {r.texts}')
+    r = dep.post('/', TextDoc(text='hello'), return_type=DocList[TextDoc])
+    print(f'return: {r.text}')
 ```
 ````
 ````{tab} Flow
 ```{code-block} python
 ---
-emphasize-lines: 13
+emphasize-lines: 15
 ---
-from jina import Flow, Document, Executor, requests
+from jina import Flow, Executor, requests
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class MyExec(Executor):
 
     @requests
-    def foo(self, docs, **kwargs):
-        print(f'inside: {docs.texts}')
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        print(f'inside: {docs.text}')
 
 
 f = (
@@ -300,8 +525,8 @@ f = (
 )
 
 with f:
-    r = f.post('/', Document(text='hello'))
-    print(f'return: {r.texts}')
+    r = dep.post('/', TextDoc(text='hello'), return_type=DocList[TextDoc])
+    print(f'return: {r.text}')
 ```
 ````
 

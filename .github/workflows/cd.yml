@@ -38,12 +38,13 @@ jobs:
           token: ${{ secrets.JINA_DEV_BOT }}
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: 3.8
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
       - run: |
           pip install . --no-cache-dir
+          pip install docarray==0.21.0 # only valid for this version. I think we should remove this schema loading
           JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-master
           echo "JINA_VERSION=${JINA_VERSION}" >> $GITHUB_ENV
           cd schema
@@ -69,16 +70,6 @@ jobs:
           if [[ `git status --porcelain` ]]; then
             git pull && git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
           fi
-
-      - name: Pre-release (.devN)
-        run: |
-          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
-          pip install twine wheel
-          ./scripts/release.sh
-        env:
-          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-          JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
 
   update-docker:
     needs: update-schema
@@ -115,28 +106,55 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
     steps:
       - uses: actions/checkout@v2.5.0
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Set up Golang
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.19.5
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel
+          pip install git+https://github.com/jina-ai/setuptools-golang.git@feat-align-with-alaeddine-code
+          pip install cibuildwheel
+
+      - name: Build wheels with setuptools-golang-build-manylinux-wheel
+        run: |
+          setuptools-golang-build-manylinux-wheels --pythons cp38-cp38
       - name: Prepare environment
         run: |
           docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
-          pip install -U protobuf==3.20.3
-          pip install ".[common,devel,test]" --no-cache-dir
-          pip install -U "git+https://github.com/docarray/docarray@feat-rewrite-v2#egg=docarray[common]"
+          WHEEL_FILE=$(ls dist/*whl)
+          pip install "$WHEEL_FILE[common,devel,test]" --no-cache-dir
+          pip install -U protobuf${{ matrix.protobuf-version }}
           jina
           export JINA_LOG_LEVEL="ERROR"
       - name: Test
         id: test
         run: |
-          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/docarray_v2
-
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/unit/serve/runtimes/test_helper.py
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/docarray_v2/test_v2.py
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/deployment_http_composite
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/docarray_v2/test_singleton.py
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/docarray_v2/test_parameters_as_pydantic.py
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/docarray_v2/test_streaming.py
+          echo "flag it as jina for codeoverage"
+          echo "codecov_flag=jina" >> $GITHUB_OUTPUT
+        timeout-minutes: 45
+        env:
+          JINA_AUTH_TOKEN: "${{ secrets.JINA_AUTH_TOKEN }}"
+      - name: Test stateful
+        id: test_stateful
+        run: |
+          JINA_LOG_LEVEL=DEBUG JINA_RANDOM_PORT_MAX="60535" pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/stateful
           echo "flag it as jina for codeoverage"
           echo "codecov_flag=jina" >> $GITHUB_OUTPUT
         timeout-minutes: 30
@@ -149,12 +167,224 @@ jobs:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v3.1.1
-        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.8'
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
           flags: ${{ steps.test.outputs.codecov_flag }}
           fail_ci_if_error: false
+
+
+  mark-dev-N:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 200
+
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+      - id: computedevdelta
+        run: |
+          git fetch --depth=200
+          LAST_VER=$(git tag -l | sort -V | tail -n1)
+          COMMITS_SINCE_LAST_VER=$(git rev-list $LAST_VER..HEAD --count)
+          echo "devdelta=$COMMITS_SINCE_LAST_VER" >> $GITHUB_OUTPUT
+          INIT_FILE='jina/__init__.py'
+          RELEASE_VER=$(sed -n '/^__version__/p' $INIT_FILE | cut -d \' -f2)
+          echo "LAST_VER $LAST_VER"
+          echo "COMMITS_SINCE_LAST_VER $COMMITS_SINCE_LAST_VER"
+          echo "RELEASE_VER $RELEASE_VER"
+          echo "devdelta=$COMMITS_SINCE_LAST_VER" >> $GITHUB_OUTPUT
+          echo "releasever=$RELEASE_VER" >> $GITHUB_OUTPUT
+    outputs:
+      devdelta: ${{ steps.computedevdelta.outputs.devdelta }}
+      releasever: ${{ steps.computedevdelta.outputs.releasever }}
+
+  # Build the wheels for Linux and macOS for Python 3.8 and newer
+  build-wheels:
+    runs-on: ${{ matrix.os }}
+    needs: [mark-dev-N]
+    strategy:
+      # Ensure that a wheel builder finishes even if another fails
+      fail-fast: false
+      matrix:
+        include:
+          # linux
+          - os: ubuntu-latest
+            python: '3.7'
+            python-manylinux-tag: "cp37-cp37m"
+          - os: ubuntu-latest
+            python: '3.8'
+            python-manylinux-tag: "cp38-cp38"
+          - os: ubuntu-latest
+            python: '3.9'
+            python-manylinux-tag: "cp39-cp39"
+          - os: ubuntu-latest
+            python: '3.10'
+            python-manylinux-tag: "cp310-cp310"
+          - os: ubuntu-latest
+            python: '3.11'
+            python-manylinux-tag: "cp311-cp311"
+
+          # MacOS emulated
+          - os: macos-latest
+            python: '3.8'
+            python-cibuildwheels: '38'
+            platform_id: macosx_x86_64
+            arch: x86_64
+            goarch: amd64
+          - os: macos-latest
+            python: '3.9'
+            python-cibuildwheels: '39'
+            platform_id: macosx_x86_64
+            arch: x86_64
+            goarch: amd64
+          - os: macos-latest
+            python: '3.10'
+            python-cibuildwheels: '310'
+            platform_id: macosx_x86_64
+            arch: x86_64
+            goarch: amd64
+          - os: macos-latest
+            python: '3.11'
+            python-cibuildwheels: '311'
+            platform_id: macosx_x86_64
+            arch: x86_64
+            goarch: amd64
+
+          # MacOS native
+          - os: macos-latest
+            python: '3.8'
+            python-cibuildwheels: '38'
+            platform_id: macosx_arm64
+            arch: arm64
+            goarch: arm64
+          - os: macos-latest
+            python: '3.9'
+            python-cibuildwheels: '39'
+            platform_id: macosx_arm64
+            arch: arm64
+            goarch: arm64
+          - os: macos-latest
+            python: '3.10'
+            python-cibuildwheels: '310'
+            platform_id: macosx_arm64
+            arch: arm64
+            goarch: arm64
+          - os: macos-latest
+            python: '3.11'
+            python-cibuildwheels: '311'
+            platform_id: macosx_arm64
+            arch: arm64
+            goarch: arm64
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Set up Golang
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.19.5
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel
+          pip install git+https://github.com/jina-ai/setuptools-golang.git@feat-align-with-alaeddine-code
+          pip install cibuildwheel
+
+      - name: Update version
+        run: |
+          DEVDELTA=${{needs.mark-dev-N.outputs.devdelta}}
+          RELEASE_VER=${{needs.mark-dev-N.outputs.releasever}}
+          INIT_FILE='jina/__init__.py'
+          DEV_VER=$RELEASE_VER".dev"$DEVDELTA
+          echo "DEVDELTA $DEVDELTA"
+          echo "RELEASE_VER $RELEASE_VER"
+          echo "DEV_VER $DEV_VER"
+          if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+            sed -i '' '/'"${RELEASE_VER}"'/s/.*/'"__version__ = '${DEV_VER}'"'/' "${INIT_FILE}"
+          else
+            sed -i '/'"${RELEASE_VER}"'/s/.*/'"__version__ = '${DEV_VER}'"'/' "${INIT_FILE}"
+          fi
+
+      - name: Build wheels with setuptools-golang-build-manylinux-wheel
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          setuptools-golang-build-manylinux-wheels --pythons ${{ matrix.python-manylinux-tag }}
+
+      - name: Build wheels with cibuildwheels on macos
+        env:
+          CIBW_BUILD: cp${{ matrix.python-cibuildwheels }}-${{ matrix.platform_id }}
+          CIBW_ARCHS: ${{ matrix.arch }}
+          CIBW_TEST_COMMAND: python -c "import jina; import jraft"
+          CIBW_BUILD_VERBOSITY: 1
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 1
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          python -m cibuildwheel --output-dir dist
+
+      - name: Test wheels
+        run: |
+          WHEEL_FILE=$(ls dist/*.whl)
+          python -m pip install $WHEEL_FILE
+          python -c "import jraft"
+        if: ${{ matrix.os != 'macos-latest' || matrix.platform_id != 'macosx_arm64' }} # runners do not necessarily have macos ARM, so cannot run this test for it
+
+      - name: Upload wheels as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: dist/*.whl
+
+# comment for now, do it manually if needed
+#  pre-release:
+#    if: |
+#      !startsWith(github.event.head_commit.message, 'chore') &&
+#      !startsWith(github.event.head_commit.message, 'build: hotfix') &&
+#      !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
+#    needs: [build-wheels, mark-dev-N]
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2.5.0
+#        with:
+#          #          submodules: true
+#          fetch-depth: 100
+#      - run: |
+#          truncate --size=24KB README.md > README-trunc.md
+#      - uses: actions/download-artifact@v3
+#        with:
+#          name: artifact
+#          path: dist
+#
+#      - name: Update version
+#        run: |
+#          DEVDELTA=${{needs.mark-dev-N.outputs.devdelta}}
+#          RELEASE_VER=${{needs.mark-dev-N.outputs.releasever}}
+#          INIT_FILE='jina/__init__.py'
+#          DEV_VER=$RELEASE_VER".dev"$DEVDELTA
+#          echo "DEVDELTA $DEVDELTA"
+#          echo "RELEASE_VER $RELEASE_VER"
+#          echo "DEV_VER $DEV_VER"
+#          sed -i '/'"${RELEASE_VER}"'/s/.*/'"__version__ = '${DEV_VER}'"'/' "${INIT_FILE}"
+#      - name: Pre-release (.devN)
+#        run: |
+#          pip install twine wheel
+#          ./scripts/release.sh
+#        env:
+#          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
+#          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+#          JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
 
   core-test:
     needs: prep-testbed
@@ -162,30 +392,43 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v2.5.0
-#        with:
-#          submodules: true
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Set up Golang
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.19.5
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel
+          pip install git+https://github.com/jina-ai/setuptools-golang.git@feat-align-with-alaeddine-code
+          pip install cibuildwheel
+
+      - name: Build wheels with setuptools-golang-build-manylinux-wheel
+        run: |
+          setuptools-golang-build-manylinux-wheels --pythons cp38-cp38
       - name: Prepare environment
         run: |
-          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build --build-arg DOCARRAY_VERSION="0.21.0" -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
-          pip install ".[all]" --no-cache-dir
+          WHEEL_FILE=$(ls dist/*whl)
+          pip install "$WHEEL_FILE[all]" --no-cache-dir
+          pip install docarray==0.21.0
           jina
           export JINA_LOG_LEVEL="ERROR"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test
         id: test
         run: |
-          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/docarray_v2/*' --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/docarray_v2/*' --ignore-glob='tests/integration/stateful/*' --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
           echo "flag it as jina for codeoverage"
           echo "codecov_flag=jina" >> $GITHUB_OUTPUT
         timeout-minutes: 30
@@ -201,7 +444,7 @@ jobs:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v3.1.1
-        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.8'
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
@@ -285,10 +528,10 @@ jobs:
       #        with:
       #          access_token: ${{ github.token }}
       - uses: actions/checkout@v2.5.0
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: 3.8
       - name: Test hubapp with hubpods
         run: |
           ./tests/jinahub/test_integration.sh
@@ -302,16 +545,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.5.0
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: 3.8
       - name: Prepare enviroment
         run: |
-          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build --build-arg DOCARRAY_VERSION="0.21.0" -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
+          pip install docarray==0.21.0
           jina
           export JINA_LOG_LEVEL="ERROR"
         env:
@@ -329,37 +573,38 @@ jobs:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v3.1.1
-        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.8'
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
           flags: ${{ steps.test.outputs.codecov_flag }}
           fail_ci_if_error: false
 
-  k8s-graceful-and-deployment-test:
+  k8s-deployment-test:
     needs: update-schema
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.5.0
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: 3.8
       - name: Prepare enviroment
         run: |
-          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build --build-arg DOCARRAY_VERSION="0.21.0" -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
+          pip install docarray==0.21.0
           jina
           export JINA_LOG_LEVEL="ERROR"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Test graceful request handling on k8s and Executor deployment on k8s
+      - name: Test k8s Deployment
         run: |
           export LINKERD2_VERSION=stable-2.11.4
           curl --proto '=https' --tlsv1.2 -sSfL https://run.linkerd.io/install | sh
-          pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/k8s/test_k8s_deployment.py ./tests/k8s/test_k8s_graceful_request_handling.py
+          pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/k8s/test_k8s_deployment.py
         timeout-minutes: 30
       - name: Check codecov file
         id: check_files
@@ -368,7 +613,47 @@ jobs:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v3.1.1
-        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.8'
+        with:
+          file: coverage.xml
+          name: ${{ matrix.test-path }}-codecov
+          flags: ${{ steps.test.outputs.codecov_flag }}
+          fail_ci_if_error: false
+
+  k8s-graceful-test:
+    needs: update-schema
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.5.0
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+      - name: Prepare enviroment
+        run: |
+          docker build --build-arg DOCARRAY_VERSION="0.21.0" -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          python -m pip install --upgrade pip
+          python -m pip install wheel
+          pip install ".[all]" --no-cache-dir
+          pip install docarray==0.21.0
+          jina
+          export JINA_LOG_LEVEL="ERROR"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Test graceful request handling on k8s
+        run: |
+          export LINKERD2_VERSION=stable-2.11.4
+          curl --proto '=https' --tlsv1.2 -sSfL https://run.linkerd.io/install | sh
+          pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/k8s/test_k8s_graceful_request_handling.py
+        timeout-minutes: 45
+      - name: Check codecov file
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "coverage.xml"
+      - name: Upload coverage from test to Codecov
+        uses: codecov/codecov-action@v3.1.1
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.8'
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
@@ -376,20 +661,21 @@ jobs:
           fail_ci_if_error: false
 
   k8s-failures-test:
-    runs-on: ubuntu-latest
     needs: update-schema
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.5.0
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: 3.8
       - name: Prepare enviroment
         run: |
-          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build --build-arg DOCARRAY_VERSION="0.21.0" -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
+          pip install docarray==0.21.0
           jina
           export JINA_LOG_LEVEL="ERROR"
         env:
@@ -400,6 +686,44 @@ jobs:
           curl --proto '=https' --tlsv1.2 -sSfL https://run.linkerd.io/install | sh
           curl --proto '=https' --tlsv1.2 -sSfL https://linkerd.github.io/linkerd-smi/install | sh
           pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/k8s/test_k8s_failures.py
+        timeout-minutes: 45
+      - name: Check codecov file
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "coverage.xml"
+      - name: Upload coverage from test to Codecov
+        uses: codecov/codecov-action@v3.1.1
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.8'
+        with:
+          file: coverage.xml
+          name: ${{ matrix.test-path }}-codecov
+          flags: ${{ steps.test.outputs.codecov_flag }}
+          fail_ci_if_error: false
+
+  k8s-otel-test:
+    needs: update-schema
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.5.0
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+      - name: Prepare enviroment
+        run: |
+          docker build --build-arg DOCARRAY_VERSION="0.21.0" -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          python -m pip install --upgrade pip
+          python -m pip install wheel
+          pip install ".[all]" --no-cache-dir
+          pip install docarray==0.21.0
+          jina
+          export JINA_LOG_LEVEL="ERROR"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Test K8s with OpenTelemetry
+        run: |
+          pytest -v -s --cov=jina --cov-report=xml ./tests/k8s_otel
         timeout-minutes: 30
       - name: Check codecov file
         id: check_files
@@ -408,7 +732,7 @@ jobs:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v3.1.1
-        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.8'
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
@@ -420,16 +744,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.5.0
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: 3.8
       - name: Prepare enviroment
         run: |
-          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build --build-arg DOCARRAY_VERSION="0.21.0" -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
+          pip install docarray==0.21.0
           jina
           export JINA_LOG_LEVEL="ERROR"
         env:
@@ -445,7 +770,7 @@ jobs:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v3.1.1
-        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.8'
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
@@ -454,16 +779,14 @@ jobs:
 
   benchmark-pre-release:
     runs-on: ubuntu-latest
-    needs: update-schema
+    needs: [update-schema, mark-dev-N]
     steps:
       - uses: actions/checkout@v2.5.0
         with:
-          fetch-depth: 0
+          fetch-depth: 200
       - run: |
-          INIT_FILE='jina/__init__.py'
-          RELEASE_VER=$(sed -n '/^__version__/p' $INIT_FILE | cut -d \' -f2)
-          LAST_VER=$(git tag -l | sort -V | tail -n1)
-          COMMITS_SINCE_LAST_VER=$(git rev-list $LAST_VER..HEAD --count)
+          DEVDELTA=${{needs.mark-dev-N.outputs.devdelta}}
+          RELEASE_VER=${{needs.mark-dev-N.outputs.releasever}}
           NEXT_VER=$RELEASE_VER".dev"$COMMITS_SINCE_LAST_VER
           echo "NEXT_VER=$NEXT_VER" >> $GITHUB_ENV
       - uses: benc-uk/workflow-dispatch@v1
@@ -476,7 +799,7 @@ jobs:
   # just for blocking the merge until all parallel core-test are successful
   success-all-steps:
     runs-on: ubuntu-latest
-    needs: [core-test, docarray-v-two-test, import-test, hub-test, k8s-flow-test, k8s-graceful-and-deployment-test, k8s-failures-test, docker-compose-test, docker-image-test, benchmark-pre-release, update-schema, update-docker]
+    needs: [core-test, docarray-v-two-test, import-test, hub-test, k8s-flow-test, k8s-deployment-test, k8s-graceful-test, k8s-failures-test, k8s-otel-test, docker-compose-test, docker-image-test, benchmark-pre-release, update-schema, update-docker, pre-release]
     if: always()
     steps:
       - uses: technote-space/workflow-conclusion-action@v2

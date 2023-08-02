@@ -18,6 +18,7 @@ from jina.serve.runtimes.gateway.gateway import BaseGateway
 from jina.serve.runtimes.gateway.grpc import GRPCGateway
 from jina.serve.runtimes.gateway.http import HTTPGateway
 from jina.serve.runtimes.gateway.websocket import WebSocketGateway
+from jina.serve.runtimes.servers import BaseServer
 
 if TYPE_CHECKING:  # pragma: no cover
     import multiprocessing
@@ -41,6 +42,9 @@ class AsyncNewLoopRuntime:
             cancel_event: Optional[
                 Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
             ] = None,
+            signal_handlers_installed_event: Optional[
+                Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
+            ] = None,
             req_handler_cls=None,
             gateway_load_balancer: bool = False,
             **kwargs,
@@ -56,6 +60,9 @@ class AsyncNewLoopRuntime:
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
         self.is_cancel = cancel_event or asyncio.Event()
+        self.is_signal_handlers_installed = signal_handlers_installed_event or asyncio.Event()
+
+        self.logger.debug(f'Setting signal handlers')
 
         if not __windows__:
 
@@ -77,6 +84,8 @@ class AsyncNewLoopRuntime:
             for sig in HANDLED_SIGNALS:
                 signal.signal(sig, _cancel)
 
+        self.logger.debug(f'Signal handlers already set')
+        self.is_signal_handlers_installed.set()
         self._start_time = time.time()
         self._loop.run_until_complete(self.async_setup())
         self._send_telemetry_event(event='start')
@@ -104,12 +113,12 @@ class AsyncNewLoopRuntime:
         """Do NOT override this method when inheriting from :class:`GatewayPod`"""
         # threads are not using asyncio.Event, but threading.Event
         if isinstance(self.is_cancel, asyncio.Event) and not hasattr(
-            self.server, '_should_exit'
+                self.server, '_should_exit'
         ):
             await self.is_cancel.wait()
         else:
             while not self.is_cancel.is_set() and not getattr(
-                self.server, '_should_exit', False
+                    self.server, '_should_exit', False
             ):
                 await asyncio.sleep(0.1)
 
@@ -156,7 +165,7 @@ class AsyncNewLoopRuntime:
                 uses_with['expose_graphql_endpoint'] = self.args.expose_graphql_endpoint
             if 'cors' not in non_defaults:
                 uses_with['cors'] = self.args.cors
-            return BaseGateway.load_config(
+            server = BaseGateway.load_config(
                 self.args.uses,
                 uses_with=dict(
                     **non_defaults,
@@ -172,9 +181,11 @@ class AsyncNewLoopRuntime:
                 py_modules=self.args.py_modules,
                 extra_search_paths=self.args.extra_search_paths,
             )
-
+            if isinstance(server, BaseServer):
+                server.is_cancel = self.is_cancel
+            return server
         elif not hasattr(self.args, 'protocol') or (
-            len(self.args.protocol) == 1 and self.args.protocol[0] == ProtocolType.GRPC
+                len(self.args.protocol) == 1 and self.args.protocol[0] == ProtocolType.GRPC
         ):
             from jina.serve.runtimes.servers.grpc import GRPCServer
 
@@ -185,6 +196,7 @@ class AsyncNewLoopRuntime:
                 grpc_server_options=self.args.grpc_server_options,
                 ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
                 ssl_certfile=getattr(self.args, 'ssl_certfile', None),
+                proxy=getattr(self.args, 'proxy', None),
             )
 
         elif len(self.args.protocol) == 1 and self.args.protocol[0] == ProtocolType.HTTP:
@@ -197,6 +209,7 @@ class AsyncNewLoopRuntime:
                               ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
                               ssl_certfile=getattr(self.args, 'ssl_certfile', None),
                               cors=getattr(self.args, 'cors', None),
+                              is_cancel=self.is_cancel,
                               )
         elif len(self.args.protocol) == 1 and self.args.protocol[0] == ProtocolType.WEBSOCKET:
             from jina.serve.runtimes.servers.websocket import \
@@ -207,7 +220,8 @@ class AsyncNewLoopRuntime:
                                    proxy=getattr(self.args, 'proxy', None),
                                    uvicorn_kwargs=getattr(self.args, 'uvicorn_kwargs', None),
                                    ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
-                                   ssl_certfile=getattr(self.args, 'ssl_certfile', None))
+                                   ssl_certfile=getattr(self.args, 'ssl_certfile', None),
+                                   is_cancel=self.is_cancel)
         elif len(self.args.protocol) > 1:
             from jina.serve.runtimes.servers.composite import \
                 CompositeServer  # we need a concrete implementation of this
@@ -215,7 +229,8 @@ class AsyncNewLoopRuntime:
                                    runtime_args=self.args,
                                    req_handler_cls=self.req_handler_cls,
                                    ssl_keyfile=getattr(self.args, 'ssl_keyfile', None),
-                                   ssl_certfile=getattr(self.args, 'ssl_certfile', None))
+                                   ssl_certfile=getattr(self.args, 'ssl_certfile', None),
+                                   is_cancel=self.is_cancel)
 
     def _send_telemetry_event(self, event, extra_kwargs=None):
         gateway_kwargs = {}
@@ -224,7 +239,7 @@ class AsyncNewLoopRuntime:
         elif self.req_handler_cls.__name__ == 'HeaderRequestHandler':
             runtime_cls_name = 'HeadRuntime'
         else:
-            runtime_cls_name = self.server.__class__
+            runtime_cls_name = self.server.__class__.__name__
             gateway_kwargs['is_custom_gateway'] = self.server.__class__ not in [
                 CompositeGateway,
                 GRPCGateway,
@@ -253,7 +268,6 @@ class AsyncNewLoopRuntime:
             raise PortAlreadyUsed(f'port:{self.args.port}')
 
         self.server = self._get_server()
-
         await self.server.setup_server()
 
     async def async_teardown(self):
