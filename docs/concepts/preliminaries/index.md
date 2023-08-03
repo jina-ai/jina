@@ -39,7 +39,7 @@ from docarray.documents import TextDoc
 
 c = Client(port=12345)
 
-r = c.post(on='/', inputs=DocList[TextDoc](TextDoc()), return_type=DocList[TextDoc])
+r = c.post(on='/', inputs=DocList[TextDoc]([TextDoc(text='')]), return_type=DocList[TextDoc])
 print([d.text for d in r])
 ```
 ````
