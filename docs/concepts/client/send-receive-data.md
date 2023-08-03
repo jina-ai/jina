@@ -95,9 +95,8 @@ However, once your solution is deployed remotely, these objects are not present 
 Hence, `deployment.post()` and `flow.post()` is not recommended outside of testing or debugging use cases.
 ```
 
+(request-size-client)=
 ## Send data in batches
-
-TODO(Joan): Clarify the relationship with Executor batching
 
 Especially during indexing, a Client can send up to thousands or millions of Documents to a {class}`~jina.Flow`.
 Those Documents are internally batched into a `Request`, providing a smaller memory footprint and faster response times
