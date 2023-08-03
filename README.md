@@ -366,8 +366,9 @@ class PromptDocument(BaseDoc):
     max_tokens: int
 
 
-class TokenDocument(BaseDoc):
+class ModelOutputDocument(BaseDoc):
     token_id: int
+    generated_text: str
 ```
 <!-- end llm-streaming-schemas -->
 
@@ -393,22 +394,31 @@ class TokenStreamingExecutor(Executor):
 
 #### Implement the streaming endpoint
 <!-- start llm-streaming-endpoint -->
-Our streaming endpoint accepts a `PromptDocument` as input and streams `TokenDocument`s. To stream a document back to 
+Our streaming endpoint accepts a `PromptDocument` as input and streams `ModelOutputDocument`s. To stream a document back to 
 the client, use the `yield` keyword in the endpoint implementation. Therefore, we use the model to generate 
 up to `max_tokens` tokens and yield them until the generation stops: 
 ```python
-@requests(on='/stream')
-async def task(self, doc: PromptDocument, **kwargs) -> TokenDocument:
-    encoded_input = tokenizer(doc.prompt, return_tensors='pt')
-    for _ in range(doc.max_tokens):
-        output = self.model.generate(**encoded_input, max_new_tokens=1)
-        if output[0][-1] == tokenizer.eos_token_id:
-            break
-        yield TokenDocument(token_id=output[0][-1])
-        encoded_input = {
-            'input_ids': output,
-            'attention_mask': torch.ones(1, len(output[0])),
-        }
+class TokenStreamingExecutor(Executor):
+    ...
+
+    @requests(on='/stream')
+    async def task(self, doc: PromptDocument, **kwargs) -> ModelOutputDocument:
+        input = tokenizer(doc.prompt, return_tensors='pt')
+        input_len = input['input_ids'].shape[1]
+        for _ in range(doc.max_tokens):
+            output = self.model.generate(**input, max_new_tokens=1)
+            if output[0][-1] == tokenizer.eos_token_id:
+                break
+            yield ModelOutputDocument(
+                token_id=output[0][-1],
+                generated_text=tokenizer.decode(
+                    output[0][input_len:], skip_special_tokens=True
+                ),
+            )
+            input = {
+                'input_ids': output,
+                'attention_mask': torch.ones(1, len(output[0])),
+            }
 ```
 
 Learn more about {ref}`streaming endpoints <streaming-endpoints>` from the `Executor` documentation.
@@ -423,9 +433,7 @@ To serve the Executor using gRPC:
 ```python
 from jina import Deployment
 
-with Deployment(
-    uses=TokenStreamingExecutor, port=12345, protocol='grpc'
-) as dep:
+with Deployment(uses=TokenStreamingExecutor, port=12345, protocol='grpc') as dep:
     dep.block()
 ```
 
@@ -437,20 +445,24 @@ from jina import Client
 
 async def main():
     client = Client(port=12345, protocol='grpc', asyncio=True)
-    tokens = []
     async for doc in client.stream_doc(
         on='/stream',
         inputs=PromptDocument(prompt='what is the capital of France ?', max_tokens=10),
-        return_type=TokenDocument,
+        return_type=ModelOutputDocument,
     ):
-        tokens.append(doc.token_id)
-        print(tokenizer.decode(tokens, skip_special_tokens=True))
+        print(doc.generated_text)
 
 
 asyncio.run(main())
 ```
 
 ```text
+The
+The capital
+The capital of
+The capital of France
+The capital of France is
+The capital of France is Paris
 The capital of France is Paris.
 ```
 <!-- end llm-streaming-serve -->

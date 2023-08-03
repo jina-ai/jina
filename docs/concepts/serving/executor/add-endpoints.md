@@ -283,7 +283,6 @@ with Deployment(
     port=12345,
     protocol='http', # or 'grpc'
     cors=True,
-    include_gateway=False,
 ) as dep:
     dep.block()
 ```
