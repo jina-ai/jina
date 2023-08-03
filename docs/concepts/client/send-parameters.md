@@ -1,8 +1,6 @@
 (client-executor-parameters)=
 # Send Parameters
 
-TODO(Joan): Talk about capacity to send Parameterds as Pydantic Model
-
 The {class}`~jina.Client` can send key-value pairs as parameters to {class}`~jina.Executor`s as shown below:
 
 ```{code-block} python
@@ -10,7 +8,7 @@ The {class}`~jina.Client` can send key-value pairs as parameters to {class}`~jin
 emphasize-lines: 15
 ---
 
-from jina import Client, Executor, Flow, requests
+from jina import Client, Executor, Deployment, requests
 from docarray import BaseDoc
 
 class MyExecutor(Executor):
@@ -19,10 +17,10 @@ class MyExecutor(Executor):
     def foo(self, parameters, **kwargs):
         print(parameters['hello'])
 
-f = Flow().add(uses=MyExecutor)
+dep = Deployment(uses=MyExecutor)
 
-with f:
-    client = Client(port=f.port)
+with dep:
+    client = Client(port=dep.port)
     client.post('/', BaseDoc(), parameters={'hello': 'world'})
 ```
 
@@ -31,13 +29,16 @@ with f:
 You can send a parameters-only data request via:
 
 ```python
-with f:
-    client = Client(port=f.port)
+with dep:
+    client = Client(port=dep.port)
     client.post('/', parameters={'hello': 'world'})
 ```
 
 This might be useful to control `Executor` objects during their lifetime.
 ````
+
+Since Executors {ref}`can use Pydantic models to have strongly typed parameters <executor-api-parameters>`, you can also send parameters as Pydantic models in the client API
+
 
 (specific-params)=
 ## Send parameters to specific Executors
@@ -63,7 +64,7 @@ with Flow().add(name='exec1').add(name='exec2') as f:
     )
 ```
 
-The Executor `exec1` will receive `{'traversal_path':'@r'}` as parameters, whereas `exec2` will receive `{'traversal_path':'@c'}` as parameters.
+The Executor `exec1` will receive `{'parameter_exec1':'param_exec1'}` as parameters, whereas `exec2` will receive `{'parameter_exec1':'param_exec2'}` as parameters.
 
 This feature is intended for the case where there are multiple Executors that take the same parameter names, but you want to use different values for each Executor.
 This is often the case for Executors from the Hub, since they tend to share a common interface for parameters.

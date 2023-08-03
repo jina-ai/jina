@@ -261,8 +261,6 @@ Refer to the {ref}`Configure Executor gRPC options <executor-grpc-server-options
 
 ## Returns
 
-TODO(Joan): Clarify what happens when return_type is singleton and the Result has only a single Document
-
 {meth}`~jina.clients.mixin.PostMixin.post` returns a `DocList` containing all Documents flattened over all
 Requests. When setting `return_responses=True`, this behavior is changed to returning a list of
 {class}`~jina.types.request.data.Response` objects.
@@ -330,6 +328,16 @@ None
 ```
 
 ````
+
+### Return type
+
+{meth}`~jina.clients.mixin.PostMixin.post` returns the Documents as the server sends them back. In order for the client to 
+return the user's expected document type, the `return_type` argument is required.
+
+The `return_type` can be a parametrized `DocList` or a single `BaseDoc` type. If the return type parameter is a `BaseDoc` type,
+the results will be returned as a `DocList[T]` except if the result contains a single Document, in that case the only Document in the list is returned
+instead of the DocList.
+
 
 ### Callbacks vs returns
 

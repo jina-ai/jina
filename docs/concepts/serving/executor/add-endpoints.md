@@ -230,6 +230,7 @@ class MyExecutor(Executor):
 Working on batches of Documents in the same method call can make sense specially for serving models that can handle multiple inputs at the same time, for instance
 when serving embedding models.
 
+(executor-api-parameters)=
 ### Parameters
 
 In many cases, the behavior of a model or service does not only depend on the input data (documents in this case) but there are also other parameters
@@ -398,6 +399,7 @@ class MyExecutor(Executor):
 with Deployment(
     uses=MyExecutor,
     port=12345,
+    cors=True
 ) as dep:
     dep.block()
 ```
@@ -407,7 +409,7 @@ Jina offers a standard python client for using the streaming endpoint:
 
 ```python
 from jina import Client
-client = Client(port=12345, asyncio=True) # or protocol='grpc'
+client = Client(port=12345, cors=True, asyncio=True) # or protocol='grpc'
 async for doc in client.stream_doc(
     on='/hello', inputs=MyDocument(text='hello world'), return_type=MyDocument
 ):
