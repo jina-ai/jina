@@ -166,6 +166,8 @@ The main job of an Executor is to process `Documents` that are sent via the netw
 
 This is determined by adding the argument `doc` if you want your Executor to work on one Document at a time or `docs` if you want to work on batches of Documents.
 
+These APIs and the type annotations related to them, also affect the way your {ref}`OpenAPI looks when deploying the Executor <openapi-deployment>` with {class}`jina.Deployment` or {class}`jina.Flow` with HTTP protocol.
+
 (singleton-document)=
 ### Single Document
 
@@ -485,7 +487,68 @@ NotImplementedError('no time for it')
 
 ````
 
-(endpoint-openapi)=
+(openapi-deployment)=
 ## OpenAPI from Executors Endpoints
 
-TODO(Joan): Show the relations of Executors, endpoints notation and the resulting OpenAPI and Swagger UI obtained from Deployment and Flow with HTTP.
+When deploying an Executor and serving it with HTTP, Jina uses FastAPI to expose all the Executor endpoints as HTTP endpoints, and thus you can
+enjoy a corresponding nice OpenAPI accessible via the Swagger UI. You can also add descriptions and examples to your docarray and pydantic types so that your
+users and clients can enjoy a nice API.
+
+Let's see how this would look like:
+
+```python
+from jina import Executor, requests, Deployment
+from docarray import BaseDoc
+from pydantic import BaseModel, Field
+
+
+class Prompt(BaseDoc):
+    """Prompt Document to be inputed to a Language Model"""
+    text: str = Field(description='The text of the prompt', example='Write me a short poem')
+
+
+class Generation(BaseDoc):
+    """Document representing the generation of the Large Language Model"""
+    prompt: str = Field(description='The original prompt that created this output')
+    text: str = Field(description='The actual generated text')
+
+class LLMCallingParams(BaseModel):
+    """Calling parameters of the LLM model"""
+    num_max_tokens: int = Field(default=5000, description='The limit of tokens the model can take, it can affect the memory consumption of the model')
+
+class MyLLMExecutor(Executor):
+
+    @requests(on='/generate')
+    def generate(self, doc: Prompt, parameters: LLMCallingParams, **kwargs) -> Generation:
+        ...
+
+with Deployment(port=12345, protocol='http', uses=MyLLMExecutor) as dep:
+    dep.block()
+```
+
+```shell
+
+──── 🎉 Deployment is ready to serve! ────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                   http  │
+│  🏠       Local           0.0.0.0:54322  │
+│  🔒     Private    xxx.xx.xxx.xxx:54322  │
+│       Public       xx.xxx.xxx.xxx:54322  │
+╰──────────────────────────────────────────╯
+╭─────────── 💎 HTTP extension ────────────╮
+│  💬    Swagger UI    0.0.0.0:54322/docs  │
+│  📚         Redoc   0.0.0.0:54322/redoc  │
+╰──────────────────────────────────────────╯
+```
+
+
+After running this code, you could open '0.0.0.0:12345/docs' on your browser:
+
+```{figure} login-1.png
+doc-openapi-example.png
+```
+
+Notice how you can see the schema defined in the OpenAPI also considers the examples and descriptions for the types and fields.
+The same behavior is seen when serving Executors with {class}`jina.Flow`. In that case, the input and output schemas of each endpoint is inferred by the 
+topology of the Flow, so if two Executors are chained in a Flow, the schema of the input is the schema of the first Executor and the schema of the response
+corresponds to the output of the second Executor.
