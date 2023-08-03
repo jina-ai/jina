@@ -1,8 +1,6 @@
 (python-yaml)=
 # Coding in Python/YAML
 
-!!!!!TODO(Joan): Also talk about the Executor config.yml and explain the principle with the "WITH" and "USES_WITH" concepts.
-
 In the docs, you often see two coding styles when describing a Jina project: 
 
 ```{glossary}
@@ -85,15 +83,13 @@ Flow().add(uses=FooExec, replicas=3).add(uses=BarExec, replicas=2).save_config(
 )
 ```
 
-<!--If you get used to the Pythonic way to building Deployments and Flows, and then you need to start working with YAMLS, 
+````{admonition} Hint: YAML and Python duality (with, add, uses_with)
+:class: hint
+f you get used to the Pythonic way to building Deployments and Flows, and then you need to start working with YAMLS, 
 a good way to think about this translation is to think that YAML is a direct translation of what you would type in Python.
 
-Let's see an example for writing a Deployment:
-
-````python
-from jina import Deployment
-
-d = Deployment(protocols=['grpc', 'http'], ports=[12345, 12346], uses=MyExec, uses_with={}
-
+So, every `with` clause is like an instantiation of an object, be it a Flow, Deployment or Executor (a call to its constructor).
+And when Flow has a list of executors, every entry on the list is a call to its `add` method. This is why in Deployment and Flow
+we sometimes need the argument `uses_with` to override the defaults given by the Executor.
 ````
--->
+

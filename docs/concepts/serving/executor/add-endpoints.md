@@ -544,8 +544,7 @@ with Deployment(port=12345, protocol='http', uses=MyLLMExecutor) as dep:
 
 After running this code, you could open '0.0.0.0:12345/docs' on your browser:
 
-```{figure} login-1.png
-doc-openapi-example.png
+```{figure} doc-openapi-example.png
 ```
 
 Notice how you can see the schema defined in the OpenAPI also considers the examples and descriptions for the types and fields.
