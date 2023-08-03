@@ -398,8 +398,6 @@ class MyExecutor(Executor):
 with Deployment(
     uses=MyExecutor,
     port=12345,
-    protocol='http', # or 'grpc'
-    cors=True,
 ) as dep:
     dep.block()
 ```
@@ -409,7 +407,7 @@ Jina offers a standard python client for using the streaming endpoint:
 
 ```python
 from jina import Client
-client = Client(port=12345, protocol='http', cors=True, asyncio=True) # or protocol='grpc'
+client = Client(port=12345, asyncio=True) # or protocol='grpc'
 async for doc in client.stream_doc(
     on='/hello', inputs=MyDocument(text='hello world'), return_type=MyDocument
 ):
