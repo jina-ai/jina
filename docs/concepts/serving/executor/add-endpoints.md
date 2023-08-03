@@ -81,7 +81,6 @@ class MyExecutor(Executor):
         print(f'Calling bar')
 ```
 
-
 ### No binding
 
 If a class has no `@requests` decorator, the request simply passes through without any processing.
@@ -91,6 +90,7 @@ If a class has no `@requests` decorator, the request simply passes through witho
 When using `docarray>=0.30`, each endpoint bound by the request endpoints can have different input and output Document types. One can specify these types by adding 
 type annotations to the decorated methods or by using the `request_schema` and `response_schema` argument. The design is inspired by [FastAPI](https://fastapi.tiangolo.com/). 
 
+TODO(Joan): Introduce singleton document vs batching
 These schemas have to be parametrized `DocList` with valid `Documents` inheriting from `BaseDoc`. The only exception is when {ref}`streaming endpoints <streaming-endpoints>` are used, in that case
 the `BaseDocs` are the parameters.
 
@@ -155,6 +155,7 @@ and `response_schema` will be used.
 
 (endpoint-arguments)=
 ## Arguments
+TODO(Joan): Say that you can have doc and docs, for single Document and for batching. Also, separate tracing context into another subsection
 All Executor methods decorated by `@requests` need to follow the signature below to be usable as a microservice to be orchestrated either using {class}`~jina.Flow` or {class}`~jina.Deployment`.
 
 The `async` definition is optional.
