@@ -1,6 +1,8 @@
 (client-executor-parameters)=
 # Send Parameters
 
+TODO(Joan): Talk about capacity to send Parameterds as Pydantic Model
+
 The {class}`~jina.Client` can send key-value pairs as parameters to {class}`~jina.Executor`s as shown below:
 
 ```{code-block} python

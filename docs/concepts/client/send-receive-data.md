@@ -1,6 +1,6 @@
 # Send & Receive Data
 
-After a {class}`~jina.Client` has connected to a {class}`~jina.Flow`, it can send requests to the Flow using its
+After a {class}`~jina.Client` has connected to a {class}`~jina.Deployment` or a {class}`~jina.Flow`, it can send requests to the service using its
 {meth}`~jina.clients.mixin.PostMixin.post` method.
 This expects as inputs the {ref}`Executor endpoint <exec-endpoint>` that you want to target, as well as a Document or
 Iterable of Documents:
@@ -90,12 +90,14 @@ client.post('/endpoint')
 
 ```{admonition} Caution
 :class: caution
-`Flow` also provides a `.post()` method that follows the same interface as `client.post()`.
-However, once your solution is deployed remotely, the Flow interface is not present anymore.
-Hence, `flow.post()` is not recommended outside of testing or debugging use cases.
+`Flow` and `Deployment` also provides a `.post()` method that follows the same interface as `client.post()`.
+However, once your solution is deployed remotely, these objects are not present anymore.
+Hence, `deployment.post()` and `flow.post()` is not recommended outside of testing or debugging use cases.
 ```
 
 ## Send data in batches
+
+TODO(Joan): Clarify the relationship with Executor batching
 
 Especially during indexing, a Client can send up to thousands or millions of Documents to a {class}`~jina.Flow`.
 Those Documents are internally batched into a `Request`, providing a smaller memory footprint and faster response times
@@ -106,10 +108,10 @@ The size of these batches can be controlled with the `request_size` keyword.
 The default `request_size` is 100 Documents. The optimal size will depend on your use case.
 
 ```python
-from jina import Flow, Client
+from jina import Deployment, Client
 from docarray import DocList, BaseDoc
 
-with Flow() as f:
+with Deployment() as dep:
     client = Client(port=f.port)
     client.post('/', DocList[BaseDoc](BaseDoc() for _ in range(100)), request_size=10)
 ```
@@ -127,7 +129,7 @@ This means you can iterate over Responses one by one, as they come in.
 ```python
 import asyncio
 
-from jina import Client, Flow
+from jina import Client, Deployment
 from docarray import BaseDoc
 
 
@@ -143,11 +145,11 @@ async def run_client(port):
         print(resp)
 
 
-with Flow() as f:  # Using it as a Context Manager will start the Flow
-    asyncio.run(run_client(f.port))
+with Deployment() as dep:  # Using it as a Context Manager will start the Deployment
+    asyncio.run(run_client(dep.port))
 ```
 
-Async send is useful when calling a Flow from an Executor, as described in {ref}`async-executors`.
+Async send is useful when calling an external service from an Executor.
 
 ```python
 from jina import Client, Executor, requests
@@ -260,6 +262,8 @@ Refer to the {ref}`Configure Executor gRPC options <executor-grpc-server-options
 
 ## Returns
 
+TODO(Joan): Clarify what happens when return_type is singleton and the Result has only a single Document
+
 {meth}`~jina.clients.mixin.PostMixin.post` returns a `DocList` containing all Documents flattened over all
 Requests. When setting `return_responses=True`, this behavior is changed to returning a list of
 {class}`~jina.types.request.data.Response` objects.
@@ -269,12 +273,12 @@ If a callback function is provided, `client.post()` will return none.
 ````{tab} Return as DocList objects
 
 ```python
-from jina import Flow, Client
+from jina import Deployment, Client
 from docarray import DocList
 from docarray.documents import TextDoc
 
-with Flow() as f:
-    client = Client(port=f.port)
+with Deployment() as dep:
+    client = Client(port=dep.port)
     docs = client.post(on='', inputs=TextDoc(text='Hi there!'), return_type=DocList[TextDoc])
     print(docs)
     print(docs.text)
@@ -292,8 +296,8 @@ with Flow() as f:
 from docarray import DocList
 from docarray.documents import TextDoc
 
-with Flow() as f:
-    client = Client(port=f.port)
+with Deployment() as dep:
+    client = Client(port=dep.port)
     resp = client.post(on='', inputs=TextDoc(text='Hi there!'), return_type=DocList[TextDoc], return_responses=True)
     print(resp)
     print(resp[0].docs.text)
@@ -312,7 +316,7 @@ from jina import Flow, Client
 from docarray import DocList
 from docarray.documents import TextDoc
 
-with Flow() as f:
+with Deployment() as dep:
     client = Client(port=f.port)
     resp = client.post(
         on='',
@@ -349,7 +353,7 @@ parameter to {meth}`~jina.clients.mixin.PostMixin.post`.
 ```python
 import random
 import time
-from jina import Flow, Executor, requests, Client
+from jina import Deployment, Executor, requests, Client
 from docarray import DocList
 from docarray.documents import TextDoc
 
@@ -361,12 +365,12 @@ class RandomSleepExecutor(Executor):
         time.sleep(rand_sleep)
 
 
-f = Flow().add(uses=RandomSleepExecutor, replicas=3)
+dep = Deployment(uses=RandomSleepExecutor, replicas=3)
 input_text = [f'ordinal-{i}' for i in range(180)]
 input_da = DocList[TextDoc]([TextDoc(text=t) for t in input_text])
 
 with f:
-    c = Client(port=f.port, protocol=f.protocol)
+    c = Client(port=dep.port, protocol=dep.protocol)
     output_da = c.post('/', inputs=input_da, request_size=10, return_type=DocList[TextDoc], results_in_order=True)
     for input, output in zip(input_da, output_da):
         assert input.text == output.text

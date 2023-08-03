@@ -90,12 +90,7 @@ If a class has no `@requests` decorator, the request simply passes through witho
 When using `docarray>=0.30`, each endpoint bound by the request endpoints can have different input and output Document types. One can specify these types by adding 
 type annotations to the decorated methods or by using the `request_schema` and `response_schema` argument. The design is inspired by [FastAPI](https://fastapi.tiangolo.com/). 
 
-TODO(Joan): Introduce singleton document vs batching
-These schemas have to be parametrized `DocList` with valid `Documents` inheriting from `BaseDoc`. The only exception is when {ref}`streaming endpoints <streaming-endpoints>` are used, in that case
-the `BaseDocs` are the parameters.
-
-When no type annotation or argument is provided, Jina assumes that [LegacyDocument](https://docs.docarray.org/API_reference/documents/documents/#docarray.documents.legacy.LegacyDocument) is the type used.
-This is intended to ease the transition from using Jina with `docarray<0.30.0` to using with the newer versions.
+These schemas have to be `Documents` inheriting from `BaseDoc` or parametrized `DocList`. We will review the differences when using single Documents or a DocList for serving in the `batching` section (TODO: JOAN LINK HERE).
 
 ```python
 from jina import Executor, requests
@@ -153,10 +148,22 @@ class MyExecutor(Executor):
 If there is no `request_schema` and `response_schema`, the type hint is used to infer the schema. If both exist, `request_schema`
 and `response_schema` will be used.
 
+
+```{admonition} Note
+:class: note
+
+When no type annotation or argument is provided, Jina assumes that [LegacyDocument](https://docs.docarray.org/API_reference/documents/documents/#docarray.documents.legacy.LegacyDocument) is the type used.
+This is intended to ease the transition from using Jina with `docarray<0.30.0` to using with the newer versions.
+```
+
 (endpoint-arguments)=
 ## Arguments
 TODO(Joan): Say that you can have doc and docs, for single Document and for batching. Also, separate tracing context into another subsection
-All Executor methods decorated by `@requests` need to follow the signature below to be usable as a microservice to be orchestrated either using {class}`~jina.Flow` or {class}`~jina.Deployment`.
+TODO(Joan): Talk about parameters, their philosophy related to batching and their capacity to be Pydantic models
+All Executor methods decorated by `@requests` need to follow one of the signature below to be usable as a service to be orchestrated either using {class}`~jina.Deployment` or {class}`~jina.Flow`.
+
+Each of the signatures, corresponds to different patterns of processing Documents inside Executors. One pattern is used to serve single Documents and the other one is used
+to serve multiple Documents in a batch using `DocList`.
 
 The `async` definition is optional.
 
@@ -178,7 +185,7 @@ class MyExecutor(Executor):
         parameters: Dict,
         tracing_context: Optional['Context'],
         **kwargs
-    ) -> Union[DocList[T_output], Dict, None]:
+    ) -> Union[DocList[T_output], T_output, Dict, None]:
         pass
 ```
 
@@ -369,3 +376,8 @@ NotImplementedError('no time for it')
 ```
 
 ````
+
+(endpoint-openapi)=
+## OpenAPI from Executors Endpoints
+
+TODO(Joan): Show the relations of Executors, endpoints notation and the resulting OpenAPI and Swagger UI obtained from Deployment and Flow with HTTP.
