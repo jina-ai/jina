@@ -249,6 +249,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -16019,4 +16020,64 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```fb0b0c0f```](https://github.com/jina-ai/jina/commit/fb0b0c0f6e51655c57b59c95c1db0eafc3973306)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```18dcbb0d```](https://github.com/jina-ai/jina/commit/18dcbb0d1d9cfad65801388247feb61b35a218d5)] __-__ __version__: the next version will be 3.19.1 (*Jina Dev Bot*)
+
+<a name=release-note-3-20-0></a>
+## Release Note (`3.20.0`)
+
+> Release time: 2023-08-04 08:58:38
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals Martinez,  Joan Fontanals,  AlaeddineAbdessalem,  Alex Cureton-Griffiths,  Deepankar Mahapatro,  Nikolas Pitsillos,  Winston Wong,  Jina Dev Bot,  Zhaofeng Miao,  🙇
+
+
+### 🆕 New Features
+
+ - [[```9c0378a6```](https://github.com/jina-ai/jina/commit/9c0378a62a87fa56467b223239e04505dfcd1283)] __-__ parameters can be described as Pydantic model for rich schema (#6001) (*Joan Fontanals*)
+ - [[```31fd261f```](https://github.com/jina-ai/jina/commit/31fd261f72819d9bff9d868dc7e964d474179d58)] __-__ executor singleton doc (#5991) (*Joan Fontanals*)
+ - [[```34664ee8```](https://github.com/jina-ai/jina/commit/34664ee8db0a0e593a6c71dd6476cbf266a80641)] __-__ expose richer OpenAPI.json from Flow with HTTP (#5992) (*Joan Fontanals*)
+ - [[```7c9d4ca0```](https://github.com/jina-ai/jina/commit/7c9d4ca07f49e873efbe5ec4e2c9abb38d895913)] __-__ support streaming in Flow with one Executor (#5988) (*Joan Fontanals*)
+ - [[```7e075792```](https://github.com/jina-ai/jina/commit/7e0757922bfa6f870e60a987a2aafe37a92780d2)] __-__ stream_doc working for Deployment with include_gateway option (#5986) (*Joan Fontanals*)
+ - [[```c1377d95```](https://github.com/jina-ai/jina/commit/c1377d95730acb987e5538d55979b77d5d7dee51)] __-__ Document by Document streaming for gRPC protocol (#5921) (*AlaeddineAbdessalem*)
+
+### 🐞 Bug fixes
+
+ - [[```103ddb30```](https://github.com/jina-ai/jina/commit/103ddb305bc817cb778dfabe34708088842d0788)] __-__ fix caching models from all endpoints, inputs and outputs (#6005) (*Joan Fontanals*)
+ - [[```6fd64da4```](https://github.com/jina-ai/jina/commit/6fd64da408fae252cedd1a0f3250f8409b5c6781)] __-__ use 127.0.0.1 as local ctrl address (#6004) (*Joan Fontanals*)
+ - [[```a96c7ce0```](https://github.com/jina-ai/jina/commit/a96c7ce01eba52403e1f817a49c999c5d5553192)] __-__ show examples in SwaggerUI (#5995) (*Joan Fontanals*)
+ - [[```8cf77872```](https://github.com/jina-ai/jina/commit/8cf778721de50d952acee81f26d027ebcfeda9d2)] __-__ small fix OpenAPI.json with description (#5993) (*Joan Fontanals*)
+ - [[```4b4c4acf```](https://github.com/jina-ai/jina/commit/4b4c4acfd1fc076090c76f3f133da0d015dd5afa)] __-__ ignore warnings from google (#5968) (*Deepankar Mahapatro*)
+ - [[```e27c1725```](https://github.com/jina-ai/jina/commit/e27c17253467f9109af88b79021a0521f668f6c2)] __-__ respect req-id from client (#5989) (*Joan Fontanals*)
+ - [[```4ea03afd```](https://github.com/jina-ai/jina/commit/4ea03afdd610fe5cb7bfb510bb5f7bf637e62c26)] __-__ fix streaming validation error message (#5981) (*AlaeddineAbdessalem*)
+ - [[```99c964eb```](https://github.com/jina-ai/jina/commit/99c964eb894d81084b0ee3dc7d84f7c17652ce64)] __-__ fix example shown in SwaggerUI for Flow with HTTP (#5977) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```56210dfa```](https://github.com/jina-ai/jina/commit/56210dfa7a43c4138a00686d37646a3f1b47adb7)] __-__ update Documentation to show single Document serving (#6009) (*Joan Fontanals*)
+ - [[```6e3a65eb```](https://github.com/jina-ai/jina/commit/6e3a65eb93bd37de863bf772d99ea13bcc1feaee)] __-__ do not use tokenizer in client for llm streaming example (#6013) (*AlaeddineAbdessalem*)
+ - [[```6bdfb986```](https://github.com/jina-ai/jina/commit/6bdfb986998738e016369777aba0029670b52320)] __-__ fix errors in getting started and preliminaries (#6008) (*Joan Fontanals*)
+ - [[```adebce9f```](https://github.com/jina-ai/jina/commit/adebce9fc34e157fe6c2924a0f0e47d82cde43ff)] __-__ add note about flow with one executor supported (#5990) (*Joan Fontanals*)
+ - [[```88b0b96b```](https://github.com/jina-ai/jina/commit/88b0b96bdce0c89e188bf5af05aa4d823210e96d)] __-__ add docs for secrets &amp; jobs (#5948) (*Nikolas Pitsillos*)
+ - [[```4f7039c6```](https://github.com/jina-ai/jina/commit/4f7039c6da08285fbd3a0b110d7809f0791cab90)] __-__ remove include gateway arg (#5987) (*Joan Fontanals*)
+ - [[```88f0a12e```](https://github.com/jina-ai/jina/commit/88f0a12e7e35236af02098660eca6d52c19b3647)] __-__ add kubernetes hint to port ignored (#5985) (*Joan Fontanals*)
+ - [[```e51ddcaf```](https://github.com/jina-ai/jina/commit/e51ddcaf007abd08e908f4c0c956f171e8834588)] __-__ streaming documentation (#5980) (*AlaeddineAbdessalem*)
+ - [[```29123200```](https://github.com/jina-ai/jina/commit/29123200a35e90ec169277854aced82ba6adb4c2)] __-__ add docs for jcloud horizontal pod autoscale (#5957) (*Winston Wong*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```bfa11561```](https://github.com/jina-ai/jina/commit/bfa11561782dab53f0f8f6eb1b12c3a4a61d1b67)] __-__ fix CD yaml (#6003) (*Joan Fontanals*)
+ - [[```12f7058a```](https://github.com/jina-ai/jina/commit/12f7058a8bfca0a7b51a36689c0cfae88d33422b)] __-__ bump up python version to 3.8 (#5975) (*Zhaofeng Miao*)
+
+### 🍹 Other Improvements
+
+ - [[```ee29839a```](https://github.com/jina-ai/jina/commit/ee29839aa24225cc9a7a51f59de078e5a0de964d)] __-__ update version to 3.20.0 (*Joan Fontanals Martinez*)
+ - [[```462b2ccf```](https://github.com/jina-ai/jina/commit/462b2ccfa71833124bc45c27daf63c4e2de8c3fc)] __-__ update social sharing banner (#6011) (*Alex Cureton-Griffiths*)
+ - [[```fc4a27ef```](https://github.com/jina-ai/jina/commit/fc4a27ef33fa9599d59477c94a92b7011526c919)] __-__ Chore remove print (#6002) (*Joan Fontanals*)
+ - [[```b093d52f```](https://github.com/jina-ai/jina/commit/b093d52f1a0dde8ed09c8e27a58383f9194dbd21)] __-__ fix uvicorn version to avoid breaking test (#5997) (*Joan Fontanals*)
+ - [[```4af03082```](https://github.com/jina-ai/jina/commit/4af03082e844976fc7ada1b6a220dc34a31e5226)] __-__ small refactor (#5983) (*Joan Fontanals*)
+ - [[```2b043f49```](https://github.com/jina-ai/jina/commit/2b043f499cc3fdf002d676f2f98b4205981cc665)] __-__ remove useless import (#5979) (*Joan Fontanals*)
+ - [[```8141d99e```](https://github.com/jina-ai/jina/commit/8141d99e0cbc05173e82db58bfec6a9c3b10742a)] __-__ refactor CompositeServer for better extendability (#5978) (*Joan Fontanals*)
+ - [[```6f8c10b8```](https://github.com/jina-ai/jina/commit/6f8c10b84cb72f51d439c075240de0485d04944a)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```83557ab4```](https://github.com/jina-ai/jina/commit/83557ab4bd275ed4ea6c9d0bdb99c0cc615dd3db)] __-__ __version__: the next version will be 3.19.2 (*Jina Dev Bot*)
 
