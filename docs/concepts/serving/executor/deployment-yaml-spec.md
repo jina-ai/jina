@@ -9,7 +9,6 @@ To generate a YAML configuration from a {class}`~jina.Deployment` Python object,
 jtype: Deployment
 with:
   replicas: 2
-  shards: 3
   uses: jinaai+docker://jina-ai/CLIPEncoder
 ```
 

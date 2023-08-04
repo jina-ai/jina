@@ -69,8 +69,8 @@ from jina import Deployment
 
 dep = Deployment(
     uses='MyExecutor',
-    uses_with={"parameter_1": "foo", "parameter_2": "bar"},
     py_modules=["executor.py"],
+    uses_with={"parameter_1": "foo", "parameter_2": "bar"},
     uses_metas={
         "name": "MyExecutor",
         "description": "MyExecutor does a thing to the stuff in your Documents",
@@ -89,8 +89,8 @@ from jina import Flow
 
 f = Flow().add(
     uses='MyExecutor',
-    uses_with={"parameter_1": "foo", "parameter_2": "bar"},
     py_modules=["executor.py"],
+    uses_with={"parameter_1": "foo", "parameter_2": "bar"},
     uses_metas={
         "name": "MyExecutor",
         "description": "MyExecutor does a thing to the stuff in your Documents",
@@ -104,13 +104,13 @@ with f:
 ```
 ````
 
+- `py_modules` is a list of strings that defines the Executor's Python dependencies;
 - `uses_with` is a key-value map that defines the {ref}`arguments of the Executor'<executor-args>` `__init__` method.
 - `uses_requests` is a key-value map that defines the {ref}`mapping from endpoint to class method<executor-requests>`. This is useful to overwrite the default endpoint-to-method mapping defined in the Executor python implementation.
-- `workspace` is a string that defines the {ref}`workspace <executor-workspace>`.
-- `py_modules` is a list of strings that defines the Executor's Python dependencies;
 - `uses_metas` is a key-value map that defines some of the Executor's {ref}`internal attributes<executor-metas>`. It contains the following fields:
     - `name` is a string that defines the name of the Executor;
     - `description` is a string that defines the description of this Executor. It is used in the automatic docs UI;
+- `workspace` is a string that defines the {ref}`workspace <executor-workspace>`.
 
 ### Set `with` via `uses_with`
 

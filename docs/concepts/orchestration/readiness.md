@@ -45,6 +45,10 @@ False
 
 ## Via Jina Client
 
+<!-- start ready-from-client -->
+
+You can check the readiness from the client:
+
 ````{tab} Deployment
 ```python
 from jina import Deployment
@@ -83,6 +87,9 @@ print(client.is_flow_ready())
 True
 ```
 ````
+
+<!-- end ready-from-client -->
+
 
 ### Via CLI
 
@@ -208,8 +215,6 @@ WARNI… JINA@92986 message lost 100% (3/3)
 ```
 ````
 `````
-
-<!-- end flow-ready -->
 
 ## Readiness check via third-party clients
 

@@ -23,16 +23,18 @@
 
 <!-- start jina-description -->
 
-Jina lets you build multimodal [**AI services**](#build-ai-services) and [**pipelines**](#build-a-pipeline) that communicate via gRPC, HTTP and WebSockets, then scale them up and deploy to production. You can focus on your logic and algorithms, without worrying about the infrastructure complexity.
+Jina lets you build multimodal [**AI services**](#build-ai-models) and [**pipelines**](#build-a-pipeline) that communicate via gRPC, HTTP and WebSockets, then scale them up and deploy to production. You can focus on your logic and algorithms, without worrying about the infrastructure complexity.
 
 ![](./.github/images/build-deploy.png)
 
-Jina provides a smooth Pythonic experience transitioning from local deployment to advanced orchestration frameworks like Docker-Compose, Kubernetes, or Jina AI Cloud. Jina makes advanced solution engineering and cloud-native technologies accessible to every developer.
+Jina provides a smooth Pythonic experience for serving ML models transitioning from local deployment to advanced orchestration frameworks like Docker-Compose, Kubernetes, or Jina AI Cloud. Jina makes advanced solution engineering and cloud-native technologies accessible to every developer.
 
-- Build applications for any [data type](https://docs.docarray.org/data_types/first_steps/), any mainstream [deep learning framework](), and any [protocol](https://docs.jina.ai/concepts/serving/gateway/#set-protocol-in-python).
-- Design high-performance microservices, with [easy scaling](https://docs.jina.ai/concepts/orchestration/scale-out/), duplex client-server streaming, and async/non-blocking data processing over dynamic flows.
-- Docker container integration via [Executor Hub](https://cloud.jina.ai), OpenTelemetry/Prometheus observability, and fast Kubernetes/Docker-Compose deployment.
-- CPU/GPU hosting via [Jina AI Cloud](https://cloud.jina.ai).
+- Build and serve models for any [data type](https://docs.docarray.org/data_types/first_steps/) and any mainstream [deep learning framework](https://docarray.org/docarray/how_to/multimodal_training_and_serving/).
+- Design high-performance services, with [easy scaling](https://docs.jina.ai/concepts/orchestration/scale-out/), duplex client-server streaming, batching, [dynamic batching](https://docs.jina.ai/concepts/serving/executor/dynamic-batching/), async/non-blocking data processing and and any [protocol](https://docs.jina.ai/concepts/serving/gateway/#set-protocol-in-python).
+- Serve [LLM models while streaming their output](#streaming-for-llms).
+- Docker container integration via [Executor Hub](https://cloud.jina.ai), OpenTelemetry/Prometheus observability.
+- Streamlined CPU/GPU hosting via [Jina AI Cloud](https://cloud.jina.ai).
+- Deploy to your own cloud or system with our [Kubernetes](https://docs.jina.ai/cloud-nativeness/k8s/) and [Docker Compose](https://docs.jina.ai/cloud-nativeness/docker-compose/) integration().
 
 <details>
     <summary><strong>Wait, how is Jina different from FastAPI?</strong></summary>
@@ -40,14 +42,15 @@ Jina's value proposition may seem quite similar to that of FastAPI. However, the
 
  **Data structure and communication protocols**
   - FastAPI communication relies on Pydantic and Jina relies on [DocArray](https://github.com/docarray/docarray) allowing Jina to support multiple protocols
-  to expose its services.
+  to expose its services. The support for gRPC protocol is specially useful for data intensive applications as for embedding services
+  where the embeddings and tensors can be more efficiently serialized.
 
  **Advanced orchestration and scaling capabilities**
+  - Jina allows you to easily containerize and orchestrate your services and models, providing concurrency and scalability.
   - Jina lets you deploy applications formed from multiple microservices that can be containerized and scaled independently.
-  - Jina allows you to easily containerize and orchestrate your services, providing concurrency and scalability.
 
  **Journey to the cloud**
-  - Jina provides a smooth transition from local development (using [DocArray](https://github.com/docarray/docarray)) to local serving using (Jina's orchestration layer)
+  - Jina provides a smooth transition from local development (using [DocArray](https://github.com/docarray/docarray)) to local serving using [Deployment](https://docs.jina.ai/concepts/orchestration/deployment/) and [Flow](https://docs.jina.ai/concepts/orchestration/flow/)
   to having production-ready services by using Kubernetes capacity to orchestrate the lifetime of containers.
   - By using [Jina AI Cloud](https://cloud.jina.ai) you have access to scalable and serverless deployments of your applications in one command.
 </details>
@@ -70,14 +73,14 @@ Find more install options on [Apple Silicon](https://docs.jina.ai/get-started/in
 
 Jina has three fundamental layers:
 
-- Data layer: [**BaseDoc**](https://docarray.docs.org/) and [**DocList**](https://docarray.docs.org/) (from [DocArray](https://github.com/docarray/docarray)) is the input/output format in Jina.
-- Serving layer: An [**Executor**](https://docs.jina.ai/concepts/serving/executor/) is a Python class that transforms and processes Documents. [**Gateway**](https://docs.jina.ai/concepts/serving/gateway/) is the service making sure connecting all Executors inside a Flow.
+- Data layer: [**BaseDoc**](https://docarray.docs.org/) and [**DocList**](https://docarray.docs.org/) (from [DocArray](https://github.com/docarray/docarray)) are the input/output formats in Jina.
+- Serving layer: An [**Executor**](https://docs.jina.ai/concepts/serving/executor/) is a Python class that transforms and processes Documents. By simply wrapping your models into an Executor, you allow them to be served and scaled by Jina. [**Gateway**](https://docs.jina.ai/concepts/serving/gateway/) is the service making sure connecting all Executors inside a Flow.
 - Orchestration layer:  [**Deployment**](https://docs.jina.ai/concepts/orchestration/deployment) serves a single Executor, while a [**Flow**](https://docs.jina.ai/concepts/orchestration/flow/) serves Executors chained into a pipeline.
 
 
 [The full glossary is explained here](https://docs.jina.ai/concepts/preliminaries/#).
 
-### Build AI Services
+### Serve AI models
 <!-- start build-ai-services -->
 
 Let's build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an **[Executor](https://docs.jina.ai/concepts/serving/executor/)**. Our simple Executor will wrap the [StableLM](https://huggingface.co/stabilityai/stablelm-base-alpha-3b) LLM from Stability AI. We'll then use a **Deployment** to serve it.
@@ -218,7 +221,7 @@ A Flow is a [DAG](https://en.wikipedia.org/wiki/Directed_acyclic_graph) pipeline
 > **Note**
 > If you just want to serve a single Executor, you can use a [Deployment](#build-ai--ml-services).
 
-For instance, let's combine [our StableLM language model](#build-ai--ml-services) with a Stable Diffusion image generation service. Chaining these services together into a [Flow](https://docs.jina.ai/concepts/orchestration/flow/) will give us a service that will generate images based on a prompt generated by the LLM.
+For instance, let's combine [our StableLM language model](#build-ai--ml-services) with a Stable Diffusion image generation model. Chaining these services together into a [Flow](https://docs.jina.ai/concepts/orchestration/flow/) will give us a service that will generate images based on a prompt generated by the LLM.
 
 
 <table>
@@ -341,135 +344,9 @@ response[0].display()
 
 <!-- end build-pipelines -->
 
-### Streaming for LLMs
-<!-- start llm-streaming-intro -->
-Large Language Models can power a wide range of applications from chatbots to assistants and intelligent systems.
-However, these models can be heavy and slow and your users want systems that are both intelligent _and_ fast!
-
-Large language models work by turning your questions into tokens and then generating new token one at a 
-time until it decides that generation should stop.
-This means you want to **stream** the output tokens generated by a large language model to the client. 
-In this tutorial, we will discuss how to achieve this with Streaming Endpoints in Jina.
-<!-- end llm-streaming-intro -->
-
-#### Service Schemas
-<!-- start llm-streaming-schemas -->
-The first step is to define the streaming service schemas, as you would do in any other service framework.
-The input to the service is the prompt and the maximum number of tokens to generate, while the output is simply the 
-token ID:
-```python
-from docarray import BaseDoc
-
-
-class PromptDocument(BaseDoc):
-    prompt: str
-    max_tokens: int
-
-
-class ModelOutputDocument(BaseDoc):
-    token_id: int
-    generated_text: str
-```
-<!-- end llm-streaming-schemas -->
-
-#### Service initialization
-<!-- start llm-streaming-init -->
-Our service depends on a large language model. As an example, we will use the `gpt2` model. This is how you would load 
-such a model in your executor
-```python
-from jina import Executor, requests
-from transformers import GPT2Tokenizer, GPT2LMHeadModel
-import torch
-
-tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
-
-
-class TokenStreamingExecutor(Executor):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.model = GPT2LMHeadModel.from_pretrained('gpt2')
-```
-<!-- end llm-streaming-init -->
-
-
-#### Implement the streaming endpoint
-<!-- start llm-streaming-endpoint -->
-Our streaming endpoint accepts a `PromptDocument` as input and streams `ModelOutputDocument`s. To stream a document back to 
-the client, use the `yield` keyword in the endpoint implementation. Therefore, we use the model to generate 
-up to `max_tokens` tokens and yield them until the generation stops: 
-```python
-class TokenStreamingExecutor(Executor):
-    ...
-
-    @requests(on='/stream')
-    async def task(self, doc: PromptDocument, **kwargs) -> ModelOutputDocument:
-        input = tokenizer(doc.prompt, return_tensors='pt')
-        input_len = input['input_ids'].shape[1]
-        for _ in range(doc.max_tokens):
-            output = self.model.generate(**input, max_new_tokens=1)
-            if output[0][-1] == tokenizer.eos_token_id:
-                break
-            yield ModelOutputDocument(
-                token_id=output[0][-1],
-                generated_text=tokenizer.decode(
-                    output[0][input_len:], skip_special_tokens=True
-                ),
-            )
-            input = {
-                'input_ids': output,
-                'attention_mask': torch.ones(1, len(output[0])),
-            }
-```
-
-Learn more about {ref}`streaming endpoints <streaming-endpoints>` from the `Executor` documentation.
-<!-- end llm-streaming-endpoint -->
-
-
-#### Serve and send requests
-<!-- start llm-streaming-serve -->
-
-The final step is to serve the Executor and send requests using the client.
-To serve the Executor using gRPC:
-```python
-from jina import Deployment
-
-with Deployment(uses=TokenStreamingExecutor, port=12345, protocol='grpc') as dep:
-    dep.block()
-```
-
-To send requests from a client:
-```python
-import asyncio
-from jina import Client
-
-
-async def main():
-    client = Client(port=12345, protocol='grpc', asyncio=True)
-    async for doc in client.stream_doc(
-        on='/stream',
-        inputs=PromptDocument(prompt='what is the capital of France ?', max_tokens=10),
-        return_type=ModelOutputDocument,
-    ):
-        print(doc.generated_text)
-
-
-asyncio.run(main())
-```
-
-```text
-The
-The capital
-The capital of
-The capital of France
-The capital of France is
-The capital of France is Paris
-The capital of France is Paris.
-```
-<!-- end llm-streaming-serve -->
-
 ### Easy scalability and concurrency
 
-Why not just use standard Python to build that microservice and pipeline? Jina accelerates time to market of your application by making it more scalable and cloud-native. Jina also handles the infrastructure complexity in production and other Day-2 operations so that you can focus on the data application itself.
+Why not just use standard Python to build that service and pipeline? Jina accelerates time to market of your application by making it more scalable and cloud-native. Jina also handles the infrastructure complexity in production and other Day-2 operations so that you can focus on the data application itself.
 
 Increase your application's throughput with scalability features out of the box, like [replicas](https://docs.jina.ai/concepts/orchestration/scale-out/#replicate-executors), [shards](https://docs.jina.ai/concepts/orchestration/scale-out/#customize-polling-behaviors) and [dynamic batching](https://docs.jina.ai/concepts/serving/executor/dynamic-batching/).
 
@@ -633,6 +510,133 @@ jina cloud deploy jcloud-flow.yml
 > Make sure to delete/clean up the Flow once you are done with this tutorial to save resources and credits.
 
 Read more about [deploying Flows to JCloud](https://docs.jina.ai/concepts/jcloud/#deploy).
+
+### Streaming for LLMs
+<!-- start llm-streaming-intro -->
+Large Language Models can power a wide range of applications from chatbots to assistants and intelligent systems.
+However, these models can be heavy and slow and your users want systems that are both intelligent _and_ fast!
+
+Large language models work by turning your questions into tokens and then generating new token one at a 
+time until it decides that generation should stop.
+This means you want to **stream** the output tokens generated by a large language model to the client. 
+In this tutorial, we will discuss how to achieve this with Streaming Endpoints in Jina.
+<!-- end llm-streaming-intro -->
+
+#### Service Schemas
+<!-- start llm-streaming-schemas -->
+The first step is to define the streaming service schemas, as you would do in any other service framework.
+The input to the service is the prompt and the maximum number of tokens to generate, while the output is simply the 
+token ID:
+```python
+from docarray import BaseDoc
+
+
+class PromptDocument(BaseDoc):
+    prompt: str
+    max_tokens: int
+
+
+class ModelOutputDocument(BaseDoc):
+    token_id: int
+    generated_text: str
+```
+<!-- end llm-streaming-schemas -->
+
+#### Service initialization
+<!-- start llm-streaming-init -->
+Our service depends on a large language model. As an example, we will use the `gpt2` model. This is how you would load 
+such a model in your executor
+```python
+from jina import Executor, requests
+from transformers import GPT2Tokenizer, GPT2LMHeadModel
+import torch
+
+tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
+
+
+class TokenStreamingExecutor(Executor):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.model = GPT2LMHeadModel.from_pretrained('gpt2')
+```
+<!-- end llm-streaming-init -->
+
+
+#### Implement the streaming endpoint
+<!-- start llm-streaming-endpoint -->
+Our streaming endpoint accepts a `PromptDocument` as input and streams `ModelOutputDocument`s. To stream a document back to 
+the client, use the `yield` keyword in the endpoint implementation. Therefore, we use the model to generate 
+up to `max_tokens` tokens and yield them until the generation stops: 
+```python
+class TokenStreamingExecutor(Executor):
+    ...
+
+    @requests(on='/stream')
+    async def task(self, doc: PromptDocument, **kwargs) -> ModelOutputDocument:
+        input = tokenizer(doc.prompt, return_tensors='pt')
+        input_len = input['input_ids'].shape[1]
+        for _ in range(doc.max_tokens):
+            output = self.model.generate(**input, max_new_tokens=1)
+            if output[0][-1] == tokenizer.eos_token_id:
+                break
+            yield ModelOutputDocument(
+                token_id=output[0][-1],
+                generated_text=tokenizer.decode(
+                    output[0][input_len:], skip_special_tokens=True
+                ),
+            )
+            input = {
+                'input_ids': output,
+                'attention_mask': torch.ones(1, len(output[0])),
+            }
+```
+
+Learn more about {ref}`streaming endpoints <streaming-endpoints>` from the `Executor` documentation.
+<!-- end llm-streaming-endpoint -->
+
+
+#### Serve and send requests
+<!-- start llm-streaming-serve -->
+
+The final step is to serve the Executor and send requests using the client.
+To serve the Executor using gRPC:
+```python
+from jina import Deployment
+
+with Deployment(uses=TokenStreamingExecutor, port=12345, protocol='grpc') as dep:
+    dep.block()
+```
+
+To send requests from a client:
+```python
+import asyncio
+from jina import Client
+
+
+async def main():
+    client = Client(port=12345, protocol='grpc', asyncio=True)
+    async for doc in client.stream_doc(
+        on='/stream',
+        inputs=PromptDocument(prompt='what is the capital of France ?', max_tokens=10),
+        return_type=ModelOutputDocument,
+    ):
+        print(doc.generated_text)
+
+
+asyncio.run(main())
+```
+
+```text
+The
+The capital
+The capital of
+The capital of France
+The capital of France is
+The capital of France is Paris
+The capital of France is Paris.
+```
+
+<!-- end llm-streaming-serve -->
 
 <!-- start support-pitch -->
 

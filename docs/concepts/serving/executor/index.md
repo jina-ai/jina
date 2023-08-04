@@ -1,18 +1,18 @@
 (executor-cookbook)=
 # Executor
 
-An {class}`~jina.Executor` is a self-contained microservice that performs a task on `Documents`. 
+An {class}`~jina.Executor` is a self-contained service that performs a task on `Documents`. 
 
 You can create an Executor by extending the `Executor` class and adding logic to endpoint methods.
 
 ## Why use Executors?
 
 Once you've learned about `Documents` and `DocList` from [docarray](https://docs.docarray.org/), you can use all its power and expressiveness to build a multimodal application.
-But what if you want to go bigger? Organize your code into modules, serve and scale them independently as microservices? That's where Executors come in.
+But what if you want to go bigger? Organize your code into modules, serve and scale them? That's where Executors come in.
 
 - Executors let you organize functions into logical entities that can share configuration state, following OOP.
 - Executors can be easily containerized and shared with your colleagues using `jina hub push/pull`.
-- Executors can be exposed as a service over gRPC using `~jina.Deployment`.
+- Executors can be exposed as a service over gRPC or HTTP using `~jina.Deployment`.
 - Executors can be chained together to form a `~jina.Flow`.
 
 ## Minimum working example

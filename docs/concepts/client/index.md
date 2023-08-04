@@ -203,11 +203,11 @@ One can also specify the compression of the internal communication {ref}`as desc
 
 
 
-## Test readiness of the Flow
+## Test readiness of the server
 
-```{include} ../flow/readiness.md
-:start-after: <!-- start flow-ready -->
-:end-before: <!-- end flow-ready -->
+```{include} ../orchestration/readiness.md
+:start-after: <!-- start ready-from-client -->
+:end-before: <!-- end ready-from-client -->
 ```
 
 ## Simple profiling of the latency

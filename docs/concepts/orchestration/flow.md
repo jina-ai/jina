@@ -978,6 +978,7 @@ Note that whenever a Document does not satisfy the condition of an Executor, it 
 Instead, only a tailored Request without any payload is transferred.
 This means that you can not only use this feature to build complex logic, but also to minimize your networking overhead.
 
+(merging-upstream)=
 ### Merging upstream Documents
 
 Often when you're building a Flow, you want an Executor to receive Documents from multiple upstream Executors. 
