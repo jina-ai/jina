@@ -93,7 +93,7 @@ This animation shows what's happening behind the scenes when running the previou
 
 ```{hint}
 :class: seealso
-GRPC, WebSocket, HTTP are network protocols for transmitting data. gRPC is always used for communication between {term}`Gateway` and {term}`Executor inside a Flow`.
+gRPC, WebSocket and HTTP are network protocols for transmitting data. gRPC is always used for communication between the {term}`Gateway` and {term}`Executors inside a Flow`.
 ```
 
 ```{hint}
