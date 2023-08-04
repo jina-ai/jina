@@ -90,9 +90,9 @@ client.post('/endpoint')
 
 ```{admonition} Caution
 :class: caution
-`Flow` and `Deployment` also provides a `.post()` method that follows the same interface as `client.post()`.
+`Flow` and `Deployment` also provide a `.post()` method that follows the same interface as `client.post()`.
 However, once your solution is deployed remotely, these objects are not present anymore.
-Hence, `deployment.post()` and `flow.post()` is not recommended outside of testing or debugging use cases.
+Hence, `deployment.post()` and `flow.post()` are not recommended outside of testing or debugging use cases.
 ```
 
 (request-size-client)=

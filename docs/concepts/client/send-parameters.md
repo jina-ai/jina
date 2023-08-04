@@ -64,7 +64,7 @@ with Flow().add(name='exec1').add(name='exec2') as f:
     )
 ```
 
-The Executor `exec1` will receive `{'parameter_exec1':'param_exec1'}` as parameters, whereas `exec2` will receive `{'parameter_exec1':'param_exec2'}` as parameters.
+The Executor `exec1` will receive `{'parameter_exec1':'param_exec1'}` as parameters, whereas `exec2` will receive `{'parameter_exec1':'param_exec2'}`.
 
 This feature is intended for the case where there are multiple Executors that take the same parameter names, but you want to use different values for each Executor.
 This is often the case for Executors from the Hub, since they tend to share a common interface for parameters.
