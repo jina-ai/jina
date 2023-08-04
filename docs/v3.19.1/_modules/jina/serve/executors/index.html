@@ -1,0 +1,1603 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
+        <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/executors.html" />
+
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
+        <title>jina.serve.executors - Jina 3.19.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/main.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/docbot.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  --color-brand-primary: #009191;
+  --color-brand-content: #009191;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+    <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+    <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+    <header class="mobile-header">
+        <div class="header-left">
+            <label class="nav-overlay-icon" for="__navigation">
+                <div class="visually-hidden">Toggle site navigation sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-menu"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+        <div class="header-center">
+            <a href="../../../../">
+                <div class="brand">Jina 3.19.1 documentation</div>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle-container theme-toggle-header">
+                <button class="theme-toggle">
+                    <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                    <svg class="theme-icon-when-auto">
+                        <use href="#svg-sun-half"></use>
+                    </svg>
+                    <svg class="theme-icon-when-dark">
+                        <use href="#svg-moon"></use>
+                    </svg>
+                    <svg class="theme-icon-when-light">
+                        <use href="#svg-sun"></use>
+                    </svg>
+                </button>
+            </div>
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+                <div class="visually-hidden">Toggle table of contents sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-toc"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+    </header>
+    <aside class="sidebar-drawer">
+        <div class="sidebar-container">
+            
+            <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../../../../_static/logo-dark.svg" alt="Dark Logo" />
+  </div>
+  
+  
+</a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../../../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../get-started/install/"><svg aria-hidden="true" class="sd-octicon sd-octicon-desktop-download" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4.927 5.427l2.896 2.896a.25.25 0 00.354 0l2.896-2.896A.25.25 0 0010.896 5H8.75V.75a.75.75 0 10-1.5 0V5H5.104a.25.25 0 00-.177.427z"></path><path d="M1.573 2.573a.25.25 0 00-.073.177v7.5a.25.25 0 00.25.25h12.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-3a.75.75 0 110-1.5h3A1.75 1.75 0 0116 2.75v7.5A1.75 1.75 0 0114.25 12h-3.727c.099 1.041.52 1.872 1.292 2.757A.75.75 0 0111.25 16h-6.5a.75.75 0 01-.565-1.243c.772-.885 1.192-1.716 1.292-2.757H1.75A1.75 1.75 0 010 10.25v-7.5A1.75 1.75 0 011.75 1h3a.75.75 0 010 1.5h-3a.25.25 0 00-.177.073zM6.982 12a5.72 5.72 0 01-.765 2.5h3.566a5.72 5.72 0 01-.765-2.5H6.982z"></path></svg> Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../get-started/install/docker/">Via Docker Image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../get-started/install/apple-silicon-m1-m2/">On Apple Silicon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../get-started/install/windows/">On Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../get-started/install/troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../get-started/create-app/"><span class="fas fa-folder-plus"></span> Create First Project</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../concepts/preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/preliminaries/coding-in-python-yaml/">Coding in Python/YAML</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../concepts/serving/"><span class="fas fa-gears"></span> Serving</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../concepts/serving/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/create/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/add-endpoints/">Add Endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/serve/">Serve</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/dynamic-batching/">Dynamic Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/health-check/">Health Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/hot-reload/">Hot Reload</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/file-structure/">File Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/containerize/">Containerize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../concepts/serving/gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/gateway/health-check/">Health Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/gateway/rate-limit/">Rate Limit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/gateway/customize-http-endpoints/">Customize HTTP endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/gateway/customization/">Customization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/gateway/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../concepts/orchestration/"><span class="fas fa-network-wired"></span> Orchestration</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/deployment/">Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/flow/">Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/add-executors/">Add Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/scale-out/">Scale Out</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/hot-reload/">Hot Reload</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/handle-exceptions/">Handle Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/readiness/">Readiness</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/health-check/">Health Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/troubleshooting-on-multiprocess/">Troubleshooting on Multiprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/orchestration/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../concepts/client/"><span class="fas fa-laptop-code"></span> Client</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-parameters/">Send Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/transient-errors/">Transient Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/callbacks/">Callbacks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/rate-limit/">Rate Limit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/third-party-clients/">Third-party clients</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cloud Native</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../cloud-nativeness/k8s/"><span class="fas fa-dharmachakra"></span> Kubernetes Support</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../cloud-nativeness/kubernetes/">Deploy on Kubernetes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cloud-nativeness/docker-compose/"><span class="fab fa-docker"></span> Docker Compose Support</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../cloud-nativeness/opentelemetry/"><svg aria-hidden="true" class="sd-octicon sd-octicon-telescope-fill" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M8.531 10.21a.75.75 0 01.944.253l2.644 3.864a.75.75 0 11-1.238.847L9 12.424v2.826a.75.75 0 01-1.5 0v-2.826l-1.881 2.75a.75.75 0 01-1.238-.848l2.048-2.992a.75.75 0 01.293-.252l1.81-.871zM11.905.42a1.5 1.5 0 012.144.49l1.692 2.93a1.5 1.5 0 01-.649 2.102L2.895 11.815a1.5 1.5 0 01-1.95-.602l-.68-1.176a1.5 1.5 0 01.455-1.99L11.905.422zM3.279 8.119l.835 1.445 1.355-.653-.947-1.64-1.243.848zm7.728-1.874L9.6 3.808l1.243-.848 1.52 2.631-1.356.653z" fill-rule="evenodd"></path></svg> OpenTelemetry Support</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../cloud-nativeness/opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../cloud-nativeness/monitoring/">Prometheus/Grafana Support (Legacy)</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../concepts/serving/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/hub/sandbox/">Sandbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/serving/executor/hub/debug-executor/">Debug</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../concepts/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../concepts/jcloud/configuration/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> Configuration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML Specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docarray-support/">DocArray support</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/deploy-model/">Deploy a model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
+</ul>
+
+    <p class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+    <ul>
+        <li class="toctree-l1">
+            <a class="reference internal" href="#">
+                <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/search-light.svg">
+                <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/search-dark.svg">
+                Jina</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://cloud.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/hub-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/hub-dark.svg">
+            Jina Hub</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://finetuner.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/finetuner-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/finetuner-dark.svg">
+            Finetuner</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/docarray-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/docarray-dark.svg">
+            DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jcloud">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/JCloud-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/JCloud-dark.svg">
+            JCloud</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://now.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/now-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/now-dark.svg">
+            NOW</a></li>
+    </ul>
+</div>
+
+</div>
+
+            </div>
+            
+        </div>
+    </aside>
+    <div class="main">
+        <div class="content">
+            <div class="article-container">
+                <a href="#" class="back-to-top muted-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+                    </svg>
+                    <span>Back to top</span>
+                </a>
+                <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+                        <button class="theme-toggle">
+                            <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                            <svg class="theme-icon-when-auto">
+                                <use href="#svg-sun-half"></use>
+                            </svg>
+                            <svg class="theme-icon-when-dark">
+                                <use href="#svg-moon"></use>
+                            </svg>
+                            <svg class="theme-icon-when-light">
+                                <use href="#svg-sun"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <label class="toc-overlay-icon toc-content-icon no-toc"
+                           for="__toc">
+                        <div class="visually-hidden">Toggle table of contents sidebar</div>
+                        <i class="icon">
+                            <svg>
+                                <use href="#svg-toc"></use>
+                            </svg>
+                        </i>
+                    </label>
+                </div>
+                <article role="main">
+                    <h1>Source code for jina.serve.executors</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">contextlib</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TYPE_CHECKING</span><span class="p">,</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">NamedTuple</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Type</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+    <span class="n">overload</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">docarray_v2</span>
+<span class="kn">from</span> <span class="nn">jina.constants</span> <span class="kn">import</span> <span class="n">__args_executor_init__</span><span class="p">,</span> <span class="n">__cache_path__</span><span class="p">,</span> <span class="n">__default_endpoint__</span>
+<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">BetterEnum</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ArgNamespace</span><span class="p">,</span>
+    <span class="n">T</span><span class="p">,</span>
+    <span class="n">get_or_reuse_loop</span><span class="p">,</span>
+    <span class="n">is_generator</span><span class="p">,</span>
+    <span class="n">iscoroutinefunction</span><span class="p">,</span>
+    <span class="n">typename</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">jina.jaml</span> <span class="kn">import</span> <span class="n">JAML</span><span class="p">,</span> <span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">env_var_regex</span><span class="p">,</span> <span class="n">internal_var_regex</span>
+<span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">jina.serve.executors.decorators</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_init_requests_by_class</span><span class="p">,</span>
+    <span class="n">avoid_concurrent_lock_cls</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">jina.serve.executors.metas</span> <span class="kn">import</span> <span class="n">get_executor_taboo</span>
+<span class="kn">from</span> <span class="nn">jina.serve.helper</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_get_workspace_from_name_and_shards</span><span class="p">,</span>
+    <span class="n">store_init_kwargs</span><span class="p">,</span>
+    <span class="n">wrap_func</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">jina.serve.instrumentation</span> <span class="kn">import</span> <span class="n">MetricsTimer</span>
+
+<span class="k">if</span> <span class="n">docarray_v2</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">docarray.documents.legacy</span> <span class="kn">import</span> <span class="n">LegacyDocument</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+    <span class="kn">from</span> <span class="nn">opentelemetry.context.context</span> <span class="kn">import</span> <span class="n">Context</span>
+
+<span class="n">__dry_run_endpoint__</span> <span class="o">=</span> <span class="s1">&#39;_jina_dry_run_&#39;</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">,</span> <span class="n">__dry_run_endpoint__</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">ExecutorType</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">),</span> <span class="nb">type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The class of Executor type, which is the metaclass of :class:`BaseExecutor`.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        # noqa: DAR101</span>
+<span class="sd">        # noqa: DAR102</span>
+
+<span class="sd">        :return: Executor class</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_cls</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># this needs to be here, in the case where Executors inherited do not define new `requests`</span>
+        <span class="n">_init_requests_by_class</span><span class="p">(</span><span class="n">_cls</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">register_class</span><span class="p">(</span><span class="n">_cls</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">register_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register a class and wrap update, train, aggregate functions.</span>
+
+<span class="sd">        :param cls: The class.</span>
+<span class="sd">        :return: The class, after being registered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reg_cls_set</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;_registered_class&#39;</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+
+        <span class="n">cls_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">if</span> <span class="n">cls_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reg_cls_set</span><span class="p">:</span>
+            <span class="n">arg_spec</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="fm">__init__</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">arg_spec</span><span class="o">.</span><span class="n">varkw</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">__args_executor_init__</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span>
+                <span class="n">arg_spec</span><span class="o">.</span><span class="n">args</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="fm">__init__</span><span class="si">}</span><span class="s1"> does not follow the full signature of `Executor.__init__`, &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;please add `**kwargs` to your __init__ function&#39;</span>
+                <span class="p">)</span>
+            <span class="n">taboo</span> <span class="o">=</span> <span class="n">get_executor_taboo</span><span class="p">()</span>
+
+            <span class="n">wrap_func</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;__init__&#39;</span><span class="p">],</span> <span class="n">store_init_kwargs</span><span class="p">,</span> <span class="n">taboo</span><span class="o">=</span><span class="n">taboo</span><span class="p">)</span>
+            <span class="n">wrap_func</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;__init__&#39;</span><span class="p">],</span> <span class="n">avoid_concurrent_lock_cls</span><span class="p">(</span><span class="bp">cls</span><span class="p">))</span>
+
+            <span class="n">reg_cls_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cls_id</span><span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;_registered_class&#39;</span><span class="p">,</span> <span class="n">reg_cls_set</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span>
+
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s1">&#39;_FunctionWithSchema&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_FunctionWithSchema</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span>
+    <span class="n">request_schema</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">]</span> <span class="o">=</span> <span class="n">DocumentArray</span>
+    <span class="n">response_schema</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">]</span> <span class="o">=</span> <span class="n">DocumentArray</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_function_with_schema</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+
+        <span class="c1"># if it&#39;s not a generator function, infer the type annotation from the docs parameter</span>
+        <span class="c1"># otherwise, infer from the doc parameter (since generator endpoints expect only 1 document as input)</span>
+        <span class="n">is_generator</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;__is_generator__&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_generator</span><span class="p">:</span>
+            <span class="n">docs_annotation</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="vm">__annotations__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;docs&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">docs_annotation</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="vm">__annotations__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;doc&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">docs_annotation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">docs_annotation</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;`docs` annotation must be a type hint, got </span><span class="si">{</span><span class="n">docs_annotation</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="s1">&#39; instead, you should maybe remove the string annotation. Default value&#39;</span>
+                <span class="s1">&#39;DocumentArray will be used instead.&#39;</span>
+            <span class="p">)</span>
+            <span class="n">docs_annotation</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">docs_annotation</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;`docs` annotation must be a class if you want to use it&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; as schema input, got </span><span class="si">{</span><span class="n">docs_annotation</span><span class="si">}</span><span class="s1">. try to remove the Optional&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;.fallback to default behavior&#39;</span>
+                <span class="s1">&#39;&#39;</span>
+            <span class="p">)</span>
+            <span class="n">docs_annotation</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">return_annotation</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="vm">__annotations__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;return&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">return_annotation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">return_annotation</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;`return` annotation must be a class if you want to use it&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; as schema input, got </span><span class="si">{</span><span class="n">docs_annotation</span><span class="si">}</span><span class="s1">. try to remove the Optional&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;.fallback to default behavior&#39;</span>
+                <span class="s1">&#39;&#39;</span>
+            <span class="p">)</span>
+            <span class="n">return_annotation</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">return_annotation</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;`return` annotation must be a class if you want to use it&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;as schema input, got </span><span class="si">{</span><span class="n">docs_annotation</span><span class="si">}</span><span class="s1">, fallback to default behavior&#39;</span>
+                <span class="s1">&#39;&#39;</span>
+            <span class="p">)</span>
+            <span class="n">return_annotation</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">docarray_v2</span><span class="p">:</span>
+            <span class="n">request_schema</span> <span class="o">=</span> <span class="n">docs_annotation</span> <span class="ow">or</span> <span class="n">DocumentArray</span>
+            <span class="n">response_schema</span> <span class="o">=</span> <span class="n">return_annotation</span> <span class="ow">or</span> <span class="n">DocumentArray</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_generator</span><span class="p">:</span>
+                <span class="n">request_schema</span> <span class="o">=</span> <span class="n">docs_annotation</span> <span class="ow">or</span> <span class="n">DocList</span><span class="p">[</span><span class="n">LegacyDocument</span><span class="p">]</span>
+                <span class="n">response_schema</span> <span class="o">=</span> <span class="n">return_annotation</span> <span class="ow">or</span> <span class="n">DocList</span><span class="p">[</span><span class="n">LegacyDocument</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">request_schema</span> <span class="o">=</span> <span class="n">docs_annotation</span> <span class="ow">or</span> <span class="n">LegacyDocument</span>
+                <span class="n">response_schema</span> <span class="o">=</span> <span class="n">return_annotation</span> <span class="ow">or</span> <span class="n">LegacyDocument</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_generator</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">request_schema</span><span class="p">,</span> <span class="n">DocList</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span>
+                    <span class="n">response_schema</span><span class="p">,</span> <span class="n">DocList</span>
+                <span class="p">):</span>
+                    <span class="n">faulty_schema</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="s1">&#39;request_schema&#39;</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">request_schema</span><span class="p">,</span> <span class="n">DocList</span><span class="p">)</span>
+                        <span class="k">else</span> <span class="s1">&#39;response_schema&#39;</span>
+                    <span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;The </span><span class="si">{</span><span class="n">faulty_schema</span><span class="si">}</span><span class="s1"> schema for </span><span class="si">{</span><span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">request_schema</span><span class="si">}</span><span class="s1"> is not a DocList. Please make sure that your endpoints used DocList for request and response schema&#39;</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">request_schema</span><span class="p">,</span> <span class="n">BaseDoc</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span>
+                    <span class="nb">issubclass</span><span class="p">(</span><span class="n">response_schema</span><span class="p">,</span> <span class="n">BaseDoc</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">response_schema</span><span class="p">,</span> <span class="n">BaseDoc</span><span class="p">)</span>
+                <span class="p">):</span>  <span class="c1"># response_schema may be a DocList because by default we use LegacyDocument, and for generators we ignore response</span>
+                    <span class="n">faulty_schema</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="s1">&#39;request_schema&#39;</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">request_schema</span><span class="p">,</span> <span class="n">BaseDoc</span><span class="p">)</span>
+                        <span class="k">else</span> <span class="s1">&#39;response_schema&#39;</span>
+                    <span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;The </span><span class="si">{</span><span class="n">faulty_schema</span><span class="si">}</span><span class="s1"> schema for </span><span class="si">{</span><span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">request_schema</span><span class="si">}</span><span class="s1"> is not a BaseDoc. Please make sure that your streaming endpoints used BaseDoc for request and response schema&#39;</span>
+                    <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_FunctionWithSchema</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">request_schema</span><span class="p">,</span> <span class="n">response_schema</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BaseExecutor"><a class="viewcode-back" href="../../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor">[docs]</a><span class="k">class</span> <span class="nc">BaseExecutor</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ExecutorType</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base class of all Executors, can be used to build encoder, indexer, etc.</span>
+
+<span class="sd">    :class:`jina.Executor` as an alias for this class.</span>
+
+<span class="sd">    EXAMPLE USAGE</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from jina import Executor, requests, Flow</span>
+
+
+<span class="sd">        class MyExecutor(Executor):</span>
+<span class="sd">            @requests</span>
+<span class="sd">            def foo(self, docs, **kwargs):</span>
+<span class="sd">                print(docs)  # process docs here</span>
+
+
+<span class="sd">        f = Flow().add(uses=Executor)  # you can add your Executor to a Flow</span>
+
+<span class="sd">    Any executor inherited from :class:`BaseExecutor` always has the **meta** defined in :mod:`jina.executors.metas.defaults`.</span>
+
+<span class="sd">    All arguments in the :func:`__init__` can be specified with a ``with`` map in the YAML config. Example:</span>
+
+<span class="sd">    .. highlight:: python</span>
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        class MyAwesomeExecutor(Executor):</span>
+<span class="sd">            def __init__(awesomeness=5):</span>
+<span class="sd">                pass</span>
+
+<span class="sd">    is equal to</span>
+
+<span class="sd">    .. highlight:: yaml</span>
+<span class="sd">    .. code-block:: yaml</span>
+
+<span class="sd">        jtype: MyAwesomeExecutor</span>
+<span class="sd">        with:</span>
+<span class="sd">            awesomeness: 5</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dynamic_batching</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;`metas` and `requests` are always auto-filled with values from YAML config.</span>
+
+<span class="sd">        :param metas: a dict of metas fields</span>
+<span class="sd">        :param requests: a dict of endpoint-function mapping</span>
+<span class="sd">        :param runtime_args: a dict of arguments injected from :class:`Runtime` during runtime</span>
+<span class="sd">        :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected</span>
+<span class="sd">        :param workspace: the workspace of the executor. Only used if a workspace is not already provided in `metas` or `runtime_args`</span>
+<span class="sd">        :param dynamic_batching: a dict of endpoint-dynamic_batching config mapping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_metas</span><span class="p">(</span><span class="n">metas</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_requests</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_dynamic_batching</span><span class="p">(</span><span class="n">dynamic_batching</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_runtime_args</span><span class="p">(</span><span class="n">runtime_args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_instrumentation</span><span class="p">(</span><span class="n">runtime_args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_monitoring</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_workspace</span> <span class="o">=</span> <span class="n">workspace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">__dry_run_endpoint__</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">[</span>
+                <span class="n">__dry_run_endpoint__</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">_FunctionWithSchema</span><span class="o">.</span><span class="n">get_function_with_schema</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dry_run_func</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39; Endpoint </span><span class="si">{</span><span class="n">__dry_run_endpoint__</span><span class="si">}</span><span class="s1"> is defined by the Executor. Be aware that this endpoint is usually reserved to enable health checks from the Client through the gateway.&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; So it is recommended not to expose this endpoint. &#39;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="n">BaseExecutor</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">[</span>
+                <span class="n">__default_endpoint__</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">_FunctionWithSchema</span><span class="o">.</span><span class="n">get_function_with_schema</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dry_run_func</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">AsyncExitStack</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="p">,</span> <span class="s1">&#39;allow_concurrent&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+                <span class="p">)</span>  <span class="c1"># Lock to run in Executor non async methods in a way that does not block the event loop to do health checks without the fear of having race conditions or multithreading issues.</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_lock</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="p">)</span>  <span class="c1"># watch because this makes it no serializable</span>
+
+    <span class="k">def</span> <span class="nf">_get_endpoint_models_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">docarray_v2</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">docarray_v2</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">docarray.document.pydantic_model</span> <span class="kn">import</span> <span class="n">PydanticDocument</span>
+
+        <span class="n">endpoint_models</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">function_with_schema</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">_is_generator</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">function_with_schema</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;__is_generator__&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">docarray_v2</span><span class="p">:</span>
+                <span class="c1"># if the endpoint is not a generator endpoint, then the request schema is a DocumentArray and we need</span>
+                <span class="c1"># to get the doc_type from the schema</span>
+                <span class="c1"># otherwise, since generator endpoints only accept a Document as input, the request_schema is the schema</span>
+                <span class="c1"># of the Document</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_generator</span><span class="p">:</span>
+                    <span class="n">request_schema</span> <span class="o">=</span> <span class="n">function_with_schema</span><span class="o">.</span><span class="n">request_schema</span><span class="o">.</span><span class="n">doc_type</span>
+                    <span class="n">response_schema</span> <span class="o">=</span> <span class="n">function_with_schema</span><span class="o">.</span><span class="n">response_schema</span><span class="o">.</span><span class="n">doc_type</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">request_schema</span> <span class="o">=</span> <span class="n">function_with_schema</span><span class="o">.</span><span class="n">request_schema</span>
+                    <span class="n">response_schema</span> <span class="o">=</span> <span class="n">function_with_schema</span><span class="o">.</span><span class="n">response_schema</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">request_schema</span> <span class="o">=</span> <span class="n">PydanticDocument</span>
+                <span class="n">response_schema</span> <span class="o">=</span> <span class="n">PydanticDocument</span>
+            <span class="n">endpoint_models</span><span class="p">[</span><span class="n">endpoint</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;input&#39;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">request_schema</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                    <span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="n">request_schema</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="s1">&#39;output&#39;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">response_schema</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                    <span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="n">response_schema</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="s1">&#39;is_generator&#39;</span><span class="p">:</span> <span class="n">_is_generator</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">return</span> <span class="n">endpoint_models</span>
+
+    <span class="k">def</span> <span class="nf">_dry_run_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_init_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="p">,</span> <span class="s1">&#39;metrics_registry&#39;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">metrics_registry</span>
+        <span class="p">):</span>
+            <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
+                <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;You need to install the `prometheus_client` to use the montitoring functionality of jina&#39;</span><span class="p">,</span>
+            <span class="p">):</span>
+                <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">Summary</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_summary_method</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">(</span>
+                <span class="s1">&#39;process_request_seconds&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Time spent when calling the executor request method&#39;</span><span class="p">,</span>
+                <span class="n">registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">,</span>
+                <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;jina&#39;</span><span class="p">,</span>
+                <span class="n">labelnames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;executor&#39;</span><span class="p">,</span> <span class="s1">&#39;executor_endpoint&#39;</span><span class="p">,</span> <span class="s1">&#39;runtime_name&#39;</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_metrics_buffer</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;process_request_seconds&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summary_method</span><span class="p">}</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_summary_method</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_metrics_buffer</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">meter</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_process_request_histogram</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meter</span><span class="o">.</span><span class="n">create_histogram</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;jina_process_request_seconds&#39;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Time spent when calling the executor request method&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_histogram_buffer</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;jina_process_request_seconds&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_request_histogram</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_process_request_histogram</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_histogram_buffer</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_init_instrumentation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_runtime_args</span><span class="p">:</span>
+            <span class="n">_runtime_args</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">instrumenting_module_name</span> <span class="o">=</span> <span class="n">_runtime_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+        <span class="n">args_tracer_provider</span> <span class="o">=</span> <span class="n">_runtime_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tracer_provider&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">args_tracer_provider</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tracer_provider</span> <span class="o">=</span> <span class="n">args_tracer_provider</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracer_provider</span><span class="o">.</span><span class="n">get_tracer</span><span class="p">(</span><span class="n">instrumenting_module_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tracer_provider</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">args_meter_provider</span> <span class="o">=</span> <span class="n">_runtime_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;meter_provider&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">args_meter_provider</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">meter_provider</span> <span class="o">=</span> <span class="n">args_meter_provider</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">meter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meter_provider</span><span class="o">.</span><span class="n">get_meter</span><span class="p">(</span><span class="n">instrumenting_module_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">meter_provider</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">meter</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">requests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the request dictionary corresponding to this specific class</span>
+
+<span class="sd">        :return: Returns the requests corresponding to the specific Executor instance class</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_requests&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;requests_by_class&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">requests_by_class</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests_by_class</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">requests_by_class</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="c1"># we need to copy so that different instances with different (requests) in input do not disturb one another</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">requests_by_class</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">])</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">write_endpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of endpoints bound to write methods</span>
+
+<span class="sd">        :return: Returns the list of endpoints bound to write methods</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_write_methods&#39;</span><span class="p">):</span>
+            <span class="n">endpoints</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">fn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">fn</span><span class="o">.</span><span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_methods</span><span class="p">:</span>
+                    <span class="n">endpoints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">endpoint</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">endpoints</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">_add_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">_requests</span><span class="p">:</span>
+            <span class="n">func_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">e</span> <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="k">for</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">_requests</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="c1"># the following line must be `getattr(self.__class__, func)` NOT `getattr(self, func)`</span>
+                <span class="c1"># this to ensure we always have `_func` as unbound method</span>
+                <span class="k">if</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">func_names</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">func_names</span><span class="p">[</span><span class="n">func</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">:</span>
+                        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">[</span><span class="n">func_names</span><span class="p">[</span><span class="n">func</span><span class="p">]]</span>
+
+                <span class="n">_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">_func</span><span class="p">):</span>
+                    <span class="c1"># the target function is not decorated with `@requests` yet</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">[</span>
+                        <span class="n">endpoint</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="n">_FunctionWithSchema</span><span class="o">.</span><span class="n">get_function_with_schema</span><span class="p">(</span><span class="n">_func</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">typename</span><span class="p">(</span><span class="n">_func</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;jina.executors.decorators.FunctionMapper&#39;</span><span class="p">:</span>
+                    <span class="c1"># the target function is already decorated with `@requests`, need unwrap with `.fn`</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">[</span>
+                        <span class="n">endpoint</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="n">_FunctionWithSchema</span><span class="o">.</span><span class="n">get_function_with_schema</span><span class="p">(</span><span class="n">_func</span><span class="o">.</span><span class="n">fn</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;expect </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s1"> to be a function, but receiving </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">_func</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_dynamic_batching</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_dynamic_batching</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">_dynamic_batching</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dynamic_batching</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;dynamic_batching&#39;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dynamic_batching</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_dynamic_batching</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_metas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
+        <span class="kn">from</span> <span class="nn">jina.serve.executors.metas</span> <span class="kn">import</span> <span class="n">get_default_metas</span>
+
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">get_default_metas</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">_metas</span><span class="p">:</span>
+            <span class="n">tmp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_metas</span><span class="p">)</span>
+
+        <span class="n">unresolved_attr</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">()</span>
+        <span class="c1"># set self values filtered by those non-exist, and non-expandable</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">tmp</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s1">&#39;workspace&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">v</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s1">&#39;Setting `workspace` via `metas.workspace` is deprecated. &#39;</span>
+                    <span class="s1">&#39;Instead, use `f.add(..., workspace=...)` when defining a a Flow in Python; &#39;</span>
+                    <span class="s1">&#39;the `workspace` parameter when defining a Flow using YAML; &#39;</span>
+                    <span class="s1">&#39;or `--workspace` when starting an Executor using the CLI.&#39;</span><span class="p">,</span>
+                    <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">env_var_regex</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                        <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">unresolved_attr</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">unresolved_attr</span><span class="p">:</span>
+            <span class="n">_tmp</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">_tmp</span><span class="p">[</span><span class="s1">&#39;metas&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span>
+            <span class="n">new_metas</span> <span class="o">=</span> <span class="n">JAML</span><span class="o">.</span><span class="n">expand_dict</span><span class="p">(</span><span class="n">_tmp</span><span class="p">)[</span><span class="s1">&#39;metas&#39;</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">new_metas</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+                            <span class="n">env_var_regex</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="ow">or</span> <span class="n">internal_var_regex</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                        <span class="p">):</span>
+                            <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1"> is not substitutable or badly referred&#39;</span>
+                            <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="c1"># `name` is important as it serves as an identifier of the executor</span>
+        <span class="c1"># if not given, then set a name by the rule</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">metas</span> <span class="o">=</span> <span class="n">target</span>
+
+<div class="viewcode-block" id="BaseExecutor.close"><a class="viewcode-back" href="../../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Always invoked as executor is destroyed.</span>
+
+<span class="sd">        You can write destructor &amp; saving logic here.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req_endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        # noqa: DAR101</span>
+<span class="sd">        # noqa: DAR102</span>
+<span class="sd">        # noqa: DAR201</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">req_endpoint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">[</span><span class="n">req_endpoint</span><span class="p">](</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>  <span class="c1"># unbound method, self is required</span>
+        <span class="k">elif</span> <span class="n">__default_endpoint__</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">[</span><span class="n">__default_endpoint__</span><span class="p">](</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>  <span class="c1"># unbound method, self is required</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">__acall__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req_endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        # noqa: DAR101</span>
+<span class="sd">        # noqa: DAR102</span>
+<span class="sd">        # noqa: DAR201</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">req_endpoint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__acall_endpoint__</span><span class="p">(</span><span class="n">req_endpoint</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">__default_endpoint__</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__acall_endpoint__</span><span class="p">(</span><span class="n">__default_endpoint__</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">__acall_endpoint__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">req_endpoint</span><span class="p">,</span> <span class="n">tracing_context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Context&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="n">func</span><span class="p">,</span> <span class="n">input_doc</span><span class="p">,</span> <span class="n">output_doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">[</span><span class="n">req_endpoint</span><span class="p">]</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">exec_func</span><span class="p">(</span>
+            <span class="n">summary</span><span class="p">,</span> <span class="n">histogram</span><span class="p">,</span> <span class="n">histogram_metric_labels</span><span class="p">,</span> <span class="n">tracing_context</span>
+        <span class="p">):</span>
+            <span class="k">with</span> <span class="n">MetricsTimer</span><span class="p">(</span><span class="n">summary</span><span class="p">,</span> <span class="n">histogram</span><span class="p">,</span> <span class="n">histogram_metric_labels</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="k">await</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tracing_context</span><span class="o">=</span><span class="n">tracing_context</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="k">await</span> <span class="n">get_or_reuse_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span>
+                            <span class="kc">None</span><span class="p">,</span>
+                            <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span>
+                                <span class="n">func</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">tracing_context</span><span class="o">=</span><span class="n">tracing_context</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                            <span class="p">),</span>
+                        <span class="p">)</span>
+
+        <span class="n">runtime_name</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="n">_summary</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_summary_method</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">req_endpoint</span><span class="p">,</span> <span class="n">runtime_name</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summary_method</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="n">_histogram_metric_labels</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;executor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+            <span class="s1">&#39;executor_endpoint&#39;</span><span class="p">:</span> <span class="n">req_endpoint</span><span class="p">,</span>
+            <span class="s1">&#39;runtime_name&#39;</span><span class="p">:</span> <span class="n">runtime_name</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">start_as_current_span</span><span class="p">(</span>
+                <span class="n">req_endpoint</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">tracing_context</span>
+            <span class="p">):</span>
+                <span class="kn">from</span> <span class="nn">opentelemetry.propagate</span> <span class="kn">import</span> <span class="n">extract</span>
+                <span class="kn">from</span> <span class="nn">opentelemetry.trace.propagation.tracecontext</span> <span class="kn">import</span> <span class="p">(</span>
+                    <span class="n">TraceContextTextMapPropagator</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="n">tracing_carrier_context</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">TraceContextTextMapPropagator</span><span class="p">()</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">tracing_carrier_context</span><span class="p">)</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">exec_func</span><span class="p">(</span>
+                    <span class="n">_summary</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_process_request_histogram</span><span class="p">,</span>
+                    <span class="n">_histogram_metric_labels</span><span class="p">,</span>
+                    <span class="n">extract</span><span class="p">(</span><span class="n">tracing_carrier_context</span><span class="p">),</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">exec_func</span><span class="p">(</span>
+                <span class="n">_summary</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_process_request_histogram</span><span class="p">,</span>
+                <span class="n">_histogram_metric_labels</span><span class="p">,</span>
+                <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">workspace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the workspace directory of the Executor.</span>
+
+<span class="sd">        :return: returns the workspace of the current shard of this Executor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">workspace</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="p">,</span> <span class="s1">&#39;workspace&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metas</span><span class="p">,</span> <span class="s1">&#39;workspace&#39;</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_workspace</span>
+            <span class="ow">or</span> <span class="n">__cache_path__</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">workspace</span><span class="p">:</span>
+            <span class="n">shard_id</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="p">,</span>
+                <span class="s1">&#39;shard_id&#39;</span><span class="p">,</span>
+                <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">_get_workspace_from_name_and_shards</span><span class="p">(</span>
+                <span class="n">workspace</span><span class="o">=</span><span class="n">workspace</span><span class="p">,</span> <span class="n">shard_id</span><span class="o">=</span><span class="n">shard_id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BaseExecutor.from_hub"><a class="viewcode-back" href="../../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.from_hub">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_hub</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_dynamic_batching</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct an Executor from Hub.</span>
+
+<span class="sd">        :param uri: a hub Executor scheme starts with `jinahub://`</span>
+<span class="sd">        :param context: context replacement variables in a dict, the value of the dict is the replacement.</span>
+<span class="sd">        :param uses_with: dictionary of parameters to overwrite from the default config&#39;s with field</span>
+<span class="sd">        :param uses_metas: dictionary of parameters to overwrite from the default config&#39;s metas field</span>
+<span class="sd">        :param uses_requests: dictionary of parameters to overwrite from the default config&#39;s requests field</span>
+<span class="sd">        :param uses_dynamic_batching: dictionary of parameters to overwrite from the default config&#39;s dynamic_batching field</span>
+<span class="sd">        :param kwargs: other kwargs accepted by the CLI ``jina hub pull``</span>
+<span class="sd">        :return: the Hub Executor object.</span>
+
+<span class="sd">        .. highlight:: python</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from jina import Executor</span>
+<span class="sd">            from docarray import Document, DocumentArray</span>
+
+<span class="sd">            executor = Executor.from_hub(</span>
+<span class="sd">                uri=&#39;jinahub://CLIPImageEncoder&#39;, install_requirements=True</span>
+<span class="sd">            )</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">hubble.executor.helper</span> <span class="kn">import</span> <span class="n">is_valid_huburi</span>
+
+        <span class="n">_source</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">is_valid_huburi</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">hubble.executor.hubio</span> <span class="kn">import</span> <span class="n">HubIO</span>
+            <span class="kn">from</span> <span class="nn">hubble.executor.parsers</span> <span class="kn">import</span> <span class="n">set_hub_pull_parser</span>
+
+            <span class="n">_args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span>
+                <span class="p">{</span><span class="s1">&#39;no_usage&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">},</span>
+                <span class="n">set_hub_pull_parser</span><span class="p">(),</span>
+                <span class="n">positional_args</span><span class="o">=</span><span class="p">(</span><span class="n">uri</span><span class="p">,),</span>
+            <span class="p">)</span>
+            <span class="n">_source</span> <span class="o">=</span> <span class="n">HubIO</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">_args</span><span class="p">)</span><span class="o">.</span><span class="n">pull</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_source</span> <span class="ow">or</span> <span class="n">_source</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;docker://&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Can not construct a native Executor from </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">. Looks like you want to use it as a &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;Docker container, you may want to use it in the Flow via `.add(uses=</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">)` instead.&#39;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span>
+            <span class="n">_source</span><span class="p">,</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+            <span class="n">uses_with</span><span class="o">=</span><span class="n">uses_with</span><span class="p">,</span>
+            <span class="n">uses_metas</span><span class="o">=</span><span class="n">uses_metas</span><span class="p">,</span>
+            <span class="n">uses_requests</span><span class="o">=</span><span class="n">uses_requests</span><span class="p">,</span>
+            <span class="n">uses_dynamic_batching</span><span class="o">=</span><span class="n">uses_dynamic_batching</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+    <span class="c1"># overload_inject_start_executor_serve</span>
+    <span class="nd">@overload</span>
+    <span class="k">def</span> <span class="nf">serve</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">allow_concurrent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">connection_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">disable_auto_volume</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">docker_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">entrypoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">exit_on_exceptions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">external</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">floating</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">force_update</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">gpus</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">grpc_channel_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">grpc_metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">grpc_server_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">],</span>
+        <span class="n">install_requirements</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">metrics_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">metrics_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;executor&#39;</span><span class="p">,</span>
+        <span class="n">native</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">no_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">output_array_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span>
+        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prefer_platform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GRPC&#39;</span><span class="p">],</span>
+        <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">raft_configuration</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">reload</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">replicas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">retries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">runtime_cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;WorkerRuntime&#39;</span><span class="p">,</span>
+        <span class="n">shards</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">ssl_certfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ssl_keyfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">stateful</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
+        <span class="n">timeout_ready</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">600000</span><span class="p">,</span>
+        <span class="n">timeout_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">traces_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">traces_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tracing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;BaseExecutor&#39;</span><span class="p">,</span>
+        <span class="n">uses_after</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_after_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_before</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_before_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_dynamic_batching</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uvicorn_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">volumes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">when</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serve this Executor in a temporary Flow. Useful in testing an Executor in remote settings.</span>
+
+<span class="sd">        :param allow_concurrent: Allow concurrent requests to be processed by the Executor. This is only recommended if the Executor is thread-safe.</span>
+<span class="sd">        :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.</span>
+<span class="sd">        :param connection_list: dictionary JSON with a list of connections to configure</span>
+<span class="sd">        :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.</span>
+<span class="sd">        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
+<span class="sd">        :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.</span>
+<span class="sd">        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker &#39;</span>
+<span class="sd">          container.</span>
+
+<span class="sd">          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/</span>
+<span class="sd">        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</span>
+<span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
+<span class="sd">        :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.</span>
+<span class="sd">        :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.</span>
+<span class="sd">        :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.</span>
+<span class="sd">        :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local</span>
+<span class="sd">        :param gpus: This argument allows dockerized Jina Executors to discover local gpu devices.</span>
+
+<span class="sd">              Note,</span>
+<span class="sd">              - To access all gpus, use `--gpus all`.</span>
+<span class="sd">              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.</span>
+<span class="sd">              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`</span>
+<span class="sd">              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`</span>
+<span class="sd">              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</span>
+<span class="sd">        :param grpc_channel_options: Dictionary of kwargs arguments that will be passed to the grpc channel as options when creating a channel, example : {&#39;grpc.max_send_message_length&#39;: -1}. When max_attempts &gt; 1, the &#39;grpc.service_config&#39; option will not be applicable.</span>
+<span class="sd">        :param grpc_metadata: The metadata to be passed to the gRPC request.</span>
+<span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
+<span class="sd">        :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.</span>
+<span class="sd">        :param install_requirements: If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.</span>
+<span class="sd">        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.</span>
+<span class="sd">        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</span>
+<span class="sd">        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</span>
+<span class="sd">        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.</span>
+<span class="sd">        :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics</span>
+<span class="sd">        :param name: The name of this object.</span>
+
+<span class="sd">              This will be used in the following places:</span>
+<span class="sd">              - how you refer to this object in Python/YAML/CLI</span>
+<span class="sd">              - visualization</span>
+<span class="sd">              - log message header</span>
+<span class="sd">              - ...</span>
+
+<span class="sd">              When not given, then the default naming strategy will apply.</span>
+<span class="sd">        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</span>
+<span class="sd">        :param no_reduce: Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a `docs_matrix` or `docs_map`</span>
+<span class="sd">        :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.</span>
+
+<span class="sd">          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found</span>
+<span class="sd">          `here &lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;`.</span>
+<span class="sd">          Defaults to retaining whatever type is returned by the Executor.</span>
+<span class="sd">        :param polling: The polling strategy of the Deployment and its endpoints (when `shards&gt;1`).</span>
+<span class="sd">              Can be defined for all endpoints of a Deployment or by endpoint.</span>
+<span class="sd">              Define per Deployment:</span>
+<span class="sd">              - ANY: only one (whoever is idle) Pod polls the message</span>
+<span class="sd">              - ALL: all Pods poll the message (like a broadcast)</span>
+<span class="sd">              Define per Endpoint:</span>
+<span class="sd">              JSON dict, {endpoint: PollingType}</span>
+<span class="sd">              {&#39;/custom&#39;: &#39;ALL&#39;, &#39;/search&#39;: &#39;ANY&#39;, &#39;*&#39;: &#39;ANY&#39;}</span>
+<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</span>
+<span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
+<span class="sd">        :param prefer_platform: The preferred target Docker platform. (e.g. &quot;linux/amd64&quot;, &quot;linux/arm64&quot;)</span>
+<span class="sd">        :param protocol: Communication protocol of the server exposed by the Executor. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: [&#39;GRPC&#39;, &#39;HTTP&#39;, &#39;WEBSOCKET&#39;].</span>
+<span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
+
+<span class="sd">          Note that the recommended way is to only import a single module - a simple python file, if your</span>
+<span class="sd">          executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,</span>
+<span class="sd">          which should be structured as a python package. For more details, please see the</span>
+<span class="sd">          `Executor cookbook &lt;https://docs.jina.ai/concepts/executor/executor-files/&gt;`__</span>
+<span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
+<span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
+<span class="sd">        :param raft_configuration: Dictionary of kwargs arguments that will be passed to the RAFT node as configuration options when starting the RAFT node.</span>
+<span class="sd">        :param reload: If set, the Executor will restart while serving if YAML configuration source or Executor modules are changed. If YAML configuration is changed, the whole deployment is reloaded and new processes will be restarted. If only Python modules of the Executor have changed, they will be reloaded to the interpreter without restarting process.</span>
+<span class="sd">        :param replicas: The number of replicas in the deployment</span>
+<span class="sd">        :param retries: Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</span>
+<span class="sd">        :param runtime_cls: The runtime class to run inside the Pod</span>
+<span class="sd">        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies</span>
+<span class="sd">        :param ssl_certfile: the path to the certificate file</span>
+<span class="sd">        :param ssl_keyfile: the path to the key file</span>
+<span class="sd">        :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas</span>
+<span class="sd">        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever</span>
+<span class="sd">        :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever</span>
+<span class="sd">        :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</span>
+<span class="sd">        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
+<span class="sd">        :param tls: If set, connect to deployment using tls encryption</span>
+<span class="sd">        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.</span>
+<span class="sd">        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.</span>
+<span class="sd">        :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.</span>
+<span class="sd">        :param uses: The config of the executor, it could be one of the followings:</span>
+<span class="sd">                  * the string literal of an Executor class name</span>
+<span class="sd">                  * an Executor YAML file (.yml, .yaml, .jaml)</span>
+<span class="sd">                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)</span>
+<span class="sd">                  * a docker image (must start with `docker://`)</span>
+<span class="sd">                  * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
+<span class="sd">                  * the string literal of a JSON config</span>
+
+<span class="sd">                  When use it under Python, one can use the following values additionally:</span>
+<span class="sd">                  - a Python dict that represents the config</span>
+<span class="sd">                  - a text file stream has `.read()` interface</span>
+<span class="sd">        :param uses_after: The executor attached after the Pods described by --uses, typically used for receiving from all shards, accepted type follows `--uses`. This argument only applies for sharded Deployments (shards &gt; 1).</span>
+<span class="sd">        :param uses_after_address: The address of the uses-before runtime</span>
+<span class="sd">        :param uses_before: The executor attached before the Pods described by --uses, typically before sending to all shards, accepted type follows `--uses`. This argument only applies for sharded Deployments (shards &gt; 1).</span>
+<span class="sd">        :param uses_before_address: The address of the uses-before runtime</span>
+<span class="sd">        :param uses_dynamic_batching: Dictionary of keyword arguments that will override the `dynamic_batching` configuration in `uses`</span>
+<span class="sd">        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`</span>
+<span class="sd">        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`</span>
+<span class="sd">        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`</span>
+<span class="sd">        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server</span>
+
+<span class="sd">          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/</span>
+<span class="sd">        :param volumes: The path on the host to be mounted inside the container.</span>
+
+<span class="sd">          Note,</span>
+<span class="sd">          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.</span>
+<span class="sd">          - If no split provided, then the basename of that directory will be mounted into container&#39;s root path, e.g. `--volumes=&quot;/user/test/my-workspace&quot;` will be mounted into `/my-workspace` inside the container.</span>
+<span class="sd">          - All volumes are mounted with read-write mode.</span>
+<span class="sd">        :param when: The condition that the documents need to fulfill before reaching the Executor.The condition can be defined in the form of a `DocArray query condition &lt;https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions&gt;`</span>
+<span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
+
+<span class="sd">        .. # noqa: DAR202</span>
+<span class="sd">        .. # noqa: DAR101</span>
+<span class="sd">        .. # noqa: DAR003</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="c1"># overload_inject_end_executor_serve</span>
+
+<div class="viewcode-block" id="BaseExecutor.serve"><a class="viewcode-back" href="../../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.serve">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">serve</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">stop_event</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;threading.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_dynamic_batching</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">reload</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serve this Executor in a temporary Flow. Useful in testing an Executor in remote settings.</span>
+
+<span class="sd">        :param uses_with: dictionary of parameters to overwrite from the default config&#39;s with field</span>
+<span class="sd">        :param uses_metas: dictionary of parameters to overwrite from the default config&#39;s metas field</span>
+<span class="sd">        :param uses_requests: dictionary of parameters to overwrite from the default config&#39;s requests field</span>
+<span class="sd">        :param reload: If set, the Executor reloads the modules as they change</span>
+<span class="sd">        :param stop_event: a threading event or a multiprocessing event that once set will resume the control Flow</span>
+<span class="sd">            to main thread.</span>
+<span class="sd">        :param uses_dynamic_batching: dictionary of parameters to overwrite from the default config&#39;s dynamic_batching field</span>
+<span class="sd">        :param reload: a flag indicating if the Executor should watch the Python files of its implementation to reload the code live while serving.</span>
+<span class="sd">        :param kwargs: other kwargs accepted by the Flow, full list can be found `here &lt;https://docs.jina.ai/api/jina.orchestrate.flow.base/&gt;`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Executor.serve() is no more supported and will be deprecated soon. Use Deployment to serve an Executor instead: &#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;https://docs.jina.ai/concepts/executor/serve/&#39;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments</span> <span class="kn">import</span> <span class="n">Deployment</span>
+
+        <span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span>
+            <span class="n">uses</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span>
+            <span class="n">uses_with</span><span class="o">=</span><span class="n">uses_with</span><span class="p">,</span>
+            <span class="n">uses_metas</span><span class="o">=</span><span class="n">uses_metas</span><span class="p">,</span>
+            <span class="n">uses_requests</span><span class="o">=</span><span class="n">uses_requests</span><span class="p">,</span>
+            <span class="n">uses_dynamic_batching</span><span class="o">=</span><span class="n">uses_dynamic_batching</span><span class="p">,</span>
+            <span class="n">reload</span><span class="o">=</span><span class="n">reload</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="n">dep</span><span class="p">:</span>
+            <span class="n">dep</span><span class="o">.</span><span class="n">block</span><span class="p">(</span><span class="n">stop_event</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseExecutor.StandaloneExecutorType"><a class="viewcode-back" href="../../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.StandaloneExecutorType">[docs]</a>    <span class="k">class</span> <span class="nc">StandaloneExecutorType</span><span class="p">(</span><span class="n">BetterEnum</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Type of standalone Executors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">EXTERNAL</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># served by a gateway</span>
+        <span class="n">SHARED</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># not served by a gateway, served by head/worker</span></div>
+
+<div class="viewcode-block" id="BaseExecutor.to_kubernetes_yaml"><a class="viewcode-back" href="../../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.to_kubernetes_yaml">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">to_kubernetes_yaml</span><span class="p">(</span>
+        <span class="n">uses</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">output_base_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">k8s_namespace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">executor_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="n">StandaloneExecutorType</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">StandaloneExecutorType</span><span class="o">.</span><span class="n">EXTERNAL</span><span class="p">,</span>
+        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_dynamic_batching</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts the Executor into a set of yaml deployments to deploy in Kubernetes.</span>
+
+<span class="sd">        If you don&#39;t want to rebuild image on Jina Hub,</span>
+<span class="sd">        you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.</span>
+
+<span class="sd">        :param uses: the Executor to use. Has to be containerized and accessible from K8s</span>
+<span class="sd">        :param output_base_path: The base path where to dump all the yaml files</span>
+<span class="sd">        :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.</span>
+<span class="sd">        :param executor_type: The type of Executor. Can be external or shared. External Executors include the Gateway. Shared Executors don&#39;t. Defaults to External</span>
+<span class="sd">        :param uses_with: dictionary of parameters to overwrite from the default config&#39;s with field</span>
+<span class="sd">        :param uses_metas: dictionary of parameters to overwrite from the default config&#39;s metas field</span>
+<span class="sd">        :param uses_requests: dictionary of parameters to overwrite from the default config&#39;s requests field</span>
+<span class="sd">        :param uses_dynamic_batching: dictionary of parameters to overwrite from the default config&#39;s dynamic_batching field</span>
+<span class="sd">        :param kwargs: other kwargs accepted by the Flow, full list can be found `here &lt;https://docs.jina.ai/api/jina.orchestrate.flow.base/&gt;`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Executor.to_kubernetes_yaml() is no more supported and will be deprecated soon. Use Deployment to export kubernetes YAML files: &#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;https://docs.jina.ai/concepts/executor/serve/#serve-via-kubernetes&#39;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">jina.orchestrate.flow.base</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+        <span class="n">Flow</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="n">uses</span><span class="o">=</span><span class="n">uses</span><span class="p">,</span>
+            <span class="n">uses_with</span><span class="o">=</span><span class="n">uses_with</span><span class="p">,</span>
+            <span class="n">uses_metas</span><span class="o">=</span><span class="n">uses_metas</span><span class="p">,</span>
+            <span class="n">uses_requests</span><span class="o">=</span><span class="n">uses_requests</span><span class="p">,</span>
+            <span class="n">uses_dynamic_batching</span><span class="o">=</span><span class="n">uses_dynamic_batching</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">to_kubernetes_yaml</span><span class="p">(</span>
+            <span class="n">output_base_path</span><span class="o">=</span><span class="n">output_base_path</span><span class="p">,</span>
+            <span class="n">k8s_namespace</span><span class="o">=</span><span class="n">k8s_namespace</span><span class="p">,</span>
+            <span class="n">include_gateway</span><span class="o">=</span><span class="n">executor_type</span>
+            <span class="o">==</span> <span class="n">BaseExecutor</span><span class="o">.</span><span class="n">StandaloneExecutorType</span><span class="o">.</span><span class="n">EXTERNAL</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+    <span class="n">to_k8s_yaml</span> <span class="o">=</span> <span class="n">to_kubernetes_yaml</span>
+
+<div class="viewcode-block" id="BaseExecutor.to_docker_compose_yaml"><a class="viewcode-back" href="../../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.to_docker_compose_yaml">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">to_docker_compose_yaml</span><span class="p">(</span>
+        <span class="n">uses</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">output_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">network_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">executor_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="n">StandaloneExecutorType</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">StandaloneExecutorType</span><span class="o">.</span><span class="n">EXTERNAL</span><span class="p">,</span>
+        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_dynamic_batching</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts the Executor into a yaml file to run with `docker-compose up`</span>
+<span class="sd">        :param uses: the Executor to use. Has to be containerized</span>
+<span class="sd">        :param output_path: The output path for the yaml file</span>
+<span class="sd">        :param network_name: The name of the network that will be used by the deployment name</span>
+<span class="sd">        :param executor_type: The type of Executor. Can be external or shared. External Executors include the Gateway. Shared Executors don&#39;t. Defaults to External</span>
+<span class="sd">        :param uses_with: dictionary of parameters to overwrite from the default config&#39;s with field</span>
+<span class="sd">        :param uses_metas: dictionary of parameters to overwrite from the default config&#39;s metas field</span>
+<span class="sd">        :param uses_requests: dictionary of parameters to overwrite from the default config&#39;s requests field</span>
+<span class="sd">        :param uses_dynamic_batching: dictionary of parameters to overwrite from the default config&#39;s requests field</span>
+<span class="sd">        :param kwargs: other kwargs accepted by the Flow, full list can be found `here &lt;https://docs.jina.ai/api/jina.orchestrate.flow.base/&gt;`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Executor.to_docker_compose_yaml() is no more supported and will be deprecated soon. Use Deployment to export docker compose YAML files: &#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;https://docs.jina.ai/concepts/executor/serve/#serve-via-docker-compose&#39;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="kn">from</span> <span class="nn">jina.orchestrate.flow.base</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="n">uses</span><span class="o">=</span><span class="n">uses</span><span class="p">,</span>
+            <span class="n">uses_with</span><span class="o">=</span><span class="n">uses_with</span><span class="p">,</span>
+            <span class="n">uses_metas</span><span class="o">=</span><span class="n">uses_metas</span><span class="p">,</span>
+            <span class="n">uses_requests</span><span class="o">=</span><span class="n">uses_requests</span><span class="p">,</span>
+            <span class="n">uses_dynamic_batching</span><span class="o">=</span><span class="n">uses_dynamic_batching</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">to_docker_compose_yaml</span><span class="p">(</span>
+            <span class="n">output_path</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span>
+            <span class="n">network_name</span><span class="o">=</span><span class="n">network_name</span><span class="p">,</span>
+            <span class="n">include_gateway</span><span class="o">=</span><span class="n">executor_type</span>
+            <span class="o">==</span> <span class="n">BaseExecutor</span><span class="o">.</span><span class="n">StandaloneExecutorType</span><span class="o">.</span><span class="n">EXTERNAL</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseExecutor.monitor"><a class="viewcode-back" href="../../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.monitor">[docs]</a>    <span class="k">def</span> <span class="nf">monitor</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">documentation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MetricsTimer</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a given prometheus metric, if it does not exist yet, it will create it and store it in a buffer.</span>
+<span class="sd">        :param name: the name of the metrics</span>
+<span class="sd">        :param documentation:  the description of the metrics</span>
+
+<span class="sd">        :return: the given prometheus metrics or None if monitoring is not enable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_summary</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_metrics_buffer</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics_buffer</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="n">_histogram</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_histogram_buffer</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_histogram_buffer</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics_buffer</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_summary</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">Summary</span>
+
+            <span class="n">_summary</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">(</span>
+                <span class="n">name</span><span class="p">,</span>
+                <span class="n">documentation</span><span class="p">,</span>
+                <span class="n">registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">,</span>
+                <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;jina&#39;</span><span class="p">,</span>
+                <span class="n">labelnames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;runtime_name&#39;</span><span class="p">,),</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_metrics_buffer</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_summary</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_histogram_buffer</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_histogram</span><span class="p">:</span>
+            <span class="n">_histogram</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meter</span><span class="o">.</span><span class="n">create_histogram</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;jina_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">documentation</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_histogram_buffer</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_histogram</span>
+
+        <span class="k">if</span> <span class="n">_summary</span> <span class="ow">or</span> <span class="n">_histogram</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">MetricsTimer</span><span class="p">(</span>
+                <span class="n">_summary</span><span class="p">,</span>
+                <span class="n">_histogram</span><span class="p">,</span>
+                <span class="n">histogram_metric_labels</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;runtime_name&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">name</span><span class="p">},</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">nullcontext</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BaseExecutor.snapshot"><a class="viewcode-back" href="../../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.snapshot">[docs]</a>    <span class="k">def</span> <span class="nf">snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">snapshot_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Interface to take a snapshot from the Executor. Implement it to enable periodic snapshots</span>
+<span class="sd">        :param snapshot_file: The file path where to store the binary representation of the Executor snapshot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Raising an Exception. Snapshot is not enabled by default&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseExecutor.restore"><a class="viewcode-back" href="../../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.restore">[docs]</a>    <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">snapshot_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Interface to restore the state of the Executor from a snapshot that has been taken by the snapshot method.</span>
+<span class="sd">        :param snapshot_file: The file path from where to reconstruct the Executor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="nf">_run_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">snapshot_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">did_raise_exception</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+            <span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_lock</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">snapshot</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">did_raise_exception</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="k">raise</span>
+
+    <span class="k">def</span> <span class="nf">_run_restore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">snapshot_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">did_raise_exception</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_lock</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">did_raise_exception</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="k">raise</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">)</span></div>
+</pre></div>
+                </article>
+            </div>
+            <footer>
+                
+                <div class="related-pages">
+                    
+                    
+                </div>
+                <div class="bottom-of-page">
+                    <div class="left-details">
+                        <div class="copyright">
+                            Copyright &#169; Jina AI Limited. All rights reserved.
+                        </div><div class="last-updated">
+                            Last updated on Aug 04, 2023</div>
+                    </div>
+                    <div class="right-details">
+                        <div class="social-btns">
+                            <a class='social-btn' href="https://github.com/jina-ai/jina" aria-label="GitHub"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                            <a class='social-btn' href="https://discord.jina.ai" aria-label="Discord" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-discord"></i></a>
+                            <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                            <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                            <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+        <aside class="toc-drawer no-toc">
+            
+            
+            
+        </aside>
+    </div>
+</div>
+<img referrerpolicy="no-referrer-when-downgrade"
+     src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/scripts/furo.js"></script>
+    <script src="../../../../_static/clipboard.min.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script src="../../../../_static/tabs.js"></script>
+    <script src="../../../../_static/design-tabs.js"></script>
+    </body>
+</html>
