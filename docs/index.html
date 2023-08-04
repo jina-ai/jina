@@ -6,11 +6,11 @@
 <meta property="og:title" content="Welcome to Jina!" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/" />
-<meta property="og:site_name" content="Jina 3.19.2 Documentation" />
-<meta property="og:description" content="Jina lets you build multimodal AI services and pipelines that communicate via gRPC, HTTP and WebSockets, then scale them up and deploy to production. You can focus on your logic and algorithms, without worrying about the infrastructure complexity. Jina provides a smooth Pythonic experience transi..." />
+<meta property="og:site_name" content="Jina 3.20.0 Documentation" />
+<meta property="og:description" content="Jina lets you build multimodal AI services and pipelines that communicate via gRPC, HTTP and WebSockets, then scale them up and deploy to production. You can focus on your logic and algorithms, without worrying about the infrastructure complexity. Jina provides a smooth Pythonic experience for se..." />
 <meta property="og:image" content="https://docs.jina.ai/.github/images/build-deploy.png" />
 <meta property="og:image:alt" content="" />
-<meta name="description" content="Jina lets you build multimodal AI services and pipelines that communicate via gRPC, HTTP and WebSockets, then scale them up and deploy to production. You can focus on your logic and algorithms, without worrying about the infrastructure complexity. Jina provides a smooth Pythonic experience transi..." />
+<meta name="description" content="Jina lets you build multimodal AI services and pipelines that communicate via gRPC, HTTP and WebSockets, then scale them up and deploy to production. You can focus on your logic and algorithms, without worrying about the infrastructure complexity. Jina provides a smooth Pythonic experience for se..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/index.html" />
 
     <link rel="shortcut icon" href="_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Jina 3.19.2 documentation</title>
+        <title>Jina 3.20.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="#">
-                <div class="brand">Jina 3.19.2 documentation</div>
+                <div class="brand">Jina 3.20.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -440,14 +440,16 @@
 <p class="admonition-title">Survey</p>
 <p>Take our <strong><a class="reference external" href="https://10sw1tcpld4.typeform.com/to/EGAEReM7?utm_source=doc&amp;amp;utm_medium=github&amp;amp;utm_campaign=user%20experience&amp;amp;utm_term=feb2023&amp;amp;utm_content=survey">user experience survey</a></strong> to let us know your thoughts and help shape the future of Jina!</p>
 </div>
-<p>Jina lets you build multimodal <a class="reference internal" href="#build-ai-services"><strong>AI services</strong></a> and <a class="reference internal" href="#build-a-pipeline"><strong>pipelines</strong></a> that communicate via gRPC, HTTP and WebSockets, then scale them up and deploy to production. You can focus on your logic and algorithms, without worrying about the infrastructure complexity.</p>
+<p>Jina lets you build multimodal <a class="reference internal" href="#build-ai-models"><span class="xref myst"><strong>AI services</strong></span></a> and <a class="reference internal" href="#build-a-pipeline"><strong>pipelines</strong></a> that communicate via gRPC, HTTP and WebSockets, then scale them up and deploy to production. You can focus on your logic and algorithms, without worrying about the infrastructure complexity.</p>
 <p><img alt="" src=".github/images/build-deploy.png" /></p>
-<p>Jina provides a smooth Pythonic experience transitioning from local deployment to advanced orchestration frameworks like Docker-Compose, Kubernetes, or Jina AI Cloud. Jina makes advanced solution engineering and cloud-native technologies accessible to every developer.</p>
+<p>Jina provides a smooth Pythonic experience for serving ML models transitioning from local deployment to advanced orchestration frameworks like Docker-Compose, Kubernetes, or Jina AI Cloud. Jina makes advanced solution engineering and cloud-native technologies accessible to every developer.</p>
 <ul class="simple">
-<li><p>Build applications for any <a class="reference external" href="https://docs.docarray.org/data_types/first_steps/">data type</a>, any mainstream <a class="reference internal" href="#"><span class="xref myst">deep learning framework</span></a>, and any <a class="reference external" href="https://docs.jina.ai/concepts/serving/gateway/#set-protocol-in-python">protocol</a>.</p></li>
-<li><p>Design high-performance microservices, with <a class="reference external" href="https://docs.jina.ai/concepts/orchestration/scale-out/">easy scaling</a>, duplex client-server streaming, and async/non-blocking data processing over dynamic flows.</p></li>
-<li><p>Docker container integration via <a class="reference external" href="https://cloud.jina.ai">Executor Hub</a>, OpenTelemetry/Prometheus observability, and fast Kubernetes/Docker-Compose deployment.</p></li>
-<li><p>CPU/GPU hosting via <a class="reference external" href="https://cloud.jina.ai">Jina AI Cloud</a>.</p></li>
+<li><p>Build and serve models for any <a class="reference external" href="https://docs.docarray.org/data_types/first_steps/">data type</a> and any mainstream <a class="reference external" href="https://docarray.org/docarray/how_to/multimodal_training_and_serving/">deep learning framework</a>.</p></li>
+<li><p>Design high-performance services, with <a class="reference external" href="https://docs.jina.ai/concepts/orchestration/scale-out/">easy scaling</a>, duplex client-server streaming, batching, <a class="reference external" href="https://docs.jina.ai/concepts/serving/executor/dynamic-batching/">dynamic batching</a>, async/non-blocking data processing and and any <a class="reference external" href="https://docs.jina.ai/concepts/serving/gateway/#set-protocol-in-python">protocol</a>.</p></li>
+<li><p>Serve <a class="reference internal" href="#streaming-for-llms"><span class="xref myst">LLM models while streaming their output</span></a>.</p></li>
+<li><p>Docker container integration via <a class="reference external" href="https://cloud.jina.ai">Executor Hub</a>, OpenTelemetry/Prometheus observability.</p></li>
+<li><p>Streamlined CPU/GPU hosting via <a class="reference external" href="https://cloud.jina.ai">Jina AI Cloud</a>.</p></li>
+<li><p>Deploy to your own cloud or system with our <a class="reference external" href="https://docs.jina.ai/cloud-nativeness/k8s/">Kubernetes</a> and <a class="reference external" href="https://docs.jina.ai/cloud-nativeness/docker-compose/">Docker Compose</a> integration().</p></li>
 </ul>
 <details>
     <summary><strong>Wait, how is Jina different from FastAPI?</strong></summary>
@@ -455,16 +457,17 @@ Jina's value proposition may seem quite similar to that of FastAPI. However, the
 <p><strong>Data structure and communication protocols</strong></p>
 <ul class="simple">
 <li><p>FastAPI communication relies on Pydantic and Jina relies on <a class="reference external" href="https://github.com/docarray/docarray">DocArray</a> allowing Jina to support multiple protocols
-to expose its services.</p></li>
+to expose its services. The support for gRPC protocol is specially useful for data intensive applications as for embedding services
+where the embeddings and tensors can be more efficiently serialized.</p></li>
 </ul>
 <p><strong>Advanced orchestration and scaling capabilities</strong></p>
 <ul class="simple">
+<li><p>Jina allows you to easily containerize and orchestrate your services and models, providing concurrency and scalability.</p></li>
 <li><p>Jina lets you deploy applications formed from multiple microservices that can be containerized and scaled independently.</p></li>
-<li><p>Jina allows you to easily containerize and orchestrate your services, providing concurrency and scalability.</p></li>
 </ul>
 <p><strong>Journey to the cloud</strong></p>
 <ul class="simple">
-<li><p>Jina provides a smooth transition from local development (using <a class="reference external" href="https://github.com/docarray/docarray">DocArray</a>) to local serving using (Jina’s orchestration layer)
+<li><p>Jina provides a smooth transition from local development (using <a class="reference external" href="https://github.com/docarray/docarray">DocArray</a>) to local serving using <a class="reference external" href="https://docs.jina.ai/concepts/orchestration/deployment/">Deployment</a> and <a class="reference external" href="https://docs.jina.ai/concepts/orchestration/flow/">Flow</a>
 to having production-ready services by using Kubernetes capacity to orchestrate the lifetime of containers.</p></li>
 <li><p>By using <a class="reference external" href="https://cloud.jina.ai">Jina AI Cloud</a> you have access to scalable and serverless deployments of your applications in one command.</p></li>
 </ul>
@@ -606,7 +609,7 @@ A Deployment serves just one Executor. To combine multiple Executors into a pipe
 <div><p><strong>Note</strong>
 If you just want to serve a single Executor, you can use a <a class="reference internal" href="#build-ai--ml-services"><span class="xref myst">Deployment</span></a>.</p>
 </div></blockquote>
-<p>For instance, let’s combine <a class="reference internal" href="#build-ai--ml-services"><span class="xref myst">our StableLM language model</span></a> with a Stable Diffusion image generation service. Chaining these services together into a <a class="reference external" href="https://docs.jina.ai/concepts/orchestration/flow/">Flow</a> will give us a service that will generate images based on a prompt generated by the LLM.</p>
+<p>For instance, let’s combine <a class="reference internal" href="#build-ai--ml-services"><span class="xref myst">our StableLM language model</span></a> with a Stable Diffusion image generation model. Chaining these services together into a <a class="reference external" href="https://docs.jina.ai/concepts/orchestration/flow/">Flow</a> will give us a service that will generate images based on a prompt generated by the LLM.</p>
 <table>
 <tr>
 <th><code>text_to_image.py</code></th> 
@@ -831,7 +834,7 @@ If you just want to serve a single Executor, you can use a <a class="reference i
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 03, 2023</div>
+                            Last updated on Aug 04, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

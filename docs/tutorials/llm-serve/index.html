@@ -6,10 +6,10 @@
 <meta property="og:title" content="Build a Streaming API for a Large Language Model" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/tutorials/llm-serve/" />
-<meta property="og:site_name" content="Jina 3.19.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.20.0 Documentation" />
 <meta property="og:description" content="Large Language Models can power a wide range of applications from chatbots to assistants and intelligent systems. However, these models can be heavy and slow and your users want systems that are both intelligent and fast! Large language models work by turning your questions into tokens and then g..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.19.2 Documentation" />
+<meta property="og:image:alt" content="Jina 3.20.0 Documentation" />
 <meta name="description" content="Large Language Models can power a wide range of applications from chatbots to assistants and intelligent systems. However, these models can be heavy and slow and your users want systems that are both intelligent and fast! Large language models work by turning your questions into tokens and then g..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/tutorials/llm-serve.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Build a Streaming API for a Large Language Model - Jina 3.19.2 documentation</title>
+        <title>Build a Streaming API for a Large Language Model - Jina 3.20.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.19.2 documentation</div>
+                <div class="brand">Jina 3.20.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -455,8 +455,9 @@ token ID:</p>
     <span class="n">max_tokens</span><span class="p">:</span> <span class="nb">int</span>
 
 
-<span class="k">class</span> <span class="nc">TokenDocument</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ModelOutputDocument</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
     <span class="n">token_id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">generated_text</span><span class="p">:</span> <span class="nb">str</span>
 </pre></div>
 </div>
 <div class="note admonition">
@@ -486,21 +487,30 @@ such a model in your executor</p>
 </section>
 <section id="implement-the-streaming-endpoint">
 <h2>Implement the streaming endpoint<a class="headerlink" href="#implement-the-streaming-endpoint" title="Permalink to this heading">#</a></h2>
-<p>Our streaming endpoint accepts a <code class="docutils literal notranslate"><span class="pre">PromptDocument</span></code> as input and streams <code class="docutils literal notranslate"><span class="pre">TokenDocument</span></code>s. To stream a document back to
+<p>Our streaming endpoint accepts a <code class="docutils literal notranslate"><span class="pre">PromptDocument</span></code> as input and streams <code class="docutils literal notranslate"><span class="pre">ModelOutputDocument</span></code>s. To stream a document back to
 the client, use the <code class="docutils literal notranslate"><span class="pre">yield</span></code> keyword in the endpoint implementation. Therefore, we use the model to generate
 up to <code class="docutils literal notranslate"><span class="pre">max_tokens</span></code> tokens and yield them until the generation stops:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/stream&#39;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="n">PromptDocument</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TokenDocument</span><span class="p">:</span>
-    <span class="n">encoded_input</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s1">&#39;pt&#39;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">max_tokens</span><span class="p">):</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="o">**</span><span class="n">encoded_input</span><span class="p">,</span> <span class="n">max_new_tokens</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">eos_token_id</span><span class="p">:</span>
-            <span class="k">break</span>
-        <span class="k">yield</span> <span class="n">TokenDocument</span><span class="p">(</span><span class="n">token_id</span><span class="o">=</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="n">encoded_input</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;input_ids&#39;</span><span class="p">:</span> <span class="n">output</span><span class="p">,</span>
-            <span class="s1">&#39;attention_mask&#39;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span>
-        <span class="p">}</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TokenStreamingExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="o">...</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/stream&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="n">PromptDocument</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelOutputDocument</span><span class="p">:</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s1">&#39;pt&#39;</span><span class="p">)</span>
+        <span class="n">input_len</span> <span class="o">=</span> <span class="nb">input</span><span class="p">[</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">max_tokens</span><span class="p">):</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="o">**</span><span class="nb">input</span><span class="p">,</span> <span class="n">max_new_tokens</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">eos_token_id</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">yield</span> <span class="n">ModelOutputDocument</span><span class="p">(</span>
+                <span class="n">token_id</span><span class="o">=</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">generated_text</span><span class="o">=</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span>
+                    <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">input_len</span><span class="p">:],</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;input_ids&#39;</span><span class="p">:</span> <span class="n">output</span><span class="p">,</span>
+                <span class="s1">&#39;attention_mask&#39;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span>
+            <span class="p">}</span>
 </pre></div>
 </div>
 <p>Learn more about <a class="reference internal" href="../../concepts/serving/executor/add-endpoints/#streaming-endpoints"><span class="std std-ref">streaming endpoints</span></a> from the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> documentation.</p>
@@ -511,9 +521,7 @@ up to <code class="docutils literal notranslate"><span class="pre">max_tokens</s
 To serve the Executor using gRPC:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
 
-<span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span>
-    <span class="n">uses</span><span class="o">=</span><span class="n">TokenStreamingExecutor</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;grpc&#39;</span>
-<span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
+<span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">TokenStreamingExecutor</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;grpc&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
     <span class="n">dep</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -524,20 +532,24 @@ To serve the Executor using gRPC:</p>
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;grpc&#39;</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">tokens</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">async</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">stream_doc</span><span class="p">(</span>
         <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/stream&#39;</span><span class="p">,</span>
         <span class="n">inputs</span><span class="o">=</span><span class="n">PromptDocument</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="s1">&#39;what is the capital of France ?&#39;</span><span class="p">,</span> <span class="n">max_tokens</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
-        <span class="n">return_type</span><span class="o">=</span><span class="n">TokenDocument</span><span class="p">,</span>
+        <span class="n">return_type</span><span class="o">=</span><span class="n">ModelOutputDocument</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">token_id</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">generated_text</span><span class="p">)</span>
 
 
 <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
 </pre></div>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>The capital of France is Paris.
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>The
+The capital
+The capital of
+The capital of France
+The capital of France is
+The capital of France is Paris
+The capital of France is Paris.
 </pre></div>
 </div>
 </section>
@@ -566,7 +578,7 @@ To serve the Executor using gRPC:</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 03, 2023</div>
+                            Last updated on Aug 04, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

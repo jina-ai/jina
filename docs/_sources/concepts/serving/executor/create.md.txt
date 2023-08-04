@@ -8,11 +8,11 @@ Executors use `docarray.BaseDoc` and docarray.DocList` as their input and output
 ```
 
 An {class}`~jina.Executor` is a self-contained microservice exposed using a gRPC or HTTP protocol. 
-It contains functions (decorated with `@requests`) that process `Documents`s. Executors follow three principles:
+It contains functions (decorated with `@requests`) that process `Documents`. Executors follow these principles:
 
 1. An Executor should subclass directly from the `jina.Executor` class.
 2. An Executor is a Python class; it can contain any number of functions.
-3. Functions decorated by {class}`~jina.requests` are exposed as services according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions. This will be explained later in {ref}`Add Endpoints Section<exec-endpoint>`
+3. Functions decorated by {class}`~jina.requests` are exposed as services according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions. They can work on single Documents, or on batches. This will be explained later in {ref}`Add Endpoints Section<exec-endpoint>`
 4. (Beta) Functions decorated by {class}`~jina.serve.executors.decorators.write` above their {class}`~jina.requests` decoration, are considered to update the internal state of the Executor. The `__init__` and `close` methods are exceptions. The reasons this is useful is explained in {ref}`Stateful-executor<stateful-executor>`.
 
 ## Create an Executor

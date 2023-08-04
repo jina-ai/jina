@@ -6,11 +6,11 @@
 <meta property="og:title" content="Send & Receive Data" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/client/send-receive-data/" />
-<meta property="og:site_name" content="Jina 3.19.2 Documentation" />
-<meta property="og:description" content="After a Client has connected to a Flow, it can send requests to the Flow using its post() method. This expects as inputs the Executor endpoint that you want to target, as well as a Document or Iterable of Documents: A single Document A list of Documents A DocList A Generator of Document No Docume..." />
+<meta property="og:site_name" content="Jina 3.20.0 Documentation" />
+<meta property="og:description" content="After a Client has connected to a Deployment or a Flow, it can send requests to the service using its post() method. This expects as inputs the Executor endpoint that you want to target, as well as a Document or Iterable of Documents: A single Document A list of Documents A DocList A Generator of..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.19.2 Documentation" />
-<meta name="description" content="After a Client has connected to a Flow, it can send requests to the Flow using its post() method. This expects as inputs the Executor endpoint that you want to target, as well as a Document or Iterable of Documents: A single Document A list of Documents A DocList A Generator of Document No Docume..." />
+<meta property="og:image:alt" content="Jina 3.20.0 Documentation" />
+<meta name="description" content="After a Client has connected to a Deployment or a Flow, it can send requests to the service using its post() method. This expects as inputs the Executor endpoint that you want to target, as well as a Document or Iterable of Documents: A single Document A list of Documents A DocList A Generator of..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/client/send-receive-data.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Send &amp; Receive Data - Jina 3.19.2 documentation</title>
+        <title>Send &amp; Receive Data - Jina 3.20.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.19.2 documentation</div>
+                <div class="brand">Jina 3.20.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -436,7 +436,7 @@
                 <article role="main">
                     <section id="send-receive-data">
 <h1>Send &amp; Receive Data<a class="headerlink" href="#send-receive-data" title="Permalink to this heading">#</a></h1>
-<p>After a <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code> has connected to a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>, it can send requests to the Flow using its
+<p>After a <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code> has connected to a <code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code> or a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>, it can send requests to the service using its
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code> method.
 This expects as inputs the <a class="reference internal" href="../../serving/executor/add-endpoints/#exec-endpoint"><span class="std std-ref">Executor endpoint</span></a> that you want to target, as well as a Document or
 Iterable of Documents:</p>
@@ -497,22 +497,22 @@ Iterable of Documents:</p>
 </div>
 <div class="caution admonition">
 <p class="admonition-title">Caution</p>
-<p><code class="docutils literal notranslate"><span class="pre">Flow</span></code> also provides a <code class="docutils literal notranslate"><span class="pre">.post()</span></code> method that follows the same interface as <code class="docutils literal notranslate"><span class="pre">client.post()</span></code>.
-However, once your solution is deployed remotely, the Flow interface is not present anymore.
-Hence, <code class="docutils literal notranslate"><span class="pre">flow.post()</span></code> is not recommended outside of testing or debugging use cases.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Flow</span></code> and <code class="docutils literal notranslate"><span class="pre">Deployment</span></code> also provide a <code class="docutils literal notranslate"><span class="pre">.post()</span></code> method that follows the same interface as <code class="docutils literal notranslate"><span class="pre">client.post()</span></code>.
+However, once your solution is deployed remotely, these objects are not present anymore.
+Hence, <code class="docutils literal notranslate"><span class="pre">deployment.post()</span></code> and <code class="docutils literal notranslate"><span class="pre">flow.post()</span></code> are not recommended outside of testing or debugging use cases.</p>
 </div>
 <section id="send-data-in-batches">
-<h2>Send data in batches<a class="headerlink" href="#send-data-in-batches" title="Permalink to this heading">#</a></h2>
+<span id="request-size-client"></span><h2>Send data in batches<a class="headerlink" href="#send-data-in-batches" title="Permalink to this heading">#</a></h2>
 <p>Especially during indexing, a Client can send up to thousands or millions of Documents to a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>.
 Those Documents are internally batched into a <code class="docutils literal notranslate"><span class="pre">Request</span></code>, providing a smaller memory footprint and faster response times
 thanks
 to <a class="reference internal" href="../callbacks/#callback-functions"><span class="std std-ref">callback functions</span></a>.</p>
 <p>The size of these batches can be controlled with the <code class="docutils literal notranslate"><span class="pre">request_size</span></code> keyword.
 The default <code class="docutils literal notranslate"><span class="pre">request_size</span></code> is 100 Documents. The optimal size will depend on your use case.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Client</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span><span class="p">,</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
 
-<span class="k">with</span> <span class="n">Flow</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="k">with</span> <span class="n">Deployment</span><span class="p">()</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
     <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">DocList</span><span class="p">[</span><span class="n">BaseDoc</span><span class="p">](</span><span class="n">BaseDoc</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)),</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
@@ -528,7 +528,7 @@ by allowing <em>coroutines</em> as input, and returning an <em>asynchronous iter
 This means you can iterate over Responses one by one, as they come in.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Flow</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Deployment</span>
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">BaseDoc</span>
 
 
@@ -544,11 +544,11 @@ This means you can iterate over Responses one by one, as they come in.</p>
         <span class="nb">print</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
 
 
-<span class="k">with</span> <span class="n">Flow</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>  <span class="c1"># Using it as a Context Manager will start the Flow</span>
-    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_client</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">port</span><span class="p">))</span>
+<span class="k">with</span> <span class="n">Deployment</span><span class="p">()</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>  <span class="c1"># Using it as a Context Manager will start the Deployment</span>
+    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_client</span><span class="p">(</span><span class="n">dep</span><span class="o">.</span><span class="n">port</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>Async send is useful when calling a Flow from an Executor, as described in <span class="xref std std-ref">async-executors</span>.</p>
+<p>Async send is useful when calling an external service from an Executor.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
 
@@ -656,12 +656,12 @@ Requests. When setting <code class="docutils literal notranslate"><span class="p
 <p>If a callback function is provided, <code class="docutils literal notranslate"><span class="pre">client.post()</span></code> will return none.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Return as DocList objects</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Client</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span><span class="p">,</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
 <span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 
-<span class="k">with</span> <span class="n">Flow</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">Deployment</span><span class="p">()</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">dep</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
     <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Hi there!&#39;</span><span class="p">),</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">])</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
@@ -676,8 +676,8 @@ Requests. When setting <code class="docutils literal notranslate"><span class="p
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
 <span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 
-<span class="k">with</span> <span class="n">Flow</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">Deployment</span><span class="p">()</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">dep</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
     <span class="n">resp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Hi there!&#39;</span><span class="p">),</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="n">return_responses</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">resp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
@@ -693,7 +693,7 @@ Requests. When setting <code class="docutils literal notranslate"><span class="p
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
 <span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 
-<span class="k">with</span> <span class="n">Flow</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="k">with</span> <span class="n">Deployment</span><span class="p">()</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
     <span class="n">resp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
         <span class="n">on</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
@@ -709,6 +709,14 @@ Requests. When setting <code class="docutils literal notranslate"><span class="p
 </div>
 </div>
 </div>
+<section id="return-type">
+<h3>Return type<a class="headerlink" href="#return-type" title="Permalink to this heading">#</a></h3>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code> returns the Documents as the server sends them back. In order for the client to
+return the user’s expected document type, the <code class="docutils literal notranslate"><span class="pre">return_type</span></code> argument is required.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">return_type</span></code> can be a parametrized <code class="docutils literal notranslate"><span class="pre">DocList</span></code> or a single <code class="docutils literal notranslate"><span class="pre">BaseDoc</span></code> type. If the return type parameter is a <code class="docutils literal notranslate"><span class="pre">BaseDoc</span></code> type,
+the results will be returned as a <code class="docutils literal notranslate"><span class="pre">DocList[T]</span></code> except if the result contains a single Document, in that case the only Document in the list is returned
+instead of the DocList.</p>
+</section>
 <section id="callbacks-vs-returns">
 <h3>Callbacks vs returns<a class="headerlink" href="#callbacks-vs-returns" title="Permalink to this heading">#</a></h3>
 <p>Callback operates on every sub-request generated by <code class="docutils literal notranslate"><span class="pre">request_size</span></code>. The callback function consumes the response one by
@@ -726,7 +734,7 @@ the sending order.</p>
 parameter to <code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
 <span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
 
@@ -738,12 +746,12 @@ parameter to <code class="xref py py-meth docutils literal notranslate"><span cl
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">rand_sleep</span><span class="p">)</span>
 
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">RandomSleepExecutor</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">RandomSleepExecutor</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="n">input_text</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;ordinal-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">180</span><span class="p">)]</span>
 <span class="n">input_da</span> <span class="o">=</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]([</span><span class="n">TextDoc</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">input_text</span><span class="p">])</span>
 
 <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">dep</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">dep</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span>
     <span class="n">output_da</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">input_da</span><span class="p">,</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="n">results_in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">for</span> <span class="nb">input</span><span class="p">,</span> <span class="n">output</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">input_da</span><span class="p">,</span> <span class="n">output_da</span><span class="p">):</span>
         <span class="k">assert</span> <span class="nb">input</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="n">output</span><span class="o">.</span><span class="n">text</span>
@@ -784,7 +792,7 @@ parameter to <code class="xref py py-meth docutils literal notranslate"><span cl
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 03, 2023</div>
+                            Last updated on Aug 04, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -823,6 +831,7 @@ parameter to <code class="xref py py-meth docutils literal notranslate"><span cl
 <li><a class="reference internal" href="#use-unary-or-streaming-grpc">Use Unary or Streaming gRPC</a></li>
 <li><a class="reference internal" href="#configure-grpc-client-options">Configure gRPC Client options</a></li>
 <li><a class="reference internal" href="#returns">Returns</a><ul>
+<li><a class="reference internal" href="#return-type">Return type</a></li>
 <li><a class="reference internal" href="#callbacks-vs-returns">Callbacks vs returns</a></li>
 <li><a class="reference internal" href="#force-the-order-of-responses">Force the order of responses</a></li>
 </ul>

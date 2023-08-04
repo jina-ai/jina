@@ -63,7 +63,7 @@ Calling foo
 ### Default binding
 
 A class method decorated with plain `@requests` (without `on=`) is the default handler for all endpoints.
-This means it is the fallback handler for endpoints that are not found. `f.post(on='/blah', ...)` invokes `MyExecutor.foo`.
+This means it is the fallback handler for endpoints that are not found. `c.post(on='/blah', ...)` invokes `MyExecutor.foo`.
 
 ```python
 from jina import Executor, requests
@@ -81,21 +81,17 @@ class MyExecutor(Executor):
         print(f'Calling bar')
 ```
 
-
 ### No binding
 
 If a class has no `@requests` decorator, the request simply passes through without any processing.
 
+(document-type-binding)=
 ## Document type binding
 
 When using `docarray>=0.30`, each endpoint bound by the request endpoints can have different input and output Document types. One can specify these types by adding 
 type annotations to the decorated methods or by using the `request_schema` and `response_schema` argument. The design is inspired by [FastAPI](https://fastapi.tiangolo.com/). 
 
-These schemas have to be parametrized `DocList` with valid `Documents` inheriting from `BaseDoc`. The only exception is when {ref}`streaming endpoints <streaming-endpoints>` are used, in that case
-the `BaseDocs` are the parameters.
-
-When no type annotation or argument is provided, Jina assumes that [LegacyDocument](https://docs.docarray.org/API_reference/documents/documents/#docarray.documents.legacy.LegacyDocument) is the type used.
-This is intended to ease the transition from using Jina with `docarray<0.30.0` to using with the newer versions.
+These schemas have to be Documents inheriting from `BaseDoc` or a parametrized `DocList`. You can see the differences when using single Documents or a DocList for serving in the {ref}`Executor API <executor-api>` section.
 
 ```python
 from jina import Executor, requests
@@ -153,18 +149,76 @@ class MyExecutor(Executor):
 If there is no `request_schema` and `response_schema`, the type hint is used to infer the schema. If both exist, `request_schema`
 and `response_schema` will be used.
 
-(endpoint-arguments)=
-## Arguments
-All Executor methods decorated by `@requests` need to follow the signature below to be usable as a microservice to be orchestrated either using {class}`~jina.Flow` or {class}`~jina.Deployment`.
 
-The `async` definition is optional.
+```{admonition} Note
+:class: note
 
-The endpoint signature looks like the following:
+When no type annotation or argument is provided, Jina assumes that [LegacyDocument](https://docs.docarray.org/API_reference/documents/documents/#docarray.documents.legacy.LegacyDocument) is the type used.
+This is intended to ease the transition from using Jina with `docarray<0.30.0` to using it with the newer versions.
+```
 
-```python
-from typing import Dict, Union, Optional, TypeVar
+(executor-api)=
+## Executor API
+
+Methods decorated by `@requests` require an API for Jina to serve them with a {class}`~jina.Deployment` or {class}`~jina.Flow`.
+
+An Executor's job is to process `Documents` that are sent via the network. Executors can work on these `Documents` one by one or in batches.
+
+This behavior is determined by an argument:
+
+- `doc` if you want your Executor to work on one Document at a time, or 
+- `docs` if you want to work on batches of Documents.
+
+These APIs and related type annotations also affect how your {ref}`OpenAPI looks when deploying the Executor <openapi-deployment>` with {class}`jina.Deployment` or {class}`jina.Flow` using the HTTP protocol.
+
+(singleton-document)=
+### Single Document
+
+When using `doc` as a keyword argument, you need to add a single `BaseDoc` as your request and response schema as seen in {ref}`the document type binding section <document-type-binding>`.
+
+Jina will ensure that even if multiple `Documents` are sent from the client, the Executor will process only one at a time. 
+
+```{code-block} python
+---
+emphasize-lines: 13
+---
+from typing import Dict, Union, TypeVar
 from jina import Executor, requests
 from docarray import DocList, BaseDoc
+from pydantic import BaseModel
+
+T_input = TypeVar('T_input', bound='BaseDoc')
+T_output = TypeVar('T_output', bound='BaseDoc')
+
+class MyExecutor(Executor):
+    @requests
+    async def foo(
+        self,
+        doc: T_input,
+        **kwargs, 
+    ) -> Union[T_output, Dict, None]:
+        pass
+```
+
+Working on single Documents instead of  batches can make your interface and code cleaner. In many cases, like in Generative AI, input rarely comes in batches,
+and models can be heavy enough that they cannot profit from processing multiple inputs at the same time.
+
+(batching-doclist)=
+### Batching documents
+
+When using `docs` as a keyword argument, you need to add a parametrized `DocList` as your request and response schema as seen in {ref}`the document type binding section <document-type-binding>`.
+
+In this case, Jina will ensure that all the request's `Documents` are passed to the Executor. The {ref}`"request_size" parameter from Client <request-size-client>` controls how many Documents are passed to the server in each request.
+When using batches, you can leverage the {ref}`dynamic batching feature <executor-dynamic-batching>`.
+
+```{code-block} python
+---
+emphasize-lines: 13
+---
+from typing import Dict, Union, TypeVar
+from jina import Executor, requests
+from docarray import DocList, BaseDoc
+from pydantic import BaseModel
 
 T_input = TypeVar('T_input', bound='BaseDoc')
 T_output = TypeVar('T_output', bound='BaseDoc')
@@ -174,22 +228,91 @@ class MyExecutor(Executor):
     async def foo(
         self,
         docs: DocList[T_input],
-        parameters: Dict,
-        tracing_context: Optional['Context'],
-        **kwargs
+        **kwargs, 
+    ) -> Union[DocList[T_output], Dict, None]:
+        pass
+```
+Working on batches of Documents in the same method call can make sense, especially for serving models that handle multiple inputs at the same time, like
+when serving embedding models.
+
+(executor-api-parameters)=
+### Parameters
+
+Often, the behavior of a model or service depends not just on the input data (documents in this case) but also on other parameters.
+An example might be special attributes that some ML models allow you to configure, like  maximum token length or other attributes not directly related
+to the data input.
+
+Executor methods decorated with `requests` accept a `parameters` attribute in their signature to provide this flexibility.
+
+This attribute can be a plain Python dictionary or a Pydantic Model. To get a Pydantic model the `parameters` argument needs to have the model
+as a type annotation.
+
+```{code-block} python
+---
+emphasize-lines: 15
+---
+from typing import Dict, Union, TypeVar
+from jina import Executor, requests
+from docarray import DocList, BaseDoc
+from pydantic import BaseModel
+
+T_input = TypeVar('T_input', bound='BaseDoc')
+T_output = TypeVar('T_output', bound='BaseDoc')
+T_output = TypeVar('T_parameters', bound='BaseModel')
+
+class MyExecutor(Executor):
+    @requests
+    async def foo(
+        self,
+        docs: DocList[T_input],
+        parameters: Union[Dict, BaseModel],
+        **kwargs, 
     ) -> Union[DocList[T_output], Dict, None]:
         pass
 ```
 
-Let's take a look at these arguments:
+Defining `parameters` as a Pydantic model instead of a simple dictionary has two main benefits:
 
-- `docs`: A DocList that is part of the request. Since an Executor wraps functionality related to `DocList`, it's usually the main data format inside Executor methods. Note that these `docs` can be also change in place, just like any other `list`-like object in a Python function.
-- `parameters`: A Dict object that passes extra parameters to Executor functions.
-- `tracing_context`: Context needed if you want to add {ref}`custom traces <instrumenting-executor>` in your Executor.
+- Validation and default values: You can get validation of the parameters that the Executor expected before the Executor can access any invalid key. You can also
+easily define defaults.
+- Descriptive OpenAPI definition when using HTTP protocol.
 
-````{admonition} Flow-specific arguments
+
+### Tracing context
+
+Executors also accept `tracing_context` as input if you want to add {ref}`custom traces <instrumenting-executor>` in your Executor.
+
+```{code-block} python
+---
+emphasize-lines: 15
+---
+from typing import Dict, Union, TypeVar
+from jina import Executor, requests
+from docarray import DocList, BaseDoc
+from pydantic import BaseModel
+
+T_input = TypeVar('T_input', bound='BaseDoc')
+T_output = TypeVar('T_output', bound='BaseDoc')
+T_output = TypeVar('T_parameters', bound='BaseModel')
+
+class MyExecutor(Executor):
+    @requests
+    async def foo(
+        self,
+        tracing_context: Optional['Context'],
+        **kwargs, 
+    ) -> Union[DocList[T_output], Dict, None]:
+        pass
+```
+
+### Other arguments
+
+When using an Executors in a {class}`~jina.Flow`, you may use an Executor to merge results from upstream Executors.
+For these merging Executors you can use one of the {ref}`extra arguments <merging-upstream>`.
+
+````{admonition} Hint
 :class: hint
-If you use an Executor in a Flow and want to merge incoming DocLists from multiple Executors, you may also be interested in {ref}`some additional arguments <merge-upstream-documentarrays>`.
+You can also use an Executor as a simple Pythonic class. This is especially useful for locally testing the Executor-specific logic before serving it.
 ````
 
 ````{admonition} Hint
@@ -225,8 +348,8 @@ class MyExecutor(Executor):
 
 Every Executor method can `return` in three ways: 
 
-- You can directly return a `DocList` object.
-- If you return `None` or don't have a `return` in your method, then the original `docs` object (potentially mutated by your function) is returned.
+- You can directly return a `BaseDoc` or `DocList` object.
+- If you return `None` or don't have a `return` in your method, then the original `docs` or `doc` object (potentially mutated by your function) is returned.
 - If you return a `dict` object, it will be considered as a result and returned on `parameters['__results__']` to the client.
 
 ```python
@@ -281,9 +404,7 @@ class MyExecutor(Executor):
 with Deployment(
     uses=MyExecutor,
     port=12345,
-    protocol='http', # or 'grpc'
-    cors=True,
-    include_gateway=False,
+    cors=True
 ) as dep:
     dep.block()
 ```
@@ -293,7 +414,7 @@ Jina offers a standard python client for using the streaming endpoint:
 
 ```python
 from jina import Client
-client = Client(port=12345, protocol='http', cors=True, asyncio=True) # or protocol='grpc'
+client = Client(port=12345, cors=True, asyncio=True) # or protocol='grpc'
 async for doc in client.stream_doc(
     on='/hello', inputs=MyDocument(text='hello world'), return_type=MyDocument
 ):
@@ -368,3 +489,68 @@ NotImplementedError('no time for it')
 ```
 
 ````
+
+(openapi-deployment)=
+## OpenAPI from Executor endpoints
+
+When deploying an Executor and serving it with HTTP, Jina uses FastAPI to expose all Executor endpoints as HTTP endpoints, and you can
+enjoy a corresponding OpenAPI via the Swagger UI. You can also add descriptions and examples to your DocArray and Pydantic types so your
+users and clients can enjoy an API.
+
+Let's see how this would look:
+
+```python
+from jina import Executor, requests, Deployment
+from docarray import BaseDoc
+from pydantic import BaseModel, Field
+
+
+class Prompt(BaseDoc):
+    """Prompt Document to be input to a Language Model"""
+    text: str = Field(description='The text of the prompt', example='Write me a short poem')
+
+
+class Generation(BaseDoc):
+    """Document representing the generation of the Large Language Model"""
+    prompt: str = Field(description='The original prompt that created this output')
+    text: str = Field(description='The actual generated text')
+
+class LLMCallingParams(BaseModel):
+    """Calling parameters of the LLM model"""
+    num_max_tokens: int = Field(default=5000, description='The limit of tokens the model can take, it can affect the memory consumption of the model')
+
+class MyLLMExecutor(Executor):
+
+    @requests(on='/generate')
+    def generate(self, doc: Prompt, parameters: LLMCallingParams, **kwargs) -> Generation:
+        ...
+
+with Deployment(port=12345, protocol='http', uses=MyLLMExecutor) as dep:
+    dep.block()
+```
+
+```shell
+
+──── 🎉 Deployment is ready to serve! ────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                   http  │
+│  🏠       Local           0.0.0.0:54322  │
+│  🔒     Private    xxx.xx.xxx.xxx:54322  │
+│       Public       xx.xxx.xxx.xxx:54322  │
+╰──────────────────────────────────────────╯
+╭─────────── 💎 HTTP extension ────────────╮
+│  💬    Swagger UI    0.0.0.0:54322/docs  │
+│  📚         Redoc   0.0.0.0:54322/redoc  │
+╰──────────────────────────────────────────╯
+```
+
+
+After running this code, you can open '0.0.0.0:12345/docs' on your browser:
+
+```{figure} doc-openapi-example.png
+```
+
+Note how the schema defined in the OpenAPI also considers the examples and descriptions for the types and fields.
+The same behavior is seen when serving Executors with a {class}`jina.Flow`. In that case, the input and output schemas of each endpoint are inferred by the Flow's
+topology, so if two Executors are chained in a Flow, the schema of the input is the schema of the first Executor and the schema of the response
+corresponds to the output of the second Executor.

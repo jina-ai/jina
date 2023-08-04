@@ -6,11 +6,11 @@
 <meta property="og:title" content=" Preliminaries" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/preliminaries/" />
-<meta property="og:site_name" content="Jina 3.19.2 Documentation" />
-<meta property="og:description" content="This chapter introduces the basic terminology and concepts you will encounter in the docs. But first, look at the code below: Server Client Running it gives you: Architecture: This animation shows what’s happening behind the scenes when running the previous example: Jina as an MLOPs framework is ..." />
-<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.19.2 Documentation" />
-<meta name="description" content="This chapter introduces the basic terminology and concepts you will encounter in the docs. But first, look at the code below: Server Client Running it gives you: Architecture: This animation shows what’s happening behind the scenes when running the previous example: Jina as an MLOPs framework is ..." />
+<meta property="og:site_name" content="Jina 3.20.0 Documentation" />
+<meta property="og:description" content="This chapter introduces the basic terminology and concepts you will encounter in the docs. But first, look at the code below: In this code, we are going to use Jina to serve simple logic with one Deployment, or a combination of two services with a Flow. We are also going to see how we can query t..." />
+<meta property="og:image" content="https://docs.jina.ai/_images/arch-deployment-overview.png" />
+<meta property="og:image:alt" content="Jina 3.20.0 Documentation" />
+<meta name="description" content="This chapter introduces the basic terminology and concepts you will encounter in the docs. But first, look at the code below: In this code, we are going to use Jina to serve simple logic with one Deployment, or a combination of two services with a Flow. We are also going to see how we can query t..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/preliminaries/index.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Preliminaries - Jina 3.19.2 documentation</title>
+        <title>Preliminaries - Jina 3.20.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.19.2 documentation</div>
+                <div class="brand">Jina 3.20.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -437,8 +437,10 @@
                     <section id="preliminaries">
 <span id="architecture-overview"></span><h1><span class="fas fa-egg"></span> Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this heading">#</a></h1>
 <p>This chapter introduces the basic terminology and concepts you will encounter in the docs. But first, look at the code below:</p>
+<p>In this code, we are going to use Jina to serve simple logic with one Deployment, or a combination of two services with a Flow.
+We are also going to see how we can query these services with Jina’s client.</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Server</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Deployment</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span>
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
 <span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
@@ -450,6 +452,24 @@
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
             <span class="n">d</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39;hello, world!&#39;</span>
 
+<span class="n">dep</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="n">FooExec</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">dep</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Flow</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
+<span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
+
+
+<span class="k">class</span> <span class="nc">FooExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">add_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocList</span><span class="p">[</span><span class="n">TextDoc</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39;hello, world!&#39;</span>
 
 <span class="k">class</span> <span class="nc">BarExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
@@ -464,7 +484,7 @@
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Client</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--3">Client</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span>
 <span class="kn">from</span> <span class="nn">docarray.documents</span> <span class="kn">import</span> <span class="n">TextDoc</span>
@@ -478,40 +498,59 @@
 </div>
 </div>
 <p>Running it gives you:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Deployment</label><div class="tab-content docutils">
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[&#39;hello, world!&#39;, &#39;hello, world!&#39;]
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">Flow</label><div class="tab-content docutils">
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[&#39;hello, world!goodbye!&#39;, &#39;hello, world!goodbye!&#39;]
 </pre></div>
 </div>
+</div>
+</div>
 <section id="architecture">
 <h2>Architecture<a class="headerlink" href="#architecture" title="Permalink to this heading">#</a></h2>
-<p>This animation shows what’s happening behind the scenes when running the previous example:</p>
+<p>This animation shows what’s happening behind the scenes when running the previous examples:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--1">Deployment</label><div class="tab-content docutils">
 <figure class="align-center">
-<img alt="../../_images/arch-overview.svg" src="../../_images/arch-overview.svg" /></figure>
+<img alt="../../_images/arch-deployment-overview.png" src="../../_images/arch-deployment-overview.png" />
+</figure>
+</div>
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--2">Flow</label><div class="tab-content docutils">
+<figure class="align-center">
+<img alt="../../_images/arch-flow-overview.svg" src="../../_images/arch-flow-overview.svg" /></figure>
+</div>
+</div>
 <div class="seealso admonition hint">
 <p class="admonition-title">Hint</p>
-<p>GRPC, WebSocket, HTTP are network protocols for transmitting data. gRPC is always used for communication between <span class="xref std std-term">Gateway</span> and <span class="xref std std-term">Executor</span>.</p>
+<p>gRPC, WebSocket and HTTP are network protocols for transmitting data. gRPC is always used for communication between the <span class="xref std std-term">Gateway</span> and <span class="xref std std-term">Executors inside a Flow</span>.</p>
 </div>
 <div class="seealso admonition hint">
 <p class="admonition-title">Hint</p>
 <p>TLS is a security protocol to facilitate privacy and data security for communications over the Internet. The communication between <a class="reference internal" href="#term-Client"><span class="xref std std-term">Client</span></a> and <span class="xref std std-term">Gateway</span> is protected by TLS.</p>
 </div>
-<p>Jina as an MLOPs framework is structured in two main layers that together with DocArray data structure and Jina Python Client complete the framework, all of them are covered in the user guide
+<p>Jina is an MLOPs serving framework that is structured in two main layers. These layers work with DocArray’s data structure and Jina’s Python Client to complete the framework. All of these are covered in the user guide
 and contains the following concepts:</p>
 <dl class="simple glossary">
 <dt id="term-DocArray-data-structure"><strong>DocArray data structure</strong><a class="headerlink" href="#term-DocArray-data-structure" title="Permalink to this term">#</a></dt><dt id="term-Data-structures-coming-from-docarray-are-the-basic-fundamental-data-structure-in-Jina.">Data structures coming from <a class="reference external" href="https://docs.docarray.org/">docarray</a> are the basic fundamental data structure in Jina.<a class="headerlink" href="#term-Data-structures-coming-from-docarray-are-the-basic-fundamental-data-structure-in-Jina." title="Permalink to this term">#</a></dt><dt id="term-BaseDoc">- <strong>BaseDoc</strong><a class="headerlink" href="#term-BaseDoc" title="Permalink to this term">#</a></dt><dd><p>Document is the basic object for representing multimodal data. It can be extended to represent any data you want. More information can be found in <a class="reference external" href="https://docs.docarray.org/user_guide/representing/first_step/">DocArray’s Docs</a>.</p>
 </dd>
-<dt id="term-DocList">- <strong>DocList</strong><a class="headerlink" href="#term-DocList" title="Permalink to this term">#</a></dt><dd><p>DocList is a list-like container of multiple Documents. It is the essential element of IO in Jina services. More information can be found in <a class="reference external" href="https://docs.docarray.org/user_guide/representing/array/">DocArray’s Docs</a>.</p>
+<dt id="term-DocList">- <strong>DocList</strong><a class="headerlink" href="#term-DocList" title="Permalink to this term">#</a></dt><dd><p>DocList is a list-like container of multiple Documents. More information can be found in <a class="reference external" href="https://docs.docarray.org/user_guide/representing/array/">DocArray’s Docs</a>.</p>
 </dd>
-<dt id="term-Serving"><strong>Serving</strong><a class="headerlink" href="#term-Serving" title="Permalink to this term">#</a></dt><dt id="term-This-layer-contains-all-the-objects-and-concepts-that-are-used-to-actually-serve-the-logic-and-receive-and-respond-to-queries.-These-components-are-designed-to-be-used-as-microservices-ready-to-be-containerized.">This layer contains all the objects and concepts that are used to actually serve the logic and receive and respond to queries. These components are designed to be used as microservices ready to be containerized. <a class="headerlink" href="#term-This-layer-contains-all-the-objects-and-concepts-that-are-used-to-actually-serve-the-logic-and-receive-and-respond-to-queries.-These-components-are-designed-to-be-used-as-microservices-ready-to-be-containerized." title="Permalink to this term">#</a></dt><dt id="term-These-components-can-be-orchestrated-by-Jina-s-orchestration-layer-or-by-other-container-orchestration-frameworks-such-as-Kubernetes-or-Docker-Compose.">These components can be orchestrated by Jina’s <a class="reference internal" href="#term-Orchestration"><span class="xref std std-term">orchestration</span></a> layer or by other container orchestration frameworks such as Kubernetes or Docker Compose.<a class="headerlink" href="#term-These-components-can-be-orchestrated-by-Jina-s-orchestration-layer-or-by-other-container-orchestration-frameworks-such-as-Kubernetes-or-Docker-Compose." title="Permalink to this term">#</a></dt><dd></dd>
-<dt id="term-Executor">- <strong>Executor</strong><a class="headerlink" href="#term-Executor" title="Permalink to this term">#</a></dt><dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> is a Python class that can serve logic using <span class="xref std std-term">DocList</span>. Loosely speaking, each Executor is a microservice.</p>
+<dt id="term-All-the-components-in-Jina-use-BaseDoc-and-or-DocList-as-the-main-data-format-for-communication-making-use-of-the-different">All the components in Jina use <code class="docutils literal notranslate"><span class="pre">BaseDoc</span></code> and/or <code class="docutils literal notranslate"><span class="pre">DocList</span></code> as the main data format for communication, making use of the different <a class="headerlink" href="#term-All-the-components-in-Jina-use-BaseDoc-and-or-DocList-as-the-main-data-format-for-communication-making-use-of-the-different" title="Permalink to this term">#</a></dt><dt id="term-serialization-capabilities-of-these-structures.">serialization capabilities of these structures.<a class="headerlink" href="#term-serialization-capabilities-of-these-structures." title="Permalink to this term">#</a></dt><dt id="term-Serving"><strong>Serving</strong><a class="headerlink" href="#term-Serving" title="Permalink to this term">#</a></dt><dt id="term-This-layer-contains-all-the-objects-and-concepts-that-are-used-to-actually-serve-the-logic-and-receive-and-respond-to-queries.-These-components-are-designed-to-be-used-as-microservices-ready-to-be-containerized.">This layer contains all the objects and concepts that are used to actually serve the logic and receive and respond to queries. These components are designed to be used as microservices ready to be containerized. <a class="headerlink" href="#term-This-layer-contains-all-the-objects-and-concepts-that-are-used-to-actually-serve-the-logic-and-receive-and-respond-to-queries.-These-components-are-designed-to-be-used-as-microservices-ready-to-be-containerized." title="Permalink to this term">#</a></dt><dt id="term-These-components-can-be-orchestrated-by-Jina-s-orchestration-layer-or-by-other-container-orchestration-frameworks-such-as-Kubernetes-or-Docker-Compose.">These components can be orchestrated by Jina’s <a class="reference internal" href="#term-Orchestration"><span class="xref std std-term">orchestration</span></a> layer or by other container orchestration frameworks such as Kubernetes or Docker Compose.<a class="headerlink" href="#term-These-components-can-be-orchestrated-by-Jina-s-orchestration-layer-or-by-other-container-orchestration-frameworks-such-as-Kubernetes-or-Docker-Compose." title="Permalink to this term">#</a></dt><dd></dd>
+<dt id="term-Executor">- <strong>Executor</strong><a class="headerlink" href="#term-Executor" title="Permalink to this term">#</a></dt><dd><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> is a Python class that serves logic using Documents. Loosely speaking, each Executor is a service wrapping a model or application.</p>
 </dd>
-<dt id="term-Gateway">- <strong>Gateway</strong><a class="headerlink" href="#term-Gateway" title="Permalink to this term">#</a></dt><dd><p>Gateway is the entrypoint of a <span class="xref std std-term">Flow</span>. It exposes multiple protocols for external communications; it routes all internal traffic.</p>
+<dt id="term-Gateway">- <strong>Gateway</strong><a class="headerlink" href="#term-Gateway" title="Permalink to this term">#</a></dt><dd><p>A Gateway is the entrypoint of a <span class="xref std std-term">Flow</span>. It exposes multiple protocols for external communications; routing all internal traffic to different Executors that work together to
+provide a more complex service.</p>
 </dd>
 <dt id="term-Orchestration"><strong>Orchestration</strong><a class="headerlink" href="#term-Orchestration" title="Permalink to this term">#</a></dt><dt id="term-This-layer-contains-the-components-making-sure-that-the-objects-especially-the-Executor-are-deployed-and-scaled-for-serving.">This layer contains the components making sure that the objects (especially the <span class="xref std std-term">Executor</span>) are deployed and scaled for serving.<a class="headerlink" href="#term-This-layer-contains-the-components-making-sure-that-the-objects-especially-the-Executor-are-deployed-and-scaled-for-serving." title="Permalink to this term">#</a></dt><dt id="term-They-wrap-them-to-provide-them-the-scalability-and-serving-capabilities.-They-also-provide-easy-translation-to-other-orchestration">They wrap them to provide them the <strong>scalability</strong> and <strong>serving</strong> capabilities. They also provide easy translation to other orchestration<a class="headerlink" href="#term-They-wrap-them-to-provide-them-the-scalability-and-serving-capabilities.-They-also-provide-easy-translation-to-other-orchestration" title="Permalink to this term">#</a></dt><dt id="term-frameworks-Kubernetes-Docker-compose-to-provide-more-advanced-and-production-ready-settings.-They-can-also-be-directly-deployed-to-Jina-AI-Cloud">frameworks (Kubernetes, Docker compose) to provide more advanced and production-ready settings. They can also be directly deployed to <a class="reference external" href="https://cloud.jina.ai">Jina AI Cloud</a><a class="headerlink" href="#term-frameworks-Kubernetes-Docker-compose-to-provide-more-advanced-and-production-ready-settings.-They-can-also-be-directly-deployed-to-Jina-AI-Cloud" title="Permalink to this term">#</a></dt><dt id="term-with-a-single-command-line.">with a single command line.<a class="headerlink" href="#term-with-a-single-command-line." title="Permalink to this term">#</a></dt><dt id="term-Deployment">- <strong>Deployment</strong><a class="headerlink" href="#term-Deployment" title="Permalink to this term">#</a></dt><dd><p>Deployment is a layer that orchestrates <span class="xref std std-term">Executor</span>. It can be used to serve an Executor as a standalone
 service or as part of a <span class="xref std std-term">Flow</span>. It encapsulates and abstracts internal replication and serving details.</p>
 </dd>
 <dt id="term-Flow">- <strong>Flow</strong><a class="headerlink" href="#term-Flow" title="Permalink to this term">#</a></dt><dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> ties multiple <code class="xref py py-class docutils literal notranslate"><span class="pre">Deployments</span></code>s together into a logic pipeline to achieve a more complex task. It orchestrates both <span class="xref std std-term">Executor</span>s and the <span class="xref std std-term">Gateway</span>.</p>
 </dd>
-<dt id="term-Client"><strong>Client</strong><a class="headerlink" href="#term-Client" title="Permalink to this term">#</a></dt><dt id="term-Client-connects-to-a-Gateway-or-Executor-and-sends-receives-streams-data-from-it."><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code> connects to a <span class="xref std std-term">Gateway</span> or <span class="xref std std-term">Executor</span> and sends/receives/streams data from it.<a class="headerlink" href="#term-Client-connects-to-a-Gateway-or-Executor-and-sends-receives-streams-data-from-it." title="Permalink to this term">#</a></dt><dd></dd>
+<dt id="term-Client"><strong>Client</strong><a class="headerlink" href="#term-Client" title="Permalink to this term">#</a></dt><dt id="term-The-Client-connects-to-a-Gateway-or-Executor-and-sends-receives-streams-data-from-them.">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code> connects to a <span class="xref std std-term">Gateway</span> or <span class="xref std std-term">Executor</span> and sends/receives/streams data from them.<a class="headerlink" href="#term-The-Client-connects-to-a-Gateway-or-Executor-and-sends-receives-streams-data-from-them." title="Permalink to this term">#</a></dt><dd></dd>
 </dl>
 <div class="important admonition">
 <p class="admonition-title">Deployments on JCloud</p>
@@ -553,7 +592,7 @@ service or as part of a <span class="xref std std-term">Flow</span>. It encapsul
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 03, 2023</div>
+                            Last updated on Aug 04, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

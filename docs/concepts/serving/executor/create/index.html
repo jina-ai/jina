@@ -6,11 +6,11 @@
 <meta property="og:title" content="Create" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/serving/executor/create/" />
-<meta property="og:site_name" content="Jina 3.19.2 Documentation" />
-<meta property="og:description" content="Introduction: An Executor is a self-contained microservice exposed using a gRPC or HTTP protocol. It contains functions (decorated with@requests) that process Documents s. Executors follow three principles: An Executor should subclass directly from the jina.Executor class., An Executor is a Pytho..." />
+<meta property="og:site_name" content="Jina 3.20.0 Documentation" />
+<meta property="og:description" content="Introduction: An Executor is a self-contained microservice exposed using a gRPC or HTTP protocol. It contains functions (decorated with@requests) that process Documents. Executors follow these principles: An Executor should subclass directly from the jina.Executor class., An Executor is a Python ..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.19.2 Documentation" />
-<meta name="description" content="Introduction: An Executor is a self-contained microservice exposed using a gRPC or HTTP protocol. It contains functions (decorated with@requests) that process Documents s. Executors follow three principles: An Executor should subclass directly from the jina.Executor class., An Executor is a Pytho..." />
+<meta property="og:image:alt" content="Jina 3.20.0 Documentation" />
+<meta name="description" content="Introduction: An Executor is a self-contained microservice exposed using a gRPC or HTTP protocol. It contains functions (decorated with@requests) that process Documents. Executors follow these principles: An Executor should subclass directly from the jina.Executor class., An Executor is a Python ..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/serving/executor/create.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Create - Jina 3.19.2 documentation</title>
+        <title>Create - Jina 3.20.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.19.2 documentation</div>
+                <div class="brand">Jina 3.20.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -443,11 +443,11 @@
 <p>Executors use <code class="docutils literal notranslate"><span class="pre">docarray.BaseDoc</span></code> and docarray.DocList` as their input and output data structure. <a class="reference external" href="https://docs.docarray.org">Read DocArray’s docs</a> to see how it works.</p>
 </div>
 <p>An <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> is a self-contained microservice exposed using a gRPC or HTTP protocol.
-It contains functions (decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code>) that process <code class="docutils literal notranslate"><span class="pre">Documents</span></code>s. Executors follow three principles:</p>
+It contains functions (decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code>) that process <code class="docutils literal notranslate"><span class="pre">Documents</span></code>. Executors follow these principles:</p>
 <ol class="arabic simple">
 <li><p>An Executor should subclass directly from the <code class="docutils literal notranslate"><span class="pre">jina.Executor</span></code> class.</p></li>
 <li><p>An Executor is a Python class; it can contain any number of functions.</p></li>
-<li><p>Functions decorated by <code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code> are exposed as services according to their <code class="docutils literal notranslate"><span class="pre">on=</span></code> endpoint. These functions can be coroutines (<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code>) or regular functions. This will be explained later in <a class="reference internal" href="../add-endpoints/#exec-endpoint"><span class="std std-ref">Add Endpoints Section</span></a></p></li>
+<li><p>Functions decorated by <code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code> are exposed as services according to their <code class="docutils literal notranslate"><span class="pre">on=</span></code> endpoint. These functions can be coroutines (<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code>) or regular functions. They can work on single Documents, or on batches. This will be explained later in <a class="reference internal" href="../add-endpoints/#exec-endpoint"><span class="std std-ref">Add Endpoints Section</span></a></p></li>
 <li><p>(Beta) Functions decorated by <code class="xref py py-class docutils literal notranslate"><span class="pre">write</span></code> above their <code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code> decoration, are considered to update the internal state of the Executor. The <code class="docutils literal notranslate"><span class="pre">__init__</span></code> and <code class="docutils literal notranslate"><span class="pre">close</span></code> methods are exceptions. The reasons this is useful is explained in <span class="xref std std-ref">Stateful-executor</span>.</p></li>
 </ol>
 </section>
@@ -651,7 +651,7 @@ of all these details.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 03, 2023</div>
+                            Last updated on Aug 04, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

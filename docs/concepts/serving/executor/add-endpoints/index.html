@@ -6,10 +6,10 @@
 <meta property="og:title" content="Add Endpoints" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/serving/executor/add-endpoints/" />
-<meta property="og:site_name" content="Jina 3.19.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.20.0 Documentation" />
 <meta property="og:description" content="Methods decorated with@requests are mapped to network endpoints while serving. Decorator: Executor methods decorated with requests are bound to specific network requests, and respond to network queries. Both def or async def methods can be decorated with requests. You can import the@requests deco..." />
-<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.19.2 Documentation" />
+<meta property="og:image" content="https://docs.jina.ai/_images/doc-openapi-example.png" />
+<meta property="og:image:alt" content="Jina 3.20.0 Documentation" />
 <meta name="description" content="Methods decorated with@requests are mapped to network endpoints while serving. Decorator: Executor methods decorated with requests are bound to specific network requests, and respond to network queries. Both def or async def methods can be decorated with requests. You can import the@requests deco..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/serving/executor/add-endpoints.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Add Endpoints - Jina 3.19.2 documentation</title>
+        <title>Add Endpoints - Jina 3.20.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.19.2 documentation</div>
+                <div class="brand">Jina 3.20.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -488,7 +488,7 @@ Calling<span class="w"> </span>foo
 <section id="default-binding">
 <h3>Default binding<a class="headerlink" href="#default-binding" title="Permalink to this heading">#</a></h3>
 <p>A class method decorated with plain <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> (without <code class="docutils literal notranslate"><span class="pre">on=</span></code>) is the default handler for all endpoints.
-This means it is the fallback handler for endpoints that are not found. <code class="docutils literal notranslate"><span class="pre">f.post(on='/blah',</span> <span class="pre">...)</span></code> invokes <code class="docutils literal notranslate"><span class="pre">MyExecutor.foo</span></code>.</p>
+This means it is the fallback handler for endpoints that are not found. <code class="docutils literal notranslate"><span class="pre">c.post(on='/blah',</span> <span class="pre">...)</span></code> invokes <code class="docutils literal notranslate"><span class="pre">MyExecutor.foo</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 
@@ -511,13 +511,10 @@ This means it is the fallback handler for endpoints that are not found. <code cl
 </section>
 </section>
 <section id="document-type-binding">
-<h2>Document type binding<a class="headerlink" href="#document-type-binding" title="Permalink to this heading">#</a></h2>
+<span id="id1"></span><h2>Document type binding<a class="headerlink" href="#document-type-binding" title="Permalink to this heading">#</a></h2>
 <p>When using <code class="docutils literal notranslate"><span class="pre">docarray&gt;=0.30</span></code>, each endpoint bound by the request endpoints can have different input and output Document types. One can specify these types by adding
 type annotations to the decorated methods or by using the <code class="docutils literal notranslate"><span class="pre">request_schema</span></code> and <code class="docutils literal notranslate"><span class="pre">response_schema</span></code> argument. The design is inspired by <a class="reference external" href="https://fastapi.tiangolo.com/">FastAPI</a>.</p>
-<p>These schemas have to be parametrized <code class="docutils literal notranslate"><span class="pre">DocList</span></code> with valid <code class="docutils literal notranslate"><span class="pre">Documents</span></code> inheriting from <code class="docutils literal notranslate"><span class="pre">BaseDoc</span></code>. The only exception is when <a class="reference internal" href="#streaming-endpoints"><span class="std std-ref">streaming endpoints</span></a> are used, in that case
-the <code class="docutils literal notranslate"><span class="pre">BaseDocs</span></code> are the parameters.</p>
-<p>When no type annotation or argument is provided, Jina assumes that <a class="reference external" href="https://docs.docarray.org/API_reference/documents/documents/#docarray.documents.legacy.LegacyDocument">LegacyDocument</a> is the type used.
-This is intended to ease the transition from using Jina with <code class="docutils literal notranslate"><span class="pre">docarray&lt;0.30.0</span></code> to using with the newer versions.</p>
+<p>These schemas have to be Documents inheriting from <code class="docutils literal notranslate"><span class="pre">BaseDoc</span></code> or a parametrized <code class="docutils literal notranslate"><span class="pre">DocList</span></code>. You can see the differences when using single Documents or a DocList for serving in the <a class="reference internal" href="#executor-api"><span class="std std-ref">Executor API</span></a> section.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
 <span class="kn">from</span> <span class="nn">docarray.typing</span> <span class="kn">import</span> <span class="n">AnyTensor</span>
@@ -569,15 +566,30 @@ schema of the endpoint.</p>
 </div>
 <p>If there is no <code class="docutils literal notranslate"><span class="pre">request_schema</span></code> and <code class="docutils literal notranslate"><span class="pre">response_schema</span></code>, the type hint is used to infer the schema. If both exist, <code class="docutils literal notranslate"><span class="pre">request_schema</span></code>
 and <code class="docutils literal notranslate"><span class="pre">response_schema</span></code> will be used.</p>
+<div class="note admonition">
+<p class="admonition-title">Note</p>
+<p>When no type annotation or argument is provided, Jina assumes that <a class="reference external" href="https://docs.docarray.org/API_reference/documents/documents/#docarray.documents.legacy.LegacyDocument">LegacyDocument</a> is the type used.
+This is intended to ease the transition from using Jina with <code class="docutils literal notranslate"><span class="pre">docarray&lt;0.30.0</span></code> to using it with the newer versions.</p>
+</div>
 </section>
-<section id="arguments">
-<span id="endpoint-arguments"></span><h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this heading">#</a></h2>
-<p>All Executor methods decorated by <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> need to follow the signature below to be usable as a microservice to be orchestrated either using <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code>.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">async</span></code> definition is optional.</p>
-<p>The endpoint signature looks like the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span>
+<section id="executor-api">
+<span id="id2"></span><h2>Executor API<a class="headerlink" href="#executor-api" title="Permalink to this heading">#</a></h2>
+<p>Methods decorated by <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> require an API for Jina to serve them with a <code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>.</p>
+<p>An Executor’s job is to process <code class="docutils literal notranslate"><span class="pre">Documents</span></code> that are sent via the network. Executors can work on these <code class="docutils literal notranslate"><span class="pre">Documents</span></code> one by one or in batches.</p>
+<p>This behavior is determined by an argument:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">doc</span></code> if you want your Executor to work on one Document at a time, or</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs</span></code> if you want to work on batches of Documents.</p></li>
+</ul>
+<p>These APIs and related type annotations also affect how your <a class="reference internal" href="#openapi-deployment"><span class="std std-ref">OpenAPI looks when deploying the Executor</span></a> with <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.Deployment</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.Flow</span></code> using the HTTP protocol.</p>
+<section id="single-document">
+<span id="singleton-document"></span><h3>Single Document<a class="headerlink" href="#single-document" title="Permalink to this heading">#</a></h3>
+<p>When using <code class="docutils literal notranslate"><span class="pre">doc</span></code> as a keyword argument, you need to add a single <code class="docutils literal notranslate"><span class="pre">BaseDoc</span></code> as your request and response schema as seen in <a class="reference internal" href="#document-type-binding"><span class="std std-ref">the document type binding section</span></a>.</p>
+<p>Jina will ensure that even if multiple <code class="docutils literal notranslate"><span class="pre">Documents</span></code> are sent from the client, the Executor will process only one at a time.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TypeVar</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 
 <span class="n">T_input</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T_input&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s1">&#39;BaseDoc&#39;</span><span class="p">)</span>
 <span class="n">T_output</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T_output&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s1">&#39;BaseDoc&#39;</span><span class="p">)</span>
@@ -586,23 +598,106 @@ and <code class="docutils literal notranslate"><span class="pre">response_schema
     <span class="nd">@requests</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">T_input</span><span class="p">],</span>
-        <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
-        <span class="n">tracing_context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Context&#39;</span><span class="p">],</span>
-        <span class="o">**</span><span class="n">kwargs</span>
+<span class="hll">        <span class="n">doc</span><span class="p">:</span> <span class="n">T_input</span><span class="p">,</span>
+</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> 
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T_output</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Working on single Documents instead of  batches can make your interface and code cleaner. In many cases, like in Generative AI, input rarely comes in batches,
+and models can be heavy enough that they cannot profit from processing multiple inputs at the same time.</p>
+</section>
+<section id="batching-documents">
+<span id="batching-doclist"></span><h3>Batching documents<a class="headerlink" href="#batching-documents" title="Permalink to this heading">#</a></h3>
+<p>When using <code class="docutils literal notranslate"><span class="pre">docs</span></code> as a keyword argument, you need to add a parametrized <code class="docutils literal notranslate"><span class="pre">DocList</span></code> as your request and response schema as seen in <a class="reference internal" href="#document-type-binding"><span class="std std-ref">the document type binding section</span></a>.</p>
+<p>In this case, Jina will ensure that all the request’s <code class="docutils literal notranslate"><span class="pre">Documents</span></code> are passed to the Executor. The <a class="reference internal" href="../../../client/send-receive-data/#request-size-client"><span class="std std-ref">“request_size” parameter from Client</span></a> controls how many Documents are passed to the server in each request.
+When using batches, you can leverage the <a class="reference internal" href="../dynamic-batching/#executor-dynamic-batching"><span class="std std-ref">dynamic batching feature</span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="n">T_input</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T_input&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s1">&#39;BaseDoc&#39;</span><span class="p">)</span>
+<span class="n">T_output</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T_output&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s1">&#39;BaseDoc&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+<span class="hll">        <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">T_input</span><span class="p">],</span>
+</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> 
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">DocList</span><span class="p">[</span><span class="n">T_output</span><span class="p">],</span> <span class="n">Dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="k">pass</span>
 </pre></div>
 </div>
-<p>Let’s take a look at these arguments:</p>
+<p>Working on batches of Documents in the same method call can make sense, especially for serving models that handle multiple inputs at the same time, like
+when serving embedding models.</p>
+</section>
+<section id="parameters">
+<span id="executor-api-parameters"></span><h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">#</a></h3>
+<p>Often, the behavior of a model or service depends not just on the input data (documents in this case) but also on other parameters.
+An example might be special attributes that some ML models allow you to configure, like  maximum token length or other attributes not directly related
+to the data input.</p>
+<p>Executor methods decorated with <code class="docutils literal notranslate"><span class="pre">requests</span></code> accept a <code class="docutils literal notranslate"><span class="pre">parameters</span></code> attribute in their signature to provide this flexibility.</p>
+<p>This attribute can be a plain Python dictionary or a Pydantic Model. To get a Pydantic model the <code class="docutils literal notranslate"><span class="pre">parameters</span></code> argument needs to have the model
+as a type annotation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="n">T_input</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T_input&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s1">&#39;BaseDoc&#39;</span><span class="p">)</span>
+<span class="n">T_output</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T_output&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s1">&#39;BaseDoc&#39;</span><span class="p">)</span>
+<span class="n">T_output</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T_parameters&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s1">&#39;BaseModel&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">docs</span><span class="p">:</span> <span class="n">DocList</span><span class="p">[</span><span class="n">T_input</span><span class="p">],</span>
+<span class="hll">        <span class="n">parameters</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">],</span>
+</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> 
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">DocList</span><span class="p">[</span><span class="n">T_output</span><span class="p">],</span> <span class="n">Dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Defining <code class="docutils literal notranslate"><span class="pre">parameters</span></code> as a Pydantic model instead of a simple dictionary has two main benefits:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">docs</span></code>: A DocList that is part of the request. Since an Executor wraps functionality related to <code class="docutils literal notranslate"><span class="pre">DocList</span></code>, it’s usually the main data format inside Executor methods. Note that these <code class="docutils literal notranslate"><span class="pre">docs</span></code> can be also change in place, just like any other <code class="docutils literal notranslate"><span class="pre">list</span></code>-like object in a Python function.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">parameters</span></code>: A Dict object that passes extra parameters to Executor functions.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tracing_context</span></code>: Context needed if you want to add <a class="reference internal" href="../instrumentation/#instrumenting-executor"><span class="std std-ref">custom traces</span></a> in your Executor.</p></li>
+<li><p>Validation and default values: You can get validation of the parameters that the Executor expected before the Executor can access any invalid key. You can also
+easily define defaults.</p></li>
+<li><p>Descriptive OpenAPI definition when using HTTP protocol.</p></li>
 </ul>
+</section>
+<section id="tracing-context">
+<h3>Tracing context<a class="headerlink" href="#tracing-context" title="Permalink to this heading">#</a></h3>
+<p>Executors also accept <code class="docutils literal notranslate"><span class="pre">tracing_context</span></code> as input if you want to add <a class="reference internal" href="../instrumentation/#instrumenting-executor"><span class="std std-ref">custom traces</span></a> in your Executor.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="n">T_input</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T_input&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s1">&#39;BaseDoc&#39;</span><span class="p">)</span>
+<span class="n">T_output</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T_output&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s1">&#39;BaseDoc&#39;</span><span class="p">)</span>
+<span class="n">T_output</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T_parameters&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s1">&#39;BaseModel&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">tracing_context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Context&#39;</span><span class="p">],</span>
+<span class="hll">        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> 
+</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">DocList</span><span class="p">[</span><span class="n">T_output</span><span class="p">],</span> <span class="n">Dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+</section>
+<section id="other-arguments">
+<h3>Other arguments<a class="headerlink" href="#other-arguments" title="Permalink to this heading">#</a></h3>
+<p>When using an Executors in a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>, you may use an Executor to merge results from upstream Executors.
+For these merging Executors you can use one of the <a class="reference internal" href="../../../orchestration/flow/#merging-upstream"><span class="std std-ref">extra arguments</span></a>.</p>
 <div class="hint admonition">
-<p class="admonition-title">Flow-specific arguments</p>
-<p>If you use an Executor in a Flow and want to merge incoming DocLists from multiple Executors, you may also be interested in <span class="xref std std-ref">some additional arguments</span>.</p>
+<p class="admonition-title">Hint</p>
+<p>You can also use an Executor as a simple Pythonic class. This is especially useful for locally testing the Executor-specific logic before serving it.</p>
 </div>
 <div class="hint admonition">
 <p class="admonition-title">Hint</p>
@@ -629,12 +724,13 @@ and <code class="docutils literal notranslate"><span class="pre">response_schema
 </div>
 </div>
 </section>
+</section>
 <section id="returns">
 <h2>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">#</a></h2>
 <p>Every Executor method can <code class="docutils literal notranslate"><span class="pre">return</span></code> in three ways:</p>
 <ul class="simple">
-<li><p>You can directly return a <code class="docutils literal notranslate"><span class="pre">DocList</span></code> object.</p></li>
-<li><p>If you return <code class="docutils literal notranslate"><span class="pre">None</span></code> or don’t have a <code class="docutils literal notranslate"><span class="pre">return</span></code> in your method, then the original <code class="docutils literal notranslate"><span class="pre">docs</span></code> object (potentially mutated by your function) is returned.</p></li>
+<li><p>You can directly return a <code class="docutils literal notranslate"><span class="pre">BaseDoc</span></code> or <code class="docutils literal notranslate"><span class="pre">DocList</span></code> object.</p></li>
+<li><p>If you return <code class="docutils literal notranslate"><span class="pre">None</span></code> or don’t have a <code class="docutils literal notranslate"><span class="pre">return</span></code> in your method, then the original <code class="docutils literal notranslate"><span class="pre">docs</span></code> or <code class="docutils literal notranslate"><span class="pre">doc</span></code> object (potentially mutated by your function) is returned.</p></li>
 <li><p>If you return a <code class="docutils literal notranslate"><span class="pre">dict</span></code> object, it will be considered as a result and returned on <code class="docutils literal notranslate"><span class="pre">parameters['__results__']</span></code> to the client.</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Deployment</span>
@@ -655,7 +751,7 @@ and <code class="docutils literal notranslate"><span class="pre">response_schema
 </div>
 </section>
 <section id="streaming-endpoints">
-<span id="id1"></span><h2>Streaming endpoints<a class="headerlink" href="#streaming-endpoints" title="Permalink to this heading">#</a></h2>
+<span id="id3"></span><h2>Streaming endpoints<a class="headerlink" href="#streaming-endpoints" title="Permalink to this heading">#</a></h2>
 <p>Executors can stream Documents individually rather than as a whole DocList.
 This is useful when you want to return Documents one by one and you want the client to immediately process Documents as
 they arrive. This can be helpful for Generative AI use cases, where a Large Language Model is used to generate text
@@ -684,9 +780,7 @@ Streaming endpoints receive one Document as input and yields one Document at a t
 <span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span>
     <span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span>
     <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span>
-    <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="c1"># or &#39;grpc&#39;</span>
-    <span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">include_gateway</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">cors</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
     <span class="n">dep</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
@@ -694,7 +788,7 @@ Streaming endpoints receive one Document as input and yields one Document at a t
 <p>From the client side, any SSE client can be used to receive the Documents, one at a time.
 Jina offers a standard python client for using the streaming endpoint:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># or protocol=&#39;grpc&#39;</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># or protocol=&#39;grpc&#39;</span>
 <span class="k">async</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">stream_doc</span><span class="p">(</span>
     <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">MyDocument</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;hello world&#39;</span><span class="p">),</span> <span class="n">return_type</span><span class="o">=</span><span class="n">MyDocument</span>
 <span class="p">):</span>
@@ -771,6 +865,63 @@ NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&
 </div>
 </div>
 </details></section>
+<section id="openapi-from-executor-endpoints">
+<span id="openapi-deployment"></span><h2>OpenAPI from Executor endpoints<a class="headerlink" href="#openapi-from-executor-endpoints" title="Permalink to this heading">#</a></h2>
+<p>When deploying an Executor and serving it with HTTP, Jina uses FastAPI to expose all Executor endpoints as HTTP endpoints, and you can
+enjoy a corresponding OpenAPI via the Swagger UI. You can also add descriptions and examples to your DocArray and Pydantic types so your
+users and clients can enjoy an API.</p>
+<p>Let’s see how this would look:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Deployment</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">BaseDoc</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
+
+
+<span class="k">class</span> <span class="nc">Prompt</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prompt Document to be input to a Language Model&quot;&quot;&quot;</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;The text of the prompt&#39;</span><span class="p">,</span> <span class="n">example</span><span class="o">=</span><span class="s1">&#39;Write me a short poem&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Generation</span><span class="p">(</span><span class="n">BaseDoc</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Document representing the generation of the Large Language Model&quot;&quot;&quot;</span>
+    <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;The original prompt that created this output&#39;</span><span class="p">)</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;The actual generated text&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">LLMCallingParams</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calling parameters of the LLM model&quot;&quot;&quot;</span>
+    <span class="n">num_max_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;The limit of tokens the model can take, it can affect the memory consumption of the model&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MyLLMExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/generate&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="n">Prompt</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="n">LLMCallingParams</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generation</span><span class="p">:</span>
+        <span class="o">...</span>
+
+<span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="n">MyLLMExecutor</span><span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">dep</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>────<span class="w"> </span>🎉<span class="w"> </span>Deployment<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>serve!<span class="w"> </span>────
+╭──────────────<span class="w"> </span>🔗<span class="w"> </span>Endpoint<span class="w"> </span>───────────────╮
+│<span class="w">  </span>⛓<span class="w">     </span>Protocol<span class="w">                   </span>http<span class="w">  </span>│
+│<span class="w">  </span>🏠<span class="w">       </span>Local<span class="w">           </span><span class="m">0</span>.0.0.0:54322<span class="w">  </span>│
+│<span class="w">  </span>🔒<span class="w">     </span>Private<span class="w">    </span>xxx.xx.xxx.xxx:54322<span class="w">  </span>│
+│<span class="w">       </span>Public<span class="w">       </span>xx.xxx.xxx.xxx:54322<span class="w">  </span>│
+╰──────────────────────────────────────────╯
+╭───────────<span class="w"> </span>💎<span class="w"> </span>HTTP<span class="w"> </span>extension<span class="w"> </span>────────────╮
+│<span class="w">  </span>💬<span class="w">    </span>Swagger<span class="w"> </span>UI<span class="w">    </span><span class="m">0</span>.0.0.0:54322/docs<span class="w">  </span>│
+│<span class="w">  </span>📚<span class="w">         </span>Redoc<span class="w">   </span><span class="m">0</span>.0.0.0:54322/redoc<span class="w">  </span>│
+╰──────────────────────────────────────────╯
+</pre></div>
+</div>
+<p>After running this code, you can open ‘0.0.0.0:12345/docs’ on your browser:</p>
+<figure class="align-default">
+<img alt="../../../../_images/doc-openapi-example.png" src="../../../../_images/doc-openapi-example.png" />
+</figure>
+<p>Note how the schema defined in the OpenAPI also considers the examples and descriptions for the types and fields.
+The same behavior is seen when serving Executors with a <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.Flow</span></code>. In that case, the input and output schemas of each endpoint are inferred by the Flow’s
+topology, so if two Executors are chained in a Flow, the schema of the input is the schema of the first Executor and the schema of the response
+corresponds to the output of the second Executor.</p>
+</section>
 </section>
 
                 </article>
@@ -804,7 +955,7 @@ NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 03, 2023</div>
+                            Last updated on Aug 04, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -843,10 +994,18 @@ NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&
 </ul>
 </li>
 <li><a class="reference internal" href="#document-type-binding">Document type binding</a></li>
-<li><a class="reference internal" href="#arguments">Arguments</a></li>
+<li><a class="reference internal" href="#executor-api">Executor API</a><ul>
+<li><a class="reference internal" href="#single-document">Single Document</a></li>
+<li><a class="reference internal" href="#batching-documents">Batching documents</a></li>
+<li><a class="reference internal" href="#parameters">Parameters</a></li>
+<li><a class="reference internal" href="#tracing-context">Tracing context</a></li>
+<li><a class="reference internal" href="#other-arguments">Other arguments</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#returns">Returns</a></li>
 <li><a class="reference internal" href="#streaming-endpoints">Streaming endpoints</a></li>
 <li><a class="reference internal" href="#exception-handling">Exception handling</a></li>
+<li><a class="reference internal" href="#openapi-from-executor-endpoints">OpenAPI from Executor endpoints</a></li>
 </ul>
 </li>
 </ul>

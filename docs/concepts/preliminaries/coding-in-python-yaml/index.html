@@ -6,11 +6,11 @@
 <meta property="og:title" content="Coding in Python/YAML" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/preliminaries/coding-in-python-yaml/" />
-<meta property="og:site_name" content="Jina 3.19.2 Documentation" />
-<meta property="og:description" content="In the docs, you often see two coding styles when describing a Jina project: Pythonic, Flows, Deployments and Executors are all written in Python files, and the entrypoint is via Python.,, YAMLish, Executors are written in Python files, and the Flow or Deployment are defined in a YAML file. The e..." />
+<meta property="og:site_name" content="Jina 3.20.0 Documentation" />
+<meta property="og:description" content="In the docs, you often see two coding styles when describing a Jina project: Pythonic, Flows, Deployments and Executors are all written in Python files, and the entrypoint is via Python.,, YAMLish, Executors are written in Python files, and the Deployment or Flow are defined in a YAML file. The e..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.19.2 Documentation" />
-<meta name="description" content="In the docs, you often see two coding styles when describing a Jina project: Pythonic, Flows, Deployments and Executors are all written in Python files, and the entrypoint is via Python.,, YAMLish, Executors are written in Python files, and the Flow or Deployment are defined in a YAML file. The e..." />
+<meta property="og:image:alt" content="Jina 3.20.0 Documentation" />
+<meta name="description" content="In the docs, you often see two coding styles when describing a Jina project: Pythonic, Flows, Deployments and Executors are all written in Python files, and the entrypoint is via Python.,, YAMLish, Executors are written in Python files, and the Deployment or Flow are defined in a YAML file. The e..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/preliminaries/coding-in-python-yaml.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Coding in Python/YAML - Jina 3.19.2 documentation</title>
+        <title>Coding in Python/YAML - Jina 3.20.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.19.2 documentation</div>
+                <div class="brand">Jina 3.20.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -440,10 +440,10 @@
 <dl class="simple glossary">
 <dt id="term-Pythonic"><strong>Pythonic</strong><a class="headerlink" href="#term-Pythonic" title="Permalink to this term">#</a></dt><dd><p>Flows, Deployments and Executors are all written in Python files, and the entrypoint is via Python.</p>
 </dd>
-<dt id="term-YAMLish"><strong>YAMLish</strong><a class="headerlink" href="#term-YAMLish" title="Permalink to this term">#</a></dt><dd><p>Executors are written in Python files, and the Flow or Deployment are defined in a YAML file. The entrypoint is via Jina CLI <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">flow</span> <span class="pre">--uses</span> <span class="pre">flow.yml</span></code>.</p>
+<dt id="term-YAMLish"><strong>YAMLish</strong><a class="headerlink" href="#term-YAMLish" title="Permalink to this term">#</a></dt><dd><p>Executors are written in Python files, and the Deployment or Flow are defined in a YAML file. The entrypoint can still be used via Python or the Jina CLI <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">deployment</span> <span class="pre">--uses</span> <span class="pre">deployment.yml</span></code> or <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">flow</span> <span class="pre">--uses</span> <span class="pre">flow.yml</span></code>.</p>
 </dd>
 </dl>
-<p>For example, <a class="reference internal" href="../#dummy-example"><span class="std std-ref">the server-side code</span></a> above follows <a class="reference internal" href="#term-Pythonic"><span class="xref std std-term">Pythonic</span></a> style. It can be written in <a class="reference internal" href="#term-YAMLish"><span class="xref std std-term">YAMLish</span></a> style as follows:</p>
+<p>For example, <a class="reference internal" href="../#dummy-example"><span class="std std-ref">the server-side code</span></a> follows the <a class="reference internal" href="#term-Pythonic"><span class="xref std std-term">Pythonic</span></a> style. It can be written in <a class="reference internal" href="#term-YAMLish"><span class="xref std std-term">YAMLish</span></a> style as follows:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">executor.py</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
@@ -487,7 +487,8 @@
 </div>
 </div>
 <p>In general, the YAML style can be used to represent and configure a Flow or Deployment which are the objects orchestrating the serving of Executors and applications.
-The YAMLish style separates the Flow or Deployment representation from the logic code from Executors. It is more flexible to configure and should be used for more complex projects in production. In many integrations such as JCloud and Kubernetes, YAMLish is preferred.</p>
+The YAMLish style separates the Flow or Deployment representation from the Executor logic code.
+It is more flexible to configure and should be used for more complex projects in production. In many integrations such as JCloud and Kubernetes, YAMLish is preferred.</p>
 <p>Note that the two coding styles can be converted to each other easily. To load a Flow YAML into Python and run it:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -504,6 +505,13 @@ The YAMLish style separates the Flow or Deployment representation from the logic
     <span class="s1">&#39;flow.yml&#39;</span>
 <span class="p">)</span>
 </pre></div>
+</div>
+<div class="hint admonition">
+<p class="admonition-title">Hint: YAML and Python duality (with, add, uses_with)</p>
+<p>If you are used to the Pythonic way of building Deployments and Flows, and then you need to start working with YAML,
+a good way to think about this translation is to think of YAML as a direct translation of what you would type in Python.</p>
+<p>So, every <code class="docutils literal notranslate"><span class="pre">with</span></code> clause is like an instantiation of an object, be it a Flow, Deployment or Executor (a call to its constructor).
+And when a Flow has a list of Executors, each entry on the list is a call to the Flow’s <code class="docutils literal notranslate"><span class="pre">add()</span></code> method. This is why Deployments and Flows sometimes need the argument <code class="docutils literal notranslate"><span class="pre">uses_with</span></code> to override the Executor’s defaults.</p>
 </div>
 </section>
 
@@ -538,7 +546,7 @@ The YAMLish style separates the Flow or Deployment representation from the logic
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 03, 2023</div>
+                            Last updated on Aug 04, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
