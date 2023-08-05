@@ -591,7 +591,7 @@ class TokenStreamingExecutor(Executor):
             }
 ```
 
-Learn more about {ref}`streaming endpoints <streaming-endpoints>` from the `Executor` documentation.
+Learn more about [streaming endpoints](https://docs.jina.ai/concepts/serving/executor/add-endpoints/#streaming-endpoints) from the `Executor` documentation.
 <!-- end llm-streaming-endpoint -->
 
 
