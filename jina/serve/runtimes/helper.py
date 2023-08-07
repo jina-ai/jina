@@ -269,7 +269,7 @@ if docarray_v2:
         definitions: Optional[Dict] = None,
     ) -> type:
         if not definitions:
-            definitions = {}
+            definitions = schema.get('definitions', {})
 
         cached_models = cached_models if cached_models is not None else {}
         fields: Dict[str, Any] = {}

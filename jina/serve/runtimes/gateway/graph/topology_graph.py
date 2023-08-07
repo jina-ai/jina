@@ -215,9 +215,6 @@ class TopologyGraph:
                                                     input_model_schema,
                                                     input_model_name,
                                                     models_created_by_name,
-                                                    definitions=input_model_schema.get(
-                                                        'definitions'
-                                                    ),
                                                 )
                                             )
                                         models_created_by_name[
