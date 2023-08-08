@@ -23,7 +23,7 @@ hello-jina/
             |- executor.py
 ```
 
-- `deployment.yml` is the configuration file for the Deployment`.
+- `deployment.yml` is the configuration file for the Deployment.
 - `executor1/` is where you write your {ref}`Executor <executor-cookbook>` code.
 - `config.yml` is the configuration file for the Executor. It stores metadata for your Executor, as well as dependencies.
 - `client.py` is the entrypoint of your Jina project. You can run it via `python app.py`.
