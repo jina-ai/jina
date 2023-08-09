@@ -1,3 +1,6 @@
+import asyncio
+import time
+
 import pytest
 
 from jina import Client, Deployment, Executor, requests
@@ -29,17 +32,52 @@ async def test_streaming_deployment(protocol, include_gateway):
         uses=MyExecutor,
         timeout_ready=-1,
         protocol=protocol,
-        cors=True,
         port=port,
         include_gateway=include_gateway,
     ):
-        client = Client(port=port, protocol=protocol, cors=True, asyncio=True)
+        client = Client(port=port, protocol=protocol, asyncio=True)
         i = 0
         async for doc in client.stream_doc(
             on='/hello', inputs=Document(text='hello world')
         ):
             assert doc.text == f'hello world {i}'
             i += 1
+
+
+class WaitStreamExecutor(Executor):
+    @requests(on='/hello')
+    async def task(self, doc: Document, **kwargs):
+        for i in range(5):
+            yield Document(text=f'{doc.text} {i}')
+            await asyncio.sleep(0.5)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('protocol', ['http', 'grpc'])
+@pytest.mark.parametrize('include_gateway', [False, True])
+async def test_streaming_delay(protocol, include_gateway):
+    from jina import Deployment
+
+    port = random_port()
+
+    with Deployment(
+        uses=WaitStreamExecutor,
+        timeout_ready=-1,
+        protocol=protocol,
+        port=port,
+        include_gateway=include_gateway,
+    ):
+        client = Client(port=port, protocol=protocol, asyncio=True)
+        i = 0
+        start_time = time.time()
+        async for doc in client.stream_doc(
+            on='/hello', inputs=Document(text='hello world')
+        ):
+            assert doc.text == f'hello world {i}'
+            i += 1
+
+            # 0.5 seconds between each request + 0.5 seconds tolerance interval
+            assert time.time() - start_time < (0.5 * i) + 0.5
 
 
 @pytest.mark.asyncio
@@ -53,11 +91,10 @@ async def test_streaming_client_non_gen_endpoint(protocol):
         uses=MyExecutor,
         timeout_ready=-1,
         protocol=protocol,
-        cors=True,
         port=port,
         include_gateway=False,
     ):
-        client = Client(port=port, protocol=protocol, cors=True, asyncio=True)
+        client = Client(port=port, protocol=protocol, asyncio=True)
         i = 0
         with pytest.raises(BadServer):
             async for _ in client.stream_doc(
@@ -67,7 +104,6 @@ async def test_streaming_client_non_gen_endpoint(protocol):
 
 
 def test_invalid_executor():
-
     with pytest.raises(RuntimeError) as exc_info:
 
         class InvalidExecutor3(Executor):
