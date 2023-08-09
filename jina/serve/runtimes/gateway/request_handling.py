@@ -11,6 +11,7 @@ from jina.types.request.status import StatusMessage
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import SimpleNamespace
+
     import grpc
 
     from jina.logging.logger import JinaLogger
@@ -185,12 +186,23 @@ class GatewayRequestHandler:
             async with aiohttp.ClientSession() as session:
                 if request.method == 'GET':
                     async with session.get(target_url) as response:
-                        content = await response.read()
-                        return web.Response(
-                            body=content,
+                        # Create a StreamResponse with the same headers and status as the target response
+                        stream_response = web.StreamResponse(
                             status=response.status,
-                            content_type=response.content_type,
+                            headers=response.headers,
                         )
+
+                        # Prepare the response to send headers
+                        await stream_response.prepare(request)
+
+                        # Stream the response from the target server to the client
+                        async for chunk in response.content.iter_any():
+                            await stream_response.write(chunk)
+
+                        # Close the stream response once all chunks are sent
+                        await stream_response.write_eof()
+                        return stream_response
+
                 elif request.method == 'POST':
                     d = await request.read()
                     import json
@@ -282,7 +294,7 @@ class GatewayRequestHandler:
             yield resp
 
     async def stream_doc(
-            self, request: SingleDocumentRequest, context: 'grpc.aio.ServicerContext'
+        self, request: SingleDocumentRequest, context: 'grpc.aio.ServicerContext'
     ) -> SingleDocumentRequest:
         """
         Process the received requests and return the result as a new request
@@ -293,7 +305,7 @@ class GatewayRequestHandler:
         """
         self.logger.debug('recv a stream_doc request')
         async for result in self.streamer.rpc_stream_doc(
-                request=request,
+            request=request,
         ):
             yield result
 
@@ -317,6 +329,7 @@ class GatewayRequestHandler:
         :returns: the response request
         """
         from google.protobuf import json_format
+
         self.logger.debug('got an endpoint discovery request')
         response = jina_pb2.EndpointsProto()
         await self.streamer._get_endpoints_input_output_models(is_cancel=None)
@@ -332,7 +345,9 @@ class GatewayRequestHandler:
             response.endpoints.extend(schema_maps.keys())
             json_format.ParseDict(schema_maps, response.schemas)
         else:
-            endpoints = await self.streamer.topology_graph._get_all_endpoints(self.streamer._connection_pool,  retry_forever=True, is_cancel=None)
+            endpoints = await self.streamer.topology_graph._get_all_endpoints(
+                self.streamer._connection_pool, retry_forever=True, is_cancel=None
+            )
             response.endpoints.extend(list(endpoints))
         return response
 
