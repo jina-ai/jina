@@ -3,6 +3,7 @@ from unittest.mock import Mock
 
 import pytest
 
+from jina._docarray import docarray_v2
 from jina.serve.helper import get_default_grpc_options
 from jina.serve.runtimes.helper import (
     _get_name_from_replicas_name,
@@ -10,7 +11,6 @@ from jina.serve.runtimes.helper import (
     _parse_specific_params,
     _spit_key_and_executor_name,
 )
-from jina._docarray import docarray_v2
 
 
 @pytest.mark.parametrize(
@@ -44,15 +44,15 @@ def test_split_key_executor_name(full_key, key, executor):
     'param, parsed_param, executor_name',
     [
         (
-                {'key': 1, 'executor__key': 2, 'wrong_executor__key': 3},
-                {'key': 2},
-                'executor',
+            {'key': 1, 'executor__key': 2, 'wrong_executor__key': 3},
+            {'key': 2},
+            'executor',
         ),
         ({'executor__key': 2, 'wrong_executor__key': 3}, {'key': 2}, 'executor'),
         (
-                {'a': 1, 'executor__key': 2, 'wrong_executor__key': 3},
-                {'key': 2, 'a': 1},
-                'executor',
+            {'a': 1, 'executor__key': 2, 'wrong_executor__key': 3},
+            {'key': 2, 'a': 1},
+            'executor',
         ),
         ({'key_1': 0, 'exec2__key_2': 1}, {'key_1': 0}, 'executor'),
     ],
@@ -69,8 +69,8 @@ def test_get_name_from_replicas(name_w_replicas, name):
 
 
 def _custom_grpc_options(
-        call_recording_mock: Mock,
-        additional_options: Optional[Union[list, Dict[str, Any]]] = None,
+    call_recording_mock: Mock,
+    additional_options: Optional[Union[list, Dict[str, Any]]] = None,
 ) -> List[Tuple[str, Any]]:
     call_recording_mock()
     expected_grpc_option_keys = [
@@ -89,12 +89,23 @@ def _custom_grpc_options(
 @pytest.mark.parametrize('transformation', ['proto', 'json'])
 @pytest.mark.skipif(not docarray_v2, reason='Test only working with docarray v2')
 def test_create_pydantic_model_from_schema(transformation):
-    from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list, _create_pydantic_model_from_schema
-    import numpy as np
     from typing import Optional
+
+    import numpy as np
     from docarray import BaseDoc, DocList
-    from docarray.typing import AnyTensor, ImageUrl
     from docarray.documents import TextDoc
+    from docarray.typing import AnyTensor, ImageUrl
+
+    from jina.serve.runtimes.helper import (
+        _create_aux_model_doc_list_to_list,
+        _create_pydantic_model_from_schema,
+    )
+
+    class Nested2Doc(BaseDoc):
+        value: str
+
+    class Nested1Doc(BaseDoc):
+        nested: Nested2Doc
 
     class CustomDoc(BaseDoc):
         tensor: Optional[AnyTensor]
@@ -108,26 +119,43 @@ def test_create_pydantic_model_from_schema(transformation):
         u: Union[str, int]
         lu: List[Union[str, int]] = [0, 1, 2]
         tags: Optional[Dict[str, Any]] = None
+        nested: Nested1Doc
 
     CustomDocCopy = _create_aux_model_doc_list_to_list(CustomDoc)
-    new_custom_doc_model = _create_pydantic_model_from_schema(CustomDocCopy.schema(), 'CustomDoc', {})
+    new_custom_doc_model = _create_pydantic_model_from_schema(
+        CustomDocCopy.schema(), 'CustomDoc', {}
+    )
 
-    original_custom_docs = DocList[CustomDoc]([CustomDoc(url='photo.jpg', lll=[[[40]]], fff=[[[40.2]]], d={'b': 'a'},
-                                                         texts=DocList[TextDoc]
-                                                         ([TextDoc(text='hey ha', embedding=np.zeros(3))]),
-                                                         single_text=TextDoc(text='single hey ha',
-                                                                             embedding=np.zeros(2)),
-                                                         u='a',
-                                                         lu=[3, 4])])
+    original_custom_docs = DocList[CustomDoc](
+        [
+            CustomDoc(
+                url='photo.jpg',
+                lll=[[[40]]],
+                fff=[[[40.2]]],
+                d={'b': 'a'},
+                texts=DocList[TextDoc]([TextDoc(text='hey ha', embedding=np.zeros(3))]),
+                single_text=TextDoc(text='single hey ha', embedding=np.zeros(2)),
+                u='a',
+                lu=[3, 4],
+                nested=Nested1Doc(nested=Nested2Doc(value='hello world')),
+            )
+        ]
+    )
     for doc in original_custom_docs:
         doc.tensor = np.zeros((10, 10, 10))
         doc.di = {'a': 2}
 
     if transformation == 'proto':
-        custom_partial_da = DocList[new_custom_doc_model].from_protobuf(original_custom_docs.to_protobuf())
-        original_back = DocList[CustomDoc].from_protobuf(custom_partial_da.to_protobuf())
+        custom_partial_da = DocList[new_custom_doc_model].from_protobuf(
+            original_custom_docs.to_protobuf()
+        )
+        original_back = DocList[CustomDoc].from_protobuf(
+            custom_partial_da.to_protobuf()
+        )
     elif transformation == 'json':
-        custom_partial_da = DocList[new_custom_doc_model].from_json(original_custom_docs.to_json())
+        custom_partial_da = DocList[new_custom_doc_model].from_json(
+            original_custom_docs.to_json()
+        )
         original_back = DocList[CustomDoc].from_json(custom_partial_da.to_json())
 
     assert len(custom_partial_da) == 1
@@ -144,6 +172,7 @@ def test_create_pydantic_model_from_schema(transformation):
     assert custom_partial_da[0].u == 'a'
     assert custom_partial_da[0].single_text.text == 'single hey ha'
     assert custom_partial_da[0].single_text.embedding.shape == (2,)
+    assert custom_partial_da[0].nested.nested.value == 'hello world'
 
     assert len(original_back) == 1
     assert original_back[0].url == 'photo.jpg'
@@ -159,21 +188,28 @@ def test_create_pydantic_model_from_schema(transformation):
     assert original_back[0].u == 'a'
     assert original_back[0].single_text.text == 'single hey ha'
     assert original_back[0].single_text.embedding.shape == (2,)
+    assert original_back[0].nested.nested.value == 'hello world'
 
     class TextDocWithId(BaseDoc):
         ia: str
 
     TextDocWithIdCopy = _create_aux_model_doc_list_to_list(TextDocWithId)
-    new_textdoc_with_id_model = _create_pydantic_model_from_schema(TextDocWithIdCopy.schema(), 'TextDocWithId', {})
+    new_textdoc_with_id_model = _create_pydantic_model_from_schema(
+        TextDocWithIdCopy.schema(), 'TextDocWithId', {}
+    )
 
     original_text_doc_with_id = DocList[TextDocWithId](
         [TextDocWithId(ia=f'ID {i}') for i in range(10)]
     )
     if transformation == 'proto':
-        custom_da = DocList[new_textdoc_with_id_model].from_protobuf(original_text_doc_with_id.to_protobuf())
+        custom_da = DocList[new_textdoc_with_id_model].from_protobuf(
+            original_text_doc_with_id.to_protobuf()
+        )
         original_back = DocList[TextDocWithId].from_protobuf(custom_da.to_protobuf())
     elif transformation == 'json':
-        custom_da = DocList[new_textdoc_with_id_model].from_json(original_text_doc_with_id.to_json())
+        custom_da = DocList[new_textdoc_with_id_model].from_json(
+            original_text_doc_with_id.to_json()
+        )
         original_back = DocList[TextDocWithId].from_json(custom_da.to_json())
 
     assert len(custom_da) == 10
@@ -188,15 +224,22 @@ def test_create_pydantic_model_from_schema(transformation):
         matches: DocList[TextDocWithId]
 
     ResultTestDocCopy = _create_aux_model_doc_list_to_list(ResultTestDoc)
-    new_result_test_doc_with_id_model = _create_pydantic_model_from_schema(ResultTestDocCopy.schema(), 'ResultTestDoc',
-                                                                           {})
-    result_test_docs = DocList[ResultTestDoc]([ResultTestDoc(matches=original_text_doc_with_id)])
+    new_result_test_doc_with_id_model = _create_pydantic_model_from_schema(
+        ResultTestDocCopy.schema(), 'ResultTestDoc', {}
+    )
+    result_test_docs = DocList[ResultTestDoc](
+        [ResultTestDoc(matches=original_text_doc_with_id)]
+    )
 
     if transformation == 'proto':
-        custom_da = DocList[new_result_test_doc_with_id_model].from_protobuf(result_test_docs.to_protobuf())
+        custom_da = DocList[new_result_test_doc_with_id_model].from_protobuf(
+            result_test_docs.to_protobuf()
+        )
         original_back = DocList[ResultTestDoc].from_protobuf(custom_da.to_protobuf())
     elif transformation == 'json':
-        custom_da = DocList[new_result_test_doc_with_id_model].from_json(result_test_docs.to_json())
+        custom_da = DocList[new_result_test_doc_with_id_model].from_json(
+            result_test_docs.to_json()
+        )
         original_back = DocList[ResultTestDoc].from_json(custom_da.to_json())
 
     assert len(custom_da) == 1
@@ -213,11 +256,16 @@ def test_create_pydantic_model_from_schema(transformation):
 @pytest.mark.parametrize('transformation', ['proto', 'json'])
 @pytest.mark.skipif(not docarray_v2, reason='Test only working with docarray v2')
 def test_create_empty_doc_list_from_schema(transformation):
-    from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list, _create_pydantic_model_from_schema
     from typing import Optional
+
     from docarray import BaseDoc, DocList
-    from docarray.typing import AnyTensor, ImageUrl
     from docarray.documents import TextDoc
+    from docarray.typing import AnyTensor, ImageUrl
+
+    from jina.serve.runtimes.helper import (
+        _create_aux_model_doc_list_to_list,
+        _create_pydantic_model_from_schema,
+    )
 
     class CustomDoc(BaseDoc):
         tensor: Optional[AnyTensor]
@@ -234,14 +282,22 @@ def test_create_empty_doc_list_from_schema(transformation):
         lf: List[float] = [3.0, 4.1]
 
     CustomDocCopy = _create_aux_model_doc_list_to_list(CustomDoc)
-    new_custom_doc_model = _create_pydantic_model_from_schema(CustomDocCopy.schema(), 'CustomDoc', {})
+    new_custom_doc_model = _create_pydantic_model_from_schema(
+        CustomDocCopy.schema(), 'CustomDoc', {}
+    )
 
     original_custom_docs = DocList[CustomDoc]()
     if transformation == 'proto':
-        custom_partial_da = DocList[new_custom_doc_model].from_protobuf(original_custom_docs.to_protobuf())
-        original_back = DocList[CustomDoc].from_protobuf(custom_partial_da.to_protobuf())
+        custom_partial_da = DocList[new_custom_doc_model].from_protobuf(
+            original_custom_docs.to_protobuf()
+        )
+        original_back = DocList[CustomDoc].from_protobuf(
+            custom_partial_da.to_protobuf()
+        )
     elif transformation == 'json':
-        custom_partial_da = DocList[new_custom_doc_model].from_json(original_custom_docs.to_json())
+        custom_partial_da = DocList[new_custom_doc_model].from_json(
+            original_custom_docs.to_json()
+        )
         original_back = DocList[CustomDoc].from_json(custom_partial_da.to_json())
 
     assert len(custom_partial_da) == 0
@@ -251,14 +307,20 @@ def test_create_empty_doc_list_from_schema(transformation):
         ia: str
 
     TextDocWithIdCopy = _create_aux_model_doc_list_to_list(TextDocWithId)
-    new_textdoc_with_id_model = _create_pydantic_model_from_schema(TextDocWithIdCopy.schema(), 'TextDocWithId', {})
+    new_textdoc_with_id_model = _create_pydantic_model_from_schema(
+        TextDocWithIdCopy.schema(), 'TextDocWithId', {}
+    )
 
     original_text_doc_with_id = DocList[TextDocWithId]()
     if transformation == 'proto':
-        custom_da = DocList[new_textdoc_with_id_model].from_protobuf(original_text_doc_with_id.to_protobuf())
+        custom_da = DocList[new_textdoc_with_id_model].from_protobuf(
+            original_text_doc_with_id.to_protobuf()
+        )
         original_back = DocList[TextDocWithId].from_protobuf(custom_da.to_protobuf())
     elif transformation == 'json':
-        custom_da = DocList[new_textdoc_with_id_model].from_json(original_text_doc_with_id.to_json())
+        custom_da = DocList[new_textdoc_with_id_model].from_json(
+            original_text_doc_with_id.to_json()
+        )
         original_back = DocList[TextDocWithId].from_json(custom_da.to_json())
 
     assert len(original_back) == 0
@@ -268,15 +330,20 @@ def test_create_empty_doc_list_from_schema(transformation):
         matches: DocList[TextDocWithId]
 
     ResultTestDocCopy = _create_aux_model_doc_list_to_list(ResultTestDoc)
-    new_result_test_doc_with_id_model = _create_pydantic_model_from_schema(ResultTestDocCopy.schema(), 'ResultTestDoc',
-                                                                           {})
+    new_result_test_doc_with_id_model = _create_pydantic_model_from_schema(
+        ResultTestDocCopy.schema(), 'ResultTestDoc', {}
+    )
     result_test_docs = DocList[ResultTestDoc]()
 
     if transformation == 'proto':
-        custom_da = DocList[new_result_test_doc_with_id_model].from_protobuf(result_test_docs.to_protobuf())
+        custom_da = DocList[new_result_test_doc_with_id_model].from_protobuf(
+            result_test_docs.to_protobuf()
+        )
         original_back = DocList[ResultTestDoc].from_protobuf(custom_da.to_protobuf())
     elif transformation == 'json':
-        custom_da = DocList[new_result_test_doc_with_id_model].from_json(result_test_docs.to_json())
+        custom_da = DocList[new_result_test_doc_with_id_model].from_json(
+            result_test_docs.to_json()
+        )
         original_back = DocList[ResultTestDoc].from_json(custom_da.to_json())
 
     assert len(original_back) == 0
