@@ -1,5 +1,6 @@
 import copy
-from typing import Dict, Tuple, List, Any, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 from jina._docarray import docarray_v2
 
 _SPECIFIC_EXECUTOR_SEPARATOR = '__'
@@ -42,7 +43,7 @@ def _is_param_for_specific_executor(key_name: str) -> bool:
     """
     if _SPECIFIC_EXECUTOR_SEPARATOR in key_name:
         if key_name.startswith(_SPECIFIC_EXECUTOR_SEPARATOR) or key_name.endswith(
-                _SPECIFIC_EXECUTOR_SEPARATOR
+            _SPECIFIC_EXECUTOR_SEPARATOR
         ):
             return False
         return True
@@ -79,11 +80,12 @@ def _parse_specific_params(parameters: Dict, executor_name: str):
 
 
 if docarray_v2:
-    from jina._docarray import docarray_v2
-    from docarray import DocList, BaseDoc
+    from docarray import BaseDoc, DocList
     from docarray.typing import AnyTensor
     from pydantic import create_model
     from pydantic.fields import FieldInfo
+
+    from jina._docarray import docarray_v2
 
     RESERVED_KEYS = [
         'type',
@@ -96,7 +98,6 @@ if docarray_v2:
         'properties',
         'default',
     ]
-
 
     def _create_aux_model_doc_list_to_list(model):
         fields: Dict[str, Any] = {}
@@ -111,11 +112,24 @@ if docarray_v2:
             except TypeError:
                 fields[field_name] = (field, field_info)
         return create_model(
-            model.__name__, __base__=model, __validators__=model.__validators__, **fields
+            model.__name__,
+            __base__=model,
+            __validators__=model.__validators__,
+            **fields,
         )
 
-
-    def _get_field_from_type(field_schema, field_name, root_schema, cached_models, is_tensor=False, num_recursions=0, base_class=BaseDoc):
+    def _get_field_from_type(
+        field_schema,
+        field_name,
+        root_schema,
+        cached_models,
+        is_tensor=False,
+        num_recursions=0,
+        base_class=BaseDoc,
+        definitions: Optional[Dict] = None,
+    ):
+        if not definitions:
+            definitions = {}
         field_type = field_schema.get('type', None)
         tensor_shape = field_schema.get('tensor/array shape', None)
         if 'anyOf' in field_schema:
@@ -125,14 +139,27 @@ if docarray_v2:
                     obj_ref = any_of_schema.get('$ref')
                     ref_name = obj_ref.split('/')[-1]
                     any_of_types.append(
-                        _create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name,
-                                                           cached_models=cached_models, base_class=base_class))
+                        _create_pydantic_model_from_schema(
+                            definitions[ref_name],
+                            ref_name,
+                            cached_models=cached_models,
+                            base_class=base_class,
+                            definitions=definitions,
+                        )
+                    )
                 else:
-                    any_of_types.append(_get_field_from_type(any_of_schema, field_name, root_schema=root_schema,
-                                                             cached_models=cached_models,
-                                                             is_tensor=tensor_shape is not None,
-                                                             num_recursions=0,
-                                                             base_class=base_class))  # No Union of Lists
+                    any_of_types.append(
+                        _get_field_from_type(
+                            any_of_schema,
+                            field_name,
+                            root_schema=root_schema,
+                            cached_models=cached_models,
+                            is_tensor=tensor_shape is not None,
+                            num_recursions=0,
+                            base_class=base_class,
+                            definitions=definitions,
+                        )
+                    )  # No Union of Lists
             ret = Union[tuple(any_of_types)]
             for rec in range(num_recursions):
                 ret = List[ret]
@@ -163,40 +190,87 @@ if docarray_v2:
             if 'additionalProperties' in field_schema:  # handle Dictionaries
                 additional_props = field_schema['additionalProperties']
                 if additional_props.get('type') == 'object':
-                    ret = Dict[str, _create_pydantic_model_from_schema(additional_props, field_name,
-                                                                       cached_models=cached_models, base_class=base_class)]
+                    ret = Dict[
+                        str,
+                        _create_pydantic_model_from_schema(
+                            additional_props,
+                            field_name,
+                            cached_models=cached_models,
+                            base_class=base_class,
+                        ),
+                    ]
                 else:
                     ret = Dict[str, Any]
             else:
-                obj_ref = field_schema.get('$ref') or field_schema.get('allOf', [{}])[0].get('$ref', None)
+                obj_ref = field_schema.get('$ref') or field_schema.get('allOf', [{}])[
+                    0
+                ].get('$ref', None)
                 if num_recursions == 0:  # single object reference
                     if obj_ref:
                         ref_name = obj_ref.split('/')[-1]
-                        ret = _create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name,
-                                                                 cached_models=cached_models, base_class=base_class)
+                        ret = _create_pydantic_model_from_schema(
+                            definitions[ref_name],
+                            ref_name,
+                            cached_models=cached_models,
+                            base_class=base_class,
+                            definitions=definitions,
+                        )
                     else:
                         ret = Any
                 else:  # object reference in definitions
                     if obj_ref:
                         ref_name = obj_ref.split('/')[-1]
-                        ret = DocList[_create_pydantic_model_from_schema(root_schema['definitions'][ref_name], ref_name,
-                                                                         cached_models=cached_models, base_class=base_class)]
+                        ret = DocList[
+                            _create_pydantic_model_from_schema(
+                                definitions[ref_name],
+                                ref_name,
+                                cached_models=cached_models,
+                                base_class=base_class,
+                                definitions=definitions,
+                            )
+                        ]
                     else:
                         ret = DocList[
-                            _create_pydantic_model_from_schema(field_schema, field_name, cached_models=cached_models, base_class=base_class)]
+                            _create_pydantic_model_from_schema(
+                                field_schema,
+                                field_name,
+                                cached_models=cached_models,
+                                base_class=base_class,
+                                definitions=definitions,
+                            )
+                        ]
         elif field_type == 'array':
-            ret = _get_field_from_type(field_schema=field_schema.get('items', {}), field_name=field_name,
-                                       root_schema=root_schema, cached_models=cached_models,
-                                       is_tensor=tensor_shape is not None, num_recursions=num_recursions + 1, base_class=base_class)
+            ret = _get_field_from_type(
+                field_schema=field_schema.get('items', {}),
+                field_name=field_name,
+                root_schema=root_schema,
+                cached_models=cached_models,
+                is_tensor=tensor_shape is not None,
+                num_recursions=num_recursions + 1,
+                base_class=base_class,
+                definitions=definitions,
+            )
         else:
             if num_recursions > 0:
-                raise ValueError(f"Unknown array item type: {field_type} for field_name {field_name}")
+                raise ValueError(
+                    f"Unknown array item type: {field_type} for field_name {field_name}"
+                )
             else:
-                raise ValueError(f"Unknown field type: {field_type} for field_name {field_name}")
+                raise ValueError(
+                    f"Unknown field type: {field_type} for field_name {field_name}"
+                )
         return ret
 
+    def _create_pydantic_model_from_schema(
+        schema: Dict[str, any],
+        model_name: str,
+        cached_models: Dict,
+        base_class=BaseDoc,
+        definitions: Optional[Dict] = None,
+    ) -> type:
+        if not definitions:
+            definitions = schema.get('definitions', {})
 
-    def _create_pydantic_model_from_schema(schema: Dict[str, any], model_name: str, cached_models: Dict, base_class=BaseDoc) -> type:
         cached_models = cached_models if cached_models is not None else {}
         fields: Dict[str, Any] = {}
         if model_name in cached_models:
@@ -209,9 +283,13 @@ if docarray_v2:
                 cached_models=cached_models,
                 is_tensor=False,
                 num_recursions=0,
-                base_class=base_class
+                base_class=base_class,
+                definitions=definitions,
             )
-            fields[field_name] = (field_type, FieldInfo(default=field_schema.pop('default', None), **field_schema))
+            fields[field_name] = (
+                field_type,
+                FieldInfo(default=field_schema.pop('default', None), **field_schema),
+            )
 
         model = create_model(model_name, __base__=base_class, **fields)
         model.__config__.title = schema.get('title', model.__config__.title)
