@@ -3,11 +3,12 @@ import copy
 import re
 from collections import defaultdict
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Type
 
 import grpc.aio
 
-from jina._docarray import docarray_v2
+# TODO: remove this
+from jina._docarray import DocumentArray, docarray_v2
 from jina.constants import __default_endpoint__
 from jina.excepts import InternalNetworkError
 from jina.logging.logger import JinaLogger
@@ -351,6 +352,7 @@ class TopologyGraph:
             request_input_parameters: Dict = {},
             copy_request_at_send: bool = False,
             init_task: Optional[asyncio.Task] = None,
+            return_type: Type[DocumentArray] = None,
         ):
             # Check my condition and send request with the condition
             metadata = {}
@@ -420,11 +422,14 @@ class TopologyGraph:
 
                         if docarray_v2:
                             if self.endpoints and endpoint in self.endpoints:
-                                resp.document_array_cls = DocList[
-                                    self._pydantic_models_by_endpoint[endpoint][
-                                        'output'
+                                if not return_type:
+                                    resp.document_array_cls = DocList[
+                                        self._pydantic_models_by_endpoint[endpoint][
+                                            'output'
+                                        ]
                                     ]
-                                ]
+                                else:
+                                    resp.document_array_cls = return_type
 
                         if WorkerRequestHandler._KEY_RESULT in resp.parameters:
                             # Accumulate results from each Node and then add them to the original
@@ -570,6 +575,7 @@ class TopologyGraph:
             request_input_has_specific_params: bool = False,
             copy_request_at_send: bool = False,
             init_task: Optional[asyncio.Task] = None,
+            return_type: Type[DocumentArray] = DocumentArray,
         ) -> List[Tuple[bool, asyncio.Task]]:
             """
             Gets all the tasks corresponding from all the subgraphs born from this node
@@ -602,6 +608,7 @@ class TopologyGraph:
 
                 When the caller of these methods await them, they will fire the logic of sending requests and responses from and to every deployment
 
+            :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.
             :return: Return a list of tuples, where tasks corresponding to the leafs of all the subgraphs born from this node are in each tuple.
                 These tasks will be based on awaiting for the task from previous_node and sending a request to the corresponding node. The other member of the pair
                 is a flag indicating if the task is to be awaited by the gateway or not.
@@ -616,6 +623,7 @@ class TopologyGraph:
                     request_input_parameters=request_input_parameters,
                     copy_request_at_send=copy_request_at_send,
                     init_task=init_task,
+                    return_type=return_type,
                 )
             )
             if self.leaf:  # I am like a leaf
@@ -635,6 +643,7 @@ class TopologyGraph:
                     request_input_has_specific_params=request_input_has_specific_params,
                     copy_request_at_send=num_outgoing_nodes > 1
                     and request_input_has_specific_params,
+                    return_type=return_type,
                 )
                 # We are interested in the last one, that will be the task that awaits all the previous
                 hanging_tasks_tuples.extend(t)
