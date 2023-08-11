@@ -838,7 +838,25 @@ def test_custom_gateway():
                     parameters=PARAMETERS,
                     return_type=DocList[TextDoc],
                 )
+                assert resp.doc_type is TextDoc
                 return {'result': [doc.text for doc in resp]}
+
+            @app.get('/endpoint_stream_docs')
+            async def get_endpoint_stream_docs(text: str):
+                docs = DocList[TextDoc](
+                    [
+                        TextDoc(text=f'stream {text}'),
+                        TextDoc(text=f'stream {text}'.upper()),
+                    ]
+                )
+                async for resp in self.streamer.stream_docs(
+                    docs,
+                    parameters=PARAMETERS,
+                    target_executor='executor1',
+                    return_type=DocList[TextDoc],
+                ):
+                    assert resp.doc_type is TextDoc
+                    return {'result': [doc.text for doc in resp]}
 
             @app.get('/endpoint_stream')
             async def get_endpoint_stream(text: str):
@@ -848,9 +866,13 @@ def test_custom_gateway():
                         TextDoc(text=f'stream {text}'.upper()),
                     ]
                 )
-                async for resp in self.streamer.stream_docs(
-                    docs, parameters=PARAMETERS, target_executor='executor1'
+                async for resp, _ in self.streamer.stream(
+                    docs,
+                    parameters=PARAMETERS,
+                    target_executor='executor1',
+                    return_type=DocList[TextDoc],
                 ):
+                    assert resp.doc_type is TextDoc
                     return {'result': [doc.text for doc in resp]}
 
             return app
@@ -878,6 +900,12 @@ def test_custom_gateway():
         assert r.json()['result'] == [
             f'executor meow Second(parameters={str(PARAMETERS)})',
             f'EXECUTOR MEOW Second(parameters={str(PARAMETERS)})',
+        ]
+
+        r = requests.get(f'http://localhost:{flow.port}/endpoint_stream_docs?text=meow')
+        assert r.json()['result'] == [
+            f'stream meow Second(parameters={str(PARAMETERS)})',
+            f'STREAM MEOW Second(parameters={str(PARAMETERS)})',
         ]
 
         r = requests.get(f'http://localhost:{flow.port}/endpoint_stream?text=meow')
@@ -1136,7 +1164,9 @@ def test_serve_complex_model(protocols, replicas, ctxt_manager):
 
     class MyComplexServeExec(Executor):
         @requests(on='/bar')
-        def bar(self, docs: DocList[InputComplexDoc], **kwargs) -> DocList[OutputComplexDoc]:
+        def bar(
+            self, docs: DocList[InputComplexDoc], **kwargs
+        ) -> DocList[OutputComplexDoc]:
             docs_return = DocList[OutputComplexDoc](
                 [
                     OutputComplexDoc(
@@ -1160,9 +1190,13 @@ def test_serve_complex_model(protocols, replicas, ctxt_manager):
 
     ports = [random_port() for _ in protocols]
     if ctxt_manager == 'flow':
-        ctxt = Flow(port=ports, protocol=protocols).add(replicas=replicas, uses=MyComplexServeExec)
+        ctxt = Flow(port=ports, protocol=protocols).add(
+            replicas=replicas, uses=MyComplexServeExec
+        )
     else:
-        ctxt = Deployment(port=ports, protocol=protocols, replicas=replicas, uses=MyComplexServeExec)
+        ctxt = Deployment(
+            port=ports, protocol=protocols, replicas=replicas, uses=MyComplexServeExec
+        )
     with ctxt:
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
@@ -1484,22 +1518,27 @@ def test_issue_with_monitoring():
 def test_doc_with_examples(ctxt_manager, include_gateway):
     if ctxt_manager == 'flow' and include_gateway:
         return
-    import string
     import random
+    import string
 
     random_example = ''.join(random.choices(string.ascii_letters, k=10))
     random_description = ''.join(random.choices(string.ascii_letters, k=10))
     from pydantic.fields import Field
+
     class MyDocWithExample(BaseDoc):
         """This test should be in description"""
+
         t: str = Field(examples=[random_example], description=random_description)
+
         class Config:
             title: str = 'MyDocWithExampleTitle'
             schema_extra: Dict = {'extra_key': 'extra_value'}
 
     class MyExecDocWithExample(Executor):
         @requests
-        def foo(self, docs: DocList[MyDocWithExample], **kwargs) -> DocList[MyDocWithExample]:
+        def foo(
+            self, docs: DocList[MyDocWithExample], **kwargs
+        ) -> DocList[MyDocWithExample]:
             pass
 
     port = random_port()
@@ -1507,10 +1546,16 @@ def test_doc_with_examples(ctxt_manager, include_gateway):
     if ctxt_manager == 'flow':
         ctxt = Flow(protocol='http', port=port).add(uses=MyExecDocWithExample)
     else:
-        ctxt = Deployment(uses=MyExecDocWithExample, protocol='http', port=port, include_gateway=include_gateway)
+        ctxt = Deployment(
+            uses=MyExecDocWithExample,
+            protocol='http',
+            port=port,
+            include_gateway=include_gateway,
+        )
 
     with ctxt:
         import requests as general_requests
+
         resp = general_requests.get(f'http://localhost:{port}/openapi.json')
         resp_str = str(resp.json())
         assert random_example in resp_str
@@ -1527,13 +1572,18 @@ def test_issue_fastapi_multiple_models_same_name():
     class MyInputModel(BaseDoc):
         b: Optional[MyRandomModel] = None
 
-
     class MyFailingExecutor(Executor):
         @requests(on='/generate')
-        def generate(self, docs: DocList[MyInputModel], **kwargs) -> DocList[MyRandomModel]:
+        def generate(
+            self, docs: DocList[MyInputModel], **kwargs
+        ) -> DocList[MyRandomModel]:
             return DocList[MyRandomModel]([doc.b for doc in docs])
 
     with Flow(protocol='http').add(uses=MyFailingExecutor) as f:
         input_doc = MyRandomModel(a='hello world')
-        res = f.post(on='/generate', inputs=[MyInputModel(b=MyRandomModel(a='hey'))], return_type=DocList[MyRandomModel])
+        res = f.post(
+            on='/generate',
+            inputs=[MyInputModel(b=MyRandomModel(a='hey'))],
+            return_type=DocList[MyRandomModel],
+        )
         assert res[0].a == 'hey'
