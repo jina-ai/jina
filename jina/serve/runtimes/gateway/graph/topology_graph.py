@@ -7,7 +7,6 @@ from typing import Dict, List, Optional, Tuple, Type
 
 import grpc.aio
 
-# TODO: remove this
 from jina._docarray import DocumentArray, docarray_v2
 from jina.constants import __default_endpoint__
 from jina.excepts import InternalNetworkError

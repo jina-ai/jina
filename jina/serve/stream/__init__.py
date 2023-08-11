@@ -18,7 +18,6 @@ from jina.types.request.data import DataRequest
 
 __all__ = ['RequestStreamer']
 
-# TODO: remove later
 from jina._docarray import DocumentArray
 from jina.types.request.data import Response
 
