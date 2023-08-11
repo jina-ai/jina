@@ -250,6 +250,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -628,6 +629,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.19.0`)](#release-note-3190)
 - [Release Note (`3.19.1`)](#release-note-3191)
 - [Release Note (`3.20.0`)](#release-note-3200)
+- [Release Note (`3.20.1`)](#release-note-3201)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -16081,4 +16083,32 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```8141d99e```](https://github.com/jina-ai/jina/commit/8141d99e0cbc05173e82db58bfec6a9c3b10742a)] __-__ refactor CompositeServer for better extendability (#5978) (*Joan Fontanals*)
  - [[```6f8c10b8```](https://github.com/jina-ai/jina/commit/6f8c10b84cb72f51d439c075240de0485d04944a)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```83557ab4```](https://github.com/jina-ai/jina/commit/83557ab4bd275ed4ea6c9d0bdb99c0cc615dd3db)] __-__ __version__: the next version will be 3.19.2 (*Jina Dev Bot*)
+
+<a name=release-note-3-20-1></a>
+## Release Note (`3.20.1`)
+
+> Release time: 2023-08-10 15:49:12
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ AlaeddineAbdessalem,  Naymul Islam,  Joan Fontanals,  Saba Sturua,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```0a33cde3```](https://github.com/jina-ai/jina/commit/0a33cde3235d5d70416cde16a9d2bffd89f5e61a)] __-__ make gateway load balancer should stream results (#6024) (*AlaeddineAbdessalem*)
+ - [[```36e67f53```](https://github.com/jina-ai/jina/commit/36e67f53d2c0fef9a203b4055ad9d1a4f201150b)] __-__ refer to global schema definitions when creating models (#6021) (*AlaeddineAbdessalem*)
+
+### 📗 Documentation
+
+ - [[```c44eb350```](https://github.com/jina-ai/jina/commit/c44eb35015a1708412d2bf6fa114c54f5c095922)] __-__ remove an extra backtick in create-app.md (#6023) (*Naymul Islam*)
+ - [[```ace17e3b```](https://github.com/jina-ai/jina/commit/ace17e3b66ce65a77881a1597d6138c63b2bf7f3)] __-__ update README.md (#6018) (*Joan Fontanals*)
+ - [[```3b031af9```](https://github.com/jina-ai/jina/commit/3b031af9f527e37faaf528d3e1bdb0b781d0d938)] __-__ fix streaming endpoint ref in readme (#6017) (*Saba Sturua*)
+
+### 🍹 Other Improvements
+
+ - [[```4b51c711```](https://github.com/jina-ai/jina/commit/4b51c711efab1053504970fda74cef7259329c5c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```6c32f235```](https://github.com/jina-ai/jina/commit/6c32f2353fbb139b1e89a0c9354926b163f96f95)] __-__ have less previous vers in docs (#6016) (*Joan Fontanals*)
+ - [[```afebba7a```](https://github.com/jina-ai/jina/commit/afebba7a18262e35c216232fbae4c30852da599e)] __-__ __version__: the next version will be 3.20.1 (*Jina Dev Bot*)
 
