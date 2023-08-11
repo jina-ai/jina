@@ -67,7 +67,7 @@ class UnaryRpc:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(self.channel)
 
         def _request_handler(
-            request: 'Request',
+            request: 'Request', **kwargs
         ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
             async def _with_retry(req: 'Request'):
                 for attempt in range(1, self.max_attempts + 1):

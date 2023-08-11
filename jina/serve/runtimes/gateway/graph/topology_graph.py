@@ -422,7 +422,7 @@ class TopologyGraph:
 
                         if docarray_v2:
                             if self.endpoints and endpoint in self.endpoints:
-                                # Todo: need to make sure return_type is used when it is simply a DocumentArray/DocList
+                                # Todo: need to make sure return_type is not used when it is simply a DocumentArray/DocList
                                 if not return_type:
                                     resp.document_array_cls = DocList[
                                         self._pydantic_models_by_endpoint[endpoint][
