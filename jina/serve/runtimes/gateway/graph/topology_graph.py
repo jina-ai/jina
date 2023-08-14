@@ -433,10 +433,14 @@ class TopologyGraph:
                                     or not return_type.doc_type
                                     or return_type.doc_type is AnyDoc
                                 ):
+                                    pydantic_models = (
+                                        self._pydantic_models_by_endpoint.get(endpoint)
+                                        or self._pydantic_models_by_endpoint.get(
+                                            __default_endpoint__
+                                        )
+                                    )
                                     resp.document_array_cls = DocList[
-                                        self._pydantic_models_by_endpoint[endpoint][
-                                            'output'
-                                        ]
+                                        pydantic_models['output']
                                     ]
                                 else:
                                     resp.document_array_cls = return_type
