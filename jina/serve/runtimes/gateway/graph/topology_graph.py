@@ -420,7 +420,10 @@ class TopologyGraph:
                             resp, metadata = result
 
                         if docarray_v2:
-                            if self.endpoints and endpoint in self.endpoints:
+                            if self.endpoints and (
+                                endpoint in self.endpoints
+                                or __default_endpoint__ in self.endpoints
+                            ):
                                 from docarray.base_doc import AnyDoc
 
                                 # if return_type is not specified or if it is a default type, cast using retrieved
