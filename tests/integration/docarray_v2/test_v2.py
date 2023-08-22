@@ -76,8 +76,9 @@ def test_send_custom_doc(protocols, replicas):
 
     class MyExec(Executor):
         @requests(on='/foo')
-        def foo(self, docs: DocList[MyDoc], **kwargs):
+        def foo(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDoc]:
             docs[0].my_text = 'hello world'
+            return docs
 
     ports = [random_port() for _ in protocols]
     with Flow(port=ports, protocol=protocols, replicas=replicas).add(uses=MyExec):
