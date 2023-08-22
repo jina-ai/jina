@@ -458,7 +458,8 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install wheel
           WHEEL_FILE=$(ls dist/*whl)
-          pip install -v "$WHEEL_FILE[common,devel,test]" --no-cache-dir
+          pip install "$WHEEL_FILE[common,devel,test]" --no-cache-dir
+          pip install docarray==0.37.1
           pip install -U protobuf${{ matrix.protobuf-version }}
           jina
           export JINA_LOG_LEVEL="ERROR"
