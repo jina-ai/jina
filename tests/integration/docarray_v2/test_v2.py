@@ -68,8 +68,10 @@ def test_different_document_schema(protocols, replicas):
             assert docs[0].texts[1].text == 'ha'
 
 
-@pytest.mark.parametrize('protocols', [['http']])
-@pytest.mark.parametrize('replicas', [1])
+@pytest.mark.parametrize(
+    'protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']]
+)
+@pytest.mark.parametrize('replicas', [1, 3])
 def test_send_custom_doc(protocols, replicas):
     class MyDoc(BaseDoc):
         my_text: str
