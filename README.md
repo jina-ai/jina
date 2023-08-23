@@ -25,7 +25,7 @@
 
 Jina lets you build multimodal [**AI services**](#build-ai-models) and [**pipelines**](#build-a-pipeline) that communicate via gRPC, HTTP and WebSockets, then scale them up and deploy to production. You can focus on your logic and algorithms, without worrying about the infrastructure complexity.
 
-![](./.github/images/build-deploy.png)
+![](https://github.com/jina-ai/jina/.github/images/build-deploy.png)
 
 Jina provides a smooth Pythonic experience for serving ML models transitioning from local deployment to advanced orchestration frameworks like Docker-Compose, Kubernetes, or Jina AI Cloud. Jina makes advanced solution engineering and cloud-native technologies accessible to every developer.
 
@@ -85,7 +85,7 @@ Jina has three fundamental layers:
 
 Let's build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an **[Executor](https://docs.jina.ai/concepts/serving/executor/)**. Our simple Executor will wrap the [StableLM](https://huggingface.co/stabilityai/stablelm-base-alpha-3b) LLM from Stability AI. We'll then use a **Deployment** to serve it.
 
-![](./.github/images/deployment-diagram.png)
+![](https://github.com/jina-ai/jina/.github/images/deployment-diagram.png)
 
 > **Note**
 > A Deployment serves just one Executor. To combine multiple Executors into a pipeline and serve that, use a [Flow](#build-a-pipeline).
@@ -265,7 +265,7 @@ class TextToImage(Executor):
 </table>
 
 
-![](./.github/images/flow-diagram.png)
+![](https://github.com/jina-ai/jina/.github/images/flow-diagram.png)
 
 Build the Flow with either Python or YAML:
 
@@ -340,7 +340,7 @@ response = client.post(on='/', inputs=[prompt], return_type=DocList[ImageDoc])
 response[0].display()
 ```
 
-![](./.github/images/mona-lisa.png)
+![](https://github.com/jina-ai/jina/.github/images/mona-lisa.png)
 
 <!-- end build-pipelines -->
 
@@ -352,7 +352,7 @@ Increase your application's throughput with scalability features out of the box,
 
 Let's scale a Stable Diffusion Executor deployment with replicas and dynamic batching:
 
-![](./.github/images/scaled-deployment.png)
+![](https://github.com/jina-ai/jina/.github/images/scaled-deployment.png)
 
 * Create two replicas, with [a GPU assigned for each](https://docs.jina.ai/concepts/orchestration/scale-out/#replicate-on-multiple-gpus).
 * Enable dynamic batching to process incoming parallel requests together with the same model inference.
