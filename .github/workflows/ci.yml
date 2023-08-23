@@ -459,7 +459,8 @@ jobs:
           python -m pip install wheel
           WHEEL_FILE=$(ls dist/*whl)
           pip install "$WHEEL_FILE[common,devel,test]" --no-cache-dir
-          pip install docarray==0.37.1
+          pip uninstall docarray -y
+          pip install git+https://github.com/docarray/docarray.git@fix-reduce-casting
           pip install -U protobuf${{ matrix.protobuf-version }}
           jina
           export JINA_LOG_LEVEL="ERROR"
