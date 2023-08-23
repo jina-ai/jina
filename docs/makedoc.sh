@@ -11,6 +11,8 @@ if [[ $1 == "local-only" ]]; then
     ghcr.io/jina-ai/protoc-gen-doc --doc_opt=markdown,docs.md
 
   make dirhtml
+  mkdir -p _build/dirhtml/.github
+  cp -r ../.github/images _build/dirhtml/.github
 else
   export NUM_RELEASES=${NUM_RELEASES:-10}
   export DEFAULT_BRANCH='master'
