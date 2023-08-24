@@ -1,6 +1,6 @@
 # Login & Token Management
 
-To use Jina AI Cloud, you need to log in, either via a GitHub or Google account. This section describes how to log in Jina AI Cloud and manage the personal access token. You can do it via webpage, via CLI or via Python API.
+To use Jina AI Cloud, you need to log in, either via a GitHub or Google account. This section describes how to log in Jina AI Cloud and manage the personal access token. You can do it via webpage, CLI or Python API.
 
 ## via Webpage
 
