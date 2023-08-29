@@ -270,6 +270,7 @@ def test_create_empty_doc_list_from_schema(transformation):
     class CustomDoc(BaseDoc):
         tensor: Optional[AnyTensor]
         url: ImageUrl
+        class_var: ClassVar[str] = "class_var_val"
         lll: List[List[List[int]]] = [[[5]]]
         fff: List[List[List[float]]] = [[[5.2]]]
         single_text: TextDoc
