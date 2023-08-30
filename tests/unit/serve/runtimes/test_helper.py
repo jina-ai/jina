@@ -103,9 +103,11 @@ def test_create_pydantic_model_from_schema(transformation):
 
     class Nested2Doc(BaseDoc):
         value: str
+        classvar: ClassVar[str] = 'classvar2'
 
     class Nested1Doc(BaseDoc):
         nested: Nested2Doc
+        classvar: ClassVar[str] = 'classvar1'
 
     class CustomDoc(BaseDoc):
         tensor: Optional[AnyTensor]
@@ -120,6 +122,7 @@ def test_create_pydantic_model_from_schema(transformation):
         lu: List[Union[str, int]] = [0, 1, 2]
         tags: Optional[Dict[str, Any]] = None
         nested: Nested1Doc
+        classvar: ClassVar[str] = 'classvar'
 
     CustomDocCopy = _create_aux_model_doc_list_to_list(CustomDoc)
     new_custom_doc_model = _create_pydantic_model_from_schema(
@@ -173,6 +176,9 @@ def test_create_pydantic_model_from_schema(transformation):
     assert custom_partial_da[0].single_text.text == 'single hey ha'
     assert custom_partial_da[0].single_text.embedding.shape == (2,)
     assert custom_partial_da[0].nested.nested.value == 'hello world'
+    assert custom_partial_da[0].classvar == 'classvar'
+    assert custom_partial_da[0].nested.classvar == 'classvar1'
+    assert custom_partial_da[0].nested.nested.classvar == 'classvar1'
 
     assert len(original_back) == 1
     assert original_back[0].url == 'photo.jpg'
@@ -189,6 +195,9 @@ def test_create_pydantic_model_from_schema(transformation):
     assert original_back[0].single_text.text == 'single hey ha'
     assert original_back[0].single_text.embedding.shape == (2,)
     assert original_back[0].nested.nested.value == 'hello world'
+    assert original_back[0].classvar == 'classvar'
+    assert original_back[0].nested.classvar == 'classvar1'
+    assert original_back[0].nested.nested.classvar == 'classvar2'
 
     class TextDocWithId(BaseDoc):
         ia: str
