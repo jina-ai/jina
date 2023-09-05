@@ -190,6 +190,8 @@ jobs:
           export JINA_LOG_LEVEL="ERROR"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: Test k8s Flow
         run: |
           kubectl version --client
@@ -232,6 +234,8 @@ jobs:
           export JINA_LOG_LEVEL="ERROR"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: Test k8s Deployment
         run: |
           kubectl version --client
