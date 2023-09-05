@@ -960,7 +960,12 @@ async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize('grpc_metadata', [{}, {"key1": "value1"}])
-async def test_flow_with_metadata_k8s_deployment(logger, grpc_metadata, tmpdir):
+@pytest.mark.parametrize(
+    'docker_images',
+    [['jinaai/jina']],
+    indirect=True,
+)
+async def test_flow_with_metadata_k8s_deployment(logger, grpc_metadata, docker_images, tmpdir):
     from kubernetes import client
 
     namespace = 'test-flow-with-metadata-k8s-deployment'.lower()
@@ -968,9 +973,8 @@ async def test_flow_with_metadata_k8s_deployment(logger, grpc_metadata, tmpdir):
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
     try:
-        docker_images = ['test-executor', 'jinaai/jina']
-
-        await _create_external_deployment(api_client, app_client, docker_images, tmpdir)
+        images = ['test-executor']
+        await _create_external_deployment(api_client, app_client, images, tmpdir)
 
         flow = Flow(name='k8s_flow-with_metadata_deployment').add(
             name='external_executor',
