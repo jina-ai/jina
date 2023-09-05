@@ -210,7 +210,7 @@ async def run_test_until_event(
 
 
 def inject_failures(k8s_cluster, logger):
-    k8s_cluster.install_linkderd_smi()
+    k8s_cluster.install_linkerd_smi()
     logger.info(f'Inject random failures into test cluster')
     proc = subprocess.Popen(
         [
