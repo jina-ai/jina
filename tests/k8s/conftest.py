@@ -86,7 +86,7 @@ class KindClusterWrapper:
             print(f'linkerd check yields {out.decode() if out else "nothing"}')
         except subprocess.CalledProcessError as e:
             print(
-                f'linkerd check failed with error code { e.returncode } and output { e.output }'
+                f'linkerd check failed with error code { e.returncode } and output { e.output }, and stderr { e.stderr }'
             )
             raise
 
