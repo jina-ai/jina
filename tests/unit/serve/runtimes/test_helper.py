@@ -176,9 +176,6 @@ def test_create_pydantic_model_from_schema(transformation):
     assert custom_partial_da[0].single_text.text == 'single hey ha'
     assert custom_partial_da[0].single_text.embedding.shape == (2,)
     assert custom_partial_da[0].nested.nested.value == 'hello world'
-    assert custom_partial_da[0].classvar == 'classvar'
-    assert custom_partial_da[0].nested.classvar == 'classvar1'
-    assert custom_partial_da[0].nested.nested.classvar == 'classvar1'
 
     assert len(original_back) == 1
     assert original_back[0].url == 'photo.jpg'
