@@ -487,10 +487,6 @@ def temp_workspace(tmpdir):
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_condition_feature(protocol, temp_workspace, tmpdir):
-    from docarray import __version__
-
-    print('docarray version:', __version__)
-
     class ProcessingTestDocConditions(BaseDoc):
         text: str
         tags: Dict[str, int]
