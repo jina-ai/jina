@@ -102,6 +102,8 @@ if docarray_v2:
     def _create_aux_model_doc_list_to_list(model):
         fields: Dict[str, Any] = {}
         for field_name, field in model.__annotations__.items():
+            if field_name not in model.__fields__:
+                continue
             field_info = model.__fields__[field_name].field_info
             try:
                 if issubclass(field, DocList):
