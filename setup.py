@@ -9,6 +9,14 @@ from setuptools.command.develop import develop
 from setuptools.command.egg_info import egg_info
 from setuptools.command.install import install
 
+AUTHOR_NAME = 'Jina AI'
+AUTHOR_EMAIL = 'hello@jina.ai'
+LICENSE = 'Apache 2.0'
+GITHUB_REPO = 'https://github.com/jina-ai/jina/'
+DOWNLOAD_URL = 'https://github.com/jina-ai/jina/tags'
+DOCUMENTATION = 'https://docs.jina.ai'
+TRACKER = 'https://github.com/jina-ai/jina/issues'
+
 if sys.version_info < (3, 7, 0):
     raise OSError(f'Jina requires Python >=3.7, but yours is {sys.version}')
 
@@ -194,11 +202,11 @@ setup(
     version=__version__,
     include_package_data=True,
     description='Multimodal AI services & pipelines with cloud-native stack: gRPC, Kubernetes, Docker, OpenTelemetry, Prometheus, Jaeger, etc.',
-    author='Jina AI',
-    author_email='hello@jina.ai',
-    license='Apache 2.0',
-    url='https://github.com/jina-ai/jina/',
-    download_url='https://github.com/jina-ai/jina/tags',
+    author= AUTHOR_NAME,
+    author_email= AUTHOR_EMAIL,
+    license= LICENSE,
+    url= GITHUB_REPO,
+    download_url= DOWNLOAD_URL,
     long_description=_long_description,
     long_description_content_type='text/markdown',
     zip_safe=False,
@@ -240,9 +248,9 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     project_urls={
-        'Documentation': 'https://docs.jina.ai',
-        'Source': 'https://github.com/jina-ai/jina/',
-        'Tracker': 'https://github.com/jina-ai/jina/issues',
+        'Documentation': DOCUMENTATION,
+        'Source': GITHUB_REPO,
+        'Tracker': TRACKER,
     },
     keywords='jina cloud-native cross-modal multimodal neural-search query search index elastic neural-network encoding '
     'embedding serving docker container image video audio deep-learning mlops',

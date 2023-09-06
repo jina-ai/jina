@@ -7,7 +7,7 @@ sphinx-autodoc-typehints==1.18.3
 sphinx_copybutton
 sphinx-notfound-page==0.7.1
 gitpython==3.1.30
-sphinx-sitemap
+sphinx-sitemap==2.5.0
 sphinxext-opengraph
 furo
 myst-parser
