@@ -251,6 +251,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -16111,4 +16112,33 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```4b51c711```](https://github.com/jina-ai/jina/commit/4b51c711efab1053504970fda74cef7259329c5c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```6c32f235```](https://github.com/jina-ai/jina/commit/6c32f2353fbb139b1e89a0c9354926b163f96f95)] __-__ have less previous vers in docs (#6016) (*Joan Fontanals*)
  - [[```afebba7a```](https://github.com/jina-ai/jina/commit/afebba7a18262e35c216232fbae4c30852da599e)] __-__ __version__: the next version will be 3.20.1 (*Jina Dev Bot*)
+
+<a name=release-note-3-20-2></a>
+## Release Note (`3.20.2`)
+
+> Release time: 2023-09-06 07:37:25
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Naymul Islam,  Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```034a7b1b```](https://github.com/jina-ai/jina/commit/034a7b1b86bd2fbd970fbb7f1f8becbbcd1fd4c2)] __-__ fix install issue (#6037) (*Joan Fontanals*)
+
+### 🧼 Code Refactoring
+
+ - [[```0569354b```](https://github.com/jina-ai/jina/commit/0569354b17fa3fca52e78ad7ca0e030d11f011af)] __-__ refactor the setup.py file (#6038) (*Naymul Islam*)
+
+### 📗 Documentation
+
+ - [[```23c7b8c7```](https://github.com/jina-ai/jina/commit/23c7b8c78fc4ad67d16d83fc0c9f0eae9e935e71)] __-__ thumbnails fix (#6033) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```7123bca5```](https://github.com/jina-ai/jina/commit/7123bca5b52cc40ac8a160b0964875e13702caef)] __-__ update tag to add model serving (#6036) (*Joan Fontanals*)
+ - [[```87aeff0a```](https://github.com/jina-ai/jina/commit/87aeff0af953e91911e2d545788fbf199f7ed640)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```8c912ef8```](https://github.com/jina-ai/jina/commit/8c912ef8bcdca7056b2febb17cabdff96ebd359f)] __-__ __version__: the next version will be 3.20.2 (*Jina Dev Bot*)
 
