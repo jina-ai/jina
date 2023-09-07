@@ -3,10 +3,10 @@ import re
 import sys
 from os import path
 
-version = ''
+
 # Centralize environment variables
 JINA_VERSION = os.environ.get('JINA_VERSION')
-SPHINX_MULTIVERSION_VERSION = os.environ.get('SPHINX_MULTIVERSION_VERSION', version)
+SPHINX_MULTIVERSION_VERSION = os.environ.get('SPHINX_MULTIVERSION_VERSION', None)
 
 sys.path.insert(0, path.abspath('..'))
 
