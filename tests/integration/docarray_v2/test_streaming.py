@@ -1,6 +1,6 @@
 import asyncio
 import time
-from typing import AsyncGenerator, Generator, Optional
+from typing import AsyncGenerator, Generator, Optional, ClassVar
 
 import pytest
 from docarray import BaseDoc, DocList
@@ -10,6 +10,9 @@ from jina.helper import random_port
 
 
 class MyDocument(BaseDoc):
+    # Not exposed to client
+    input_type_name: ClassVar[str] = 'MyDocumentType'
+
     text: str
     number: Optional[int]
 
@@ -68,6 +71,7 @@ async def test_streaming_deployment(protocol, include_gateway):
         ):
             assert doc.text == f'hello world {i}'
             i += 1
+            assert doc.input_type_name == 'MyDocumentType'
 
 
 @pytest.mark.asyncio

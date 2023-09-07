@@ -252,6 +252,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -631,6 +632,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.19.1`)](#release-note-3191)
 - [Release Note (`3.20.0`)](#release-note-3200)
 - [Release Note (`3.20.1`)](#release-note-3201)
+- [Release Note (`3.20.2`)](#release-note-3202)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -16141,4 +16143,24 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```7123bca5```](https://github.com/jina-ai/jina/commit/7123bca5b52cc40ac8a160b0964875e13702caef)] __-__ update tag to add model serving (#6036) (*Joan Fontanals*)
  - [[```87aeff0a```](https://github.com/jina-ai/jina/commit/87aeff0af953e91911e2d545788fbf199f7ed640)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```8c912ef8```](https://github.com/jina-ai/jina/commit/8c912ef8bcdca7056b2febb17cabdff96ebd359f)] __-__ __version__: the next version will be 3.20.2 (*Jina Dev Bot*)
+
+<a name=release-note-3-20-3></a>
+## Release Note (`3.20.3`)
+
+> Release time: 2023-09-07 08:46:43
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  Narek Amirbekian,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```75292146```](https://github.com/jina-ai/jina/commit/752921468164393673039e65026a55bcf3dde245)] __-__ skip doc attributes in __annotations__ but  not in __fields__  (#6035) (*Narek Amirbekian*)
+
+### 🍹 Other Improvements
+
+ - [[```422e2fb9```](https://github.com/jina-ai/jina/commit/422e2fb9c5676ce73b16d657be31d041f8c3eb7c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```f77e8766```](https://github.com/jina-ai/jina/commit/f77e8766c33001f138b94142dd2636c4cc73c5ec)] __-__ __version__: the next version will be 3.20.3 (*Jina Dev Bot*)
 
