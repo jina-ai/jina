@@ -5,8 +5,7 @@ from os import path
 
 
 # Centralize environment variables
-JINA_VERSION = os.environ.get('JINA_VERSION')
-SPHINX_MULTIVERSION_VERSION = os.environ.get('SPHINX_MULTIVERSION_VERSION', None)
+JINA_VERSION = os.environ.get('JINA_VERSION', None)
 
 sys.path.insert(0, path.abspath('..'))
 
@@ -35,6 +34,7 @@ except FileNotFoundError:
 
 version = __version__
 release = __version__
+SPHINX_MULTIVERSION_VERSION = os.environ.get('SPHINX_MULTIVERSION_VERSION', version)
 
 templates_path = ['_templates']
 exclude_patterns = [
