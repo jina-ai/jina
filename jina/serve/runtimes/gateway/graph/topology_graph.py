@@ -103,7 +103,7 @@ class TopologyGraph:
                                     )
                         else:
                             if (
-                                outgoing_enp != __default_endpoint__
+                                outgoing_enp not in [__default_endpoint__, '_jina_dry_run_']
                             ):  # It could happen that there is an Encoder with default followed by an indexer with [index, search]
                                 raise Exception(
                                     f'{node.name} does not expose {incoming_endp} which makes it impossible to be chained with {self.name} on {outgoing_enp}'
