@@ -35,7 +35,7 @@ __jina_env__ = (
     'JINA_STREAMER_ARGS',
 )
 
-__default_host__ = _os.environ.get(
+__default_host__ = _os.getenv(
     'JINA_DEFAULT_HOST', '127.0.0.1' if __windows__ else '0.0.0.0'
 )
 __docker_host__ = 'host.docker.internal'
@@ -77,7 +77,6 @@ _names_with_underscore = [
     '__windows__',
 ]
 
-__all__ = [_s for _s in dir() if not _s.startswith('_')]
-__all__.extend(_names_with_underscore)
+__all__ = [_s for _s in dir() if not _s.startswith('_')] + _names_with_underscore
 
 RAFT_TO_EXECUTOR_PORT = 100
