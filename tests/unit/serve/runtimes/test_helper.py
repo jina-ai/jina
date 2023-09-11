@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, ClassVar
 from unittest.mock import Mock
 
 import pytest
@@ -103,9 +103,11 @@ def test_create_pydantic_model_from_schema(transformation):
 
     class Nested2Doc(BaseDoc):
         value: str
+        classvar: ClassVar[str] = 'classvar2'
 
     class Nested1Doc(BaseDoc):
         nested: Nested2Doc
+        classvar: ClassVar[str] = 'classvar1'
 
     class CustomDoc(BaseDoc):
         tensor: Optional[AnyTensor]
@@ -120,6 +122,7 @@ def test_create_pydantic_model_from_schema(transformation):
         lu: List[Union[str, int]] = [0, 1, 2]
         tags: Optional[Dict[str, Any]] = None
         nested: Nested1Doc
+        classvar: ClassVar[str] = 'classvar'
 
     CustomDocCopy = _create_aux_model_doc_list_to_list(CustomDoc)
     new_custom_doc_model = _create_pydantic_model_from_schema(
@@ -189,6 +192,9 @@ def test_create_pydantic_model_from_schema(transformation):
     assert original_back[0].single_text.text == 'single hey ha'
     assert original_back[0].single_text.embedding.shape == (2,)
     assert original_back[0].nested.nested.value == 'hello world'
+    assert original_back[0].classvar == 'classvar'
+    assert original_back[0].nested.classvar == 'classvar1'
+    assert original_back[0].nested.nested.classvar == 'classvar2'
 
     class TextDocWithId(BaseDoc):
         ia: str
@@ -270,6 +276,7 @@ def test_create_empty_doc_list_from_schema(transformation):
     class CustomDoc(BaseDoc):
         tensor: Optional[AnyTensor]
         url: ImageUrl
+        class_var: ClassVar[str] = "class_var_val"
         lll: List[List[List[int]]] = [[[5]]]
         fff: List[List[List[float]]] = [[[5.2]]]
         single_text: TextDoc
