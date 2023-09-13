@@ -470,8 +470,6 @@ jobs:
           WHEEL_FILE=$(ls dist/*whl)
           pip install "$WHEEL_FILE[common,devel,test]" --no-cache-dir
           pip install -U protobuf${{ matrix.protobuf-version }}
-          pip uninstall docarray -y
-          pip install docarray
           jina
           export JINA_LOG_LEVEL="ERROR"
       - name: Test
