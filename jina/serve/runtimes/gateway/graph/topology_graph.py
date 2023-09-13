@@ -315,6 +315,7 @@ class TopologyGraph:
             request: SingleDocumentRequest,
             connection_pool: GrpcConnectionPool,
             endpoint: Optional[str],
+            return_type: Type[DocumentArray] = DocumentArray,
         ):
             if docarray_v2:
                 if self.endpoints and endpoint in self.endpoints:
@@ -336,9 +337,20 @@ class TopologyGraph:
                 else:
                     if docarray_v2:
                         if self.endpoints and endpoint in self.endpoints:
-                            resp.document_cls = self._pydantic_models_by_endpoint[
-                                endpoint
-                            ]['output']
+                            from docarray.base_doc import AnyDoc
+
+                            # if return_type is not specified or if it is a default type, cast using retrieved
+                            # schemas
+                            if (
+                                not return_type
+                                or not return_type.doc_type
+                                or return_type.doc_type is AnyDoc
+                            ):
+                                resp.document_cls = self._pydantic_models_by_endpoint[
+                                    endpoint
+                                ]['output']
+                            else:
+                                resp.document_array_cls = return_type
                     yield resp
 
         async def _wait_previous_and_send(

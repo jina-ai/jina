@@ -210,7 +210,7 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
 
     def handle_single_document_request(
         self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
-    ) -> Callable[['Request'], 'AsyncGenerator']:
+    ) -> Callable[['Request', Type[DocumentArray]], 'AsyncGenerator']:
         """
         Function that handles the requests arriving to the gateway. This will be passed to the streamer.
 
@@ -220,7 +220,7 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
         """
 
         async def _handle_request(
-            request: 'Request',
+            request: 'Request', return_type: Type[DocumentArray] = DocumentArray
         ) -> 'Tuple[Future, Optional[Future]]':
             self._update_start_request_metrics(request)
             # important that the gateway needs to have an instance of the graph per request
@@ -237,7 +237,10 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
                 0
             ]  # this assumes there is only one Executor behind this Gateway
             async for resp in node.stream_single_doc(
-                request=request, connection_pool=connection_pool, endpoint=exec_endpoint
+                request=request,
+                connection_pool=connection_pool,
+                endpoint=exec_endpoint,
+                return_type=return_type,
             ):
                 yield resp
 
