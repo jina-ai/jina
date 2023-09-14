@@ -67,25 +67,6 @@ def get_fastapi_app(
         )
         logger.warning('CORS is enabled. This service is accessible from any website!')
 
-    def validate_invocations_route():
-        nonlocal request_models_map
-
-        if '/invocations' in request_models_map:
-            return
-
-        if len(request_models_map) == 2:  # one is _jina_dry_run_
-            for route in request_models_map:
-                if route != '_jina_dry_run_':
-                    logger.warning(
-                        f'No "/invocations" route found. Using "{route}" as "/invocations" route'
-                    )
-                    request_models_map['/invocations'] = request_models_map[route]
-                    return
-
-        raise ValueError(
-            'The request_models_map must contain the key "/invocations" to be able to serve the model'
-        )
-
     def add_post_route(
         endpoint_path,
         input_model,
@@ -141,7 +122,6 @@ def get_fastapi_app(
                     docs_response = resp.docs
                 return output_model(data=docs_response, parameters=resp.parameters)
 
-    validate_invocations_route()
     for endpoint, input_output_map in request_models_map.items():
         if endpoint != '_jina_dry_run_':
             input_doc_model = input_output_map['input']['model']
@@ -181,6 +161,7 @@ def get_fastapi_app(
 
     from jina.serve.runtimes.gateway.health_model import JinaHealthModel
 
+    # `/ping` route is required by AWS Sagemaker
     @app.get(
         path='/ping',
         summary='Get the health of Jina Executor service',

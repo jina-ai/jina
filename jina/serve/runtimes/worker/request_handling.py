@@ -194,6 +194,26 @@ class WorkerRequestHandler:
 
         request_models_map = self._executor._get_endpoint_models_dict()
 
+        def validate_invocations_route():
+            # validate if the request_models_map contains the key '/invocations'
+            nonlocal request_models_map
+
+            if '/invocations' in request_models_map:
+                return
+
+            if len(request_models_map) == 2:  # one is _jina_dry_run_
+                for route in request_models_map:
+                    if route != '_jina_dry_run_':
+                        self.logger.warning(
+                            f'No "/invocations" route found. Using "{route}" as "/invocations" route'
+                        )
+                        request_models_map['/invocations'] = request_models_map[route]
+                        return
+
+            raise ValueError(
+                'The request_models_map must contain the key "/invocations" to be able to serve the model'
+            )
+
         def call_handle(request):
             is_generator = request_models_map[request.header.exec_endpoint][
                 'is_generator'
@@ -201,6 +221,7 @@ class WorkerRequestHandler:
 
             return self.process_single_data(request, None, is_generator=is_generator)
 
+        validate_invocations_route()
         app = get_fastapi_app(
             request_models_map=request_models_map, caller=call_handle, **kwargs
         )
