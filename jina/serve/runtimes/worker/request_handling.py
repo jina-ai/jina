@@ -190,7 +190,7 @@ class WorkerRequestHandler:
         return app
 
     def _http_fastapi_sagemaker_app(self, **kwargs):
-        from jina.serve.runtimes.worker.http_fastapi_app import get_fastapi_app
+        from jina.serve.runtimes.worker.http_sagemaker_app import get_fastapi_app
 
         request_models_map = self._executor._get_endpoint_models_dict()
 
