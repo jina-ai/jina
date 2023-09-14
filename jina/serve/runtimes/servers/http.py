@@ -139,7 +139,7 @@ class FastAPIBaseServer(BaseServer):
                 **self.uvicorn_kwargs,
             )
         )
-        self.logger.debug(f'UviServer server setup')
+        self.logger.debug(f'UviServer server setup on port {self.port}')
         await self.server.setup()
         self.logger.debug(f'HTTP server setup successful')
 
