@@ -166,7 +166,7 @@ class WebSocketBaseClient(BaseClient):
                 asyncio.create_task(iolet.send_eoi())
 
             def _request_handler(
-                request: 'Request',
+                request: 'Request', **kwargs
             ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
                 """
                 For each request in the iterator, we send the `Message` using `iolet.send_message()`.
@@ -175,6 +175,7 @@ class WebSocketBaseClient(BaseClient):
                 Then add {<request-id>: <an-empty-future>} to the request buffer.
                 This empty future is used to track the `result` of this request during `receive`.
                 :param request: current request in the iterator
+                :param kwargs: kwargs
                 :return: asyncio Future for sending message
                 """
                 future = get_or_reuse_loop().create_future()

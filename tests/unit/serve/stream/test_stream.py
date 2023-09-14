@@ -2,8 +2,8 @@ import asyncio
 import random
 
 import pytest
-
 from docarray import Document, DocumentArray
+
 from jina.helper import Namespace, random_identity
 from jina.serve.stream import RequestStreamer
 from jina.types.request.data import DataRequest
@@ -24,10 +24,10 @@ class RequestStreamerWrapper:
             result_handler=self.result_handle_fn,
             end_of_iter_handler=self.end_of_iter_fn,
             prefetch=getattr(args, 'prefetch', 0),
-            iterate_sync_in_thread=iterate_sync_in_thread
+            iterate_sync_in_thread=iterate_sync_in_thread,
         )
 
-    def request_handler_fn(self, request):
+    def request_handler_fn(self, request, **kwargs):
         self.requests_handled.append(request)
 
         async def task():
@@ -82,7 +82,9 @@ async def test_request_streamer(
     prefetch, num_requests, async_iterator, results_in_order, iterate_sync_in_thread
 ):
 
-    test_streamer = RequestStreamerWrapper(num_requests, prefetch, iterate_sync_in_thread)
+    test_streamer = RequestStreamerWrapper(
+        num_requests, prefetch, iterate_sync_in_thread
+    )
     streamer = test_streamer.streamer
 
     it = (
@@ -113,7 +115,9 @@ async def test_request_streamer(
 @pytest.mark.asyncio
 @pytest.mark.parametrize('num_requests', [1, 5, 13])
 @pytest.mark.parametrize('iterate_sync_in_thread', [False, True])
-async def test_request_streamer_process_single_data(monkeypatch, num_requests, iterate_sync_in_thread):
+async def test_request_streamer_process_single_data(
+    monkeypatch, num_requests, iterate_sync_in_thread
+):
     test_streamer = RequestStreamerWrapper(num_requests, 0, iterate_sync_in_thread)
     streamer = test_streamer.streamer
 
