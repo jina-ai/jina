@@ -275,6 +275,12 @@ class SagemakerHTTPServer(FastAPIBaseServer):
         return 8080
 
     @property
+    def ports(self):
+        """Get the port for the sagemaker server
+        :return: Return the port for the sagemaker server, always 8080"""
+        return [8080]
+
+    @property
     def app(self):
         """Get the sagemaker fastapi app
         :return: Return a FastAPI app for the sagemaker container
