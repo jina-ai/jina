@@ -5,10 +5,7 @@ from typing import TYPE_CHECKING, Dict, Optional, Tuple, Type
 
 from jina._docarray import Document, DocumentArray, docarray_v2
 from jina.clients.base import BaseClient
-from jina.clients.base.helper import (
-    HTTPClientlet,
-    handle_response_status,
-)
+from jina.clients.base.helper import HTTPClientlet, handle_response_status
 from jina.clients.helper import callback_exec
 from jina.importer import ImportExtensions
 from jina.logging.profile import ProgressBar
@@ -165,12 +162,13 @@ class HTTPBaseClient(BaseClient):
             )
 
             def _request_handler(
-                request: 'Request',
+                request: 'Request', **kwargs
             ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
                 """
                 For HTTP Client, for each request in the iterator, we `send_message` using
                 http POST request and add it to the list of tasks which is awaited and yielded.
                 :param request: current request in the iterator
+                :param kwargs: kwargs
                 :return: asyncio Task for sending message
                 """
                 return asyncio.ensure_future(iolet.send_message(request=request)), None
@@ -203,11 +201,15 @@ class HTTPBaseClient(BaseClient):
                         da = DocumentArray.from_dict(r_str['data'])
                     else:
                         from docarray import DocList
+
                         if issubclass(return_type, DocList):
                             da = return_type(
-                                [return_type.doc_type(**v) for v in r_str['data']])
+                                [return_type.doc_type(**v) for v in r_str['data']]
+                            )
                         else:
-                            da = DocList[return_type]([return_type(**v) for v in r_str['data']])
+                            da = DocList[return_type](
+                                [return_type(**v) for v in r_str['data']]
+                            )
                     del r_str['data']
 
                 resp = DataRequest(r_str)
