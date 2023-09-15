@@ -605,6 +605,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         # and if so, we use it as the POST /invocations endpoint, or raise an error
         if (
             not hasattr(self, 'runtime_args')
+            or not hasattr(self.runtime_args, 'provider')
             or not self.runtime_args.provider != 'sagemaker'
         ):
             return
