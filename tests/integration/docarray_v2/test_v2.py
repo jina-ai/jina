@@ -839,7 +839,25 @@ def test_custom_gateway():
                     parameters=PARAMETERS,
                     return_type=DocList[TextDoc],
                 )
+                assert resp.doc_type is TextDoc
                 return {'result': [doc.text for doc in resp]}
+
+            @app.get('/endpoint_stream_docs')
+            async def get_endpoint_stream_docs(text: str):
+                docs = DocList[TextDoc](
+                    [
+                        TextDoc(text=f'stream {text}'),
+                        TextDoc(text=f'stream {text}'.upper()),
+                    ]
+                )
+                async for resp in self.streamer.stream_docs(
+                    docs,
+                    parameters=PARAMETERS,
+                    target_executor='executor1',
+                    return_type=DocList[TextDoc],
+                ):
+                    assert resp.doc_type is TextDoc
+                    return {'result': [doc.text for doc in resp]}
 
             @app.get('/endpoint_stream')
             async def get_endpoint_stream(text: str):
@@ -849,9 +867,13 @@ def test_custom_gateway():
                         TextDoc(text=f'stream {text}'.upper()),
                     ]
                 )
-                async for resp in self.streamer.stream_docs(
-                    docs, parameters=PARAMETERS, target_executor='executor1'
+                async for resp, _ in self.streamer.stream(
+                    docs,
+                    parameters=PARAMETERS,
+                    target_executor='executor1',
+                    return_type=DocList[TextDoc],
                 ):
+                    assert resp.doc_type is TextDoc
                     return {'result': [doc.text for doc in resp]}
 
             return app
@@ -879,6 +901,12 @@ def test_custom_gateway():
         assert r.json()['result'] == [
             f'executor meow Second(parameters={str(PARAMETERS)})',
             f'EXECUTOR MEOW Second(parameters={str(PARAMETERS)})',
+        ]
+
+        r = requests.get(f'http://localhost:{flow.port}/endpoint_stream_docs?text=meow')
+        assert r.json()['result'] == [
+            f'stream meow Second(parameters={str(PARAMETERS)})',
+            f'STREAM MEOW Second(parameters={str(PARAMETERS)})',
         ]
 
         r = requests.get(f'http://localhost:{flow.port}/endpoint_stream?text=meow')
