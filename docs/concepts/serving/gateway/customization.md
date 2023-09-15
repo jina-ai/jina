@@ -240,6 +240,13 @@ class MyGateway(FastAPIBaseGateway):
         return app
 ```
 
+```{hint} 
+:class: note
+if you omit the `return_type` parameter, the gateway streamer can still fetch the Executor output schemas and dynamically construct a DocArray model for it.
+Even though the dynamically created schema is very similar to original schema, some validation checks can still fail (for instance adding to a typed `DocList`).
+It is recommended to always pass the `return_type` parameter
+```
+
 ### Recovering Executor errors
 
 Exceptions raised by an `Executor` are captured in the server object which can be extracted by using the {meth}`jina.serve.streamer.stream()` method. The `stream` method
@@ -264,6 +271,14 @@ async def get(text: str):
         else:
             results.append(docs[0].text)
     return {'results': results, 'errors': [error.name for error in errors]}
+```
+
+
+```{hint} 
+:class: note
+if you omit the `return_type` parameter, the gateway streamer can still fetch the Executor output schemas and dynamically construct a DocArray model for it.
+Even though the dynamically created schema is very similar to original schema, some validation checks can still fail (for instance adding to a typed `DocList`).
+It is recommended to always pass the `return_type` parameter
 ```
 
 (executor-streamer)=
