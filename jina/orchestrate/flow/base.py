@@ -1657,9 +1657,7 @@ class Flow(
         )
 
     @allowed_levels([FlowBuildLevel.EMPTY])
-    def build(
-        self, copy_flow: bool = False, **kwargs
-    ) -> 'Flow':
+    def build(self, copy_flow: bool = False, **kwargs) -> 'Flow':
         """
         Build the current Flow and make it ready to use
 
@@ -1669,6 +1667,7 @@ class Flow(
             context manager, or using :meth:`start`, :meth:`build` will be invoked.
 
         :param copy_flow: when set to true, then always copy the current Flow and do the modification on top of it then return, otherwise, do in-line modification
+        :param kwargs: kwargs for backward compatibility
         :return: the current Flow (by default)
 
         .. note::
