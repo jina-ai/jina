@@ -123,9 +123,6 @@ Putting all these files into a folder named CLIPEncoder and calling `jina hub pu
 │   Container   YAML     uses: jinaai+docker://<user-id>/EncoderPrivate:latest           │
 │               Python   .add(uses='jinaai+docker://<user-id>/EncoderPrivate:latest')    │
 │                                                                                                                 │
-│   Sandbox     YAML     uses: jinaai+sandbox://<user-id>/EncoderPrivate:latest          │
-│               Python   .add(uses='jinaai+sandbox://<user-id>/EncoderPrivate:latest')   │
-│                                                                                                                 │
 │   Source      YAML     uses: jinaai://<user-id>/EncoderPrivate:latest                  │
 │               Python   .add(uses='jinaai://<user-id>/EncoderPrivate:latest')           │
 │                                                                                                                 │
@@ -202,10 +199,7 @@ Putting all these files into a folder named Indexer and calling `jina hub push I
 │                                                                                                                 │
 │   Container   YAML     uses: jinaai+docker://<user-id>/IndexerPrivate:latest           │
 │               Python   .add(uses='jinaai+docker://<user-id>/IndexerPrivate:latest')    │
-│                                                                                                                 │
-│   Sandbox     YAML     uses: jinaai+sandbox://<user-id>/IndexerPrivate:latest          │
-│               Python   .add(uses='jinaai+sandbox://<user-id>/IndexerPrivate:latest')   │
-│                                                                                                                 │
+│                                                                                                                 │                      │
 │   Source      YAML     uses: jinaai://<user-id>/IndexerPrivate:latest                  │
 │               Python   .add(uses='jinaai://<user-id>/IndexerPrivate:latest')           │
 │                                                                                                                 │
