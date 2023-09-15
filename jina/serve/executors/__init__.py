@@ -28,7 +28,7 @@ from typing import (
 
 from jina._docarray import DocumentArray, docarray_v2
 from jina.constants import __args_executor_init__, __cache_path__, __default_endpoint__
-from jina.enums import BetterEnum
+from jina.enums import BetterEnum, ProviderType
 from jina.helper import (
     ArgNamespace,
     T,
@@ -606,7 +606,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if (
             not hasattr(self, 'runtime_args')
             or not hasattr(self.runtime_args, 'provider')
-            or not self.runtime_args.provider != 'sagemaker'
+            or self.runtime_args.provider != ProviderType.SAGEMAKER.value
         ):
             return
 
