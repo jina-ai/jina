@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Union
 
-from jina import Document, DocumentArray
 from jina._docarray import docarray_v2
 from jina.importer import ImportExtensions
 from jina.types.request.data import DataRequest
@@ -42,6 +41,10 @@ def get_fastapi_app(
     from jina.proto import jina_pb2
     from jina.serve.runtimes.gateway.models import _to_camel_case
 
+    if not docarray_v2:
+        logger.warning('Only docarray v2 is supported with Sagemaker. ')
+        return
+
     class Header(BaseModel):
         request_id: Optional[str] = Field(
             description='Request ID', example=os.urandom(16).hex()
@@ -74,16 +77,15 @@ def get_fastapi_app(
         input_doc_list_model=None,
         output_doc_list_model=None,
     ):
+        from docarray.base_doc.docarray_response import DocArrayResponse
+
         app_kwargs = dict(
             path=f'/{endpoint_path.strip("/")}',
             methods=['POST'],
             summary=f'Endpoint {endpoint_path}',
             response_model=output_model,
+            response_class=DocArrayResponse,
         )
-        if docarray_v2:
-            from docarray.base_doc.docarray_response import DocArrayResponse
-
-            app_kwargs['response_class'] = DocArrayResponse
 
         @app.api_route(**app_kwargs)
         async def post(body: input_model, response: Response):
@@ -94,19 +96,14 @@ def get_fastapi_app(
             if body.parameters is not None:
                 req.parameters = body.parameters
             req.header.exec_endpoint = endpoint_path
+
             data = body.data
             if isinstance(data, list):
-                if not docarray_v2:
-                    req.data.docs = DocumentArray.from_pydantic_model(data)
-                else:
-                    req.document_array_cls = DocList[input_doc_model]
-                    req.data.docs = DocList[input_doc_list_model](data)
+                req.document_array_cls = DocList[input_doc_model]
+                req.data.docs = DocList[input_doc_list_model](data)
             else:
-                if not docarray_v2:
-                    req.data.docs = DocumentArray([Document.from_pydantic_model(data)])
-                else:
-                    req.document_array_cls = DocList[input_doc_model]
-                    req.data.docs = DocList[input_doc_list_model]([data])
+                req.document_array_cls = DocList[input_doc_model]
+                req.data.docs = DocList[input_doc_list_model]([data])
                 if body.header is None:
                     req.header.request_id = req.docs[0].id
 
@@ -116,11 +113,7 @@ def get_fastapi_app(
             if status.code == jina_pb2.StatusProto.ERROR:
                 raise HTTPException(status_code=499, detail=status.description)
             else:
-                if not docarray_v2:
-                    docs_response = resp.docs.to_dict()
-                else:
-                    docs_response = resp.docs
-                return output_model(data=docs_response, parameters=resp.parameters)
+                return output_model(data=resp.docs, parameters=resp.parameters)
 
     for endpoint, input_output_map in request_models_map.items():
         if endpoint != '_jina_dry_run_':
@@ -131,11 +124,7 @@ def get_fastapi_app(
                 ... if input_output_map['parameters']['model'] else None
             )
 
-            if docarray_v2:
-                _config = inherit_config(InnerConfig, BaseDoc.__config__)
-            else:
-                _config = input_doc_model.__config__
-
+            _config = inherit_config(InnerConfig, BaseDoc.__config__)
             endpoint_input_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_input_model',
                 data=(Union[List[input_doc_model], input_doc_model], ...),
