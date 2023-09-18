@@ -479,12 +479,20 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         self.args = args
         self._gateway_load_balancer = False
         if self.args.provider == ProviderType.SAGEMAKER:
-            if self.args.port != 8080:
+            if self._gateway_kwargs.get('port', 0) == 8080:
+                raise ValueError(
+                    f'Port 8080 is reserved for Sagemaker deployment. Please use another port'
+                )
+            if self.args.port != [8080]:
                 warnings.warn(
                     f'Port is changed to 8080 for Sagemaker deployment. Port {self.args.port} is ignored'
                 )
-            self.args.protocol = [ProtocolType.HTTP]
-            self.args.port = [8080]
+                self.args.port = [8080]
+            if self.args.protocol != [ProtocolType.HTTP]:
+                warnings.warn(
+                    f'Protocol is changed to HTTP for Sagemaker deployment. Protocol {self.args.protocol} is ignored'
+                )
+                self.args.protocol = [ProtocolType.HTTP]
         if self._include_gateway and ProtocolType.HTTP in self.args.protocol:
             self._gateway_load_balancer = True
         log_config = kwargs.get('log_config')

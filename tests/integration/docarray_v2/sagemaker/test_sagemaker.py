@@ -1,6 +1,7 @@
 import os
 from contextlib import AbstractContextManager
 
+import pytest
 import requests
 
 from jina import Deployment
@@ -79,3 +80,10 @@ def test_provider_sagemaker_deployment():
             resp_json = rsp.json()
             assert len(resp_json['data']) == 1
             assert len(resp_json['data'][0]['embeddings'][0]) == 64
+
+
+def test_provider_sagemaker_deployment_wrong_port():
+    with chdir(os.path.join(os.path.dirname(__file__), 'SampleExecutor')):
+        with pytest.raises(ValueError):
+            with Deployment(uses='config.yml', provider='sagemaker', port=8080) as dep:
+                pass
