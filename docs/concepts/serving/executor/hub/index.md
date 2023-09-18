@@ -19,14 +19,14 @@ Hub allows you to turn your Executor into a ready-for-the-cloud containerized se
 With Hub you can pull prebuilt Executors to dramatically reduce the effort and complexity needed in your system, or push your own custom
 Executors to share privately or publicly. You can think of the Hub as your easy to entry door to a Docker registry.
 
-A Hub Executor is an Executor published on Executor Hub. You can use such an Executor in a Flow:
+A Hub Executor is an Executor published on Executor Hub. You can use such an Executor in a Flow or in a Deployment:
 
 ```python
-from jina import Flow
+from jina import Deployment
 
-f = Flow().add(uses='jinaai+docker://<username>/MyExecutor')
+d = Deployment(uses='jinaai+docker://<username>/MyExecutor')
 
-with f:
+with d:
     ...
 ```
 
@@ -45,7 +45,6 @@ hub-portal
 create-hub-executor
 push-executor
 use-hub-executor
-sandbox
 debug-executor
 yaml-spec
 ```

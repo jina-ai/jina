@@ -570,8 +570,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         else:
             self.pod_args['gateway'] = None
 
-        self._sandbox_deployed = False
-
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
 
     def _get_connection_list_for_flow(self) -> List[str]:
@@ -705,32 +703,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         else:
             self.pod_args = self._parse_args(self.args)
 
-    def update_sandbox_args(self):
-        """Update args of all its pods based on the host and port returned by Hubble"""
-        if self.is_sandbox:
-            host, port = HubIO.deploy_public_sandbox(self.args)
-            self._sandbox_deployed = True
-            self.first_pod_args.host = host
-            self.first_pod_args.port = [port]
-            if self.head_args:
-                self.pod_args['head'].host = host
-                self.pod_args['head'].port = [port]
-
     def update_worker_pod_args(self):
         """Update args of all its worker pods based on Deployment args. Does not touch head and tail"""
         self.pod_args['pods'] = self._set_pod_args()
-
-    @property
-    def is_sandbox(self) -> bool:
-        """
-        Check if this deployment is a sandbox.
-
-        :return: True if this deployment is provided as a sandbox, False otherwise
-        """
-        from hubble.executor.helper import is_valid_sandbox_uri
-
-        uses = getattr(self.args, 'uses') or ''
-        return is_valid_sandbox_uri(uses)
 
     @property
     def role(self) -> 'DeploymentRoleType':
@@ -856,7 +831,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         has_cert = getattr(self.args, 'ssl_certfile', None) is not None
         has_key = getattr(self.args, 'ssl_keyfile', None) is not None
         tls = getattr(self.args, 'tls', False)
-        return tls or self.is_sandbox or (has_cert and has_key)
+        return tls or (has_cert and has_key)
 
     @property
     def external(self) -> bool:
@@ -865,7 +840,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         :return: True if this deployment is provided as an external deployment, False otherwise
         """
-        return getattr(self.args, 'external', False) or self.is_sandbox
+        return getattr(self.args, 'external', False)
 
     @property
     def grpc_metadata(self):
@@ -1112,8 +1087,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         """
 
         self._start_time = time.time()
-        if self.is_sandbox and not self._sandbox_deployed:
-            self.update_sandbox_args()
 
         if not self._is_docker and getattr(self.args, 'install_requirements', False):
             install_package_dependencies(_get_package_path_from_uses(self.args.uses))
