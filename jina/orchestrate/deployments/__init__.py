@@ -1,14 +1,15 @@
 import asyncio
 import copy
 import json
+import multiprocessing
 import os
+import platform
 import re
 import subprocess
-import threading
-import multiprocessing
-import platform
 import sys
+import threading
 import time
+import warnings
 from argparse import Namespace
 from collections import defaultdict
 from contextlib import ExitStack
@@ -29,7 +30,13 @@ from jina.constants import (
     __docker_host__,
     __windows__,
 )
-from jina.enums import DeploymentRoleType, PodRoleType, PollingType, ProtocolType
+from jina.enums import (
+    DeploymentRoleType,
+    PodRoleType,
+    PollingType,
+    ProtocolType,
+    ProviderType,
+)
 from jina.helper import (
     ArgNamespace,
     parse_host_scheme,
@@ -281,6 +288,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         port_monitoring: Optional[int] = None,
         prefer_platform: Optional[str] = None,
         protocol: Optional[Union[str, List[str]]] = ['GRPC'],
+        provider: Optional[str] = ['NONE'],
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
@@ -380,6 +388,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
         :param protocol: Communication protocol of the server exposed by the Executor. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
+        :param provider: If set, Executor is translated to a custom container compatible with the chosen provider. Choose the convenient providers from: ['NONE', 'SAGEMAKER'].
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your
@@ -469,6 +478,21 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
         self.args = args
         self._gateway_load_balancer = False
+        if self.args.provider == ProviderType.SAGEMAKER:
+            if self._gateway_kwargs.get('port', 0) == 8080:
+                raise ValueError(
+                    f'Port 8080 is reserved for Sagemaker deployment. Please use another port'
+                )
+            if self.args.port != [8080]:
+                warnings.warn(
+                    f'Port is changed to 8080 for Sagemaker deployment. Port {self.args.port} is ignored'
+                )
+                self.args.port = [8080]
+            if self.args.protocol != [ProtocolType.HTTP]:
+                warnings.warn(
+                    f'Protocol is changed to HTTP for Sagemaker deployment. Protocol {self.args.protocol} is ignored'
+                )
+                self.args.protocol = [ProtocolType.HTTP]
         if self._include_gateway and ProtocolType.HTTP in self.args.protocol:
             self._gateway_load_balancer = True
         log_config = kwargs.get('log_config')
@@ -1304,7 +1328,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
             selected_devices = []
             if device_str[2:]:
-
                 for device in Deployment._parse_devices(device_str[2:], num_devices):
                     selected_devices.append(device)
             else:
@@ -1446,7 +1469,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
     @staticmethod
     def _set_uses_before_after_args(args: Namespace, entity_type: str) -> Namespace:
-
         _args = copy.deepcopy(args)
         _args.pod_role = PodRoleType.WORKER
         _args.host = _args.host[0] or __default_host__
@@ -1648,7 +1670,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             watch_changes = self.args.reload
 
             if watch_changes and self._is_executor_from_yaml:
-
                 with ImportExtensions(
                     required=True,
                     help_text='''reload requires watchfiles dependency to be installed. You can run `pip install 
@@ -1692,7 +1713,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         swagger_ui_link = None
         redoc_link = None
         for _port, _protocol in zip(_ports, _protocols):
-
             address_table.add_row(':chains:', 'Protocol', _protocol)
 
             _protocol = _protocol.lower()

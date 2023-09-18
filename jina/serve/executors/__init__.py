@@ -28,7 +28,7 @@ from typing import (
 
 from jina._docarray import DocumentArray, docarray_v2
 from jina.constants import __args_executor_init__, __cache_path__, __default_endpoint__
-from jina.enums import BetterEnum
+from jina.enums import BetterEnum, ProviderType
 from jina.helper import (
     ArgNamespace,
     T,
@@ -68,8 +68,9 @@ def is_pydantic_model(annotation: Type) -> bool:
     :param annotation: The annotation from which to extract PydantiModel.
     :return: boolean indicating if a Pydantic model is inside the annotation
     """
-    from pydantic import BaseModel
     from typing import get_args, get_origin
+
+    from pydantic import BaseModel
 
     origin = get_origin(annotation) or annotation
     args = get_args(annotation)
@@ -92,8 +93,9 @@ def get_inner_pydantic_model(annotation: Type) -> bool:
     :return: The inner Pydantic model expected
     """
     try:
+        from typing import Optional, Type, Union, get_args, get_origin
+
         from pydantic import BaseModel
-        from typing import Type, Optional, get_args, get_origin, Union
 
         origin = get_origin(annotation) or annotation
         args = get_args(annotation)
@@ -179,7 +181,7 @@ class _FunctionWithSchema(NamedTuple):
             self.is_generator and self.is_batch_docs
         ), f'Cannot specify the `docs` parameter if the endpoint {self.fn.__name__} is a generator'
         if docarray_v2:
-            from docarray import DocList, BaseDoc
+            from docarray import BaseDoc, DocList
 
             if not self.is_generator:
                 if self.is_batch_docs and (
@@ -390,10 +392,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._add_requests(requests)
         self._add_dynamic_batching(dynamic_batching)
         self._add_runtime_args(runtime_args)
+        self.logger = JinaLogger(self.__class__.__name__, **vars(self.runtime_args))
+        self._validate_sagemaker()
         self._init_instrumentation(runtime_args)
         self._init_monitoring()
         self._init_workspace = workspace
-        self.logger = JinaLogger(self.__class__.__name__, **vars(self.runtime_args))
         if __dry_run_endpoint__ not in self.requests:
             self.requests[
                 __dry_run_endpoint__
@@ -596,6 +599,32 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                         f'expect {typename(self)}.{func} to be a function, but receiving {typename(_func)}'
                     )
 
+    def _validate_sagemaker(self):
+        # sagemaker expects the POST /invocations endpoint to be defined.
+        # if it is not defined, we check if there is only one endpoint defined,
+        # and if so, we use it as the POST /invocations endpoint, or raise an error
+        if (
+            not hasattr(self, 'runtime_args')
+            or not hasattr(self.runtime_args, 'provider')
+            or self.runtime_args.provider != ProviderType.SAGEMAKER.value
+        ):
+            return
+
+        if '/invocations' in self.requests:
+            return
+
+        if len(self.requests) == 1:
+            route = list(self.requests.keys())[0]
+            self.logger.warning(
+                f'No "/invocations" route found. Using "{route}" as "/invocations" route'
+            )
+            self.requests['/invocations'] = self.requests[route]
+            return
+
+        raise ValueError(
+            'No "/invocations" route found. Please define a "/invocations" route'
+        )
+
     def _add_dynamic_batching(self, _dynamic_batching: Optional[Dict]):
         if _dynamic_batching:
             self.dynamic_batching = getattr(self, 'dynamic_batching', {})
@@ -695,7 +724,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     async def __acall_endpoint__(
         self, req_endpoint, tracing_context: Optional['Context'], **kwargs
     ):
-
         # Decorator to make sure that `parameters` are passed as PydanticModels if needed
         def parameters_as_pydantic_models_decorator(func, parameters_pydantic_model):
             @functools.wraps(func)  # Step 2: Use functools.wraps to preserve metadata
@@ -956,6 +984,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         port_monitoring: Optional[int] = None,
         prefer_platform: Optional[str] = None,
         protocol: Optional[Union[str, List[str]]] = ['GRPC'],
+        provider: Optional[str] = ['NONE'],
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
@@ -1055,6 +1084,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
         :param protocol: Communication protocol of the server exposed by the Executor. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
+        :param provider: If set, Executor is translated to a custom container compatible with the chosen provider. Choose the convenient providers from: ['NONE', 'SAGEMAKER'].
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your
