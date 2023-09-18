@@ -29,7 +29,6 @@ Note that some usages are not supported on JCloud due to security reasons and th
 | ✅         | ✅      | `'executor-config.yml'`                       | Use an Executor from a YAML file defined by {ref}`Executor YAML interface <executor-yaml-spec>`.          |
 | ✅         | ❌      | `'jinaai://jina-ai/TransformerTorchEncoder/'` | Use an Executor as Python source from Executor Hub.                                                       |
 | ✅         | ✅      | `'jinaai+docker://jina-ai/TransformerTorchEncoder'`  | Use an Executor as a Docker container from Executor Hub.                                                      |
-| ✅         | ✅      | `'jinaai+sandbox://jina-ai/TransformerTorchEncoder'` | Use a {ref}`Sandbox Executor <sandbox>` hosted on Executor Hub. The Executor runs remotely on Executor Hub.       |
 | ✅         | ❌      | `'docker://sentence-encoder'`                 | Use a pre-built Executor as a Docker container.                                                           |
 
 
