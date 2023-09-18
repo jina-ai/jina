@@ -1,14 +1,15 @@
 import asyncio
 import copy
 import json
+import multiprocessing
 import os
+import platform
 import re
 import subprocess
-import threading
-import multiprocessing
-import platform
 import sys
+import threading
 import time
+import warnings
 from argparse import Namespace
 from collections import defaultdict
 from contextlib import ExitStack
@@ -29,7 +30,13 @@ from jina.constants import (
     __docker_host__,
     __windows__,
 )
-from jina.enums import DeploymentRoleType, PodRoleType, PollingType, ProtocolType
+from jina.enums import (
+    DeploymentRoleType,
+    PodRoleType,
+    PollingType,
+    ProtocolType,
+    ProviderType,
+)
 from jina.helper import (
     ArgNamespace,
     parse_host_scheme,
@@ -471,6 +478,13 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
         self.args = args
         self._gateway_load_balancer = False
+        if self.args.provider == ProviderType.SAGEMAKER:
+            if self.args.port != 8080:
+                warnings.warn(
+                    f'Port is changed to 8080 for Sagemaker deployment. Port {self.args.port} is ignored'
+                )
+            self.args.protocol = [ProtocolType.HTTP]
+            self.args.port = [8080]
         if self._include_gateway and ProtocolType.HTTP in self.args.protocol:
             self._gateway_load_balancer = True
         log_config = kwargs.get('log_config')
@@ -1306,7 +1320,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
             selected_devices = []
             if device_str[2:]:
-
                 for device in Deployment._parse_devices(device_str[2:], num_devices):
                     selected_devices.append(device)
             else:
@@ -1448,7 +1461,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
     @staticmethod
     def _set_uses_before_after_args(args: Namespace, entity_type: str) -> Namespace:
-
         _args = copy.deepcopy(args)
         _args.pod_role = PodRoleType.WORKER
         _args.host = _args.host[0] or __default_host__
@@ -1650,7 +1662,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             watch_changes = self.args.reload
 
             if watch_changes and self._is_executor_from_yaml:
-
                 with ImportExtensions(
                     required=True,
                     help_text='''reload requires watchfiles dependency to be installed. You can run `pip install 
@@ -1694,7 +1705,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         swagger_ui_link = None
         redoc_link = None
         for _port, _protocol in zip(_ports, _protocols):
-
             address_table.add_row(':chains:', 'Protocol', _protocol)
 
             _protocol = _protocol.lower()

@@ -76,6 +76,6 @@ def test_provider_sagemaker_deployment():
                 },
             )
             assert rsp.status_code == 200
-            rsp_json = rsp.json()
-            assert len(rsp_json['data']) == 1
-            assert len(rsp_json['data'][0]['embeddings'][0]) == 64
+            resp_json = rsp.json()
+            assert len(resp_json['data']) == 1
+            assert len(resp_json['data'][0]['embeddings'][0]) == 64
