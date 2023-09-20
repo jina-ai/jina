@@ -349,43 +349,43 @@ jobs:
           path: dist/*.whl
 
 # comment for now, do it manually if needed
-#  pre-release:
-#    if: |
-#      !startsWith(github.event.head_commit.message, 'chore') &&
-#      !startsWith(github.event.head_commit.message, 'build: hotfix') &&
-#      !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
-#    needs: [build-wheels, mark-dev-N]
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v2.5.0
-#        with:
-#          #          submodules: true
-#          fetch-depth: 100
-#      - run: |
-#          truncate --size=24KB README.md > README-trunc.md
-#      - uses: actions/download-artifact@v3
-#        with:
-#          name: artifact
-#          path: dist
-#
-#      - name: Update version
-#        run: |
-#          DEVDELTA=${{needs.mark-dev-N.outputs.devdelta}}
-#          RELEASE_VER=${{needs.mark-dev-N.outputs.releasever}}
-#          INIT_FILE='jina/__init__.py'
-#          DEV_VER=$RELEASE_VER".dev"$DEVDELTA
-#          echo "DEVDELTA $DEVDELTA"
-#          echo "RELEASE_VER $RELEASE_VER"
-#          echo "DEV_VER $DEV_VER"
-#          sed -i '/'"${RELEASE_VER}"'/s/.*/'"__version__ = '${DEV_VER}'"'/' "${INIT_FILE}"
-#      - name: Pre-release (.devN)
-#        run: |
-#          pip install twine wheel
-#          ./scripts/release.sh
-#        env:
-#          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
-#          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-#          JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
+  pre-release:
+   if: |
+     !startsWith(github.event.head_commit.message, 'chore') &&
+     !startsWith(github.event.head_commit.message, 'build: hotfix') &&
+     !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
+   needs: [build-wheels, mark-dev-N]
+   runs-on: ubuntu-latest
+   steps:
+     - uses: actions/checkout@v2.5.0
+       with:
+         #          submodules: true
+         fetch-depth: 100
+     - run: |
+         truncate --size=24KB README.md > README-trunc.md
+     - uses: actions/download-artifact@v3
+       with:
+         name: artifact
+         path: dist
+
+     - name: Update version
+       run: |
+         DEVDELTA=${{needs.mark-dev-N.outputs.devdelta}}
+         RELEASE_VER=${{needs.mark-dev-N.outputs.releasever}}
+         INIT_FILE='jina/__init__.py'
+         DEV_VER=$RELEASE_VER".dev"$DEVDELTA
+         echo "DEVDELTA $DEVDELTA"
+         echo "RELEASE_VER $RELEASE_VER"
+         echo "DEV_VER $DEV_VER"
+         sed -i '/'"${RELEASE_VER}"'/s/.*/'"__version__ = '${DEV_VER}'"'/' "${INIT_FILE}"
+     - name: Pre-release (.devN)
+       run: |
+         pip install twine wheel
+         ./scripts/release.sh
+       env:
+         TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
+         TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+         JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
 
   core-test:
     needs: prep-testbed
