@@ -2,8 +2,7 @@ import json
 import math
 import os
 import warnings
-from argparse import Namespace
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Union
 
 from jina.orchestrate.deployments.config.k8slib import kubernetes_tools
 from jina.serve.networking import GrpcConnectionPool
@@ -217,57 +216,3 @@ def get_template_yamls(
 
     return yamls
 
-
-def get_cli_params(
-        arguments: Namespace, skip_list: Tuple[str] = (), port: Optional[int] = None
-) -> str:
-    """Get cli parameters based on the arguments.
-
-    :param arguments: arguments where the cli parameters are generated from
-    :param skip_list: list of arguments which should be ignored
-    :param port: overwrite port with the provided value if set
-
-    :return: string which contains all cli parameters
-    """
-    arguments.host = '0.0.0.0'
-    skip_attributes = [
-                          'uses',  # set manually
-                          'uses_with',  # set manually
-                          'runtime_cls',  # set manually
-                          'workspace',
-                          'log_config',
-                          'polling_type',
-                          'uses_after',
-                          'uses_before',
-                          'replicas',
-                      ] + list(skip_list)
-    if port:
-        arguments.port = port
-    arg_list = [
-        [attribute, attribute.replace('_', '-'), value]
-        for attribute, value in arguments.__dict__.items()
-    ]
-    cli_args = []
-    for attribute, cli_attribute, value in arg_list:
-        # TODO: This should not be here, its a workaround for our parser design with boolean values
-        if attribute in skip_attributes:
-            continue
-        if type(value) == bool and value:
-            cli_args.append(f'"--{cli_attribute}"')
-        elif type(value) != bool:
-            if value is not None:
-                value = str(value)
-                value = value.replace('\'', '').replace('"', '\\"')
-                cli_args.append(f'"--{cli_attribute}", "{value}"')
-
-    cli_string = ', '.join(cli_args)
-    return cli_string
-
-
-def dictionary_to_cli_param(dictionary) -> str:
-    """Convert the dictionary into a string to pass it as argument in k8s.
-    :param dictionary: dictionary which has to be passed as argument in k8s.
-
-    :return: string representation of the dictionary
-    """
-    return json.dumps(dictionary).replace('"', '\\"') if dictionary else ""
