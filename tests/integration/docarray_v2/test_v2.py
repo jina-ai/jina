@@ -74,21 +74,22 @@ def test_different_document_schema(protocols, replicas):
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_send_custom_doc(protocols, replicas):
     class MyDoc(BaseDoc):
-        text: str
+        my_text: str
 
     class MyExec(Executor):
         @requests(on='/foo')
-        def foo(self, docs: DocList[MyDoc], **kwargs):
-            docs[0].text = 'hello world'
+        def foo(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDoc]:
+            docs[0].my_text = 'hello world'
+            return docs
 
     ports = [random_port() for _ in protocols]
     with Flow(port=ports, protocol=protocols, replicas=replicas).add(uses=MyExec):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             docs = c.post(
-                on='/foo', inputs=MyDoc(text='hello'), return_type=DocList[MyDoc]
+                on='/foo', inputs=MyDoc(my_text='hello'), return_type=DocList[MyDoc]
             )
-            assert docs[0].text == 'hello world'
+            assert docs[0].my_text == 'hello world'
 
 
 @pytest.mark.parametrize(
