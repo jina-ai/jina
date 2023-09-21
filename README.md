@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-<b>Build multimodal AI services with cloud native technologies</b>
+<b>Build multimodal AI applications with cloud-native technologies</b>
 </p>
 
 <p align=center>
