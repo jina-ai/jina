@@ -1,11 +1,4 @@
 <p align="center">
-<!-- survey banner start -->
-<a href="https://10sw1tcpld4.typeform.com/to/EGAEReM7?utm_source=readme&utm_medium=github&utm_campaign=user%20experience&utm_term=feb2023&utm_content=survey">
-  <img src="./.github/banner.svg?raw=true">
-</a>
-<!-- survey banner start -->
-
-<p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: Build multimodal AI services via cloud native technologies · Model Serving · Generative AI · Neural Search · Cloud Native" width="150px"></a>
 </p>
 
@@ -34,7 +27,7 @@ Jina provides a smooth Pythonic experience for serving ML models transitioning f
 - Serve [LLM models while streaming their output](https://github.com/jina-ai/jina#streaming-for-llms).
 - Docker container integration via [Executor Hub](https://cloud.jina.ai), OpenTelemetry/Prometheus observability.
 - Streamlined CPU/GPU hosting via [Jina AI Cloud](https://cloud.jina.ai).
-- Deploy to your own cloud or system with our [Kubernetes](https://docs.jina.ai/cloud-nativeness/k8s/) and [Docker Compose](https://docs.jina.ai/cloud-nativeness/docker-compose/) integration().
+- Deploy to your own cloud or system with our [Kubernetes](https://docs.jina.ai/cloud-nativeness/k8s/) and [Docker Compose](https://docs.jina.ai/cloud-nativeness/docker-compose/) integration.
 
 <details>
     <summary><strong>Wait, how is Jina different from FastAPI?</strong></summary>
