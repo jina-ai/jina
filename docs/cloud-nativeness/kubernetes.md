@@ -48,6 +48,7 @@ First, we build the encoder Executor.
 ````{tab} executor.py
 ```{code-block} python
 import torch
+from typing import Optional
 from transformers import CLIPModel, CLIPTokenizer
 from docarray import DocList, BaseDoc
 from docarray.typing import NdArray
@@ -61,12 +62,7 @@ class MyDoc(BaseDoc):
 
 class Encoder(Executor):
     def __init__(
-            self,
-            pretrained_model_name_or_path: str = 'openai/clip-vit-base-patch32'
-            device: str = 'cpu',
-            *args,
-            **kwargs,
-    ):
+            self, pretrained_model_name_or_path: str = 'openai/clip-vit-base-patch32', device: str = 'cpu', *args,**kwargs ):
         super().__init__(*args, **kwargs)
         self.device = device
         self.tokenizer = CLIPTokenizer.from_pretrained(pretrained_model_name_or_path)
