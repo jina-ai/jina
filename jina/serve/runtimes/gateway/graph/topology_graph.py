@@ -80,7 +80,7 @@ class TopologyGraph:
                 if node._pydantic_models_by_endpoint is not None:  # gateway end
 
                     for endp in self._pydantic_models_by_endpoint.keys():
-                        outgoing_enp = endp
+                        outgoing_endp = endp
                         incoming_endp = (
                             endp
                             if endp in node._pydantic_models_by_endpoint
@@ -91,7 +91,7 @@ class TopologyGraph:
 
                             if endp in node._pydantic_models_by_endpoint:
                                 if (
-                                    self._pydantic_models_by_endpoint[outgoing_enp][
+                                    self._pydantic_models_by_endpoint[outgoing_endp][
                                         'output'
                                     ].schema()
                                     != node._pydantic_models_by_endpoint[incoming_endp][
@@ -99,14 +99,14 @@ class TopologyGraph:
                                     ].schema()
                                 ):
                                     raise Exception(
-                                        f'The output schema of {self.name} is incompatible with the input schema of {node.name}'
+                                        f'The output schema of {self.name} at {outgoing_endp} endpoint is incompatible with the input schema of {node.name} at {incoming_endp} endpoint'
                                     )
                         else:
                             if (
-                                outgoing_enp != __default_endpoint__
+                                outgoing_endp != __default_endpoint__
                             ):  # It could happen that there is an Encoder with default followed by an indexer with [index, search]
                                 raise Exception(
-                                    f'{node.name} does not expose {incoming_endp} which makes it impossible to be chained with {self.name} on {outgoing_enp}'
+                                    f'{node.name} does not expose {incoming_endp} which makes it impossible to be chained with {self.name} on {outgoing_endp}'
                                 )
                             else:
                                 self.logger.warning(
