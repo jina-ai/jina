@@ -15,5 +15,5 @@ for s in ('flow', 'gateway', 'executor', 'deployment'):
         type = None if v['type'] == 'null' else v['type']
         table.append(f'| `{k}` | {desc} | `{type}` | `{v["default"]}` |')
 
-    with open(f'../docs/concepts/flow/{s}-args.md', 'w') as fp:
+    with open(f'../docs/concepts/flow/{s}-args.md', 'w', encoding='utf-8') as fp:
         fp.write('\n'.join(table))

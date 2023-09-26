@@ -10,11 +10,10 @@ jina -vf
 If you use containerized Executors (including {ref}`Kubernetes <kubernetes>` and {ref}`Docker Compose <docker-compose>`), you can pass separate environment variables to each Executor in the following way:
 
 
-`````{tab} YAML
+`````{tab} FLow YAML
 
 ```yaml
 jtype: Flow
-version: '1'
 with: {}
 executors:
 - name: executor0
@@ -27,6 +26,18 @@ executors:
   env:
     JINA_LOG_LEVEL: INFO
     CUDA_VISIBLE_DEVICES: 1
+```
+`````
+`````{tab} Deployment YAML
+
+```yaml
+jtype: Deployment
+with:
+  name: executor0
+  port: 49583
+  env:
+    JINA_LOG_LEVEL: DEBUG
+    MYSECRET: ${{ ENV.MYSECRET }}
 ```
 `````
 ````{tab} Python API

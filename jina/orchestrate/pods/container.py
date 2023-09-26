@@ -186,6 +186,7 @@ def run(
     is_started: Union['multiprocessing.Event', 'threading.Event'],
     is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
     is_ready: Union['multiprocessing.Event', 'threading.Event'],
+    is_signal_handlers_installed: Union['multiprocessing.Event', 'threading.Event'],
 ):
     """Method to be run in a process that stream logs from a Container
 
@@ -207,6 +208,7 @@ def run(
     :param runtime_ctrl_address: The control address of the runtime in the container
     :param envs: Dictionary of environment variables to be set in the docker image
     :param is_started: concurrency event to communicate runtime is properly started. Used for better logging
+    :param is_signal_handlers_installed: concurrency event to communicate runtime is ready to get SIGTERM from orchestration
     :param is_shutdown: concurrency event to communicate runtime is terminated
     :param is_ready: concurrency event to communicate runtime is ready to receive messages
     """
@@ -225,7 +227,7 @@ def run(
                 signal.signal(signame, lambda *args, **kwargs: cancel.set())
         except (ValueError, RuntimeError) as exc:
             logger.warning(
-                f' The process starting the container for {name} will not be able to handle termination signals. '
+                f'The process starting the container for {name} will not be able to handle termination signals. '
                 f' {repr(exc)}'
             )
     else:
@@ -239,6 +241,7 @@ def run(
 
         win32api.SetConsoleCtrlHandler(lambda *args, **kwargs: cancel.set(), True)
 
+    is_signal_handlers_installed.set()
     client = docker.from_env()
 
     try:
@@ -301,7 +304,7 @@ def run(
         client.close()
         if not is_started.is_set():
             logger.error(
-                f' Process terminated, the container fails to start, check the arguments or entrypoint'
+                f'Process terminated, the container fails to start, check the arguments or entrypoint'
             )
         is_shutdown.set()
         logger.debug(f'process terminated')
@@ -414,6 +417,7 @@ class ContainerPod(BasePod):
                 'runtime_ctrl_address': self.runtime_ctrl_address,
                 'envs': self._envs,
                 'is_started': self.is_started,
+                'is_signal_handlers_installed': self.is_signal_handlers_installed,
                 'is_shutdown': self.is_shutdown,
                 'is_ready': self.is_ready,
             },
@@ -430,7 +434,7 @@ class ContainerPod(BasePod):
         """
         # terminate the docker
         try:
-            self._container.kill(signal='SIGTERM')
+            self._container.stop()
         finally:
             self.is_shutdown.wait(self.args.timeout_ctrl)
             self.logger.debug(f'terminating the runtime process')
@@ -456,5 +460,5 @@ class ContainerPod(BasePod):
         except docker.errors.NotFound:
             pass
         self.logger.debug(f'joining the process')
-        self.worker.join(*args, **kwargs)
+        self.worker.join(timeout=10, *args, **kwargs)
         self.logger.debug(f'successfully joined the process')

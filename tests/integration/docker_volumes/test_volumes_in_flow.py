@@ -49,7 +49,7 @@ def test_volumes_in_flow(
     found_output_file = False  # workspace has random element, so we search for it
     for cur_path, dirs, files in os.walk(source):
         if 'out.txt' in files:
-            with open(os.path.join(cur_path, 'out.txt'), 'r') as f:
+            with open(os.path.join(cur_path, 'out.txt'), 'r', encoding='utf-8') as f:
                 if f.read() == 'Filewriter was here':
                     found_output_file = True
     assert found_output_file

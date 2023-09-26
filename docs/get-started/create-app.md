@@ -23,7 +23,7 @@ hello-jina/
             |- executor.py
 ```
 
-- `deployment.yml` is the configuration file for the Deployment`.
+- `deployment.yml` is the configuration file for the Deployment.
 - `executor1/` is where you write your {ref}`Executor <executor-cookbook>` code.
 - `config.yml` is the configuration file for the Executor. It stores metadata for your Executor, as well as dependencies.
 - `client.py` is the entrypoint of your Jina project. You can run it via `python app.py`.
@@ -42,10 +42,18 @@ jina deployment --uses deployment.yml
 
 ──── 🎉 Deployment is ready to serve! ────
 ╭────────────── 🔗 Endpoint ───────────────╮
-│  ⛓     Protocol                    GRPC  │
+│  ⛓     Protocol                   grpc  │
 │  🏠       Local           0.0.0.0:54321  │
-│  🔒     Private    192.168.200.56:54321  │
-│  🌍      Public    81.223.121.124:54321  │
+│  🔒     Private    xxx.xx.xxx.xxx:54321  │
+│       Public       xx.xxx.xxx.xxx:54321  │
+│  ⛓     Protocol                   http  │
+│  🏠       Local           0.0.0.0:54322  │
+│  🔒     Private    xxx.xx.xxx.xxx:54322  │
+│       Public       xx.xxx.xxx.xxx:54322  │
+╰──────────────────────────────────────────╯
+╭─────────── 💎 HTTP extension ────────────╮
+│  💬    Swagger UI    0.0.0.0:54322/docs  │
+│  📚         Redoc   0.0.0.0:54322/redoc  │
 ╰──────────────────────────────────────────╯
 ```
 ````
@@ -85,10 +93,22 @@ jina flow --uses flow.yml
 
 ──── 🎉 Flow is ready to serve! ────
 ╭────────────── 🔗 Endpoint ───────────────╮
-│  ⛓     Protocol                    GRPC  │
+│  ⛓     Protocol                   grpc  │
 │  🏠       Local           0.0.0.0:54321  │
-│  🔒     Private    192.168.200.56:54321  │
-│  🌍      Public    81.223.121.124:54321  │
+│  🔒     Private    xxx.xx.xxx.xxx:54321  │
+│       Public       xx.xxx.xxx.xxx:54321  │
+│  ⛓     Protocol                   http  │
+│  🏠       Local           0.0.0.0:54322  │
+│  🔒     Private    xxx.xx.xxx.xxx:54322  │
+│       Public       xx.xxx.xxx.xxx:54322  │
+│  ⛓     Protocol              websocket  │
+│  🏠       Local           0.0.0.0:54323  │
+│  🔒     Private    xxx.xx.xxx.xxx:54323  │
+│       Public       xx.xxx.xxx.xxx:54323  │
+╰──────────────────────────────────────────╯
+╭─────────── 💎 HTTP extension ────────────╮
+│  💬    Swagger UI    0.0.0.0:54322/docs  │
+│  📚         Redoc   0.0.0.0:54322/redoc  │
 ╰──────────────────────────────────────────╯
 ```
 
@@ -121,17 +141,17 @@ emphasize-lines: 13-16
 import numpy as np
 import torch
 
-from jina import Executor, requests, DocumentArray
+from jina import Executor, requests
 
 
 class MyExecutor(Executor):
     @requests
-    def foo(self, docs: DocumentArray, **kwargs):
+    def foo(self, docs, **kwargs):
         docs[0].text = 'hello, world!'
         docs[1].text = 'goodbye, world!'
 
     @requests(on='/crunch-numbers')
-    def bar(self, docs: DocumentArray, **kwargs):
+    def bar(self, docs:, **kwargs):
         for doc in docs:
             doc.tensor = torch.tensor(np.random.random([10, 2]))
 ```
@@ -143,12 +163,14 @@ Kill the last server with `Ctrl-C` and restart the server with `jina flow --uses
 Modify `client.py` to call the `/crunch-numbers` endpoint:
 
 ```python
-from jina import Client, DocumentArray
+from jina import Client
+from docarray import DocList
+from docarray.documents.legacy import LegacyDocument
 
 if __name__ == '__main__':
-    c = Client(host='grpcs://1655d050ad.wolf.jina.ai')
-    da = c.post('/crunch-numbers', DocumentArray.empty(2))
-    print(da.tensors)
+    c = Client(port=54321)
+    da = c.post('/crunch-numbers', DocList[LegacyDocument]([LegacyDocument(), LegacyDocument()]), return_type=DocList[LegacyDocument])
+    print(da.tensor)
 ```
 
 After you save that, you can run your new client:
@@ -197,7 +219,7 @@ jina auth login
 Log in with your GitHub, Google or Email account:
 
 ```bash
-jina cloud deploy ./
+jina cloud flow deploy ./
 ```
 
 ```{figure} deploy-jcloud-ongoing.png
@@ -221,14 +243,16 @@ Now change the Client's code to use the deployed endpoint shown above:
 
 ```{code-block} python
 ---
-emphasize-lines: 4
+emphasize-lines: 6
 ---
-from jina import Client, DocumentArray
+from jina import Client
+from docarray import DocList
+from docarray.documents.legacy import LegacyDocument
 
 if __name__ == '__main__':
     c = Client(host='grpcs://1655d050ad.wolf.jina.ai')
-    da = c.post('/crunch-numbers', DocumentArray.empty(2))
-    print(da.tensors)
+    da = c.post('/crunch-numbers', DocList[LegacyDocument]([LegacyDocument(), LegacyDocument()]))
+    print(da.tensor)
 ```
 
 ```{tip}
@@ -264,7 +288,7 @@ tensor([[[0.4254, 0.4305],
 Don't forget to delete a Flow if you're not using it any more:
 
 ```bash
-jina cloud remove 1655d050ad
+jina cloud flow remove 1655d050ad
 ```
 
 ```text

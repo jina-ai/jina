@@ -2,7 +2,7 @@ import os
 from typing import Iterable, List, Union
 
 from jina.proto import jina_pb2
-from jina.types.request.data import DataRequest
+from jina.types.request.data import DataRequest, SingleDocumentRequest
 
 
 class DataRequestProto:
@@ -154,3 +154,165 @@ class JinaInfoProto:
         ip.ParseFromString(x)
 
         return ip
+
+
+class SnapshotId:
+    """Placeholder that delegates the serialization and deserialization to the internal protobuf"""
+
+    @staticmethod
+    def SerializeToString(x):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        return x.SerializeToString()
+
+    @staticmethod
+    def FromString(x: bytes):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        si = jina_pb2.SnapshotId()
+        si.ParseFromString(x)
+
+        return si
+
+
+class SnapshotStatusProto:
+    """Placeholder that delegates the serialization and deserialization to the internal protobuf"""
+
+    @staticmethod
+    def SerializeToString(x):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        return x.SerializeToString()
+
+    @staticmethod
+    def FromString(x: bytes):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        sp = jina_pb2.SnapshotStatusProto()
+        sp.ParseFromString(x)
+
+        return sp
+
+
+class RestoreSnapshotCommand:
+    """Placeholder that delegates the serialization and deserialization to the internal protobuf"""
+
+    @staticmethod
+    def SerializeToString(x):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        return x.SerializeToString()
+
+    @staticmethod
+    def FromString(x: bytes):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        rpcommand = jina_pb2.RestoreSnapshotCommand()
+        rpcommand.ParseFromString(x)
+
+        return rpcommand
+
+
+class RestoreId:
+    """Placeholder that delegates the serialization and deserialization to the internal protobuf"""
+
+    @staticmethod
+    def SerializeToString(x):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        return x.SerializeToString()
+
+    @staticmethod
+    def FromString(x: bytes):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        ri = jina_pb2.RestoreId()
+        ri.ParseFromString(x)
+
+        return ri
+
+
+class RestoreSnapshotStatusProto:
+    """Placeholder that delegates the serialization and deserialization to the internal protobuf"""
+
+    @staticmethod
+    def SerializeToString(x):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        return x.SerializeToString()
+
+    @staticmethod
+    def FromString(x: bytes):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        rsp = jina_pb2.RestoreSnapshotStatusProto()
+        rsp.ParseFromString(x)
+
+        return rsp
+
+
+class SingleDocumentRequestProto:
+    """Placeholder that delegates the serialization and deserialization to the internal protobuf"""
+
+    @staticmethod
+    def SerializeToString(x: 'SingleDocumentRequest'):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        if not x.is_decompressed:
+            r = x.buffer
+        else:
+            r = x.proto.SerializePartialToString()
+        os.environ['JINA_GRPC_SEND_BYTES'] = str(
+            len(r) + int(os.environ.get('JINA_GRPC_SEND_BYTES', 0))
+        )
+        return r
+
+    @staticmethod
+    def FromString(x: bytes):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        import os
+        if x:
+            os.environ['JINA_GRPC_RECV_BYTES'] = str(
+                len(x) + int(os.environ.get('JINA_GRPC_RECV_BYTES', 0))
+            )
+            return SingleDocumentRequest(x)
+        else:
+            return SingleDocumentRequest()
+

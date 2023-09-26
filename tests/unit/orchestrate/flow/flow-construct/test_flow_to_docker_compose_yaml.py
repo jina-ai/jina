@@ -33,7 +33,7 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     )
 
     configuration = None
-    with open(dump_path) as f:
+    with open(dump_path, encoding='utf-8') as f:
         configuration = yaml.safe_load(f)
 
     assert set(configuration.keys()) == {'version', 'services', 'networks'}
@@ -329,7 +329,7 @@ def test_docker_compose_set_volume(tmpdir):
     )
 
     configuration = None
-    with open(dump_path) as f:
+    with open(dump_path, encoding='utf-8') as f:
         configuration = yaml.safe_load(f)
 
     assert set(configuration.keys()) == {'version', 'services', 'networks'}
@@ -377,7 +377,7 @@ def test_disable_auto_volume(tmpdir):
     flow.to_docker_compose_yaml(output_path=dump_path)
 
     configuration = None
-    with open(dump_path) as f:
+    with open(dump_path, encoding='utf-8') as f:
         configuration = yaml.safe_load(f)
 
     assert set(configuration.keys()) == {'version', 'services', 'networks'}
@@ -392,33 +392,6 @@ def test_disable_auto_volume(tmpdir):
     assert 'volumes' not in services['executor0']
 
 
-@pytest.mark.parametrize(
-    'uses',
-    ['jinaai+sandbox://jina-ai/DummyHubExecutor'],
-)
-def test_flow_to_docker_compose_sandbox(tmpdir, uses):
-    flow = Flow(name='test-flow', port=8080).add(uses=uses)
-
-    dump_path = os.path.join(str(tmpdir), 'test_flow_docker_compose.yml')
-
-    flow.to_docker_compose_yaml(
-        output_path=dump_path,
-    )
-
-    configuration = None
-    with open(dump_path) as f:
-        configuration = yaml.safe_load(f)
-
-    services = configuration['services']
-    gateway_service = services['gateway']
-    gateway_args = gateway_service['command']
-
-    deployment_addresses = json.loads(
-        gateway_args[gateway_args.index('--deployments-addresses') + 1]
-    )
-    assert deployment_addresses['executor0'][0].startswith('grpcs://')
-
-
 @pytest.mark.parametrize('count', [1, 'all'])
 def test_flow_to_docker_compose_gpus(tmpdir, count):
     flow = Flow().add(name='encoder', gpus=count)
@@ -429,7 +402,7 @@ def test_flow_to_docker_compose_gpus(tmpdir, count):
     )
 
     configuration = None
-    with open(dump_path) as f:
+    with open(dump_path, encoding='utf-8') as f:
         configuration = yaml.safe_load(f)
 
     services = configuration['services']

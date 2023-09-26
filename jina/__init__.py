@@ -28,8 +28,20 @@ def _warning_on_one_line(message, category, filename, lineno, *args, **kwargs):
     )
 
 
+def _ignore_google_warnings():
+    import warnings
+
+    warnings.filterwarnings(
+        'ignore',
+        category=DeprecationWarning,
+        message='Deprecated call to `pkg_resources.declare_namespace(\'google\')`.',
+        append=True
+    )
+
+
 _warnings.formatwarning = _warning_on_one_line
-_warnings.simplefilter('always', DeprecationWarning)
+_warnings.simplefilter('always', DeprecationWarning, append=True)
+_ignore_google_warnings()
 
 # fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
 _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
@@ -55,17 +67,21 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
     # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
     from multiprocessing import set_start_method as _set_start_method
 
-    _set_start_method('fork')
+    try:
+        _set_start_method('fork')
+        _warnings.warn(f'multiprocessing start method is set to `fork`')
+    except Exception as e:
+        _warnings.warn(f'failed to set multiprocessing start_method to `fork`: {e!r}')
 
 # do not change this line manually
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
 
-__version__ = '3.15.0'
+__version__ = '3.21.0'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.1.17'
+__proto_version__ = '0.1.27'
 
 try:
     __docarray_version__ = _docarray.__version__

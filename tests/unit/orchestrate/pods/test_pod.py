@@ -161,6 +161,7 @@ def test_close_before_start(monkeypatch):
     )
     pod = Pod(_generate_pod_args(['--noblock-on-start']))
     pod.start()
+    pod.is_signal_handlers_installed.set()
     pod.close()
 
 
@@ -186,4 +187,5 @@ def test_close_before_start_slow_enter(monkeypatch):
     )
     pod = Pod(_generate_pod_args(['--noblock-on-start']))
     pod.start()
+    pod.is_signal_handlers_installed.set()
     pod.close()

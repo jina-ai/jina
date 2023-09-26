@@ -98,7 +98,7 @@ def main():
         setup_path = os.path.join(dst, 'setup.py')
 
         # Insert the include statement to MANIFEST.in if not present
-        with open(manifest_path, 'a+') as manifest:
+        with open(manifest_path, 'a+', encoding='utf-8') as manifest:
             manifest.seek(0)
             manifest_content = manifest.read()
             if 'include fastentrypoints.py' not in manifest_content:
@@ -107,7 +107,7 @@ def main():
                 )
 
         # Insert the import statement to setup.py if not present
-        with open(setup_path, 'a+') as setup:
+        with open(setup_path, 'a+', encoding='utf-8') as setup:
             setup.seek(0)
             setup_content = setup.read()
             if 'import fastentrypoints' not in setup_content:

@@ -166,8 +166,8 @@ def deprecated_method(new_function_name):
 
 
 def retry(
-        num_retry: int = 3,
-        message: str = 'Calling {func_name} failed, retry attempt {attempt}/{num_retry}. Error: {error!r}',
+    num_retry: int = 3,
+    message: str = 'Calling {func_name} failed, retry attempt {attempt}/{num_retry}. Error: {error!r}',
 ):
     """
     Retry calling a function again in case of an error.
@@ -211,18 +211,18 @@ def get_readable_size(num_bytes: Union[int, float]) -> str:
     num_bytes = int(num_bytes)
     if num_bytes < 1024:
         return f'{num_bytes} Bytes'
-    elif num_bytes < 1024 ** 2:
+    elif num_bytes < 1024**2:
         return f'{num_bytes / 1024:.1f} KB'
-    elif num_bytes < 1024 ** 3:
+    elif num_bytes < 1024**3:
         return f'{num_bytes / (1024 ** 2):.1f} MB'
     else:
         return f'{num_bytes / (1024 ** 3):.1f} GB'
 
 
 def batch_iterator(
-        data: Iterable[Any],
-        batch_size: int,
-        axis: int = 0,
+    data: Iterable[Any],
+    batch_size: int,
+    axis: int = 0,
 ) -> Iterator[Any]:
     """
     Get an iterator of batches of data.
@@ -261,7 +261,7 @@ def batch_iterator(
             yield data
             return
         for _ in range(0, len(data), batch_size):
-            yield data[_: _ + batch_size]
+            yield data[_ : _ + batch_size]
     elif isinstance(data, Iterable):
         # as iterator, there is no way to know the length of it
         iterator = iter(data)
@@ -566,7 +566,7 @@ def expand_env_var(v: str) -> Optional[Union[bool, int, str, list, float]]:
 
 
 def expand_dict(
-        d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True
+    d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True
 ) -> Dict[str, Any]:
     """
     Expand variables from YAML file.
@@ -668,10 +668,10 @@ if __windows__:
 
 
 def colored(
-        text: str,
-        color: Optional[str] = None,
-        on_color: Optional[str] = None,
-        attrs: Optional[Union[str, list]] = None,
+    text: str,
+    color: Optional[str] = None,
+    on_color: Optional[str] = None,
+    attrs: Optional[Union[str, list]] = None,
 ) -> str:
     """
     Give the text with color.
@@ -728,10 +728,10 @@ def colored(
 
 
 def colored_rich(
-        text: str,
-        color: Optional[str] = None,
-        on_color: Optional[str] = None,
-        attrs: Optional[Union[str, list]] = None,
+    text: str,
+    color: Optional[str] = None,
+    on_color: Optional[str] = None,
+    attrs: Optional[Union[str, list]] = None,
 ) -> str:
     """
     Give the text with color. You should only use it when printing with rich print. Othersiwe please see the colored
@@ -827,11 +827,11 @@ class ArgNamespace:
 
     @staticmethod
     def kwargs2namespace(
-            kwargs: Dict[str, Union[str, int, bool]],
-            parser: ArgumentParser,
-            warn_unknown: bool = False,
-            fallback_parsers: Optional[List[ArgumentParser]] = None,
-            positional_args: Optional[Tuple[str, ...]] = None,
+        kwargs: Dict[str, Union[str, int, bool]],
+        parser: ArgumentParser,
+        warn_unknown: bool = False,
+        fallback_parsers: Optional[List[ArgumentParser]] = None,
+        positional_args: Optional[Tuple[str, ...]] = None,
     ) -> Namespace:
         """
         Convert dict to a namespace.
@@ -865,7 +865,7 @@ class ArgNamespace:
 
     @staticmethod
     def get_non_defaults_args(
-            args: Namespace, parser: ArgumentParser, taboo: Optional[Set[str]] = None
+        args: Namespace, parser: ArgumentParser, taboo: Optional[Set[str]] = None
     ) -> Dict:
         """
         Get non-default args in a dict.
@@ -886,7 +886,7 @@ class ArgNamespace:
 
     @staticmethod
     def flatten_to_dict(
-            args: Union[Dict[str, 'Namespace'], 'Namespace']
+        args: Union[Dict[str, 'Namespace'], 'Namespace']
     ) -> Dict[str, Any]:
         """Convert argparse.Namespace to dict to be uploaded via REST.
 
@@ -908,7 +908,6 @@ class ArgNamespace:
 
 
 def is_valid_local_config_source(path: str) -> bool:
-    # TODO: this function must be refactored before 1.0 (Han 12.22)
     """
     Check if the path is valid.
 
@@ -949,13 +948,8 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     except:
         __jcloud_version__ = 'not-available'
 
+    from jina import __docarray_version__, __proto_version__, __version__
     from jina.constants import __jina_env__, __unset_msg__, __uptime__
-
-    from jina import (
-        __docarray_version__,
-        __proto_version__,
-        __version__,
-    )
     from jina.logging.predefined import default_logger
 
     try:
@@ -981,7 +975,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'uptime': __uptime__,
             'ci-vendor': get_ci_vendor() or __unset_msg__,
             'internal': 'jina-ai'
-                        in os.getenv('GITHUB_ACTION_REPOSITORY', __unset_msg__),
+            in os.getenv('GITHUB_ACTION_REPOSITORY', __unset_msg__),
         }
 
         env_info = {k: os.getenv(k, __unset_msg__) for k in __jina_env__}
@@ -1310,25 +1304,16 @@ def run_async(func, *args, **kwargs):
     if loop and loop.is_running():
         # eventloop already exist
         # running inside Jupyter
-        if is_jupyter():
-            thread = _RunThread()
-            thread.start()
-            thread.join()
-            try:
-                return thread.result
-            except AttributeError:
-                from jina.excepts import BadClient
+        thread = _RunThread()
+        thread.start()
+        thread.join()
+        try:
+            return thread.result
+        except AttributeError:
+            from jina.excepts import BadClient
 
-                raise BadClient(
-                    'something wrong when running the eventloop, result can not be retrieved'
-                )
-        else:
-
-            raise RuntimeError(
-                'you have an eventloop running but not using Jupyter/ipython, '
-                'this may mean you are using Jina with other integration? if so, then you '
-                'may want to use Client/Flow(asyncio=True). If not, then '
-                'please report this issue here: https://github.com/jina-ai/jina'
+            raise BadClient(
+                'something wrong when running the eventloop, result can not be retrieved'
             )
     else:
         return asyncio.run(func(*args, **kwargs))
@@ -1482,7 +1467,9 @@ def extend_rest_interface(app: 'FastAPI') -> 'FastAPI':
 def get_ci_vendor() -> Optional[str]:
     from jina.constants import __resources_path__
 
-    with open(os.path.join(__resources_path__, 'ci-vendors.json')) as fp:
+    with open(
+        os.path.join(__resources_path__, 'ci-vendors.json'), encoding='utf-8'
+    ) as fp:
         all_cis = json.load(fp)
         for c in all_cis:
             if isinstance(c['env'], str) and c['env'] in os.environ:
@@ -1675,3 +1662,8 @@ def send_telemetry_event(event: str, obj_cls_name: Any, **kwargs) -> None:
             pass
 
     threading.Thread(target=_telemetry, daemon=True).start()
+
+
+def is_generator(func):
+    import inspect
+    return inspect.isgeneratorfunction(func) or inspect.isasyncgenfunction(func)

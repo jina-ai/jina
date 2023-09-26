@@ -1,0 +1,110 @@
+//protoc --go_out docarray-go-proto --go_opt=paths=source_relative --go_opt=Mdocarray.proto=docarray-go-proto=jraft/docarray-go-proto --go-grpc_out docarray-go-proto --go-grpc_opt=paths=source_relative --experimental_allow_proto3_optional docarray.proto
+syntax = "proto3";
+import "google/protobuf/struct.proto";
+
+package docarray;
+option go_package = "jraft/docarray-go-proto";
+
+/**
+ * Represents a (quantized) dense n-dim array
+ */
+message DenseNdArrayProto {
+  // the actual array data, in bytes
+  bytes buffer = 1;
+
+  // the shape (dimensions) of the array
+  repeated uint32 shape = 2;
+
+  // the data type of the array
+  string dtype = 3;
+}
+
+/**
+ * Represents a general n-dim array, can be either dense or sparse
+ */
+message NdArrayProto {
+  DenseNdArrayProto dense = 1; // dense representation of the ndarray
+
+  google.protobuf.Struct parameters = 2;
+}
+
+message KeyValuePair {
+  google.protobuf.Value key = 1;
+  google.protobuf.Value value = 2;
+}
+
+message GenericDictValue {
+  repeated KeyValuePair entries = 1;
+}
+
+
+
+message NodeProto {
+
+  oneof content {
+    // a text
+    string text = 1;
+    //an integer
+    int32 integer = 2;
+    // a float
+    double float = 3;
+    //a boolean
+    bool boolean = 4;
+    // a bytes representation
+    bytes blob = 5;
+    // the ndarray of the image/audio/video document
+    NdArrayProto ndarray = 6;
+    // a sub Document
+    DocProto doc = 7;
+    // a sub DocArray
+    DocListProto doc_array = 8;
+    //any list
+    ListOfAnyProto list = 9;
+    //any set
+    ListOfAnyProto set = 10;
+    //any tuple
+    ListOfAnyProto tuple = 11;
+    // dictionary with string as keys
+    DictOfAnyProto dict = 12;
+  }
+
+  oneof docarray_type {
+    string type = 13;
+  }
+
+}
+
+/**
+ * Represents a Document
+ */
+message DocProto {
+
+  map<string, NodeProto> data = 1;
+
+}
+
+message DictOfAnyProto {
+
+  map<string, NodeProto> data = 1;
+
+}
+
+message ListOfAnyProto {
+  repeated NodeProto data = 1;
+}
+
+message DocListProto {
+  repeated DocProto docs = 1; // a list of Documents
+}
+
+
+message ListOfDocArrayProto {
+  repeated DocListProto data = 1;
+}
+
+message DocVecProto{
+  map<string, NdArrayProto> tensor_columns = 1; // a dict of document columns
+  map<string, DocVecProto> doc_columns = 2; // a dict of tensor columns
+  map<string, ListOfDocArrayProto> docs_vec_columns = 3; // a dict of document array columns
+  map<string, ListOfAnyProto> any_columns = 4; // a dict of any columns. Used for the rest of the data
+}

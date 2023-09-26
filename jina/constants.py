@@ -35,7 +35,7 @@ __jina_env__ = (
     'JINA_STREAMER_ARGS',
 )
 
-__default_host__ = _os.environ.get(
+__default_host__ = _os.getenv(
     'JINA_DEFAULT_HOST', '127.0.0.1' if __windows__ else '0.0.0.0'
 )
 __docker_host__ = 'host.docker.internal'
@@ -46,6 +46,7 @@ __default_composite_gateway__ = 'CompositeGateway'
 __default_websocket_gateway__ = 'WebSocketGateway'
 __default_grpc_gateway__ = 'GRPCGateway'
 __default_endpoint__ = '/default'
+__dynamic_base_gateway_hubble__ = 'jinaai+docker://jina-ai/JinaGateway:latest'
 __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
 __unset_msg__ = '(unset)'
@@ -76,5 +77,6 @@ _names_with_underscore = [
     '__windows__',
 ]
 
-__all__ = [_s for _s in dir() if not _s.startswith('_')]
-__all__.extend(_names_with_underscore)
+__all__ = [_s for _s in dir() if not _s.startswith('_')] + _names_with_underscore
+
+RAFT_TO_EXECUTOR_PORT = 100

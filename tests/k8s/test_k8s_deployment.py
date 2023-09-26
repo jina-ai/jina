@@ -4,8 +4,10 @@ import os
 import pytest
 from docarray import DocumentArray
 from pytest_kind import cluster
+from jina.serve.networking import GrpcConnectionPool
+from jina.serve.runtimes.servers import BaseServer
 
-from jina import Deployment
+from jina import Deployment, Client
 from jina.helper import random_port
 from tests.k8s.conftest import shell_portforward
 
@@ -121,8 +123,7 @@ async def test_deployment_serve_k8s(
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
 
-    # test with custom port
-    port = random_port()
+    port = GrpcConnectionPool.K8S_PORT
     try:
         dep = Deployment(
             name='test-executor',
@@ -130,7 +131,6 @@ async def test_deployment_serve_k8s(
             shards=shards,
             protocol=protocol,
             replicas=replicas,
-            port=port,
         )
 
         dump_path = os.path.join(
@@ -194,6 +194,64 @@ async def test_deployment_serve_k8s(
             if not (shards == 1 and replicas == 2):
                 assert len(visited) == shards * replicas
 
+    except Exception as exc:
+        logger.error(f' Exception raised {exc}')
+        raise exc
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['test-executor', 'jinaai/jina']],
+    indirect=True,
+)
+async def test_deployment_with_multiple_protocols(
+        logger, docker_images, tmpdir, k8s_cluster
+):
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    namespace = f'test-deployment-serve-k8s-multiprotocol'
+    try:
+
+        dep = Deployment(
+            name='test-executor',
+            uses=f'docker://{docker_images[0]}',
+            protocol=['grpc', 'http'],
+        )
+
+        dump_path = os.path.join(
+            str(tmpdir), f'test-deployment-serve-k8s-multiprotocol'
+        )
+        dep.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+        deployment_replicas_expected = {'test-executor': 1}
+        await create_executor_deployment_and_wait_ready(
+            dump_path,
+            namespace=namespace,
+            api_client=api_client,
+            app_client=app_client,
+            core_client=core_client,
+            deployment_replicas_expected=deployment_replicas_expected,
+            logger=logger,
+        )
+        grpc_port = GrpcConnectionPool.K8S_PORT
+        http_port = GrpcConnectionPool.K8S_PORT + 1
+
+        with shell_portforward(k8s_cluster._cluster.kubectl_path, pod_or_service='service/test-executor-1-http', port1=http_port, port2=http_port, namespace=namespace):
+            import requests
+
+            resp = requests.get(f'http://localhost:{http_port}').json()
+            assert resp == {}
+
+        with shell_portforward(k8s_cluster._cluster.kubectl_path, pod_or_service='service/test-executor', port1=grpc_port, port2=grpc_port, namespace=namespace):
+            grpc_client = Client(protocol='grpc', port=grpc_port, asyncio=True)
+            async for _ in grpc_client.post('/', inputs=DocumentArray.empty(5)):
+                pass
+            assert BaseServer.is_ready(f'localhost:{grpc_port}')
     except Exception as exc:
         logger.error(f' Exception raised {exc}')
         raise exc

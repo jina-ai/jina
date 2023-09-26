@@ -8,8 +8,8 @@ There are two ways of applying a rate limit using the {class}`~jina.Client`.
 
 
 The `prefetch` argument controls the number of in flight requests made by the {meth}`~jina.clients.mixin.PostMixin.post` 
-method. Using the default value might overload the {class}`~jina.Flow` especially if the operation characteristics of the `Flow` 
-are unknown. Furthermore the Client can send various types of requests which can have varying resource usage in the `Flow`.
+method. Using the default value might overload the {class}`~jina.Gateway` or {class}`~jina.Executor` especially if the operation characteristics of the `Deployment` or `Flow` 
+are unknown. Furthermore the Client can send various types of requests which can have varying resource usage.
 
 For example, a high number of `index` requests can contain a large data payload requiring high input/output operation.
 This increases CPU consumption and eventually lead to a build up of the requests on the Flow. If the queue of in-flight requests 
@@ -19,7 +19,7 @@ apply the `prefetch` value on the {meth}`~jina.clients.mixin.PostMixin.post` met
 requests for expensive operations.
 
 Apply the `prefetch` argument on the {meth}`~jina.clients.mixin.PostMixin.post` method to dynamically increase 
-the `Flow` responsiveness for customer-facing requests which require faster response times vs. background requests such as cronjobs or 
+the server responsiveness for customer-facing requests which require faster response times vs. background requests such as cronjobs or 
 analytics requests which can be processed slowly.
 
 ```python

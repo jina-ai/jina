@@ -12,11 +12,11 @@ from jina.helper import deprecate_by, get_or_reuse_loop, run_async
 from jina.importer import ImportExtensions
 
 if TYPE_CHECKING:  # pragma: no cover
-
+    from pydantic import BaseModel
     from jina.clients.base import CallbackFnType, InputType
     from jina.types.request.data import Response
 
-from jina._docarray import Document, DocumentArray
+from jina._docarray import Document, DocumentArray, docarray_v2
 
 
 def _include_results_field_in_param(parameters: Optional['Dict']) -> 'Dict':
@@ -344,7 +344,7 @@ class PostMixin:
         on_done: Optional['CallbackFnType'] = None,
         on_error: Optional['CallbackFnType'] = None,
         on_always: Optional['CallbackFnType'] = None,
-        parameters: Optional[Dict] = None,
+        parameters: Union[Dict, 'BaseModel', None] = None,
         target_executor: Optional[str] = None,
         request_size: int = 100,
         show_progress: bool = False,
@@ -362,12 +362,12 @@ class PostMixin:
     ) -> Optional[Union['DocumentArray', List['Response']]]:
         """Post a general data request to the Flow.
 
-        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document.
+        :param inputs: input data which can be a DocList, a BaseDoc, an Iterable, a function which returns an Iterable.
         :param on: the endpoint which is invoked. All the functions in the executors decorated by `@requests(on=...)` with the same endpoint are invoked.
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is either resolved or rejected.
-        :param parameters: the kwargs that will be sent to the executor
+        :param parameters: the parameters that will be sent to the executor, this can be a Dict or a Pydantic model
         :param target_executor: a regex string. Only matching Executors will process the request.
         :param request_size: the number of Documents per request. <=0 means all inputs in one request.
         :param show_progress: if set, client will show a progress bar on receiving every request.
@@ -380,7 +380,7 @@ class PostMixin:
         :param results_in_order: return the results in the same order as the inputs
         :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.
         :param prefetch: How many Requests are processed from the Client at the same time. If not provided then Gateway prefetch value will be used.
-        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.
+        :param return_type: the DocList or BaseDoc type to be returned. By default, it is `DocumentArray`.
         :param kwargs: additional parameters
         :return: None or DocumentArray containing all response Documents
 
@@ -397,16 +397,28 @@ class PostMixin:
         return_results = (on_always is None) and (on_done is None)
 
         async def _get_results(*args, **kwargs):
-            result = [] if return_responses else return_type([])
+            is_singleton = False
+            inferred_return_type = return_type
+            if docarray_v2:
+                from docarray import DocList
+                if not issubclass(return_type, DocList):
+                    is_singleton = True
+                    inferred_return_type = DocList[return_type]
+            result = [] if return_responses else inferred_return_type([])
+
             async for resp in c._get_results(*args, **kwargs):
+
                 if return_results:
+                    resp.document_array_cls = inferred_return_type
                     if return_responses:
                         result.append(resp)
                     else:
-                        resp.document_array_cls = return_type
                         result.extend(resp.data.docs)
             if return_results:
-                return result
+                if not return_responses and is_singleton and len(result) == 1:
+                    return result[0]
+                else:
+                    return result
 
         return self._with_retry(
             func=_get_results,
@@ -446,7 +458,7 @@ class AsyncPostMixin:
         on_done: Optional['CallbackFnType'] = None,
         on_error: Optional['CallbackFnType'] = None,
         on_always: Optional['CallbackFnType'] = None,
-        parameters: Optional[Dict] = None,
+        parameters: Union[Dict, 'BaseModel', None] = None,
         target_executor: Optional[str] = None,
         request_size: int = 100,
         show_progress: bool = False,
@@ -464,12 +476,12 @@ class AsyncPostMixin:
     ) -> AsyncGenerator[None, Union['DocumentArray', 'Response']]:
         """Async Post a general data request to the Flow.
 
-        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document.
+        :param inputs: input data which can be a DocList, a BaseDoc, an Iterable, a function which returns an Iterable.
         :param on: the endpoint which is invoked. All the functions in the executors decorated by `@requests(on=...)` with the same endpoint are invoked.
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is either resolved or rejected.
-        :param parameters: the kwargs that will be sent to the executor
+        :param parameters: the parameters that will be sent to the executor, this can be a Dict or a Pydantic model
         :param target_executor: a regex string. Only matching Executors will process the request.
         :param request_size: the number of Documents per request. <=0 means all inputs in one request.
         :param show_progress: if set, client will show a progress bar on receiving every request.
@@ -482,7 +494,7 @@ class AsyncPostMixin:
         :param results_in_order: return the results in the same order as the inputs
         :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.
         :param prefetch: How many Requests are processed from the Client at the same time. If not provided then Gateway prefetch value will be used.
-        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.
+        :param return_type: the DocList or BaseDoc type to be returned. By default, it is `DocumentArray`.
         :param kwargs: additional parameters, can be used to pass metadata or authentication information in the server call
         :yield: Response object
 
@@ -515,11 +527,55 @@ class AsyncPostMixin:
             return_type=return_type,
             **kwargs,
         ):
+            is_singleton = False
+            if docarray_v2:
+                from docarray import DocList
+                if issubclass(return_type, DocList):
+                    result.document_array_cls = return_type
+                else:
+                    is_singleton = True
+                    result.document_array_cls = DocList[return_type]
             if not return_responses:
-                result.document_array_cls = return_type
-                yield result.data.docs
+                ret_docs = result.data.docs
+                if is_singleton and len(ret_docs) == 1:
+                    yield ret_docs[0]
+                else:
+                    yield ret_docs
             else:
                 yield result
+
+    async def stream_doc(
+        self,
+        on: str,
+        inputs: Document,
+        parameters: Optional[Dict] = None,
+        return_type: Type[Document] = Document,
+        timeout: Optional[int] = None,
+        **kwargs,
+    ) -> AsyncGenerator[None, 'Document']:
+        """Send one document to a streaming endpoint and receive results asynchronisly, one Document at a time.
+
+        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document.
+        :param on: the endpoint which is invoked. All the functions in the executors decorated by `@requests(on=...)` with the same endpoint are invoked.
+        :param parameters: the kwargs that will be sent to the executor
+        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.
+        :param timeout: Timeout for the client to remain connected to the server.
+        :param kwargs: additional parameters, can be used to pass metadata or authentication information in the server call
+        :yield: Document object
+        """
+        c = self.client
+        parameters = _include_results_field_in_param(parameters)
+
+        async for doc in c._get_streaming_results(
+            on=on,
+            inputs=inputs,
+            exec_endpoint=on,
+            parameters=parameters,
+            return_type=return_type,
+            timeout=timeout,
+            **kwargs,
+        ):
+            yield doc
 
     # ONLY CRUD, for other request please use `.post`
     index = partialmethod(post, '/index')

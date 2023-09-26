@@ -17,4 +17,4 @@ If you think you found a vulnerability, and even if you are not sure about it, p
 
 Our team will review it thoroughly and get back to you.
 
-Please restrain from publicly discussing a potential security vulnerability on Github issues or in Slack community. 🙊 It's better to discuss privately and try to find a solution first, to limit the potential impact as much as possible.
+Please restrain from publicly discussing a potential security vulnerability on Github issues or in Discord community. 🙊 It's better to discuss privately and try to find a solution first, to limit the potential impact as much as possible.

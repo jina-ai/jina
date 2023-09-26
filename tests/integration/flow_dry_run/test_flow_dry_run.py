@@ -5,7 +5,7 @@ from jina import Flow
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_dry_run(protocol):
-    f = Flow(protocol=protocol).add()
+    f = Flow(protocols=protocol).add()
     with f:
         dry_run = f.is_flow_ready()
     dry_run_negative = f.is_flow_ready()

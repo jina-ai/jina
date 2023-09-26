@@ -4,10 +4,11 @@ import argparse
 from dataclasses import dataclass
 from typing import Dict
 
-from jina.enums import PodRoleType, ProtocolType
+from jina.enums import PodRoleType, ProtocolType, ProviderType
 from jina.helper import random_port
 from jina.parsers.helper import (
     _SHOW_ALL_ARGS,
+    CastPeerPorts,
     CastToIntAction,
     KVAppendAction,
     add_arg_group,
@@ -51,7 +52,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         type=int,
         default=600000,
         help='The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting '
-             'forever',
+        'forever',
     )
 
     gp.add_argument(
@@ -67,7 +68,18 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         action=KVAppendAction,
         metavar='KEY: VALUE',
         nargs='*',
-        help='The map of environment variables that are read from kubernetes cluster secrets',
+        help='The map of environment variables that are read from kubernetes cluster secrets'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+    gp.add_argument(
+        '--image-pull-secrets',
+        type=str,
+        nargs='+',
+        default=None,
+        help='List of ImagePullSecrets that the Kubernetes Pods need to have access to in order to pull the image. Used in `to_kubernetes_yaml`'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
     )
 
     # hidden CLI used for internal only
@@ -96,7 +108,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         action='store_true',
         default=False,
         help='If set, starting a Pod/Deployment does not block the thread/process. It then relies on '
-             '`wait_start_success` at outer function for the postpone check.'
+        '`wait_start_success` at outer function for the postpone check.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
@@ -106,17 +118,27 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         action='store_true',
         default=False,
         help='If set, the current Pod/Deployment can not be further chained, '
-             'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
+        'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
     )
+
+    gp.add_argument(
+        '--replica-id',
+        type=int,
+        default=0,
+        help='defines the replica identifier for the executor. It is used when `stateful` is set to true'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
     if pod_type != 'gateway':
         gp.add_argument(
             '--reload',
             action='store_true',
             default=False,
             help='If set, the Executor will restart while serving if YAML configuration source or Executor modules '
-                 'are changed. If YAML configuration is changed, the whole deployment is reloaded and new '
-                 'processes will be restarted. If only Python modules of the Executor have changed, they will be '
-                 'reloaded to the interpreter without restarting process.',
+            'are changed. If YAML configuration is changed, the whole deployment is reloaded and new '
+            'processes will be restarted. If only Python modules of the Executor have changed, they will be '
+            'reloaded to the interpreter without restarting process.',
         )
         gp.add_argument(
             '--install-requirements',
@@ -132,6 +154,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
             help='If set, the Gateway will restart while serving if YAML configuration source is changed.',
         )
     mixin_pod_runtime_args_parser(gp, pod_type=pod_type)
+    mixin_stateful_parser(gp)
 
 
 def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
@@ -175,6 +198,14 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
     )
 
     arg_group.add_argument(
+        '--provider',
+        type=ProviderType.from_string,
+        choices=list(ProviderType),
+        default=[ProviderType.NONE],
+        help=f'If set, Executor is translated to a custom container compatible with the chosen provider. Choose the convenient providers from: {[provider.to_string() for provider in list(ProviderType)]}.',
+    )
+
+    arg_group.add_argument(
         '--monitoring',
         action='store_true',
         default=False,
@@ -204,7 +235,7 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         action='store_true',
         default=False,
         help='If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. '
-             'Otherwise a no-op implementation will be provided.',
+        'Otherwise a no-op implementation will be provided.',
     )
 
     arg_group.add_argument(
@@ -226,7 +257,7 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         action='store_true',
         default=False,
         help='If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. '
-             'Otherwise a no-op implementation will be provided.',
+        'Otherwise a no-op implementation will be provided.',
     )
 
     arg_group.add_argument(
@@ -241,4 +272,29 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         type=int,
         default=None,
         help='If tracing is enabled, this port will be used to configure the metrics exporter agent.',
+    )
+
+
+def mixin_stateful_parser(parser):
+    """Mixing in arguments required to work with Stateful Executors into the given parser.
+    :param parser: the parser instance to which we add arguments
+    """
+
+    gp = add_arg_group(parser, title='Stateful Executor')
+
+    gp.add_argument(
+        '--stateful',
+        action='store_true',
+        default=False,
+        help='If set, start consensus module to make sure write operations are properly replicated between all the replicas',
+    )
+    gp.add_argument(
+        '--peer-ports',
+        type=str,
+        default=None,
+        help='When using --stateful option, it is required to tell the cluster what are the cluster configuration. This is important'
+        'when the Deployment is restarted. It indicates the ports to which each replica of the cluster binds.'
+        ' It is expected to be a single list if shards == 1 or a dictionary if shards > 1.',
+        action=CastPeerPorts,
+        nargs='+',
     )

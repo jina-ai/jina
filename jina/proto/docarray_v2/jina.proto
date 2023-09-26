@@ -52,6 +52,9 @@ message EndpointsProto {
 
     // list of endpoints exposed by an Executor
     repeated string endpoints = 1;
+    repeated string write_endpoints = 2;
+    // Dictionary containing input and output schema per endpoint
+    google.protobuf.Struct schemas = 3; // extra kwargs that will be used in executor
 }
 
 /**
@@ -121,6 +124,23 @@ message DataRequestProto {
     DataContentProto data = 4; // container for docs and groundtruths
 }
 
+
+
+/**
+ * Represents a Single Document DataRequest
+ */
+message SingleDocumentRequestProto {
+
+    HeaderProto header = 1; // header contains meta info defined by the user
+
+    google.protobuf.Struct parameters = 2; // extra kwargs that will be used in executor
+
+    repeated RouteProto routes = 3; // status info on every routes
+
+    docarray.DocProto document = 4; // the document in this request
+
+}
+
 message DataRequestProtoWoData {
 
     HeaderProto header = 1; // header contains meta info defined by the user
@@ -160,6 +180,16 @@ service JinaSingleDataRequestRPC {
 }
 
 /**
+ * jina gRPC service for DataRequests.
+ * This is used to send requests to Executors when a list of requests is not needed
+ */
+service JinaSingleDocumentRequestRPC {
+    // Used for streaming one document to the Executors
+    rpc stream_doc (SingleDocumentRequestProto) returns (stream SingleDocumentRequestProto) {
+    }
+}
+
+/**
  * jina streaming gRPC service.
  */
 service JinaRPC {
@@ -193,3 +223,110 @@ service JinaInfoRPC {
     }
 }
 
+/**
+* An ID representation for the Snapshot Job
+*/
+message SnapshotId {
+    string value = 1;
+}
+
+/**
+* An ID representation for the Restore Job
+*/
+message RestoreId {
+    string value = 1;
+}
+
+
+/**
+* Represents the status of a Snapshot.
+*/
+message SnapshotStatusProto {
+
+    SnapshotId id = 1; // An ID for the Snapshot Job.
+
+    enum Status {
+        STATE_UNSPECIFIED = 0;
+        
+        QUEUED = 1; // Snapshot Job is admitted (validated and persisted) and waiting for resources.
+        
+        SCHEDULED = 2; // Snapshot Job is scheduled to run as soon as resource allocation is ready.
+        
+        RUNNING = 3; // Resource allocation has been successful. Snapshot Job is RUNNING.
+        
+        SUCCEEDED = 4; // Snapshot Job has finished successfully.
+        
+        FAILED = 5; // Snapshot Job has failed.
+
+        NOT_FOUND = 6; // If the specific snapshot id is unknown or not found
+    }
+
+    // status code
+    Status status = 2;
+    
+    // snapshot file
+    string snapshot_file = 3;
+}
+
+/**
+* jina gRPC service to trigger a snapshot at the Executor Runtime.
+*/
+service JinaExecutorSnapshot {
+    rpc snapshot (google.protobuf.Empty) returns (SnapshotStatusProto) {
+    }
+}
+
+/**
+* jina gRPC service to trigger a snapshot at the Executor Runtime.
+*/
+service JinaExecutorSnapshotProgress {
+    rpc snapshot_status (SnapshotId) returns (SnapshotStatusProto) {
+    }
+}
+
+/**
+* Represents the status of a Restore.
+*/
+message RestoreSnapshotStatusProto {
+
+    RestoreId id = 1; // An ID for the Restore Job.
+
+    enum Status {
+        STATE_UNSPECIFIED = 0;
+
+        RUNNING = 1; // Resource allocation has been successful. Restore Job is RUNNING.
+
+        SUCCEEDED = 2; // Resource Job has finished successfully.
+
+        FAILED = 3; // Resource Job has failed.
+
+        NOT_FOUND = 6; // If the specific restore id is unknown or not found
+    }
+
+    // status code
+    Status status = 2;
+}
+
+/**
+* Commands to restore an Executor from a snapshot file
+*/
+message RestoreSnapshotCommand {
+    // snapshot file
+    string snapshot_file = 1;
+}
+
+/**
+* jina gRPC service to trigger a restore at the Executor Runtime.
+*/
+service JinaExecutorRestore {
+    rpc restore (RestoreSnapshotCommand) returns (RestoreSnapshotStatusProto) {
+    }
+}
+
+/**
+* jina gRPC service to trigger a snapshot at the Executor Runtime.
+*/
+service JinaExecutorRestoreProgress {
+    rpc restore_status (RestoreId) returns (RestoreSnapshotStatusProto) {
+    }
+}

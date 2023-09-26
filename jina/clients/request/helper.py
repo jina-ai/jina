@@ -5,6 +5,9 @@ from jina._docarray import Document, DocumentArray, docarray_v2
 from jina.enums import DataInputType
 from jina.types.request.data import DataRequest
 
+if docarray_v2:
+    from docarray import DocList, BaseDoc
+
 
 def _new_data_request_from_batch(
     batch,
@@ -74,8 +77,16 @@ def _new_doc_from_data(
 
 
 def _add_docs(req: DataRequest, batch, data_type: DataInputType) -> None:
-    da = DocumentArray([])
+    if not docarray_v2:
+        da = DocumentArray([])
+    else:
+        if len(batch) > 0:
+            da = DocList[batch[0].__class__]()
+        else:
+            da = DocList[BaseDoc]()
+
     for content in batch:
         d, data_type = _new_doc_from_data(content, data_type)
         da.append(d)
+    req.document_array_cls = da.__class__
     req.data.docs = da

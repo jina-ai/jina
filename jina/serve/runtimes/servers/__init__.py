@@ -1,4 +1,5 @@
 import abc
+import threading
 import time
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Dict, Optional, Union
@@ -11,7 +12,9 @@ __all__ = ['BaseServer']
 
 if TYPE_CHECKING:
     import multiprocessing
-    import threading
+
+    from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+    from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 
 
 class BaseServer(MonitoringMixin, InstrumentationMixin):
@@ -25,13 +28,17 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         runtime_args: Optional[Dict] = None,
         req_handler_cls=None,
         req_handler=None,
+        is_cancel=None,
         **kwargs,
     ):
         self.name = name or ''
         self.runtime_args = runtime_args
         self.works_as_load_balancer = False
+        self.is_cancel = is_cancel or threading.Event()
         if isinstance(runtime_args, Dict):
-            self.works_as_load_balancer = runtime_args.get('gateway_load_balancer', False)
+            self.works_as_load_balancer = runtime_args.get(
+                'gateway_load_balancer', False
+            )
         if isinstance(self.runtime_args, dict):
             self.logger = JinaLogger(self.name, **self.runtime_args)
         else:
@@ -51,7 +58,9 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
             metrics_exporter_host=self.runtime_args.metrics_exporter_host,
             metrics_exporter_port=self.runtime_args.metrics_exporter_port,
         )
-        self._request_handler = req_handler or self._get_request_handler()
+        self._request_handler: Union[
+            'GatewayRequestHandler', 'WorkerRequestHandler'
+        ] = (req_handler or self._get_request_handler())
         if hasattr(self._request_handler, 'streamer'):
             self.streamer = self._request_handler.streamer  # backward compatibility
             self.executor = self._request_handler.executor  # backward compatibility
@@ -88,7 +97,7 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
             aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
             tracing_client_interceptor=self.tracing_client_interceptor(),
             deployment_name=self.name.split('/')[0],
-            works_as_load_balancer=self.works_as_load_balancer
+            works_as_load_balancer=self.works_as_load_balancer,
         )
 
     def _add_gateway_args(self):
@@ -120,21 +129,33 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         """Gets the first port of the port list argument. To be used in the regular case where a Gateway exposes a single port
         :return: The first port to be exposed
         """
-        return self.runtime_args.port[0]
+        return (
+            self.runtime_args.port[0]
+            if isinstance(self.runtime_args.port, list)
+            else self.runtime_args.port
+        )
 
     @property
     def ports(self):
         """Gets all the list of ports from the runtime_args as a list.
         :return: The lists of ports to be exposed
         """
-        return self.runtime_args.port
+        return (
+            self.runtime_args.port
+            if isinstance(self.runtime_args.port, list)
+            else [self.runtime_args.port]
+        )
 
     @property
     def protocols(self):
         """Gets all the list of protocols from the runtime_args as a list.
         :return: The lists of protocols to be exposed
         """
-        return self.runtime_args.protocol
+        return (
+            self.runtime_args.protocol
+            if isinstance(self.runtime_args.protocol, list)
+            else [self.runtime_args.protocol]
+        )
 
     @property
     def host(self):
@@ -169,6 +190,7 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         ctrl_address: str,
         protocol: Optional[str] = 'grpc',
         timeout: float = 1.0,
+        logger=None,
         **kwargs,
     ) -> bool:
         """
@@ -176,18 +198,15 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         :param ctrl_address: the address where the control request needs to be sent
         :param protocol: protocol of the gateway runtime
         :param timeout: timeout of grpc call in seconds
+        :param logger: JinaLogger to be used
         :param kwargs: extra keyword arguments
         :return: True if status is ready else False.
         """
+        from jina.enums import ProtocolType
         from jina.serve.runtimes.servers.grpc import GRPCServer
         from jina.serve.runtimes.servers.http import FastAPIBaseServer
-        from jina.enums import ProtocolType
 
-        if (
-                protocol is None
-                or protocol == ProtocolType.GRPC
-                or protocol == 'grpc'
-        ):
+        if protocol is None or protocol == ProtocolType.GRPC or protocol == 'grpc':
             res = GRPCServer.is_ready(ctrl_address)
         else:
             res = FastAPIBaseServer.is_ready(ctrl_address)
@@ -198,6 +217,7 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         ctrl_address: str,
         protocol: Optional[str] = 'grpc',
         timeout: float = 1.0,
+        logger=None,
         **kwargs,
     ) -> bool:
         """
@@ -205,21 +225,18 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         :param ctrl_address: the address where the control request needs to be sent
         :param protocol: protocol of the gateway runtime
         :param timeout: timeout of grpc call in seconds
+        :param logger: JinaLogger to be used
         :param kwargs: extra keyword arguments
         :return: True if status is ready else False.
         """
+        from jina.enums import ProtocolType
         from jina.serve.runtimes.servers.grpc import GRPCServer
         from jina.serve.runtimes.servers.http import FastAPIBaseServer
-        from jina.enums import ProtocolType
 
-        if (
-                protocol is None
-                or protocol == ProtocolType.GRPC
-                or protocol == 'grpc'
-        ):
-            res = await GRPCServer.async_is_ready(ctrl_address)
+        if protocol is None or protocol == ProtocolType.GRPC or protocol == 'grpc':
+            res = await GRPCServer.async_is_ready(ctrl_address, logger=logger)
         else:
-            res = await FastAPIBaseServer.async_is_ready(ctrl_address)
+            res = await FastAPIBaseServer.async_is_ready(ctrl_address, logger=logger)
         return res
 
     @classmethod

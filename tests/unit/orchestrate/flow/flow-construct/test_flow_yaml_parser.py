@@ -16,10 +16,10 @@ cur_dir = Path(__file__).parent
 
 
 def test_load_flow_from_empty_yaml():
-    with open(cur_dir / 'yaml' / 'dummy-flow.yml') as fp:
+    with open(cur_dir / 'yaml' / 'dummy-flow.yml', encoding='utf-8') as fp:
         JAML.load(fp)
 
-    with open(cur_dir / 'yaml' / 'dummy-flow.yml') as fp:
+    with open(cur_dir / 'yaml' / 'dummy-flow.yml', encoding='utf-8') as fp:
         Flow.load_config(fp)
 
 
@@ -161,7 +161,7 @@ def test_load_flow_from_cli():
 
 
 def test_load_flow_from_yaml():
-    with open(cur_dir.parent.parent.parent / 'yaml' / 'test-flow.yml') as fp:
+    with open(cur_dir.parent.parent.parent / 'yaml' / 'test-flow.yml', encoding='utf-8') as fp:
         _ = Flow.load_config(fp)
 
 
@@ -174,7 +174,7 @@ def test_flow_yaml_dump(tmpdir):
 
 def test_flow_yaml_from_string():
     f1 = Flow.load_config('yaml/flow-v1.0-syntax.yml')
-    with open(str(cur_dir / 'yaml' / 'flow-v1.0-syntax.yml')) as fp:
+    with open(str(cur_dir / 'yaml' / 'flow-v1.0-syntax.yml'), encoding='utf-8') as fp:
         str_yaml = fp.read()
         assert isinstance(str_yaml, str)
         f2 = Flow.load_config(str_yaml)

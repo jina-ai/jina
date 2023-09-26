@@ -78,7 +78,7 @@ def test_logging_file(monkeypatch):
     ) as file_logger:
         log(file_logger)
         assert os.path.exists(fn)
-        with open(fn) as fp:
+        with open(fn, encoding='utf-8') as fp:
             assert len(fp.readlines()) == 5
     for f in glob.glob(cur_dir + '/*.log'):
         os.remove(f)

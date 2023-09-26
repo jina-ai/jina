@@ -3,12 +3,11 @@ from datetime import datetime
 from enum import Enum
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Union
-
-from docarray.document.pydantic_model import PydanticDocument, PydanticDocumentArray
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from pydantic import BaseConfig, BaseModel, Field, create_model, root_validator
 
 from jina.proto.jina_pb2 import DataRequestProto, JinaInfoProto, RouteProto, StatusProto
+from jina._docarray import docarray_v2
 
 if TYPE_CHECKING:  # pragma: no cover
     from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
@@ -194,8 +193,12 @@ def protobuf_to_pydantic_model(
 
     CustomConfig.fields = camel_case_fields
     if model_name == 'DocumentProto':
+        from docarray.document.pydantic_model import PydanticDocument
+
         model = PydanticDocument
     elif model_name == 'DocumentArrayProto':
+        from docarray.document.pydantic_model import PydanticDocumentArray
+
         model = PydanticDocumentArray
     else:
         model = create_model(
@@ -210,8 +213,12 @@ def protobuf_to_pydantic_model(
     return model
 
 
-for proto in (RouteProto, StatusProto, DataRequestProto, JinaInfoProto):
-    protobuf_to_pydantic_model(proto)
+if not docarray_v2:
+    for proto in (RouteProto, StatusProto, DataRequestProto, JinaInfoProto):
+        protobuf_to_pydantic_model(proto)
+else:
+    for proto in (RouteProto, StatusProto, JinaInfoProto):
+        protobuf_to_pydantic_model(proto)
 
 
 def _to_camel_case(snake_str: str) -> str:
@@ -220,83 +227,68 @@ def _to_camel_case(snake_str: str) -> str:
     # with the 'title' method and join them together.
     return components[0] + ''.join(x.title() for x in components[1:])
 
+if not docarray_v2:
+    from docarray.document.pydantic_model import PydanticDocument, PydanticDocumentArray
 
-class JinaHealthModel(BaseModel):
-    """Pydantic BaseModel for Jina health check, used as the response model in REST app."""
+    class JinaRequestModel(BaseModel):
+        """
+        Jina HTTP request model.
+        """
 
-    ...
+        # the dict one is only for compatibility.
+        # So we will accept data: {[Doc1.to_dict, Doc2...]} and data: {docs: [[Doc1.to_dict, Doc2...]}
+        data: Optional[
+            Union[
+                PydanticDocumentArray,
+                Dict[str, PydanticDocumentArray],
+            ]
+        ] = Field(
+            None,
+            example=[
+                {'text': 'hello, world!'},
+                {'uri': 'https://docs.jina.ai/_static/logo-light.svg'},
+            ],
+            description=DESCRIPTION_DATA,
+        )
+        target_executor: Optional[str] = Field(
+            None,
+            example='',
+            description=DESCRIPTION_TARGET_EXEC,
+        )
+        parameters: Optional[Dict] = Field(
+            None,
+            example={},
+            description=DESCRIPTION_PARAMETERS,
+        )
 
-
-class JinaInfoModel(BaseModel):
-    """Pydantic BaseModel for Jina status, used as the response model in REST app."""
-
-    jina: Dict
-    envs: Dict
-
-    class Config:
-        alias_generator = _to_camel_case
-        allow_population_by_field_name = True
-
-
-class JinaRequestModel(BaseModel):
-    """
-    Jina HTTP request model.
-    """
-
-    # the dict one is only for compatibility.
-    # So we will accept data: {[Doc1.to_dict, Doc2...]} and data: {docs: [[Doc1.to_dict, Doc2...]}
-    data: Optional[
-        Union[
-            PydanticDocumentArray,
-            Dict[str, PydanticDocumentArray],
-        ]
-    ] = Field(
-        None,
-        example=[
-            {'text': 'hello, world!'},
-            {'uri': 'https://docs.jina.ai/_static/logo-light.svg'},
-        ],
-        description=DESCRIPTION_DATA,
-    )
-    target_executor: Optional[str] = Field(
-        None,
-        example='',
-        description=DESCRIPTION_TARGET_EXEC,
-    )
-    parameters: Optional[Dict] = Field(
-        None,
-        example={},
-        description=DESCRIPTION_PARAMETERS,
-    )
-
-    class Config:
-        alias_generator = _to_camel_case
-        allow_population_by_field_name = True
+        class Config:
+            alias_generator = _to_camel_case
+            allow_population_by_field_name = True
 
 
-class JinaResponseModel(BaseModel):
-    """
-    Jina HTTP Response model. Only `request_id` and `data` are preserved.
-    """
+    class JinaResponseModel(BaseModel):
+        """
+        Jina HTTP Response model. Only `request_id` and `data` are preserved.
+        """
 
-    header: PROTO_TO_PYDANTIC_MODELS.HeaderProto = None
-    parameters: Dict = None
-    routes: List[PROTO_TO_PYDANTIC_MODELS.RouteProto] = None
-    data: Optional[PydanticDocumentArray] = None
+        header: PROTO_TO_PYDANTIC_MODELS.HeaderProto = None
+        parameters: Dict = None
+        routes: List[PROTO_TO_PYDANTIC_MODELS.RouteProto] = None
+        data: Optional[PydanticDocumentArray] = None
 
-    class Config:
-        alias_generator = _to_camel_case
-        allow_population_by_field_name = True
+        class Config:
+            alias_generator = _to_camel_case
+            allow_population_by_field_name = True
 
 
-class JinaEndpointRequestModel(JinaRequestModel):
-    """
-    Jina HTTP request model that allows customized endpoint.
-    """
+    class JinaEndpointRequestModel(JinaRequestModel):
+        """
+        Jina HTTP request model that allows customized endpoint.
+        """
 
-    exec_endpoint: str = Field(
-        default='/',
-        example='/',
-        description='The endpoint string, by convention starts with `/`. '
-        'If you specify it as `/foo`, then all executors bind with `@requests(on="/foo")` will receive the request.',
-    )
+        exec_endpoint: str = Field(
+            default='/',
+            example='/',
+            description='The endpoint string, by convention starts with `/`. '
+            'If you specify it as `/foo`, then all executors bind with `@requests(on="/foo")` will receive the request.',
+        )

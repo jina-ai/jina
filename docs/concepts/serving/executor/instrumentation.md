@@ -38,11 +38,13 @@ You can use the `self.tracer` class attribute to create a new child span using t
 
 ```python
 from jina import Executor, requests
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class MyExecutor(Executor):
     @requests
-    def foo(self, docs, tracing_context, **kwargs):
+    def foo(self, docs: DocList[TextDoc], tracing_context, **kwargs) -> DocList[TextDoc]:
         with self.tracer.start_as_current_span(
             'process_docs', context=tracing_context
         ) as process_span:
@@ -55,6 +57,7 @@ class MyExecutor(Executor):
                 except Exception as ex:
                     update_span.set_status(Status(StatusCode.ERROR))
                     update_span.record_exception(ex)
+        return docs
 ```
 
 The above pieces of instrumentation generate three spans:
@@ -113,16 +116,19 @@ Use `self.monitor` to monitor your function's internal blocks:
 
 ```python
 from jina import Executor, requests
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class MyExecutor(Executor):
     @requests
-    def foo(self, docs, **kwargs):
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         with self.monitor('processing_seconds', 'Time processing my document'):
             docs = process(docs)
         print(docs.texts)
         with self.monitor('update_seconds', 'Time updates my document'):
             docs = update(docs)
+        return docs
 ```
 
 
@@ -164,9 +170,9 @@ Under the hood, Python [OpenTelemetry Metrics API](https://opentelemetry.io/docs
 
 
 ```python
-from jina import requests, Executor, DocumentArray
-
-from prometheus_client import Counter
+from jina import requests, Executor
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class MyExecutor(Executor):
@@ -175,7 +181,7 @@ class MyExecutor(Executor):
         self.counter = self.meter.create_counter('my_count', 'my count')
 
     @requests
-    def encode(self, docs: DocumentArray, **kwargs):
+    def encode(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         self.counter.inc(len(docs))
 ```
 
@@ -190,24 +196,26 @@ If metrics are not enabled by default or enabled in your environment, you should
 
 
 ```python
-from jina import requests, Executor, DocumentArray
+from jina import requests, Executor
+from docarray import DocList
+from docarray.documents.legacy import LegacyDocument
 
 
 class MyExecutor(Executor):
-    def preprocessing(self, docs: DocumentArray):
+    def preprocessing(self, docs: DocList[LegacyDocument]):
         ...
 
     def model_inference(self, tensor):
         ...
 
     @requests
-    def encode(self, docs: DocumentArray, **kwargs):
+    def encode(self, docs: DocList[LegacyDocument], **kwargs) -> DocList[LegacyDocument]:
         docs.tensors = self.preprocessing(docs)
         docs.embedding = self.model_inference(docs.tensors)
 ```
 
 The `encode` function is composed of two sub-functions.
-* `preprocessing` takes raw bytes from a DocumentArray and puts them into a PyTorch tensor. 
+* `preprocessing` takes raw bytes from a DocList and puts them into a PyTorch tensor. 
 * `model inference` calls the forward function of a deep learning model.
 
 By default, only the `encode` function is monitored:
@@ -215,14 +223,16 @@ By default, only the `encode` function is monitored:
 ````{tab} Decorator
 ```{code-block} python
 ---
-emphasize-lines: 5, 9
+emphasize-lines: 7, 11
 ---
-from jina import requests, monitor, Executor, DocumentArray
+from jina import Executor, requests, monitor
+from docarray import DocList
+from docarray.documents.legacy import LegacyDocument
 
 class MyExecutor(Executor):
 
     @monitor()
-    def preprocessing(self, docs: DocumentArray):
+    def preprocessing(self, docs: DocList[LegacyDocument]):
         ...
 
     @monitor()
@@ -230,7 +240,7 @@ class MyExecutor(Executor):
         ...
 
     @requests
-    def encode(self, docs: DocumentArray, **kwargs):
+    def encode(self, docs: DocList[LegacyDocument], **kwargs) -> DocList[LegacyDocument]:
         docs.tensors = self.preprocessing(docs)
         docs.embedding = self.model_inference(docs.tensors)
 ```
@@ -242,9 +252,11 @@ class MyExecutor(Executor):
 ---
 emphasize-lines: 13, 15
 ---
-from jina import requests, Executor, DocumentArray
+from jina import Executor, requests
+from docarray import DocList
+from docarray.documents.legacy import LegacyDocument
 
-def preprocessing(self, docs: DocumentArray):
+def preprocessing(self, docs: DocList[LegacyDocument]):
     ...
 
 def model_inference(self, tensor):
@@ -253,7 +265,7 @@ def model_inference(self, tensor):
 class MyExecutor(Executor):
 
     @requests
-    def encode(self, docs: DocumentArray, **kwargs):
+    def encode(self, docs: DocList[LegacyDocument], **kwargs) -> DocList[LegacyDocument]:
         with self.monitor('preprocessing_seconds', 'Time preprocessing the requests'):
             docs.tensors = preprocessing(docs)
         with self.monitor('model_inference_seconds', 'Time doing inference the requests'):

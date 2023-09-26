@@ -31,6 +31,8 @@ def get_yaml(template: str, params: Dict) -> Dict:
             yaml = _get_deployment_with_device_plugins(yaml, params)
         if params.get('env_from_secret'):
             yaml = _get_deployment_with_env_secret(yaml, params)
+        if params.get('image_pull_secrets'):
+            yaml = _get_deployment_with_image_pull_secrets(yaml, params)
     else:
         yaml = _get_yaml(template, params)
 
@@ -42,7 +44,7 @@ def _get_yaml(template: str, params: Dict) -> Dict:
 
     path = os.path.join(DEFAULT_RESOURCE_DIR, f'{template}.yml')
 
-    with open(path) as f:
+    with open(path, encoding='utf-8') as f:
         content = f.read()
         for k, v in params.items():
             content = content.replace(f'{{{k}}}', str(v))
@@ -56,7 +58,7 @@ def _get_configmap_yaml(template: str, params: Dict):
 
     path = os.path.join(DEFAULT_RESOURCE_DIR, f'{template}.yml')
 
-    with open(path) as f:
+    with open(path, encoding='utf-8') as f:
         config_map = yaml.safe_load(f)
 
     config_map['metadata']['name'] = params.get('name') + '-' + 'configmap'
@@ -82,12 +84,20 @@ def _get_deployment_with_device_plugins(deployment: Dict, params: Dict) -> Dict:
     ] = device_plugins
     return deployment
 
+
 def _get_deployment_with_env_secret(deployment: Dict, params: Dict) -> Dict:
-    for k,v in params['env_from_secret'].items():
-        env_var = {}
-        env_var['name'] = k
-        env_var['valueFrom'] = {'secretKeyRef': {'name': v['name'], 'key': v['key']}}
-            
+    for k, v in params['env_from_secret'].items():
+        env_var = {'name': k, 'valueFrom': {'secretKeyRef': {'name': v['name'], 'key': v['key']}}}
+
         deployment['spec']['template']['spec']['containers'][0]['env'].append(env_var)
 
+    return deployment
+
+
+def _get_deployment_with_image_pull_secrets(deployment: Dict, params: Dict) -> Dict:
+    image_pull_secrets = params['image_pull_secrets']
+    image_pull_secrets_dict = [{'name': secret} for secret in image_pull_secrets]
+    deployment['spec']['template']['spec'][
+        'imagePullSecrets'
+    ] = image_pull_secrets_dict
     return deployment

@@ -208,7 +208,7 @@ def test_jtype(tmpdir):
 
     f = Flow()
     f.save_config(flow_path)
-    with open(flow_path, 'r') as file:
+    with open(flow_path, 'r', encoding='utf-8') as file:
         conf = yaml.safe_load(file)
         assert 'jtype' in conf
         assert conf['jtype'] == 'Flow'
@@ -218,7 +218,7 @@ def test_jtype(tmpdir):
 
     e = BaseExecutor()
     e.save_config(exec_path)
-    with open(exec_path, 'r') as file:
+    with open(exec_path, 'r', encoding='utf-8') as file:
         conf = yaml.safe_load(file)
         assert 'jtype' in conf
         assert conf['jtype'] == 'BaseExecutor'
@@ -229,7 +229,7 @@ def test_jtype(tmpdir):
 
     dep = Deployment(uses='YourExecutor', port=12345, replicas=3, shards=2)
     dep.save_config(dep_path)
-    with open(dep_path, 'r') as file:
+    with open(dep_path, 'r', encoding='utf-8') as file:
         conf = yaml.safe_load(file)
         assert 'jtype' in conf
         assert conf['jtype'] == 'Deployment'

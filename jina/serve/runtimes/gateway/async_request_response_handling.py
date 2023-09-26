@@ -1,10 +1,10 @@
 import asyncio
 import copy
-from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
+from typing import TYPE_CHECKING, AsyncGenerator, Callable, List, Optional, Tuple, Type
 
 import grpc.aio
 
-from jina._docarray import DocumentArray
+from jina._docarray import DocumentArray, docarray_v2
 from jina.excepts import InternalNetworkError
 from jina.helper import GATEWAY_NAME
 from jina.logging.logger import JinaLogger
@@ -39,7 +39,7 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
         logger: Optional[JinaLogger] = None,
     ):
         super().__init__(metrics_registry, meter, runtime_name)
-        self._executor_endpoint_mapping = None
+        self._endpoint_discovery_finished = False
         self._gathering_endpoints = False
         self.logger = logger or JinaLogger(self.__class__.__name__)
 
@@ -55,40 +55,31 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
         """
 
         async def gather_endpoints(request_graph):
-            nodes = request_graph.all_nodes
-            try:
-                tasks_to_get_endpoints = [
-                    node.get_endpoints(connection_pool) for node in nodes
-                ]
-                endpoints = await asyncio.gather(*tasks_to_get_endpoints)
-            except InternalNetworkError as err:
-                err_code = err.code()
-                if err_code == grpc.StatusCode.UNAVAILABLE:
-                    err._details = (
-                        err.details()
-                        + f' |Gateway: Communication error while gathering endpoints with deployment at address(es) {err.dest_addr}. Head or worker(s) may be down.'
-                    )
-                    raise err
-                else:
-                    raise
-            except Exception as exc:
-                self.logger.error(f' Error gathering endpoints: {exc}')
-                raise exc
+            if not self._endpoint_discovery_finished:
+                self._gathering_endpoints = True
+                try:
+                    _ = await request_graph._get_all_endpoints(connection_pool)
+                except InternalNetworkError as err:
+                    err_code = err.code()
+                    if err_code == grpc.StatusCode.UNAVAILABLE:
+                        err._details = (
+                            err.details()
+                            + f' |Gateway: Communication error while gathering endpoints with deployment at address(es) {err.dest_addr}. Head or worker(s) may be down.'
+                        )
+                        raise err
+                    else:
+                        raise
+                except Exception as exc:
+                    self.logger.error(f' Error gathering endpoints: {exc}')
+                    raise exc
+                self._endpoint_discovery_finished = True
 
-            self._executor_endpoint_mapping = {}
-            for node, (endp, _) in zip(nodes, endpoints):
-                self._executor_endpoint_mapping[node.name] = endp.endpoints
-
-        def _handle_request(request: 'Request') -> 'Tuple[Future, Optional[Future]]':
+        def _handle_request(
+            request: 'Request', return_type: Type[DocumentArray]
+        ) -> 'Tuple[Future, Optional[Future]]':
             self._update_start_request_metrics(request)
-
             # important that the gateway needs to have an instance of the graph per request
             request_graph = copy.deepcopy(graph)
-
-            if graph.has_filter_conditions:
-                request_doc_ids = request.data.docs[
-                    :, 'id'
-                ]  # used to maintain order of docs that are filtered by executors
             responding_tasks = []
             floating_tasks = []
             endpoint = request.header.exec_endpoint
@@ -108,18 +99,46 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
             target_executor = request.header.target_executor
             # reset it in case we send to an external gateway
             request.header.target_executor = ''
+            exec_endpoint = request.header.exec_endpoint
+            gather_endpoints_task = None
+            if not self._endpoint_discovery_finished and not self._gathering_endpoints:
+                gather_endpoints_task = asyncio.create_task(
+                    gather_endpoints(request_graph)
+                )
+
+            init_task = None
+            request_doc_ids = []
+
+            if graph.has_filter_conditions:
+                if not docarray_v2:
+                    request_doc_ids = request.data.docs[
+                        :, 'id'
+                    ]  # used to maintain order of docs that are filtered by executors
+                else:
+                    init_task = gather_endpoints_task
+                    from docarray import DocList
+                    from docarray.base_doc import AnyDoc
+
+                    prev_doc_array_cls = request.data.document_array_cls
+                    request.data.document_array_cls = DocList[AnyDoc]
+                    request_doc_ids = request.data.docs.id
+                    request.data._loaded_doc_array = None
+                    request.data.document_array_cls = prev_doc_array_cls
+            else:
+                init_task = None
 
             for origin_node in request_graph.origin_nodes:
-                leaf_tasks = origin_node.get_leaf_tasks(
+                leaf_tasks = origin_node.get_leaf_req_response_tasks(
                     connection_pool=connection_pool,
                     request_to_send=request,
                     previous_task=None,
                     endpoint=endpoint,
-                    executor_endpoint_mapping=self._executor_endpoint_mapping,
                     target_executor_pattern=target_executor or None,
                     request_input_parameters=request_input_parameters,
                     request_input_has_specific_params=has_specific_params,
                     copy_request_at_send=num_outgoing_nodes > 1 and has_specific_params,
+                    init_task=init_task,
+                    return_type=return_type,
                 )
                 # Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their
                 # subtrees that unwrap all the previous tasks. It starts like a chain of waiting for tasks from previous
@@ -142,13 +161,6 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
                 tasks: List[asyncio.Task], request_graph: TopologyGraph
             ) -> asyncio.Future:
                 try:
-                    if (
-                        self._executor_endpoint_mapping is None
-                        and not self._gathering_endpoints
-                    ):
-                        self._gathering_endpoints = True
-                        asyncio.create_task(gather_endpoints(request_graph))
-
                     partial_responses = await asyncio.gather(*tasks)
                 except Exception:
                     # update here failed request
@@ -193,6 +205,44 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
                 if len(floating_tasks) > 0
                 else None,
             )
+
+        return _handle_request
+
+    def handle_single_document_request(
+        self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
+    ) -> Callable[['Request', Type[DocumentArray]], 'AsyncGenerator']:
+        """
+        Function that handles the requests arriving to the gateway. This will be passed to the streamer.
+
+        :param graph: The TopologyGraph of the Flow.
+        :param connection_pool: The connection pool to be used to send messages to specific nodes of the graph
+        :return: Return a Function that given a Request will return a Future from where to extract the response
+        """
+
+        async def _handle_request(
+            request: 'Request', return_type: Type[DocumentArray] = DocumentArray
+        ) -> 'Tuple[Future, Optional[Future]]':
+            self._update_start_request_metrics(request)
+            # important that the gateway needs to have an instance of the graph per request
+            request_graph = copy.deepcopy(graph)
+            r = request.routes.add()
+            r.executor = 'gateway'
+            r.start_time.GetCurrentTime()
+            # If the request is targeting a specific deployment, we can send directly to the deployment instead of
+            # querying the graph
+            # reset it in case we send to an external gateway
+            exec_endpoint = request.header.exec_endpoint
+
+            node = request_graph.all_nodes[
+                0
+            ]  # this assumes there is only one Executor behind this Gateway
+            async for resp in node.stream_single_doc(
+                request=request,
+                connection_pool=connection_pool,
+                endpoint=exec_endpoint,
+                return_type=return_type,
+            ):
+                yield resp
 
         return _handle_request
 

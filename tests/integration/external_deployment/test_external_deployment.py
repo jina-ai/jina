@@ -75,7 +75,6 @@ def test_flow_with_external_deployment(
         del external_args['name']
         del external_args['external']
         del external_args['deployment_role']
-        print(external_args)
         flow = Flow().add(
             **external_args,
             name='external_fake',

@@ -7,7 +7,9 @@ import functools
 import inspect
 import multiprocessing
 import os
+import threading
 import warnings
+from collections.abc import AsyncGenerator, AsyncIterator, Generator, Iterator
 from types import SimpleNamespace
 from typing import (
     TYPE_CHECKING,
@@ -20,12 +22,13 @@ from typing import (
     Type,
     TypeVar,
     Union,
+    _GenericAlias,
     overload,
 )
 
-from jina._docarray import DocumentArray
+from jina._docarray import DocumentArray, docarray_v2
 from jina.constants import __args_executor_init__, __cache_path__, __default_endpoint__
-from jina.enums import BetterEnum
+from jina.enums import BetterEnum, ProviderType
 from jina.helper import (
     ArgNamespace,
     T,
@@ -41,17 +44,74 @@ from jina.serve.executors.decorators import (
     avoid_concurrent_lock_cls,
 )
 from jina.serve.executors.metas import get_executor_taboo
-from jina.serve.helper import store_init_kwargs, wrap_func
+from jina.serve.helper import (
+    _get_workspace_from_name_and_shards,
+    store_init_kwargs,
+    wrap_func,
+)
 from jina.serve.instrumentation import MetricsTimer
 
-if TYPE_CHECKING:  # pragma: no cover
-    import threading
+if docarray_v2:
+    from docarray.documents.legacy import LegacyDocument
 
+if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry.context.context import Context
 
 __dry_run_endpoint__ = '_jina_dry_run_'
 
 __all__ = ['BaseExecutor', __dry_run_endpoint__]
+
+
+def is_pydantic_model(annotation: Type) -> bool:
+    """Method to detect if parameter annotation corresponds to a Pydantic model
+
+    :param annotation: The annotation from which to extract PydantiModel.
+    :return: boolean indicating if a Pydantic model is inside the annotation
+    """
+    from typing import get_args, get_origin
+
+    from pydantic import BaseModel
+
+    origin = get_origin(annotation) or annotation
+    args = get_args(annotation)
+
+    # If the origin itself is a Pydantic model, return True
+    if isinstance(origin, type) and issubclass(origin, BaseModel):
+        return True
+
+    # Check the arguments (for the actual types inside Union, Optional, etc.)
+    if args:
+        return any(is_pydantic_model(arg) for arg in args)
+
+    return False
+
+
+def get_inner_pydantic_model(annotation: Type) -> bool:
+    """Method to get the Pydantic model corresponding, in case there is optional or something
+
+    :param annotation: The annotation from which to extract PydantiModel.
+    :return: The inner Pydantic model expected
+    """
+    try:
+        from typing import Optional, Type, Union, get_args, get_origin
+
+        from pydantic import BaseModel
+
+        origin = get_origin(annotation) or annotation
+        args = get_args(annotation)
+
+        # If the origin itself is a Pydantic model, return True
+        if isinstance(origin, type) and issubclass(origin, BaseModel):
+            return origin
+
+        # Check the arguments (for the actual types inside Union, Optional, etc.)
+        if args:
+            for arg in args:
+                if is_pydantic_model(arg):
+                    return arg
+    except:
+        pass
+    return None
 
 
 class ExecutorType(type(JAMLCompatible), type):
@@ -105,13 +165,101 @@ T = TypeVar('T', bound='_FunctionWithSchema')
 
 class _FunctionWithSchema(NamedTuple):
     fn: Callable
+    is_generator: bool
+    is_batch_docs: bool
+    is_singleton_doc: False
+    parameters_is_pydantic_model: bool
+    parameters_model: Type
     request_schema: Type[DocumentArray] = DocumentArray
     response_schema: Type[DocumentArray] = DocumentArray
 
+    def validate(self):
+        assert not (
+            self.is_singleton_doc and self.is_batch_docs
+        ), f'Cannot specify both the `doc` and the `docs` paramater for {self.fn.__name__}'
+        assert not (
+            self.is_generator and self.is_batch_docs
+        ), f'Cannot specify the `docs` parameter if the endpoint {self.fn.__name__} is a generator'
+        if docarray_v2:
+            from docarray import BaseDoc, DocList
+
+            if not self.is_generator:
+                if self.is_batch_docs and (
+                    not issubclass(self.request_schema, DocList)
+                    or not issubclass(self.response_schema, DocList)
+                ):
+                    faulty_schema = (
+                        'request_schema'
+                        if not issubclass(self.request_schema, DocList)
+                        else 'response_schema'
+                    )
+                    raise Exception(
+                        f'The {faulty_schema} schema for {self.fn.__name__}: {self.request_schema} is not a DocList. Please make sure that your endpoint used DocList for request and response schema'
+                    )
+                if self.is_singleton_doc and (
+                    not issubclass(self.request_schema, BaseDoc)
+                    or not issubclass(self.response_schema, BaseDoc)
+                ):
+                    faulty_schema = (
+                        'request_schema'
+                        if not issubclass(self.request_schema, BaseDoc)
+                        else 'response_schema'
+                    )
+                    raise Exception(
+                        f'The {faulty_schema} schema for {self.fn.__name__}: {self.request_schema} is not a BaseDoc. Please make sure that your endpoint used BaseDoc for request and response schema'
+                    )
+            else:
+                if not issubclass(self.request_schema, BaseDoc) or not (
+                    issubclass(self.response_schema, BaseDoc)
+                    or issubclass(self.response_schema, BaseDoc)
+                ):  # response_schema may be a DocList because by default we use LegacyDocument, and for generators we ignore response
+                    faulty_schema = (
+                        'request_schema'
+                        if not issubclass(self.request_schema, BaseDoc)
+                        else 'response_schema'
+                    )
+                    raise Exception(
+                        f'The {faulty_schema} schema for {self.fn.__name__}: {self.request_schema} is not a BaseDoc. Please make sure that your streaming endpoints used BaseDoc for request and response schema'
+                    )
+
     @staticmethod
     def get_function_with_schema(fn: Callable) -> T:
+        # if it's not a generator function, infer the type annotation from the docs parameter
+        # otherwise, infer from the doc parameter (since generator endpoints expect only 1 document as input)
+        is_generator = getattr(fn, '__is_generator__', False)
+        is_singleton_doc = 'doc' in fn.__annotations__
+        is_batch_docs = (
+            not is_singleton_doc
+        )  # some tests just use **kwargs and should work as before
+        assert not (
+            is_singleton_doc and is_batch_docs
+        ), f'Cannot specify both the `doc` and the `docs` paramater for {fn.__name__}'
+        assert not (
+            is_generator and is_batch_docs
+        ), f'Cannot specify the `docs` parameter if the endpoint {fn.__name__} is a generator'
+        docs_annotation = fn.__annotations__.get(
+            'docs', fn.__annotations__.get('doc', None)
+        )
+        parameters_model = (
+            fn.__annotations__.get('parameters', None) if docarray_v2 else None
+        )
+        parameters_is_pydantic_model = False
+        if parameters_model is not None and docarray_v2:
+            from pydantic import BaseModel
 
-        docs_annotation = fn.__annotations__.get('docs', None)
+            parameters_is_pydantic_model = is_pydantic_model(parameters_model)
+            parameters_model = get_inner_pydantic_model(parameters_model)
+
+        if docarray_v2:
+            from docarray import BaseDoc, DocList
+
+            default_annotations = (
+                DocList[LegacyDocument] if is_batch_docs else LegacyDocument
+            )
+        else:
+            from jina import Document, DocumentArray
+
+            default_annotations = DocumentArray if is_batch_docs else Document
 
         if docs_annotation is None:
             pass
@@ -143,6 +291,18 @@ class _FunctionWithSchema(NamedTuple):
                 ''
             )
             return_annotation = None
+        elif isinstance(return_annotation, _GenericAlias):
+            from typing import get_args, get_origin
+
+            if get_origin(return_annotation) == Generator:
+                return_annotation = get_args(return_annotation)[0]
+            elif get_origin(return_annotation) == AsyncGenerator:
+                return_annotation = get_args(return_annotation)[0]
+            elif get_origin(return_annotation) == Iterator:
+                return_annotation = get_args(return_annotation)[0]
+            elif get_origin(return_annotation) == AsyncIterator:
+                return_annotation = get_args(return_annotation)[0]
+
         elif not isinstance(return_annotation, type):
             warnings.warn(
                 f'`return` annotation must be a class if you want to use it'
@@ -151,10 +311,20 @@ class _FunctionWithSchema(NamedTuple):
             )
             return_annotation = None
 
-        request_schema = docs_annotation or DocumentArray
-        response_schema = return_annotation or DocumentArray
-
-        return _FunctionWithSchema(fn, request_schema, response_schema)
+        request_schema = docs_annotation or default_annotations
+        response_schema = return_annotation or default_annotations
+        fn_with_schema = _FunctionWithSchema(
+            fn=fn,
+            is_generator=is_generator,
+            is_singleton_doc=is_singleton_doc,
+            is_batch_docs=is_batch_docs,
+            parameters_model=parameters_model,
+            parameters_is_pydantic_model=parameters_is_pydantic_model,
+            request_schema=request_schema,
+            response_schema=response_schema,
+        )
+        fn_with_schema.validate()
+        return fn_with_schema
 
 
 class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
@@ -222,23 +392,24 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._add_requests(requests)
         self._add_dynamic_batching(dynamic_batching)
         self._add_runtime_args(runtime_args)
+        self.logger = JinaLogger(self.__class__.__name__, **vars(self.runtime_args))
+        self._validate_sagemaker()
         self._init_instrumentation(runtime_args)
         self._init_monitoring()
         self._init_workspace = workspace
-        self.logger = JinaLogger(self.__class__.__name__, **vars(self.runtime_args))
         if __dry_run_endpoint__ not in self.requests:
-            self.requests[__dry_run_endpoint__] = _FunctionWithSchema(
-                self._dry_run_func
-            )
+            self.requests[
+                __dry_run_endpoint__
+            ] = _FunctionWithSchema.get_function_with_schema(self._dry_run_func)
         else:
             self.logger.warning(
                 f' Endpoint {__dry_run_endpoint__} is defined by the Executor. Be aware that this endpoint is usually reserved to enable health checks from the Client through the gateway.'
                 f' So it is recommended not to expose this endpoint. '
             )
         if type(self) == BaseExecutor:
-            self.requests[__default_endpoint__] = _FunctionWithSchema(
-                self._dry_run_func
-            )
+            self.requests[
+                __default_endpoint__
+            ] = _FunctionWithSchema.get_function_with_schema(self._dry_run_func)
 
         self._lock = contextlib.AsyncExitStack()
         try:
@@ -249,6 +420,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         except RuntimeError:
             pass
 
+        self._write_lock = (
+            threading.Lock()
+        )  # watch because this makes it no serializable
+
     def _get_endpoint_models_dict(self):
         from jina._docarray import docarray_v2
 
@@ -257,9 +432,29 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         endpoint_models = {}
         for endpoint, function_with_schema in self.requests.items():
+            _is_generator = function_with_schema.is_generator
+            _is_singleton_doc = function_with_schema.is_singleton_doc
+            _is_batch_docs = function_with_schema.is_batch_docs
+            _parameters_model = function_with_schema.parameters_model
             if docarray_v2:
-                request_schema = function_with_schema.request_schema
-                response_schema = function_with_schema.response_schema
+                # if the endpoint is not a generator endpoint, then the request schema is a DocumentArray and we need
+                # to get the doc_type from the schema
+                # otherwise, since generator endpoints only accept a Document as input, the request_schema is the schema
+                # of the Document
+                if not _is_generator:
+                    request_schema = (
+                        function_with_schema.request_schema.doc_type
+                        if _is_batch_docs
+                        else function_with_schema.request_schema
+                    )
+                    response_schema = (
+                        function_with_schema.response_schema.doc_type
+                        if _is_batch_docs
+                        else function_with_schema.response_schema
+                    )
+                else:
+                    request_schema = function_with_schema.request_schema
+                    response_schema = function_with_schema.response_schema
             else:
                 request_schema = PydanticDocument
                 response_schema = PydanticDocument
@@ -271,6 +466,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 'output': {
                     'name': response_schema.__name__,
                     'model': response_schema,
+                },
+                'is_generator': _is_generator,
+                'is_singleton_doc': _is_singleton_doc,
+                'parameters': {
+                    'name': _parameters_model.__name__
+                    if _parameters_model is not None
+                    else None,
+                    'model': _parameters_model,
                 },
             }
         return endpoint_models
@@ -354,6 +557,22 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._requests = copy.copy(self.requests_by_class[self.__class__.__name__])
             return self._requests
 
+    @property
+    def write_endpoints(self):
+        """
+        Get the list of endpoints bound to write methods
+
+        :return: Returns the list of endpoints bound to write methods
+        """
+        if hasattr(self, '_write_methods'):
+            endpoints = []
+            for endpoint, fn in self.requests.items():
+                if fn.fn.__name__ in self._write_methods:
+                    endpoints.append(endpoint)
+            return endpoints
+        else:
+            return []
+
     def _add_requests(self, _requests: Optional[Dict]):
         if _requests:
             func_names = {f.fn.__name__: e for e, f in self.requests.items()}
@@ -379,6 +598,32 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     raise TypeError(
                         f'expect {typename(self)}.{func} to be a function, but receiving {typename(_func)}'
                     )
+
+    def _validate_sagemaker(self):
+        # sagemaker expects the POST /invocations endpoint to be defined.
+        # if it is not defined, we check if there is only one endpoint defined,
+        # and if so, we use it as the POST /invocations endpoint, or raise an error
+        if (
+            not hasattr(self, 'runtime_args')
+            or not hasattr(self.runtime_args, 'provider')
+            or self.runtime_args.provider != ProviderType.SAGEMAKER.value
+        ):
+            return
+
+        if '/invocations' in self.requests:
+            return
+
+        if len(self.requests) == 1:
+            route = list(self.requests.keys())[0]
+            self.logger.warning(
+                f'No "/invocations" route found. Using "{route}" as "/invocations" route'
+            )
+            self.requests['/invocations'] = self.requests[route]
+            return
+
+        raise ValueError(
+            'No "/invocations" route found. Please define a "/invocations" route'
+        )
 
     def _add_dynamic_batching(self, _dynamic_batching: Optional[Dict]):
         if _dynamic_batching:
@@ -479,7 +724,80 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     async def __acall_endpoint__(
         self, req_endpoint, tracing_context: Optional['Context'], **kwargs
     ):
-        func, input_doc, output_doc = self.requests[req_endpoint]
+        # Decorator to make sure that `parameters` are passed as PydanticModels if needed
+        def parameters_as_pydantic_models_decorator(func, parameters_pydantic_model):
+            @functools.wraps(func)  # Step 2: Use functools.wraps to preserve metadata
+            def wrapper(*args, **kwargs):
+                parameters = kwargs.get('parameters', None)
+                if parameters is not None:
+                    parameters = parameters_pydantic_model(**parameters)
+                    kwargs['parameters'] = parameters
+                result = func(*args, **kwargs)
+                return result
+
+            return wrapper
+
+        # Decorator to make sure that `docs` are fed one by one to method using singleton document serving
+        def loop_docs_decorator(func):
+            @functools.wraps(func)  # Step 2: Use functools.wraps to preserve metadata
+            def wrapper(*args, **kwargs):
+                docs = kwargs.pop('docs')
+                if docarray_v2:
+                    from docarray import DocList
+
+                    ret = DocList[response_schema]()
+                else:
+                    ret = DocumentArray()
+                for doc in docs:
+                    f_ret = func(*args, doc=doc, **kwargs)
+                    if f_ret is None:
+                        ret.append(doc)  # this means change in place
+                    else:
+                        ret.append(f_ret)
+                return ret
+
+            return wrapper
+
+        def async_loop_docs_decorator(func):
+            @functools.wraps(func)  # Step 2: Use functools.wraps to preserve metadata
+            async def wrapper(*args, **kwargs):
+                docs = kwargs.pop('docs')
+                if docarray_v2:
+                    from docarray import DocList
+
+                    ret = DocList[response_schema]()
+                else:
+                    ret = DocumentArray()
+                for doc in docs:
+                    f_ret = await original_func(*args, doc=doc, **kwargs)
+                    if f_ret is None:
+                        ret.append(doc)  # this means change in place
+                    else:
+                        ret.append(f_ret)
+                return ret
+
+            return wrapper
+
+        fn_info = self.requests[req_endpoint]
+        original_func = fn_info.fn
+        is_generator = fn_info.is_generator
+        is_batch_docs = fn_info.is_batch_docs
+        response_schema = fn_info.response_schema
+        parameters_model = fn_info.parameters_model
+        is_parameters_pydantic_model = fn_info.parameters_is_pydantic_model
+
+        func = original_func
+        if is_generator or is_batch_docs:
+            pass
+        elif kwargs.get('docs', None) is not None:
+            # This means I need to pass every doc (most likely 1, but potentially more)
+            if iscoroutinefunction(original_func):
+                func = async_loop_docs_decorator(original_func)
+            else:
+                func = loop_docs_decorator(original_func)
+
+        if is_parameters_pydantic_model:
+            func = parameters_as_pydantic_models_decorator(func, parameters_model)
 
         async def exec_func(
             summary, histogram, histogram_metric_labels, tracing_context
@@ -552,17 +870,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             or __cache_path__
         )
         if workspace:
-            complete_workspace = os.path.join(workspace, self.metas.name)
             shard_id = getattr(
                 self.runtime_args,
                 'shard_id',
                 None,
             )
-            if shard_id is not None and shard_id != -1:
-                complete_workspace = os.path.join(complete_workspace, str(shard_id))
-            if not os.path.exists(complete_workspace):
-                os.makedirs(complete_workspace)
-            return os.path.abspath(complete_workspace)
+            return _get_workspace_from_name_and_shards(
+                workspace=workspace, shard_id=shard_id, name=self.metas.name
+            )
 
     def __enter__(self):
         return self
@@ -645,7 +960,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
-        env_from_secret: Optional[dict] = None,
         exit_on_exceptions: Optional[List[str]] = [],
         external: Optional[bool] = False,
         floating: Optional[bool] = False,
@@ -670,9 +984,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         port_monitoring: Optional[int] = None,
         prefer_platform: Optional[str] = None,
         protocol: Optional[Union[str, List[str]]] = ['GRPC'],
+        provider: Optional[str] = ['NONE'],
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
+        raft_configuration: Optional[dict] = None,
         reload: Optional[bool] = False,
         replicas: Optional[int] = 1,
         retries: Optional[int] = -1,
@@ -680,6 +996,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         shards: Optional[int] = 1,
         ssl_certfile: Optional[str] = None,
         ssl_keyfile: Optional[str] = None,
+        stateful: Optional[bool] = False,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
@@ -717,7 +1034,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
-        :param env_from_secret: The map of environment variables that are read from kubernetes cluster secrets
         :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
@@ -768,6 +1084,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
         :param protocol: Communication protocol of the server exposed by the Executor. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
+        :param provider: If set, Executor is translated to a custom container compatible with the chosen provider. Choose the convenient providers from: ['NONE', 'SAGEMAKER'].
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your
@@ -776,6 +1093,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
           `Executor cookbook <https://docs.jina.ai/concepts/executor/executor-files/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param raft_configuration: Dictionary of kwargs arguments that will be passed to the RAFT node as configuration options when starting the RAFT node.
         :param reload: If set, the Executor will restart while serving if YAML configuration source or Executor modules are changed. If YAML configuration is changed, the whole deployment is reloaded and new processes will be restarted. If only Python modules of the Executor have changed, they will be reloaded to the interpreter without restarting process.
         :param replicas: The number of replicas in the deployment
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
@@ -783,6 +1101,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
+        :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -1024,3 +1343,40 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             )
 
         return contextlib.nullcontext()
+
+    def snapshot(self, snapshot_file: str):
+        """
+        Interface to take a snapshot from the Executor. Implement it to enable periodic snapshots
+        :param snapshot_file: The file path where to store the binary representation of the Executor snapshot
+        """
+        raise Exception('Raising an Exception. Snapshot is not enabled by default')
+
+    def restore(self, snapshot_file: str):
+        """
+        Interface to restore the state of the Executor from a snapshot that has been taken by the snapshot method.
+        :param snapshot_file: The file path from where to reconstruct the Executor
+        """
+        pass
+
+    def _run_snapshot(self, snapshot_file: str, did_raise_exception):
+        try:
+            from pathlib import Path
+
+            p = Path(snapshot_file)
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.touch()
+            with self._write_lock:
+                self.snapshot(snapshot_file)
+        except:
+            did_raise_exception.set()
+            raise
+
+    def _run_restore(self, snapshot_file: str, did_raise_exception):
+        try:
+            with self._write_lock:
+                self.restore(snapshot_file)
+        except:
+            did_raise_exception.set()
+            raise
+        finally:
+            os.remove(snapshot_file)
