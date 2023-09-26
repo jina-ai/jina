@@ -374,7 +374,9 @@ func add_voter(self *C.PyObject, args *C.PyObject) *C.PyObject {
         err := AddVoter(C.GoString(target), C.GoString(raftId), C.GoString(voterAddress))
         if err != nil {
             logger.Error("Error received calling AddVoter", "error", err)
-            C.raise_exception(C.CString("Error from AddVoter"))
+            cerr := C.CString("Error from AddVoter")
+            defer C.free(unsafe.Pointer(cerr))
+            C.raise_exception(cerr)
             return nil
         }
     }
@@ -455,6 +457,8 @@ func get_configuration(self *C.PyObject, args *C.PyObject) *C.PyObject {
         return pyStr
 
     }
-    C.raise_exception(C.CString("Error from get_configuration, wrong parameters passed"))
+    cerr := C.CString("Error from get_configuration, wrong parameters passed")
+    defer C.free(unsafe.Pointer(cerr))
+    C.raise_exception(cerr)
     return nil
 }
