@@ -316,6 +316,8 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
     SnapshotThreshold        = C.uint64_t(raftDefaultConfig.SnapshotThreshold)
     LeaderLeaseTimeout       = C.int(raftDefaultConfig.LeaderLeaseTimeout / time.Millisecond)
     LogLevel                 = C.CString(raftDefaultConfig.LogLevel)
+    defer C.free(unsafe.Pointer(LogLevel))
+
     NoSnapshotRestoreOnStart = C.bool(raftDefaultConfig.NoSnapshotRestoreOnStart)
 
     if C.PyArg_ParseTuple_run(args,
