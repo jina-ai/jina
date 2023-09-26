@@ -1,0 +1,7 @@
+jina.serve.networking.sse module
+================================
+
+.. automodule:: jina.serve.networking.sse
+   :members:
+   :undoc-members:
+   :show-inheritance:
