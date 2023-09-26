@@ -976,6 +976,30 @@ def test_flow_incompatible_linear(protocol):
 
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+def test_flow_compatible_different_exact_schema(protocol):
+    from pydantic import Field
+    class MyFirstDoc(BaseDoc):
+        a: str = Field(default='My first default')
+
+    class MySecondDoc(BaseDoc):
+        a: str = Field(default='My second default')
+    class FirstTestComp(Executor):
+        @requests
+        def foo(self, docs: DocList[MyFirstDoc], **kwargs) -> DocList[MyFirstDoc]:
+            pass
+
+    class SecondTestComp(Executor):
+        @requests
+        def foo(self, docs: DocList[MySecondDoc], **kwargs) -> DocList[MySecondDoc]:
+            pass
+
+    f = Flow(protocol=protocol).add(uses=FirstTestComp).add(uses=SecondTestComp)
+
+    with f:
+        pass
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 @pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
 def test_wrong_schemas(ctxt_manager, protocol):
     if ctxt_manager == 'deployment' and protocol == 'websocket':
