@@ -1,4 +1,5 @@
 import os
+import time
 from contextlib import AbstractContextManager
 
 import pytest
@@ -7,6 +8,21 @@ import requests
 from jina import Deployment
 from jina.orchestrate.pods import Pod
 from jina.parsers import set_pod_parser
+
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+@pytest.fixture
+def replica_docker_image_built():
+    import docker
+
+    client = docker.from_env()
+    client.images.build(path=cur_dir, tag='sampler-executor')
+    client.close()
+    yield
+    time.sleep(2)
+    client = docker.from_env()
+    client.containers.prune()
 
 
 class chdir(AbstractContextManager):
@@ -151,6 +167,29 @@ def test_provider_sagemaker_deployment_inference():
             resp_json = rsp.json()
             assert len(resp_json['data']) == 1
             assert len(resp_json['data'][0]['embeddings'][0]) == 64
+
+
+def test_provider_sagemaker_deployment_inference_docker(replica_docker_image_built):
+    with Deployment(uses='docker://sampler-executor', provider='sagemaker', port=12345):
+        # Test the `GET /ping` endpoint (added by jina for sagemaker)
+        rsp = requests.get('http://localhost:12345/ping')
+        assert rsp.status_code == 200
+        assert rsp.json() == {}
+
+        # Test the `POST /invocations` endpoint
+        # Note: this endpoint is not implemented in the sample executor
+        rsp = requests.post(
+            'http://localhost:12345/invocations',
+            json={
+                'data': [
+                    {'text': 'hello world'},
+                ]
+            },
+        )
+        assert rsp.status_code == 200
+        resp_json = rsp.json()
+        assert len(resp_json['data']) == 1
+        assert len(resp_json['data'][0]['embeddings'][0]) == 64
 
 
 @pytest.mark.skip('Sagemaker with Deployment for batch-transform is not supported yet')
