@@ -6,10 +6,10 @@
 <meta property="og:title" content="Deploy on Kubernetes" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/cloud-nativeness/kubernetes/" />
-<meta property="og:site_name" content="Jina 3.20.3 Documentation" />
+<meta property="og:site_name" content="Jina 3.21.0 Documentation" />
 <meta property="og:description" content="This how-to will go through deploying a Deployment and a simple Flow using Kubernetes, customizing the Kubernetes configuration to your needs, and scaling Executors using replicas and shards. Deploying Jina services in Kubernetes is the recommended way to use Jina in production because Kubernetes..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.20.3 Documentation" />
+<meta property="og:image:alt" content="Jina 3.21.0 Documentation" />
 <meta name="description" content="This how-to will go through deploying a Deployment and a simple Flow using Kubernetes, customizing the Kubernetes configuration to your needs, and scaling Executors using replicas and shards. Deploying Jina services in Kubernetes is the recommended way to use Jina in production because Kubernetes..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/cloud-nativeness/kubernetes.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Deploy on Kubernetes - Jina 3.20.3 documentation</title>
+        <title>Deploy on Kubernetes - Jina 3.21.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.20.3 documentation</div>
+                <div class="brand">Jina 3.21.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -328,7 +328,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/serving/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/serving/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/serving/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../concepts/serving/executor/hub/sandbox/">Sandbox</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../concepts/serving/executor/hub/debug-executor/">Debug</a></li>
 </ul>
 </li>
@@ -469,6 +468,7 @@ we can build a simple neural search system.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">executor.py</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 <span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">CLIPModel</span><span class="p">,</span> <span class="n">CLIPTokenizer</span>
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocList</span><span class="p">,</span> <span class="n">BaseDoc</span>
 <span class="kn">from</span> <span class="nn">docarray.typing</span> <span class="kn">import</span> <span class="n">NdArray</span>
@@ -482,12 +482,7 @@ we can build a simple neural search system.</p>
 
 <span class="k">class</span> <span class="nc">Encoder</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">pretrained_model_name_or_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;openai/clip-vit-base-patch32&#39;</span>
-            <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cpu&#39;</span><span class="p">,</span>
-            <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">pretrained_model_name_or_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;openai/clip-vit-base-patch32&#39;</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cpu&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">CLIPTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">pretrained_model_name_or_path</span><span class="p">)</span>
@@ -541,9 +536,6 @@ we can build a simple neural search system.</p>
 │<span class="w">                                                                                                                 </span>│
 │<span class="w">   </span>Container<span class="w">   </span>YAML<span class="w">     </span>uses:<span class="w"> </span>jinaai+docker://&lt;user-id&gt;/EncoderPrivate:latest<span class="w">           </span>│
 │<span class="w">               </span>Python<span class="w">   </span>.add<span class="o">(</span><span class="nv">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://&lt;user-id&gt;/EncoderPrivate:latest&#39;</span><span class="o">)</span><span class="w">    </span>│
-│<span class="w">                                                                                                                 </span>│
-│<span class="w">   </span>Sandbox<span class="w">     </span>YAML<span class="w">     </span>uses:<span class="w"> </span>jinaai+sandbox://&lt;user-id&gt;/EncoderPrivate:latest<span class="w">          </span>│
-│<span class="w">               </span>Python<span class="w">   </span>.add<span class="o">(</span><span class="nv">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+sandbox://&lt;user-id&gt;/EncoderPrivate:latest&#39;</span><span class="o">)</span><span class="w">   </span>│
 │<span class="w">                                                                                                                 </span>│
 │<span class="w">   </span>Source<span class="w">      </span>YAML<span class="w">     </span>uses:<span class="w"> </span>jinaai://&lt;user-id&gt;/EncoderPrivate:latest<span class="w">                  </span>│
 │<span class="w">               </span>Python<span class="w">   </span>.add<span class="o">(</span><span class="nv">uses</span><span class="o">=</span><span class="s1">&#39;jinaai://&lt;user-id&gt;/EncoderPrivate:latest&#39;</span><span class="o">)</span><span class="w">           </span>│
@@ -618,10 +610,7 @@ we can build a simple neural search system.</p>
 │<span class="w">                                                                                                                 </span>│
 │<span class="w">   </span>Container<span class="w">   </span>YAML<span class="w">     </span>uses:<span class="w"> </span>jinaai+docker://&lt;user-id&gt;/IndexerPrivate:latest<span class="w">           </span>│
 │<span class="w">               </span>Python<span class="w">   </span>.add<span class="o">(</span><span class="nv">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://&lt;user-id&gt;/IndexerPrivate:latest&#39;</span><span class="o">)</span><span class="w">    </span>│
-│<span class="w">                                                                                                                 </span>│
-│<span class="w">   </span>Sandbox<span class="w">     </span>YAML<span class="w">     </span>uses:<span class="w"> </span>jinaai+sandbox://&lt;user-id&gt;/IndexerPrivate:latest<span class="w">          </span>│
-│<span class="w">               </span>Python<span class="w">   </span>.add<span class="o">(</span><span class="nv">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+sandbox://&lt;user-id&gt;/IndexerPrivate:latest&#39;</span><span class="o">)</span><span class="w">   </span>│
-│<span class="w">                                                                                                                 </span>│
+│<span class="w">                                                                                                                 </span>│<span class="w">                      </span>│
 │<span class="w">   </span>Source<span class="w">      </span>YAML<span class="w">     </span>uses:<span class="w"> </span>jinaai://&lt;user-id&gt;/IndexerPrivate:latest<span class="w">                  </span>│
 │<span class="w">               </span>Python<span class="w">   </span>.add<span class="o">(</span><span class="nv">uses</span><span class="o">=</span><span class="s1">&#39;jinaai://&lt;user-id&gt;/IndexerPrivate:latest&#39;</span><span class="o">)</span><span class="w">           </span>│
 │<span class="w">                                                                                                                 </span>│
@@ -1091,7 +1080,7 @@ sleep<span class="w"> </span><span class="m">60</span><span class="w"> </span><s
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 07, 2023</div>
+                            Last updated on Sep 26, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

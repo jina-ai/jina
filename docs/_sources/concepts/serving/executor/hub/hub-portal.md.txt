@@ -44,7 +44,7 @@ There are several tabs you can explore: **Readme**, **Arguments**, **Tags** and 
 
 4. **Dependencies**: The Executor's Python dependencies.
 
-On the left, you'll see possible ways to use this Executor, including Docker image, sandbox, source code, etc.
+On the left, you'll see possible ways to use this Executor, including Docker image, source code, etc.
 
 ```{figure} ../../../../../.github/hub-website-usage.png
 :align: center

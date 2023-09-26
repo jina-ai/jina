@@ -6,10 +6,10 @@
 <meta property="og:title" content="Customization" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/serving/gateway/customization/" />
-<meta property="og:site_name" content="Jina 3.20.3 Documentation" />
+<meta property="og:site_name" content="Jina 3.21.0 Documentation" />
 <meta property="og:description" content="Gateways are customizable in Jina. You can implement them in much the same way as an Executor. With customized Gateways, Jina gives you more power by letting you implement any server, protocol and interface at the Gateway level. This means you have more freedom to: Define and expose your own API ..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.20.3 Documentation" />
+<meta property="og:image:alt" content="Jina 3.21.0 Documentation" />
 <meta name="description" content="Gateways are customizable in Jina. You can implement them in much the same way as an Executor. With customized Gateways, Jina gives you more power by letting you implement any server, protocol and interface at the Gateway level. This means you have more freedom to: Define and expose your own API ..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/serving/gateway/customization.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Customization - Jina 3.20.3 documentation</title>
+        <title>Customization - Jina 3.21.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.20.3 documentation</div>
+                <div class="brand">Jina 3.21.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -328,7 +328,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../executor/hub/sandbox/">Sandbox</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../executor/hub/debug-executor/">Debug</a></li>
 </ul>
 </li>
@@ -660,6 +659,12 @@ It returns an <code class="docutils literal notranslate"><span class="pre">Async
         <span class="k">return</span> <span class="n">app</span>
 </pre></div>
 </div>
+<div class="note admonition hint">
+<p class="admonition-title">Hint</p>
+<p>if you omit the <code class="docutils literal notranslate"><span class="pre">return_type</span></code> parameter, the gateway streamer can still fetch the Executor output schemas and dynamically construct a DocArray model for it.
+Even though the dynamically created schema is very similar to original schema, some validation checks can still fail (for instance adding to a typed <code class="docutils literal notranslate"><span class="pre">DocList</span></code>).
+It is recommended to always pass the <code class="docutils literal notranslate"><span class="pre">return_type</span></code> parameter</p>
+</div>
 <section id="recovering-executor-errors">
 <h3>Recovering Executor errors<a class="headerlink" href="#recovering-executor-errors" title="Permalink to this heading">#</a></h3>
 <p>Exceptions raised by an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> are captured in the server object which can be extracted by using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">jina.serve.streamer.stream()</span></code> method. The <code class="docutils literal notranslate"><span class="pre">stream</span></code> method
@@ -680,6 +685,12 @@ The error can be utilized for retries, handling partial responses or returning d
 </span>            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;results&#39;</span><span class="p">:</span> <span class="n">results</span><span class="p">,</span> <span class="s1">&#39;errors&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">error</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">]}</span>
 </pre></div>
+</div>
+<div class="note admonition hint">
+<p class="admonition-title">Hint</p>
+<p>if you omit the <code class="docutils literal notranslate"><span class="pre">return_type</span></code> parameter, the gateway streamer can still fetch the Executor output schemas and dynamically construct a DocArray model for it.
+Even though the dynamically created schema is very similar to original schema, some validation checks can still fail (for instance adding to a typed <code class="docutils literal notranslate"><span class="pre">DocList</span></code>).
+It is recommended to always pass the <code class="docutils literal notranslate"><span class="pre">return_type</span></code> parameter</p>
 </div>
 </section>
 </section>
@@ -1025,7 +1036,7 @@ health checks will be sent, it is important to specify them when including the G
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 07, 2023</div>
+                            Last updated on Sep 26, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

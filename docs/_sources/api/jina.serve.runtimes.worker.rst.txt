@@ -9,6 +9,7 @@ Submodules
 
    jina.serve.runtimes.worker.batch_queue
    jina.serve.runtimes.worker.http_fastapi_app
+   jina.serve.runtimes.worker.http_sagemaker_app
    jina.serve.runtimes.worker.request_handling
 
 Module contents
