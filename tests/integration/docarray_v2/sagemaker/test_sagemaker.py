@@ -6,10 +6,12 @@ import pytest
 import requests
 
 from jina import Deployment
+from jina.helper import random_port
 from jina.orchestrate.pods import Pod
 from jina.parsers import set_pod_parser
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
+sagemaker_port = 8080
 
 
 @pytest.fixture
@@ -50,17 +52,15 @@ def test_provider_sagemaker_pod_inference():
             ]
         )
         with Pod(args):
-            # provider=sagemaker would set the port to 8080
-            port = 8080
             # Test the `GET /ping` endpoint (added by jina for sagemaker)
-            resp = requests.get(f'http://localhost:{port}/ping')
+            resp = requests.get(f'http://localhost:{sagemaker_port}/ping')
             assert resp.status_code == 200
             assert resp.json() == {}
 
             # Test the `POST /invocations` endpoint for inference
             # Note: this endpoint is not implemented in the sample executor
             resp = requests.post(
-                f'http://localhost:{port}/invocations',
+                f'http://localhost:{sagemaker_port}/invocations',
                 json={
                     'data': [
                         {'text': 'hello world'},
@@ -85,8 +85,6 @@ def test_provider_sagemaker_pod_batch_transform_valid():
             ]
         )
         with Pod(args):
-            # provider=sagemaker would set the port to 8080
-            port = 8080
             # Test `POST /invocations` endpoint for batch-transform with valid input
             with open(
                 os.path.join(os.path.dirname(__file__), 'valid_input.csv'), 'r'
@@ -94,7 +92,7 @@ def test_provider_sagemaker_pod_batch_transform_valid():
                 csv_data = f.read()
 
             resp = requests.post(
-                f'http://localhost:{port}/invocations',
+                f'http://localhost:{sagemaker_port}/invocations',
                 headers={
                     'accept': 'application/json',
                     'content-type': 'text/csv',
@@ -120,8 +118,6 @@ def test_provider_sagemaker_pod_batch_transform_invalid():
             ]
         )
         with Pod(args):
-            # provider=sagemaker would set the port to 8080
-            port = 8080
             # Test `POST /invocations` endpoint for batch-transform with invalid input
             with open(
                 os.path.join(os.path.dirname(__file__), 'invalid_input.csv'), 'r'
@@ -129,7 +125,7 @@ def test_provider_sagemaker_pod_batch_transform_invalid():
                 csv_data = f.read()
 
             resp = requests.post(
-                f'http://localhost:{port}/invocations',
+                f'http://localhost:{sagemaker_port}/invocations',
                 headers={
                     'accept': 'application/json',
                     'content-type': 'text/csv',
@@ -146,7 +142,7 @@ def test_provider_sagemaker_pod_batch_transform_invalid():
 
 def test_provider_sagemaker_deployment_inference():
     with chdir(os.path.join(os.path.dirname(__file__), 'SampleExecutor')):
-        dep_port = 12345
+        dep_port = random_port()
         with Deployment(uses='config.yml', provider='sagemaker', port=dep_port):
             # Test the `GET /ping` endpoint (added by jina for sagemaker)
             rsp = requests.get(f'http://localhost:{dep_port}/ping')
@@ -170,16 +166,19 @@ def test_provider_sagemaker_deployment_inference():
 
 
 def test_provider_sagemaker_deployment_inference_docker(replica_docker_image_built):
-    with Deployment(uses='docker://sampler-executor', provider='sagemaker', port=12345):
+    dep_port = random_port()
+    with Deployment(
+        uses='docker://sampler-executor', provider='sagemaker', port=dep_port
+    ):
         # Test the `GET /ping` endpoint (added by jina for sagemaker)
-        rsp = requests.get('http://localhost:12345/ping')
+        rsp = requests.get(f'http://localhost:{dep_port}/ping')
         assert rsp.status_code == 200
         assert rsp.json() == {}
 
         # Test the `POST /invocations` endpoint
         # Note: this endpoint is not implemented in the sample executor
         rsp = requests.post(
-            'http://localhost:12345/invocations',
+            f'http://localhost:{dep_port}/invocations',
             json={
                 'data': [
                     {'text': 'hello world'},
@@ -195,7 +194,7 @@ def test_provider_sagemaker_deployment_inference_docker(replica_docker_image_bui
 @pytest.mark.skip('Sagemaker with Deployment for batch-transform is not supported yet')
 def test_provider_sagemaker_deployment_batch():
     with chdir(os.path.join(os.path.dirname(__file__), 'SampleExecutor')):
-        dep_port = 12345
+        dep_port = random_port()
         with Deployment(uses='config.yml', provider='sagemaker', port=dep_port):
             # Test the `POST /invocations` endpoint for batch-transform
             with open(
