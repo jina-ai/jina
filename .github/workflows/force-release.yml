@@ -25,17 +25,6 @@ jobs:
         run: |
           [[ -f SUCCESS ]]
 
-
-  hub-integration:
-    needs: token-check
-    uses: jina-ai/hub-integration/.github/workflows/main.yml@main
-    with:
-      actions: 'all'
-      python_version: 3.8
-    secrets:
-      extended_github_token: ${{ secrets.JINA_DEV_BOT }}
-      jina_auth_token: ${{ secrets.JINA_AUTH_TOKEN }}
-
   # Build the wheels for Linux, Windows and macOS for Python 3.8 and newer
   build-wheels:
     runs-on: ${{ matrix.os }}
