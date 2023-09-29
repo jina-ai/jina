@@ -1,0 +1,5 @@
+jtype: Indexer
+metas:
+  name: IndexerPrivate
+  py_modules:
+    - executor.py
