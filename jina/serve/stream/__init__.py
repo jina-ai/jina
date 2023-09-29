@@ -85,7 +85,6 @@ class RequestStreamer:
             connection_pool, retry_forever=True, is_cancel=is_cancel
         )
         self.logger.debug(f'Got all endpoints from TopologyGraph {endpoints}')
-
         if endpoints is not None:
             for endp in endpoints:
                 for origin_node in topology_graph.origin_nodes:
@@ -102,6 +101,16 @@ class RequestStreamer:
                         and len(leaf_input_output_model) > 0
                     ):
                         _endpoints_models_map[endp] = leaf_input_output_model[0]
+        cached_models = {}
+        for k, v in _endpoints_models_map.items():
+            if v['input'].__name__ not in cached_models:
+                cached_models[v['input'].__name__] = v['input']
+            else:
+                v['input'] = cached_models[v['input'].__name__]
+            if v['output'].__name__ not in cached_models:
+                cached_models[v['output'].__name__] = v['output']
+            else:
+                v['output'] = cached_models[v['output'].__name__]
         return _endpoints_models_map
 
     async def stream_doc(
