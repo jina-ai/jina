@@ -254,6 +254,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -16212,4 +16213,32 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```7078f129```](https://github.com/jina-ai/jina/commit/7078f1293e8905c52c8a76182709059011d97e19)] __-__ fix typo (*Han Xiao*)
  - [[```6d62bced```](https://github.com/jina-ai/jina/commit/6d62bcedd5e2cd75720c1b0c4c896aafdc64cb85)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```d20a5d82```](https://github.com/jina-ai/jina/commit/d20a5d82327e9e4fed168fac90e0a14a56d91c6a)] __-__ __version__: the next version will be 3.20.4 (*Jina Dev Bot*)
+
+<a name=release-note-3-21-1></a>
+## Release Note (`3.21.1`)
+
+> Release time: 2023-09-29 10:45:55
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Deepankar Mahapatro,  Zhaofeng Miao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```67c83c2d```](https://github.com/jina-ai/jina/commit/67c83c2d754540aa14904097c17a67ccc2fa5a51)] __-__ __sagemaker__: support batch-transform (#6055) (*Deepankar Mahapatro*)
+
+### 🐞 Bug fixes
+
+ - [[```31e0c9a2```](https://github.com/jina-ai/jina/commit/31e0c9a200bd6acf86731bba6282267e729790f3)] __-__ fix issue with same doc type in spawned processes (#6062) (*Joan Fontanals*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```4ea8bb56```](https://github.com/jina-ai/jina/commit/4ea8bb5665adefed10373b0eb3a7b2205985f6f0)] __-__ remove hub integration test (#6061) (*Zhaofeng Miao*)
+
+### 🍹 Other Improvements
+
+ - [[```9897bbde```](https://github.com/jina-ai/jina/commit/9897bbde79c513aabdcaed2710b0c4144ab15837)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```f82ac59e```](https://github.com/jina-ai/jina/commit/f82ac59ecfe0748973e37afee6926eeeeba8a42f)] __-__ __version__: the next version will be 3.21.1 (*Jina Dev Bot*)
 
