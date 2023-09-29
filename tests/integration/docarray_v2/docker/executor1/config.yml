@@ -1,0 +1,5 @@
+jtype: Encoder
+metas:
+  name: EncoderPrivate
+  py_modules:
+    - executor.py
