@@ -17,7 +17,6 @@ from itertools import cycle
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Type, Union, overload
 
 from hubble.executor.helper import replace_secret_of_hub_uri
-from hubble.executor.hubio import HubIO
 from rich import print
 from rich.panel import Panel
 
@@ -54,7 +53,6 @@ from jina.orchestrate.orchestrator import BaseOrchestrator
 from jina.orchestrate.pods.factory import PodFactory
 from jina.parsers import set_deployment_parser, set_gateway_parser
 from jina.parsers.helper import _update_gateway_args
-from jina.serve.networking import GrpcConnectionPool
 from jina.serve.networking.utils import host_is_local, in_docker
 
 WRAPPED_SLICE_BASE = r'\[[-\d:]+\]'
@@ -103,7 +101,7 @@ def _call_add_voters(leader, voters, replica_ids, name, event_signal=None):
             logger.success(
                 f'Replica-{str(replica_id)} successfully added as voter with address {voter_address} to leader at {leader}'
             )
-    logger.debug(f'Adding voters to leader finished')
+    logger.debug('Adding voters to leader finished')
     if event_signal:
         event_signal.set()
 
@@ -138,7 +136,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             voter_addresses = [pod.runtime_ctrl_address for pod in self._pods[1:]]
             replica_ids = [pod.args.replica_id for pod in self._pods[1:]]
             event_signal = multiprocessing.Event()
-            self.logger.debug(f'Starting process to call Add Voters')
+            self.logger.debug('Starting process to call Add Voters')
             process = multiprocessing.Process(
                 target=_call_add_voters,
                 kwargs={
@@ -159,19 +157,19 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 else:
                     time.sleep(1.0)
             if properly_closed:
-                self.logger.debug(f'Add Voters process finished')
+                self.logger.debug('Add Voters process finished')
                 process.terminate()
             else:
-                self.logger.error(f'Add Voters process did not finish successfully')
+                self.logger.error('Add Voters process did not finish successfully')
                 process.kill()
-            self.logger.debug(f'Add Voters process finished')
+            self.logger.debug('Add Voters process finished')
 
         async def _async_add_voter_to_leader(self):
             leader_address = f'{self._pods[0].runtime_ctrl_address}'
             voter_addresses = [pod.runtime_ctrl_address for pod in self._pods[1:]]
             replica_ids = [pod.args.replica_id for pod in self._pods[1:]]
             event_signal = multiprocessing.Event()
-            self.logger.debug(f'Starting process to call Add Voters')
+            self.logger.debug('Starting process to call Add Voters')
             process = multiprocessing.Process(
                 target=_call_add_voters,
                 kwargs={
@@ -192,10 +190,10 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 else:
                     await asyncio.sleep(1.0)
             if properly_closed:
-                self.logger.debug(f'Add Voters process finished')
+                self.logger.debug('Add Voters process finished')
                 process.terminate()
             else:
-                self.logger.error(f'Add Voters process did not finish successfully')
+                self.logger.error('Add Voters process did not finish successfully')
                 process.kill()
 
         @property
@@ -214,23 +212,23 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 pod.join()
 
         def wait_start_success(self):
-            self.logger.debug(f'Waiting for ReplicaSet to start successfully')
+            self.logger.debug('Waiting for ReplicaSet to start successfully')
             for pod in self._pods:
                 pod.wait_start_success()
             # should this be done only when the cluster is started ?
             if self._pods[0].args.stateful:
                 self._add_voter_to_leader()
-            self.logger.debug(f'ReplicaSet started successfully')
+            self.logger.debug('ReplicaSet started successfully')
 
         async def async_wait_start_success(self):
-            self.logger.debug(f'Waiting for ReplicaSet to start successfully')
+            self.logger.debug('Waiting for ReplicaSet to start successfully')
             await asyncio.gather(
                 *[pod.async_wait_start_success() for pod in self._pods]
             )
             # should this be done only when the cluster is started ?
             if self._pods[0].args.stateful:
                 await self._async_add_voter_to_leader()
-            self.logger.debug(f'ReplicaSet started successfully')
+            self.logger.debug('ReplicaSet started successfully')
 
         def __enter__(self):
             for _args in self.args:
@@ -481,16 +479,19 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         if self.args.provider == ProviderType.SAGEMAKER:
             if self._gateway_kwargs.get('port', 0) == 8080:
                 raise ValueError(
-                    f'Port 8080 is reserved for Sagemaker deployment. Please use another port'
+                    'Port 8080 is reserved for Sagemaker deployment. '
+                    'Please use another port'
                 )
             if self.args.port != [8080]:
                 warnings.warn(
-                    f'Port is changed to 8080 for Sagemaker deployment. Port {self.args.port} is ignored'
+                    'Port is changed to 8080 for Sagemaker deployment. '
+                    f'Port {self.args.port} is ignored'
                 )
                 self.args.port = [8080]
             if self.args.protocol != [ProtocolType.HTTP]:
                 warnings.warn(
-                    f'Protocol is changed to HTTP for Sagemaker deployment. Protocol {self.args.protocol} is ignored'
+                    'Protocol is changed to HTTP for Sagemaker deployment. '
+                    f'Protocol {self.args.protocol} is ignored'
                 )
                 self.args.protocol = [ProtocolType.HTTP]
         if self._include_gateway and ProtocolType.HTTP in self.args.protocol:
@@ -529,10 +530,10 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         if self.args.stateful and (is_windows_os or (is_mac_os and is_37)):
             if is_windows_os:
-                raise RuntimeError(f'Stateful feature is not available on Windows')
+                raise RuntimeError('Stateful feature is not available on Windows')
             if is_mac_os:
                 raise RuntimeError(
-                    f'Stateful feature when running on MacOS requires Python3.8 or newer version'
+                    'Stateful feature when running on MacOS requires Python3.8 or newer version'
                 )
         if self.args.stateful and (
             ProtocolType.WEBSOCKET in self.args.protocol
@@ -805,7 +806,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         if args.name:
             _head_args.name = f'{args.name}/head'
         else:
-            _head_args.name = f'head'
+            _head_args.name = 'head'
 
         return _head_args
 
@@ -1209,7 +1210,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 coros.append(self.shards[shard_id].async_wait_start_success())
 
             await asyncio.gather(*coros)
-            self.logger.debug(f'Deployment started successfully')
+            self.logger.debug('Deployment started successfully')
         except:
             self.close()
             raise
@@ -1374,7 +1375,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             peer_ports = peer_ports_all_shards.get(str(shard_id), [])
             if len(peer_ports) > 0 and len(peer_ports) != replicas:
                 raise ValueError(
-                    f'peer-ports argument does not match number of replicas, it will be ignored'
+                    'peer-ports argument does not match number of replicas, it will be ignored'
                 )
             elif len(peer_ports) == 0:
                 peer_ports = [random_port() for _ in range(replicas)]
@@ -1506,12 +1507,12 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         if self.args.stateful and self.args.replicas in [1, 2]:
             self.logger.debug(
-                f'Stateful Executor is not recommended to be used less than 3 replicas'
+                'Stateful Executor is not recommended to be used less than 3 replicas'
             )
 
         if self.args.stateful and self.args.workspace is None:
             raise ValueError(
-                f'Stateful Executors need to be provided `workspace` when used in a Deployment'
+                'Stateful Executors need to be provided `workspace` when used in a Deployment'
             )
 
         # a gateway has no heads and uses
@@ -1568,7 +1569,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         mermaid_graph = []
         secret = '&ltsecret&gt'
         if self.role != DeploymentRoleType.GATEWAY and not self.external:
-            mermaid_graph = [f'subgraph {self.name};', f'\ndirection LR;\n']
+            mermaid_graph = [f'subgraph {self.name};', '\ndirection LR;\n']
 
             uses_before_name = (
                 self.uses_before_args.name
@@ -1596,7 +1597,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     shard_names.append(shard_name)
                     shard_mermaid_graph = [
                         f'subgraph {shard_name};',
-                        f'\ndirection TB;\n',
+                        '\ndirection TB;\n',
                     ]
                     names = [
                         args.name for args in pod_args
