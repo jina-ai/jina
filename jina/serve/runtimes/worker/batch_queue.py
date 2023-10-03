@@ -1,7 +1,6 @@
 import asyncio
 from asyncio import Event, Task
 from typing import Callable, Dict, List, Optional, TYPE_CHECKING
-
 from jina._docarray import docarray_v2
 
 if not docarray_v2:
@@ -20,7 +19,8 @@ class BatchQueue:
     def __init__(
             self,
             func: Callable,
-            docarray_cls,
+            request_docarray_cls,
+            response_docarray_cls,
             output_array_type: Optional[str] = None,
             params: Optional[Dict] = None,
             preferred_batch_size: int = 4,
@@ -33,11 +33,10 @@ class BatchQueue:
         self._is_closed = False
         self._output_array_type = output_array_type
         self.params = params
-        self._docarray_cls = docarray_cls
-
+        self._docarray_cls = request_docarray_cls
+        self._out_docarray_cls = response_docarray_cls
         self._preferred_batch_size: int = preferred_batch_size
         self._timeout: int = timeout
-
         self._reset()
 
     def __repr__(self) -> str:
@@ -50,6 +49,7 @@ class BatchQueue:
         """Set all events and reset the batch queue."""
         self._requests: List[DataRequest] = []
         self._request_lens: List[int] = []
+        self._requests_full: List[asyncio.Queue] = []
         if not docarray_v2:
             self._big_doc: DocumentArray = DocumentArray.empty()
         else:
@@ -82,7 +82,7 @@ class BatchQueue:
         await asyncio.sleep(self._timeout / 1000)
         event.set()
 
-    async def push(self, request: DataRequest) -> Task:
+    async def push(self, request: DataRequest) -> asyncio.Queue:
         """Append request to the queue. Once the request has been processed, the returned task will complete.
 
         :param request: The request to append to the queue.
@@ -101,68 +101,104 @@ class BatchQueue:
             self._big_doc.extend(docs)
             self._requests.append(request)
             self._request_lens.append(len(docs))
-
+            queue = asyncio.Queue()
+            self._requests_full.append(queue)
             if len(self._big_doc) >= self._preferred_batch_size:
                 self._flush_trigger.set()
 
-        return self._flush_task
+        return queue
 
     async def _await_then_flush(self) -> None:
         """Process all requests in the queue once flush_trigger event is set."""
+
+        def _distribute_documents(inner_docs, requests_len_list):
+            # Create an iterator to iterate over the documents
+            num_distributed_docs = 0
+            # Initialize a list to store the distributed requests
+            distributed_requests = []
+
+            for request_len in requests_len_list:
+                # Create a new request bucket
+                if num_distributed_docs + request_len <= len(inner_docs):
+                    request_bucket = inner_docs[num_distributed_docs: num_distributed_docs + request_len]
+                    num_distributed_docs += request_len
+
+                    if len(request_bucket) == request_len:
+                        # Add the request bucket to the list of distributed requests
+                        distributed_requests.append(request_bucket)
+
+            return distributed_requests, num_distributed_docs
+
+        def batch(iterable, n=1):
+            items = len(iterable)
+            for ndx in range(0, items, n):
+                yield iterable[ndx: min(ndx + n, items)]
+
         await self._flush_trigger.wait()
 
         # writes to shared data between tasks need to be mutually exclusive
         async with self._data_lock:
             try:
-
-                # The function might accidentally change the size
-                input_len_before_call: int = len(self._big_doc)
-
-                # We need to get the function to process the big doc
-                return_docs = await self.func(
-                    docs=self._big_doc,
-                    parameters=self.params,
-                    docs_matrix=None,  # joining manually with batch queue is not supported right now
-                    tracing_context=None,
-                )
-
-                # Output validation
-                if (docarray_v2 and isinstance(return_docs, DocList)) or (not docarray_v2 and isinstance(return_docs, DocumentArray)):
-                    if not len(return_docs) == input_len_before_call:
-                        raise ValueError(
-                            f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(self._big_doc)}'
-                        )
-                elif return_docs is None:
-                    if not len(self._big_doc) == input_len_before_call:
-                        raise ValueError(
-                            f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(self._big_doc)}'
-                        )
+                if not docarray_v2:
+                    return_docs: DocumentArray = DocumentArray.empty()
+                    non_distributed_docs: DocumentArray = DocumentArray.empty()
                 else:
-                    array_name = 'DocumentArray' if not docarray_v2 else 'DocList'
-                    raise TypeError(
-                        f'The return type must be {array_name} / `None` when using dynamic batching, '
-                        f'but getting {return_docs!r}'
-                    )
+                    return_docs = self._out_docarray_cls()
+                    non_distributed_docs = self._out_docarray_cls()
 
-                # We need to re-slice the big doc array into the original requests
-                self._apply_return_docs_to_requests(return_docs)
+                filled_requests = 0
+                for docs in batch(self._big_doc, self._preferred_batch_size):
+                    input_len_before_call: int = len(docs)
+                    try:
+                        batch_res_docs = await self.func(
+                            docs=docs,
+                            parameters=self.params,
+                            docs_matrix=None,  # joining manually with batch queue is not supported right now
+                            tracing_context=None,
+                        )
+
+                        # Output validation
+                        if (docarray_v2 and isinstance(batch_res_docs, DocList)) or (
+                                not docarray_v2 and isinstance(batch_res_docs, DocumentArray)):
+                            if not len(batch_res_docs) == input_len_before_call:
+                                raise ValueError(
+                                    f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(self._big_doc)}'
+                                )
+                        elif batch_res_docs is None:
+                            if not len(docs) == input_len_before_call:
+                                raise ValueError(
+                                    f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(self._big_doc)}'
+                                )
+                        else:
+                            array_name = 'DocumentArray' if not docarray_v2 else 'DocList'
+                            raise TypeError(
+                                f'The return type must be {array_name} / `None` when using dynamic batching, '
+                                f'but getting {return_docs!r}'
+                            )
+
+                        # We need to re-slice the big doc array into the original requests
+                        non_distributed_docs.extend(batch_res_docs if batch_res_docs is not None else docs)
+                        request_buckets, num_distributed_docs_in_batch = _distribute_documents(non_distributed_docs,
+                                                                                               self._request_lens[
+                                                                                               filled_requests:])
+
+                        for bucket, request, request_full in zip(request_buckets, self._requests[filled_requests:],
+                                                                 self._requests_full[filled_requests:]):
+                            request.data.set_docs_convert_arrays(
+                                bucket, ndarray_type=self._output_array_type
+                            )
+                            await request_full.put(None)
+
+                        filled_requests += len(request_buckets)
+                        non_distributed_docs = batch_res_docs[
+                                               num_distributed_docs_in_batch:] if batch_res_docs is not None else docs[
+                            num_distributed_docs_in_batch]
+
+                    except Exception as exc:
+                        # All the requests containing docs in this Exception should be raising it
+                        raise exc
             finally:
                 self._reset()
-
-    def _apply_return_docs_to_requests(self, return_docs: Optional['DocumentArray']):
-        consumed_count: int = 0
-        for request, request_len in zip(self._requests, self._request_lens):
-            left = consumed_count
-            right = consumed_count + request_len
-            if return_docs:
-                request.data.set_docs_convert_arrays(
-                    return_docs[left:right], ndarray_type=self._output_array_type
-                )
-            else:
-                request.data.set_docs_convert_arrays(
-                    self._big_doc[left:right], ndarray_type=self._output_array_type
-                )
-            consumed_count += request_len
 
     async def close(self):
         """Closes the batch queue by flushing pending requests."""

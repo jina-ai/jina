@@ -678,16 +678,20 @@ class WorkerRequestHandler:
             if param_key not in self._batchqueue_instances[exec_endpoint]:
                 self._batchqueue_instances[exec_endpoint][param_key] = BatchQueue(
                     functools.partial(self._executor.__acall__, exec_endpoint),
-                    docarray_cls=self._executor.requests[exec_endpoint].request_schema,
+                    request_docarray_cls=self._executor.requests[exec_endpoint].request_schema,
+                    response_docarray_cls=self._executor.requests[exec_endpoint].response_schema,
                     output_array_type=self.args.output_array_type,
                     params=params,
                     **self._batchqueue_config[exec_endpoint],
                 )
             # This is necessary because push might need to await for the queue to be emptied
-            task = await self._batchqueue_instances[exec_endpoint][param_key].push(
+            queue = await self._batchqueue_instances[exec_endpoint][param_key].push(
                 requests[0]
             )
-            await task
+            item = await queue.get()
+            queue.task_done()
+            if isinstance(item, Exception):
+                raise item
         else:
             docs = WorkerRequestHandler.get_docs_from_request(requests)
             docs_matrix, docs_map = WorkerRequestHandler._get_docs_matrix_from_request(
@@ -1180,7 +1184,7 @@ class WorkerRequestHandler:
 
         :return: the status of the snapshot
         """
-        self.logger.debug(f' Calling snapshot')
+        self.logger.debug('Calling snapshot')
         if (
             self._snapshot
             and self._snapshot_thread
@@ -1247,7 +1251,7 @@ class WorkerRequestHandler:
 
         :return: the status of the snapshot
         """
-        self.logger.debug(f' Calling restore')
+        self.logger.debug(f'Calling restore')
         if self._restore and self._restore_thread and self._restore_thread.is_alive():
             raise RuntimeError(
                 f'A restore with id {self._restore.id.value} is currently in progress. Cannot start another.'
