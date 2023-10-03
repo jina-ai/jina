@@ -126,6 +126,8 @@ class BatchQueue:
                     if len(request_bucket) == request_len:
                         # Add the request bucket to the list of distributed requests
                         distributed_requests.append(request_bucket)
+                else:
+                    break
 
             return distributed_requests, num_distributed_docs
 
@@ -137,15 +139,18 @@ class BatchQueue:
         await self._flush_trigger.wait()
         # writes to shared data between tasks need to be mutually exclusive
         async with self._data_lock:
+            # At this moment, we have documents concatenated in self._big_doc corresponding to requests in
+            # self._requests with its lengths stored in self._requests_len. For each requests, there is a queue to
+            # communicate that the request has been processed properly. At this stage the data_lock is ours and
+            # therefore noone can add requests to this list.
             filled_requests = 0
             try:
                 if not docarray_v2:
-                    return_docs: DocumentArray = DocumentArray.empty()
                     non_distributed_docs: DocumentArray = DocumentArray.empty()
                 else:
-                    return_docs = self._out_docarray_cls()
                     non_distributed_docs = self._out_docarray_cls()
                 for docs in batch(self._big_doc, self._preferred_batch_size):
+
                     input_len_before_call: int = len(docs)
                     try:
                         batch_res_docs = await self.func(
@@ -160,43 +165,43 @@ class BatchQueue:
                                 not docarray_v2 and isinstance(batch_res_docs, DocumentArray)):
                             if not len(batch_res_docs) == input_len_before_call:
                                 raise ValueError(
-                                    f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(self._big_doc)}'
+                                    f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(batch_res_docs)}'
                                 )
                         elif batch_res_docs is None:
                             if not len(docs) == input_len_before_call:
                                 raise ValueError(
-                                    f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(self._big_doc)}'
+                                    f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(docs)}'
                                 )
                         else:
                             array_name = 'DocumentArray' if not docarray_v2 else 'DocList'
                             raise TypeError(
                                 f'The return type must be {array_name} / `None` when using dynamic batching, '
-                                f'but getting {return_docs!r}'
+                                f'but getting {batch_res_docs!r}'
                             )
 
-                        # We need to re-slice the big doc array into the original requests
+                        # We need to attribute the docs to their requests
                         non_distributed_docs.extend(batch_res_docs if batch_res_docs is not None else docs)
                         request_buckets, num_distributed_docs_in_batch = _distribute_documents(non_distributed_docs,
                                                                                                self._request_lens[
                                                                                                filled_requests:])
+                        if num_distributed_docs_in_batch > 0:
+                            for bucket, request, request_full in zip(request_buckets, self._requests[filled_requests:],
+                                                                     self._requests_full[filled_requests:]):
+                                request.data.set_docs_convert_arrays(
+                                    bucket, ndarray_type=self._output_array_type
+                                )
+                                await request_full.put(None)
 
-                        for bucket, request, request_full in zip(request_buckets, self._requests[filled_requests:],
-                                                                 self._requests_full[filled_requests:]):
-                            request.data.set_docs_convert_arrays(
-                                bucket, ndarray_type=self._output_array_type
-                            )
-                            await request_full.put(None)
-
-                        filled_requests += len(request_buckets)
-                        non_distributed_docs = batch_res_docs[
-                                               num_distributed_docs_in_batch:] if batch_res_docs is not None else docs[
-                            num_distributed_docs_in_batch:]
+                            filled_requests += len(request_buckets)
+                            non_distributed_docs = batch_res_docs[
+                                                   num_distributed_docs_in_batch:] if batch_res_docs is not None else docs[
+                                num_distributed_docs_in_batch:]
 
                     except Exception as exc:
                         # All the requests containing docs in this Exception should be raising it
                         # TODO: Handle exceptions properly
                         for request_full in self._requests_full[filled_requests:]:
-                           await request_full.put(exc)
+                            await request_full.put(exc)
             finally:
                 self._reset()
 
