@@ -49,7 +49,7 @@ class BatchQueue:
         """Set all events and reset the batch queue."""
         self._requests: List[DataRequest] = []
         self._request_lens: List[int] = []
-        self._requests_full: List[asyncio.Queue] = []
+        self._requests_completed: List[asyncio.Queue] = []
         if not docarray_v2:
             self._big_doc: DocumentArray = DocumentArray.empty()
         else:
@@ -102,7 +102,7 @@ class BatchQueue:
             self._requests.append(request)
             self._request_lens.append(len(docs))
             queue = asyncio.Queue()
-            self._requests_full.append(queue)
+            self._requests_completed.append(queue)
             if len(self._big_doc) >= self._preferred_batch_size:
                 self._flush_trigger.set()
 
@@ -149,16 +149,16 @@ class BatchQueue:
                     non_distributed_docs: DocumentArray = DocumentArray.empty()
                 else:
                     non_distributed_docs = self._out_docarray_cls()
-                for docs in batch(self._big_doc, self._preferred_batch_size):
-                    input_len_before_call: int = len(docs)
+                for docs_inner_batch in batch(self._big_doc, self._preferred_batch_size):
+                    input_len_before_call: int = len(docs_inner_batch)
+                    batch_res_docs = None
                     try:
                         batch_res_docs = await self.func(
-                            docs=docs,
+                            docs=docs_inner_batch,
                             parameters=self.params,
                             docs_matrix=None,  # joining manually with batch queue is not supported right now
                             tracing_context=None,
                         )
-
                         # Output validation
                         if (docarray_v2 and isinstance(batch_res_docs, DocList)) or (
                                 not docarray_v2 and isinstance(batch_res_docs, DocumentArray)):
@@ -167,9 +167,9 @@ class BatchQueue:
                                     f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(batch_res_docs)}'
                                 )
                         elif batch_res_docs is None:
-                            if not len(docs) == input_len_before_call:
+                            if not len(docs_inner_batch) == input_len_before_call:
                                 raise ValueError(
-                                    f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(docs)}'
+                                    f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(docs_inner_batch)}'
                                 )
                         else:
                             array_name = 'DocumentArray' if not docarray_v2 else 'DocList'
@@ -177,30 +177,41 @@ class BatchQueue:
                                 f'The return type must be {array_name} / `None` when using dynamic batching, '
                                 f'but getting {batch_res_docs!r}'
                             )
-
-                        output_executor_docs = batch_res_docs if batch_res_docs is not None else docs
-
-                        # We need to attribute the docs to their requests
-                        non_distributed_docs.extend(output_executor_docs)
-                        request_buckets, num_distributed_docs_in_batch = _distribute_documents(non_distributed_docs,
-                                                                                               self._request_lens[
-                                                                                               filled_requests:])
-                        if num_distributed_docs_in_batch > 0:
-                            for bucket, request, request_full in zip(request_buckets, self._requests[filled_requests:],
-                                                                     self._requests_full[filled_requests:]):
-                                request.data.set_docs_convert_arrays(
-                                    bucket, ndarray_type=self._output_array_type
-                                )
-                                await request_full.put(None)
-
-                            filled_requests += len(request_buckets)
-                            non_distributed_docs = non_distributed_docs[
-                                                   num_distributed_docs_in_batch:]
                     except Exception as exc:
                         # All the requests containing docs in this Exception should be raising it
-                        # TODO: Handle exceptions properly
-                        for request_full in self._requests_full[filled_requests:]:
+                        # TODO: Handle exceptions properly, we need to assign to the requests involved
+                        involved_requests_min_indx = filled_requests # For sure this request is involved and should return an exception, but how many of the docs belong to that request (non_distributed_docs)
+                        num_docs_from_other_requests = len(docs_inner_batch) - len(non_distributed_docs)
+                        l = 0
+                        for i, req_len in enumerate(self._request_lens[involved_requests_min_indx:]):
+                            l += req_len
+                            if l >= num_docs_from_other_requests:
+                                break
+                        involved_requests_max_indx = involved_requests_min_indx + i
+                        for request_full in self._requests_completed[involved_requests_min_indx:involved_requests_max_indx + 1]:
                             await request_full.put(exc)
+                        pass
+
+                    # If there has been an exception, this will be docs_inner_batch
+                    output_executor_docs = batch_res_docs if batch_res_docs is not None else docs_inner_batch
+
+                    # We need to attribute the docs to their requests
+                    non_distributed_docs.extend(output_executor_docs)
+                    request_buckets, num_distributed_docs_in_batch = _distribute_documents(non_distributed_docs,
+                                                                                           self._request_lens[
+                                                                                           filled_requests:])
+                    if num_distributed_docs_in_batch > 0:
+                        for bucket, request, request_full in zip(request_buckets, self._requests[filled_requests:],
+                                                                 self._requests_completed[filled_requests:]):
+                            request.data.set_docs_convert_arrays(
+                                bucket, ndarray_type=self._output_array_type
+                            )
+                            await request_full.put(None)
+
+                        filled_requests += len(request_buckets)
+                        non_distributed_docs = non_distributed_docs[
+                                               num_distributed_docs_in_batch:]
+
             finally:
                 self._reset()
 

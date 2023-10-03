@@ -74,7 +74,7 @@ async def test_batch_queue_req_length_larger_than_preferred():
 
     data_requests = [DataRequest() for _ in range(3)]
     for req in data_requests:
-        req.data.docs = DocumentArray.empty(10) # 30 docs in total
+        req.data.docs = DocumentArray.empty(10)  # 30 docs in total
         assert req.data.docs[0].text == ''
 
     async def process_request(req):
@@ -100,11 +100,12 @@ async def test_exception():
     BAD_REQUEST_IDX = [2, 6]
 
     async def foo(docs, **kwargs):
+        await asyncio.sleep(0.1)
         assert len(docs) == 1
         if docs[0].text == 'Bad':
             raise Exception
         for doc in docs:
-            doc.text = 'Processed'
+            doc.text += ' Processed'
 
     bq: BatchQueue = BatchQueue(
         foo,
@@ -114,9 +115,9 @@ async def test_exception():
         timeout=500,
     )
 
-    data_requests = [DataRequest() for _ in range(10)]
+    data_requests = [DataRequest() for _ in range(35)]
     for i, req in enumerate(data_requests):
-        req.data.docs = DocumentArray(Document(text='' if i not in BAD_REQUEST_IDX else 'Bad'))
+        req.data.docs = DocumentArray(Document(text=f'{i}' if i not in BAD_REQUEST_IDX else 'Bad'))
 
     async def process_request(req):
         q = await bq.push(req)
@@ -133,9 +134,88 @@ async def test_exception():
             assert isinstance(item, Exception)
     for i, req in enumerate(data_requests):
         if i not in BAD_REQUEST_IDX:
-            assert req.data.docs[0].text == 'Processed'
+            assert req.data.docs[0].text == f'{i} Processed'
         else:
             assert req.data.docs[0].text == 'Bad'
+
+
+@pytest.mark.asyncio
+async def test_exception_more_complex():
+    TRIGGER_BAD_REQUEST_IDX = [2, 6]
+    EXPECTED_BAD_REQUESTS = [2, 3, 6, 7]
+
+    # REQUESTS 0, 1 should be good
+    # REQUESTS 2, 3 should be bad
+    # REQUESTS 4, 5 should be good
+    # REQUESTS 6, 7 should be bad
+    async def foo(docs, **kwargs):
+        await asyncio.sleep(0.1)
+        if docs[0].text == 'Bad':
+            raise Exception
+        for doc in docs:
+            doc.text = 'Processed'
+
+    bq: BatchQueue = BatchQueue(
+        foo,
+        request_docarray_cls=DocumentArray,
+        response_docarray_cls=DocumentArray,
+        preferred_batch_size=2,
+        timeout=500,
+    )
+
+    data_requests = [DataRequest() for _ in range(35)]
+    for i, req in enumerate(data_requests):
+        req.data.docs = DocumentArray(Document(text='' if i not in TRIGGER_BAD_REQUEST_IDX else 'Bad'))
+
+    async def process_request(req):
+        q = await bq.push(req)
+        item = await q.get()
+        q.task_done()
+        return item
+
+    tasks = [asyncio.create_task(process_request(req)) for req in data_requests]
+    items = await asyncio.gather(*tasks)
+    for i, item in enumerate(items):
+        if i not in EXPECTED_BAD_REQUESTS:
+            assert item is None
+        else:
+            assert isinstance(item, Exception)
+    for i, req in enumerate(data_requests):
+        if i not in EXPECTED_BAD_REQUESTS:
+            assert req.data.docs[0].text == 'Processed'
+        elif i in TRIGGER_BAD_REQUEST_IDX:
+            assert req.data.docs[0].text == 'Bad'
+        else:
+            assert req.data.docs[0].text == ''
+
+
+@pytest.mark.asyncio
+async def test_exception_all():
+    async def foo(docs, **kwargs):
+        raise AssertionError
+
+    bq: BatchQueue = BatchQueue(
+        foo,
+        request_docarray_cls=DocumentArray,
+        response_docarray_cls=DocumentArray,
+        preferred_batch_size=2,
+        timeout=500,
+    )
+
+    data_requests = [DataRequest() for _ in range(10)]
+    for i, req in enumerate(data_requests):
+        req.data.docs = DocumentArray(Document(text=''))
+
+    async def process_request(req):
+        q = await bq.push(req)
+        item = await q.get()
+        q.task_done()
+        return item
+
+    tasks = [asyncio.create_task(process_request(req)) for req in data_requests]
+    items = await asyncio.gather(*tasks)
+    for i, item in enumerate(items):
+        assert isinstance(item, Exception)
 
 
 @pytest.mark.asyncio
