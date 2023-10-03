@@ -232,3 +232,47 @@ async def test_repr_and_str():
     )
 
     assert repr(bq) == str(bq)
+
+
+@pytest.mark.parametrize('num_requests', [61, 127, 100])
+@pytest.mark.parametrize('preferred_batch_size', [7, 27, 61, 73, 100])
+@pytest.mark.parametrize('timeout', [0.3, 500])
+@pytest.mark.asyncio
+async def test_return_proper_assignment(num_requests, preferred_batch_size, timeout):
+    import random
+
+    async def foo(docs, **kwargs):
+        await asyncio.sleep(0.1)
+        for doc in docs:
+            doc.text += ' Processed'
+
+    bq: BatchQueue = BatchQueue(
+        foo,
+        request_docarray_cls=DocumentArray,
+        response_docarray_cls=DocumentArray,
+        preferred_batch_size=preferred_batch_size,
+        timeout=timeout,
+    )
+
+    data_requests = [DataRequest() for _ in range(num_requests)]
+    len_requests = []
+    for i, req in enumerate(data_requests):
+        len_request = random.randint(2, 27)
+        len_requests.append(len_request)
+        req.data.docs = DocumentArray([Document(text=f'Text {j} from request {i} with len {len_request}') for j in range(len_request)])
+
+    async def process_request(req):
+        q = await bq.push(req)
+        item = await q.get()
+        q.task_done()
+        return item
+
+    tasks = [asyncio.create_task(process_request(req)) for req in data_requests]
+    items = await asyncio.gather(*tasks)
+    for i, item in enumerate(items):
+        assert item is None
+
+    for i, (resp, length) in enumerate(zip(data_requests, len_requests)):
+        assert len(resp.docs) == length
+        for j, d in enumerate(resp.docs):
+            assert d.text == f'Text {j} from request {i} with len {length} Processed'
