@@ -150,7 +150,6 @@ class BatchQueue:
                 else:
                     non_distributed_docs = self._out_docarray_cls()
                 for docs in batch(self._big_doc, self._preferred_batch_size):
-
                     input_len_before_call: int = len(docs)
                     try:
                         batch_res_docs = await self.func(
@@ -179,8 +178,10 @@ class BatchQueue:
                                 f'but getting {batch_res_docs!r}'
                             )
 
+                        output_executor_docs = batch_res_docs if batch_res_docs is not None else docs
+
                         # We need to attribute the docs to their requests
-                        non_distributed_docs.extend(batch_res_docs if batch_res_docs is not None else docs)
+                        non_distributed_docs.extend(output_executor_docs)
                         request_buckets, num_distributed_docs_in_batch = _distribute_documents(non_distributed_docs,
                                                                                                self._request_lens[
                                                                                                filled_requests:])
@@ -193,10 +194,8 @@ class BatchQueue:
                                 await request_full.put(None)
 
                             filled_requests += len(request_buckets)
-                            non_distributed_docs = batch_res_docs[
-                                                   num_distributed_docs_in_batch:] if batch_res_docs is not None else docs[
-                                num_distributed_docs_in_batch:]
-
+                            non_distributed_docs = non_distributed_docs[
+                                                   num_distributed_docs_in_batch:]
                     except Exception as exc:
                         # All the requests containing docs in this Exception should be raising it
                         # TODO: Handle exceptions properly

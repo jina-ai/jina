@@ -1,6 +1,7 @@
 import asyncio
 
 import pytest
+import time
 
 from jina import Document, DocumentArray
 from jina.serve.runtimes.worker.batch_queue import BatchQueue
@@ -8,90 +9,133 @@ from jina.types.request.data import DataRequest
 
 
 @pytest.mark.asyncio
-async def test_batch_queue():
+async def test_batch_queue_timeout():
     async def foo(docs, **kwargs):
+        await asyncio.sleep(0.1)
         return DocumentArray([Document(text='Done') for _ in docs])
 
     bq: BatchQueue = BatchQueue(
         foo,
-        docarray_cls=DocumentArray,
+        request_docarray_cls=DocumentArray,
+        response_docarray_cls=DocumentArray,
         preferred_batch_size=4,
-        timeout=500,
+        timeout=2000,
     )
 
-    data_requests = [DataRequest() for _ in range(4)]
-    for req in data_requests:
+    three_data_requests = [DataRequest() for _ in range(3)]
+    for req in three_data_requests:
         req.data.docs = DocumentArray.empty(1)
         assert req.data.docs[0].text == ''
 
-    # Test preferred batch size
-    tasks = [await bq.push(req) for req in data_requests[:-1]]
-    assert len(bq._requests) == 3
-    assert len(bq._big_doc) == 3
-    assert all(not task.done() for task in tasks)
+    async def process_request(req):
+        q = await bq.push(req)
+        _ = await q.get()
+        q.task_done()
+        return req
 
-    tasks.append(await bq.push(data_requests[-1]))
-    assert len(bq._requests) == 4
-    assert all(not task.done() for task in tasks)
+    init_time = time.time()
+    tasks = [asyncio.create_task(process_request(req)) for req in three_data_requests]
+    responses = await asyncio.gather(*tasks)
+    time_spent = (time.time() - init_time) * 1000
+    assert time_spent >= 2000
+    # Test that since no more docs arrived, the function was triggerred after timeout
+    for resp in responses:
+        assert resp.data.docs[0].text == 'Done'
 
-    # The time here is necessary because the flush has awaits inside
-    # We need to give time for the flush to finish
-    await asyncio.sleep(0.2)
-    assert len(bq._requests) == 0
-    assert len(bq._big_doc) == 0
-    assert all(task.done() for task in tasks)
-    assert all(task.exception() is None for task in tasks)
+    four_data_requests = [DataRequest() for _ in range(4)]
+    for req in four_data_requests:
+        req.data.docs = DocumentArray.empty(1)
+        assert req.data.docs[0].text == ''
+    init_time = time.time()
+    tasks = [asyncio.create_task(process_request(req)) for req in four_data_requests]
+    responses = await asyncio.gather(*tasks)
+    time_spent = (time.time() - init_time) * 1000
+    assert time_spent < 2000
+    # Test that since no more docs arrived, the function was triggerred after timeout
+    for resp in responses:
+        assert resp.data.docs[0].text == 'Done'
 
+    await bq.close()
+
+
+@pytest.mark.asyncio
+async def test_batch_queue_req_length_larger_than_preferred():
+    async def foo(docs, **kwargs):
+        await asyncio.sleep(0.1)
+        return DocumentArray([Document(text='Done') for _ in docs])
+
+    bq: BatchQueue = BatchQueue(
+        foo,
+        request_docarray_cls=DocumentArray,
+        response_docarray_cls=DocumentArray,
+        preferred_batch_size=4,
+        timeout=2000,
+    )
+
+    data_requests = [DataRequest() for _ in range(3)]
     for req in data_requests:
-        assert req.data.docs[0].text == 'Done'
+        req.data.docs = DocumentArray.empty(10) # 30 docs in total
+        assert req.data.docs[0].text == ''
 
-    # Test timeout
-    for req in data_requests:
-        req.data.docs[0].text = 'Not Done'
+    async def process_request(req):
+        q = await bq.push(req)
+        _ = await q.get()
+        q.task_done()
+        return req
 
-    single_task = await bq.push(data_requests[0])
-    assert not single_task.done()
-    assert data_requests[0].data.docs[0].text == 'Not Done'
+    init_time = time.time()
+    tasks = [asyncio.create_task(process_request(req)) for req in data_requests]
+    responses = await asyncio.gather(*tasks)
+    time_spent = (time.time() - init_time) * 1000
+    assert time_spent < 2000
+    # Test that since no more docs arrived, the function was triggerred after timeout
+    for resp in responses:
+        assert resp.data.docs[0].text == 'Done'
 
-    await asyncio.sleep(0)
-    assert not single_task.done()
-    assert data_requests[0].data.docs[0].text == 'Not Done'
-
-    await asyncio.sleep(0.1)
-    assert not single_task.done()
-    assert data_requests[0].data.docs[0].text == 'Not Done'
-
-    await asyncio.sleep(0.5)
-    assert single_task.done()
-    assert data_requests[0].data.docs[0].text == 'Done'
+    await bq.close()
 
 
 @pytest.mark.asyncio
 async def test_exception():
+    BAD_REQUEST_IDX = [2, 6]
+
     async def foo(docs, **kwargs):
-        return "Bad type"
+        assert len(docs) == 1
+        if docs[0].text == 'Bad':
+            raise Exception
+        for doc in docs:
+            doc.text = 'Processed'
 
     bq: BatchQueue = BatchQueue(
         foo,
-        docarray_cls=DocumentArray,
-        preferred_batch_size=4,
+        request_docarray_cls=DocumentArray,
+        response_docarray_cls=DocumentArray,
+        preferred_batch_size=1,
         timeout=500,
     )
 
-    data_requests = [DataRequest() for _ in range(4)]
-    for req in data_requests:
-        req.data.docs = DocumentArray.empty(1)
-        assert req.data.docs[0].text == ''
+    data_requests = [DataRequest() for _ in range(10)]
+    for i, req in enumerate(data_requests):
+        req.data.docs = DocumentArray(Document(text='' if i not in BAD_REQUEST_IDX else 'Bad'))
 
-    tasks = [await bq.push(req) for req in data_requests]
-    assert len(bq._requests) == 4
-    assert all(not task.done() for task in tasks)
+    async def process_request(req):
+        q = await bq.push(req)
+        item = await q.get()
+        q.task_done()
+        return item
 
-    for i in range(3):
-        with pytest.raises(TypeError):
-            await tasks[i]
-        assert tasks[i].done()
-        assert tasks[i].exception is not None
+    tasks = [asyncio.create_task(process_request(req)) for req in data_requests]
+    items = await asyncio.gather(*tasks)
+    for i, item in enumerate(items):
+        if i not in BAD_REQUEST_IDX:
+            assert item is None
+        else:
+            assert isinstance(item, Exception)
+    for i, req in enumerate(data_requests):
+        if i not in BAD_REQUEST_IDX:
+            assert req.data.docs[0].text == 'Processed'
+        else:
+            assert req.data.docs[0].text == 'Bad'
 
 
 @pytest.mark.asyncio
@@ -101,7 +145,8 @@ async def test_repr_and_str():
 
     bq: BatchQueue = BatchQueue(
         foo,
-        docarray_cls=DocumentArray,
+        request_docarray_cls=DocumentArray,
+        response_docarray_cls=DocumentArray,
         preferred_batch_size=4,
         timeout=500,
     )
