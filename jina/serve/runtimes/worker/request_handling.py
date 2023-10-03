@@ -981,6 +981,7 @@ class WorkerRequestHandler:
                     req.document_cls = doc.__class__
                     req.data.doc = doc
 
+                self.logger.debug('yielding response')
                 yield req
 
     async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
@@ -1088,6 +1089,7 @@ class WorkerRequestHandler:
                     self._successful_requests_counter.add(
                         1, attributes=self._metric_attributes
                     )
+                self.logger.debug('return request result')
                 return result
             except (RuntimeError, Exception) as ex:
                 self.logger.error(
@@ -1114,7 +1116,6 @@ class WorkerRequestHandler:
                 ):
                     self.logger.info('Exiting because of "--exit-on-exceptions".')
                     raise RuntimeTerminated
-
                 return requests[0]
 
     async def _status(self, empty, context) -> jina_pb2.JinaInfoProto:
