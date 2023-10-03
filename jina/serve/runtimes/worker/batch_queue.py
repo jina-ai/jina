@@ -135,9 +135,9 @@ class BatchQueue:
                 yield iterable[ndx: min(ndx + n, items)]
 
         await self._flush_trigger.wait()
-
         # writes to shared data between tasks need to be mutually exclusive
         async with self._data_lock:
+            filled_requests = 0
             try:
                 if not docarray_v2:
                     return_docs: DocumentArray = DocumentArray.empty()
@@ -145,8 +145,6 @@ class BatchQueue:
                 else:
                     return_docs = self._out_docarray_cls()
                     non_distributed_docs = self._out_docarray_cls()
-
-                filled_requests = 0
                 for docs in batch(self._big_doc, self._preferred_batch_size):
                     input_len_before_call: int = len(docs)
                     try:
@@ -192,11 +190,13 @@ class BatchQueue:
                         filled_requests += len(request_buckets)
                         non_distributed_docs = batch_res_docs[
                                                num_distributed_docs_in_batch:] if batch_res_docs is not None else docs[
-                            num_distributed_docs_in_batch]
+                            num_distributed_docs_in_batch:]
 
                     except Exception as exc:
                         # All the requests containing docs in this Exception should be raising it
-                        raise exc
+                        # TODO: Handle exceptions properly
+                        for request_full in self._requests_full[filled_requests:]:
+                           await request_full.put(exc)
             finally:
                 self._reset()
 
