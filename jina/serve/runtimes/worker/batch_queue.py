@@ -48,6 +48,8 @@ class BatchQueue:
     def _reset(self) -> None:
         """Set all events and reset the batch queue."""
         self._requests: List[DataRequest] = []
+        # a list of every request ID
+        self._request_idxs: List[int] = []
         self._request_lens: List[int] = []
         self._requests_completed: List[asyncio.Queue] = []
         if not docarray_v2:
@@ -99,8 +101,9 @@ class BatchQueue:
                 self._start_timer()
 
             self._big_doc.extend(docs)
-            self._requests.append(request)
+            self._request_idxs.extend([len(self._requests)] * len(docs))
             self._request_lens.append(len(docs))
+            self._requests.append(request)
             queue = asyncio.Queue()
             self._requests_completed.append(queue)
             if len(self._big_doc) >= self._preferred_batch_size:
@@ -111,30 +114,54 @@ class BatchQueue:
     async def _await_then_flush(self) -> None:
         """Process all requests in the queue once flush_trigger event is set."""
 
-        def _distribute_documents(inner_docs, requests_len_list):
-            # Create an iterator to iterate over the documents
-            num_distributed_docs = 0
-            # Initialize a list to store the distributed requests
+        def _get_buckets_completed_request_indexes(non_assigned_docs,
+                                                   non_assigned_docs_reqs_idx,
+                                                   sum_from_previous_mini_batch_in_first_req_idx):
             distributed_requests = []
+            completed_req_idx = []
+            num_distributed_docs = 0
+            num_docs_in_req_idx = 0
+            min_involved_req_idx = non_assigned_docs_reqs_idx[0]
+            req_idx = min_involved_req_idx
+            for req_idx in non_assigned_docs_reqs_idx:
+                sum_from_previous_mini_batch_in_first_req_idx -= 1 # the previous leftovers are being allocated here
+                if req_idx > min_involved_req_idx:
+                    request_bucket = non_assigned_docs[num_distributed_docs: num_distributed_docs + num_docs_in_req_idx]
+                    num_distributed_docs += num_docs_in_req_idx
+                    completed_req_idx.append(min_involved_req_idx)
+                    min_involved_req_idx = req_idx
+                    num_docs_in_req_idx = 0
+                    distributed_requests.append(request_bucket)
+                num_docs_in_req_idx += 1
 
-            for request_len in requests_len_list:
-                # Create a new request bucket
-                if num_distributed_docs + request_len <= len(inner_docs):
-                    request_bucket = inner_docs[num_distributed_docs: num_distributed_docs + request_len]
-                    num_distributed_docs += request_len
+            if req_idx not in completed_req_idx and num_docs_in_req_idx + sum_from_previous_mini_batch_in_first_req_idx == \
+                    self._request_lens[req_idx]:
+                completed_req_idx.append(req_idx)
+                request_bucket = non_assigned_docs[num_distributed_docs: num_distributed_docs + num_docs_in_req_idx]
+                distributed_requests.append(request_bucket)
+            return distributed_requests, completed_req_idx
 
-                    if len(request_bucket) == request_len:
-                        # Add the request bucket to the list of distributed requests
-                        distributed_requests.append(request_bucket)
-                else:
-                    break
+        async def _assign_results(non_assigned_to_response_docs, non_assigned_to_response_request_idxs,
+                                  sum_from_previous_mini_batch_in_first_req_idx):
+            buckets, completed_req_idxs = _get_buckets_completed_request_indexes(non_assigned_to_response_docs,
+                                                                                 non_assigned_to_response_request_idxs,
+                                                                                 sum_from_previous_mini_batch_in_first_req_idx)
+            num_assigned_docs = sum(len(bucket) for bucket in buckets)
 
-            return distributed_requests, num_distributed_docs
+            for bucket, request_idx in zip(buckets, completed_req_idxs):
+                request = self._requests[request_idx]
+                request_completed = self._requests_completed[request_idx]
+                request.data.set_docs_convert_arrays(
+                    bucket, ndarray_type=self._output_array_type
+                )
+                await request_completed.put(None)
 
-        def batch(iterable, n=1):
-            items = len(iterable)
+            return num_assigned_docs
+
+        def batch(iterable_1, iterable_2, n=1):
+            items = len(iterable_1)
             for ndx in range(0, items, n):
-                yield iterable[ndx: min(ndx + n, items)]
+                yield iterable_1[ndx: min(ndx + n, items)], iterable_2[ndx: min(ndx + n, items)]
 
         await self._flush_trigger.wait()
         # writes to shared data between tasks need to be mutually exclusive
@@ -143,13 +170,16 @@ class BatchQueue:
             # self._requests with its lengths stored in self._requests_len. For each requests, there is a queue to
             # communicate that the request has been processed properly. At this stage the data_lock is ours and
             # therefore noone can add requests to this list.
-            filled_requests = 0
             try:
                 if not docarray_v2:
-                    non_distributed_docs: DocumentArray = DocumentArray.empty()
+                    non_assigned_to_response_docs: DocumentArray = DocumentArray.empty()
                 else:
-                    non_distributed_docs = self._out_docarray_cls()
-                for docs_inner_batch in batch(self._big_doc, self._preferred_batch_size):
+                    non_assigned_to_response_docs = self._out_docarray_cls()
+                non_assigned_to_response_request_idxs = []
+                sum_from_previous_first_req_idx = 0
+                for docs_inner_batch, req_idxs in batch(self._big_doc, self._request_idxs, self._preferred_batch_size):
+                    involved_requests_min_indx = req_idxs[0]
+                    involved_requests_max_indx = req_idxs[-1]
                     input_len_before_call: int = len(docs_inner_batch)
                     batch_res_docs = None
                     try:
@@ -179,16 +209,8 @@ class BatchQueue:
                             )
                     except Exception as exc:
                         # All the requests containing docs in this Exception should be raising it
-                        # TODO: Handle exceptions properly, we need to assign to the requests involved
-                        involved_requests_min_indx = filled_requests # For sure this request is involved and should return an exception, but how many of the docs belong to that request (non_distributed_docs)
-                        num_docs_from_other_requests = len(docs_inner_batch) - len(non_distributed_docs)
-                        l = 0
-                        for i, req_len in enumerate(self._request_lens[involved_requests_min_indx:]):
-                            l += req_len
-                            if l >= num_docs_from_other_requests:
-                                break
-                        involved_requests_max_indx = involved_requests_min_indx + i
-                        for request_full in self._requests_completed[involved_requests_min_indx:involved_requests_max_indx + 1]:
+                        for request_full in self._requests_completed[
+                                            involved_requests_min_indx:involved_requests_max_indx + 1]:
                             await request_full.put(exc)
                         pass
 
@@ -196,22 +218,20 @@ class BatchQueue:
                     output_executor_docs = batch_res_docs if batch_res_docs is not None else docs_inner_batch
 
                     # We need to attribute the docs to their requests
-                    non_distributed_docs.extend(output_executor_docs)
-                    request_buckets, num_distributed_docs_in_batch = _distribute_documents(non_distributed_docs,
-                                                                                           self._request_lens[
-                                                                                           filled_requests:])
-                    if num_distributed_docs_in_batch > 0:
-                        for bucket, request, request_full in zip(request_buckets, self._requests[filled_requests:],
-                                                                 self._requests_completed[filled_requests:]):
-                            request.data.set_docs_convert_arrays(
-                                bucket, ndarray_type=self._output_array_type
-                            )
-                            await request_full.put(None)
+                    non_assigned_to_response_docs.extend(output_executor_docs)
+                    non_assigned_to_response_request_idxs.extend(req_idxs)
+                    num_assigned_docs = await _assign_results(non_assigned_to_response_docs,
+                                                              non_assigned_to_response_request_idxs,
+                                                              sum_from_previous_first_req_idx)
 
-                        filled_requests += len(request_buckets)
-                        non_distributed_docs = non_distributed_docs[
-                                               num_distributed_docs_in_batch:]
-
+                    sum_from_previous_first_req_idx = len(non_assigned_to_response_docs) - num_assigned_docs
+                    non_assigned_to_response_docs = non_assigned_to_response_docs[
+                                                    num_assigned_docs:]
+                    non_assigned_to_response_request_idxs = non_assigned_to_response_request_idxs[
+                                                            num_assigned_docs:]
+                if len(non_assigned_to_response_request_idxs) > 0:
+                    _ = await _assign_results(non_assigned_to_response_docs, non_assigned_to_response_request_idxs,
+                                              sum_from_previous_first_req_idx)
             finally:
                 self._reset()
 
