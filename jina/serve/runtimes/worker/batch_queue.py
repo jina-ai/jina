@@ -1,4 +1,6 @@
 import asyncio
+from dataclasses import dataclass
+
 from asyncio import Event, Task
 from typing import Callable, Dict, List, Optional, TYPE_CHECKING
 from jina._docarray import docarray_v2
@@ -11,6 +13,17 @@ from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
     from jina._docarray import DocumentArray
+
+
+@dataclass
+class _Batch:
+    min_doc_idx: int
+    max_doc_idx: int
+    min_req_idx: int
+    max_req_idx: int
+
+    def __init__(self):
+
 
 
 class BatchQueue:
@@ -47,8 +60,9 @@ class BatchQueue:
             self._big_doc = self._request_docarray_cls()
 
         self._flush_trigger: Event = Event()
-        self._flush_task: Optional[Task] = None
-        self._timer_task: Optional[Task] = None
+        self._batches: List[_Batch] = []
+        self._flush_tasks: List[Task] = []
+        self._timer_tasks: List[Task] = []
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(preferred_batch_size={self._preferred_batch_size}, timeout={self._timeout})'
@@ -56,18 +70,20 @@ class BatchQueue:
     def __str__(self) -> str:
         return self.__repr__()
 
-    def _reset(self, len_big_docs, len_requests) -> None:
+    def _reset(self, batch_idx) -> None:
         """Set all events and reset the batch queue."""
+        print(f'reset {len_big_docs}, and {len_requests}')
         self._requests = self._requests[len_requests:]
         # a list of every request ID
         self._request_idxs = self._request_idxs[len_big_docs:]
         self._request_lens = self._request_lens[len_requests:]
         self._requests_completed = self._requests_completed[len_requests:]
         self._big_doc = self._big_doc[len_big_docs:]
+        self._batches: List[_Batch] = self._batches[1:]
 
         self._flush_trigger: Event = Event()
-        self._flush_task: Optional[Task] = None
-        self._timer_task: Optional[Task] = None
+        self._flush_tasks: List[Task] = []
+        self._timer_tasks: List[Task] = []
 
     def _cancel_timer_if_pending(self):
         if (
@@ -104,12 +120,15 @@ class BatchQueue:
         """
         docs = request.docs
 
-        # writes to shared data between tasks need to be mutually exclusive
-        if not self._flush_task:
-            self._flush_task = asyncio.create_task(self._await_then_flush())
-        if not self._timer_task:
-            self._start_timer()
+
+        # if not self._timer_task:
+        #     self._start_timer()
+
+        print(f'HERE I AM PUSHING {len(docs)} with {len(self._big_doc)} and {self._batches}')
         self._big_doc.extend(docs)
+        next_min_doc_idx = 0 if len(self._batches) == 0 else self._batches[0].max_doc_idx
+        next_min_req_idx = 0 if len(self._batches) == 0 else self._batches[0].max_req_idx
+
         next_req_idx = len(self._requests)
         num_docs = len(docs)
         self._request_idxs.extend([next_req_idx] * num_docs)
@@ -117,12 +136,13 @@ class BatchQueue:
         self._requests.append(request)
         queue = asyncio.Queue()
         self._requests_completed.append(queue)
-        if len(self._big_doc) >= self._preferred_batch_size:
-            self._flush_trigger.set()
+        if len(self._big_doc) - next_min_doc_idx >= self._preferred_batch_size:
+            self._batches.append(_Batch(min_doc_idx=next_min_doc_idx, max_doc_idx=len(self._big_doc) - 1, min_req_idx=next_min_req_idx,  max_req_idx=len(self._requests) - 1))
+            self._flush_tasks.append(asyncio.create_task(self._flush(batch_idx=len(self._batches) - 1)))
 
         return queue
 
-    async def _await_then_flush(self) -> None:
+    async def _flush(self, batch_idx) -> None:
         """Process all requests in the queue once flush_trigger event is set."""
 
         def _get_docs_groups_completed_request_indexes(
@@ -211,14 +231,13 @@ class BatchQueue:
 
             return num_assigned_docs
 
-        def batch(iterable_1, iterable_2, n=1):
+        def batch_gen(iterable_1, iterable_2, n=1):
             items = len(iterable_1)
             for ndx in range(0, items, n):
                 yield iterable_1[ndx: min(ndx + n, items)], iterable_2[
                                                             ndx: min(ndx + n, items)
                                                             ]
 
-        await self._flush_trigger.wait()
         # writes to shared data between tasks need to be mutually exclusive
         # At this moment, we have documents concatenated in self._big_doc corresponding to requests in
         # self._requests with its lengths stored in self._requests_len. For each requests, there is a queue to
@@ -226,6 +245,8 @@ class BatchQueue:
         # therefore noone can add requests to this list.
         len_big_docs = len(self._big_doc)
         len_requests = len(self._requests)
+        self._offset_processing = len_big_docs
+        batch = self._batches[batch_idx]
         try:
             if not docarray_v2:
                 non_assigned_to_response_docs: DocumentArray = DocumentArray.empty()
@@ -233,8 +254,10 @@ class BatchQueue:
                 non_assigned_to_response_docs = self._response_docarray_cls()
             non_assigned_to_response_request_idxs = []
             sum_from_previous_first_req_idx = 0
-            for docs_inner_batch, req_idxs in batch(
-                    self._big_doc, self._request_idxs, self._preferred_batch_size
+            big_doc_chunk = self._big_doc[batch.min_doc_idx: batch.max_doc_idx]
+            big_req_idxs = self._request_idxs[batch.min_doc_idx: batch.max_doc_idx]
+            for docs_inner_batch, req_idxs in batch_gen(
+                    big_doc_chunk, big_req_idxs, self._preferred_batch_size
             ):
                 involved_requests_min_indx = req_idxs[0]
                 involved_requests_max_indx = req_idxs[-1]
@@ -316,7 +339,7 @@ class BatchQueue:
         if not self._is_closed:
             # debug print amount of requests to be processed.
             self._flush_trigger.set()
-            if self._flush_task:
-                await self._flush_task
+            for task in self._flush_tasks:
+                await task
             self._cancel_timer_if_pending()
             self._is_closed = True
