@@ -136,7 +136,7 @@ Then, in your `config.yaml` file, you can enable dynamic batching on the `/bar` 
 jtype: MyExecutor
 py_modules:
     - my_executor.py
-dynamic_batching:
+uses_dynamic_batching:
   /bar:
     preferred_batch_size: 10
     timeout: 200
@@ -157,8 +157,8 @@ with Deployment(uses='config.yml') as dep:
 ## Parameters
 The following parameters allow you to configure the dynamic batching behavior on each Executor endpoint:
 * `preferred_batch_size`: Target number of Documents in a batch. The batcher collects requests until 
-`preferred_batch_size` is reached, or until `timeout` is reached. Therefore, the actual batch size could be smaller or 
-larger than `preferred_batch_size`.
+`preferred_batch_size` is reached, or until `timeout` is reached. The batcher then makes sure that the Executor
+only receives documents in groups of maximum the `preferred_batch_size` Therefore, the actual batch size could be smaller than `preferred_batch_size`.
 * `timeout`:  Maximum time in milliseconds to wait for a request to be assigned to a batch.
 If the oldest request in the queue reaches a waiting time of `timeout`, the batch is passed to the Executor, even 
 if it contains fewer than `preferred_batch_size` Documents. Default is 10,000ms (10 seconds).
