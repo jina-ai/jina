@@ -1,0 +1,39 @@
+jina.serve.runtimes.gateway package
+===================================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   jina.serve.runtimes.gateway.composite
+   jina.serve.runtimes.gateway.graph
+   jina.serve.runtimes.gateway.grpc
+   jina.serve.runtimes.gateway.http
+   jina.serve.runtimes.gateway.load_balancer
+   jina.serve.runtimes.gateway.websocket
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   jina.serve.runtimes.gateway.async_request_response_handling
+   jina.serve.runtimes.gateway.gateway
+   jina.serve.runtimes.gateway.health_model
+   jina.serve.runtimes.gateway.http_fastapi_app
+   jina.serve.runtimes.gateway.http_fastapi_app_docarrayv2
+   jina.serve.runtimes.gateway.models
+   jina.serve.runtimes.gateway.request_handling
+   jina.serve.runtimes.gateway.streamer
+   jina.serve.runtimes.gateway.websocket_fastapi_app
+
+Module contents
+---------------
+
+.. automodule:: jina.serve.runtimes.gateway
+   :members:
+   :undoc-members:
+   :show-inheritance:

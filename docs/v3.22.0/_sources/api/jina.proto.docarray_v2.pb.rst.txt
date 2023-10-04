@@ -1,0 +1,19 @@
+jina.proto.docarray\_v2.pb package
+==================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   jina.proto.docarray_v2.pb.jina_pb2
+   jina.proto.docarray_v2.pb.jina_pb2_grpc
+
+Module contents
+---------------
+
+.. automodule:: jina.proto.docarray_v2.pb
+   :members:
+   :undoc-members:
+   :show-inheritance:
