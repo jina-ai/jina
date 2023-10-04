@@ -99,9 +99,10 @@ class BatchQueue:
                 self._flush_task = asyncio.create_task(self._await_then_flush())
             if not self._timer_task:
                 self._start_timer()
-
             self._big_doc.extend(docs)
-            self._request_idxs.extend([len(self._requests)] * len(docs))
+            nex_req_idx = len(self._requests)
+            num_docs = len(docs)
+            self._request_idxs.extend([nex_req_idx] * num_docs)
             self._request_lens.append(len(docs))
             self._requests.append(request)
             queue = asyncio.Queue()
