@@ -33,8 +33,8 @@ class BatchQueue:
         self._is_closed = False
         self._output_array_type = output_array_type
         self.params = params
-        self._docarray_cls = request_docarray_cls
-        self._out_docarray_cls = response_docarray_cls
+        self._request_docarray_cls = request_docarray_cls
+        self._response_docarray_cls = response_docarray_cls
         self._preferred_batch_size: int = preferred_batch_size
         self._timeout: int = timeout
         self._reset()
@@ -55,7 +55,7 @@ class BatchQueue:
         if not docarray_v2:
             self._big_doc: DocumentArray = DocumentArray.empty()
         else:
-            self._big_doc = self._docarray_cls()
+            self._big_doc = self._request_docarray_cls()
 
         self._flush_trigger: Event = Event()
         self._flush_task: Optional[Task] = None
@@ -85,11 +85,14 @@ class BatchQueue:
         event.set()
 
     async def push(self, request: DataRequest) -> asyncio.Queue:
-        """Append request to the queue. Once the request has been processed, the returned task will complete.
+        """Append request to the the list of requests to be processed.
+
+        This method creates an asyncio Queue for that request and keeps track of it. It returns
+        this queue to the caller so that the caller can now when this request has been processed
 
         :param request: The request to append to the queue.
 
-        :return: The task that will be set once the request has been processed.
+        :return: The queue that will receive when the request is processed.
         """
         docs = request.docs
 
@@ -100,9 +103,9 @@ class BatchQueue:
             if not self._timer_task:
                 self._start_timer()
             self._big_doc.extend(docs)
-            nex_req_idx = len(self._requests)
+            next_req_idx = len(self._requests)
             num_docs = len(docs)
-            self._request_idxs.extend([nex_req_idx] * num_docs)
+            self._request_idxs.extend([next_req_idx] * num_docs)
             self._request_lens.append(len(docs))
             self._requests.append(request)
             queue = asyncio.Queue()
@@ -115,9 +118,15 @@ class BatchQueue:
     async def _await_then_flush(self) -> None:
         """Process all requests in the queue once flush_trigger event is set."""
 
-        def _get_buckets_completed_request_indexes(non_assigned_docs,
-                                                   non_assigned_docs_reqs_idx,
-                                                   sum_from_previous_mini_batch_in_first_req_idx):
+        def _get_docs_groups_completed_request_indexes(non_assigned_docs,
+                                                       non_assigned_docs_reqs_idx,
+                                                       sum_from_previous_mini_batch_in_first_req_idx):
+            """
+            This method groups all the `non_assigned_docs` into groups of docs according to the `req_idx` they belong to.
+            They are only distributed when we are sure that the request is full.
+
+            The method returns the a list of document groups and a list of request Idx to which each of these groups belong
+            """
             distributed_requests = []
             completed_req_idx = []
             num_distributed_docs = 0
@@ -125,7 +134,7 @@ class BatchQueue:
             min_involved_req_idx = non_assigned_docs_reqs_idx[0]
             req_idx = min_involved_req_idx
             for req_idx in non_assigned_docs_reqs_idx:
-                sum_from_previous_mini_batch_in_first_req_idx -= 1 # the previous leftovers are being allocated here
+                sum_from_previous_mini_batch_in_first_req_idx -= 1  # the previous leftovers are being allocated here
                 if req_idx > min_involved_req_idx:
                     request_bucket = non_assigned_docs[num_distributed_docs: num_distributed_docs + num_docs_in_req_idx]
                     num_distributed_docs += num_docs_in_req_idx
@@ -142,18 +151,27 @@ class BatchQueue:
                 distributed_requests.append(request_bucket)
             return distributed_requests, completed_req_idx
 
-        async def _assign_results(non_assigned_to_response_docs, non_assigned_to_response_request_idxs,
+        async def _assign_results(non_assigned_to_response_docs,
+                                  non_assigned_to_response_request_idxs,
                                   sum_from_previous_mini_batch_in_first_req_idx):
-            buckets, completed_req_idxs = _get_buckets_completed_request_indexes(non_assigned_to_response_docs,
+            """
+            This method aims to assign to the corresponding request objects the resulting documents from the mini batches.
+            They are assigned when we are sure that the Request is fully processed.
+
+            It also communicates to the corresponding queue that the request is full so that it can be returned
+
+            It returns the amount of assigned documents so that some documents can come back in the next iteration
+            """
+            docs_grouped, completed_req_idxs = _get_docs_groups_completed_request_indexes(non_assigned_to_response_docs,
                                                                                  non_assigned_to_response_request_idxs,
                                                                                  sum_from_previous_mini_batch_in_first_req_idx)
-            num_assigned_docs = sum(len(bucket) for bucket in buckets)
+            num_assigned_docs = sum(len(group) for group in docs_grouped)
 
-            for bucket, request_idx in zip(buckets, completed_req_idxs):
+            for docs_group, request_idx in zip(docs_grouped, completed_req_idxs):
                 request = self._requests[request_idx]
                 request_completed = self._requests_completed[request_idx]
                 request.data.set_docs_convert_arrays(
-                    bucket, ndarray_type=self._output_array_type
+                    docs_group, ndarray_type=self._output_array_type
                 )
                 await request_completed.put(None)
 
@@ -175,7 +193,7 @@ class BatchQueue:
                 if not docarray_v2:
                     non_assigned_to_response_docs: DocumentArray = DocumentArray.empty()
                 else:
-                    non_assigned_to_response_docs = self._out_docarray_cls()
+                    non_assigned_to_response_docs = self._response_docarray_cls()
                 non_assigned_to_response_request_idxs = []
                 sum_from_previous_first_req_idx = 0
                 for docs_inner_batch, req_idxs in batch(self._big_doc, self._request_idxs, self._preferred_batch_size):
