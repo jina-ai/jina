@@ -255,6 +255,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -16242,4 +16243,30 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```9897bbde```](https://github.com/jina-ai/jina/commit/9897bbde79c513aabdcaed2710b0c4144ab15837)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```f82ac59e```](https://github.com/jina-ai/jina/commit/f82ac59ecfe0748973e37afee6926eeeeba8a42f)] __-__ __version__: the next version will be 3.21.1 (*Jina Dev Bot*)
+
+<a name=release-note-3-22-0></a>
+## Release Note (`3.22.0`)
+
+> Release time: 2023-10-04 12:16:53
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Jina Dev Bot,  Johannes Messner,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```a12ce6c3```](https://github.com/jina-ai/jina/commit/a12ce6c3d7e75ffeebfa9bfc2d5096b4a9d166d8)] __-__ fix the logic to handle dynamic batching (#6066) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```c9fdb856```](https://github.com/jina-ai/jina/commit/c9fdb85638e2acca32e3a73293d7a0b12bd9a4c3)] __-__ fix dynamic batching documentation (#6068) (*Joan Fontanals*)
+ - [[```810d8d44```](https://github.com/jina-ai/jina/commit/810d8d446e820374552edb77e43c1eefc6099b2d)] __-__ fix line explaining dynamic batching in yaml (#6065) (*Johannes Messner*)
+
+### 🍹 Other Improvements
+
+ - [[```2e2bfeab```](https://github.com/jina-ai/jina/commit/2e2bfeab027408570f1cf15cdc5c881e0f1f6b03)] __-__ update version (#6070) (*Joan Fontanals*)
+ - [[```40536987```](https://github.com/jina-ai/jina/commit/4053698766414671dd1f300cc2eeaa4770cc026a)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```441fc73f```](https://github.com/jina-ai/jina/commit/441fc73fb28a1b3c7e538e768b94c80d42bd67c8)] __-__ __version__: the next version will be 3.21.2 (*Jina Dev Bot*)
 
