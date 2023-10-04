@@ -200,7 +200,8 @@ def get_fastapi_app(
             else:
                 docs = DocList[input_doc_list_model]([data])
                 if body.header is None:
-                    req_id = docs[0].id
+                    if hasattr(docs[0], 'id'):
+                        req_id = docs[0].id
 
             try:
                 async for resp in streamer.stream_docs(

@@ -29,14 +29,13 @@ def get_fastapi_app(
     :return: fastapi app
     """
     with ImportExtensions(required=True):
-        from fastapi import FastAPI, Response, HTTPException
         import pydantic
+        from fastapi import FastAPI, HTTPException, Request
         from fastapi.middleware.cors import CORSMiddleware
+        from pydantic import BaseModel, Field
+        from pydantic.config import BaseConfig, inherit_config
 
     import os
-
-    from pydantic import BaseModel, Field
-    from pydantic.config import BaseConfig, inherit_config
 
     from jina.proto import jina_pb2
     from jina.serve.runtimes.gateway.models import _to_camel_case
@@ -83,12 +82,25 @@ def get_fastapi_app(
             path=f'/{endpoint_path.strip("/")}',
             methods=['POST'],
             summary=f'Endpoint {endpoint_path}',
-            response_model=output_model,
+            response_model=Union[output_model, List[output_model]],
             response_class=DocArrayResponse,
         )
 
-        @app.api_route(**app_kwargs)
-        async def post(body: input_model, response: Response):
+        def is_valid_csv(content: str) -> bool:
+            import csv
+            from io import StringIO
+
+            try:
+                f = StringIO(content)
+                reader = csv.DictReader(f)
+                for _ in reader:
+                    pass
+
+                return True
+            except Exception:
+                return False
+
+        async def process(body) -> output_model:
             req = DataRequest()
             if body.header is not None:
                 req.header.request_id = body.header.request_id
@@ -96,13 +108,12 @@ def get_fastapi_app(
             if body.parameters is not None:
                 req.parameters = body.parameters
             req.header.exec_endpoint = endpoint_path
+            req.document_array_cls = DocList[input_doc_model]
 
             data = body.data
             if isinstance(data, list):
-                req.document_array_cls = DocList[input_doc_model]
                 req.data.docs = DocList[input_doc_list_model](data)
             else:
-                req.document_array_cls = DocList[input_doc_model]
                 req.data.docs = DocList[input_doc_list_model]([data])
                 if body.header is None:
                     req.header.request_id = req.docs[0].id
@@ -114,6 +125,48 @@ def get_fastapi_app(
                 raise HTTPException(status_code=499, detail=status.description)
             else:
                 return output_model(data=resp.docs, parameters=resp.parameters)
+
+        @app.api_route(**app_kwargs)
+        async def post(request: Request):
+            content_type = request.headers.get('content-type')
+            if content_type == 'application/json':
+                json_body = await request.json()
+                return await process(input_model(**json_body))
+
+            elif content_type in ('text/csv', 'application/csv'):
+                bytes_body = await request.body()
+                csv_body = bytes_body.decode('utf-8')
+                if not is_valid_csv(csv_body):
+                    raise HTTPException(
+                        status_code=400,
+                        detail='Invalid CSV input. Please check your input.',
+                    )
+
+                # NOTE: Sagemaker only supports csv files without header, so we enforce
+                # the header by getting the field names from the input model.
+                # This will also enforce the order of the fields in the csv file.
+                # This also means, all fields in the input model must be present in the
+                # csv file including the optional ones.
+                field_names = [f for f in input_doc_list_model.__fields__]
+                data = []
+                for line in csv_body.splitlines():
+                    fields = line.split(',')
+                    if len(fields) != len(field_names):
+                        raise HTTPException(
+                            status_code=400,
+                            detail=f'Invalid CSV format. Line {fields} doesn\'t match '
+                            f'the expected field order {field_names}.',
+                        )
+                    data.append(input_doc_list_model(**dict(zip(field_names, fields))))
+
+                return await process(input_model(data=data))
+
+            else:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f'Invalid content-type: {content_type}. '
+                    f'Please use either application/json or text/csv.',
+                )
 
     for endpoint, input_output_map in request_models_map.items():
         if endpoint != '_jina_dry_run_':

@@ -24,5 +24,7 @@ class SampleExecutor(Executor):
     def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[EmbeddingResponseModel]:
         ret = []
         for doc in docs:
-            ret.append(EmbeddingResponseModel(embeddings=np.random.random((1, 64))))
+            ret.append(
+                EmbeddingResponseModel(id=doc.id, embeddings=np.random.random((1, 64)))
+            )
         return DocList[EmbeddingResponseModel](ret)
