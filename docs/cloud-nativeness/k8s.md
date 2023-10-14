@@ -43,7 +43,7 @@ You, the user, know your use case and requirements the best.
 This means that, while Jina generates configurations for you that run out of the box, as a professional user you should always see them as just a starting point to get you off the ground.
 
 ```{hint}
-The export funciton {meth}`~jina.Deployment.to_kubernetes_yaml` and {meth}`~jina.Flow.to_kubernetes_yaml` are helper functions to get your stared off the ground. **There are meant to be updated and adapted to every use case**
+The export function {meth}`~jina.Deployment.to_kubernetes_yaml` and {meth}`~jina.Flow.to_kubernetes_yaml` are helper functions to get your stared off the ground. **There are meant to be updated and adapted to every use case**
 ```
 ````{admonition} Matching Jina versions
 :class: caution
@@ -155,7 +155,7 @@ To expose your Gateway replicas outside Kubernetes, you can add a load balancer 
 
 ````{admonition} Hint
 :class: hint
-You can use a custom Docker image for the Gateway deployment by setting the envrironment variable `JINA_GATEWAY_IMAGE` to the desired image before generating the configuration.
+You can use a custom Docker image for the Gateway deployment by setting the environment variable `JINA_GATEWAY_IMAGE` to the desired image before generating the configuration.
 ````
 
 ## See also

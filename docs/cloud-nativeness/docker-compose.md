@@ -98,7 +98,7 @@ flow.to_docker_compose_yaml('docker-compose.yml')
 
 ````{admonition} Hint
 :class: hint
-You can use a custom jina Docker image for the Gateway service by setting the envrironment variable `JINA_GATEWAY_IMAGE` to the desired image before generating the configuration.
+You can use a custom jina Docker image for the Gateway service by setting the environment variable `JINA_GATEWAY_IMAGE` to the desired image before generating the configuration.
 ````
 
 let's take a look at the generated compose file:
