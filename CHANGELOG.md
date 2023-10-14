@@ -4149,7 +4149,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 📗 Documentation
 
- - [[```ee947a80```](https://github.com/jina-ai/jina/commit/ee947a8056cb972c953b6e72c52b0a02ba38595b)] __-__ add explaination to all the types (*Han Xiao*)
+ - [[```ee947a80```](https://github.com/jina-ai/jina/commit/ee947a8056cb972c953b6e72c52b0a02ba38595b)] __-__ add explanation to all the types (*Han Xiao*)
  - [[```2eade014```](https://github.com/jina-ai/jina/commit/2eade014a509c9be94892cb7000fdca768218c5a)] __-__ add examples to querylangdrivers docstrings (*Joan Fontanals Martinez*)
  - [[```ac82cff6```](https://github.com/jina-ai/jina/commit/ac82cff667cca7b442b2cb8138281d316ec1a683)] __-__ improve documentation of query lang drivers (*Joan Fontanals Martinez*)
 
@@ -4526,7 +4526,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```066b2459```](https://github.com/jina-ai/jina/commit/066b2459518c6110ff99797c65252c14a54786f9)] __-__ rename recur_range and recur_on (*Han Xiao*)
  - [[```36a4c486```](https://github.com/jina-ai/jina/commit/36a4c486ef6c847dde0bab4de6c9842609165220)] __-__ remove unused level field from yaml (*Han Xiao*)
  - [[```205f61fa```](https://github.com/jina-ai/jina/commit/205f61fa3f4ca16a31ab15c7d25956ade79212e9)] __-__ set ranker traverse_on to matches (*Han Xiao*)
- - [[```85643efd```](https://github.com/jina-ai/jina/commit/85643efde55203bb17830f0ae749ede2367a4201)] __-__ add adjacency to doc pb definiton (*Han Xiao*)
+ - [[```85643efd```](https://github.com/jina-ai/jina/commit/85643efde55203bb17830f0ae749ede2367a4201)] __-__ add adjacency to doc pb definition (*Han Xiao*)
  - [[```18daaa1d```](https://github.com/jina-ai/jina/commit/18daaa1d0a9ec46b3bca2fc7d95e238abf16eb42)] __-__ level_depth is now granularity (*Han Xiao*)
  - [[```0ee4ff9d```](https://github.com/jina-ai/jina/commit/0ee4ff9da802fcabf2482756530571aeec0f2b7d)] __-__ rename depth_range to recurring_range (*Han Xiao*)
  - [[```41d7d904```](https://github.com/jina-ai/jina/commit/41d7d9043f19b5753ab8bce84122e7303af78bb4)] __-__ remove recursivity of matches (*Joan Fontanals Martinez*)
@@ -4683,7 +4683,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 🆕 New Features
 
- - [[```c4534033```](https://github.com/jina-ai/jina/commit/c4534033f830b2be34e102113bdea97f4411268e)] __-__ __indexer__: add shelfpbindexer for data persistance (*Han Xiao*)
+ - [[```c4534033```](https://github.com/jina-ai/jina/commit/c4534033f830b2be34e102113bdea97f4411268e)] __-__ __indexer__: add shelfpbindexer for data persistence (*Han Xiao*)
  - [[```f611c1b9```](https://github.com/jina-ai/jina/commit/f611c1b91e39eafe7870673e91f04828965fc832)] __-__ added Matches2DocRankDriver (*Maximilian Werk*)
  - [[```ae74d32a```](https://github.com/jina-ai/jina/commit/ae74d32a6f7ccace09c9758d5a3a49cd848dcbb0)] __-__ add adjacency range (*Joan Fontanals Martinez*)
  - [[```40a90434```](https://github.com/jina-ai/jina/commit/40a9043485009763537f4f15e896382103b2762a)] __-__ adding jina hub new to contributing readme (*rutujasurve94*)
@@ -4795,7 +4795,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```b0a21a46```](https://github.com/jina-ai/jina/commit/b0a21a462cb5db4e83c5e786eef313909b3f20b8)] __-__ fixed host_info depending on args (*Deepankar Mahapatro*)
  - [[```1570d487```](https://github.com/jina-ai/jina/commit/1570d487437a1ccb0828e13844b268825b9140f7)] __-__ updated logic to insert/replace doc in mongo (*Deepankar Mahapatro*)
  - [[```f19c87ea```](https://github.com/jina-ai/jina/commit/f19c87ea9488fc75d1ef6a4cf846c9867143992a)] __-__ adding host-info arg to hub build cli (*Deepankar Mahapatro*)
- - [[```6b4881f5```](https://github.com/jina-ai/jina/commit/6b4881f5cd3713501506ab9c98826cd482c4c1b4)] __-__ add additonal params to build summary (*Deepankar Mahapatro*)
+ - [[```6b4881f5```](https://github.com/jina-ai/jina/commit/6b4881f5cd3713501506ab9c98826cd482c4c1b4)] __-__ add additional params to build summary (*Deepankar Mahapatro*)
  - [[```1a45ea5e```](https://github.com/jina-ai/jina/commit/1a45ea5e0d190bc97bcc40f12dbd020ff3dcd65d)] __-__ set higher priority integrated in test yaml driver (*Joan Fontanals Martinez*)
  - [[```357c8d69```](https://github.com/jina-ai/jina/commit/357c8d693889ffdf1c239f7c1ee9d666e5993752)] __-__ set priority and driver name in queryset for top_k (*Joan Fontanals Martinez*)
  - [[```6f78ba78```](https://github.com/jina-ai/jina/commit/6f78ba7822ec582b9ed78c1aaf4539749e990147)] __-__ set request top_k, needed to be read by jinabox (*Joan Fontanals Martinez*)
@@ -4935,7 +4935,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```5798b385```](https://github.com/jina-ai/jina/commit/5798b3855124874e76aec1b63af22e76c4e1c734)] __-__ fixed host_info depending on args (*Deepankar Mahapatro*)
  - [[```57b970d1```](https://github.com/jina-ai/jina/commit/57b970d1320abae30774c3b059260bf822af7d76)] __-__ updated logic to insert/replace doc in mongo (*Deepankar Mahapatro*)
  - [[```84657bef```](https://github.com/jina-ai/jina/commit/84657bef49a2a5f6225c98a991bea41820ad196e)] __-__ adding host-info arg to hub build cli (*Deepankar Mahapatro*)
- - [[```3220696b```](https://github.com/jina-ai/jina/commit/3220696b9769bfd31fe97430c7f59100b7899f92)] __-__ add additonal params to build summary (*Deepankar Mahapatro*)
+ - [[```3220696b```](https://github.com/jina-ai/jina/commit/3220696b9769bfd31fe97430c7f59100b7899f92)] __-__ add additional params to build summary (*Deepankar Mahapatro*)
  - [[```9c8066fe```](https://github.com/jina-ai/jina/commit/9c8066fea1c05e26bd09e6cae9811e4d0aa29ca9)] __-__ __hubio__: fix tempfile naming (*Han Xiao*)
  - [[```c60bdd8d```](https://github.com/jina-ai/jina/commit/c60bdd8dcb718a287ae303814ff193073d2d576e)] __-__ keep text, blob and buffer after vectorsearch (*maximilianwerk*)
  - [[```eeb533ee```](https://github.com/jina-ai/jina/commit/eeb533eee6802f3203e58f9cf7225cb6d675abc1)] __-__ moving hub new template readme to cookiecutter (*rutujasurve94*)
@@ -5200,13 +5200,13 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 
 🙇 We'd like to thank all contributors for this new release! In particular,
- Han Xiao,  Jina Dev Bot,  Joan Fontanals,  Joan Fontanals Martinez,  Maximilian Werk,  Deepankar Mahapatro,  jancijen,  theUnkownName,  RenrakuRunrat,  Ján Jendrušák,  bwanglzu,  Susana Guzman,  CatStark,  Alex McKenzie,  Rutuja Surve,  🙇
+ Han Xiao,  Jina Dev Bot,  Joan Fontanals,  Joan Fontanals Martinez,  Maximilian Werk,  Deepankar Mahapatro,  jancijen,  theUnknownName,  RenrakuRunrat,  Ján Jendrušák,  bwanglzu,  Susana Guzman,  CatStark,  Alex McKenzie,  Rutuja Surve,  🙇
 
 
 ### 🆕 New Features
 
  - [[```a9c28235```](https://github.com/jina-ai/jina/commit/a9c282358e94ada2b697ee9d1b95f5af66a621d1)] __-__ try to see if syslog available (*Joan Fontanals Martinez*)
- - [[```c3bf1e4d```](https://github.com/jina-ai/jina/commit/c3bf1e4d8f675cdb72e4a122d2c8a23e5bfdbb2b)] __-__ render inline within iphython notebook (*theUnkownName*)
+ - [[```c3bf1e4d```](https://github.com/jina-ai/jina/commit/c3bf1e4d8f675cdb72e4a122d2c8a23e5bfdbb2b)] __-__ render inline within iphython notebook (*theUnknownName*)
  - [[```c81cf86f```](https://github.com/jina-ai/jina/commit/c81cf86fba3b47173e43c8155d33939252789c9b)] __-__ pass logger params up to executor (*Joan Fontanals Martinez*)
  - [[```6c56495f```](https://github.com/jina-ai/jina/commit/6c56495f3b7a832eec439a5a637fbcf3612e3d69)] __-__ jina hub push via hubapi (*Deepankar Mahapatro*)
  - [[```2217a73b```](https://github.com/jina-ai/jina/commit/2217a73b26f0335523ce5be7d71aef2a50b538dc)] __-__ jina hub login via github oauth (*Deepankar Mahapatro*)
@@ -5230,9 +5230,9 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```f511fc6b```](https://github.com/jina-ai/jina/commit/f511fc6b9f22ea922e2199098904de62b7a80c4f)] __-__ logging changes (*Deepankar Mahapatro*)
  - [[```3418301b```](https://github.com/jina-ai/jina/commit/3418301bb9dff22448a51fa61edeac8d8d78d244)] __-__ fixed the int float conversion collision between hash and idy (#1034) (*Maximilian Werk*)
- - [[```8c80d0b9```](https://github.com/jina-ai/jina/commit/8c80d0b93451fc251755fa05f1e693ac4cad3688)] __-__ display inline (*theUnkownName*)
+ - [[```8c80d0b9```](https://github.com/jina-ai/jina/commit/8c80d0b93451fc251755fa05f1e693ac4cad3688)] __-__ display inline (*theUnknownName*)
  - [[```5c31b98a```](https://github.com/jina-ai/jina/commit/5c31b98a550eb2eff8d7481fe697e2b6a53139b1)] __-__ login error handling and code cleanup (*Deepankar Mahapatro*)
- - [[```9b4a5c02```](https://github.com/jina-ai/jina/commit/9b4a5c02dcd022cbfe3ec89b405900da20f1a885)] __-__ update docstring and remove return url (*theUnkownName*)
+ - [[```9b4a5c02```](https://github.com/jina-ai/jina/commit/9b4a5c02dcd022cbfe3ec89b405900da20f1a885)] __-__ update docstring and remove return url (*theUnknownName*)
  - [[```b1fbfda1```](https://github.com/jina-ai/jina/commit/b1fbfda1067f57f98aff66955faad7efacce1540)] __-__ yaml config in fluentd logger (#1026) (*Han Xiao*)
  - [[```acbfceb8```](https://github.com/jina-ai/jina/commit/acbfceb8b174945518b8e318b00b7a830a4ccdb6)] __-__ comply with fluent pattern (*Susana Guzman*)
  - [[```43b7eb10```](https://github.com/jina-ai/jina/commit/43b7eb10ec87700c187557849944ba2174ccc66e)] __-__ no special default for filter ql (*Maximilian Werk*)
@@ -5240,14 +5240,14 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```01f163b6```](https://github.com/jina-ai/jina/commit/01f163b6e5e2b0ec791b1ad5b140ddaeb7d7e863)] __-__ remove double underscore (*Susana Guzman*)
  - [[```6bb495b1```](https://github.com/jina-ai/jina/commit/6bb495b1f23aef43f409aea532d8b95c34afe644)] __-__ fix problem with file location (*Susana Guzman*)
  - [[```b73ab6bf```](https://github.com/jina-ai/jina/commit/b73ab6bfd1f13cbdb83de78c505ccf865cf5b0c0)] __-__ no early file closing (#1024) (*Maximilian Werk*)
- - [[```83c021fa```](https://github.com/jina-ai/jina/commit/83c021fa49bb6fa096022355c40a93107be51f60)] __-__ remove unnecesary import (*Susana Guzman*)
+ - [[```83c021fa```](https://github.com/jina-ai/jina/commit/83c021fa49bb6fa096022355c40a93107be51f60)] __-__ remove unnecessary import (*Susana Guzman*)
  - [[```2d1941a9```](https://github.com/jina-ai/jina/commit/2d1941a97f05a8ac647bdd307f4814b938bb4c76)] __-__ add almost equal test (*Susana Guzman*)
  - [[```9de7222b```](https://github.com/jina-ai/jina/commit/9de7222ba09a7c9e61647b70e17f92551c0969ab)] __-__ improve for loop (*Susana Guzman*)
  - [[```94524ba9```](https://github.com/jina-ai/jina/commit/94524ba985b717fa721e84934ac1abf4314c2088)] __-__ remove extra _pod_needs (*Susana Guzman*)
  - [[```f0e7c5d7```](https://github.com/jina-ai/jina/commit/f0e7c5d793360eb4ee34d8b43e92f7cba90f0137)] __-__ remove fluentd start (*Joan Fontanals Martinez*)
  - [[```5ff2a993```](https://github.com/jina-ai/jina/commit/5ff2a993c1488b50b24e03445a94499f2bdb5936)] __-__ remove granularity from request (*Maximilian Werk*)
  - [[```6918f83c```](https://github.com/jina-ai/jina/commit/6918f83c181fb4c127d666e362990f170f695100)] __-__ remove images (*Susana Guzman*)
- - [[```e4c70dfc```](https://github.com/jina-ai/jina/commit/e4c70dfce9dda383b7b75d9f0d0d7f0530a4cccb)] __-__ unnecesary file (*CatStark*)
+ - [[```e4c70dfc```](https://github.com/jina-ai/jina/commit/e4c70dfce9dda383b7b75d9f0d0d7f0530a4cccb)] __-__ unnecessary file (*CatStark*)
  - [[```1f7bc019```](https://github.com/jina-ai/jina/commit/1f7bc019cc83efdb79d44cf36ba7a3a66254727f)] __-__ remove printline (*Susana Guzman*)
  - [[```82289b60```](https://github.com/jina-ai/jina/commit/82289b603fec0e6c39b02909b6725dc155b9d667)] __-__ add img tests (*Susana Guzman*)
  - [[```b5bab142```](https://github.com/jina-ai/jina/commit/b5bab142476c30c1cb139195361350d1620b4286)] __-__ remove only created img, not the test one (*Susana Guzman*)
@@ -5319,7 +5319,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```bbe38754```](https://github.com/jina-ai/jina/commit/bbe38754fbbf3b945ea60af06bf04c2b82f6d9b9)] __-__ hotfix patch traversing (*Han Xiao*)
  - [[```732da535```](https://github.com/jina-ai/jina/commit/732da53578da856fb1ce9f61dc1470764a875a96)] __-__ update contributors (*Jina Dev Bot*)
- - [[```a739097c```](https://github.com/jina-ai/jina/commit/a739097c59458541efefb702146b6223e63c072f)] __-__ adding new clinet id for oauth (*Deepankar Mahapatro*)
+ - [[```a739097c```](https://github.com/jina-ai/jina/commit/a739097c59458541efefb702146b6223e63c072f)] __-__ adding new client id for oauth (*Deepankar Mahapatro*)
  - [[```aed76e19```](https://github.com/jina-ai/jina/commit/aed76e19a66327a536dbb58a21ab0716e9c954b1)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```f36aba8b```](https://github.com/jina-ai/jina/commit/f36aba8bca9d26f418b78b9fcaed3039233c0401)] __-__ change style (*Susana Guzman*)
  - [[```d95e4e72```](https://github.com/jina-ai/jina/commit/d95e4e72e7c8acb0278ea049aa56905ba97271d3)] __-__ __version__: the next version will be 0.6.4 (*Jina Dev Bot*)
@@ -5721,7 +5721,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 🐞 Bug fixes
 
- - [[```cb6b1a86```](https://github.com/jina-ai/jina/commit/cb6b1a86892a92aa1cd7b2c06ed4d8b921f5a227)] __-__ pod argument overriden by flow (#1189) (*Maximilian Werk*)
+ - [[```cb6b1a86```](https://github.com/jina-ai/jina/commit/cb6b1a86892a92aa1cd7b2c06ed4d8b921f5a227)] __-__ pod argument overridden by flow (#1189) (*Maximilian Werk*)
  - [[```553e9871```](https://github.com/jina-ai/jina/commit/553e9871f344af07c9f17a38c9eced04805cafe6)] __-__ __docker__: include submodule when building devel images (#1184) (*Han Xiao*)
 
 ### 🚧 Code Refactoring
@@ -7235,7 +7235,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🍹 Other Improvements
 
  - [[```3a4a9d2b```](https://github.com/jina-ai/jina/commit/3a4a9d2b7c26a8372d2b61119485dd879c4114e5)] __-__ hotfix release (*Han Xiao*)
- - [[```90b779d5```](https://github.com/jina-ai/jina/commit/90b779d5408aab3b83ed4704bf00497302a8a3b4)] __-__ crud intergration tests: docidcache-centric (#1613) (*cristian*)
+ - [[```90b779d5```](https://github.com/jina-ai/jina/commit/90b779d5408aab3b83ed4704bf00497302a8a3b4)] __-__ crud integration tests: docidcache-centric (#1613) (*cristian*)
  - [[```c275cc88```](https://github.com/jina-ai/jina/commit/c275cc88b68bf43a2bc8f4bf0154d9c323fd874a)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```f00cd02c```](https://github.com/jina-ai/jina/commit/f00cd02c18b0f53f52f2011885ffa38683357b38)] __-__ update cd yml (*Han Xiao*)
  - [[```39d96983```](https://github.com/jina-ai/jina/commit/39d96983d4c5c174c963de781e38921d15f7cde3)] __-__ update docker image desc (*Han Xiao*)
@@ -7549,7 +7549,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 📗 Documentation
 
  - [[```a0749ece```](https://github.com/jina-ai/jina/commit/a0749ece833cf678409b56e0adf6b1ce4164a724)] __-__ __101__: add support to the Spanish language for 101 (#1794) (*Michelle Díaz*)
- - [[```7b625a16```](https://github.com/jina-ai/jina/commit/7b625a1674879270308fe962a9e6b9650c8ee2d1)] __-__ added docstring for paramters (#1789) (*Maximilian Werk*)
+ - [[```7b625a16```](https://github.com/jina-ai/jina/commit/7b625a1674879270308fe962a9e6b9650c8ee2d1)] __-__ added docstring for parameters (#1789) (*Maximilian Werk*)
 
 ### 🏁 Unit Test and CICD
 
@@ -7575,7 +7575,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 🆕 New Features
 
- - [[```f1930d98```](https://github.com/jina-ai/jina/commit/f1930d98baa2ccd896863b9db02a5869d0ae319a)] __-__ check yaml definition matches instanciated class in LegacyParser (#1817) (*David Buchaca Prats*)
+ - [[```f1930d98```](https://github.com/jina-ai/jina/commit/f1930d98baa2ccd896863b9db02a5869d0ae319a)] __-__ check yaml definition matches instantiated class in LegacyParser (#1817) (*David Buchaca Prats*)
  - [[```0b83b12b```](https://github.com/jina-ai/jina/commit/0b83b12b9b6a758eb9b66bdb8ce24aaeda7dc8c0)] __-__ __async__: AsyncClient &amp; AsyncFlow&#39;s return is async generator (#1816) (*Han Xiao*)
 
 ### 🐞 Bug fixes
@@ -8657,7 +8657,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 🚧 Code Refactoring
 
- - [[```1fa761f8```](https://github.com/jina-ai/jina/commit/1fa761f8279063112a7d7ba14a4e9dfce112a808)] __-__ __proto__: devices now explict rename as targets (#2280) (*Han Xiao*)
+ - [[```1fa761f8```](https://github.com/jina-ai/jina/commit/1fa761f8279063112a7d7ba14a4e9dfce112a808)] __-__ __proto__: devices now explicit rename as targets (#2280) (*Han Xiao*)
 
 ### 🍹 Other Improvements
 
@@ -8799,7 +8799,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 🐞 Bug fixes
 
- - [[```03e72b16```](https://github.com/jina-ai/jina/commit/03e72b163e60ab3dc320cf0f28f30cd3d7cdc06d)] __-__ __docs__: fixed incorrect infomation (#2314) (*Fionn Delahunty*)
+ - [[```03e72b16```](https://github.com/jina-ai/jina/commit/03e72b163e60ab3dc320cf0f28f30cd3d7cdc06d)] __-__ __docs__: fixed incorrect information (#2314) (*Fionn Delahunty*)
 
 ### 🚧 Code Refactoring
 
@@ -9309,7 +9309,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```6ad2e005```](https://github.com/***/jina/commit/6ad2e005a7cc32079d9f14df3b674276954624f8)] __-__ added a test to showcase how shards and parallel are synonyms (#2544) (*Maximilian Werk*)
  - [[```3b323667```](https://github.com/***/jina/commit/3b3236675b50e63736e8b92d15a193649ff85c54)] __-__ added a test for docmatrix in the tail pea (#2537) (*Maximilian Werk*)
  - [[```f4553912```](https://github.com/***/jina/commit/f455391208c00dc255fbece50d67461e48e2f411)] __-__ added pymodules import test back (#2536) (*Maximilian Werk*)
- - [[```7d6c8ff0```](https://github.com/***/jina/commit/7d6c8ff05a638c7638af32f3683e1741c0568450)] __-__ make high order matches useful agian (#2529) (*Maximilian Werk*)
+ - [[```7d6c8ff0```](https://github.com/***/jina/commit/7d6c8ff05a638c7638af32f3683e1741c0568450)] __-__ make high order matches useful again (#2529) (*Maximilian Werk*)
  - [[```9c48382d```](https://github.com/***/jina/commit/9c48382de96a3d6c22706b43ba92e6a804146e29)] __-__ added test for startup exception (#2532) (*Maximilian Werk*)
  - [[```25b5fa58```](https://github.com/***/jina/commit/25b5fa58d97dee6b8d6059d8de75060edceabdd9)] __-__ docarray filter (#2535) (*cristian*)
  - [[```1f60790f```](https://github.com/***/jina/commit/1f60790fa743a3dc87ca823693f98236b360d151)] __-__ add test for docs with sparse embedding pydantic (#2534) (*Joan Fontanals*)
@@ -9404,7 +9404,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```6ad2e005```](https://github.com/jina-ai/jina/commit/6ad2e005a7cc32079d9f14df3b674276954624f8)] __-__ added a test to showcase how shards and parallel are synonyms (#2544) (*Maximilian Werk*)
  - [[```3b323667```](https://github.com/jina-ai/jina/commit/3b3236675b50e63736e8b92d15a193649ff85c54)] __-__ added a test for docmatrix in the tail pea (#2537) (*Maximilian Werk*)
  - [[```f4553912```](https://github.com/jina-ai/jina/commit/f455391208c00dc255fbece50d67461e48e2f411)] __-__ added pymodules import test back (#2536) (*Maximilian Werk*)
- - [[```7d6c8ff0```](https://github.com/jina-ai/jina/commit/7d6c8ff05a638c7638af32f3683e1741c0568450)] __-__ make high order matches useful agian (#2529) (*Maximilian Werk*)
+ - [[```7d6c8ff0```](https://github.com/jina-ai/jina/commit/7d6c8ff05a638c7638af32f3683e1741c0568450)] __-__ make high order matches useful again (#2529) (*Maximilian Werk*)
  - [[```9c48382d```](https://github.com/jina-ai/jina/commit/9c48382de96a3d6c22706b43ba92e6a804146e29)] __-__ added test for startup exception (#2532) (*Maximilian Werk*)
  - [[```25b5fa58```](https://github.com/jina-ai/jina/commit/25b5fa58d97dee6b8d6059d8de75060edceabdd9)] __-__ docarray filter (#2535) (*cristian*)
  - [[```1f60790f```](https://github.com/jina-ai/jina/commit/1f60790fa743a3dc87ca823693f98236b360d151)] __-__ add test for docs with sparse embedding pydantic (#2534) (*Joan Fontanals*)
@@ -9827,7 +9827,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```4f62f637```](https://github.com/jina-ai/jina/commit/4f62f63703f21b512e6d26b43f0a8183f9e4ec15)] __-__ make hubble executor work in container (#2875) (*felix-wang*)
  - [[```f43ac776```](https://github.com/jina-ai/jina/commit/f43ac776c8ebd111b85bdf8826bef731866d22b0)] __-__ __core__: add complex test for routing list (#2760) (*Tobias Jacobowitz*)
- - [[```7cbf37ef```](https://github.com/jina-ai/jina/commit/7cbf37ef8b2d2efd5f85f58a67a5b0de8570cbdd)] __-__ __core__: fix request/response missmatch while prefetching (#2843) (*Tobias Jacobowitz*)
+ - [[```7cbf37ef```](https://github.com/jina-ai/jina/commit/7cbf37ef8b2d2efd5f85f58a67a5b0de8570cbdd)] __-__ __core__: fix request/response mismatch while prefetching (#2843) (*Tobias Jacobowitz*)
  - [[```0fd44bfb```](https://github.com/jina-ai/jina/commit/0fd44bfbd064cbe985396ee77688346fc07976ce)] __-__ __logger__: change debug level color to purple (*Han Xiao*)
  - [[```ed90b94b```](https://github.com/jina-ai/jina/commit/ed90b94b727ea70ea9fc07eaff61face46e34b79)] __-__ __logger__: change debug level color to purple (#2867) (*Han Xiao*)
  - [[```95d78fae```](https://github.com/jina-ai/jina/commit/95d78fae9f4db0a0df64171f132d80b73ed76922)] __-__ fix the clustered UI when displaying alias (#2860) (*Nan Wang*)
@@ -9987,7 +9987,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```a7dd9c82```](https://github.com/jina-ai/jina/commit/a7dd9c82151ae1e405901e51c2897783603dd710)] __-__ __ci__: head commit ahead base commit (#2968) (*Wang Bo*)
  - [[```1c6958ba```](https://github.com/jina-ai/jina/commit/1c6958baf53c9dc228b951e7e25be17ffdbd32e9)] __-__ fix pydantic typo example (#2965) (*Han Xiao*)
- - [[```bab63236```](https://github.com/jina-ai/jina/commit/bab6323648bfbc5256331cd10eb162edc72f7078)] __-__ __hubble__: logging error message refering to jinahub uri (#2945) (*felix-wang*)
+ - [[```bab63236```](https://github.com/jina-ai/jina/commit/bab6323648bfbc5256331cd10eb162edc72f7078)] __-__ __hubble__: logging error message referring to jinahub uri (#2945) (*felix-wang*)
  - [[```e0893758```](https://github.com/jina-ai/jina/commit/e08937585d80b22d0b6a40e98080668bfc8db643)] __-__ fix early pea shutdown logic (#2947) (*Joan Fontanals*)
  - [[```41a90a8d```](https://github.com/jina-ai/jina/commit/41a90a8d8ec63d084fe804235219ed1e9fa824d0)] __-__ add lz4, uvloop, filelock to daemon (#2946) (*Kelton Zhang*)
  - [[```d28b279b```](https://github.com/jina-ai/jina/commit/d28b279be1c4ba32cd1d6287cfc4aec53c0eb7e5)] __-__ __core__: dont respond to cancel and idle (#2940) (*Tobias Jacobowitz*)
@@ -10218,7 +10218,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```f40d7964```](https://github.com/jina-ai/jina/commit/f40d7964902b8776571d252f53fbec8aa5681fe0)] __-__ match with same documents (#3040) (*Wang Bo*)
  - [[```8f01fcec```](https://github.com/jina-ai/jina/commit/8f01fcec00d7d5be04360940e3661fdff3aae93b)] __-__ __hub__: fix typo base image name (#3039) (*Zhaofeng Miao*)
  - [[```635435b7```](https://github.com/jina-ai/jina/commit/635435b73f741b3d90ff6bc9cdfa7ab49ee54dde)] __-__ add Dockerfile to resources (*Han Xiao*)
- - [[```6564e91e```](https://github.com/jina-ai/jina/commit/6564e91e7773bde6f152fca24383a4ab84810a6c)] __-__ fashion fixh writting as black and white image (#3032) (*David Buchaca Prats*)
+ - [[```6564e91e```](https://github.com/jina-ai/jina/commit/6564e91e7773bde6f152fca24383a4ab84810a6c)] __-__ fashion fixh writing as black and white image (#3032) (*David Buchaca Prats*)
 
 ### 🚧 Code Refactoring
 
@@ -10405,7 +10405,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```53e4607c```](https://github.com/jina-ai/jina/commit/53e4607c0cabbe5761333ed26c84c0a1b47dc98a)] __-__ pass native in container runtime docker (#3200) (*Joan Fontanals*)
  - [[```2939170b```](https://github.com/jina-ai/jina/commit/2939170b71fbc765b86dba8b3080c6ac51a011a6)] __-__ blobs property (#3198) (*Joan Fontanals*)
- - [[```befb7cd3```](https://github.com/jina-ai/jina/commit/befb7cd3574251588579e1a6f2ae017c38802eca)] __-__ unknown args loggin (#3172) (*Maximilian Werk*)
+ - [[```befb7cd3```](https://github.com/jina-ai/jina/commit/befb7cd3574251588579e1a6f2ae017c38802eca)] __-__ unknown args login (#3172) (*Maximilian Werk*)
  - [[```b32a0a56```](https://github.com/jina-ai/jina/commit/b32a0a56b0642336a8801e030451f76c4e85b0aa)] __-__ changed pull_request_target to pull_request (#3189) (*Maksudur Rahman Maateen*)
  - [[```21a62afc```](https://github.com/jina-ai/jina/commit/21a62afc78cd66cb9e04a4780159cc119734c754)] __-__ add setter to embeddings (#3190) (*David Buchaca Prats*)
  - [[```7a700e5e```](https://github.com/jina-ai/jina/commit/7a700e5e4a0ff406a361f454d1bb0b9d1241cde2)] __-__ add split prepare for trainer (#3167) (*Wang Bo*)
@@ -10660,7 +10660,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 🆕 New Features
 
- - [[```8a47de91```](https://github.com/jina-ai/jina/commit/8a47de916201b60754cb65b4344b611562885843)] __-__ __flow__: add install_requirments args when using jinahub (#3324) (*felix-wang*)
+ - [[```8a47de91```](https://github.com/jina-ai/jina/commit/8a47de916201b60754cb65b4344b611562885843)] __-__ __flow__: add install_requirements args when using jinahub (#3324) (*felix-wang*)
  - [[```b33e6693```](https://github.com/jina-ai/jina/commit/b33e669306606730427359a2b2fc35a29b3591a4)] __-__ __match__: add exclude_self to match func (#3352) (*Han Xiao*)
  - [[```cbe578dc```](https://github.com/jina-ai/jina/commit/cbe578dc3a1560704580be848b55de3f6703c663)] __-__ k8s parallel for shards (#3350) (*Florian Hönicke*)
  - [[```7fe4c3e2```](https://github.com/jina-ai/jina/commit/7fe4c3e25b243b21a0bc5864a6762892e78586e3)] __-__ __k8s__: client access from within the cluster (#3344) (*Tobias Jacobowitz*)
@@ -10909,7 +10909,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```eacff19e```](https://github.com/jina-ai/jina/commit/eacff19e4b6beb7485f11989ca4b7072c113e6a9)] __-__ __docs__: rearrange experimental section (*Han Xiao*)
  - [[```f28e156d```](https://github.com/jina-ai/jina/commit/f28e156d54f3cffe6d344d64f11d0ba82dfbceee)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```c97d99f4```](https://github.com/jina-ai/jina/commit/c97d99f4cd7c61b97036cfb5ad7f372a68e08449)] __-__ __docs__: update docs pypi deps (*Han Xiao*)
- - [[```907cf8e1```](https://github.com/jina-ai/jina/commit/907cf8e1cf9c3a6dd3d5203d1fc905d48ad730c7)] __-__ __docs__: add manifest yaml explaination (*Han Xiao*)
+ - [[```907cf8e1```](https://github.com/jina-ai/jina/commit/907cf8e1cf9c3a6dd3d5203d1fc905d48ad730c7)] __-__ __docs__: add manifest yaml explanation (*Han Xiao*)
  - [[```51b5cd41```](https://github.com/jina-ai/jina/commit/51b5cd41ed437aeb5fbc853cb8155eafb93b23dc)] __-__ __docs__: fix section name (*Han Xiao*)
  - [[```89eba6ae```](https://github.com/jina-ai/jina/commit/89eba6ae6dc7277f0d5143540dc4fa9ffc1be2a8)] __-__ __version__: the next version will be 2.1.3 (*Jina Dev Bot*)
 
@@ -11199,7 +11199,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 🐞 Bug fixes
 
- - [[```c9a86306```](https://github.com/jina-ai/jina/commit/c9a86306475d0c2c02131f2146456faa7a4eda8d)] __-__ requirments not exist (#3715) (*felix-wang*)
+ - [[```c9a86306```](https://github.com/jina-ai/jina/commit/c9a86306475d0c2c02131f2146456faa7a4eda8d)] __-__ requirements not exist (#3715) (*felix-wang*)
  - [[```0aa6c3d9```](https://github.com/jina-ai/jina/commit/0aa6c3d9e0e35d2a374ef064bdd379d612643da9)] __-__ fix windows py38 tornado (#3679) (*Joan Fontanals*)
  - [[```cf6705f4```](https://github.com/jina-ai/jina/commit/cf6705f43109e38df666a0256c8c04bb54df1b37)] __-__ pass shards args in k8s (#3689) (*Joan Fontanals*)
  - [[```fcbb98e7```](https://github.com/jina-ai/jina/commit/fcbb98e72e330c778349fed0bff9d27d320543f2)] __-__ convert uri to datauri without overwriting buffer (#3697) (*felix-wang*)
@@ -11608,7 +11608,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 📗 Documentation
 
- - [[```88baef1b```](https://github.com/jina-ai/jina/commit/88baef1b97b5289a0c69874c9773e43a5dbfcb90)] __-__ polish documentarray explaination (#3873) (*Zhaofeng Miao*)
+ - [[```88baef1b```](https://github.com/jina-ai/jina/commit/88baef1b97b5289a0c69874c9773e43a5dbfcb90)] __-__ polish documentarray explanation (#3873) (*Zhaofeng Miao*)
  - [[```643ec37d```](https://github.com/jina-ai/jina/commit/643ec37db6968ddf8cdb15aed034f056c7c479dd)] __-__ __tutorial__: add table filter search with jina (*Han Xiao*)
  - [[```b73134ee```](https://github.com/jina-ai/jina/commit/b73134eec20d08a7f23f68e0578801a8f3afc0f9)] __-__ __tutorial__: add feature hashing full text search (*Han Xiao*)
 
@@ -12203,7 +12203,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```4bcbb81f```](https://github.com/jina-ai/jina/commit/4bcbb81f8409b76aaa06aa4a862da5dfa8f7ce69)] __-__ remove upper bound of python version (#4085) (*Zhaofeng Miao*)
  - [[```0728ed15```](https://github.com/jina-ai/jina/commit/0728ed15b5eead943fc7908c12b5fd175dd5cd07)] __-__ __qa-bot__: fix link reference and width style (#4081) (*Yanlong Wang*)
  - [[```e714c2a8```](https://github.com/jina-ai/jina/commit/e714c2a8496cde0528f5eb3cf1fbd0086099632e)] __-__ __hub__: disk_cache_offline to return chached mark (#4065) (*felix-wang*)
- - [[```1afd5593```](https://github.com/jina-ai/jina/commit/1afd5593825783e2573971a7e19d74fb0dcbbad0)] __-__ mispell import (#4063) (*David Buchaca Prats*)
+ - [[```1afd5593```](https://github.com/jina-ai/jina/commit/1afd5593825783e2573971a7e19d74fb0dcbbad0)] __-__ misspell import (#4063) (*David Buchaca Prats*)
 
 ### 🧼 Code Refactoring
 
@@ -12244,7 +12244,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 🧼 Code Refactoring
 
- - [[```c84d0fa0```](https://github.com/jina-ai/jina/commit/c84d0fa0fb67ec52dcf0afd95b30e079506984a9)] __-__ __helloworld__: supress warnings of traversal flat (#4094) (*Wang Bo*)
+ - [[```c84d0fa0```](https://github.com/jina-ai/jina/commit/c84d0fa0fb67ec52dcf0afd95b30e079506984a9)] __-__ __helloworld__: suppress warnings of traversal flat (#4094) (*Wang Bo*)
 
 ### 📗 Documentation
 
@@ -12301,7 +12301,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```1f2c8635```](https://github.com/jina-ai/jina/commit/1f2c86359246e00eae7cba081d9e952cb64c9aea)] __-__ rescue docarray in setup (#4203) (*Tobias Jacobowitz*)
  - [[```4db20692```](https://github.com/jina-ai/jina/commit/4db2069216f22479c7bb6372005f7bbf704ca4b6)] __-__ fix helloworld multimodal (#4198) (*Joan Fontanals*)
  - [[```f808a9ee```](https://github.com/jina-ai/jina/commit/f808a9eec2fefa6be9f80e5e14a909944a31bfb5)] __-__ __runtime__: worker grpc proxy env (#4189) (*felix-wang*)
- - [[```96f421e4```](https://github.com/jina-ai/jina/commit/96f421e481d27f47e16de589540d24feaad4d7d0)] __-__ __tests__: replace multiprocessing.Queue.qsize() to enable MacOS compatability (#4187) (*Johannes Messner*)
+ - [[```96f421e4```](https://github.com/jina-ai/jina/commit/96f421e481d27f47e16de589540d24feaad4d7d0)] __-__ __tests__: replace multiprocessing.Queue.qsize() to enable MacOS compatibility (#4187) (*Johannes Messner*)
  - [[```b09d1d19```](https://github.com/jina-ai/jina/commit/b09d1d19733cf40b9be17a8315e36d1e7202917e)] __-__ __peapods__: the name of a worker is now the name of the pea managing the worker (#4188) (*samsja*)
  - [[```a088b373```](https://github.com/jina-ai/jina/commit/a088b373b6ee369d3f3ab730cd999080e198fbf3)] __-__ use INFO log level in k8s (#4159) (*Joan Fontanals*)
 
@@ -13070,8 +13070,8 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 🧼 Code Refactoring
 
- - [[```639114fd```](https://github.com/jina-ai/jina/commit/639114fdc89619a2e9a60332b01e3b1667f4fce5)] __-__ __hubble__: remove livetime tip since we have long-live sandbox now (#4602) (*Zhaofeng Miao*)
- - [[```eafd4691```](https://github.com/jina-ai/jina/commit/eafd469174dc16c845c0277af530c86df29fd826)] __-__ __docs__: clarifiy kubernetes utilisation (#4572) (*samsja*)
+ - [[```639114fd```](https://github.com/jina-ai/jina/commit/639114fdc89619a2e9a60332b01e3b1667f4fce5)] __-__ __hubble__: remove lifetime tip since we have long-live sandbox now (#4602) (*Zhaofeng Miao*)
+ - [[```eafd4691```](https://github.com/jina-ai/jina/commit/eafd469174dc16c845c0277af530c86df29fd826)] __-__ __docs__: clarify kubernetes utilisation (#4572) (*samsja*)
  - [[```238dcc18```](https://github.com/jina-ai/jina/commit/238dcc1887dcbd1704b33713313c91fb5ebcd066)] __-__ __docs__:  flow api (#4547) (*samsja*)
 
 ### 📗 Documentation
@@ -13404,7 +13404,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 🐞 Bug fixes
 
- - [[```a3b71c72```](https://github.com/jina-ai/jina/commit/a3b71c7208b3cd48aa7bc978c3343a074947e3d9)] __-__ __parsers__: clearify flow args (#4701) (*Han Xiao*)
+ - [[```a3b71c72```](https://github.com/jina-ai/jina/commit/a3b71c7208b3cd48aa7bc978c3343a074947e3d9)] __-__ __parsers__: clarify flow args (#4701) (*Han Xiao*)
  - [[```babd97d0```](https://github.com/jina-ai/jina/commit/babd97d041063f5193b1478c35acc8579b78aae2)] __-__ __hubio__: improve error message from hubble (#4674) (*Yanlong Wang*)
 
 ### 🍹 Other Improvements
@@ -13633,7 +13633,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🐞 Bug fixes
 
  - [[```de381ba0```](https://github.com/jina-ai/jina/commit/de381ba012372907c85a862d181d28671b59566d)] __-__ __logger__: make log format more compact (#4739) (*Han Xiao*)
- - [[```944afbc5```](https://github.com/jina-ai/jina/commit/944afbc5797c6c888dc5e9a085f646e157ed31eb)] __-__ move prometheus depedency to perf (#4735) (*samsja*)
+ - [[```944afbc5```](https://github.com/jina-ai/jina/commit/944afbc5797c6c888dc5e9a085f646e157ed31eb)] __-__ move prometheus dependency to perf (#4735) (*samsja*)
  - [[```3a1a8f64```](https://github.com/jina-ai/jina/commit/3a1a8f649f409f7a33b231c9d03b80b6c88b3d3a)] __-__ rich console logs (#4724) (*samsja*)
 
 ### 🍹 Other Improvements
@@ -13704,7 +13704,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```913312c0```](https://github.com/jina-ai/jina/commit/913312c0b4827de7f81a69ead87fb0e921facd8c)] __-__ rename the endpoint label in monitroing to jina endpoint (#4768) (*samsja*)
  - [[```db638330```](https://github.com/jina-ai/jina/commit/db63833046c2f0c8a5ab562b8becdf0221c37f2f)] __-__ add runtime name as label for monitoring (#4752) (*samsja*)
  - [[```65d6d6da```](https://github.com/jina-ai/jina/commit/65d6d6da50cb795499ea5e361bf14908f62a3168)] __-__ gateway endpoint discovery (#4756) (*Joan Fontanals*)
- - [[```a2cbd8ec```](https://github.com/jina-ai/jina/commit/a2cbd8ecdb320cddb689df46e1585f50c234bb51)] __-__ now display all of the monitoring adress (#4758) (*samsja*)
+ - [[```a2cbd8ec```](https://github.com/jina-ai/jina/commit/a2cbd8ecdb320cddb689df46e1585f50c234bb51)] __-__ now display all of the monitoring address (#4758) (*samsja*)
  - [[```c1e03950```](https://github.com/jina-ai/jina/commit/c1e03950670e338c40754b80ce2b6f2128858867)] __-__ add a decoratator for monitoring method (#4737) (*samsja*)
  - [[```01dc9da6```](https://github.com/jina-ai/jina/commit/01dc9da6bc7c11bbfa996ffd941d96e4ec8c97df)] __-__ k8s failure testing (#4743) (*Tobias Jacobowitz*)
 
@@ -14104,7 +14104,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 📗 Documentation
 
- - [[```e77b8020```](https://github.com/jina-ai/jina/commit/e77b80209dec60bc11787efeb14baa96c840e701)] __-__ __hub__: replace the fomula (#4905) (*Zhaofeng Miao*)
+ - [[```e77b8020```](https://github.com/jina-ai/jina/commit/e77b80209dec60bc11787efeb14baa96c840e701)] __-__ __hub__: replace the formula (#4905) (*Zhaofeng Miao*)
  - [[```35a0d78a```](https://github.com/jina-ai/jina/commit/35a0d78ae7dd9ae6e288b787408546a9bd40cc59)] __-__ correct header indention (#4904) (*Ziniu Yu*)
  - [[```d34f9161```](https://github.com/jina-ai/jina/commit/d34f9161337fef4f8b8bfc0b620ef0a863094ae5)] __-__ __monitor__: restructure monitor (#4903) (*Han Xiao*)
  - [[```17270e27```](https://github.com/jina-ai/jina/commit/17270e27289dd8c59969de1fe00301b6d098b6d8)] __-__ docs improvements (#4900) (*samsja*)
@@ -14166,7 +14166,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 📗 Documentation
 
- - [[```91c91166```](https://github.com/jina-ai/jina/commit/91c91166494696bc6629c90adb3cebf65ffd5780)] __-__ minor documenation updates on the get started section (#4922) (*samsja*)
+ - [[```91c91166```](https://github.com/jina-ai/jina/commit/91c91166494696bc6629c90adb3cebf65ffd5780)] __-__ minor documentation updates on the get started section (#4922) (*samsja*)
  - [[```07f0ef9a```](https://github.com/jina-ai/jina/commit/07f0ef9a8dd52ff64df7b1becfea613f85853193)] __-__ documentation enhancement (#4907) (*samsja*)
 
 ### 🍹 Other Improvements
@@ -14950,7 +14950,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🐞 Bug fixes
 
  - [[```78aae025```](https://github.com/jina-ai/jina/commit/78aae0256da180287fc6b05fc3d5d74b6b7d2e02)] __-__ fix inconsistent docs and tests on py_modules (#5108) (*Han Xiao*)
- - [[```a725010d```](https://github.com/jina-ai/jina/commit/a725010d0f41967603dd207ee0a7a5ab6a568e71)] __-__ remove flakyness of monitoring integration tests in CI (#5106) (*samsja*)
+ - [[```a725010d```](https://github.com/jina-ai/jina/commit/a725010d0f41967603dd207ee0a7a5ab6a568e71)] __-__ remove flakiness of monitoring integration tests in CI (#5106) (*samsja*)
 
 ### 🧼 Code Refactoring
 
@@ -15339,7 +15339,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```8c110d6b```](https://github.com/jina-ai/jina/commit/8c110d6b9267a54aec45527a57c61d8842941030)] __-__ unblock event loop to allow health service  (#5433) (*Joan Fontanals*)
  - [[```ea1240ba```](https://github.com/jina-ai/jina/commit/ea1240ba959547f0149ba53fe819e56e0ecd8c6c)] __-__ dump env vars as str to k8s (#5430) (*Joan Fontanals*)
  - [[```61df6a7e```](https://github.com/jina-ai/jina/commit/61df6a7e969c73c7853ad2ea3ed1f7cf841cf837)] __-__ unpin hubble sdk version (#5412) (*samsja*)
- - [[```cc41105b```](https://github.com/jina-ai/jina/commit/cc41105b6d862dd398742f54b54311dd26d7e900)] __-__ bind servers to `host` argument isntead of __default_host__ (#5405) (*AlaeddineAbdessalem*)
+ - [[```cc41105b```](https://github.com/jina-ai/jina/commit/cc41105b6d862dd398742f54b54311dd26d7e900)] __-__ bind servers to `host` argument instead of __default_host__ (#5405) (*AlaeddineAbdessalem*)
  - [[```38c86a19```](https://github.com/jina-ai/jina/commit/38c86a19d2a95dc860856d856da7731a347ff133)] __-__ fix multiplier format when using max attempts (#5403) (*AlaeddineAbdessalem*)
  - [[```e9fc038b```](https://github.com/jina-ai/jina/commit/e9fc038b71c1f48085e13fda99c76be9ff602460)] __-__ dump uses_with for gateway in k8s and docker compose (#5397) (*AlaeddineAbdessalem*)
  - [[```11f4e2f4```](https://github.com/jina-ai/jina/commit/11f4e2f441b8ff2aaf84d232d5c15b418a036637)] __-__ use start_as_current_span to maintain tracing operation chain (#5391) (*Girish Chandrashekar*)
@@ -15357,7 +15357,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 🧼 Code Refactoring
 
- - [[```beecc786```](https://github.com/jina-ai/jina/commit/beecc7863e5a6b2580a0e1f10095253549279614)] __-__ inject dependencies at contruction with runtime args (#5418) (*AlaeddineAbdessalem*)
+ - [[```beecc786```](https://github.com/jina-ai/jina/commit/beecc7863e5a6b2580a0e1f10095253549279614)] __-__ inject dependencies at construction with runtime args (#5418) (*AlaeddineAbdessalem*)
  - [[```c05524c7```](https://github.com/jina-ai/jina/commit/c05524c77d00fa99eec82f67a6c5f4f8cb43e2e1)] __-__ replace custom grpc interceptors with library implementations (#5427) (*Girish Chandrashekar*)
  - [[```e4b930e6```](https://github.com/jina-ai/jina/commit/e4b930e6369f1ec69b07af6190d61aa3cb3d9cec)] __-__ add properties to gateway (#5417) (*Joan Fontanals*)
  - [[```1be6b07f```](https://github.com/jina-ai/jina/commit/1be6b07f5ef8274c2862150c3ba354ab9d551268)] __-__ unify stop and teardown to shutdown (#5406) (*Joan Fontanals*)
@@ -15544,7 +15544,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 📗 Documentation
 
  - [[```c321d44c```](https://github.com/jina-ai/jina/commit/c321d44ce44de2953f2fca057da4a7a9b1a76aa2)] __-__ fix the reference to gateway (#5546) (*Nan Wang*)
- - [[```27acb889```](https://github.com/jina-ai/jina/commit/27acb8897beeb5d51f8f8cfb30349671926ab2e0)] __-__ common args inheritence from Flow API (#5535) (*Anne Yang*)
+ - [[```27acb889```](https://github.com/jina-ai/jina/commit/27acb8897beeb5d51f8f8cfb30349671926ab2e0)] __-__ common args inheritance from Flow API (#5535) (*Anne Yang*)
  - [[```d4075be0```](https://github.com/jina-ai/jina/commit/d4075be08649ebb7feac74b52c19967885876a3e)] __-__ add icons to top-level chapters (*Han Xiao*)
 
 ### 🍹 Other Improvements
@@ -15569,7 +15569,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```e222afb1```](https://github.com/jina-ai/jina/commit/e222afb1e56da8a5005a2224747cbcfa533e544d)] __-__ add `to_docker_compose_yaml` to Deployment (#5673) (*Joan Fontanals*)
  - [[```4e388e4c```](https://github.com/jina-ai/jina/commit/4e388e4c5fcacbd0f73c7f817a2e4f8222a571d8)] __-__ changes in CLI for Deployment (#5672) (*Joan Fontanals*)
  - [[```42a5fe79```](https://github.com/jina-ai/jina/commit/42a5fe7938764b14dcf67be89dad52248c3ad622)] __-__ deployment yaml (#5628) (*AlaeddineAbdessalem*)
- - [[```aad4b61a```](https://github.com/jina-ai/jina/commit/aad4b61a940aac37aa92f7855f5c4273be078e2a)] __-__ refactor streamer.stream method to yield reponse and executor error (#5650) (*Girish Chandrashekar*)
+ - [[```aad4b61a```](https://github.com/jina-ai/jina/commit/aad4b61a940aac37aa92f7855f5c4273be078e2a)] __-__ refactor streamer.stream method to yield response and executor error (#5650) (*Girish Chandrashekar*)
  - [[```02edb745```](https://github.com/jina-ai/jina/commit/02edb7450beaf78b68c4dc3570f276299ffbdb0b)] __-__ add argument to remove or preserve root logging handlers (#5635) (*Jake-00*)
  - [[```c57fdbb1```](https://github.com/jina-ai/jina/commit/c57fdbb11e4c318e31ab1d778ded3d4183ab1e0c)] __-__ support docarray v2 (#5603) (*samsja*)
  - [[```936249cd```](https://github.com/jina-ai/jina/commit/936249cd947cc7c4317262ecc8ad58258242639a)] __-__ add grpc streaming endpoint to worker and head runtimes (#5614) (*AlaeddineAbdessalem*)
@@ -15723,7 +15723,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```c603e4a5```](https://github.com/jina-ai/jina/commit/c603e4a53794a25a531af0dc229396eb871cc612)] __-__ getattr default checks (#5787) (*Deepankar Mahapatro*)
  - [[```d4eaf22d```](https://github.com/jina-ai/jina/commit/d4eaf22d7bf23dbd6a5e63d1cc7247ca0eb5d68d)] __-__ fix docs building post proto refactor (#5798) (*samsja*)
- - [[```275a62df```](https://github.com/jina-ai/jina/commit/275a62df51cecef6aa4bf9633d45690c49250deb)] __-__ compatibilty v2 new name (#5784) (*samsja*)
+ - [[```275a62df```](https://github.com/jina-ai/jina/commit/275a62df51cecef6aa4bf9633d45690c49250deb)] __-__ compatibility v2 new name (#5784) (*samsja*)
  - [[```ede7c6cd```](https://github.com/jina-ai/jina/commit/ede7c6cd479f495ef386be578ee61f440282d9c5)] __-__ fix docarray v2 issue (#5774) (*samsja*)
  - [[```9811278d```](https://github.com/jina-ai/jina/commit/9811278dda5fef202e3756233328b0c4e53776d0)] __-__ enable root logging always (#5736) (*Girish Chandrashekar*)
  - [[```7e3b73e0```](https://github.com/jina-ai/jina/commit/7e3b73e05d7a04b24b67cc3e7ac481e8033f5a5d)] __-__ fix gateway tensor serialization (#5752) (*AlaeddineAbdessalem*)
@@ -15941,7 +15941,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```381e388a```](https://github.com/jina-ai/jina/commit/381e388ac792742e9dba0a692551b1887a28ab1b)] __-__ __readme__: image urls (#5910) (*Alex Cureton-Griffiths*)
  - [[```357337ae```](https://github.com/jina-ai/jina/commit/357337aef36ea1f98ede470fb519454f3ef99f1c)] __-__ fix tags doc schema (#5908) (*Joan Fontanals*)
  - [[```30c0a94f```](https://github.com/jina-ai/jina/commit/30c0a94f59e8910d10b9f3fa85163f5b514cd132)] __-__ ensure closing Executor at shutdown in HTTP Deployment (#5906) (*Joan Fontanals*)
- - [[```91bfa76a```](https://github.com/jina-ai/jina/commit/91bfa76a71d6e613a8d61168d0b481159bca251b)] __-__ fix isse in head missmatch endpoint (#5904) (*Joan Fontanals*)
+ - [[```91bfa76a```](https://github.com/jina-ai/jina/commit/91bfa76a71d6e613a8d61168d0b481159bca251b)] __-__ fix issue in head mismatch endpoint (#5904) (*Joan Fontanals*)
 
 ### 📗 Documentation
 
@@ -15950,7 +15950,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 🏁 Unit Test and CICD
 
- - [[```0bc37b92```](https://github.com/jina-ai/jina/commit/0bc37b92ed0c6c92c0982835eab404244d4bd0f4)] __-__ refactor to reduce test flakyness (#5920) (*Joan Fontanals*)
+ - [[```0bc37b92```](https://github.com/jina-ai/jina/commit/0bc37b92ed0c6c92c0982835eab404244d4bd0f4)] __-__ refactor to reduce test flakiness (#5920) (*Joan Fontanals*)
  - [[```91392aab```](https://github.com/jina-ai/jina/commit/91392aabcfbbc0e1cf186314f3253cfe2869dbe2)] __-__ fix debianx Dockerfile (#5911) (*Joan Fontanals*)
 
 ### 🍹 Other Improvements
@@ -16194,7 +16194,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```fbfd3056```](https://github.com/jina-ai/jina/commit/fbfd305610d954b50c309bfe3bfe377f00cd1cc0)] __-__ fix topology schema validation (#6057) (*Joan Fontanals*)
  - [[```b168e4c4```](https://github.com/jina-ai/jina/commit/b168e4c42517e50508ff48e241bda56366c46375)] __-__ __consensus__: free more cstrings (#6056) (*Joan Fontanals*)
  - [[```195d3765```](https://github.com/jina-ai/jina/commit/195d376577c2b52988cee02402e5d26100f40364)] __-__ __consensus__: free allocated CStrings (#6054) (*XXIV*)
- - [[```23acd115```](https://github.com/jina-ai/jina/commit/23acd11575acc68839272f8c74093cdfd3622a16)] __-__ fix weird host assignemnt in k8s yaml (#6051) (*Joan Fontanals*)
+ - [[```23acd115```](https://github.com/jina-ai/jina/commit/23acd11575acc68839272f8c74093cdfd3622a16)] __-__ fix weird host assignment in k8s yaml (#6051) (*Joan Fontanals*)
  - [[```482639ab```](https://github.com/jina-ai/jina/commit/482639abbda8ebbce4800cb5480fba29c28f1122)] __-__ document casting in flow gateway (#6032) (*AlaeddineAbdessalem*)
  - [[```d4343d0b```](https://github.com/jina-ai/jina/commit/d4343d0b0dccef1ba7ac8a55b594e9333abbecac)] __-__ remove sandbox (#6047) (*Joan Fontanals*)
 
