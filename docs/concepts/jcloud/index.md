@@ -44,7 +44,7 @@ If you installed the JCloud CLI individually, all of its commands fall under the
 In case the command `jc` is already occupied by another tool, use `jcloud` instead. If your pip install doesn't register bash commands for you, you can run `python -m jcloud -h`.
 ````
 
-For the rest of this section, we use `jc` or `jcloud`. But again they are interchangable with `jina cloud`.
+For the rest of this section, we use `jc` or `jcloud`. But again they are interchangeable with `jina cloud`.
 
 ## Flows
 
@@ -83,7 +83,7 @@ jcloud:
   docarray: docarray-version
 ```
 
-The `jina` and `docarray` corresponds to your development enviornment's `jina` and `docarray` versions.
+The `jina` and `docarray` corresponds to your development environment's `jina` and `docarray` versions.
 ````
 
 ````{tip}

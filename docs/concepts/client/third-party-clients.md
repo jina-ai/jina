@@ -96,7 +96,7 @@ The response you receive includes `data` (an array of [Documents](https://docarr
 
 ```{admonition} See also: Flow REST API
 :class: seealso
-For a more detailed descripton of the REST API of a generic Flow, including the complete request body schema and request samples, please check:
+For a more detailed description of the REST API of a generic Flow, including the complete request body schema and request samples, please check:
 
 1. [OpenAPI Schema](https://api.jina.ai/rest/latest.json)
 2. [Redoc UI](https://api.jina.ai/rest/)
