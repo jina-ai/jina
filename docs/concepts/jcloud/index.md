@@ -486,7 +486,7 @@ jc job logs myjob1 -f rich-husky-af14064067
 
 ### Deploy
 
-In Jina's idiom, a project is a [Deployment](https://docs.jina.ai/concepts/orchestration/Deployment/), which represents an end-to-end task such as indexing, searching or recommending. In this document, we use "project" and "Deployment" interchangeably.
+A Jina [Deployment](https://docs.jina.ai/concepts/orchestration/Deployment/) represents an end-to-end task such as indexing, searching, or recommending. In this document, we use "project" and "Deployment" interchangeably.
 
 ```{caution}
 When `jcloud` deploys a deployment it automatically appends the following global arguments to the `deployment.yml`, if not present:
@@ -500,9 +500,9 @@ jcloud:
 
 #### Single YAML file
 
-A self-contained YAML file, consisting of all configuration at the [Deployment](https://docs.jina.ai/concepts/orchestration/deployment/)-level and [Executor](https://docs.jina.ai/concepts/serving/executor/)-level.
+A self-contained YAML file, consisting of all configuration information at the [Deployment](https://docs.jina.ai/concepts/orchestration/deployment/)-level and [Executor](https://docs.jina.ai/concepts/serving/executor/)-level.
 
-> A Deployment's `uses` must follow the format `jinaai+docker://<username>/MyExecutor` (from [Executor Hub](https://cloud.jina.ai)) to avoid any local file dependencies:
+> A Deployment's `uses` parameter must follow the format `jinaai+docker://<username>/MyExecutor` (from [Executor Hub](https://cloud.jina.ai)) to avoid any local file dependencies:
 
 ```yaml
 # deployment.yml
@@ -525,9 +525,9 @@ The Deployment is successfully deployed when you see:
 ```
 ---
 
-You will get a Deployment ID, say `pretty-monster-130a5ac952`. This ID is required to manage, view logs and remove the Deployment.
+You will get a Deployment ID, for example `pretty-monster-130a5ac952`. This ID is required to manage, view logs, and remove the Deployment.
 
-As this Deployment is deployed with the default gRPC protocol (feel free to change it to `http`), you can use `jina.Client` to access it:
+Since this Deployment is deployed with the default gRPC protocol (feel free to change it to `http`), you can use `jina.Client` to access it:
 
 ```python
 from jina import Client, Document
@@ -585,7 +585,7 @@ jc deployment list --phase all
 ```
 
 ### Remove Deployments
-You can remove a single Deployment, multiple Deployments or even all Deployments by passing different identifiers.
+You can remove a single Deployment, multiple Deployments, or even all Deployments by passing different commands to the `jc` executable at the command line.
 
 To remove a single Deployment:
 
@@ -605,7 +605,7 @@ To remove all Deployments:
 jc deployment remove all
 ```
 
-By default, removing multiple or all Deployments is an interactive process where you must give confirmation before each Deployment is deleted. To make it non-interactive, set the below environment variable before running the command:
+By default, removing all or multiple Deployments is an interactive process where you must give confirmation before each Deployment is deleted. To make it non-interactive, set the below environment variable before running the command:
 
 ```bash
 export JCLOUD_NO_INTERACTIVE=1
