@@ -486,8 +486,6 @@ jc job logs myjob1 -f rich-husky-af14064067
 
 ### Deploy
 
-A Jina [Deployment](https://docs.jina.ai/concepts/orchestration/Deployment/) represents an end-to-end task such as indexing, searching, or recommending. In this document, we use "project" and "Deployment" interchangeably.
-
 ```{caution}
 When `jcloud` deploys a deployment it automatically appends the following global arguments to the `deployment.yml`, if not present:
 ```
