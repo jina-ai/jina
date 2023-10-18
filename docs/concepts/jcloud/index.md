@@ -44,7 +44,7 @@ If you installed the JCloud CLI individually, all of its commands fall under the
 In case the command `jc` is already occupied by another tool, use `jcloud` instead. If your pip install doesn't register bash commands for you, you can run `python -m jcloud -h`.
 ````
 
-For the rest of this section, we use `jc` or `jcloud`. But again they are interchangable with `jina cloud`.
+For the rest of this section, we use `jc` or `jcloud`. But again they are interchangeable with `jina cloud`.
 
 ## Flows
 
@@ -83,7 +83,7 @@ jcloud:
   docarray: docarray-version
 ```
 
-The `jina` and `docarray` corresponds to your development enviornment's `jina` and `docarray` versions.
+The `jina` and `docarray` corresponds to your development environment's `jina` and `docarray` versions.
 ````
 
 ````{tip}
@@ -480,6 +480,217 @@ jc job logs myjob1 -f rich-husky-af14064067
 
 ```{figure} img/job_logs.png
 :width: 90%
+```
+
+## Deployments
+
+### Deploy
+
+```{caution}
+When `jcloud` deploys a deployment it automatically appends the following global arguments to the `deployment.yml`, if not present:
+```
+
+```yaml
+jcloud:
+  version: jina-version
+  docarray: docarray-version
+```
+
+#### Single YAML file
+
+A self-contained YAML file, consisting of all configuration information at the [Deployment](https://docs.jina.ai/concepts/orchestration/deployment/)-level and [Executor](https://docs.jina.ai/concepts/serving/executor/)-level.
+
+> A Deployment's `uses` parameter must follow the format `jinaai+docker://<username>/MyExecutor` (from [Executor Hub](https://cloud.jina.ai)) to avoid any local file dependencies:
+
+```yaml
+# deployment.yml
+jtype: Deployment
+with:
+  protocol: grpc
+  uses: jinaai+docker://jina-ai/Sentencizer
+```
+
+To deploy:
+
+```bash
+jc deployment deploy ./deployment.yaml
+```
+
+The Deployment is successfully deployed when you see:
+
+```{figure} img/deployment/deploy.png
+:width: 70%
+```
+---
+
+You will get a Deployment ID, for example `pretty-monster-130a5ac952`. This ID is required to manage, view logs, and remove the Deployment.
+
+Since this Deployment is deployed with the default gRPC protocol (feel free to change it to `http`), you can use `jina.Client` to access it:
+
+```python
+from jina import Client, Document
+
+print(
+    Client(host='grpcs://executor-pretty-monster-130a5ac952.wolf.jina.ai').post(
+        on='/', inputs=Document(text='hello')
+    )
+)
+```
+
+(jcloud-deployoment-status)=
+### Get status
+
+To get the status of a Deployment:
+```bash
+jc deployment status pretty-monster-130a5ac952
+```
+
+```{figure} img/deployment/status.png
+:width: 70%
+```
+
+### List Deployments
+
+To list all of your "Starting", "Serving", "Failed", "Updating", and "Paused" Deployments:
+
+```bash
+jc deployment list
+```
+
+```{figure} img/deployment/list.png
+:width: 90%
+```
+
+You can also filter your Deployments by passing a phase:
+
+```bash
+jc deployment list --phase Deleted
+```
+
+
+```{figure} img/deployment/list_deleted.png
+:width: 90%
+```
+
+Or see all Deployments:
+
+```bash
+jc deployment list --phase all
+```
+
+```{figure} img/deployment/list_all.png
+:width: 90%
+```
+
+### Remove Deployments
+You can remove a single Deployment, multiple Deployments, or even all Deployments by passing different commands to the `jc` executable at the command line.
+
+To remove a single Deployment:
+
+```bash
+jc deployment remove pretty-monster-130a5ac952
+```
+
+To remove multiple Deployments:
+
+```bash
+jc deployment remove pretty-monster-130a5ac952 artistic-tuna-ab154c4dcc
+```
+
+To remove all Deployments:
+
+```bash
+jc deployment remove all
+```
+
+By default, removing all or multiple Deployments is an interactive process where you must give confirmation before each Deployment is deleted. To make it non-interactive, set the below environment variable before running the command:
+
+```bash
+export JCLOUD_NO_INTERACTIVE=1
+```
+
+### Update a Deployment
+You can update a Deployment by providing an updated YAML.
+
+To update a Deployment:
+
+```bash
+jc deployment update pretty-monster-130a5ac952 deployment.yml
+```
+
+```{figure} img/deployment/update.png
+:width: 70%
+```
+
+### Pause / Resume Deployment
+
+You have the option to pause a Deployment that is not currently in use but may be needed later. This will allow the Deployment to be resumed later when it is needed again by using `resume`.
+
+To pause a Deployment:
+
+```bash
+jc deployment pause pretty-monster-130a5ac952
+```
+
+```{figure} img/deployment/pause.png
+:width: 70%
+```
+
+To resume a Deployment:
+
+```bash
+jc eployment resume pretty-monster-130a5ac952
+```
+
+```{figure} img/deployment/resume.png
+:width: 70%
+```
+
+### Restart Deployment
+
+To restart a Deployment:
+
+```bash
+jc deployment restart pretty-monster-130a5ac952
+```
+
+```{figure} img/deployment/restart.png
+:width: 70%
+```
+
+### Recreate a Deleted Deployment
+
+To recreate a deleted Deployment:
+
+```bash
+jc deployment recreate pretty-monster-130a5ac952
+```
+
+```{figure} img/deployment/recreate.png
+:width:  70%
+```
+
+### Scale a Deployment
+You can also manually scale any Deployment.
+
+```bash
+jc deployment scale pretty-monster-130a5ac952 --replicas 2
+```
+
+```{figure} img/deployment/scale.png
+:width: 70%
+```
+
+### Get Deployment logs
+
+To get the Deployment logs:
+
+```bash
+jc deployment logs pretty-monster-130a5ac952
+```
+
+```{figure} img/deployment/logs.png
+:width: 70%
 ```
 
 ## Configuration

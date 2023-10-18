@@ -144,7 +144,7 @@ To enable this endpoint, all you need to do is set `expose_graphql_endpoint=True
 ```python
 from jina import Flow
 
-f = Flow().config_gateway(protocol='http', expose_graphql_endpont=True)
+f = Flow().config_gateway(protocol='http', expose_graphql_endpoint=True)
 ```
 ````
 
@@ -160,7 +160,7 @@ with:
 ````{admonition} See Also
 :class: seealso
 
-For more details about the Jina GraphQL enpoint, see {ref}`here <flow-graphql>`.
+For more details about the Jina GraphQL endpoint, see {ref}`here <flow-graphql>`.
 ````
 
 

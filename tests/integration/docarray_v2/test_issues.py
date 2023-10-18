@@ -75,3 +75,20 @@ def test_issue_6019_with_nested_list():
         )
         assert res[0].text == 'hello world'
         assert res[0].nested[0].nested.value == 'test'
+
+def test_issue_6084():
+    class EnvInfo(BaseDoc):
+        history: str = ''
+
+    class A(BaseDoc):
+        b: EnvInfo
+
+    class MyIssue6084Exec(Executor):
+
+        @requests
+        def foo(self, docs: DocList[A], **kwargs) -> DocList[A]:
+            pass
+
+    f = Flow().add(uses=MyIssue6084Exec).add(uses=MyIssue6084Exec)
+    with f:
+        pass
