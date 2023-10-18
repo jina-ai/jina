@@ -422,7 +422,7 @@ class MyGateway(Gateway):
         self.server = Server(Config(app, host=self.host, port=self.port))
 ```
 
-```{admonition} Nonte
+```{admonition} Note
 :class: note
 
 Jina provides the Gateway with a list of ports and protocols to expose. Therefore, a custom Gateway can handle requests 
@@ -478,7 +478,7 @@ You may want to dockerize your custom Gateway so you can isolate its dependencie
 or Kubernetes.
 
 This assumes that you've already implemented a custom Gateway class and have defined a `config.yml` for it.
-In this case, dockerizing the Gateway is straighforward:
+In this case, dockerizing the Gateway is straightforward:
 * If you need dependencies other than Jina, make sure to add a `requirements.txt` file (for instance, you use a server library).
 * Create a `Dockerfile` as follows:
 1. Use a [Jina based image](https://hub.docker.com/r/jinaai/jina) with the `standard` tag as the base image in your Dockerfile.

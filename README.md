@@ -247,10 +247,12 @@ class TextToImage(Executor):
 
     @requests
     def generate_image(self, docs: DocList[Generation], **kwargs) -> DocList[ImageDoc]:
+        result = DocList[ImageDoc]()
         images = self.pipe(
             docs.text
         ).images  # image here is in [PIL format](https://pillow.readthedocs.io/en/stable/)
-        docs.tensor = np.array(images)
+        result.tensor = np.array(images)
+        return result
 ```
 
 </td>

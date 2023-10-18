@@ -277,7 +277,7 @@ And as always, feel free to modify these files as you see fit for your use case.
 ````{admonition} Caution: Executor YAML configurations
 :class: caution
 
-As a general rule, the configuration files produced by `to_kubernets_yaml()` should run out of the box, and if you strictly
+As a general rule, the configuration files produced by `to_kubernetes_yaml()` should run out of the box, and if you strictly
 follow this how-to they will.
 
 However, there is an exception to this: If you use a local dockerized Executor, and this Executors configuration is stored
