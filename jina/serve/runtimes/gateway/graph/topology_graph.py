@@ -84,9 +84,14 @@ class TopologyGraph:
                     return False
 
                 for property_1, property_2 in zip(schema_1_properties.keys(), schema_2_properties.keys()):
-                    if schema_1_properties[property_1]['title'] != schema_2_properties[property_2]['title'] or \
-                            schema_1_properties[property_1]['type'] != schema_2_properties[property_2]['type']:
+                    if property_1 != property_2:
                         return False
+
+                    if schema_1_properties[property_1].get('type', None) != schema_2_properties[property_2].get('type', None):
+                        return False
+
+                    # TODO: Add more complex check for nested definitions
+
                 return True
 
             for node in self.outgoing_nodes:
