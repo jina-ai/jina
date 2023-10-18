@@ -98,8 +98,8 @@ The response you receive includes `data` (an array of [Documents](https://docarr
 :class: seealso
 For a more detailed description of the REST API of a generic Flow, including the complete request body schema and request samples, please check:
 
-1. [OpenAPI Schema](https://api.jina.ai/rest/latest.json)
-2. [Redoc UI](https://api.jina.ai/rest/)
+1. [OpenAPI Schema](https://schemas.jina.ai/rest/latest.json)
+2. [Redoc UI](https://schemas.jina.ai/rest/)
 
 For a specific deployed Flow, you can get the same overview by accessing the `/redoc` endpoint.
 ```
@@ -240,7 +240,7 @@ Here you can see all the endpoints that are exposed by the Flow, such as `/searc
 To send a request, click on the endpoint you want to target, then `Try it out`.
 
 Now you can enter your HTTP request, and send it by clicking `Execute`.
-You can again use the [REST HTTP request schema](https://api.jina.ai/rest/), but do not need to specify `execEndpoint`.
+You can again use the [REST HTTP request schema](https://schemas.jina.ai/rest/), but do not need to specify `execEndpoint`.
 
 Below, in `Responses`, you can see the reply, together with a visual representation of the returned Documents.
 
@@ -322,4 +322,4 @@ The Flow defaults to `json` if you don't specify a sub-protocol while establishi
 
 - {ref}`Access a Flow with the Client <client>`
 - {ref}`Configure a Flow <flow-cookbook>`
-- [Flow REST API reference](https://api.jina.ai/rest/)
+- [Flow REST API reference](https://schemas.jina.ai/rest/)
