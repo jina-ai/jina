@@ -257,6 +257,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -16292,4 +16293,40 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```af7fdfe0```](https://github.com/jina-ai/jina/commit/af7fdfe07a3b70a0c4ff62b8b54ece4766b0713c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```e8edea54```](https://github.com/jina-ai/jina/commit/e8edea547061371369abaf82a37472a90cb2b889)] __-__ __version__: the next version will be 3.22.1 (*Jina Dev Bot*)
+
+<a name=release-note-3-22-2></a>
+## Release Note (`3.22.2`)
+
+> Release time: 2023-10-20 14:42:15
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Abhijit,  dependabot[bot],  Антон,  Deepankar Mahapatro,  Joan Fontanals,  Subba Reddy Veeramreddy,  Parikshit Adhikari,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```c76d9ab8```](https://github.com/jina-ai/jina/commit/c76d9ab8451a496205a571237b2de38658e12ab7)] __-__ fix check graph compatibility nested types (#6085) (*Joan Fontanals*)
+
+### 🧼 Code Refactoring
+
+ - [[```9014308d```](https://github.com/jina-ai/jina/commit/9014308d569002ebb3deab9d0803477137c223c9)] __-__ simplify code in module importer (#6077) (*Антон*)
+
+### 📗 Documentation
+
+ - [[```bd0e25df```](https://github.com/jina-ai/jina/commit/bd0e25df0675c7b0e0d722baef6b27f6361d062a)] __-__ fix typos inside docs/cloud-nativeness (#6080) (*Parikshit Adhikari*)
+ - [[```8e11f3d7```](https://github.com/jina-ai/jina/commit/8e11f3d7e30ee851cd11eaa6d880d8701e242fab)] __-__ fix typos inside docs/concepts directory (#6082) (*Parikshit Adhikari*)
+ - [[```496041e7```](https://github.com/jina-ai/jina/commit/496041e79aab4501d1f30e96a5612d7917a9c0bb)] __-__ fix typo inside docs/tutorials (#6083) (*Parikshit Adhikari*)
+ - [[```8cea02af```](https://github.com/jina-ai/jina/commit/8cea02afc7fd9fa54b216edb48fef7c0e771e892)] __-__ fix readme code (#6075) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```2c3d7d3a```](https://github.com/jina-ai/jina/commit/2c3d7d3a06471f57e4f7532224ebd6427138747d)] __-__ upated Twitter logo (#6092) (*Abhijit*)
+ - [[```3f24810d```](https://github.com/jina-ai/jina/commit/3f24810dba3cdd59ee61deb718714a3e22776368)] __-__ __deps__: bump gitpython from 3.1.30 to 3.1.37 in /docs (#6074) (*dependabot[bot]*)
+ - [[```82284c98```](https://github.com/jina-ai/jina/commit/82284c98259675ebfc69a09f6865d4f23b31aada)] __-__ __deps__: bump golang.org/x/net from 0.7.0 to 0.17.0 in /jina/serve/consensus (#6076) (*dependabot[bot]*)
+ - [[```a058d21a```](https://github.com/jina-ai/jina/commit/a058d21a426e7def442777807500b58376eb1101)] __-__ change to schemas.jina.ai (#6078) (*Deepankar Mahapatro*)
+ - [[```9c520dff```](https://github.com/jina-ai/jina/commit/9c520dff78e3dc25dbc44b4bb66909ce4ad325d9)] __-__ __docs__: add Jina Deployment docs (#6079) (*Subba Reddy Veeramreddy*)
+ - [[```6b7346e7```](https://github.com/jina-ai/jina/commit/6b7346e787ec5f8f47baa168097962f2e5768899)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```2aa37f77```](https://github.com/jina-ai/jina/commit/2aa37f774197fa06432f9834b5b58bc26ac6025f)] __-__ __version__: the next version will be 3.22.2 (*Jina Dev Bot*)
 
