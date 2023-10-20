@@ -98,11 +98,15 @@ def test_issue_6084():
 
 @pytest.mark.asyncio
 async def test_issue_6090():
+    """Tests if streaming works with pydantic models with complex fields which are not
+    str, int, or float.
+    """
+
     class NestedFieldSchema(BaseDoc):
         name: str = "test_name"
         dict_field: Dict = Field(default_factory=dict)
 
-    class MyDocument(BaseDoc):
+    class InputWithComplexFields(BaseDoc):
         text: str = "test"
         nested_field: NestedFieldSchema = Field(default_factory=NestedFieldSchema)
         dict_field: Dict = Field(default_factory=dict)
@@ -111,21 +115,21 @@ async def test_issue_6090():
     class MyExecutor(Executor):
         @requests(on="/stream")
         async def stream(
-            self, doc: MyDocument, parameters: Optional[Dict] = None, **kwargs
-        ) -> MyDocument:
+            self, doc: InputWithComplexFields, parameters: Optional[Dict] = None, **kwargs
+        ) -> InputWithComplexFields:
             for i in range(4):
-                yield MyDocument(text=f"hello world {doc.text} {i}")
+                yield InputWithComplexFields(text=f"hello world {doc.text} {i}")
 
     docs = []
     protocol = "http"
     with Deployment(uses=MyExecutor, protocol=protocol, port=11112) as dep:
         client = Client(port=11112, protocol=protocol, asyncio=True)
-        example_doc = MyDocument(text="my input text")
+        example_doc = InputWithComplexFields(text="my input text")
         async for doc in client.stream_doc(
             on="/stream",
             inputs=example_doc,
-            input_type=MyDocument,
-            return_type=MyDocument,
+            input_type=InputWithComplexFields,
+            return_type=InputWithComplexFields,
         ):
             docs.append(doc)
 
