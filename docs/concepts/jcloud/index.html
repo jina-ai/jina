@@ -6,10 +6,10 @@
 <meta property="og:title" content="Jina AI Cloud Hosting" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/jcloud/" />
-<meta property="og:site_name" content="Jina 3.22.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.22.2 Documentation" />
 <meta property="og:description" content="After building a Jina project, the next step is to deploy and host it on the cloud. Jina AI Cloud is Jina’s reliable, scalable and production-ready cloud-hosting solution that manages your project lifecycle without surprises or hidden development costs. In addition to deploying Flows, jcloud supp..." />
 <meta property="og:image" content="https://docs.jina.ai/_images/jcloud-banner.png" />
-<meta property="og:image:alt" content="Jina 3.22.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.22.2 Documentation" />
 <meta name="description" content="After building a Jina project, the next step is to deploy and host it on the cloud. Jina AI Cloud is Jina’s reliable, scalable and production-ready cloud-hosting solution that manages your project lifecycle without surprises or hidden development costs. In addition to deploying Flows, jcloud supp..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/jcloud/index.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Jina AI Cloud Hosting - Jina 3.22.1 documentation</title>
+        <title>Jina AI Cloud Hosting - Jina 3.22.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.22.1 documentation</div>
+                <div class="brand">Jina 3.22.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -462,7 +462,7 @@ jc<span class="w"> </span>-h
 <p>If you installed the JCloud CLI individually, all of its commands fall under the <code class="docutils literal notranslate"><span class="pre">jc</span></code> or <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> executable.</p>
 <p>In case the command <code class="docutils literal notranslate"><span class="pre">jc</span></code> is already occupied by another tool, use <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> instead. If your pip install doesn’t register bash commands for you, you can run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">jcloud</span> <span class="pre">-h</span></code>.</p>
 </div>
-<p>For the rest of this section, we use <code class="docutils literal notranslate"><span class="pre">jc</span></code> or <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>. But again they are interchangable with <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">cloud</span></code>.</p>
+<p>For the rest of this section, we use <code class="docutils literal notranslate"><span class="pre">jc</span></code> or <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>. But again they are interchangeable with <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">cloud</span></code>.</p>
 </section>
 <section id="flows">
 <h2>Flows<a class="headerlink" href="#flows" title="Permalink to this heading">#</a></h2>
@@ -495,7 +495,7 @@ jc<span class="w"> </span>-h
 <span class="w">  </span><span class="nt">docarray</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docarray-version</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">jina</span></code> and <code class="docutils literal notranslate"><span class="pre">docarray</span></code> corresponds to your development enviornment’s <code class="docutils literal notranslate"><span class="pre">jina</span></code> and <code class="docutils literal notranslate"><span class="pre">docarray</span></code> versions.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">jina</span></code> and <code class="docutils literal notranslate"><span class="pre">docarray</span></code> corresponds to your development environment’s <code class="docutils literal notranslate"><span class="pre">jina</span></code> and <code class="docutils literal notranslate"><span class="pre">docarray</span></code> versions.</p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -829,6 +829,178 @@ jc<span class="w"> </span>-h
 </figure>
 </section>
 </section>
+<section id="deployments">
+<h2>Deployments<a class="headerlink" href="#deployments" title="Permalink to this heading">#</a></h2>
+<section id="id1">
+<h3>Deploy<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> deploys a deployment it automatically appends the following global arguments to the <code class="docutils literal notranslate"><span class="pre">deployment.yml</span></code>, if not present:</p>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jcloud</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jina-version</span>
+<span class="w">  </span><span class="nt">docarray</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docarray-version</span>
+</pre></div>
+</div>
+<section id="id2">
+<h4>Single YAML file<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h4>
+<p>A self-contained YAML file, consisting of all configuration information at the <a class="reference external" href="https://docs.jina.ai/concepts/orchestration/deployment/">Deployment</a>-level and <a class="reference external" href="https://docs.jina.ai/concepts/serving/executor/">Executor</a>-level.</p>
+<blockquote>
+<div><p>A Deployment’s <code class="docutils literal notranslate"><span class="pre">uses</span></code> parameter must follow the format <code class="docutils literal notranslate"><span class="pre">jinaai+docker://&lt;username&gt;/MyExecutor</span></code> (from <a class="reference external" href="https://cloud.jina.ai">Executor Hub</a>) to avoid any local file dependencies:</p>
+</div></blockquote>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># deployment.yml</span>
+<span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grpc</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://jina-ai/Sentencizer</span>
+</pre></div>
+</div>
+<p>To deploy:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deployment<span class="w"> </span>deploy<span class="w"> </span>./deployment.yaml
+</pre></div>
+</div>
+<p>The Deployment is successfully deployed when you see:</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/deploy1.png"><img alt="../../_images/deploy1.png" src="../../_images/deploy1.png" style="width: 70%;" /></a>
+</figure>
+<hr class="docutils" />
+<p>You will get a Deployment ID, for example <code class="docutils literal notranslate"><span class="pre">pretty-monster-130a5ac952</span></code>. This ID is required to manage, view logs, and remove the Deployment.</p>
+<p>Since this Deployment is deployed with the default gRPC protocol (feel free to change it to <code class="docutils literal notranslate"><span class="pre">http</span></code>), you can use <code class="docutils literal notranslate"><span class="pre">jina.Client</span></code> to access it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Document</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;grpcs://executor-pretty-monster-130a5ac952.wolf.jina.ai&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="jcloud-deployoment-status">
+<span id="id3"></span><h3>Get status<a class="headerlink" href="#jcloud-deployoment-status" title="Permalink to this heading">#</a></h3>
+<p>To get the status of a Deployment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deployment<span class="w"> </span>status<span class="w"> </span>pretty-monster-130a5ac952
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/status1.png"><img alt="../../_images/status1.png" src="../../_images/status1.png" style="width: 70%;" /></a>
+</figure>
+</section>
+<section id="list-deployments">
+<h3>List Deployments<a class="headerlink" href="#list-deployments" title="Permalink to this heading">#</a></h3>
+<p>To list all of your “Starting”, “Serving”, “Failed”, “Updating”, and “Paused” Deployments:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deployment<span class="w"> </span>list
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/list1.png"><img alt="../../_images/list1.png" src="../../_images/list1.png" style="width: 90%;" /></a>
+</figure>
+<p>You can also filter your Deployments by passing a phase:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deployment<span class="w"> </span>list<span class="w"> </span>--phase<span class="w"> </span>Deleted
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/list_deleted1.png"><img alt="../../_images/list_deleted1.png" src="../../_images/list_deleted1.png" style="width: 90%;" /></a>
+</figure>
+<p>Or see all Deployments:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deployment<span class="w"> </span>list<span class="w"> </span>--phase<span class="w"> </span>all
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/list_all1.png"><img alt="../../_images/list_all1.png" src="../../_images/list_all1.png" style="width: 90%;" /></a>
+</figure>
+</section>
+<section id="remove-deployments">
+<h3>Remove Deployments<a class="headerlink" href="#remove-deployments" title="Permalink to this heading">#</a></h3>
+<p>You can remove a single Deployment, multiple Deployments, or even all Deployments by passing different commands to the <code class="docutils literal notranslate"><span class="pre">jc</span></code> executable at the command line.</p>
+<p>To remove a single Deployment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deployment<span class="w"> </span>remove<span class="w"> </span>pretty-monster-130a5ac952
+</pre></div>
+</div>
+<p>To remove multiple Deployments:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deployment<span class="w"> </span>remove<span class="w"> </span>pretty-monster-130a5ac952<span class="w"> </span>artistic-tuna-ab154c4dcc
+</pre></div>
+</div>
+<p>To remove all Deployments:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deployment<span class="w"> </span>remove<span class="w"> </span>all
+</pre></div>
+</div>
+<p>By default, removing all or multiple Deployments is an interactive process where you must give confirmation before each Deployment is deleted. To make it non-interactive, set the below environment variable before running the command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">JCLOUD_NO_INTERACTIVE</span><span class="o">=</span><span class="m">1</span>
+</pre></div>
+</div>
+</section>
+<section id="update-a-deployment">
+<h3>Update a Deployment<a class="headerlink" href="#update-a-deployment" title="Permalink to this heading">#</a></h3>
+<p>You can update a Deployment by providing an updated YAML.</p>
+<p>To update a Deployment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deployment<span class="w"> </span>update<span class="w"> </span>pretty-monster-130a5ac952<span class="w"> </span>deployment.yml
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/update.png"><img alt="../../_images/update.png" src="../../_images/update.png" style="width: 70%;" /></a>
+</figure>
+</section>
+<section id="pause-resume-deployment">
+<h3>Pause / Resume Deployment<a class="headerlink" href="#pause-resume-deployment" title="Permalink to this heading">#</a></h3>
+<p>You have the option to pause a Deployment that is not currently in use but may be needed later. This will allow the Deployment to be resumed later when it is needed again by using <code class="docutils literal notranslate"><span class="pre">resume</span></code>.</p>
+<p>To pause a Deployment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deployment<span class="w"> </span>pause<span class="w"> </span>pretty-monster-130a5ac952
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/pause.png"><img alt="../../_images/pause.png" src="../../_images/pause.png" style="width: 70%;" /></a>
+</figure>
+<p>To resume a Deployment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>eployment<span class="w"> </span>resume<span class="w"> </span>pretty-monster-130a5ac952
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/resume.png"><img alt="../../_images/resume.png" src="../../_images/resume.png" style="width: 70%;" /></a>
+</figure>
+</section>
+<section id="restart-deployment">
+<h3>Restart Deployment<a class="headerlink" href="#restart-deployment" title="Permalink to this heading">#</a></h3>
+<p>To restart a Deployment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deployment<span class="w"> </span>restart<span class="w"> </span>pretty-monster-130a5ac952
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/restart.png"><img alt="../../_images/restart.png" src="../../_images/restart.png" style="width: 70%;" /></a>
+</figure>
+</section>
+<section id="recreate-a-deleted-deployment">
+<h3>Recreate a Deleted Deployment<a class="headerlink" href="#recreate-a-deleted-deployment" title="Permalink to this heading">#</a></h3>
+<p>To recreate a deleted Deployment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deployment<span class="w"> </span>recreate<span class="w"> </span>pretty-monster-130a5ac952
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/recreate.png"><img alt="../../_images/recreate.png" src="../../_images/recreate.png" style="width: 70%;" /></a>
+</figure>
+</section>
+<section id="scale-a-deployment">
+<h3>Scale a Deployment<a class="headerlink" href="#scale-a-deployment" title="Permalink to this heading">#</a></h3>
+<p>You can also manually scale any Deployment.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deployment<span class="w"> </span>scale<span class="w"> </span>pretty-monster-130a5ac952<span class="w"> </span>--replicas<span class="w"> </span><span class="m">2</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/scale.png"><img alt="../../_images/scale.png" src="../../_images/scale.png" style="width: 70%;" /></a>
+</figure>
+</section>
+<section id="get-deployment-logs">
+<h3>Get Deployment logs<a class="headerlink" href="#get-deployment-logs" title="Permalink to this heading">#</a></h3>
+<p>To get the Deployment logs:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deployment<span class="w"> </span>logs<span class="w"> </span>pretty-monster-130a5ac952
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/logs.png"><img alt="../../_images/logs.png" src="../../_images/logs.png" style="width: 70%;" /></a>
+</figure>
+</section>
+</section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading">#</a></h2>
 <p>Please refer to <a class="reference internal" href="configuration/#jcloud-configuration"><span class="std std-ref">Configuration</span></a> for configuring the Flow on Jina AI Cloud.</p>
@@ -876,7 +1048,7 @@ jc<span class="w"> </span>-h
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 06, 2023</div>
+                            Last updated on Oct 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -887,7 +1059,7 @@ jc<span class="w"> </span>-h
                             <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
                                target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
                             <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
-                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                               target="_blank" rel="noreferrer"> <i class="fa-brands fa-x-twitter"></i></a>
                             <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
                                target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
                         </div>
@@ -943,6 +1115,22 @@ jc<span class="w"> </span>-h
 <li><a class="reference internal" href="#get-a-job">Get a Job</a></li>
 <li><a class="reference internal" href="#remove-job">Remove Job</a></li>
 <li><a class="reference internal" href="#get-job-logs">Get Job Logs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#deployments">Deployments</a><ul>
+<li><a class="reference internal" href="#id1">Deploy</a><ul>
+<li><a class="reference internal" href="#id2">Single YAML file</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jcloud-deployoment-status">Get status</a></li>
+<li><a class="reference internal" href="#list-deployments">List Deployments</a></li>
+<li><a class="reference internal" href="#remove-deployments">Remove Deployments</a></li>
+<li><a class="reference internal" href="#update-a-deployment">Update a Deployment</a></li>
+<li><a class="reference internal" href="#pause-resume-deployment">Pause / Resume Deployment</a></li>
+<li><a class="reference internal" href="#restart-deployment">Restart Deployment</a></li>
+<li><a class="reference internal" href="#recreate-a-deleted-deployment">Recreate a Deleted Deployment</a></li>
+<li><a class="reference internal" href="#scale-a-deployment">Scale a Deployment</a></li>
+<li><a class="reference internal" href="#get-deployment-logs">Get Deployment logs</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#configuration">Configuration</a></li>

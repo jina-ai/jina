@@ -48,7 +48,7 @@ with dep:
     dep.block()
 ```
 
-We can see that the Executor is successfuly serving:
+We can see that the Executor is successfully serving:
 
 ```python
 from jina import Client

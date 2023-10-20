@@ -6,10 +6,10 @@
 <meta property="og:title" content="Customize HTTP endpoints" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/serving/gateway/customize-http-endpoints/" />
-<meta property="og:site_name" content="Jina 3.22.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.22.2 Documentation" />
 <meta property="og:description" content="Not every Executor endpoint will automatically be exposed through the external HTTP interface. By default, any Flow exposes the following CRUD and debug HTTP endpoints:/status,/post,/index,/search,/update, and/delete. Executors that provide additional endpoints (e.g./foo) will be exposed only aft..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.22.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.22.2 Documentation" />
 <meta name="description" content="Not every Executor endpoint will automatically be exposed through the external HTTP interface. By default, any Flow exposes the following CRUD and debug HTTP endpoints:/status,/post,/index,/search,/update, and/delete. Executors that provide additional endpoints (e.g./foo) will be exposed only aft..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/concepts/serving/gateway/customize-http-endpoints.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Customize HTTP endpoints - Jina 3.22.1 documentation</title>
+        <title>Customize HTTP endpoints - Jina 3.22.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.22.1 documentation</div>
+                <div class="brand">Jina 3.22.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -561,7 +561,7 @@ To enable this endpoint, all you need to do is set <code class="docutils literal
 <input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--1">Python</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">config_gateway</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="n">expose_graphql_endpont</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">config_gateway</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="n">expose_graphql_endpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -576,7 +576,7 @@ To enable this endpoint, all you need to do is set <code class="docutils literal
 </div>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
-<p>For more details about the Jina GraphQL enpoint, see <a class="reference internal" href="../../../client/third-party-clients/#flow-graphql"><span class="std std-ref">here</span></a>.</p>
+<p>For more details about the Jina GraphQL endpoint, see <a class="reference internal" href="../../../client/third-party-clients/#flow-graphql"><span class="std std-ref">here</span></a>.</p>
 </div>
 </section>
 <section id="config-uvicorn-server">
@@ -630,7 +630,7 @@ see their <a class="reference external" href="https://www.uvicorn.org/settings/"
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 06, 2023</div>
+                            Last updated on Oct 20, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -641,7 +641,7 @@ see their <a class="reference external" href="https://www.uvicorn.org/settings/"
                             <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
                                target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
                             <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
-                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                               target="_blank" rel="noreferrer"> <i class="fa-brands fa-x-twitter"></i></a>
                             <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
                                target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
                         </div>
