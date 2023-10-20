@@ -197,13 +197,12 @@ class HTTPClientlet(AioHttpClientlet):
         :param on: Request endpoint
         :yields: responses
         """
-        req_dict = doc.json().encode()
+        req_dict = doc.json()
 
         request_kwargs = {
             'url': self.url,
             'headers': {'Accept': 'text/event-stream'},
         }
-        # request_kwargs['data'] = JinaJsonPayload(value=req_dict)
         request_kwargs['data'] = req_dict
 
         async with self.session.post(**request_kwargs) as response:

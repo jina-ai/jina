@@ -260,8 +260,8 @@ def get_fastapi_app(
                 ):
                     if error:
                         raise HTTPException(status_code=499, detail=str(error))
-                    yield {'data': doc.dict()}
-                yield {'data': 'DONE'}
+                    yield {'event': 'update', 'data': doc.dict()}
+                yield {'event': 'end'}
 
             return EventSourceResponse(event_generator())
 
