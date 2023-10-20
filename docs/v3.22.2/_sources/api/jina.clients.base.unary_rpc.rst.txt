@@ -1,0 +1,7 @@
+jina.clients.base.unary\_rpc module
+===================================
+
+.. automodule:: jina.clients.base.unary_rpc
+   :members:
+   :undoc-members:
+   :show-inheritance:
