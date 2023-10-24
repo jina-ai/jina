@@ -122,8 +122,8 @@ async def test_issue_6090():
 
     docs = []
     protocol = "http"
-    with Deployment(uses=MyExecutor, protocol=protocol, port=11112) as dep:
-        client = Client(port=11112, protocol=protocol, asyncio=True)
+    with Deployment(uses=MyExecutor, protocol=protocol) as dep:
+        client = Client(port=dep.port, protocol=protocol, asyncio=True)
         example_doc = InputWithComplexFields(text="my input text")
         async for doc in client.stream_doc(
             on="/stream",
