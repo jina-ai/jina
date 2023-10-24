@@ -138,8 +138,6 @@ def get_fastapi_app(
             req = DataRequest()
             req.header.exec_endpoint = endpoint_path
             if not docarray_v2:
-                from docarray import Document
-
                 req.data.docs = DocumentArray([Document.from_dict(query_params)])
             else:
                 req.document_array_cls = DocList[input_doc_model]
@@ -158,8 +156,6 @@ def get_fastapi_app(
             req = DataRequest()
             req.header.exec_endpoint = endpoint_path
             if not docarray_v2:
-                from docarray import Document
-
                 req.data.docs = DocumentArray([body])
             else:
                 req.document_array_cls = DocList[input_doc_model]
