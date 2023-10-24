@@ -200,7 +200,7 @@ class HTTPClientlet(AioHttpClientlet):
         request_kwargs = {
             'url': self.url,
             'headers': {'Accept': 'text/event-stream'},
-            'data': doc.json(),
+            'json': doc.dict(),
         }
 
         async with self.session.post(**request_kwargs) as response:
