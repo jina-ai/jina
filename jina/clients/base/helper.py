@@ -197,13 +197,11 @@ class HTTPClientlet(AioHttpClientlet):
         :param on: Request endpoint
         :yields: responses
         """
-        req_dict = doc.json()
-
         request_kwargs = {
             'url': self.url,
             'headers': {'Accept': 'text/event-stream'},
+            'data': doc.json(),
         }
-        request_kwargs['data'] = req_dict
 
         async with self.session.post(**request_kwargs) as response:
             async for chunk in response.content.iter_any():
