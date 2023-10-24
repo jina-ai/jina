@@ -23,7 +23,7 @@ Jina lets you build multimodal [**AI services**](#build-ai-models) and [**pipeli
 Jina provides a smooth Pythonic experience for serving ML models transitioning from local deployment to advanced orchestration frameworks like Docker-Compose, Kubernetes, or Jina AI Cloud. Jina makes advanced solution engineering and cloud-native technologies accessible to every developer.
 
 - Build and serve models for any [data type](https://docs.docarray.org/data_types/first_steps/) and any mainstream [deep learning framework](https://docarray.org/docarray/how_to/multimodal_training_and_serving/).
-- Design high-performance services, with [easy scaling](https://docs.jina.ai/concepts/orchestration/scale-out/), duplex client-server streaming, batching, [dynamic batching](https://docs.jina.ai/concepts/serving/executor/dynamic-batching/), async/non-blocking data processing and and any [protocol](https://docs.jina.ai/concepts/serving/gateway/#set-protocol-in-python).
+- Design high-performance services, with [easy scaling](https://docs.jina.ai/concepts/orchestration/scale-out/), duplex client-server streaming, batching, [dynamic batching](https://docs.jina.ai/concepts/serving/executor/dynamic-batching/), async/non-blocking data processing and any [protocol](https://docs.jina.ai/concepts/serving/gateway/#set-protocol-in-python).
 - Serve [LLM models while streaming their output](https://github.com/jina-ai/jina#streaming-for-llms).
 - Docker container integration via [Executor Hub](https://cloud.jina.ai), OpenTelemetry/Prometheus observability.
 - Streamlined CPU/GPU hosting via [Jina AI Cloud](https://cloud.jina.ai).
