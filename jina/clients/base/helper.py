@@ -200,7 +200,7 @@ class HTTPClientlet(AioHttpClientlet):
         request_kwargs = {
             'url': self.url,
             'headers': {'Accept': 'text/event-stream'},
-            'json': doc.dict(),
+            'json': doc.dict() if docarray_v2 else doc.to_dict(),
         }
 
         async with self.session.post(**request_kwargs) as response:
