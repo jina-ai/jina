@@ -280,7 +280,7 @@ def get_fastapi_app(
 
             async def event_generator():
                 async for doc, error in streamer.stream_doc(
-                    doc=input_doc_model(**body.data), exec_endpoint=endpoint_path
+                    doc=input_doc_model(**body), exec_endpoint=endpoint_path
                 ):
                     if error:
                         raise HTTPException(status_code=499, detail=str(error))
