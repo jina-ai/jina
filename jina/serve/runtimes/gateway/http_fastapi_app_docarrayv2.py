@@ -276,11 +276,11 @@ def get_fastapi_app(
             methods=['POST'],
             summary=f'Streaming Endpoint {endpoint_path}',
         )
-        async def streaming_post(body: input_doc_model, request: Request):
+        async def streaming_post(body: dict):
 
             async def event_generator():
                 async for doc, error in streamer.stream_doc(
-                    doc=body, exec_endpoint=endpoint_path
+                    doc=input_doc_model.parse_obj(body), exec_endpoint=endpoint_path
                 ):
                     if error:
                         raise HTTPException(status_code=499, detail=str(error))
