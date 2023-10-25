@@ -143,17 +143,19 @@ async def test_streaming_delay(protocol, include_gateway):
     ):
         client = Client(port=port, protocol=protocol, asyncio=True)
         i = 0
-        start_time = time.time()
-        async for doc in client.stream_doc(
+        stream = client.stream_doc(
             on='/hello',
             inputs=MyDocument(text='hello world', number=i),
             return_type=MyDocument,
-        ):
+        )
+        start_time = None
+        async for doc in stream:
+            start_time = start_time or time.time()
             assert doc.text == f'hello world {i}'
             i += 1
-
+            delay = time.time() - start_time
             # 0.5 seconds between each request + 0.5 seconds tolerance interval
-            assert time.time() - start_time < (0.5 * i) + 0.5
+            assert delay < (0.5 * i), f'Expected delay to be less than {0.5 * i}, got {delay} on iteration {i}'
 
 
 @pytest.mark.asyncio
