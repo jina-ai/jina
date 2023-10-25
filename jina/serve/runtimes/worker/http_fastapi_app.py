@@ -133,7 +133,7 @@ def get_fastapi_app(
 
         @app.api_route(
             path=f'/{endpoint_path.strip("/")}',
-            methods=['GET', 'POST'],
+            methods=['GET'],
             summary=f'Streaming Endpoint {endpoint_path}',
             tags=["streaming"],
         )
