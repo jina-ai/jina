@@ -135,7 +135,6 @@ def get_fastapi_app(
             path=f'/{endpoint_path.strip("/")}',
             methods=['GET'],
             summary=f'Streaming Endpoint {endpoint_path}',
-            tags=["streaming"],
         )
         async def streaming_get(request: Request, body: input_doc_model = None):
             if not body:
