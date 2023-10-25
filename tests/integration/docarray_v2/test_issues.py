@@ -1,8 +1,10 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
 
+import pytest
 from docarray import BaseDoc, DocList
+from pydantic import Field
 
-from jina import Executor, Flow, requests
+from jina import Executor, Flow, requests, Deployment, Client
 
 
 class Nested2Doc(BaseDoc):
@@ -92,3 +94,50 @@ def test_issue_6084():
     f = Flow().add(uses=MyIssue6084Exec).add(uses=MyIssue6084Exec)
     with f:
         pass
+
+
+@pytest.mark.asyncio
+async def test_issue_6090():
+    """Tests if streaming works with pydantic models with complex fields which are not
+    str, int, or float.
+    """
+
+    class NestedFieldSchema(BaseDoc):
+        name: str = "test_name"
+        dict_field: Dict = Field(default_factory=dict)
+
+    class InputWithComplexFields(BaseDoc):
+        text: str = "test"
+        nested_field: NestedFieldSchema = Field(default_factory=NestedFieldSchema)
+        dict_field: Dict = Field(default_factory=dict)
+        bool_field: bool = False
+
+    class MyExecutor(Executor):
+        @requests(on="/stream")
+        async def stream(
+            self, doc: InputWithComplexFields, parameters: Optional[Dict] = None, **kwargs
+        ) -> InputWithComplexFields:
+            for i in range(4):
+                yield InputWithComplexFields(text=f"hello world {doc.text} {i}")
+
+    docs = []
+    protocol = "http"
+    with Deployment(uses=MyExecutor, protocol=protocol) as dep:
+        client = Client(port=dep.port, protocol=protocol, asyncio=True)
+        example_doc = InputWithComplexFields(text="my input text")
+        async for doc in client.stream_doc(
+            on="/stream",
+            inputs=example_doc,
+            input_type=InputWithComplexFields,
+            return_type=InputWithComplexFields,
+        ):
+            docs.append(doc)
+
+    assert [d.text for d in docs] == [
+        "hello world my input text 0",
+        "hello world my input text 1",
+        "hello world my input text 2",
+        "hello world my input text 3",
+    ]
+    assert docs[0].nested_field.name == "test_name"
+
