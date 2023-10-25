@@ -381,11 +381,6 @@ Streaming endpoints receive one Document as input and yields one Document at a t
 :class: note
 
 Streaming endpoints are only supported for HTTP and gRPC protocols and for Deployment and Flow with one single Executor.
-
-For HTTP deployment streaming executors generate both a GET and POST endpoint.
-The GET endpoint support documents with string, integer, or float fields only,
-whereas, POST requests support all docarrays.
-The Jina client uses the POST endpoints.
 ```
 
 A streaming endpoint has the following signature:
