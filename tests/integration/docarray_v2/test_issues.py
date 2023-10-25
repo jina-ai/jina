@@ -1,10 +1,10 @@
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
 import pytest
 from docarray import BaseDoc, DocList
 from pydantic import Field
 
-from jina import Executor, Flow, requests, Deployment, Client
+from jina import Client, Deployment, Executor, Flow, requests
 
 
 class Nested2Doc(BaseDoc):
@@ -78,6 +78,7 @@ def test_issue_6019_with_nested_list():
         assert res[0].text == 'hello world'
         assert res[0].nested[0].nested.value == 'test'
 
+
 def test_issue_6084():
     class EnvInfo(BaseDoc):
         history: str = ''
@@ -86,7 +87,6 @@ def test_issue_6084():
         b: EnvInfo
 
     class MyIssue6084Exec(Executor):
-
         @requests
         def foo(self, docs: DocList[A], **kwargs) -> DocList[A]:
             pass
@@ -115,7 +115,10 @@ async def test_issue_6090():
     class MyExecutor(Executor):
         @requests(on="/stream")
         async def stream(
-            self, doc: InputWithComplexFields, parameters: Optional[Dict] = None, **kwargs
+            self,
+            doc: InputWithComplexFields,
+            parameters: Optional[Dict] = None,
+            **kwargs,
         ) -> InputWithComplexFields:
             for i in range(4):
                 yield InputWithComplexFields(text=f"hello world {doc.text} {i}")
@@ -134,10 +137,9 @@ async def test_issue_6090():
             docs.append(doc)
 
     assert [d.text for d in docs] == [
-        "hello world my input text 0",
-        "hello world my input text 1",
-        "hello world my input text 2",
-        "hello world my input text 3",
+        'hello world test 0',
+        'hello world test 1',
+        'hello world test 2',
+        'hello world test 3',
     ]
     assert docs[0].nested_field.name == "test_name"
-
