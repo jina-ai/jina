@@ -258,6 +258,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -16330,4 +16331,26 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```9c520dff```](https://github.com/jina-ai/jina/commit/9c520dff78e3dc25dbc44b4bb66909ce4ad325d9)] __-__ __docs__: add Jina Deployment docs (#6079) (*Subba Reddy Veeramreddy*)
  - [[```6b7346e7```](https://github.com/jina-ai/jina/commit/6b7346e787ec5f8f47baa168097962f2e5768899)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```2aa37f77```](https://github.com/jina-ai/jina/commit/2aa37f774197fa06432f9834b5b58bc26ac6025f)] __-__ __version__: the next version will be 3.22.2 (*Jina Dev Bot*)
+
+<a name=release-note-3-22-3></a>
+## Release Note (`3.22.3`)
+
+> Release time: 2023-10-25 12:03:58
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Narek Amirbekian,  Peter Willemsen,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```f2085a9b```](https://github.com/jina-ai/jina/commit/f2085a9bfd4bda6d9721f81b5afe365d9dcc1fb1)] __-__ add and use post endpoint for streaming (#6093) (*Narek Amirbekian*)
+
+### 🍹 Other Improvements
+
+ - [[```e1f97741```](https://github.com/jina-ai/jina/commit/e1f97741d144b65e98429393b12f440493d0be11)] __-__ revert twitter logo change (#6096) (*Joan Fontanals*)
+ - [[```ee95f6e3```](https://github.com/jina-ai/jina/commit/ee95f6e30f42373e488cd280df8d9870de634d2e)] __-__ fixed spelling error in README (#6094) (*Peter Willemsen*)
+ - [[```38f94f60```](https://github.com/jina-ai/jina/commit/38f94f604dbb676f98c3f272536a1f6fdb7f8273)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```fd2a1e54```](https://github.com/jina-ai/jina/commit/fd2a1e5418316234a394602696e741ddaf3934ab)] __-__ __version__: the next version will be 3.22.3 (*Jina Dev Bot*)
 
