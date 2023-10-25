@@ -181,7 +181,7 @@ def get_fastapi_app(
     ):
         app_kwargs = dict(
             path=f'/{endpoint_path.strip("/")}',
-            methods=['GET'],
+            methods=['POST'],
             summary=f'Endpoint {endpoint_path}',
             response_model=output_model,
         )
@@ -249,7 +249,7 @@ def get_fastapi_app(
 
         @app.api_route(
             path=f'/{endpoint_path.strip("/")}',
-            methods=['POST'],
+            methods=['GET', 'POST'],
             summary=f'Streaming Endpoint {endpoint_path}',
             tags=["streaming"],
         )
@@ -264,13 +264,8 @@ def get_fastapi_app(
                 ):
                     if error:
                         raise HTTPException(status_code=499, detail=str(error))
-                    yield {
-                        'event': 'update',
-                        'data': doc.dict()
-                    }
-                yield {
-                    'event': 'end'
-                }
+                    yield {'event': 'update', 'data': doc.dict()}
+                yield {'event': 'end'}
 
             return EventSourceResponse(event_generator())
 
@@ -280,7 +275,6 @@ def get_fastapi_app(
             summary=f'Streaming Endpoint {endpoint_path}',
         )
         async def streaming_post(body: dict):
-
             async def event_generator():
                 async for doc, error in streamer.stream_doc(
                     doc=input_doc_model.parse_obj(body), exec_endpoint=endpoint_path

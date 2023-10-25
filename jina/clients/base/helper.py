@@ -203,7 +203,7 @@ class HTTPClientlet(AioHttpClientlet):
             'json': doc.dict() if docarray_v2 else doc.to_dict(),
         }
 
-        async with self.session.post(**request_kwargs) as response:
+        async with self.session.get(**request_kwargs) as response:
             async for chunk in response.content.iter_any():
                 events = chunk.split(b'event: ')[1:]
                 for event in events:
