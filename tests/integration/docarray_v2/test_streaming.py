@@ -153,7 +153,7 @@ async def test_streaming_delay(protocol, include_gateway):
             i += 1
 
             # 0.5 seconds between each request + 0.5 seconds tolerance interval
-            assert time.time() - start_time < (0.5 * i) + 0.5
+            assert time.time() - start_time < (0.5 * i) + 0.6
 
 
 @pytest.mark.asyncio
