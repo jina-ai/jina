@@ -6,7 +6,6 @@ from docarray import BaseDoc, DocList
 from pydantic import Field
 
 from jina import Client, Deployment, Executor, Flow, requests
-from requests import get as http_get
 
 
 class Nested2Doc(BaseDoc):
@@ -109,9 +108,9 @@ class InputWithComplexFields(BaseDoc):
     dict_field: Dict = Field(default_factory=dict)
     bool_field: bool = False
 
+
 class SimpleInput(BaseDoc):
     text: str = "test"
-
 
 
 class MyExecutor(Executor):
@@ -177,7 +176,9 @@ async def test_issue_6090_get_params(streaming_deployment):
     """
 
     docs = []
-    url = f"htto://localhost:{streaming_deployment.port}/stream-simple?text=my_input_text"
+    url = (
+        f"htto://localhost:{streaming_deployment.port}/stream-simple?text=my_input_text"
+    )
     async with aiohttp.ClientSession() as session:
 
         async with session.get(url) as resp:

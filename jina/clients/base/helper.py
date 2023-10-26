@@ -200,11 +200,11 @@ class HTTPClientlet(AioHttpClientlet):
         request_kwargs = {
             'url': self.url,
             'headers': {'Accept': 'text/event-stream'},
-            'json': doc.dict() if docarray_v2 else doc.to_dict(),
+            'data': doc.json().encode(),
         }
 
         async with self.session.get(**request_kwargs) as response:
-            async for chunk in response.content.iter_any():
+            async for chunk, _ in response.content.iter_chunks():
                 events = chunk.split(b'event: ')[1:]
                 for event in events:
                     if event.startswith(b'update'):
