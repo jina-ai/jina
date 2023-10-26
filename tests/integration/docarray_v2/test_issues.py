@@ -1,10 +1,12 @@
 from typing import Dict, List, Optional
 
+import aiohttp
 import pytest
 from docarray import BaseDoc, DocList
 from pydantic import Field
 
 from jina import Client, Deployment, Executor, Flow, requests
+from requests import get as http_get
 
 
 class Nested2Doc(BaseDoc):
@@ -96,45 +98,68 @@ def test_issue_6084():
         pass
 
 
+class NestedFieldSchema(BaseDoc):
+    name: str = "test_name"
+    dict_field: Dict = Field(default_factory=dict)
+
+
+class InputWithComplexFields(BaseDoc):
+    text: str = "test"
+    nested_field: NestedFieldSchema = Field(default_factory=NestedFieldSchema)
+    dict_field: Dict = Field(default_factory=dict)
+    bool_field: bool = False
+
+class SimpleInput(BaseDoc):
+    text: str = "test"
+
+
+
+class MyExecutor(Executor):
+    @requests(on="/stream")
+    async def stream(
+        self,
+        doc: InputWithComplexFields,
+        parameters: Optional[Dict] = None,
+        **kwargs,
+    ) -> InputWithComplexFields:
+        for i in range(4):
+            yield InputWithComplexFields(text=f"hello world {doc.text} {i}")
+
+    @requests(on="/stream-simple")
+    async def stream_simple(
+        self,
+        doc: SimpleInput,
+        parameters: Optional[Dict] = None,
+        **kwargs,
+    ) -> SimpleInput:
+        for i in range(4):
+            yield SimpleInput(text=f"hello world {doc.text} {i}")
+
+
+@pytest.fixture(scope="module")
+def streaming_deployment():
+    protocol = "http"
+    with Deployment(uses=MyExecutor, protocol=protocol) as dep:
+        yield dep
+
+
 @pytest.mark.asyncio
-async def test_issue_6090():
+async def test_issue_6090(streaming_deployment):
     """Tests if streaming works with pydantic models with complex fields which are not
     str, int, or float.
     """
 
-    class NestedFieldSchema(BaseDoc):
-        name: str = "test_name"
-        dict_field: Dict = Field(default_factory=dict)
-
-    class InputWithComplexFields(BaseDoc):
-        text: str = "test"
-        nested_field: NestedFieldSchema = Field(default_factory=NestedFieldSchema)
-        dict_field: Dict = Field(default_factory=dict)
-        bool_field: bool = False
-
-    class MyExecutor(Executor):
-        @requests(on="/stream")
-        async def stream(
-            self,
-            doc: InputWithComplexFields,
-            parameters: Optional[Dict] = None,
-            **kwargs,
-        ) -> InputWithComplexFields:
-            for i in range(4):
-                yield InputWithComplexFields(text=f"hello world {doc.text} {i}")
-
     docs = []
     protocol = "http"
-    with Deployment(uses=MyExecutor, protocol=protocol) as dep:
-        client = Client(port=dep.port, protocol=protocol, asyncio=True)
-        example_doc = InputWithComplexFields(text="my input text")
-        async for doc in client.stream_doc(
-            on="/stream",
-            inputs=example_doc,
-            input_type=InputWithComplexFields,
-            return_type=InputWithComplexFields,
-        ):
-            docs.append(doc)
+    client = Client(port=streaming_deployment.port, protocol=protocol, asyncio=True)
+    example_doc = InputWithComplexFields(text="my input text")
+    async for doc in client.stream_doc(
+        on="/stream",
+        inputs=example_doc,
+        input_type=InputWithComplexFields,
+        return_type=InputWithComplexFields,
+    ):
+        docs.append(doc)
 
     assert [d.text for d in docs] == [
         'hello world test 0',
@@ -143,3 +168,29 @@ async def test_issue_6090():
         'hello world test 3',
     ]
     assert docs[0].nested_field.name == "test_name"
+
+
+@pytest.mark.asyncio
+async def test_issue_6090_get_params(streaming_deployment):
+    """Tests if streaming works with pydantic models with complex fields which are not
+    str, int, or float.
+    """
+
+    docs = []
+    url = f"htto://localhost:{streaming_deployment.port}/stream-simple?text=my_input_text"
+    async with aiohttp.ClientSession() as session:
+
+        async with session.get(url) as resp:
+            async for doc, _ in resp.content.iter_chunks():
+                if b"event: end" in doc:
+                    break
+                parsed = doc.decode().split("data:", 1)[-1].strip()
+                parsed = SimpleInput.parse_raw(parsed)
+                docs.append(parsed)
+
+    assert [d.text for d in docs] == [
+        'hello world my_input_text 0',
+        'hello world my_input_text 1',
+        'hello world my_input_text 2',
+        'hello world my_input_text 3',
+    ]
