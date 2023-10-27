@@ -175,17 +175,25 @@ class GatewayRequestHandler:
             )
         )
 
-    async def _load_balance(self, request):
+
+    async def _load_balance(self, request: 'aiohttp.web_request.Request'):
         import aiohttp
         from aiohttp import web
-
         target_server = next(self.load_balancer_servers)
         target_url = f'{target_server}{request.path_qs}'
 
+
         try:
             async with aiohttp.ClientSession() as session:
+
                 if request.method == 'GET':
-                    async with session.get(target_url) as response:
+                    request_kwargs = {}
+                    payload = await request.json()
+                    if payload:
+                        request_kwargs['json'] = payload
+
+
+                    async with session.get(url=target_url, **request_kwargs) as response:
                         # Create a StreamResponse with the same headers and status as the target response
                         stream_response = web.StreamResponse(
                             status=response.status,

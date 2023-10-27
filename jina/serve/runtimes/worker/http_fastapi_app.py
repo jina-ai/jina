@@ -136,7 +136,7 @@ def get_fastapi_app(
             methods=['GET'],
             summary=f'Streaming Endpoint {endpoint_path}',
         )
-        async def streaming_get(request: Request, body: input_doc_model = None):
+        async def streaming_get(request: Request = None, body: input_doc_model = None):
             if not body:
                 query_params = dict(request.query_params)
                 body = (
@@ -144,6 +144,9 @@ def get_fastapi_app(
                     if docarray_v2
                     else Document.from_dict(query_params)
                 )
+            else:
+                if not docarray_v2:
+                    body = Document.from_pydantic_model(body)
             req = DataRequest()
             req.header.exec_endpoint = endpoint_path
             if not docarray_v2:

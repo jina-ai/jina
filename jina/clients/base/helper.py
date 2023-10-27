@@ -197,14 +197,15 @@ class HTTPClientlet(AioHttpClientlet):
         :param on: Request endpoint
         :yields: responses
         """
+        req_dict = doc.to_dict() if hasattr(doc, "to_dict") else doc.dict()
         request_kwargs = {
             'url': self.url,
             'headers': {'Accept': 'text/event-stream'},
-            'data': doc.json().encode(),
+            'json': req_dict,
         }
 
         async with self.session.get(**request_kwargs) as response:
-            async for chunk, _ in response.content.iter_chunks():
+            async for chunk in response.content.iter_any():
                 events = chunk.split(b'event: ')[1:]
                 for event in events:
                     if event.startswith(b'update'):

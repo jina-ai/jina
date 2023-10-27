@@ -24,9 +24,9 @@ class MyExecutor(Executor):
 @pytest.mark.parametrize('protocol', ['http', 'grpc'])
 @pytest.mark.parametrize('include_gateway', [False, True])
 async def test_streaming_deployment(protocol, include_gateway):
-    from jina import Deployment
 
     port = random_port()
+    docs = []
 
     with Deployment(
         uses=MyExecutor,
@@ -38,10 +38,12 @@ async def test_streaming_deployment(protocol, include_gateway):
         client = Client(port=port, protocol=protocol, asyncio=True)
         i = 0
         async for doc in client.stream_doc(
-            on='/hello', inputs=Document(text='hello world')
+            on='/hello', inputs=Document(text='hello world'), return_type=Document, input_type=Document
         ):
-            assert doc.text == f'hello world {i}'
+            docs.append(doc.text)
             i += 1
+        assert docs == [f'hello world {i}' for i in range(100)]
+        assert len(docs) == 100
 
 
 class WaitStreamExecutor(Executor):
