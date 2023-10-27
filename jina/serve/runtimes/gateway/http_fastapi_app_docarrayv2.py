@@ -254,11 +254,7 @@ def get_fastapi_app(
         )
         async def streaming_get(request: Request, body: input_doc_model = None):
             body = body or dict(request.query_params)
-            body = (
-                input_doc_model.parse_obj(body)
-                if docarray_v2
-                else Document.from_dict(body)
-            )
+            body = input_doc_model.parse_obj(body)
 
             async def event_generator():
                 async for doc, error in streamer.stream_doc(
