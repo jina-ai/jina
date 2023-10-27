@@ -38,7 +38,10 @@ async def test_streaming_deployment(protocol, include_gateway):
         client = Client(port=port, protocol=protocol, asyncio=True)
         i = 0
         async for doc in client.stream_doc(
-            on='/hello', inputs=Document(text='hello world'), return_type=Document, input_type=Document
+            on='/hello',
+            inputs=Document(text='hello world'),
+            return_type=Document,
+            input_type=Document,
         ):
             docs.append(doc.text)
             i += 1
