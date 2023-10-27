@@ -175,7 +175,7 @@ class GatewayRequestHandler:
             )
         )
 
-    async def _load_balance(self, request: 'aiohttp.web_request.Request'):
+    async def _load_balance(self, request):
         import aiohttp
         from aiohttp import web
 
