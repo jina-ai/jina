@@ -161,10 +161,10 @@ async def test_issue_6090(streaming_deployment):
         docs.append(doc)
 
     assert [d.text for d in docs] == [
-        'hello world test 0',
-        'hello world test 1',
-        'hello world test 2',
-        'hello world test 3',
+        'hello world my input text 0',
+        'hello world my input text 1',
+        'hello world my input text 2',
+        'hello world my input text 3',
     ]
     assert docs[0].nested_field.name == "test_name"
 

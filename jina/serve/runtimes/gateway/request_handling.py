@@ -187,9 +187,10 @@ class GatewayRequestHandler:
 
                 if request.method == 'GET':
                     request_kwargs = {}
-                    payload = await request.json()
-                    if payload:
-                        request_kwargs['json'] = payload
+                    if request.body_exists():
+                        payload = await request.json()
+                        if payload:
+                            request_kwargs['json'] = payload
 
                     async with session.get(
                         url=target_url, **request_kwargs
