@@ -6,6 +6,7 @@ from docarray import BaseDoc, DocList
 from pydantic import Field
 
 from jina import Client, Deployment, Executor, Flow, requests
+from jina.clients.base.helper import HTTPClientlet
 
 
 class Nested2Doc(BaseDoc):
@@ -182,12 +183,17 @@ async def test_issue_6090_get_params(streaming_deployment):
     async with aiohttp.ClientSession() as session:
 
         async with session.get(url) as resp:
-            async for doc, _ in resp.content.iter_chunks():
-                if b"event: end" in doc:
-                    break
-                parsed = doc.decode().split("data:", 1)[-1].strip()
-                parsed = SimpleInput.parse_raw(parsed)
-                docs.append(parsed)
+            async for chunk in resp.content.iter_any():
+                print(chunk)
+                events = chunk.split(b'event: ')[1:]
+                for event in events:
+                    if event.startswith(b'update'):
+                        parsed = event[HTTPClientlet.UPDATE_EVENT_PREFIX:].decode()
+                        parsed = SimpleInput.parse_raw(parsed)
+                        print(parsed)
+                        docs.append(parsed)
+                    elif event.startswith(b'end'):
+                        pass
 
     assert [d.text for d in docs] == [
         'hello world my_input_text 0',
