@@ -187,10 +187,12 @@ class GatewayRequestHandler:
 
                 if request.method == 'GET':
                     request_kwargs = {}
-                    if request.body_exists:
+                    try:
                         payload = await request.json()
                         if payload:
-                            request_kwargs['data'] = request.content
+                            request_kwargs['json'] = payload
+                    except Exception:
+                        self.logger.debug('No JSON payload found in request')
 
                     async with session.get(
                         url=target_url, **request_kwargs
