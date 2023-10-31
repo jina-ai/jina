@@ -259,6 +259,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -16354,4 +16355,24 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```ee95f6e3```](https://github.com/jina-ai/jina/commit/ee95f6e30f42373e488cd280df8d9870de634d2e)] __-__ fixed spelling error in README (#6094) (*Peter Willemsen*)
  - [[```38f94f60```](https://github.com/jina-ai/jina/commit/38f94f604dbb676f98c3f272536a1f6fdb7f8273)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```fd2a1e54```](https://github.com/jina-ai/jina/commit/fd2a1e5418316234a394602696e741ddaf3934ab)] __-__ __version__: the next version will be 3.22.3 (*Jina Dev Bot*)
+
+<a name=release-note-3-22-4></a>
+## Release Note (`3.22.4`)
+
+> Release time: 2023-10-31 14:33:21
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Narek Amirbekian,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```ab2cc190```](https://github.com/jina-ai/jina/commit/ab2cc19039b9bfcf3957ffb3f1c04ed366fd16cc)] __-__ use body for streaming instead of params (#6098) (*Narek Amirbekian*)
+
+### 🍹 Other Improvements
+
+ - [[```2cee9611```](https://github.com/jina-ai/jina/commit/2cee96115d3d62a0c67cf32f98a20dc0bf9dc743)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```f9c7d044```](https://github.com/jina-ai/jina/commit/f9c7d04492777ff3965489f60604190bd5009775)] __-__ __version__: the next version will be 3.22.4 (*Jina Dev Bot*)
 
