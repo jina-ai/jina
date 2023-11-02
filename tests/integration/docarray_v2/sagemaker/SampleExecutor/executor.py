@@ -10,7 +10,7 @@ class TextDoc(BaseDoc):
     text: str = Field(description="The text of the document", default="")
 
 
-class EmbeddingResponseModel(BaseDoc):
+class EmbeddingResponseModel(TextDoc):
     embeddings: NdArray = Field(description="The embedding of the texts", default=[])
 
     class Config(BaseDoc.Config):
