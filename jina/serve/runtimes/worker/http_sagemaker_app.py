@@ -150,6 +150,7 @@ def get_fastapi_app(
                 # This will also enforce the order of the fields in the csv file.
                 # This also means, all fields in the input model must be present in the
                 # csv file including the optional ones.
+                # We also expect the csv file to have no quotes and use the escape char '\'
                 field_names = [f for f in input_doc_list_model.__fields__]
                 data = []
                 for line in csv.reader(
