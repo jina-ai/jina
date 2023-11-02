@@ -134,6 +134,9 @@ def get_fastapi_app(
                 return await process(input_model(**json_body))
 
             elif content_type in ('text/csv', 'application/csv'):
+                import csv
+                from io import StringIO
+
                 bytes_body = await request.body()
                 csv_body = bytes_body.decode('utf-8')
                 if not is_valid_csv(csv_body):
@@ -149,15 +152,19 @@ def get_fastapi_app(
                 # csv file including the optional ones.
                 field_names = [f for f in input_doc_list_model.__fields__]
                 data = []
-                for line in csv_body.splitlines():
-                    fields = line.split(',')
-                    if len(fields) != len(field_names):
+                for line in csv.reader(
+                    StringIO(csv_body),
+                    delimiter=',',
+                    quoting=csv.QUOTE_NONE,
+                    escapechar='\\',
+                ):
+                    if len(line) != len(field_names):
                         raise HTTPException(
                             status_code=400,
-                            detail=f'Invalid CSV format. Line {fields} doesn\'t match '
+                            detail=f'Invalid CSV format. Line {line} doesn\'t match '
                             f'the expected field order {field_names}.',
                         )
-                    data.append(input_doc_list_model(**dict(zip(field_names, fields))))
+                    data.append(input_doc_list_model(**dict(zip(field_names, line))))
 
                 return await process(input_model(data=data))
 
