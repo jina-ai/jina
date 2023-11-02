@@ -7,10 +7,10 @@ from jina import Executor, requests
 
 
 class TextDoc(BaseDoc):
-    text: str
+    text: str = Field(description="The text of the document", default="")
 
 
-class EmbeddingResponseModel(BaseDoc):
+class EmbeddingResponseModel(TextDoc):
     embeddings: NdArray = Field(description="The embedding of the texts", default=[])
 
     class Config(BaseDoc.Config):
@@ -25,6 +25,10 @@ class SampleExecutor(Executor):
         ret = []
         for doc in docs:
             ret.append(
-                EmbeddingResponseModel(id=doc.id, embeddings=np.random.random((1, 64)))
+                EmbeddingResponseModel(
+                    id=doc.id,
+                    text=doc.text,
+                    embeddings=np.random.random((1, 64)),
+                )
             )
         return DocList[EmbeddingResponseModel](ret)

@@ -1,3 +1,5 @@
+import csv
+import io
 import os
 import time
 from contextlib import AbstractContextManager
@@ -73,7 +75,14 @@ def test_provider_sagemaker_pod_inference():
             assert len(resp_json['data'][0]['embeddings'][0]) == 64
 
 
-def test_provider_sagemaker_pod_batch_transform_valid():
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "valid_input_1.csv",
+        "valid_input_2.csv",
+    ],
+)
+def test_provider_sagemaker_pod_batch_transform_valid(filename):
     with chdir(os.path.join(os.path.dirname(__file__), 'SampleExecutor')):
         args, _ = set_pod_parser().parse_known_args(
             [
@@ -86,24 +95,32 @@ def test_provider_sagemaker_pod_batch_transform_valid():
         )
         with Pod(args):
             # Test `POST /invocations` endpoint for batch-transform with valid input
-            with open(
-                os.path.join(os.path.dirname(__file__), 'valid_input.csv'), 'r'
-            ) as f:
+            texts = []
+            with open(os.path.join(os.path.dirname(__file__), filename), "r") as f:
                 csv_data = f.read()
 
+            for line in csv.reader(
+                io.StringIO(csv_data),
+                delimiter=",",
+                quoting=csv.QUOTE_NONE,
+                escapechar="\\",
+            ):
+                texts.append(line[1])
+
             resp = requests.post(
-                f'http://localhost:{sagemaker_port}/invocations',
+                f"http://localhost:{sagemaker_port}/invocations",
                 headers={
-                    'accept': 'application/json',
-                    'content-type': 'text/csv',
+                    "accept": "application/json",
+                    "content-type": "text/csv",
                 },
                 data=csv_data,
             )
             assert resp.status_code == 200
             resp_json = resp.json()
-            assert len(resp_json['data']) == 10
-            for d in resp_json['data']:
-                assert len(d['embeddings'][0]) == 64
+            assert len(resp_json["data"]) == 10
+            for idx, d in enumerate(resp_json["data"]):
+                assert d["text"] == texts[idx]
+                assert len(d["embeddings"][0]) == 64
 
 
 def test_provider_sagemaker_pod_batch_transform_invalid():
