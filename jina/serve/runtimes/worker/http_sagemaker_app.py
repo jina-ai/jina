@@ -14,7 +14,7 @@ if docarray_v2:
 def get_fastapi_app(
     request_models_map: Dict,
     caller: Callable,
-    logger: 'JinaLogger',
+    logger: "JinaLogger",
     cors: bool = False,
     **kwargs,
 ):
@@ -41,12 +41,12 @@ def get_fastapi_app(
     from jina.serve.runtimes.gateway.models import _to_camel_case
 
     if not docarray_v2:
-        logger.warning('Only docarray v2 is supported with Sagemaker. ')
+        logger.warning("Only docarray v2 is supported with Sagemaker. ")
         return
 
     class Header(BaseModel):
         request_id: Optional[str] = Field(
-            description='Request ID', example=os.urandom(16).hex()
+            description="Request ID", example=os.urandom(16).hex()
         )
 
         class Config(BaseConfig):
@@ -62,12 +62,12 @@ def get_fastapi_app(
     if cors:
         app.add_middleware(
             CORSMiddleware,
-            allow_origins=['*'],
+            allow_origins=["*"],
             allow_credentials=True,
-            allow_methods=['*'],
-            allow_headers=['*'],
+            allow_methods=["*"],
+            allow_headers=["*"],
         )
-        logger.warning('CORS is enabled. This service is accessible from any website!')
+        logger.warning("CORS is enabled. This service is accessible from any website!")
 
     def add_post_route(
         endpoint_path,
@@ -80,8 +80,8 @@ def get_fastapi_app(
 
         app_kwargs = dict(
             path=f'/{endpoint_path.strip("/")}',
-            methods=['POST'],
-            summary=f'Endpoint {endpoint_path}',
+            methods=["POST"],
+            summary=f"Endpoint {endpoint_path}",
             response_model=Union[output_model, List[output_model]],
             response_class=DocArrayResponse,
         )
@@ -128,21 +128,25 @@ def get_fastapi_app(
 
         @app.api_route(**app_kwargs)
         async def post(request: Request):
-            content_type = request.headers.get('content-type')
-            if content_type == 'application/json':
+            content_type = request.headers.get("content-type")
+            if content_type == "application/json":
                 json_body = await request.json()
                 return await process(input_model(**json_body))
 
-            elif content_type in ('text/csv', 'application/csv'):
+            elif content_type in ("text/csv", "application/csv"):
                 import csv
                 from io import StringIO
 
+                print(f"request headers: {request.headers}")
+
                 bytes_body = await request.body()
-                csv_body = bytes_body.decode('utf-8')
+                print(f"bytes body: {bytes_body}")
+                csv_body = bytes_body.decode("utf-8")
+                print(f"csv body: {csv_body}")
                 if not is_valid_csv(csv_body):
                     raise HTTPException(
                         status_code=400,
-                        detail='Invalid CSV input. Please check your input.',
+                        detail="Invalid CSV input. Please check your input.",
                     )
 
                 # NOTE: Sagemaker only supports csv files without header, so we enforce
@@ -155,15 +159,17 @@ def get_fastapi_app(
                 data = []
                 for line in csv.reader(
                     StringIO(csv_body),
-                    delimiter=',',
+                    delimiter=",",
                     quoting=csv.QUOTE_NONE,
-                    escapechar='\\',
+                    escapechar="\\",
                 ):
+                    print(f"len line: {len(line)}")
+                    print(f"line: {line}")
                     if len(line) != len(field_names):
                         raise HTTPException(
                             status_code=400,
-                            detail=f'Invalid CSV format. Line {line} doesn\'t match '
-                            f'the expected field order {field_names}.',
+                            detail=f"Invalid CSV format. Line {line} doesn't match "
+                            f"the expected field order {field_names}.",
                         )
                     data.append(input_doc_list_model(**dict(zip(field_names, line))))
 
@@ -172,17 +178,17 @@ def get_fastapi_app(
             else:
                 raise HTTPException(
                     status_code=400,
-                    detail=f'Invalid content-type: {content_type}. '
-                    f'Please use either application/json or text/csv.',
+                    detail=f"Invalid content-type: {content_type}. "
+                    f"Please use either application/json or text/csv.",
                 )
 
     for endpoint, input_output_map in request_models_map.items():
-        if endpoint != '_jina_dry_run_':
-            input_doc_model = input_output_map['input']['model']
-            output_doc_model = input_output_map['output']['model']
-            parameters_model = input_output_map['parameters']['model'] or Optional[Dict]
+        if endpoint != "_jina_dry_run_":
+            input_doc_model = input_output_map["input"]["model"]
+            output_doc_model = input_output_map["output"]["model"]
+            parameters_model = input_output_map["parameters"]["model"] or Optional[Dict]
             default_parameters = (
-                ... if input_output_map['parameters']['model'] else None
+                ... if input_output_map["parameters"]["model"] else None
             )
 
             _config = inherit_config(InnerConfig, BaseDoc.__config__)
@@ -213,8 +219,8 @@ def get_fastapi_app(
 
     # `/ping` route is required by AWS Sagemaker
     @app.get(
-        path='/ping',
-        summary='Get the health of Jina Executor service',
+        path="/ping",
+        summary="Get the health of Jina Executor service",
         response_model=JinaHealthModel,
     )
     async def _executor_health():
