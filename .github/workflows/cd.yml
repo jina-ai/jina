@@ -560,6 +560,8 @@ jobs:
           pip install docarray==0.21.0
           jina
           export JINA_LOG_LEVEL="ERROR"
+          curl -LO https://dl.k8s.io/release/v1.21.1/bin/linux/amd64/kubectl
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test k8s Flow
@@ -600,6 +602,8 @@ jobs:
           pip install docarray==0.21.0
           jina
           export JINA_LOG_LEVEL="ERROR"
+          curl -LO https://dl.k8s.io/release/v1.21.1/bin/linux/amd64/kubectl
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test k8s Deployment
@@ -640,6 +644,8 @@ jobs:
           pip install docarray==0.21.0
           jina
           export JINA_LOG_LEVEL="ERROR"
+          curl -LO https://dl.k8s.io/release/v1.21.1/bin/linux/amd64/kubectl
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test graceful request handling on k8s
@@ -680,6 +686,8 @@ jobs:
           pip install docarray==0.21.0
           jina
           export JINA_LOG_LEVEL="ERROR"
+          curl -LO https://dl.k8s.io/release/v1.21.1/bin/linux/amd64/kubectl
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test k8s failures
@@ -721,6 +729,8 @@ jobs:
           pip install docarray==0.21.0
           jina
           export JINA_LOG_LEVEL="ERROR"
+          curl -LO https://dl.k8s.io/release/v1.21.1/bin/linux/amd64/kubectl
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test K8s with OpenTelemetry
