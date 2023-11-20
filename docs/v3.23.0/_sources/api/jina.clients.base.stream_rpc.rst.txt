@@ -1,0 +1,7 @@
+jina.clients.base.stream\_rpc module
+====================================
+
+.. automodule:: jina.clients.base.stream_rpc
+   :members:
+   :undoc-members:
+   :show-inheritance:

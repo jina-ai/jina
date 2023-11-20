@@ -1,0 +1,7 @@
+jina.serve.runtimes.worker.http\_sagemaker\_app module
+======================================================
+
+.. automodule:: jina.serve.runtimes.worker.http_sagemaker_app
+   :members:
+   :undoc-members:
+   :show-inheritance:
