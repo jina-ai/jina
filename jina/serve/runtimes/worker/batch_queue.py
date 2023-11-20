@@ -38,6 +38,8 @@ class BatchQueue:
         self._preferred_batch_size: int = preferred_batch_size
         self._timeout: int = timeout
         self._reset()
+        self._flush_trigger: Event = Event()
+        self._timer_task: Optional[Task] = None
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(preferred_batch_size={self._preferred_batch_size}, timeout={self._timeout})'
@@ -57,9 +59,7 @@ class BatchQueue:
         else:
             self._big_doc = self._request_docarray_cls()
 
-        self._flush_trigger: Event = Event()
         self._flush_task: Optional[Task] = None
-        self._timer_task: Optional[Task] = None
 
     def _cancel_timer_if_pending(self):
         if (
@@ -97,11 +97,12 @@ class BatchQueue:
         docs = request.docs
 
         # writes to shared data between tasks need to be mutually exclusive
+        if not self._timer_task:
+            self._start_timer()
         async with self._data_lock:
             if not self._flush_task:
                 self._flush_task = asyncio.create_task(self._await_then_flush())
-            if not self._timer_task:
-                self._start_timer()
+
             self._big_doc.extend(docs)
             next_req_idx = len(self._requests)
             num_docs = len(docs)
@@ -218,6 +219,9 @@ class BatchQueue:
             # self._requests with its lengths stored in self._requests_len. For each requests, there is a queue to
             # communicate that the request has been processed properly. At this stage the data_lock is ours and
             # therefore noone can add requests to this list.
+            self._flush_trigger: Event = Event()
+            self._cancel_timer_if_pending()
+            self._timer_task = None
             try:
                 if not docarray_v2:
                     non_assigned_to_response_docs: DocumentArray = DocumentArray.empty()

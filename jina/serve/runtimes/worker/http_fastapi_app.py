@@ -1,7 +1,7 @@
 import inspect
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Union
 
-from jina import DocumentArray, Document
+from jina import Document, DocumentArray
 from jina._docarray import docarray_v2
 from jina.importer import ImportExtensions
 from jina.serve.networking.sse import EventSourceResponse
@@ -11,15 +11,15 @@ if TYPE_CHECKING:
     from jina.logging.logger import JinaLogger
 
 if docarray_v2:
-    from docarray import DocList, BaseDoc
+    from docarray import BaseDoc, DocList
 
 
 def get_fastapi_app(
-        request_models_map: Dict,
-        caller: Callable,
-        logger: 'JinaLogger',
-        cors: bool = False,
-        **kwargs,
+    request_models_map: Dict,
+    caller: Callable,
+    logger: 'JinaLogger',
+    cors: bool = False,
+    **kwargs,
 ):
     """
     Get the app from FastAPI as the REST interface.
@@ -35,15 +35,18 @@ def get_fastapi_app(
         from fastapi import FastAPI, Response, HTTPException
         import pydantic
         from fastapi.middleware.cors import CORSMiddleware
+    import os
+
     from pydantic import BaseModel, Field
     from pydantic.config import BaseConfig, inherit_config
 
     from jina.proto import jina_pb2
     from jina.serve.runtimes.gateway.models import _to_camel_case
-    import os
 
     class Header(BaseModel):
-        request_id: Optional[str] = Field(description='Request ID', example=os.urandom(16).hex())
+        request_id: Optional[str] = Field(
+            description='Request ID', example=os.urandom(16).hex()
+        )
 
         class Config(BaseConfig):
             alias_generator = _to_camel_case
@@ -66,11 +69,11 @@ def get_fastapi_app(
         logger.warning('CORS is enabled. This service is accessible from any website!')
 
     def add_post_route(
-            endpoint_path,
-            input_model,
-            output_model,
-            input_doc_list_model=None,
-            output_doc_list_model=None,
+        endpoint_path,
+        input_model,
+        output_model,
+        input_doc_list_model=None,
+        output_doc_list_model=None,
     ):
         app_kwargs = dict(
             path=f'/{endpoint_path.strip("/")}',
@@ -122,9 +125,9 @@ def get_fastapi_app(
                 ret = output_model(data=docs_response, parameters=resp.parameters)
                 return ret
 
-    def add_streaming_get_route(
-            endpoint_path,
-            input_doc_model=None,
+    def add_streaming_routes(
+        endpoint_path,
+        input_doc_model=None,
     ):
         from fastapi import Request
 
@@ -133,17 +136,24 @@ def get_fastapi_app(
             methods=['GET'],
             summary=f'Streaming Endpoint {endpoint_path}',
         )
-        async def streaming_get(request: Request):
-            query_params = dict(request.query_params)
+        async def streaming_get(request: Request = None, body: input_doc_model = None):
+            if not body:
+                query_params = dict(request.query_params)
+                body = (
+                    input_doc_model.parse_obj(query_params)
+                    if docarray_v2
+                    else Document.from_dict(query_params)
+                )
+            else:
+                if not docarray_v2:
+                    body = Document.from_pydantic_model(body)
             req = DataRequest()
             req.header.exec_endpoint = endpoint_path
             if not docarray_v2:
-                from docarray import Document
-
-                req.data.docs = DocumentArray([Document.from_dict(query_params)])
+                req.data.docs = DocumentArray([body])
             else:
                 req.document_array_cls = DocList[input_doc_model]
-                req.data.docs = DocList[input_doc_model]([input_doc_model(**query_params)])
+                req.data.docs = DocList[input_doc_model]([body])
             event_generator = _gen_dict_documents(await caller(req))
             return EventSourceResponse(event_generator)
 
@@ -153,7 +163,9 @@ def get_fastapi_app(
             output_doc_model = input_output_map['output']['model']
             is_generator = input_output_map['is_generator']
             parameters_model = input_output_map['parameters']['model'] or Optional[Dict]
-            default_parameters = ... if input_output_map['parameters']['model'] else None
+            default_parameters = (
+                ... if input_output_map['parameters']['model'] else None
+            )
 
             if docarray_v2:
                 _config = inherit_config(InnerConfig, BaseDoc.__config__)
@@ -176,7 +188,7 @@ def get_fastapi_app(
             )
 
             if is_generator:
-                add_streaming_get_route(
+                add_streaming_routes(
                     endpoint,
                     input_doc_model=input_doc_model,
                 )

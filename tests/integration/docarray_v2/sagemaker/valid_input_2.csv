@@ -1,0 +1,10 @@
+1,abcd
+2,efgh\, with comma
+3,ijkl with \"quote\"
+4,mn\\nop with newline
+5,qrst with \\ backslash
+6,uvwx with both\, comma and \"quote\"
+7,yzab with newline\\nand comma\,
+8,cde\"f with embedded quote
+9,ghij with special char #
+10,klmn with everything\, \"quote\" \\backslash and \\nnewline

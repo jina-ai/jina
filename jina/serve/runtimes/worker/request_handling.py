@@ -178,7 +178,6 @@ class WorkerRequestHandler:
             ]
 
             return self.process_single_data(request, None, is_generator=is_generator)
-
         app = get_fastapi_app(
             request_models_map=request_models_map, caller=call_handle, **kwargs
         )
@@ -187,7 +186,9 @@ class WorkerRequestHandler:
         async def _shutdown():
             await self.close()
 
-        return app
+        from jina.helper import extend_rest_interface
+
+        return extend_rest_interface(app)
 
     def _http_fastapi_sagemaker_app(self, **kwargs):
         from jina.serve.runtimes.worker.http_sagemaker_app import get_fastapi_app

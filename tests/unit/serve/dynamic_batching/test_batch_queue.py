@@ -59,6 +59,50 @@ async def test_batch_queue_timeout():
 
 
 @pytest.mark.asyncio
+async def test_batch_queue_timeout_does_not_wait_previous_batch():
+    batches_lengths_computed = []
+    async def foo(docs, **kwargs):
+        await asyncio.sleep(4)
+        batches_lengths_computed.append(len(docs))
+        return DocumentArray([Document(text='Done') for _ in docs])
+
+    bq: BatchQueue = BatchQueue(
+        foo,
+        request_docarray_cls=DocumentArray,
+        response_docarray_cls=DocumentArray,
+        preferred_batch_size=5,
+        timeout=3000,
+    )
+
+    data_requests = [DataRequest() for _ in range(3)]
+    for req in data_requests:
+        req.data.docs = DocumentArray([Document(text=''), Document(text='')])
+
+    extra_data_request = DataRequest()
+    extra_data_request.data.docs = DocumentArray([Document(text=''), Document(text='')])
+
+    async def process_request(req, sleep=0):
+        if sleep > 0:
+            await asyncio.sleep(sleep)
+        q = await bq.push(req)
+        _ = await q.get()
+        q.task_done()
+        return req
+    init_time = time.time()
+    tasks = [asyncio.create_task(process_request(req)) for req in data_requests]
+    tasks.append(asyncio.create_task(process_request(extra_data_request, sleep=2)))
+    responses = await asyncio.gather(*tasks)
+    time_spent = (time.time() - init_time) * 1000
+    # TIME TAKEN: 8000 for first batch of requests, plus 4000 for second batch that is fired inmediately
+    # BEFORE FIX in https://github.com/jina-ai/jina/pull/6071, this would take: 8000 + 3000 + 4000 (Timeout would start counting too late)
+    assert time_spent >= 12000
+    assert time_spent <= 12500
+    assert batches_lengths_computed == [5, 1, 2]
+
+    await bq.close()
+
+
+@pytest.mark.asyncio
 async def test_batch_queue_req_length_larger_than_preferred():
     async def foo(docs, **kwargs):
         await asyncio.sleep(0.1)

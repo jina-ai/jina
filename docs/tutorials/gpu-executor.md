@@ -389,7 +389,7 @@ That's more than a **6x speedup!** And that's not even the best we can do - if w
 :class: hint
 
 You've probably noticed that there was a delay (about 3 seconds) when creating the Deployment.
-This is because the weights of our model had to be transfered from CPU to GPU when we
+This is because the weights of our model had to be transferred from CPU to GPU when we
 initialized the Executor. However, this action only occurs once in the lifetime of the Executor,
 so for most use cases we don't need to worry about it.
 ```
