@@ -104,14 +104,14 @@ class GatewayRequestHandler:
         self.load_balancer_servers = itertools.cycle(servers)
         self.warmup_stop_event = threading.Event()
         self.warmup_task = None
-        if not works_as_load_balancer:
-            try:
-                self.warmup_task = asyncio.create_task(
-                    self.streamer.warmup(self.warmup_stop_event)
-                )
-            except RuntimeError:
-                # when Gateway is started locally, it may not have loop
-                pass
+        # if not works_as_load_balancer:
+        #     try:
+        #         self.warmup_task = asyncio.create_task(
+        #             self.streamer.warmup(self.warmup_stop_event)
+        #         )
+        #     except RuntimeError:
+        #         # when Gateway is started locally, it may not have loop
+        #         pass
 
     def cancel_warmup_task(self):
         """Cancel warmup task if exists and is not completed. Cancellation is required if the Flow is being terminated before the

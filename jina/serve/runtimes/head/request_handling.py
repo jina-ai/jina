@@ -140,13 +140,14 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         self._gathering_endpoints = False
         self.runtime_name = runtime_name
         self.warmup_stop_event = threading.Event()
-        self.warmup_task = asyncio.create_task(
-            self.warmup(
-                connection_pool=self.connection_pool,
-                stop_event=self.warmup_stop_event,
-                deployment=self._deployment_name,
-            )
-        )
+        self.warmup_task = None
+        # self.warmup_task = asyncio.create_task(
+        #     self.warmup(
+        #         connection_pool=self.connection_pool,
+        #         stop_event=self.warmup_stop_event,
+        #         deployment=self._deployment_name,
+        #     )
+        # )
         self._pydantic_models_by_endpoint = None
         self.endpoints_discovery_stop_event = threading.Event()
         self.endpoints_discovery_task = None
