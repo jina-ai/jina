@@ -259,6 +259,8 @@
 
 
 
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -646,6 +648,8 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.22.1`)](#release-note-3221)
 - [Release Note (`3.22.2`)](#release-note-3222)
 - [Release Note (`3.22.3`)](#release-note-3223)
+- [Release Note (`3.22.4`)](#release-note-3224)
+- [Release Note (`3.23.0`)](#release-note-3230)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -16354,4 +16358,56 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```ee95f6e3```](https://github.com/jina-ai/jina/commit/ee95f6e30f42373e488cd280df8d9870de634d2e)] __-__ fixed spelling error in README (#6094) (*Peter Willemsen*)
  - [[```38f94f60```](https://github.com/jina-ai/jina/commit/38f94f604dbb676f98c3f272536a1f6fdb7f8273)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```fd2a1e54```](https://github.com/jina-ai/jina/commit/fd2a1e5418316234a394602696e741ddaf3934ab)] __-__ __version__: the next version will be 3.22.3 (*Jina Dev Bot*)
+
+<a name=release-note-3-22-4></a>
+## Release Note (`3.22.4`)
+
+> Release time: 2023-10-31 14:33:21
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Narek Amirbekian,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```ab2cc190```](https://github.com/jina-ai/jina/commit/ab2cc19039b9bfcf3957ffb3f1c04ed366fd16cc)] __-__ use body for streaming instead of params (#6098) (*Narek Amirbekian*)
+
+### 🍹 Other Improvements
+
+ - [[```2cee9611```](https://github.com/jina-ai/jina/commit/2cee96115d3d62a0c67cf32f98a20dc0bf9dc743)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```f9c7d044```](https://github.com/jina-ai/jina/commit/f9c7d04492777ff3965489f60604190bd5009775)] __-__ __version__: the next version will be 3.22.4 (*Jina Dev Bot*)
+
+<a name=release-note-3-23-0></a>
+## Release Note (`3.23.0`)
+
+> Release time: 2023-11-20 10:02:37
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Deepankar Mahapatro,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```7bed9455```](https://github.com/jina-ai/jina/commit/7bed94555f07d40a3365adc6ad9abd97d028024c)] __-__ __sagemaker__: read csv with escaped chars (#6102) (*Deepankar Mahapatro*)
+
+### 🧼 Code Refactoring
+
+ - [[```5572a3f7```](https://github.com/jina-ai/jina/commit/5572a3f7babf00185c9494d06584c822332cd429)] __-__ try no timeout stop grpc server (#6111) (*Joan Fontanals*)
+ - [[```dbe8a940```](https://github.com/jina-ai/jina/commit/dbe8a94073d2ff585e52a35b731de97e1b0d7989)] __-__ call extend rest interface in worker (#6108) (*Joan Fontanals*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```6c6ff28f```](https://github.com/jina-ai/jina/commit/6c6ff28f9d2d339e3b3a91e62f8621109719f3a5)] __-__ fix issues with CD and K8s tests (#6106) (*Joan Fontanals*)
+ - [[```e784718e```](https://github.com/jina-ai/jina/commit/e784718ed3c31da177a907e0329eadb911572b32)] __-__ disable prerelease (#6105) (*Deepankar Mahapatro*)
+ - [[```2577e1e4```](https://github.com/jina-ai/jina/commit/2577e1e4d5aa6474eb4967ac5e0d9fd0d351c10e)] __-__ enable prerelease (#6104) (*Deepankar Mahapatro*)
+
+### 🍹 Other Improvements
+
+ - [[```891ee1af```](https://github.com/jina-ai/jina/commit/891ee1afe59e39de62e192797b8ba37a408d5bce)] __-__ update version to 3.23.0 (#6113) (*Joan Fontanals*)
+ - [[```46c06384```](https://github.com/jina-ai/jina/commit/46c06384e122dbd3659cb237e41d9a4149b388c4)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```bf6f4767```](https://github.com/jina-ai/jina/commit/bf6f4767f8c6534081fc4fdc5daf3ede96729bbf)] __-__ __version__: the next version will be 3.22.5 (*Jina Dev Bot*)
 
