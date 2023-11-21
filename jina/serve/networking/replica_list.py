@@ -45,9 +45,6 @@ class _ReplicaList:
         self.tracing_client_interceptors = tracing_client_interceptor
         self._deployment_name = deployment_name
         self.channel_options = channel_options
-        # a set containing all the ConnectionStubs that will be created using add_connection
-        # this set is not updated in reset_connection and remove_connection
-        self._warmup_stubs = set()
 
     async def reset_connection(self, address: str, deployment_name: str):
         """
@@ -90,10 +87,7 @@ class _ReplicaList:
             stubs, channel = self._create_connection(address, deployment_name)
             self._address_to_channel[resolved_address] = channel
             self._connections.append(stubs)
-            # create a new set of stubs and channels for warmup to avoid
-            # loosing channel during remove_connection or reset_connection
             stubs, _ = self._create_connection(address, deployment_name)
-            self._warmup_stubs.add(stubs)
 
     async def remove_connection(self, address: str):
         """
@@ -213,13 +207,3 @@ class _ReplicaList:
         self._address_to_connection_idx.clear()
         self._connections.clear()
         self._rr_counter = 0
-        for stub in self._warmup_stubs:
-            await stub.channel.close(0.5)
-        self._warmup_stubs.clear()
-
-    @property
-    def warmup_stubs(self):
-        """Return set of warmup stubs
-        :returns: Set of stubs. The set doesn't remove any items once added.
-        """
-        return self._warmup_stubs

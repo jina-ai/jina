@@ -139,14 +139,6 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         self._executor_endpoint_mapping = None
         self._gathering_endpoints = False
         self.runtime_name = runtime_name
-        self.warmup_stop_event = threading.Event()
-        self.warmup_task = asyncio.create_task(
-            self.warmup(
-                connection_pool=self.connection_pool,
-                stop_event=self.warmup_stop_event,
-                deployment=self._deployment_name,
-            )
-        )
         self._pydantic_models_by_endpoint = None
         self.endpoints_discovery_stop_event = threading.Event()
         self.endpoints_discovery_task = None
@@ -383,39 +375,6 @@ class HeaderRequestHandler(MonitoringRequestMixin):
 
         return task()
 
-    async def warmup(
-            self,
-            connection_pool: GrpcConnectionPool,
-            stop_event: 'threading.Event',
-            deployment: str,
-    ):
-        """Executes warmup task against the deployments from the connection pool.
-        :param connection_pool: GrpcConnectionPool that implements the warmup to the connected deployments.
-        :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.
-        :param deployment: deployment name that need to be warmed up.
-        """
-        self.logger.debug(f'Running HeadRuntime warmup')
-
-        try:
-            await connection_pool.warmup(deployment=deployment, stop_event=stop_event)
-        except Exception as ex:
-            self.logger.error(f'error with HeadRuntime warmup up task: {ex}')
-            return
-
-    def cancel_warmup_task(self):
-        """Cancel warmup task if exists and is not completed. Cancellation is required if the Flow is being terminated before the
-        task is successful or hasn't reached the max timeout.
-        """
-        if self.warmup_task:
-            try:
-                if not self.warmup_task.done():
-                    self.logger.debug(f'Cancelling warmup task.')
-                    self.warmup_stop_event.set()  # this event is useless if simply cancel
-                    self.warmup_task.cancel()
-            except Exception as ex:
-                self.logger.debug(f'exception during warmup task cancellation: {ex}')
-                pass
-
     def cancel_endpoint_discovery_from_workers_task(self):
         """Cancel endpoint_discovery_from_worker task if exists and is not completed. Cancellation is required if the Flow is being terminated before the
         task is successful or hasn't reached the max timeout.
@@ -433,7 +392,6 @@ class HeaderRequestHandler(MonitoringRequestMixin):
     async def close(self):
         """Close the data request handler, by closing the executor and the batch queues."""
         self.logger.debug(f'Closing Request Handler')
-        self.cancel_warmup_task()
         self.cancel_endpoint_discovery_from_workers_task()
         await self.connection_pool.close()
         self.logger.debug(f'Request Handler closed')
