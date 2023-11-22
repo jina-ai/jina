@@ -73,6 +73,7 @@ def _call_add_voters(leader, voters, replica_ids, name, event_signal=None):
     # makes it impossible to do tests sequentially
     print(f'add_voter-{name}: call add voters started', flush=True)
     import jraft
+
     print(f'add_voter-{name}: jraft imported', flush=True)
     print(f'add_voter-{name}: Replica IDS {replica_ids}', flush=True)
     logger = JinaLogger(context=f'add_voter-{name}', name=f'add_voter-{name}')
