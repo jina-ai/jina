@@ -134,7 +134,7 @@ jobs:
           python -m pip install wheel
           WHEEL_FILE=$(ls dist/*whl)
           pip install "$WHEEL_FILE[common,devel,test]" --no-cache-dir
-          pip install -U protobuf${{ matrix.protobuf-version }}
+          pip install -U protobuf${{ matrix.protobuf-version }} grpcio==1.47.5 grpcio-reflection==1.47.5 grpcio-health-checking==1.47.5
           jina
           export JINA_LOG_LEVEL="ERROR"
       - name: Test
