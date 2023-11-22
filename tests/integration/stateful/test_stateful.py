@@ -212,7 +212,6 @@ def test_stateful_index_search_container(shards, tmpdir, stateful_exec_docker_im
         assert_all_replicas_indexed(dep, search_da, key='random_num')
 
 
-@pytest.mark.skip()
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
 def test_add_new_replica(executor_cls, tmpdir):
     from jina.parsers import set_pod_parser
@@ -233,7 +232,7 @@ def test_add_new_replica(executor_cls, tmpdir):
     )
     with ctx_mngr:
         index_da = DocumentArray[TextDocWithId](
-            [Document(id=f'{i}', text=f'ID {i}') for i in range(100)]
+            [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(100)]
         )
         ctx_mngr.index(inputs=index_da, request_size=1)
         # allowing sometime for snapshots

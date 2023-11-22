@@ -129,8 +129,11 @@ class JinaLogger:
 
         if not name:
             name = os.getenv('JINA_DEPLOYMENT_NAME', context)
-
+        if 'add-voter' in context:
+            print(f'{context} logger A')
         self.logger = logging.getLogger(context)
+        if 'add-voter' in context:
+            print(f'{context} logger B')
         self.logger.propagate = False
 
         context_vars = {
@@ -138,8 +141,11 @@ class JinaLogger:
             'uptime': __uptime__,
             'context': context,
         }
-
+        if 'add-voter' in context:
+            print(f'{context} logger C')
         self.add_handlers(log_config, **context_vars)
+        if 'add-voter' in context:
+            print(f'{context} logger D')
         self.debug = self.logger.debug
         self.warning = self.logger.warning
         self.critical = self.logger.critical
@@ -147,6 +153,8 @@ class JinaLogger:
         self.info = self.logger.info
         self._is_closed = False
         self.debug_enabled = self.logger.isEnabledFor(logging.DEBUG)
+        if 'add-voter' in context:
+            print(f'{context} logger E')
 
     def success(self, *args):
         """
