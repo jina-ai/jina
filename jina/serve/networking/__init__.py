@@ -1,5 +1,4 @@
 import asyncio
-import time
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Set, Tuple, Union, AsyncGenerator
 
 import grpc
@@ -24,8 +23,6 @@ from jina.types.request import Request
 from jina.types.request.data import SingleDocumentRequest
 
 if TYPE_CHECKING:  # pragma: no cover
-    import threading
-
     from grpc.aio._interceptor import ClientInterceptor
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
