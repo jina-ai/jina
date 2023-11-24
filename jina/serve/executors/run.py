@@ -161,7 +161,7 @@ def run(
     finally:
         _unset_envs()
         is_shutdown.set()
-        logger.debug(f'process terminated')
+        logger.debug('process terminated')
 
 
 def run_stateful(args: 'argparse.Namespace',
@@ -181,6 +181,7 @@ def run_stateful(args: 'argparse.Namespace',
     is_ready = multiprocessing.Event()
     is_shutdown = multiprocessing.Event()
     is_started = multiprocessing.Event()
+    is_signal_handlers_installed = multiprocessing.Event()
     raft_worker = multiprocessing.Process(
         target=run_raft,
         kwargs={
@@ -192,10 +193,12 @@ def run_stateful(args: 'argparse.Namespace',
     )
     cargs = copy.deepcopy(args)
 
+    from jina.constants import RAFT_TO_EXECUTOR_PORT
+
     if isinstance(cargs.port, int):
-        cargs.port += 1
+        cargs.port += RAFT_TO_EXECUTOR_PORT
     elif isinstance(cargs.port, list):
-        cargs.port = [port + 1 for port in cargs.port]
+        cargs.port = [port + RAFT_TO_EXECUTOR_PORT for port in cargs.port]
     worker = multiprocessing.Process(
         target=run,
         kwargs={
@@ -205,6 +208,7 @@ def run_stateful(args: 'argparse.Namespace',
             'is_started': is_started,
             'is_shutdown': is_shutdown,
             'is_ready': is_ready,
+            'is_signal_handlers_installed': is_signal_handlers_installed,
             'runtime_cls': runtime_cls,
             'jaml_classes': JAML.registered_classes(),
         },

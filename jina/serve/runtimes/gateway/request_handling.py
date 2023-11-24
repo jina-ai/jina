@@ -1,6 +1,4 @@
-import asyncio
 import itertools
-import threading
 from typing import TYPE_CHECKING, AsyncIterator, Dict
 
 from jina.enums import ProtocolType

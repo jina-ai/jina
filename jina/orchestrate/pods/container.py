@@ -1,12 +1,10 @@
 import argparse
-import asyncio
 import copy
 import multiprocessing
 import os
 import platform
 import re
 import signal
-import threading
 import time
 from typing import TYPE_CHECKING, Dict, Optional, Union
 
@@ -25,21 +23,21 @@ from jina.orchestrate.pods.container_helper import (
 from jina.parsers import set_gateway_parser
 
 if TYPE_CHECKING:  # pragma: no cover
+    import threading
     from docker.client import DockerClient
 
 
 def _docker_run(
-    client: 'DockerClient',
-    args: 'argparse.Namespace',
-    container_name: str,
-    envs: Dict,
-    net_mode: Optional[str],
-    logger: 'JinaLogger',
+        client: 'DockerClient',
+        args: 'argparse.Namespace',
+        container_name: str,
+        envs: Dict,
+        net_mode: Optional[str],
+        logger: 'JinaLogger',
 ):
     # important to notice, that client is not assigned as instance member to avoid potential
     # heavy copy into new process memory space
     import warnings
-
     import docker
 
     docker_version = client.version().get('Version')
@@ -116,7 +114,7 @@ def _docker_run(
 
     _volumes = {}
     if not getattr(args, 'disable_auto_volume', None) and not getattr(
-        args, 'volumes', None
+            args, 'volumes', None
     ):
         (
             generated_volumes,
@@ -177,16 +175,16 @@ def _docker_run(
 
 
 def run(
-    args: 'argparse.Namespace',
-    name: str,
-    container_name: str,
-    net_mode: Optional[str],
-    runtime_ctrl_address: str,
-    envs: Dict,
-    is_started: Union['multiprocessing.Event', 'threading.Event'],
-    is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
-    is_ready: Union['multiprocessing.Event', 'threading.Event'],
-    is_signal_handlers_installed: Union['multiprocessing.Event', 'threading.Event'],
+        args: 'argparse.Namespace',
+        name: str,
+        container_name: str,
+        net_mode: Optional[str],
+        runtime_ctrl_address: str,
+        envs: Dict,
+        is_started: Union['multiprocessing.Event', 'threading.Event'],
+        is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
+        is_ready: Union['multiprocessing.Event', 'threading.Event'],
+        is_signal_handlers_installed: Union['multiprocessing.Event', 'threading.Event'],
 ):
     """Method to be run in a process that stream logs from a Container
 
@@ -213,18 +211,23 @@ def run(
     :param is_ready: concurrency event to communicate runtime is ready to receive messages
     """
     import docker
+    import asyncio
 
     log_kwargs = copy.deepcopy(vars(args))
     log_kwargs['log_config'] = 'docker'
     logger = JinaLogger(name, **log_kwargs)
 
-    cancel = threading.Event()
-    fail_to_start = threading.Event()
+    cancel = False
+    fail_to_start = False
+
+    def _set_cancel(*args, **kwargs):
+        cancel = True
 
     if not __windows__:
+
         try:
             for signame in {signal.SIGINT, signal.SIGTERM}:
-                signal.signal(signame, lambda *args, **kwargs: cancel.set())
+                signal.signal(signame, _set_cancel)
         except (ValueError, RuntimeError) as exc:
             logger.warning(
                 f'The process starting the container for {name} will not be able to handle termination signals. '
@@ -232,14 +235,14 @@ def run(
             )
     else:
         with ImportExtensions(
-            required=True,
-            logger=logger,
-            help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
+                required=True,
+                logger=logger,
+                help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
                 If you're using conda, please use the command `conda install -c anaconda pywin32`''',
         ):
             import win32api
 
-        win32api.SetConsoleCtrlHandler(lambda *args, **kwargs: cancel.set(), True)
+        win32api.SetConsoleCtrlHandler(_set_cancel, True)
 
     is_signal_handlers_installed.set()
     client = docker.from_env()
@@ -272,23 +275,23 @@ def run(
 
         async def _check_readiness(container):
             while (
-                _is_container_alive(container)
-                and not _is_ready()
-                and not cancel.is_set()
+                    _is_container_alive(container)
+                    and not _is_ready()
+                    and not cancel
             ):
                 await asyncio.sleep(0.1)
             if _is_container_alive(container):
                 is_started.set()
                 is_ready.set()
             else:
-                fail_to_start.set()
+                fail_to_start = True
 
         async def _stream_starting_logs(container):
             for line in container.logs(stream=True):
                 if (
-                    not is_started.is_set()
-                    and not fail_to_start.is_set()
-                    and not cancel.is_set()
+                        not is_started.is_set()
+                        and not fail_to_start
+                        and not cancel
                 ):
                     await asyncio.sleep(0.01)
                 msg = line.decode().rstrip()  # type: str
@@ -318,9 +321,9 @@ class ContainerPod(BasePod):
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
         if (
-            self.args.docker_kwargs
-            and 'extra_hosts' in self.args.docker_kwargs
-            and __docker_host__ in self.args.docker_kwargs['extra_hosts']
+                self.args.docker_kwargs
+                and 'extra_hosts' in self.args.docker_kwargs
+                and __docker_host__ in self.args.docker_kwargs['extra_hosts']
         ):
             self.args.docker_kwargs.pop('extra_hosts')
         self._net_mode = None
@@ -336,9 +339,9 @@ class ContainerPod(BasePod):
             network = get_docker_network(client)
 
             if (
-                self.args.docker_kwargs
-                and 'extra_hosts' in self.args.docker_kwargs
-                and __docker_host__ in self.args.docker_kwargs['extra_hosts']
+                    self.args.docker_kwargs
+                    and 'extra_hosts' in self.args.docker_kwargs
+                    and __docker_host__ in self.args.docker_kwargs['extra_hosts']
             ):
                 ctrl_host = __docker_host__
             elif network:
