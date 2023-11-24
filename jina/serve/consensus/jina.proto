@@ -55,9 +55,11 @@ message EndpointsProto {
 
     // list of endpoints exposed by an Executor
     repeated string endpoints = 1;
-    repeated string write_endpoints = 2;
+    // TODO(niebayes): regenerate proto files.
+    repeated string read_endpoints = 2;
+    repeated string write_endpoints = 3;
     // Dictionary containing input and output schema per endpoint
-    google.protobuf.Struct schemas = 3; // extra kwargs that will be used in executor
+    google.protobuf.Struct schemas = 4; // extra kwargs that will be used in executor
 }
 
 /**

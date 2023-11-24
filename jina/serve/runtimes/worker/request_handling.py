@@ -998,6 +998,8 @@ class WorkerRequestHandler:
         self.logger.debug('recv an endpoint discovery request')
         endpoints_proto = jina_pb2.EndpointsProto()
         endpoints_proto.endpoints.extend(list(self._executor.requests.keys()))
+        # TODO(niebayes): add read_endpoints to the proto.
+        endpoints_proto.read_endpoints.extend(list(self._executor.read_endpoints))
         endpoints_proto.write_endpoints.extend(list(self._executor.write_endpoints))
         schemas = self._executor._get_endpoint_models_dict()
         if docarray_v2:

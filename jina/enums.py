@@ -264,6 +264,13 @@ class WebsocketSubProtocols(str, Enum):
     BYTES = 'bytes'
 
 
+class ConsistencyMode(str, BetterEnum):
+    """Consistency mode supported by the consensus module"""
+
+    EVENTUAL = 'Eventual'
+    STRONG = 'Strong'
+
+    
 class ProviderType(BetterEnum):
     """Provider type."""
 
