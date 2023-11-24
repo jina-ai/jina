@@ -1,7 +1,6 @@
 import argparse
 import asyncio
 import signal
-import threading
 import time
 from typing import TYPE_CHECKING, Optional, Union
 
@@ -21,6 +20,7 @@ from jina.serve.runtimes.gateway.websocket import WebSocketGateway
 from jina.serve.runtimes.servers import BaseServer
 
 if TYPE_CHECKING:  # pragma: no cover
+    import threading
     import multiprocessing
 
 HANDLED_SIGNALS = (
