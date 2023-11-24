@@ -117,8 +117,7 @@ def test_stateful_index_search(executor_cls, shards, tmpdir, stateful_exec_docke
 @pytest.mark.timeout(240)
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
 @pytest.mark.parametrize('shards', [2, 1])
-@pytest.mark.skip()
-#@pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
+@pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
 def test_stateful_index_search_restore(executor_cls, shards, tmpdir, stateful_exec_docker_image_built,
                                        kill_all_children):
     replicas = 3
@@ -165,8 +164,7 @@ def test_stateful_index_search_restore(executor_cls, shards, tmpdir, stateful_ex
         assert_all_replicas_indexed(dep, search_da)
 
 
-#@pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
-@pytest.mark.skip()
+@pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
 @pytest.mark.parametrize('shards', [1, 2])
 def test_stateful_index_search_container(shards, tmpdir, stateful_exec_docker_image_built):
     replicas = 3
@@ -201,22 +199,21 @@ def test_stateful_index_search_container(shards, tmpdir, stateful_exec_docker_im
         time.sleep(10)
         # checking against the main read replica
         assert_is_indexed(dep, search_da)
-        assert_all_replicas_indexed(dep, search_da, key='random_num')
+        assert_all_replicas_indexed(dep, search_da, key='num')
 
     # test restoring
     with dep:
         index_da = DocumentArray[TextDocWithId](
-            [Document(id=f'{i}', text=f'ID {i}') for i in range(100, 200)]
+            [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(100, 200)]
         )
         dep.index(inputs=index_da, request_size=1, return_type=DocumentArray[TextDocWithId])
         time.sleep(10)
         search_da = DocumentArray[TextDocWithId]([TextDocWithId(id=f'{i}') for i in range(200)])
-        assert_all_replicas_indexed(dep, search_da, key='random_num')
+        assert_all_replicas_indexed(dep, search_da, key='num')
 
 
-#@pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
-@pytest.mark.skip()
-@pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
+@pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
+@pytest.mark.parametrize('executor_cls', [MyStateExecutor])
 def test_add_new_replica(executor_cls, tmpdir):
     from jina.parsers import set_pod_parser
     from jina.orchestrate.pods.factory import PodFactory
@@ -263,18 +260,22 @@ def test_add_new_replica(executor_cls, tmpdir):
                 try:
                     leader_address = f'0.0.0.0:{port}'  # detect the Pods addresses of the original Flow
                     voter_address = f'0.0.0.0:{new_replica_port}'
+
                     import jraft
                     jraft.add_voter(
                         leader_address, '4', voter_address
                     )
                     break
-                except:
+                except Exception as exc:
                     pass
+
             time.sleep(10)
+
             index_da = DocumentArray[TextDocWithId](
                 [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(100, 200)]
             )
             ctx_mngr.index(inputs=index_da, request_size=1, return_type=DocumentArray[TextDocWithId])
+
             time.sleep(10)
             search_da = DocumentArray[TextDocWithId]([TextDocWithId(id=f'{i}') for i in range(200)])
             client = Client(port=new_replica_port)

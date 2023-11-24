@@ -193,10 +193,12 @@ def run_stateful(args: 'argparse.Namespace',
     )
     cargs = copy.deepcopy(args)
 
+    from jina.constants import RAFT_TO_EXECUTOR_PORT
+
     if isinstance(cargs.port, int):
-        cargs.port += 1
+        cargs.port += RAFT_TO_EXECUTOR_PORT
     elif isinstance(cargs.port, list):
-        cargs.port = [port + 1 for port in cargs.port]
+        cargs.port = [port + RAFT_TO_EXECUTOR_PORT for port in cargs.port]
     worker = multiprocessing.Process(
         target=run,
         kwargs={
