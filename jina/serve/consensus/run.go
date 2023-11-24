@@ -2,7 +2,7 @@ package main
 
 // #include <Python.h>
 // #include <stdbool.h>
-// int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, char **executorTarget, int *HeartbeatTimeout, int *ElectionTimeout, int *CommitTimeout, int *MaxAppendEntries, bool *BatchApplyCh, bool *ShutdownOnRemove, uint64_t *TrailingLogs, int *snapshotInterval, uint64_t *SnapshotThreshold, int *LeaderLeaseTimeout, char **LogLevel, bool *NoSnapshotRestoreOnStart);
+// int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, char **name, char **executorTarget, int *HeartbeatTimeout, int *ElectionTimeout, int *CommitTimeout, int *MaxAppendEntries, bool *BatchApplyCh, bool *ShutdownOnRemove, uint64_t *TrailingLogs, int *snapshotInterval, uint64_t *SnapshotThreshold, int *LeaderLeaseTimeout, char **LogLevel, bool *NoSnapshotRestoreOnStart);
 // int PyArg_ParseTuple_add_voter(PyObject * args, char **a, char **b, char **c);
 // int PyArg_ParseTuple_get_configuration(PyObject * args, char **a, char **b);
 // void raise_exception(char *msg);
@@ -35,6 +35,7 @@ import (
 )
 
 func NewRaft(ctx context.Context,
+            name string,
             myID string,
             myAddress string,
             raftDir string,
@@ -66,7 +67,7 @@ func NewRaft(ctx context.Context,
     config.LogLevel                 = LogLevel
     config.NoSnapshotRestoreOnStart = NoSnapshotRestoreOnStart
     config.Logger = hclog.New(&hclog.LoggerOptions{
-                    Name:   "raft-" + myID,
+                    Name:   "RAFT-" + name,
                     Level:  hclog.LevelFromString(LogLevel),
                 })
 
@@ -120,6 +121,7 @@ func NewRaft(ctx context.Context,
 func Run(myAddr string,
          raftId string,
          raftDir string,
+         name string,
          executorTarget string,
          HeartbeatTimeout int,
          ElectionTimeout int,
@@ -134,7 +136,7 @@ func Run(myAddr string,
          LogLevel string,
          NoSnapshotRestoreOnStart bool) {
     run_logger := hclog.New(&hclog.LoggerOptions{
-                    Name:   "run_raft-" + raftId,
+                    Name:   "RAFT-" + name,
                     Level:  hclog.LevelFromString(LogLevel),
                 })
     if raftId == "" {
@@ -155,9 +157,10 @@ func Run(myAddr string,
     }
     defer sock.Close()
 
-    executorFSM := jinaraft.NewExecutorFSM(executorTarget, LogLevel, raftId)
+    executorFSM := jinaraft.NewExecutorFSM(executorTarget, LogLevel, name, raftId)
 
     r, tm, err := NewRaft(ctx,
+                        name,
                         raftId,
                         myAddr,
                         raftDir,
@@ -180,37 +183,23 @@ func Run(myAddr string,
     }
     grpcServer := grpc.NewServer()
     rpc_logger := hclog.New(&hclog.LoggerOptions{
-                    Name:   "rpc-" + raftId,
+                    Name:   "RPC-" + name,
                     Level:  hclog.LevelFromString(LogLevel),
                 })
 
-    pb.RegisterJinaSingleDataRequestRPCServer(grpcServer, &jinaraft.RpcInterface{
-        Executor: executorFSM,
-        Raft:     r,
-        Logger:   rpc_logger,
-    })
-    pb.RegisterJinaDiscoverEndpointsRPCServer(grpcServer, &jinaraft.RpcInterface{
-        Executor: executorFSM,
-        Raft:     r,
-        Logger:   rpc_logger,
-    })
-    pb.RegisterJinaInfoRPCServer(grpcServer, &jinaraft.RpcInterface{
-        Executor: executorFSM,
-        Raft:     r,
-        Logger:   rpc_logger,
-    })
-    pb.RegisterJinaRPCServer(grpcServer, &jinaraft.RpcInterface{
-                                    Executor: executorFSM,
-                                    Raft:     r,
-                                    Logger:   rpc_logger,
-                              })
+    rpc_interface := jinaraft.RpcInterface{
+                            Executor: executorFSM,
+                            Raft:     r,
+                            Logger:   rpc_logger,
+                        }
+
+    pb.RegisterJinaSingleDataRequestRPCServer(grpcServer, &rpc_interface)
+    pb.RegisterJinaDiscoverEndpointsRPCServer(grpcServer, &rpc_interface)
+    pb.RegisterJinaInfoRPCServer(grpcServer, &rpc_interface)
+    pb.RegisterJinaRPCServer(grpcServer, &rpc_interface)
     tm.Register(grpcServer)
 
-    healthpb.RegisterHealthServer(grpcServer, &jinaraft.RpcInterface{
-        Executor: executorFSM,
-        Raft:     r,
-        Logger:   rpc_logger,
-    })
+    healthpb.RegisterHealthServer(grpcServer, &rpc_interface)
 
     raftadmin.Register(grpcServer, r)
     reflection.Register(grpcServer)
@@ -251,6 +240,7 @@ func findServerByID(servers []raft.Server, id raft.ServerID) *raft.Server {
 func main() {
     raftDefaultConfig := raft.DefaultConfig()
 
+    name                     := flag.String("name", "executor", "name to identify in the logger the Node")
     myAddr                   := flag.String("address", "localhost:50051", "TCP host+port for this node")
     raftId                   := flag.String("raft_id", "", "Node id used by Raft")
     raftDir                  := flag.String("raft_data_dir", "data/", "Raft data dir")
@@ -271,6 +261,7 @@ func main() {
     Run(*myAddr,
         *raftId,
         *raftDir,
+        *name,
         *executorTarget,
         *HeartbeatTimeout,
         *ElectionTimeout,
@@ -292,6 +283,7 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
     var myAddr *C.char
     var raftId *C.char
     var raftDir *C.char
+    var name *C.char
     var executorTarget *C.char
     var HeartbeatTimeout C.int
     var ElectionTimeout C.int
@@ -327,6 +319,7 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
                              &myAddr,
                              &raftId,
                              &raftDir,
+                             &name,
                              &executorTarget,
                              &HeartbeatTimeout,
                              &ElectionTimeout,
@@ -343,6 +336,7 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
         Run(C.GoString(myAddr),
             C.GoString(raftId),
             C.GoString(raftDir),
+            C.GoString(name),
             C.GoString(executorTarget),
             int(HeartbeatTimeout),
             int(ElectionTimeout),

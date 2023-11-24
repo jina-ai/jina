@@ -48,7 +48,7 @@ def run_raft(
     executor_target = f'{args.host}:{port + RAFT_TO_EXECUTOR_PORT}'
 
     # if the Executor was already persisted, retrieve its port and host configuration
-    logger = JinaLogger('run_raft', **vars(args))
+    logger = JinaLogger(context=f'RAFT-{args.name}', **vars(args))
     persisted_address = jraft.get_configuration(raft_id, raft_dir)
     if persisted_address:
         logger.debug(f'Configuration found on the node: Address {persisted_address}')
@@ -65,6 +65,7 @@ def run_raft(
         address,
         raft_id,
         raft_dir,
+        args.name,
         executor_target,
         **raft_configuration,
     )
