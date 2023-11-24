@@ -2,7 +2,6 @@ import argparse
 import asyncio
 import json
 import os
-import threading
 from collections import defaultdict
 from typing import TYPE_CHECKING, AsyncIterator, Dict, List, Optional, Tuple, Any
 
@@ -140,7 +139,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         self._gathering_endpoints = False
         self.runtime_name = runtime_name
         self._pydantic_models_by_endpoint = None
-        self.endpoints_discovery_stop_event = threading.Event()
+        self.endpoints_discovery_stop_event = asyncio.Event()
         self.endpoints_discovery_task = None
         if docarray_v2:
             self.endpoints_discovery_task = asyncio.create_task(
