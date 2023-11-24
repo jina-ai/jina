@@ -1,7 +1,6 @@
 import asyncio
 import json
 import os
-import threading
 from typing import (
     TYPE_CHECKING,
     AsyncIterator,
