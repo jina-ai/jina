@@ -107,6 +107,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [3.8]
+        protobuf-version: ['==3.19.6', '']
     steps:
       - uses: actions/checkout@v2.5.0
       - name: Set up Python ${{ matrix.python-version }}
@@ -134,7 +135,11 @@ jobs:
           python -m pip install wheel
           WHEEL_FILE=$(ls dist/*whl)
           pip install "$WHEEL_FILE[common,devel,test]" --no-cache-dir
-          pip install -U protobuf${{ matrix.protobuf-version }} grpcio==1.47.5 grpcio-reflection==1.47.5 grpcio-health-checking==1.47.5
+          if [[ "${{ matrix.protobuf-version }}" == "==3.19.6" ]]; then
+            pip install -U protobuf${{ matrix.protobuf-version }} grpcio==1.47.5 grpcio-reflection==1.47.5 grpcio-health-checking==1.47.5
+          else
+            pip install -U protobuf${{ matrix.protobuf-version }}
+          fi
           jina
           export JINA_LOG_LEVEL="ERROR"
       - name: Test
@@ -156,7 +161,7 @@ jobs:
       - name: Test stateful
         id: test_stateful
         run: |
-          JINA_LOG_LEVEL=DEBUG JINA_RANDOM_PORT_MAX="60535" pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/stateful
+          JINA_LOG_LEVEL=DEBUG JINA_RANDOM_PORT_MAX="60535" pytest --suppress-no-test-exit-code --force-flaky --maxfail 1 --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/stateful
           echo "flag it as jina for codeoverage"
           echo "codecov_flag=jina" >> $GITHUB_OUTPUT
         timeout-minutes: 30
