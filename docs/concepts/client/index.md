@@ -158,6 +158,31 @@ For instance, if you're building a web server, you can introduce multi-processin
 `gunicorn`: `gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker ...`
 ````
 
+## Client API
+
+When using `docarray>=0,30`, you specify the schema that you expect the Deployment or Flow to return. You can pass the return type by using the `return_type` parameter in the `client.post` method:
+
+```{code-block} python
+---
+emphasize-lines: 7
+---
+from jina import Client
+from docarray import DocList, BaseDoc
+
+class InputDoc(BaseDoc):
+    text: str = ''
+
+class OutputDoc(BaseDoc):
+    tags: Dict[str, int] = {}
+
+c = Client(host='https://my.awesome.flow:1234', port=4321)
+c.post(
+    on='/',
+    inputs=InputDoc(),
+    return_type=DocList[OutputDoc],
+)
+```
+
 (client-compress)=
 ## Enable compression
 
@@ -178,11 +203,11 @@ One can also specify the compression of the internal communication {ref}`as desc
 
 
 
-## Test readiness of the Flow
+## Test readiness of the server
 
-```{include} ../flow/readiness.md
-:start-after: <!-- start flow-ready -->
-:end-before: <!-- end flow-ready -->
+```{include} ../orchestration/readiness.md
+:start-after: <!-- start ready-from-client -->
+:end-before: <!-- end ready-from-client -->
 ```
 
 ## Simple profiling of the latency

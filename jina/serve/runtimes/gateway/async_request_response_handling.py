@@ -1,10 +1,10 @@
 import asyncio
 import copy
-from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
+from typing import TYPE_CHECKING, AsyncGenerator, Callable, List, Optional, Tuple, Type
 
 import grpc.aio
 
-from jina._docarray import DocumentArray
+from jina._docarray import DocumentArray, docarray_v2
 from jina.excepts import InternalNetworkError
 from jina.helper import GATEWAY_NAME
 from jina.logging.logger import JinaLogger
@@ -13,7 +13,6 @@ from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.runtimes.helper import _is_param_for_specific_executor
 from jina.serve.runtimes.monitoring import MonitoringRequestMixin
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
-from jina._docarray import docarray_v2
 
 if TYPE_CHECKING:  # pragma: no cover
     from asyncio import Future
@@ -33,11 +32,11 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
     """
 
     def __init__(
-            self,
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            meter: Optional['Meter'] = None,
-            runtime_name: Optional[str] = None,
-            logger: Optional[JinaLogger] = None,
+        self,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        meter: Optional['Meter'] = None,
+        runtime_name: Optional[str] = None,
+        logger: Optional[JinaLogger] = None,
     ):
         super().__init__(metrics_registry, meter, runtime_name)
         self._endpoint_discovery_finished = False
@@ -45,7 +44,7 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
         self.logger = logger or JinaLogger(self.__class__.__name__)
 
     def handle_request(
-            self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
+        self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
     ) -> Callable[['Request'], 'Tuple[Future, Optional[Future]]']:
         """
         Function that handles the requests arriving to the gateway. This will be passed to the streamer.
@@ -64,8 +63,8 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
                     err_code = err.code()
                     if err_code == grpc.StatusCode.UNAVAILABLE:
                         err._details = (
-                                err.details()
-                                + f' |Gateway: Communication error while gathering endpoints with deployment at address(es) {err.dest_addr}. Head or worker(s) may be down.'
+                            err.details()
+                            + f' |Gateway: Communication error while gathering endpoints with deployment at address(es) {err.dest_addr}. Head or worker(s) may be down.'
                         )
                         raise err
                     else:
@@ -75,7 +74,9 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
                     raise exc
                 self._endpoint_discovery_finished = True
 
-        def _handle_request(request: 'Request') -> 'Tuple[Future, Optional[Future]]':
+        def _handle_request(
+            request: 'Request', return_type: Type[DocumentArray]
+        ) -> 'Tuple[Future, Optional[Future]]':
             self._update_start_request_metrics(request)
             # important that the gateway needs to have an instance of the graph per request
             request_graph = copy.deepcopy(graph)
@@ -100,11 +101,10 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
             request.header.target_executor = ''
             exec_endpoint = request.header.exec_endpoint
             gather_endpoints_task = None
-            if (
-                    not self._endpoint_discovery_finished
-                    and not self._gathering_endpoints
-            ):
-                gather_endpoints_task = asyncio.create_task(gather_endpoints(request_graph))
+            if not self._endpoint_discovery_finished and not self._gathering_endpoints:
+                gather_endpoints_task = asyncio.create_task(
+                    gather_endpoints(request_graph)
+                )
 
             init_task = None
             request_doc_ids = []
@@ -112,8 +112,8 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
             if graph.has_filter_conditions:
                 if not docarray_v2:
                     request_doc_ids = request.data.docs[
-                                      :, 'id'
-                                      ]  # used to maintain order of docs that are filtered by executors
+                        :, 'id'
+                    ]  # used to maintain order of docs that are filtered by executors
                 else:
                     init_task = gather_endpoints_task
                     from docarray import DocList
@@ -137,7 +137,8 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
                     request_input_parameters=request_input_parameters,
                     request_input_has_specific_params=has_specific_params,
                     copy_request_at_send=num_outgoing_nodes > 1 and has_specific_params,
-                    init_task=init_task
+                    init_task=init_task,
+                    return_type=return_type,
                 )
                 # Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their
                 # subtrees that unwrap all the previous tasks. It starts like a chain of waiting for tasks from previous
@@ -157,7 +158,7 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
                 response.data.docs = DocumentArray(sorted_docs)
 
             async def _process_results_at_end_gateway(
-                    tasks: List[asyncio.Task], request_graph: TopologyGraph
+                tasks: List[asyncio.Task], request_graph: TopologyGraph
             ) -> asyncio.Future:
                 try:
                     partial_responses = await asyncio.gather(*tasks)
@@ -204,6 +205,44 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
                 if len(floating_tasks) > 0
                 else None,
             )
+
+        return _handle_request
+
+    def handle_single_document_request(
+        self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
+    ) -> Callable[['Request', Type[DocumentArray]], 'AsyncGenerator']:
+        """
+        Function that handles the requests arriving to the gateway. This will be passed to the streamer.
+
+        :param graph: The TopologyGraph of the Flow.
+        :param connection_pool: The connection pool to be used to send messages to specific nodes of the graph
+        :return: Return a Function that given a Request will return a Future from where to extract the response
+        """
+
+        async def _handle_request(
+            request: 'Request', return_type: Type[DocumentArray] = DocumentArray
+        ) -> 'Tuple[Future, Optional[Future]]':
+            self._update_start_request_metrics(request)
+            # important that the gateway needs to have an instance of the graph per request
+            request_graph = copy.deepcopy(graph)
+            r = request.routes.add()
+            r.executor = 'gateway'
+            r.start_time.GetCurrentTime()
+            # If the request is targeting a specific deployment, we can send directly to the deployment instead of
+            # querying the graph
+            # reset it in case we send to an external gateway
+            exec_endpoint = request.header.exec_endpoint
+
+            node = request_graph.all_nodes[
+                0
+            ]  # this assumes there is only one Executor behind this Gateway
+            async for resp in node.stream_single_doc(
+                request=request,
+                connection_pool=connection_pool,
+                endpoint=exec_endpoint,
+                return_type=return_type,
+            ):
+                yield resp
 
         return _handle_request
 

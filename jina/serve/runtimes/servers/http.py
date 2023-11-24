@@ -122,7 +122,9 @@ class FastAPIBaseServer(BaseServer):
             )
 
             if isinstance(self._request_handler, GatewayRequestHandler):
-                await self._request_handler.streamer._get_endpoints_input_output_models(is_cancel=self.is_cancel)
+                await self._request_handler.streamer._get_endpoints_input_output_models(
+                    is_cancel=self.is_cancel
+                )
                 self._request_handler.streamer._validate_flow_docarray_compatibility()
 
         # app property will generate a new fastapi app each time called
@@ -137,7 +139,7 @@ class FastAPIBaseServer(BaseServer):
                 **self.uvicorn_kwargs,
             )
         )
-        self.logger.debug(f'UviServer server setup')
+        self.logger.debug(f'UviServer server setup on port {self.port}')
         await self.server.setup()
         self.logger.debug(f'HTTP server setup successful')
 
@@ -170,7 +172,9 @@ class FastAPIBaseServer(BaseServer):
         return self._should_exit
 
     @staticmethod
-    def is_ready(ctrl_address: str, timeout: float = 1.0, logger=None, **kwargs) -> bool:
+    def is_ready(
+        ctrl_address: str, timeout: float = 1.0, logger=None, **kwargs
+    ) -> bool:
         """
         Check if status is ready.
         :param ctrl_address: the address where the control request needs to be sent
@@ -192,7 +196,9 @@ class FastAPIBaseServer(BaseServer):
             return False
 
     @staticmethod
-    async def async_is_ready(ctrl_address: str, timeout: float = 1.0, logger=None, **kwargs) -> bool:
+    async def async_is_ready(
+        ctrl_address: str, timeout: float = 1.0, logger=None, **kwargs
+    ) -> bool:
         """
         Async Check if status is ready.
         :param ctrl_address: the address where the control request needs to be sent
@@ -243,6 +249,43 @@ class HTTPServer(FastAPIBaseServer):
         :return: Return a FastAPI app for the default HTTPGateway
         """
         return self._request_handler._http_fastapi_default_app(
+            title=self.title,
+            description=self.description,
+            no_crud_endpoints=self.no_crud_endpoints,
+            no_debug_endpoints=self.no_debug_endpoints,
+            expose_endpoints=self.expose_endpoints,
+            expose_graphql_endpoint=self.expose_graphql_endpoint,
+            tracing=self.tracing,
+            tracer_provider=self.tracer_provider,
+            cors=self.cors,
+            logger=self.logger,
+        )
+
+
+class SagemakerHTTPServer(FastAPIBaseServer):
+    """
+    :class:`SagemakerHTTPServer` is a FastAPIBaseServer that uses a custom FastAPI app for sagemaker endpoints
+
+    """
+
+    @property
+    def port(self):
+        """Get the port for the sagemaker server
+        :return: Return the port for the sagemaker server, always 8080"""
+        return 8080
+
+    @property
+    def ports(self):
+        """Get the port for the sagemaker server
+        :return: Return the port for the sagemaker server, always 8080"""
+        return [8080]
+
+    @property
+    def app(self):
+        """Get the sagemaker fastapi app
+        :return: Return a FastAPI app for the sagemaker container
+        """
+        return self._request_handler._http_fastapi_sagemaker_app(
             title=self.title,
             description=self.description,
             no_crud_endpoints=self.no_crud_endpoints,

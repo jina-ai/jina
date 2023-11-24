@@ -1,6 +1,5 @@
 import asyncio
 import base64
-import dis
 import functools
 import inspect
 import json
@@ -909,7 +908,6 @@ class ArgNamespace:
 
 
 def is_valid_local_config_source(path: str) -> bool:
-    # TODO: this function must be refactored before 1.0 (Han 12.22)
     """
     Check if the path is valid.
 
@@ -1667,11 +1665,5 @@ def send_telemetry_event(event: str, obj_cls_name: Any, **kwargs) -> None:
 
 
 def is_generator(func):
-    try:
-        bytecode = dis.Bytecode(func)
-        for instruction in bytecode:
-            if instruction.opname in ['YIELD_VALUE', 'YIELD_FROM']:
-                return True
-        return False
-    except TypeError:
-        return False
+    import inspect
+    return inspect.isgeneratorfunction(func) or inspect.isasyncgenfunction(func)

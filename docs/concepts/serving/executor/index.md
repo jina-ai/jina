@@ -1,37 +1,38 @@
 (executor-cookbook)=
 # Executor
 
-An {class}`~jina.Executor` is a self-contained microservice that performs a task on a `DocumentArray`. 
+An {class}`~jina.Executor` is a self-contained service that performs a task on `Documents`. 
 
 You can create an Executor by extending the `Executor` class and adding logic to endpoint methods.
 
-There is a wide selection of pre-built Executors available on Jina AI's [Executor Hub](https://cloud.jina.ai/executors). See the {ref}`Hub section <jina-hub>` for more information.
-
 ## Why use Executors?
 
-Once you've learned `DocumentArray`, you can use all its power and expressiveness to build a multimodal application.
-But what if you want to go bigger? Organize your code into modules, serve and scale them independently as microservices? That's where Executors come in.
+Once you've learned about `Documents` and `DocList` from [docarray](https://docs.docarray.org/), you can use all its power and expressiveness to build a multimodal application.
+But what if you want to go bigger? Organize your code into modules, serve and scale them? That's where Executors come in.
 
-- Executors let you organize DocumentArray-based functions into logical entities that can share configuration state, following OOP.
+- Executors let you organize functions into logical entities that can share configuration state, following OOP.
 - Executors can be easily containerized and shared with your colleagues using `jina hub push/pull`.
-- Executors can be exposed as a service over gRPC using `~jina.Deployment`.
+- Executors can be exposed as a service over gRPC or HTTP using `~jina.Deployment`.
 - Executors can be chained together to form a `~jina.Flow`.
 
 ## Minimum working example
 
 ```python
-from jina import Executor, requests, DocumentArray, Document, Deployment
+from jina import Executor, requests, Deployment
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class MyExecutor(Executor):
     @requests
-    def foo(self, docs, **kwargs):
+    def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         for d in docs:
             d.text = 'hello world'
+        return docs
 
 
 with Deployment(uses=MyExecutor) as dep:
-    response_docs = dep.post(on='/', inputs=DocumentArray([Document(text='hello')]))
+    response_docs = dep.post(on='/', inputs=DocList[TextDoc]([TextDoc(text='hello')]), return_type=DocList[TextDoc])
     print(f'Text: {response_docs[0].text}')
 ```
 

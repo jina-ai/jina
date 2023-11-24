@@ -1,6 +1,5 @@
 import asyncio
-import time
-from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Set, Tuple, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Set, Tuple, Union, AsyncGenerator
 
 import grpc
 from grpc.aio import AioRpcError
@@ -21,10 +20,9 @@ from jina.serve.networking.instrumentation import (
 from jina.serve.networking.replica_list import _ReplicaList
 from jina.serve.networking.utils import DEFAULT_MINIMUM_RETRIES
 from jina.types.request import Request
+from jina.types.request.data import SingleDocumentRequest
 
 if TYPE_CHECKING:  # pragma: no cover
-    import threading
-
     from grpc.aio._interceptor import ClientInterceptor
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
@@ -44,8 +42,8 @@ class GrpcConnectionPool:
     :param compression: The compression algorithm to be used by this GRPCConnectionPool when sending data to GRPC
     """
 
-    K8S_PORT_USES_AFTER = 8082
-    K8S_PORT_USES_BEFORE = 8081
+    K8S_PORT_USES_AFTER = 8079
+    K8S_PORT_USES_BEFORE = 8078
     K8S_PORT = 8080
     K8S_PORT_MONITORING = 9090
 
@@ -266,6 +264,44 @@ class GrpcConnectionPool:
             )
             return None
 
+    def send_single_document_request(
+            self,
+            request: SingleDocumentRequest,
+            deployment: str,
+            metadata: Optional[Dict[str, str]] = None,
+            head: bool = False,
+            endpoint: Optional[str] = None,
+            timeout: Optional[float] = None,
+            retries: Optional[int] = -1,
+    ) -> Optional[AsyncGenerator]:
+        """Send a request to target via only one of the pooled connections
+
+        :param request: request to send
+        :param deployment: name of the Jina deployment to send the request to
+        :param metadata: metadata to send with the request
+        :param head: If True it is send to the head, otherwise to the worker pods
+        :param endpoint: endpoint to target with the requests
+        :param timeout: timeout for sending the requests
+        :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
+        :return: asyncio.Task representing the send call
+        """
+        replicas = self._connections.get_replicas(deployment, head)
+        if replicas:
+            result_async_generator = self._send_single_doc_request(
+                request,
+                replicas,
+                endpoint=endpoint,
+                metadata=metadata,
+                timeout=timeout,
+                retries=retries,
+            )
+            return result_async_generator
+        else:
+            self._logger.debug(
+                f'no available connections for deployment {deployment}'
+            )
+            return None
+
     def add_connection(
             self,
             deployment: str,
@@ -387,6 +423,79 @@ class GrpcConnectionPool:
                 )
             return None
 
+    def _send_single_doc_request(
+            self,
+            request: SingleDocumentRequest,
+            connections: _ReplicaList,
+            endpoint: Optional[str] = None,
+            metadata: Optional[Dict[str, str]] = None,
+            timeout: Optional[float] = None,
+            retries: Optional[int] = -1,
+    ) -> 'asyncio.Task[Union[Tuple, AioRpcError, InternalNetworkError]]':
+        # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
+        # the grpc call function is not a coroutine but some _AioCall
+
+        if endpoint:
+            metadata = metadata or {}
+            metadata['endpoint'] = endpoint
+
+        if metadata:
+            metadata = tuple(metadata.items())
+
+        async def async_generator_wrapper():
+            tried_addresses = set()
+            num_replicas = len(connections.get_all_connections())
+            if retries is None or retries < 0:
+                total_num_tries = (
+                        max(DEFAULT_MINIMUM_RETRIES, len(connections.get_all_connections()))
+                        + 1
+                )
+            else:
+                total_num_tries = 1 + retries  # try once, then do all the retries
+            for i in range(total_num_tries):
+                current_connection = None
+                while (
+                        current_connection is None
+                        or current_connection.address in tried_addresses
+                ):
+                    current_connection = await connections.get_next_connection(
+                        num_retries=total_num_tries
+                    )
+                    # if you request to retry more than the amount of replicas, we just skip, we could balance the
+                    # retries in the future
+                    if len(tried_addresses) >= num_replicas:
+                        break
+                tried_addresses.add(current_connection.address)
+                try:
+                    async for resp, metadata_resp in current_connection.send_single_doc_request(
+                            request=request,
+                            metadata=metadata,
+                            compression=self.compression,
+                            timeout=timeout,
+                    ):
+                        yield resp, metadata_resp
+                    return
+                except AioRpcError as e:
+                    error = await self._handle_aiorpcerror(
+                        error=e,
+                        retry_i=i,
+                        request_id=request.request_id,
+                        tried_addresses=tried_addresses,
+                        total_num_tries=total_num_tries,
+                        current_address=current_connection.address,
+                        current_deployment=current_connection.deployment_name,
+                        connection_list=connections,
+                        task_type='SingleDocumentRequest'
+                    )
+                    if error:
+                        yield error, None
+                        return
+                except Exception as e:
+                    yield e, None
+                    return
+
+        return async_generator_wrapper()
+
     def _send_requests(
             self,
             requests: List[Request],
@@ -502,71 +611,6 @@ class GrpcConnectionPool:
                     return default_endpoints_proto, None
 
         return task_coroutine()
-
-    async def warmup(
-            self,
-            deployment: str,
-            stop_event: 'threading.Event',
-    ):
-        """Executes JinaInfoRPC against the provided deployment. A single task is created for each replica connection.
-        :param deployment: deployment name and the replicas that needs to be warmed up.
-        :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.
-        """
-        self._logger.debug(f'starting warmup task for deployment {deployment}')
-
-        async def task_wrapper(target_warmup_responses, stub):
-            try:
-                call_result = stub.send_info_rpc(timeout=0.5)
-                await call_result
-                target_warmup_responses[stub.address] = True
-            except asyncio.CancelledError:
-                self._logger.debug(f'warmup task got cancelled')
-                target_warmup_responses[stub.address] = False
-                raise
-            except Exception:
-                target_warmup_responses[stub.address] = False
-
-
-        try:
-            start_time = time.time()
-            timeout = start_time + 60 * 5  # 5 minutes from now
-            warmed_up_targets = set()
-            replicas = self._get_all_replicas(deployment)
-
-            while not stop_event.is_set():
-                replica_warmup_responses = {}
-                tasks = []
-                try:
-                    for replica in replicas:
-                        for stub in replica.warmup_stubs:
-                            if stub.address not in warmed_up_targets:
-                                tasks.append(
-                                    asyncio.create_task(
-                                        task_wrapper(replica_warmup_responses, stub)
-                                    )
-                                )
-
-                    await asyncio.gather(*tasks, return_exceptions=True)
-                    for target, response in replica_warmup_responses.items():
-                        if response:
-                            warmed_up_targets.add(target)
-
-                    now = time.time()
-                    if now > timeout or all(list(replica_warmup_responses.values())):
-                        self._logger.debug(
-                            f'completed warmup task in {now - start_time}s.'
-                        )
-                        return
-                    await asyncio.sleep(0.2)
-                except asyncio.CancelledError:
-                    self._logger.debug(f'warmup task got cancelled')
-                    if tasks:
-                        for task in tasks:
-                            task.cancel()
-                    raise
-        except Exception as ex:
-            self._logger.error(f'error with warmup up task: {ex}')
-            return
 
     def _get_all_replicas(self, deployment):
         replica_set = set()

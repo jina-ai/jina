@@ -1,7 +1,6 @@
 import asyncio
 import json
 import os
-import threading
 from typing import (
     TYPE_CHECKING,
     AsyncIterator,
@@ -10,11 +9,11 @@ from typing import (
     Optional,
     Sequence,
     Tuple,
+    Type,
     Union,
-    Type
 )
 
-from jina._docarray import DocumentArray
+from jina._docarray import Document, DocumentArray, docarray_v2
 from jina.excepts import ExecutorError
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2
@@ -25,8 +24,7 @@ from jina.serve.runtimes.gateway.async_request_response_handling import (
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.stream import RequestStreamer
 from jina.types.request import Request
-from jina.types.request.data import DataRequest
-from jina._docarray import docarray_v2
+from jina.types.request.data import DataRequest, SingleDocumentRequest
 
 if docarray_v2:
     from docarray import DocList
@@ -48,23 +46,23 @@ class GatewayStreamer:
     """
 
     def __init__(
-            self,
-            graph_representation: Dict,
-            executor_addresses: Dict[str, Union[str, List[str]]],
-            graph_conditions: Dict = {},
-            deployments_metadata: Dict[str, Dict[str, str]] = {},
-            deployments_no_reduce: List[str] = [],
-            timeout_send: Optional[float] = None,
-            retries: int = 0,
-            compression: Optional[str] = None,
-            runtime_name: str = 'custom gateway',
-            prefetch: int = 0,
-            logger: Optional['JinaLogger'] = None,
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            meter: Optional['Meter'] = None,
-            aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
-            tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
-            grpc_channel_options: Optional[list] = None,
+        self,
+        graph_representation: Dict,
+        executor_addresses: Dict[str, Union[str, List[str]]],
+        graph_conditions: Dict = {},
+        deployments_metadata: Dict[str, Dict[str, str]] = {},
+        deployments_no_reduce: List[str] = [],
+        timeout_send: Optional[float] = None,
+        retries: int = 0,
+        compression: Optional[str] = None,
+        runtime_name: str = 'custom gateway',
+        prefetch: int = 0,
+        logger: Optional['JinaLogger'] = None,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        meter: Optional['Meter'] = None,
+        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
+        tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
+        grpc_channel_options: Optional[list] = None,
     ):
         """
         :param graph_representation: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to
@@ -116,7 +114,11 @@ class GatewayStreamer:
         request_handler = AsyncRequestResponseHandler(
             metrics_registry, meter, runtime_name, logger
         )
-
+        self._single_doc_request_handler = (
+            request_handler.handle_single_document_request(
+                graph=self.topology_graph, connection_pool=self._connection_pool
+            )
+        )
         self._streamer = RequestStreamer(
             request_handler=request_handler.handle_request(
                 graph=self.topology_graph, connection_pool=self._connection_pool
@@ -129,15 +131,15 @@ class GatewayStreamer:
         self._streamer.Call = self._streamer.stream
 
     def _create_connection_pool(
-            self,
-            deployments_addresses,
-            compression,
-            metrics_registry,
-            meter,
-            logger,
-            aio_tracing_client_interceptors,
-            tracing_client_interceptor,
-            grpc_channel_options=None,
+        self,
+        deployments_addresses,
+        compression,
+        metrics_registry,
+        meter,
+        logger,
+        aio_tracing_client_interceptors,
+        tracing_client_interceptor,
+        grpc_channel_options=None,
     ):
         # add the connections needed
         connection_pool = GrpcConnectionPool(
@@ -168,6 +170,16 @@ class GatewayStreamer:
         """
         return self._streamer.stream(*args, **kwargs)
 
+    def rpc_stream_doc(self, *args, **kwargs):
+        """
+        stream requests from client iterator and stream responses back.
+
+        :param args: positional arguments to be passed to inner RequestStreamer
+        :param kwargs: keyword arguments to be passed to inner RequestStreamer
+        :return: An iterator over the responses from the Executors
+        """
+        return self._single_doc_request_handler(*args, **kwargs)
+
     async def _get_endpoints_input_output_models(self, is_cancel):
         """
         Return a Dictionary with endpoints as keys and values as a dictionary of input and output schemas and names
@@ -177,9 +189,11 @@ class GatewayStreamer:
         # The logic should be to get the response of all the endpoints protos schemas from all the nodes. Then do a
         # logic that for every endpoint fom every Executor computes what is the input and output schema seen by the
         # Flow.
-        self._endpoints_models_map = await self._streamer._get_endpoints_input_output_models(self.topology_graph,
-                                                                                             self._connection_pool,
-                                                                                             is_cancel)
+        self._endpoints_models_map = (
+            await self._streamer._get_endpoints_input_output_models(
+                self.topology_graph, self._connection_pool, is_cancel
+            )
+        )
 
     def _validate_flow_docarray_compatibility(self):
         """
@@ -188,14 +202,15 @@ class GatewayStreamer:
         self.topology_graph._validate_flow_docarray_compatibility()
 
     async def stream(
-            self,
-            docs: DocumentArray,
-            request_size: int = 100,
-            return_results: bool = False,
-            exec_endpoint: Optional[str] = None,
-            target_executor: Optional[str] = None,
-            parameters: Optional[Dict] = None,
-            results_in_order: bool = False,
+        self,
+        docs: DocumentArray,
+        request_size: int = 100,
+        return_results: bool = False,
+        exec_endpoint: Optional[str] = None,
+        target_executor: Optional[str] = None,
+        parameters: Optional[Dict] = None,
+        results_in_order: bool = False,
+        return_type: Type[DocumentArray] = DocumentArray,
     ) -> AsyncIterator[Tuple[Union[DocumentArray, 'Request'], 'ExecutorError']]:
         """
         stream Documents and yield Documents or Responses and unpacked Executor error if any.
@@ -207,16 +222,18 @@ class GatewayStreamer:
         :param target_executor: A regex expression indicating the Executors that should receive the Request
         :param parameters: Parameters to be attached to the Requests
         :param results_in_order: return the results in the same order as the request_iterator
+        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.
         :yield: tuple of Documents or Responses and unpacked error from Executors if any
         """
         async for result in self.stream_docs(
-                docs=docs,
-                request_size=request_size,
-                return_results=True,  # force return Responses
-                exec_endpoint=exec_endpoint,
-                target_executor=target_executor,
-                parameters=parameters,
-                results_in_order=results_in_order,
+            docs=docs,
+            request_size=request_size,
+            return_results=True,  # force return Responses
+            exec_endpoint=exec_endpoint,
+            target_executor=target_executor,
+            parameters=parameters,
+            results_in_order=results_in_order,
+            return_type=return_type,
         ):
             error = None
             if jina_pb2.StatusProto.ERROR == result.status.code:
@@ -232,16 +249,66 @@ class GatewayStreamer:
             else:
                 yield result.data.docs, error
 
+    async def stream_doc(
+        self,
+        doc: 'Document',
+        return_results: bool = False,
+        exec_endpoint: Optional[str] = None,
+        target_executor: Optional[str] = None,
+        parameters: Optional[Dict] = None,
+        request_id: Optional[str] = None,
+        return_type: Type[DocumentArray] = DocumentArray,
+    ) -> AsyncIterator[Tuple[Union[DocumentArray, 'Request'], 'ExecutorError']]:
+        """
+        stream Documents and yield Documents or Responses and unpacked Executor error if any.
+
+        :param doc: The Documents to be sent to all the Executors
+        :param return_results: If set to True, the generator will yield Responses and not `DocumentArrays`
+        :param exec_endpoint: The Executor endpoint to which to send the Documents
+        :param target_executor: A regex expression indicating the Executors that should receive the Request
+        :param parameters: Parameters to be attached to the Requests
+        :param request_id: Request ID to add to the request streamed to Executor. Only applicable if request_size is equal or less to the length of the docs
+        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.
+        :yield: tuple of Documents or Responses and unpacked error from Executors if any
+        """
+        req = SingleDocumentRequest()
+        req.document_cls = doc.__class__
+        req.data.doc = doc
+        if request_id:
+            req.header.request_id = request_id
+        if exec_endpoint:
+            req.header.exec_endpoint = exec_endpoint
+        if target_executor:
+            req.header.target_executor = target_executor
+        if parameters:
+            req.parameters = parameters
+
+        async for result in self.rpc_stream_doc(request=req, return_type=return_type):
+            error = None
+            if jina_pb2.StatusProto.ERROR == result.status.code:
+                exception = result.status.exception
+                error = ExecutorError(
+                    name=exception.name,
+                    args=exception.args,
+                    stacks=exception.stacks,
+                    executor=exception.executor,
+                )
+            if return_results:
+                yield result, error
+            else:
+                yield result.data.doc, error
+
     async def stream_docs(
-            self,
-            docs: DocumentArray,
-            request_size: int = 100,
-            return_results: bool = False,
-            exec_endpoint: Optional[str] = None,
-            target_executor: Optional[str] = None,
-            parameters: Optional[Dict] = None,
-            results_in_order: bool = False,
-            request_id: Optional[str] = None
+        self,
+        docs: DocumentArray,
+        request_size: int = 100,
+        return_results: bool = False,
+        exec_endpoint: Optional[str] = None,
+        target_executor: Optional[str] = None,
+        parameters: Optional[Dict] = None,
+        results_in_order: bool = False,
+        request_id: Optional[str] = None,
+        return_type: Type[DocumentArray] = DocumentArray,
     ):
         """
         stream documents and stream responses back.
@@ -254,10 +321,9 @@ class GatewayStreamer:
         :param parameters: Parameters to be attached to the Requests
         :param results_in_order: return the results in the same order as the request_iterator
         :param request_id: Request ID to add to the request streamed to Executor. Only applicable if request_size is equal or less to the length of the docs
+        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.
         :yield: Yields DocumentArrays or Responses from the Executors
         """
-        from jina.types.request.data import DataRequest
-
         request_id = request_id if len(docs) <= request_size else None
 
         def _req_generator():
@@ -276,10 +342,11 @@ class GatewayStreamer:
                     yield req
             else:
                 from docarray import BaseDoc
+
                 def batch(iterable, n=1):
                     l = len(iterable)
                     for ndx in range(0, l, n):
-                        yield iterable[ndx:min(ndx + n, l)]
+                        yield iterable[ndx : min(ndx + n, l)]
 
                 if len(docs) > 0:
                     for docs_batch in batch(docs, n=request_size):
@@ -310,7 +377,9 @@ class GatewayStreamer:
                     yield req
 
         async for resp in self.rpc_stream(
-                request_iterator=_req_generator(), results_in_order=results_in_order
+            request_iterator=_req_generator(),
+            results_in_order=results_in_order,
+            return_type=return_type,
         ):
             if return_results:
                 yield resp
@@ -327,7 +396,7 @@ class GatewayStreamer:
     Call = rpc_stream
 
     async def process_single_data(
-            self, request: DataRequest, context=None
+        self, request: DataRequest, context=None
     ) -> DataRequest:
         """Implements request and response handling of a single DataRequest
         :param request: DataRequest from Client
@@ -357,38 +426,6 @@ class GatewayStreamer:
     def _set_env_streamer_args(**kwargs):
         os.environ['JINA_STREAMER_ARGS'] = json.dumps(kwargs)
 
-    async def warmup(self, stop_event: threading.Event):
-        """Executes warmup task on each deployment. This forces the gateway to establish connection and open a
-        gRPC channel to each executor so that the first request doesn't need to experience the penalty of
-        eastablishing a brand new gRPC channel.
-        :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.
-        """
-        self.logger.debug(f'Running GatewayRuntime warmup')
-        deployments = {key for key in self._executor_addresses.keys()}
-
-        try:
-            deployment_warmup_tasks = []
-            try:
-                for deployment in deployments:
-                    deployment_warmup_tasks.append(
-                        asyncio.create_task(
-                            self._connection_pool.warmup(
-                                deployment=deployment, stop_event=stop_event
-                            )
-                        )
-                    )
-
-                await asyncio.gather(*deployment_warmup_tasks, return_exceptions=True)
-            except asyncio.CancelledError:
-                self.logger.debug(f'Warmup task got cancelled')
-                if deployment_warmup_tasks:
-                    for task in deployment_warmup_tasks:
-                        task.cancel()
-                raise
-        except Exception as ex:
-            self.logger.error(f'error with GatewayRuntime warmup up task: {ex}')
-            return
-
 
 class _ExecutorStreamer:
     def __init__(self, connection_pool: GrpcConnectionPool, executor_name: str) -> None:
@@ -396,14 +433,16 @@ class _ExecutorStreamer:
         self.executor_name = executor_name
 
     async def post(
-            self,
-            inputs: DocumentArray,
-            request_size: int = 100,
-            on: Optional[str] = None,
-            parameters: Optional[Dict] = None,
-            return_type: Type[DocumentArray] = DocumentArray,
-            **kwargs,
+        self,
+        inputs: DocumentArray,
+        request_size: int = 100,
+        on: Optional[str] = None,
+        parameters: Optional[Dict] = None,
+        return_type: Type[DocumentArray] = DocumentArray,
+        **kwargs,
     ):
+        if not parameters:
+            parameters = {}
         if not docarray_v2:
             reqs = []
             for docs_batch in inputs.batch(batch_size=request_size, shuffle=False):
@@ -415,10 +454,11 @@ class _ExecutorStreamer:
                 reqs.append(req)
         else:
             from docarray import BaseDoc
+
             def batch(iterable, n=1):
                 l = len(iterable)
                 for ndx in range(0, l, n):
-                    yield iterable[ndx:min(ndx + n, l)]
+                    yield iterable[ndx : min(ndx + n, l)]
 
             reqs = []
 
@@ -459,3 +499,21 @@ class _ExecutorStreamer:
                 resp.document_array_cls = return_type
                 docs.extend(resp.docs)
         return docs
+
+    async def stream_doc(
+        self,
+        inputs: 'Document',
+        on: Optional[str] = None,
+        parameters: Optional[Dict] = None,
+        **kwargs,
+    ):
+        req: SingleDocumentRequest = SingleDocumentRequest(inputs.to_protobuf())
+        req.header.exec_endpoint = on
+        req.header.target_executor = self.executor_name
+        req.parameters = parameters
+        async_generator = self._connection_pool.send_single_document_request(
+            request=req, deployment=self.executor_name, head=True, endpoint=on
+        )
+
+        async for resp, _ in async_generator:
+            yield resp

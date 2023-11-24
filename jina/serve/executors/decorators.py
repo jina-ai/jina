@@ -308,7 +308,7 @@ def requests(
     *,
     on: Optional[Union[str, Sequence[str]]] = None,
     request_schema: Optional[Type[DocumentArray]] = None,
-    response_schema: Optional[Type[DocumentArray]] = None,
+    response_schema: Optional[Union[Type[DocumentArray], Type[Document]]] = None,
 ):
     """
     `@requests` defines the endpoints of an Executor. It has a keyword `on=` to
@@ -447,8 +447,16 @@ def requests(
             )
 
             fn_with_schema = _FunctionWithSchema(
-                fn_with_schema.fn, request_schema_arg, response_schema_arg
+                fn=fn_with_schema.fn,
+                is_generator=fn_with_schema.is_generator,
+                is_singleton_doc=fn_with_schema.is_singleton_doc,
+                is_batch_docs=fn_with_schema.is_batch_docs,
+                parameters_is_pydantic_model=fn_with_schema.parameters_is_pydantic_model,
+                parameters_model=fn_with_schema.parameters_model,
+                request_schema=request_schema_arg,
+                response_schema=response_schema_arg
             )
+            fn_with_schema.validate()
 
             if isinstance(on, (list, tuple)):
                 for o in on:

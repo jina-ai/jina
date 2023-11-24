@@ -270,6 +270,13 @@ class ConsistencyMode(str, BetterEnum):
     EVENTUAL = 'Eventual'
     STRONG = 'Strong'
 
+    
+class ProviderType(BetterEnum):
+    """Provider type."""
+
+    NONE = 0  #: no provider
+    SAGEMAKER = 1  #: AWS SageMaker
+
 
 def replace_enum_to_str(obj):
     """

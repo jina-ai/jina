@@ -1,7 +1,7 @@
 import inspect
-from typing import TYPE_CHECKING, Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Union
 
-from jina import DocumentArray
+from jina import Document, DocumentArray
 from jina._docarray import docarray_v2
 from jina.importer import ImportExtensions
 from jina.serve.networking.sse import EventSourceResponse
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from jina.logging.logger import JinaLogger
 
 if docarray_v2:
-    from docarray import DocList
+    from docarray import BaseDoc, DocList
 
 
 def get_fastapi_app(
@@ -35,14 +35,18 @@ def get_fastapi_app(
         from fastapi import FastAPI, Response, HTTPException
         import pydantic
         from fastapi.middleware.cors import CORSMiddleware
-    from pydantic import BaseModel
+    import os
+
+    from pydantic import BaseModel, Field
     from pydantic.config import BaseConfig, inherit_config
 
     from jina.proto import jina_pb2
     from jina.serve.runtimes.gateway.models import _to_camel_case
 
     class Header(BaseModel):
-        request_id: Optional[str] = None
+        request_id: Optional[str] = Field(
+            description='Request ID', example=os.urandom(16).hex()
+        )
 
         class Config(BaseConfig):
             alias_generator = _to_camel_case
@@ -86,16 +90,28 @@ def get_fastapi_app(
         async def post(body: input_model, response: Response):
 
             req = DataRequest()
-            if not docarray_v2:
-                req.data.docs = DocumentArray.from_pydantic_model(body.data)
-            else:
-                req.data.docs = DocList[input_doc_list_model](body.data)
-
             if body.header is not None:
                 req.header.request_id = body.header.request_id
 
-            req.parameters = body.parameters
+            if body.parameters is not None:
+                req.parameters = body.parameters
             req.header.exec_endpoint = endpoint_path
+            data = body.data
+            if isinstance(data, list):
+                if not docarray_v2:
+                    req.data.docs = DocumentArray.from_pydantic_model(data)
+                else:
+                    req.document_array_cls = DocList[input_doc_model]
+                    req.data.docs = DocList[input_doc_list_model](data)
+            else:
+                if not docarray_v2:
+                    req.data.docs = DocumentArray([Document.from_pydantic_model(data)])
+                else:
+                    req.document_array_cls = DocList[input_doc_model]
+                    req.data.docs = DocList[input_doc_list_model]([data])
+                if body.header is None:
+                    req.header.request_id = req.docs[0].id
+
             resp = await caller(req)
             status = resp.header.status
 
@@ -109,9 +125,9 @@ def get_fastapi_app(
                 ret = output_model(data=docs_response, parameters=resp.parameters)
                 return ret
 
-    def add_streaming_get_route(
+    def add_streaming_routes(
         endpoint_path,
-        input_doc_list_model=None,
+        input_doc_model=None,
     ):
         from fastapi import Request
 
@@ -120,17 +136,24 @@ def get_fastapi_app(
             methods=['GET'],
             summary=f'Streaming Endpoint {endpoint_path}',
         )
-        async def streaming_get(request: Request):
-            query_params = dict(request.query_params)
-            endpoint = query_params.pop('exec_endpoint')
-            req = DataRequest()
-            req.header.exec_endpoint = endpoint
-            if not docarray_v2:
-                from docarray import Document
-
-                req.data.docs = DocumentArray([Document.from_dict(query_params)])
+        async def streaming_get(request: Request = None, body: input_doc_model = None):
+            if not body:
+                query_params = dict(request.query_params)
+                body = (
+                    input_doc_model.parse_obj(query_params)
+                    if docarray_v2
+                    else Document.from_dict(query_params)
+                )
             else:
-                req.data.docs = DocumentArray([input_doc_list_model(**query_params)])
+                if not docarray_v2:
+                    body = Document.from_pydantic_model(body)
+            req = DataRequest()
+            req.header.exec_endpoint = endpoint_path
+            if not docarray_v2:
+                req.data.docs = DocumentArray([body])
+            else:
+                req.document_array_cls = DocList[input_doc_model]
+                req.data.docs = DocList[input_doc_model]([body])
             event_generator = _gen_dict_documents(await caller(req))
             return EventSourceResponse(event_generator)
 
@@ -139,26 +162,35 @@ def get_fastapi_app(
             input_doc_model = input_output_map['input']['model']
             output_doc_model = input_output_map['output']['model']
             is_generator = input_output_map['is_generator']
+            parameters_model = input_output_map['parameters']['model'] or Optional[Dict]
+            default_parameters = (
+                ... if input_output_map['parameters']['model'] else None
+            )
+
+            if docarray_v2:
+                _config = inherit_config(InnerConfig, BaseDoc.__config__)
+            else:
+                _config = input_doc_model.__config__
 
             endpoint_input_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_input_model',
-                data=(List[input_doc_model], []),
-                parameters=(Optional[Dict], None),
+                data=(Union[List[input_doc_model], input_doc_model], ...),
+                parameters=(parameters_model, default_parameters),
                 header=(Optional[Header], None),
-                __config__=inherit_config(InnerConfig, input_doc_model.__config__),
+                __config__=_config,
             )
 
             endpoint_output_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_output_model',
-                data=(List[output_doc_model], []),
+                data=(Union[List[output_doc_model], output_doc_model], ...),
                 parameters=(Optional[Dict], None),
-                __config__=output_doc_model.__config__,
+                __config__=_config,
             )
 
             if is_generator:
-                add_streaming_get_route(
+                add_streaming_routes(
                     endpoint,
-                    input_doc_list_model=input_doc_model,
+                    input_doc_model=input_doc_model,
                 )
             else:
                 add_post_route(

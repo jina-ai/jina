@@ -3,6 +3,10 @@ import re
 import sys
 from os import path
 
+
+# Centralize environment variables
+JINA_VERSION = os.environ.get('JINA_VERSION', None)
+
 sys.path.insert(0, path.abspath('..'))
 
 project = 'Jina'
@@ -15,7 +19,7 @@ language = 'en'
 repo_dir = '../'
 
 try:
-    if 'JINA_VERSION' not in os.environ:
+    if not JINA_VERSION:
         pkg_name = 'jina'
         libinfo_py = path.join(repo_dir, pkg_name, '__init__.py')
         libinfo_content = open(libinfo_py, 'r', encoding='utf-8').readlines()
@@ -24,12 +28,13 @@ try:
         ][0]
         exec(version_line)
     else:
-        __version__ = os.environ['JINA_VERSION']
+        __version__ = JINA_VERSION
 except FileNotFoundError:
     __version__ = '0.0.0'
 
 version = __version__
 release = __version__
+SPHINX_MULTIVERSION_VERSION = os.environ.get('SPHINX_MULTIVERSION_VERSION', version)
 
 templates_path = ['_templates']
 exclude_patterns = [
@@ -112,7 +117,7 @@ extensions = [
     'sphinx_inline_tabs',
 ]
 
-intersphinx_mapping = {'docarray': ('https://docarray.jina.ai/', None)}
+intersphinx_mapping = {'docarray': ('https://docs.docarray.org/', None)}
 myst_enable_extensions = ['colon_fence']
 autosummary_generate = True
 redirects_file = 'redirects.txt'
@@ -168,7 +173,7 @@ ogp_use_first_image = True
 ogp_description_length = 300
 ogp_type = 'website'
 ogp_site_name = (
-    f'Jina {os.environ.get("SPHINX_MULTIVERSION_VERSION", version)} Documentation'
+    f'Jina {SPHINX_MULTIVERSION_VERSION} Documentation'
 )
 
 ogp_custom_meta_tags = [

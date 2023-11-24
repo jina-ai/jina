@@ -76,11 +76,12 @@ curl --request POST \
 The above cURL command is equivalent to passing the `on` parameter to `client.post` as follows:
 
 ```python
-from docarray import DocumentArray, Document
 from jina import Client
+from docarray import DocList
+from docarray.documents import TextDoc
 
 client = Client(port=12345, protocol='http')
-client.post(on='/foo', inputs=DocumentArray([Document(text='hello world')]))
+client.post(on='/foo', inputs=DocList[TextDoc]([TextDoc(text='hello world')]), return_type=DocList[TextDoc])
 ```
 
 ## Hide default endpoints
@@ -143,7 +144,7 @@ To enable this endpoint, all you need to do is set `expose_graphql_endpoint=True
 ```python
 from jina import Flow
 
-f = Flow().config_gateway(protocol='http', expose_graphql_endpont=True)
+f = Flow().config_gateway(protocol='http', expose_graphql_endpoint=True)
 ```
 ````
 
@@ -159,7 +160,7 @@ with:
 ````{admonition} See Also
 :class: seealso
 
-For more details about the Jina GraphQL enpoint, see {ref}`here <flow-graphql>`.
+For more details about the Jina GraphQL endpoint, see {ref}`here <flow-graphql>`.
 ````
 
 

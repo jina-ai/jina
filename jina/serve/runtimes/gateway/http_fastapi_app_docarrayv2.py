@@ -1,11 +1,11 @@
-from typing import TYPE_CHECKING, Dict, List, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
-from jina.clients.request import request_generator
-from jina.enums import DataInputType
 from jina.excepts import InternalNetworkError
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
+from jina.serve.networking.sse import EventSourceResponse
+from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry import trace
@@ -14,15 +14,15 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 def get_fastapi_app(
-        streamer: 'GatewayStreamer',
-        title: str,
-        description: str,
-        expose_graphql_endpoint: bool,
-        cors: bool,
-        logger: 'JinaLogger',
-        tracing: Optional[bool] = None,
-        tracer_provider: Optional['trace.TracerProvider'] = None,
-        **kwargs
+    streamer: 'GatewayStreamer',
+    title: str,
+    description: str,
+    expose_graphql_endpoint: bool,
+    cors: bool,
+    logger: 'JinaLogger',
+    tracing: Optional[bool] = None,
+    tracer_provider: Optional['trace.TracerProvider'] = None,
+    **kwargs,
 ):
     """
     Get the app from FastAPI as the REST interface.
@@ -44,16 +44,17 @@ def get_fastapi_app(
         from fastapi import FastAPI, Response, HTTPException
         from fastapi.middleware.cors import CORSMiddleware
         import pydantic
+        from pydantic import Field
+    from docarray import BaseDoc, DocList
     from docarray.base_doc.docarray_response import DocArrayResponse
-    from docarray import DocList, BaseDoc
 
     from jina import __version__
 
     app = FastAPI(
         title=title or 'My Jina Service',
         description=description
-                    or 'This is my awesome service. You can set `title` and `description` in your `Flow` or `Gateway` '
-                       'to customize the title and description.',
+        or 'This is my awesome service. You can set `title` and `description` in your `Flow` or `Gateway` '
+        'to customize the title and description.',
         version=__version__,
     )
 
@@ -76,18 +77,23 @@ def get_fastapi_app(
     async def _shutdown():
         await streamer.close()
 
-    from jina.proto import jina_pb2
-    from jina.types.request.status import StatusMessage
-    from jina.serve.runtimes.gateway.models import (
-        PROTO_TO_PYDANTIC_MODELS, _to_camel_case
-    )
+    import os
 
-    from pydantic.config import BaseConfig, inherit_config
     from pydantic import BaseModel
+    from pydantic.config import BaseConfig, inherit_config
+
+    from jina.proto import jina_pb2
+    from jina.serve.runtimes.gateway.models import (
+        PROTO_TO_PYDANTIC_MODELS,
+        _to_camel_case,
+    )
+    from jina.types.request.status import StatusMessage
 
     class Header(BaseModel):
-        request_id: Optional[str] = None
-        target_executor: Optional[str] = None
+        request_id: Optional[str] = Field(
+            description='Request ID', example=os.urandom(16).hex()
+        )
+        target_executor: Optional[str] = Field(default=None, example="")
 
         class Config(BaseConfig):
             alias_generator = _to_camel_case
@@ -100,7 +106,7 @@ def get_fastapi_app(
     @app.get(
         path='/dry_run',
         summary='Get the readiness of Jina Flow service, sends an empty DocumentArray to the complete Flow to '
-                'validate connectivity',
+        'validate connectivity',
         response_model=PROTO_TO_PYDANTIC_MODELS.StatusProto,
     )
     async def _flow_health():
@@ -126,6 +132,7 @@ def get_fastapi_app(
 
     if '/status' not in request_models_map:
         from jina.serve.runtimes.gateway.health_model import JinaInfoModel
+
         @app.get(
             path='/status',
             summary='Get the status of Jina service',
@@ -150,8 +157,6 @@ def get_fastapi_app(
     def _generate_exception_header(error: InternalNetworkError):
         import traceback
 
-        from jina.proto.serializer import DataRequest
-
         exception_dict = {
             'name': str(error.__class__),
             'stacks': [
@@ -167,27 +172,47 @@ def get_fastapi_app(
         header_dict = {'request_id': error.request_id, 'status': status_dict}
         return header_dict
 
-    def add_route(endpoint_path, input_model, output_model, input_doc_list_model=None, output_doc_list_model=None):
-        app_kwargs = dict(path=f'/{endpoint_path.strip("/")}',
-                          methods=['POST'],
-                          summary=f'Endpoint {endpoint_path}',
-                          response_model=output_model, )
+    def add_post_route(
+        endpoint_path,
+        input_model,
+        output_model,
+        input_doc_list_model=None,
+        output_doc_list_model=None,
+    ):
+        app_kwargs = dict(
+            path=f'/{endpoint_path.strip("/")}',
+            methods=['POST'],
+            summary=f'Endpoint {endpoint_path}',
+            response_model=output_model,
+        )
         app_kwargs['response_class'] = DocArrayResponse
 
-        @app.api_route(
-            **app_kwargs
-        )
+        @app.api_route(**app_kwargs)
         async def post(body: input_model, response: Response):
-            docs = DocList[input_doc_list_model](body.data)
             target_executor = None
             req_id = None
             if body.header is not None:
                 target_executor = body.header.target_executor
                 req_id = body.header.request_id
+            data = body.data
+            if isinstance(data, list):
+                docs = DocList[input_doc_list_model](data)
+            else:
+                docs = DocList[input_doc_list_model]([data])
+                if body.header is None:
+                    if hasattr(docs[0], 'id'):
+                        req_id = docs[0].id
 
             try:
-                async for resp in streamer.stream_docs(docs, exec_endpoint=endpoint_path, parameters=body.parameters,
-                                                       target_executor=target_executor, request_id=req_id, return_results=True):
+                async for resp in streamer.stream_docs(
+                    docs,
+                    exec_endpoint=endpoint_path,
+                    parameters=body.parameters,
+                    target_executor=target_executor,
+                    request_id=req_id,
+                    return_results=True,
+                    return_type=DocList[output_doc_list_model],
+                ):
                     status = resp.header.status
 
                     if status.code == jina_pb2.StatusProto.ERROR:
@@ -199,8 +224,8 @@ def get_fastapi_app(
                 import grpc
 
                 if (
-                        err.code() == grpc.StatusCode.UNAVAILABLE
-                        or err.code() == grpc.StatusCode.NOT_FOUND
+                    err.code() == grpc.StatusCode.UNAVAILABLE
+                    or err.code() == grpc.StatusCode.NOT_FOUND
                 ):
                     response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
                 elif err.code() == grpc.StatusCode.DEADLINE_EXCEEDED:
@@ -216,30 +241,70 @@ def get_fastapi_app(
                 )
                 return result
 
+    def add_streaming_routes(
+        endpoint_path,
+        input_doc_model=None,
+    ):
+        from fastapi import Request
+
+        @app.api_route(
+            path=f'/{endpoint_path.strip("/")}',
+            methods=['GET'],
+            summary=f'Streaming Endpoint {endpoint_path}',
+        )
+        async def streaming_get(request: Request, body: input_doc_model = None):
+            body = body or dict(request.query_params)
+            body = input_doc_model.parse_obj(body)
+
+            async def event_generator():
+                async for doc, error in streamer.stream_doc(
+                    doc=body, exec_endpoint=endpoint_path
+                ):
+                    if error:
+                        raise HTTPException(status_code=499, detail=str(error))
+                    yield {'event': 'update', 'data': doc.dict()}
+                yield {'event': 'end'}
+
+            return EventSourceResponse(event_generator())
+
     for endpoint, input_output_map in request_models_map.items():
         if endpoint != '_jina_dry_run_':
             input_doc_model = input_output_map['input']
             output_doc_model = input_output_map['output']
+            is_generator = input_output_map['is_generator']
+            parameters_model = input_output_map['parameters'] or Optional[Dict]
+            default_parameters = ... if input_output_map['parameters'] else None
+
+            _config = inherit_config(InnerConfig, BaseDoc.__config__)
 
             endpoint_input_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_input_model',
-                data=(List[input_doc_model], []),
-                parameters=(Optional[Dict], None),
+                data=(Union[List[input_doc_model], input_doc_model], ...),
+                parameters=(parameters_model, default_parameters),
                 header=(Optional[Header], None),
-                __config__=inherit_config(InnerConfig, input_doc_model.__config__)
+                __config__=_config,
             )
 
             endpoint_output_model = pydantic.create_model(
                 f'{endpoint.strip("/")}_output_model',
-                data=(List[output_doc_model], []),
+                data=(Union[List[output_doc_model], output_doc_model], ...),
                 parameters=(Optional[Dict], None),
-                __config__=output_doc_model.__config__
+                header=(Optional[Header], None),
+                __config__=_config,
             )
 
-            add_route(endpoint,
-                      input_model=endpoint_input_model,
-                      output_model=endpoint_output_model,
-                      input_doc_list_model=input_doc_model,
-                      output_doc_list_model=output_doc_model)
+            if is_generator:
+                add_streaming_routes(
+                    endpoint,
+                    input_doc_model=input_doc_model,
+                )
+            else:
+                add_post_route(
+                    endpoint,
+                    input_model=endpoint_input_model,
+                    output_model=endpoint_output_model,
+                    input_doc_list_model=input_doc_model,
+                    output_doc_list_model=output_doc_model,
+                )
 
     return app

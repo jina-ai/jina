@@ -26,7 +26,7 @@ class KindClusterWrapper:
         )
         self._log = logger
         self._set_kube_config()
-        self._install_linkderd(kind_cluster)
+        self._install_linkerd(kind_cluster)
         self._loaded_images = set()
 
     def _linkerd_install_cmd(
@@ -69,7 +69,7 @@ class KindClusterWrapper:
         if returncode is not None and returncode != 0:
             raise Exception(f'Installing {tool_name} failed with {returncode}')
 
-    def _install_linkderd(self, kind_cluster: KindCluster) -> None:
+    def _install_linkerd(self, kind_cluster: KindCluster) -> None:
         # linkerd < 2.12: only linkerd install is needed
         # in later versions, linkerd install --crds will be needed
         self._linkerd_install_cmd(
@@ -86,11 +86,11 @@ class KindClusterWrapper:
             print(f'linkerd check yields {out.decode() if out else "nothing"}')
         except subprocess.CalledProcessError as e:
             print(
-                f'linkerd check failed with error code { e.returncode } and output { e.output }'
+                f'linkerd check failed with error code { e.returncode } and output { e.output }, and stderr { e.stderr }'
             )
             raise
 
-    def install_linkderd_smi(self) -> None:
+    def install_linkerd_smi(self) -> None:
         self._log.info('Installing Linkerd SMI to Cluster...')
         proc = subprocess.Popen(
             [f'{Path.home()}/.linkerd2/bin/linkerd-smi', 'install'],
@@ -195,7 +195,8 @@ def build_docker_image(image_name: str, image_name_tag_map: Dict[str, str]) -> s
 def set_test_pip_version() -> None:
     os.environ['JINA_GATEWAY_IMAGE'] = 'jinaai/jina:test-pip'
     yield
-    del os.environ['JINA_GATEWAY_IMAGE']
+    if 'JINA_GATEWAY_IMAGE' in os.environ: # maybe another fixture has already removed
+        del os.environ['JINA_GATEWAY_IMAGE']
 
 
 def load_cluster_config() -> None:

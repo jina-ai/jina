@@ -1,14 +1,15 @@
 import asyncio
 import copy
 import json
+import multiprocessing
 import os
+import platform
 import re
 import subprocess
-import threading
-import multiprocessing
-import platform
 import sys
+import threading
 import time
+import warnings
 from argparse import Namespace
 from collections import defaultdict
 from contextlib import ExitStack
@@ -16,7 +17,6 @@ from itertools import cycle
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Type, Union, overload
 
 from hubble.executor.helper import replace_secret_of_hub_uri
-from hubble.executor.hubio import HubIO
 from rich import print
 from rich.panel import Panel
 
@@ -29,7 +29,14 @@ from jina.constants import (
     __docker_host__,
     __windows__,
 )
-from jina.enums import DeploymentRoleType, PodRoleType, PollingType, ProtocolType, ConsistencyMode
+from jina.enums import (
+    DeploymentRoleType,
+    PodRoleType,
+    PollingType,
+    ProtocolType,
+    ProviderType,
+    ConsistencyMode
+)
 from jina.helper import (
     ArgNamespace,
     parse_host_scheme,
@@ -47,7 +54,6 @@ from jina.orchestrate.orchestrator import BaseOrchestrator
 from jina.orchestrate.pods.factory import PodFactory
 from jina.parsers import set_deployment_parser, set_gateway_parser
 from jina.parsers.helper import _update_gateway_args
-from jina.serve.networking import GrpcConnectionPool
 from jina.serve.networking.utils import host_is_local, in_docker
 
 WRAPPED_SLICE_BASE = r'\[[-\d:]+\]'
@@ -96,7 +102,7 @@ def _call_add_voters(leader, voters, replica_ids, name, event_signal=None):
             logger.success(
                 f'Replica-{str(replica_id)} successfully added as voter with address {voter_address} to leader at {leader}'
             )
-    logger.debug(f'Adding voters to leader finished')
+    logger.debug('Adding voters to leader finished')
     if event_signal:
         event_signal.set()
 
@@ -131,7 +137,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             voter_addresses = [pod.runtime_ctrl_address for pod in self._pods[1:]]
             replica_ids = [pod.args.replica_id for pod in self._pods[1:]]
             event_signal = multiprocessing.Event()
-            self.logger.debug(f'Starting process to call Add Voters')
+            self.logger.debug('Starting process to call Add Voters')
             process = multiprocessing.Process(
                 target=_call_add_voters,
                 kwargs={
@@ -152,19 +158,19 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 else:
                     time.sleep(1.0)
             if properly_closed:
-                self.logger.debug(f'Add Voters process finished')
+                self.logger.debug('Add Voters process finished')
                 process.terminate()
             else:
-                self.logger.error(f'Add Voters process did not finish successfully')
+                self.logger.error('Add Voters process did not finish successfully')
                 process.kill()
-            self.logger.debug(f'Add Voters process finished')
+            self.logger.debug('Add Voters process finished')
 
         async def _async_add_voter_to_leader(self):
             leader_address = f'{self._pods[0].runtime_ctrl_address}'
             voter_addresses = [pod.runtime_ctrl_address for pod in self._pods[1:]]
             replica_ids = [pod.args.replica_id for pod in self._pods[1:]]
             event_signal = multiprocessing.Event()
-            self.logger.debug(f'Starting process to call Add Voters')
+            self.logger.debug('Starting process to call Add Voters')
             process = multiprocessing.Process(
                 target=_call_add_voters,
                 kwargs={
@@ -185,10 +191,10 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 else:
                     await asyncio.sleep(1.0)
             if properly_closed:
-                self.logger.debug(f'Add Voters process finished')
+                self.logger.debug('Add Voters process finished')
                 process.terminate()
             else:
-                self.logger.error(f'Add Voters process did not finish successfully')
+                self.logger.error('Add Voters process did not finish successfully')
                 process.kill()
 
         @property
@@ -207,23 +213,23 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 pod.join()
 
         def wait_start_success(self):
-            self.logger.debug(f'Waiting for ReplicaSet to start successfully')
+            self.logger.debug('Waiting for ReplicaSet to start successfully')
             for pod in self._pods:
                 pod.wait_start_success()
             # should this be done only when the cluster is started ?
             if self._pods[0].args.stateful:
                 self._add_voter_to_leader()
-            self.logger.debug(f'ReplicaSet started successfully')
+            self.logger.debug('ReplicaSet started successfully')
 
         async def async_wait_start_success(self):
-            self.logger.debug(f'Waiting for ReplicaSet to start successfully')
+            self.logger.debug('Waiting for ReplicaSet to start successfully')
             await asyncio.gather(
                 *[pod.async_wait_start_success() for pod in self._pods]
             )
             # should this be done only when the cluster is started ?
             if self._pods[0].args.stateful:
                 await self._async_add_voter_to_leader()
-            self.logger.debug(f'ReplicaSet started successfully')
+            self.logger.debug('ReplicaSet started successfully')
 
         def __enter__(self):
             for _args in self.args:
@@ -257,7 +263,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
-        env_from_secret: Optional[dict] = None,
         exit_on_exceptions: Optional[List[str]] = [],
         external: Optional[bool] = False,
         floating: Optional[bool] = False,
@@ -282,6 +287,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         port_monitoring: Optional[int] = None,
         prefer_platform: Optional[str] = None,
         protocol: Optional[Union[str, List[str]]] = ['GRPC'],
+        provider: Optional[str] = ['NONE'],
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
@@ -332,7 +338,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
-        :param env_from_secret: The map of environment variables that are read from kubernetes cluster secrets
         :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
@@ -383,6 +388,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
         :param protocol: Communication protocol of the server exposed by the Executor. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
+        :param provider: If set, Executor is translated to a custom container compatible with the chosen provider. Choose the convenient providers from: ['NONE', 'SAGEMAKER'].
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your
@@ -459,7 +465,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         self._include_gateway = include_gateway
         if self._include_gateway:
             # arguments exclusive to the gateway
-            for field in ['port']:
+            for field in ['port', 'ports']:
                 if field in kwargs:
                     self._gateway_kwargs[field] = kwargs.pop(field)
 
@@ -473,6 +479,24 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
         self.args = args
         self._gateway_load_balancer = False
+        if self.args.provider == ProviderType.SAGEMAKER:
+            if self._gateway_kwargs.get('port', 0) == 8080:
+                raise ValueError(
+                    'Port 8080 is reserved for Sagemaker deployment. '
+                    'Please use another port'
+                )
+            if self.args.port != [8080]:
+                warnings.warn(
+                    'Port is changed to 8080 for Sagemaker deployment. '
+                    f'Port {self.args.port} is ignored'
+                )
+                self.args.port = [8080]
+            if self.args.protocol != [ProtocolType.HTTP]:
+                warnings.warn(
+                    'Protocol is changed to HTTP for Sagemaker deployment. '
+                    f'Protocol {self.args.protocol} is ignored'
+                )
+                self.args.protocol = [ProtocolType.HTTP]
         if self._include_gateway and ProtocolType.HTTP in self.args.protocol:
             self._gateway_load_balancer = True
         log_config = kwargs.get('log_config')
@@ -509,10 +533,10 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         if self.args.stateful and (is_windows_os or (is_mac_os and is_37)):
             if is_windows_os:
-                raise RuntimeError(f'Stateful feature is not available on Windows')
+                raise RuntimeError('Stateful feature is not available on Windows')
             if is_mac_os:
                 raise RuntimeError(
-                    f'Stateful feature when running on MacOS requires Python3.8 or newer version'
+                    'Stateful feature when running on MacOS requires Python3.8 or newer version'
                 )
         if self.args.stateful and (
             ProtocolType.WEBSOCKET in self.args.protocol
@@ -589,8 +613,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             self.pod_args['gateway'] = args
         else:
             self.pod_args['gateway'] = None
-
-        self._sandbox_deployed = False
 
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
 
@@ -725,32 +747,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         else:
             self.pod_args = self._parse_args(self.args)
 
-    def update_sandbox_args(self):
-        """Update args of all its pods based on the host and port returned by Hubble"""
-        if self.is_sandbox:
-            host, port = HubIO.deploy_public_sandbox(self.args)
-            self._sandbox_deployed = True
-            self.first_pod_args.host = host
-            self.first_pod_args.port = [port]
-            if self.head_args:
-                self.pod_args['head'].host = host
-                self.pod_args['head'].port = [port]
-
     def update_worker_pod_args(self):
         """Update args of all its worker pods based on Deployment args. Does not touch head and tail"""
         self.pod_args['pods'] = self._set_pod_args()
-
-    @property
-    def is_sandbox(self) -> bool:
-        """
-        Check if this deployment is a sandbox.
-
-        :return: True if this deployment is provided as a sandbox, False otherwise
-        """
-        from hubble.executor.helper import is_valid_sandbox_uri
-
-        uses = getattr(self.args, 'uses') or ''
-        return is_valid_sandbox_uri(uses)
 
     @property
     def role(self) -> 'DeploymentRoleType':
@@ -826,7 +825,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         if args.name:
             _head_args.name = f'{args.name}/head'
         else:
-            _head_args.name = f'head'
+            _head_args.name = 'head'
 
         return _head_args
 
@@ -876,7 +875,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         has_cert = getattr(self.args, 'ssl_certfile', None) is not None
         has_key = getattr(self.args, 'ssl_keyfile', None) is not None
         tls = getattr(self.args, 'tls', False)
-        return tls or self.is_sandbox or (has_cert and has_key)
+        return tls or (has_cert and has_key)
 
     @property
     def external(self) -> bool:
@@ -885,7 +884,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         :return: True if this deployment is provided as an external deployment, False otherwise
         """
-        return getattr(self.args, 'external', False) or self.is_sandbox
+        return getattr(self.args, 'external', False)
 
     @property
     def grpc_metadata(self):
@@ -1132,8 +1131,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         """
 
         self._start_time = time.time()
-        if self.is_sandbox and not self._sandbox_deployed:
-            self.update_sandbox_args()
 
         if not self._is_docker and getattr(self.args, 'install_requirements', False):
             install_package_dependencies(_get_package_path_from_uses(self.args.uses))
@@ -1232,7 +1229,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 coros.append(self.shards[shard_id].async_wait_start_success())
 
             await asyncio.gather(*coros)
-            self.logger.debug(f'Deployment started successfully')
+            self.logger.debug('Deployment started successfully')
         except:
             self.close()
             raise
@@ -1351,7 +1348,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
             selected_devices = []
             if device_str[2:]:
-
                 for device in Deployment._parse_devices(device_str[2:], num_devices):
                     selected_devices.append(device)
             else:
@@ -1398,7 +1394,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             peer_ports = peer_ports_all_shards.get(str(shard_id), [])
             if len(peer_ports) > 0 and len(peer_ports) != replicas:
                 raise ValueError(
-                    f'peer-ports argument does not match number of replicas, it will be ignored'
+                    'peer-ports argument does not match number of replicas, it will be ignored'
                 )
             elif len(peer_ports) == 0:
                 peer_ports = [random_port() for _ in range(replicas)]
@@ -1493,7 +1489,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
     @staticmethod
     def _set_uses_before_after_args(args: Namespace, entity_type: str) -> Namespace:
-
         _args = copy.deepcopy(args)
         _args.pod_role = PodRoleType.WORKER
         _args.host = _args.host[0] or __default_host__
@@ -1531,12 +1526,12 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         if self.args.stateful and self.args.replicas in [1, 2]:
             self.logger.debug(
-                f'Stateful Executor is not recommended to be used less than 3 replicas'
+                'Stateful Executor is not recommended to be used less than 3 replicas'
             )
 
         if self.args.stateful and self.args.workspace is None:
             raise ValueError(
-                f'Stateful Executors need to be provided `workspace` when used in a Deployment'
+                'Stateful Executors need to be provided `workspace` when used in a Deployment'
             )
 
         # a gateway has no heads and uses
@@ -1593,7 +1588,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         mermaid_graph = []
         secret = '&ltsecret&gt'
         if self.role != DeploymentRoleType.GATEWAY and not self.external:
-            mermaid_graph = [f'subgraph {self.name};', f'\ndirection LR;\n']
+            mermaid_graph = [f'subgraph {self.name};', '\ndirection LR;\n']
 
             uses_before_name = (
                 self.uses_before_args.name
@@ -1621,7 +1616,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     shard_names.append(shard_name)
                     shard_mermaid_graph = [
                         f'subgraph {shard_name};',
-                        f'\ndirection TB;\n',
+                        '\ndirection TB;\n',
                     ]
                     names = [
                         args.name for args in pod_args
@@ -1695,7 +1690,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             watch_changes = self.args.reload
 
             if watch_changes and self._is_executor_from_yaml:
-
                 with ImportExtensions(
                     required=True,
                     help_text='''reload requires watchfiles dependency to be installed. You can run `pip install 
@@ -1739,7 +1733,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         swagger_ui_link = None
         redoc_link = None
         for _port, _protocol in zip(_ports, _protocols):
-
             address_table.add_row(':chains:', 'Protocol', _protocol)
 
             _protocol = _protocol.lower()
@@ -1774,7 +1767,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         )
 
         if ProtocolType.HTTP.to_string().lower() in [p.lower() for p in _protocols]:
-
             http_ext_table = self._init_table()
             http_ext_table.add_row(':speech_balloon:', 'Swagger UI', swagger_ui_link)
 
@@ -1792,7 +1784,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             monitor_ext_table = self._init_table()
 
             for replica in self.pod_args['pods'][0]:
-
                 monitor_ext_table.add_row(
                     ':flashlight:',  # upstream issue: they dont have :torch: emoji, so we use :flashlight:
                     # to represent observability of Prometheus (even they have :torch: it will be a war
@@ -1919,7 +1910,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         output_base_path: str,
         k8s_namespace: Optional[str] = None,
         k8s_deployments_addresses: Optional[Dict] = None,
-        k8s_port: Optional[int] = GrpcConnectionPool.K8S_PORT,
     ):
         import yaml
 
@@ -1935,8 +1925,14 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             if self.args.default_port:
                 from jina.serve.networking import GrpcConnectionPool
 
-                self.args.port = [GrpcConnectionPool.K8S_PORT]
-                self.first_pod_args.port = [GrpcConnectionPool.K8S_PORT]
+                self.args.port = [
+                    GrpcConnectionPool.K8S_PORT + i
+                    for i in range(len(self.args.protocol))
+                ]
+                self.first_pod_args.port = [
+                    GrpcConnectionPool.K8S_PORT + i
+                    for i in range(len(self.args.protocol))
+                ]
 
                 self.args.port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
                 self.first_pod_args.port_monitoring = (
@@ -1946,8 +1942,18 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 self.args.default_port = False
 
             self.args.deployments_addresses = k8s_deployments_addresses
+        else:
+            if len(self.args.protocol) > 1 and len(self.args.port) != len(
+                self.args.protocol
+            ):
+                from jina.serve.networking import GrpcConnectionPool
+
+                self.args.port = [
+                    GrpcConnectionPool.K8S_PORT + i
+                    for i in range(len(self.args.protocol))
+                ]
         k8s_deployment = K8sDeploymentConfig(
-            args=self.args, k8s_namespace=k8s_namespace, k8s_port=k8s_port
+            args=self.args, k8s_namespace=k8s_namespace
         )
 
         configs = k8s_deployment.to_kubernetes_yaml()
@@ -1976,11 +1982,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
         """
         k8s_namespace = k8s_namespace or 'default'
-        k8s_port = self.port[0] if isinstance(self.port, list) else self.port
+        # the Deployment conversion needs to be done in a version without Gateway included. Deployment does quite some changes to its args
+        # to let some of the args (like ports) go to the gateway locally. In Kubernetes, we want no gateway
         self._to_kubernetes_yaml(
-            output_base_path,
+            output_base_path=output_base_path,
             k8s_namespace=k8s_namespace,
-            k8s_port=k8s_port or GrpcConnectionPool.K8S_PORT,
         )
         self.logger.info(
             f'K8s YAML files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'

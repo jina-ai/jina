@@ -47,7 +47,9 @@ implementation might look like the following:
 ```python
 from fastapi import FastAPI
 from uvicorn import Server, Config
-from jina import Document, DocumentArray, Gateway
+from jina import Gateway
+from docarray import DocList
+from docarray.documents import TextDoc
 
 
 class MyGateway(Gateway):
@@ -58,13 +60,14 @@ class MyGateway(Gateway):
         @app.get(path='/service')
         async def my_service(input: str):
             # step 2: convert input request to Documents
-            docs = DocumentArray([Document(text=input)])
+            docs = DocList[TextDoc]([TextDoc(text=input)])
 
             # step 3: send Documents to Executors using GatewayStreamer
             result = None
             async for response_docs in self.streamer.stream_docs(
                 docs=docs,
                 exec_endpoint='/',
+                return_type=DocList[TextDoc]
             ):
                 # step 4: convert response docs to server response and return it
                 result = response_docs[0].text
@@ -206,14 +209,15 @@ streamer = GatewayStreamer.get_streamer()
 After transforming requests that arrive to the Gateway server into Documents, you can send them to Executors in the Flow 
 using {meth}`~jina.serve.streamer.GatewayStreamer.stream_docs()`. 
 
-This method expects a DocumentArray object and an endpoint exposed by the Flow Executors (similar to {ref}`Jina Client <client>`). 
-It returns an `AsyncGenerator` of DocumentArrays:
+This method expects a DocList object and an endpoint exposed by the Flow Executors (similar to {ref}`Jina Client <client>`). 
+It returns an `AsyncGenerator` of DocLists:
 ```{code-block} python
 ---
-emphasize-lines: 14, 15, 16, 17, 18
+emphasize-lines: 15, 16, 17, 18, 19, 20
 ---
 from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
-from jina import Document, DocumentArray
+from docarray import DocList
+from docarray.documents import TextDoc
 from fastapi import FastAPI
 
 
@@ -226,8 +230,9 @@ class MyGateway(FastAPIBaseGateway):
         async def get(text: str):
             result = None
             async for docs in self.streamer.stream_docs(
-                docs=DocumentArray([Document(text=text)]),
+                docs=DocList[TextDoc]([TextDoc(text=text)]),
                 exec_endpoint='/',
+                return_type=DocList[TextDoc],
             ):
                 result = docs[0].text
             return {'result': result}
@@ -235,10 +240,17 @@ class MyGateway(FastAPIBaseGateway):
         return app
 ```
 
+```{hint} 
+:class: note
+if you omit the `return_type` parameter, the gateway streamer can still fetch the Executor output schemas and dynamically construct a DocArray model for it.
+Even though the dynamically created schema is very similar to original schema, some validation checks can still fail (for instance adding to a typed `DocList`).
+It is recommended to always pass the `return_type` parameter
+```
+
 ### Recovering Executor errors
 
 Exceptions raised by an `Executor` are captured in the server object which can be extracted by using the {meth}`jina.serve.streamer.stream()` method. The `stream` method
-returns an `AsyncGenerator` of a tuple of `DocumentArray` and an optional {class}`jina.excepts.ExecutorError` class that be used to check if the `Executor` has issues processing the input request.
+returns an `AsyncGenerator` of a tuple of `DocList` and an optional {class}`jina.excepts.ExecutorError` class that be used to check if the `Executor` has issues processing the input request.
 The error can be utilized for retries, handling partial responses or returning default responses.
 
 ```{code-block} python
@@ -249,9 +261,10 @@ emphasize-lines: 5, 6, 7, 8, 9, 10, 11, 12
 async def get(text: str):
     results = []
     errors = []
-    async for docs, error in self.streamer.stream(
-        docs=DocumentArray([Document(text=text)]),
+    async for for docs, error in self.streamer.stream(
+        docs=DocList[TextDoc]([TextDoc(text=text)]),
         exec_endpoint='/',
+        return_type=DocList[TextDoc],
     ):
         if error:
             errors.append(error)
@@ -260,26 +273,35 @@ async def get(text: str):
     return {'results': results, 'errors': [error.name for error in errors]}
 ```
 
+
+```{hint} 
+:class: note
+if you omit the `return_type` parameter, the gateway streamer can still fetch the Executor output schemas and dynamically construct a DocArray model for it.
+Even though the dynamically created schema is very similar to original schema, some validation checks can still fail (for instance adding to a typed `DocList`).
+It is recommended to always pass the `return_type` parameter
+```
+
 (executor-streamer)=
 ## Calling an individual Executor
 
 Jina injects an `executor` object into your Gateway class which lets you call individual Executors from the Gateway.
 
 After transforming requests that arrive to the Gateway server into Documents, you can call the Executor in your Python code using `self.executor['executor_name'].post(args)`.
-This method expects a DocumentArray object and an endpoint exposed by the Executor (similar to {ref}`Jina Client <client>`). 
-It returns a 'coroutine' which returns a DocumentArray.
+This method expects a DocList object and an endpoint exposed by the Executor (similar to {ref}`Jina Client <client>`). 
+It returns a 'coroutine' which returns a DocList.
 Check the method documentation for more information: {meth}`~ jina.serve.streamer._ExecutorStreamer.post()`
 
 In this example, we have a Flow with two Executors (`executor1` and `executor2`). We can call them individually using `self.executor['executor_name'].post`:
 ```{code-block} python
 ---
-emphasize-lines: 15,16,40
+emphasize-lines: 16,17,41
 ---
 from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
-from jina import Document, DocumentArray, Flow, Executor, requests
+from jina import Flow, Executor, requests
+from docarray import DocList
+from docarray.documents import TextDoc
 from fastapi import FastAPI
 import time
-import asyncio
 
 class MyGateway(FastAPIBaseGateway):
     @property
@@ -289,22 +311,22 @@ class MyGateway(FastAPIBaseGateway):
         @app.get("/endpoint")
         async def get(text: str):
             toc = time.time()
-            doc1 = await self.executor['executor1'].post(on='/', inputs=DocumentArray([Document(text=text)]), parameters={'k': 'v'})
-            doc2 = await self.executor['executor2'].post(on='/', inputs=DocumentArray([Document(text=text)]), parameters={'k': 'v'})
-            return {'result': doc1.texts + doc2.texts, 'time_taken': time.time() - toc}
+            docs1 = await self.executor['executor1'].post(on='/', inputs=DocList[TextDoc]([TextDoc(text=text)]), parameters={'k': 'v'}, return_type=DocList[TextDoc])
+            docs2 = await self.executor['executor2'].post(on='/', inputs=DocList[TextDoc]([TextDoc(text=text)]), parameters={'k': 'v'}, return_type=DocList[TextDoc])
+            return {'result': docs1.text + docs2.text, 'time_taken': time.time() - toc}
 
         return app
 
 class FirstExec(Executor):
     @requests
-    def func(self, docs, **kwargs):
+    def func(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         time.sleep(2)
         for doc in docs:
             doc.text += ' saw the first executor'
 
 class SecondExec(Executor):
     @requests
-    def func(self, docs, **kwargs):
+    def func(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         time.sleep(2)
         for doc in docs:
             doc.text += ' saw the second executor'
@@ -322,10 +344,12 @@ You can also call two Executors in parallel using asyncio. This will overlap the
 Here is one way to do it:
 ```{code-block} python
 ---
-emphasize-lines: 15,16,17,41
+emphasize-lines: 17,18,19,43
 ---
 from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
-from jina import Document, DocumentArray, Flow, Executor, requests
+from jina import Flow, Executor, requests
+from docarray import DocList
+from docarray.documents import TextDoc
 from fastapi import FastAPI
 import time
 import asyncio
@@ -338,23 +362,23 @@ class MyGateway(FastAPIBaseGateway):
         @app.get("/endpoint")
         async def get(text: str):
             toc = time.time()
-            call1 = self.executor['executor1'].post(on='/', inputs=DocumentArray([Document(text=text)]), parameters={'k': 'v'})
-            call2 = self.executor['executor2'].post(on='/', inputs=DocumentArray([Document(text=text)]), parameters={'k': 'v'})
-            doc1, doc2 = await asyncio.gather(call1, call2)
-            return {'result': doc1.texts + doc2.texts, 'time_taken': time.time() - toc}
+            call1 = self.executor['executor1'].post(on='/', inputs=DocList[TextDoc]([TextDoc(text=text)]), parameters={'k': 'v'}, return_type=DocList[TextDoc])
+            call2 = self.executor['executor2'].post(on='/', inputs=DocList[TextDoc]([TextDoc(text=text)]), parameters={'k': 'v'}, return_type=DocList[TextDoc])
+            docs1, docs2 = await asyncio.gather(call1, call2)
+            return {'result': docs1.text + docs2.text, 'time_taken': time.time() - toc}
 
         return app
 
 class FirstExec(Executor):
     @requests
-    def func(self, docs, **kwargs):
+    def func(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         time.sleep(2)
         for doc in docs:
             doc.text += ' saw the first executor'
 
 class SecondExec(Executor):
     @requests
-    def func(self, docs, **kwargs):
+    def func(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
         time.sleep(2)
         for doc in docs:
             doc.text += ' saw the second executor'
@@ -398,7 +422,7 @@ class MyGateway(Gateway):
         self.server = Server(Config(app, host=self.host, port=self.port))
 ```
 
-```{admonition} Nonte
+```{admonition} Note
 :class: note
 
 Jina provides the Gateway with a list of ports and protocols to expose. Therefore, a custom Gateway can handle requests 
@@ -454,14 +478,14 @@ You may want to dockerize your custom Gateway so you can isolate its dependencie
 or Kubernetes.
 
 This assumes that you've already implemented a custom Gateway class and have defined a `config.yml` for it.
-In this case, dockerizing the Gateway is straighforward:
+In this case, dockerizing the Gateway is straightforward:
 * If you need dependencies other than Jina, make sure to add a `requirements.txt` file (for instance, you use a server library).
 * Create a `Dockerfile` as follows:
 1. Use a [Jina based image](https://hub.docker.com/r/jinaai/jina) with the `standard` tag as the base image in your Dockerfile.
 This ensures that everything needed for Jina to run the Gateway is installed. Make sure the Jina version supports 
 custom Gateways:
 ```dockerfile
-FROM jinaai/jina:latest-py37-standard
+FROM jinaai/jina:latest-py38-standard
 ```
 Alternatively, you can just install jina using `pip`:
 ```dockerfile

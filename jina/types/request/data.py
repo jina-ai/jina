@@ -1,16 +1,13 @@
 import copy
-from typing import TYPE_CHECKING, Dict, Optional, Type, TypeVar, Union
+from typing import Dict, Optional, Type, TypeVar, Union
 
 from google.protobuf import json_format
 
-from jina._docarray import DocumentArray, docarray_v2
+from jina._docarray import DocumentArray, Document, docarray_v2
 from jina.excepts import BadRequestType
 from jina.helper import random_identity, typename
 from jina.proto import jina_pb2
 from jina.types.request import Request
-
-if TYPE_CHECKING:
-    from jina._docarray import Document, DocumentArray, docarray_v2
 
 RequestSourceType = TypeVar(
     'RequestSourceType', jina_pb2.DataRequestProto, str, Dict, bytes
@@ -28,9 +25,9 @@ class DataRequest(Request):
 
     class _DataContent:
         def __init__(
-            self,
-            content: 'jina_pb2.DataRequestProto.DataContentProto',
-            document_array_cls: Type[DocumentArray],
+                self,
+                content: 'jina_pb2.DataRequestProto.DataContentProto',
+                document_array_cls: Type[DocumentArray],
         ):
             self._content = content
             self._loaded_doc_array = None
@@ -62,7 +59,7 @@ class DataRequest(Request):
             self.set_docs_convert_arrays(value)
 
         def set_docs_convert_arrays(
-            self, value: DocumentArray, ndarray_type: Optional[str] = None
+                self, value: DocumentArray, ndarray_type: Optional[str] = None
         ):
             """Convert embedding and tensor to given type, then set DocumentArray
             :param value: a DocumentArray
@@ -70,7 +67,6 @@ class DataRequest(Request):
             """
             if value is not None:
                 self._loaded_doc_array = None
-
                 if docarray_v2:
                     self._content.docs.CopyFrom(value.to_protobuf())
                 else:
@@ -111,8 +107,8 @@ class DataRequest(Request):
     """
 
     def __init__(
-        self,
-        request: Optional[RequestSourceType] = None,
+            self,
+            request: Optional[RequestSourceType] = None,
     ):
         self.buffer = None
         self._pb_body = None
@@ -188,7 +184,7 @@ class DataRequest(Request):
 
     @property
     def proto_wo_data(
-        self,
+            self,
     ) -> Union['jina_pb2.DataRequestProtoWoData', 'jina_pb2.DataRequestProto']:
         """
         Transform the current buffer to a :class:`jina_pb2.DataRequestProtoWoData` unless the full proto has already
@@ -202,7 +198,7 @@ class DataRequest(Request):
 
     @property
     def proto(
-        self,
+            self,
     ) -> Union['jina_pb2.DataRequestProto', 'jina_pb2.DataRequestProtoWoData']:
         """
         Cast ``self`` to a :class:`jina_pb2.DataRequestProto` or a :class:`jina_pb2.DataRequestProto`. Laziness will be broken and serialization will be recomputed when calling.
@@ -216,7 +212,7 @@ class DataRequest(Request):
 
     @property
     def proto_with_data(
-        self,
+            self,
     ) -> 'jina_pb2.DataRequestProto':
         """
         Cast ``self`` to a :class:`jina_pb2.DataRequestProto`. Laziness will be broken and serialization will be recomputed when calling.
@@ -310,7 +306,12 @@ class DataRequest(Request):
         :param value: a Python dict
         """
         self.proto_wo_data.parameters.Clear()
-        self.proto_wo_data.parameters.update(value)
+        parameters = value
+        if docarray_v2:
+            from pydantic import BaseModel
+            if isinstance(value, BaseModel):
+                parameters = dict(value)
+        self.proto_wo_data.parameters.update(parameters)
 
     @property
     def response(self):
@@ -392,3 +393,282 @@ class Response(DataRequest):
     Currently, its sole purpose is to give a more consistent semantic on
     the client API: send a :class:`~jina.types.request.data.DataRequest` and receive a :class:`~jina.types.request.data.Response`.
     """
+
+
+class SingleDocumentRequest(Request):
+    """
+    SingleDocumentRequest represents a request containing only 1 document, which is used for streaming endpoints.
+    Similar to DataRequest but has a `document` field instead of `data`
+    """
+
+    class _DataContent:
+        def __init__(
+                self,
+                content,
+                document_cls: Type['Document'],
+        ):
+            self._content = content
+            self._loaded_document = None
+            self.document_cls = document_cls
+
+        @property
+        def doc(self) -> 'Document':
+            """Get the :class: `Document` with sequence `data.doc` as content.
+
+            .. # noqa: DAR201"""
+            if not self._loaded_document:
+                self._loaded_document = self.document_cls.from_protobuf(
+                    self._content
+                )
+
+            return self._loaded_document
+
+        @doc.setter
+        def doc(self, value: 'Document'):
+            """Override the DocumentArray with the provided one
+
+            :param value: a DocumentArray
+            """
+            if value is not None:
+                self._loaded_document = None
+                self._content.CopyFrom(value.to_protobuf())
+
+    def __init__(
+            self,
+            request: Optional[jina_pb2.SingleDocumentRequestProto] = None,
+    ):
+        self.buffer = None
+        self._pb_body = None
+        self._document_cls = Document
+        self.buffer = None
+        self._data = None
+
+        try:
+            if isinstance(request, jina_pb2.SingleDocumentRequestProto):
+                self._pb_body = request
+            elif isinstance(request, dict):
+                self._pb_body = jina_pb2.SingleDocumentRequestProto()
+                json_format.ParseDict(request, self._pb_body)
+            elif isinstance(request, str):
+                self._pb_body = jina_pb2.SingleDocumentRequestProto()
+                json_format.Parse(request, self._pb_body)
+            elif isinstance(request, bytes):
+                self.buffer = request
+            elif request is not None:
+                # note ``None`` is not considered as a bad type
+                raise ValueError(f'{typename(request)} is not recognizable')
+            else:
+                self._pb_body = jina_pb2.SingleDocumentRequestProto()
+                self._pb_body.header.request_id = random_identity()
+        except Exception as ex:
+            raise BadRequestType(
+                f'fail to construct a {self.__class__} object from {request}'
+            ) from ex
+
+    @property
+    def document_cls(self) -> Type['Document']:
+        """Get the DocumentArray class to be used for deserialization.
+
+        .. # noqa: DAR201"""
+        return self._document_cls
+
+    @document_cls.setter
+    def document_cls(self, item_type: Type['Document']):
+        """Get the DocumentArray class to be used for deserialization.
+        .. # noqa: DAR101"""
+        self._document_cls = item_type
+
+        if self._data is not None:
+            self.data.document_cls = item_type
+
+    @property
+    def is_decompressed(self) -> bool:
+        """
+        Checks if the underlying proto object was already deserialized into a :class:`jina.proto.jina_pb2.DataRequestProto` or
+        :class:`jina.proto.jina_pb2.DataRequestProtoWoData`. This does not necessarily mean that the data (docs) inside the request is also decompressed.
+           :return: True if the proto was deserialized before
+        """
+        return type(self._pb_body) in [
+            jina_pb2.SingleDocumentRequestProto,
+            jina_pb2.DataRequestProtoWoData,
+        ]
+
+    @property
+    def is_decompressed_with_data(self) -> bool:
+        """
+        Checks if the underlying proto object was already deserialized into a :class:`jina.proto.jina_pb2.DataRequestProto`. In this case the full proto is decompressed, including the data (docs).
+           :return: True if the proto was deserialized before, including the data (docs)
+        """
+        return type(self._pb_body) is jina_pb2.SingleDocumentRequestProto
+
+    @property
+    def is_decompressed_wo_data(self) -> bool:
+        """
+        Checks if the underlying proto object was already deserialized into a :class:`jina.proto.jina_pb2.DataRequestProtoWoData`. It means that the proto is loaded without the data ( docs ).
+
+        :return: True if the proto was deserialized before into a DataRequest without docs
+        """
+        return type(self._pb_body) is jina_pb2.DataRequestProtoWoData
+
+    @property
+    def proto_wo_data(
+            self,
+    ) -> Union['jina_pb2.DataRequestProtoWoData', 'jina_pb2.SingleDocumentRequestProto']:
+        """
+        Transform the current buffer to a :class:`jina_pb2.DataRequestProtoWoData` unless the full proto has already
+        been initialized or . Laziness will be broken and serialization will be recomputed when
+        calling :meth:`SerializeToString`.
+        :return: protobuf instance containing parameters
+        """
+        if self._pb_body is None:
+            self._decompress_wo_data()
+        return self._pb_body
+
+    @property
+    def proto(
+            self,
+    ) -> Union['jina_pb2.SingleDocumentRequestProto', 'jina_pb2.DataRequestProtoWoData']:
+        """
+        Cast ``self`` to a :class:`jina_pb2.DataRequestProto` or a :class:`jina_pb2.DataRequestProto`. Laziness will be broken and serialization will be recomputed when calling.
+        it returns the underlying proto if it already exists (even if he is loaded without data) or creates a new one.
+        :meth:`SerializeToString`.
+        :return: DataRequestProto protobuf instance
+        """
+        if not self.is_decompressed:
+            self._decompress()
+        return self._pb_body
+
+    @property
+    def proto_with_data(
+            self,
+    ) -> 'jina_pb2.SingleDocumentRequestProto':
+        """
+        Cast ``self`` to a :class:`jina_pb2.DataRequestProto`. Laziness will be broken and serialization will be recomputed when calling.
+        :meth:`SerializeToString`.
+        :return: DataRequestProto protobuf instance
+        """
+        if not self.is_decompressed_with_data:
+            self._decompress()
+        return self._pb_body
+
+    def _decompress_wo_data(self):
+        """Decompress the buffer into a DataRequestProto without docs, it is useful if one want to access the parameters
+        or the header of the proto without the cost of deserializing the Docs."""
+
+        # Under the hood it used a different DataRequestProto (the DataRequestProtoWoData) that will just ignore the
+        # bytes from the bytes related to the docs that are store at the end of the Proto buffer
+        self._pb_body = jina_pb2.DataRequestProtoWoData()
+        self._pb_body.ParseFromString(self.buffer)
+        self.buffer = None
+
+    def _decompress(self):
+        """Decompress the buffer into a DataRequestProto"""
+        if self.buffer:
+            self._pb_body = jina_pb2.SingleDocumentRequestProto()
+            self._pb_body.ParseFromString(self.buffer)
+            self.buffer = None
+        elif self.is_decompressed_wo_data:
+            self._pb_body_old = self._pb_body
+            self._pb_body = jina_pb2.SingleDocumentRequestProto()
+            self._pb_body.ParseFromString(self._pb_body_old.SerializePartialToString())
+            del self._pb_body_old
+        else:
+            raise ValueError('the buffer is already decompressed')
+
+    def to_dict(self) -> Dict:
+        """Return the object in Python dictionary.
+
+        .. note::
+            Array like object such as :class:`numpy.ndarray` (i.e. anything described as :class:`jina_pb2.NdArrayProto`)
+            will be converted to Python list.
+
+        :return: dict representation of the object
+        """
+        doc = self.doc
+        from google.protobuf.json_format import MessageToDict
+
+        d = MessageToDict(
+            self.proto_wo_data,
+            preserving_proto_field_name=True,
+            use_integers_for_enums=True,
+        )
+        if docarray_v2:
+            d['document'] = doc
+        else:
+            d['document'] = doc.to_dict()
+        return d
+
+    @property
+    def doc(self) -> 'Document':
+        """Get the :class: `DocumentArray` with sequence `data.docs` as content.
+
+        .. # noqa: DAR201"""
+        return self.data.doc
+
+    @property
+    def data(self) -> 'SingleDocumentRequest._DataContent':
+        """Get the data contained in this data request
+
+        :return: the data content as an instance of _DataContent wrapping docs
+        """
+        if self._data is None:
+            self._data = SingleDocumentRequest._DataContent(
+                self.proto_with_data.document, document_cls=self.document_cls
+            )
+
+        return self._data
+
+    @classmethod
+    def from_proto(cls, request: 'jina_pb2.SingleDocumentRequestProto'):
+        """Creates a new DataRequest object from a given :class:`DataRequestProto` object.
+        :param request: the to-be-copied data request
+        :return: the new message object
+        """
+        return cls(request=request)
+
+    @property
+    def request_id(self):
+        """
+        Returns the request_id from the header field
+
+        :return: the request_id object of this request
+        """
+        return self.proto.header.request_id
+
+    @property
+    def status(self):
+        """
+        Returns the status from the header field
+
+        :return: the status object of this request
+        """
+        return self.proto_wo_data.header.status
+
+    @property
+    def parameters(self) -> Dict:
+        """Return the `parameters` field of this DataRequest as a Python dict
+
+        :return: a Python dict view of the parameters.
+        """
+        # if u get this u need to have it decompressed
+        return json_format.MessageToDict(self.proto_wo_data.parameters)
+
+    @parameters.setter
+    def parameters(self, value: Dict):
+        """Set the `parameters` field of this Request to a Python dict
+
+        :param value: a Python dict
+        """
+        self.proto_wo_data.parameters.Clear()
+        parameters = value
+        if docarray_v2:
+            from pydantic import BaseModel
+            if isinstance(value, BaseModel):
+                parameters = dict(value)
+        self.proto_wo_data.parameters.update(parameters)
+
+    def __copy__(self):
+        return SingleDocumentRequest(request=self.proto_with_data)
+
+    def __deepcopy__(self, _):
+        return SingleDocumentRequest(request=copy.deepcopy(self.proto_with_data))

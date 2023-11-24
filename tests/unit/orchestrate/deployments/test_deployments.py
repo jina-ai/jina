@@ -583,7 +583,7 @@ def test_pod_remote_pod_replicas_host(num_shards, num_replicas):
 @pytest.mark.parametrize('shards', [1, 2, 3])
 @pytest.mark.parametrize('replicas', [1, 2, 3])
 def test_to_k8s_yaml(tmpdir, uses, replicas, shards):
-    dep = Deployment(port_expose=2020, uses=uses, replicas=replicas, shards=shards)
+    dep = Deployment(uses=uses, replicas=replicas, shards=shards)
     dep.to_kubernetes_yaml(output_base_path=tmpdir)
 
     if shards == 1:

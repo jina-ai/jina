@@ -129,6 +129,23 @@ message DataRequestProto {
     DataContentProto data = 4; // container for docs and groundtruths
 }
 
+
+
+/**
+ * Represents a Single Document DataRequest
+ */
+message SingleDocumentRequestProto {
+
+    HeaderProto header = 1; // header contains meta info defined by the user
+
+    google.protobuf.Struct parameters = 2; // extra kwargs that will be used in executor
+
+    repeated RouteProto routes = 3; // status info on every routes
+
+    docarray.DocProto document = 4; // the document in this request
+
+}
+
 message DataRequestProtoWoData {
 
     HeaderProto header = 1; // header contains meta info defined by the user
@@ -164,6 +181,16 @@ service JinaDataRequestRPC {
 service JinaSingleDataRequestRPC {
     // Used for passing DataRequests to the Executors
     rpc process_single_data (DataRequestProto) returns (DataRequestProto) {
+    }
+}
+
+/**
+ * jina gRPC service for DataRequests.
+ * This is used to send requests to Executors when a list of requests is not needed
+ */
+service JinaSingleDocumentRequestRPC {
+    // Used for streaming one document to the Executors
+    rpc stream_doc (SingleDocumentRequestProto) returns (stream SingleDocumentRequestProto) {
     }
 }
 

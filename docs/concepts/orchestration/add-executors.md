@@ -29,7 +29,6 @@ Note that some usages are not supported on JCloud due to security reasons and th
 | ✅         | ✅      | `'executor-config.yml'`                       | Use an Executor from a YAML file defined by {ref}`Executor YAML interface <executor-yaml-spec>`.          |
 | ✅         | ❌      | `'jinaai://jina-ai/TransformerTorchEncoder/'` | Use an Executor as Python source from Executor Hub.                                                       |
 | ✅         | ✅      | `'jinaai+docker://jina-ai/TransformerTorchEncoder'`  | Use an Executor as a Docker container from Executor Hub.                                                      |
-| ✅         | ✅      | `'jinaai+sandbox://jina-ai/TransformerTorchEncoder'` | Use a {ref}`Sandbox Executor <sandbox>` hosted on Executor Hub. The Executor runs remotely on Executor Hub.       |
 | ✅         | ❌      | `'docker://sentence-encoder'`                 | Use a pre-built Executor as a Docker container.                                                           |
 
 
@@ -69,8 +68,8 @@ from jina import Deployment
 
 dep = Deployment(
     uses='MyExecutor',
-    uses_with={"parameter_1": "foo", "parameter_2": "bar"},
     py_modules=["executor.py"],
+    uses_with={"parameter_1": "foo", "parameter_2": "bar"},
     uses_metas={
         "name": "MyExecutor",
         "description": "MyExecutor does a thing to the stuff in your Documents",
@@ -89,8 +88,8 @@ from jina import Flow
 
 f = Flow().add(
     uses='MyExecutor',
-    uses_with={"parameter_1": "foo", "parameter_2": "bar"},
     py_modules=["executor.py"],
+    uses_with={"parameter_1": "foo", "parameter_2": "bar"},
     uses_metas={
         "name": "MyExecutor",
         "description": "MyExecutor does a thing to the stuff in your Documents",
@@ -104,13 +103,13 @@ with f:
 ```
 ````
 
+- `py_modules` is a list of strings that defines the Executor's Python dependencies;
 - `uses_with` is a key-value map that defines the {ref}`arguments of the Executor'<executor-args>` `__init__` method.
 - `uses_requests` is a key-value map that defines the {ref}`mapping from endpoint to class method<executor-requests>`. This is useful to overwrite the default endpoint-to-method mapping defined in the Executor python implementation.
-- `workspace` is a string that defines the {ref}`workspace <executor-workspace>`.
-- `py_modules` is a list of strings that defines the Executor's Python dependencies;
 - `uses_metas` is a key-value map that defines some of the Executor's {ref}`internal attributes<executor-metas>`. It contains the following fields:
     - `name` is a string that defines the name of the Executor;
     - `description` is a string that defines the description of this Executor. It is used in the automatic docs UI;
+- `workspace` is a string that defines the {ref}`workspace <executor-workspace>`.
 
 ### Set `with` via `uses_with`
 
@@ -360,41 +359,6 @@ with flow as f:
 	🔒 Private network:	192.168.1.101:58827
 different_name
 ```
-````
-
-### Unify output `ndarray` types
-
-Different {class}`~jina.Executor`s may depend on different `types` for array-like data such as `doc.tensor` and `doc.embedding`,
-often because they were written with different machine learning frameworks.
-As the builder of an Orchestration you don't always have control over this, for example when using Executors from Executor Hub.
-
-To ease the integration of different Executors, an Orchestration allows you to convert `tensor` and `embedding`:
-
-
-````{tab} Deployment
-```python
-from jina import Deployment
-
-dep = Deployment(uses=MyExecutor, output_array_type='numpy')
-```
-````
-````{tab} Flow
-```python
-from jina import Flow
-
-f = Flow().add(uses=MyExecutor, output_array_type='numpy').add(uses=NeedsNumpyExecutor)
-```
-````
-
-This converts the `.tensor` and `.embedding` fields of all output Documents of `MyExecutor` to `numpy.ndarray`, making the data
-usable by `NeedsNumpyExecutor`. This works whether `MyExecutor` populates these fields with arrays/tensors from
-PyTorch, TensorFlow, or any other popular ML framework.
-
-````{admonition} Output types
-:class: note
-
-`output_array_type=` supports more types than `'numpy'`. For the full specification and further details, check the
-[protobuf serialization docs](https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf).
 ````
 
 (external-executors)=

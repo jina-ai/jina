@@ -447,7 +447,6 @@ def test_default_workspace(tmpdir):
 def test_to_k8s_yaml(tmpdir, exec_type, uses):
     Executor.to_kubernetes_yaml(
         output_base_path=tmpdir,
-        port_expose=2020,
         uses=uses,
         executor_type=exec_type,
     )
@@ -474,12 +473,12 @@ def test_to_k8s_yaml(tmpdir, exec_type, uses):
                 gatewayyaml['spec']['template']['spec']['containers'][0]['ports'][0][
                     'containerPort'
                 ]
-                == 2020
+                == 8080
             )
             gateway_args = gatewayyaml['spec']['template']['spec']['containers'][0][
                 'args'
             ]
-            assert gateway_args[gateway_args.index('--port') + 1] == '2020'
+            assert gateway_args[gateway_args.index('--port') + 1] == '8080'
 
 
 @pytest.mark.parametrize(

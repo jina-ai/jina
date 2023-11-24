@@ -17,7 +17,6 @@ fundamentals/executor/hub/debug-executor.md concepts/executor/hub/debug-executor
 fundamentals/executor/hub/hub-portal.md concepts/executor/hub/hub-portal.md
 fundamentals/executor/hub/index.md concepts/executor/hub/index.md
 fundamentals/executor/hub/push-executor.md concepts/executor/hub/push-executor.md
-fundamentals/executor/hub/sandbox.md concepts/executor/hub/sandbox.md
 fundamentals/executor/hub/use-hub-executor.md concepts/executor/hub/use-hub-executor.md
 fundamentals/executor/index.md concepts/executor/index.md
 fundamentals/executor/instrumenting-executor.md concepts/executor/instrumentation.md

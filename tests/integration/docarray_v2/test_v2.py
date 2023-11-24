@@ -1,20 +1,32 @@
-from typing import Optional, List, Union, Dict, Any
-import pytest
-import time
 import os
+import time
+from typing import (
+    Any,
+    AsyncGenerator,
+    AsyncIterator,
+    Dict,
+    Generator,
+    Iterator,
+    List,
+    Optional,
+    Union,
+)
+
 import numpy as np
+import pytest
 from docarray import BaseDoc, DocList
-from docarray.documents import ImageDoc
-from docarray.typing import AnyTensor, ImageUrl, NdArray
-from docarray.documents import TextDoc
+from docarray.documents import ImageDoc, TextDoc
 from docarray.documents.legacy import LegacyDocument
+from docarray.typing import AnyTensor, ImageUrl, NdArray
+
+from jina import Client, Deployment, Executor, Flow, dynamic_batching, requests
+from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port
 
-from jina import Deployment, Executor, Flow, requests, Client
-from jina.excepts import RuntimeFailToStart
 
-
-@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
+@pytest.mark.parametrize(
+    'protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']]
+)
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_different_document_schema(protocols, replicas):
     class Image(BaseDoc):
@@ -39,7 +51,13 @@ def test_different_document_schema(protocols, replicas):
             docs = c.post(
                 on='/foo',
                 inputs=DocList[Image](
-                    [Image(url='https://via.placeholder.com/150.png', texts=DocList[TextDoc]([TextDoc('hey')]))]),
+                    [
+                        Image(
+                            url='https://via.placeholder.com/150.png',
+                            texts=DocList[TextDoc]([TextDoc('hey')]),
+                        )
+                    ]
+                ),
                 return_type=DocList[Image],
             )
             docs = docs.to_doc_vec()
@@ -50,26 +68,33 @@ def test_different_document_schema(protocols, replicas):
             assert docs[0].texts[1].text == 'ha'
 
 
-@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
+@pytest.mark.parametrize(
+    'protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']]
+)
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_send_custom_doc(protocols, replicas):
     class MyDoc(BaseDoc):
-        text: str
+        my_text: str
 
     class MyExec(Executor):
         @requests(on='/foo')
-        def foo(self, docs: DocList[MyDoc], **kwargs):
-            docs[0].text = 'hello world'
+        def foo(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDoc]:
+            docs[0].my_text = 'hello world'
+            return docs
 
     ports = [random_port() for _ in protocols]
     with Flow(port=ports, protocol=protocols, replicas=replicas).add(uses=MyExec):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
-            docs = c.post(on='/foo', inputs=MyDoc(text='hello'), return_type=DocList[MyDoc])
-            assert docs[0].text == 'hello world'
+            docs = c.post(
+                on='/foo', inputs=MyDoc(my_text='hello'), return_type=DocList[MyDoc]
+            )
+            assert docs[0].my_text == 'hello world'
 
 
-@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
+@pytest.mark.parametrize(
+    'protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']]
+)
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_input_response_schema(protocols, replicas):
     class MyDoc(BaseDoc):
@@ -90,12 +115,16 @@ def test_input_response_schema(protocols, replicas):
     with Flow(port=ports, protocol=protocols, replicas=replicas).add(uses=MyExec):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
-            docs = c.post(on='/foo', inputs=MyDoc(text='hello'), return_type=DocList[MyDoc])
+            docs = c.post(
+                on='/foo', inputs=MyDoc(text='hello'), return_type=DocList[MyDoc]
+            )
             assert docs[0].text == 'hello world'
             assert docs.__class__.doc_type == MyDoc
 
 
-@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
+@pytest.mark.parametrize(
+    'protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']]
+)
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_input_response_schema_annotation(protocols, replicas):
     class MyDoc(BaseDoc):
@@ -112,12 +141,70 @@ def test_input_response_schema_annotation(protocols, replicas):
     with Flow(port=ports, protocol=protocols, replicas=replicas).add(uses=MyExec):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
-            docs = c.post(on='/bar', inputs=MyDoc(text='hello'), return_type=DocList[MyDoc])
+            docs = c.post(
+                on='/bar', inputs=MyDoc(text='hello'), return_type=DocList[MyDoc]
+            )
             assert docs[0].text == 'hello world'
             assert docs.__class__.doc_type == MyDoc
 
 
-@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
+@pytest.mark.parametrize('endpoint', [f'task{i+1}' for i in range(6)])
+def test_generator_endpoints_type_annotations(endpoint):
+    class InputDocument(BaseDoc):
+        input: str
+        n: int
+
+    class OutputDocument(BaseDoc):
+        output: str
+
+    class GeneratorExecutor(Executor):
+        @requests(on='/task1', response_schema=OutputDocument)
+        async def task1(self, doc: InputDocument, **kwargs):
+            yield OutputDocument(text='hello world')
+
+        @requests(on='/task2')
+        async def task2(self, doc: InputDocument, **kwargs) -> OutputDocument:
+            yield OutputDocument(text='hello world')
+
+        @requests(on='/task3')
+        async def task3(
+            self, doc: InputDocument, **kwargs
+        ) -> Generator[OutputDocument, None, None]:
+            yield OutputDocument(text='hello world')
+
+        @requests(on='/task4')
+        async def task4(
+            self, doc: InputDocument, **kwargs
+        ) -> AsyncGenerator[OutputDocument, None]:
+            yield OutputDocument(text='hello world')
+
+        @requests(on='/task5')
+        async def task5(self, doc: InputDocument, **kwargs) -> Iterator[OutputDocument]:
+            yield OutputDocument(text='hello world')
+
+        @requests(on='/task6')
+        async def task6(
+            self, doc: InputDocument, **kwargs
+        ) -> AsyncIterator[OutputDocument]:
+            yield OutputDocument(text='hello world')
+
+    assert (
+        GeneratorExecutor.requests_by_class['GeneratorExecutor'][
+            f'/{endpoint}'
+        ].request_schema
+        == InputDocument
+    )
+    assert (
+        GeneratorExecutor.requests_by_class['GeneratorExecutor'][
+            f'/{endpoint}'
+        ].response_schema
+        == OutputDocument
+    )
+
+
+@pytest.mark.parametrize(
+    'protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']]
+)
 @pytest.mark.parametrize('replicas', [1, 3])
 def test_different_output_input(protocols, replicas):
     class InputDoc(BaseDoc):
@@ -134,6 +221,16 @@ def test_different_output_input(protocols, replicas):
             )
             return docs_return
 
+        @requests(on='/bar_with_dbatch')
+        @dynamic_batching(preferred_batch_size=4)
+        def bar_with_dbatch(
+            self, docs: DocList[InputDoc], **kwargs
+        ) -> DocList[OutputDoc]:
+            docs_return = DocList[OutputDoc](
+                [OutputDoc(embedding=np.zeros((100, 1))) for _ in range(len(docs))]
+            )
+            return docs_return
+
     ports = [random_port() for _ in protocols]
     with Flow(port=ports, protocol=protocols, replicas=replicas).add(uses=MyExec):
         for port, protocol in zip(ports, protocols):
@@ -145,9 +242,18 @@ def test_different_output_input(protocols, replicas):
             )
             assert docs[0].embedding.shape == (100, 1)
             assert docs.__class__.doc_type == OutputDoc
+            docs = c.post(
+                on='/bar_with_dbatch',
+                inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
+                return_type=DocList[OutputDoc],
+            )
+            assert docs[0].embedding.shape == (100, 1)
+            assert docs.__class__.doc_type == OutputDoc
 
 
-@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
+@pytest.mark.parametrize(
+    'protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']]
+)
 def test_chain(protocols):
     class Input1(BaseDoc):
         img: ImageDoc
@@ -158,7 +264,7 @@ def test_chain(protocols):
     class Output2(BaseDoc):
         a: str
 
-    class Exec1(Executor):
+    class Exec1Chain(Executor):
         @requests(on='/bar')
         def bar(self, docs: DocList[Input1], **kwargs) -> DocList[Output1]:
             docs_return = DocList[Output1](
@@ -166,16 +272,19 @@ def test_chain(protocols):
             )
             return docs_return
 
-    class Exec2(Executor):
+    class Exec2Chain(Executor):
         @requests(on='/bar')
         def bar(self, docs: DocList[Output1], **kwargs) -> DocList[Output2]:
             docs_return = DocList[Output2](
-                [Output2(a=f'shape input {docs[0].embedding.shape[0]}') for _ in range(len(docs))]
+                [
+                    Output2(a=f'shape input {docs[0].embedding.shape[0]}')
+                    for _ in range(len(docs))
+                ]
             )
             return docs_return
 
     ports = [random_port() for _ in protocols]
-    with Flow(port=ports, protocol=protocols).add(uses=Exec1).add(uses=Exec2):
+    with Flow(port=ports, protocol=protocols).add(uses=Exec1Chain).add(uses=Exec2Chain):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             docs = c.post(
@@ -185,9 +294,51 @@ def test_chain(protocols):
             )
             assert len(docs) == 1
             assert docs[0].a == 'shape input 100'
+            if len(protocols) == 1 and protocols[0] == 'grpc':
+                import grpc
+                from docarray.documents.legacy import LegacyDocument
+                from google.protobuf.json_format import MessageToDict
+
+                from jina.proto import jina_pb2
+                from jina.proto.jina_pb2_grpc import JinaDiscoverEndpointsRPCStub
+                from jina.serve.executors import __dry_run_endpoint__
+                from jina.serve.runtimes.helper import (
+                    _create_aux_model_doc_list_to_list,
+                    _create_pydantic_model_from_schema,
+                )
+
+                channel = grpc.insecure_channel(f'0.0.0.0:{ports[0]}')
+                stub = JinaDiscoverEndpointsRPCStub(channel)
+                res = stub.endpoint_discovery(
+                    jina_pb2.google_dot_protobuf_dot_empty__pb2.Empty(),
+                )
+                schema_map = MessageToDict(res.schemas)
+                assert set(schema_map.keys()) == {__dry_run_endpoint__, '/bar'}
+                v = schema_map[__dry_run_endpoint__]
+                assert v['input'] == LegacyDocument.schema()
+                assert v['output'] == LegacyDocument.schema()
+                v = schema_map['/bar']
+                assert (
+                    v['input']
+                    == _create_pydantic_model_from_schema(
+                        _create_aux_model_doc_list_to_list(Input1).schema(),
+                        'Input1',
+                        {},
+                    ).schema()
+                )
+                assert (
+                    v['output']
+                    == _create_pydantic_model_from_schema(
+                        _create_aux_model_doc_list_to_list(Output2).schema(),
+                        'Output2',
+                        {},
+                    ).schema()
+                )
 
 
-@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
+@pytest.mark.parametrize(
+    'protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']]
+)
 def test_default_endpoint(protocols):
     class Input1(BaseDoc):
         img: ImageDoc
@@ -198,7 +349,7 @@ def test_default_endpoint(protocols):
     class Output2(BaseDoc):
         a: str
 
-    class Exec1(Executor):
+    class Exec1Default(Executor):
         @requests()
         def bar(self, docs: DocList[Input1], **kwargs) -> DocList[Output1]:
             docs_return = DocList[Output1](
@@ -206,16 +357,21 @@ def test_default_endpoint(protocols):
             )
             return docs_return
 
-    class Exec2(Executor):
+    class Exec2Default(Executor):
         @requests()
         def bar(self, docs: DocList[Output1], **kwargs) -> DocList[Output2]:
             docs_return = DocList[Output2](
-                [Output2(a=f'shape input {docs[0].embedding.shape[0]}') for _ in range(len(docs))]
+                [
+                    Output2(a=f'shape input {docs[0].embedding.shape[0]}')
+                    for _ in range(len(docs))
+                ]
             )
             return docs_return
 
     ports = [random_port() for _ in protocols]
-    with Flow(port=ports, protocol=protocols).add(uses=Exec1).add(uses=Exec2):
+    with Flow(port=ports, protocol=protocols).add(uses=Exec1Default).add(
+        uses=Exec2Default
+    ):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             docs = c.post(
@@ -226,8 +382,50 @@ def test_default_endpoint(protocols):
             assert len(docs) == 1
             assert docs[0].a == 'shape input 100'
 
+        if len(protocols) == 1 and protocols[0] == 'grpc':
+            import grpc
+            from docarray.documents.legacy import LegacyDocument
+            from google.protobuf.json_format import MessageToDict
 
-@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
+            from jina.proto import jina_pb2
+            from jina.proto.jina_pb2_grpc import JinaDiscoverEndpointsRPCStub
+            from jina.serve.executors import __default_endpoint__, __dry_run_endpoint__
+            from jina.serve.runtimes.helper import (
+                _create_aux_model_doc_list_to_list,
+                _create_pydantic_model_from_schema,
+            )
+
+            channel = grpc.insecure_channel(f'0.0.0.0:{ports[0]}')
+            stub = JinaDiscoverEndpointsRPCStub(channel)
+            res = stub.endpoint_discovery(
+                jina_pb2.google_dot_protobuf_dot_empty__pb2.Empty(),
+            )
+            schema_map = MessageToDict(res.schemas)
+            assert set(schema_map.keys()) == {
+                __dry_run_endpoint__,
+                __default_endpoint__,
+            }
+            v = schema_map[__dry_run_endpoint__]
+            assert v['input'] == LegacyDocument.schema()
+            assert v['output'] == LegacyDocument.schema()
+            v = schema_map[__default_endpoint__]
+            assert (
+                v['input']
+                == _create_pydantic_model_from_schema(
+                    _create_aux_model_doc_list_to_list(Input1).schema(), 'Input1', {}
+                ).schema()
+            )
+            assert (
+                v['output']
+                == _create_pydantic_model_from_schema(
+                    _create_aux_model_doc_list_to_list(Output2).schema(), 'Output2', {}
+                ).schema()
+            )
+
+
+@pytest.mark.parametrize(
+    'protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']]
+)
 @pytest.mark.parametrize('reduce', [True, False])
 def test_complex_topology_bifurcation(protocols, reduce):
     class DocTest(BaseDoc):
@@ -244,7 +442,6 @@ def test_complex_topology_bifurcation(protocols, reduce):
                 doc.text = self.text
 
     class ReduceExecutorTest(Executor):
-
         @requests
         def endpoint(self, docs: DocList[DocTest], **kwargs) -> DocList[DocTest]:
             return docs
@@ -252,17 +449,29 @@ def test_complex_topology_bifurcation(protocols, reduce):
     ports = [random_port() for _ in protocols]
     flow = (
         Flow(protocol=protocols, port=ports)
-            .add(uses=ExecutorTest, uses_with={'text': 'exec1'}, name='pod0')
-            .add(uses=ExecutorTest, uses_with={'text': 'exec2'}, needs='gateway', name='pod1')
-            .add(uses=ExecutorTest, uses_with={'text': 'exec3'}, needs='gateway', name='pod2')
-            .add(needs=['pod0', 'pod1', 'pod2'], uses=ReduceExecutorTest, no_reduce=not reduce, name='pod3')
+        .add(uses=ExecutorTest, uses_with={'text': 'exec1'}, name='pod0')
+        .add(
+            uses=ExecutorTest, uses_with={'text': 'exec2'}, needs='gateway', name='pod1'
+        )
+        .add(
+            uses=ExecutorTest, uses_with={'text': 'exec3'}, needs='gateway', name='pod2'
+        )
+        .add(
+            needs=['pod0', 'pod1', 'pod2'],
+            uses=ReduceExecutorTest,
+            no_reduce=not reduce,
+            name='pod3',
+        )
     )
 
     with flow:
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
-            docs = c.post('/', inputs=DocList[DocTest]([DocTest(text='') for _ in range(5)]),
-                          return_type=DocList[DocTest])
+            docs = c.post(
+                '/',
+                inputs=DocList[DocTest]([DocTest(text='') for _ in range(5)]),
+                return_type=DocList[DocTest],
+            )
             assert len(docs) == 5 if reduce else 15
             for doc in docs:
                 assert 'exec' in doc.text
@@ -271,6 +480,7 @@ def test_complex_topology_bifurcation(protocols, reduce):
 @pytest.fixture()
 def temp_workspace(tmpdir):
     import os
+
     os.environ['TEMP_WORKSPACE'] = str(tmpdir)
     yield
     os.unsetenv('TEMP_WORKSPACE')
@@ -284,9 +494,13 @@ def test_condition_feature(protocol, temp_workspace, tmpdir):
 
     class ConditionDumpExecutor(Executor):
         @requests
-        def foo(self, docs: DocList[ProcessingTestDocConditions], **kwargs) -> DocList[ProcessingTestDocConditions]:
+        def foo(
+            self, docs: DocList[ProcessingTestDocConditions], **kwargs
+        ) -> DocList[ProcessingTestDocConditions]:
             with open(
-                    os.path.join(str(self.workspace), f'{self.metas.name}.txt'), 'w', encoding='utf-8'
+                os.path.join(str(self.workspace), f'{self.metas.name}.txt'),
+                'w',
+                encoding='utf-8',
             ) as fp:
                 for doc in docs:
                     fp.write(doc.text)
@@ -294,35 +508,44 @@ def test_condition_feature(protocol, temp_workspace, tmpdir):
 
     class FirstExec(Executor):
         @requests
-        def foo(self, docs: DocList[LegacyDocument], **kwargs) -> DocList[ProcessingTestDocConditions]:
+        def foo(
+            self, docs: DocList[LegacyDocument], **kwargs
+        ) -> DocList[ProcessingTestDocConditions]:
             output_da = DocList[ProcessingTestDocConditions](
-                [ProcessingTestDocConditions(text='type1', tags={'type': 1}),
-                 ProcessingTestDocConditions(text='type2', tags={'type': 2})])
+                [
+                    ProcessingTestDocConditions(text='type1', tags={'type': 1}),
+                    ProcessingTestDocConditions(text='type2', tags={'type': 2}),
+                ]
+            )
             return output_da
 
     class JoinerExec(Executor):
         @requests
-        def foo(self, docs: DocList[ProcessingTestDocConditions], **kwargs) -> DocList[ProcessingTestDocConditions]:
+        def foo(
+            self, docs: DocList[ProcessingTestDocConditions], **kwargs
+        ) -> DocList[ProcessingTestDocConditions]:
             pass
 
     f = (
         Flow(protocol=protocol)
-            .add(uses=FirstExec, name='first')
-            .add(
+        .add(uses=FirstExec, name='first')
+        .add(
             uses=ConditionDumpExecutor,
             uses_metas={'name': 'exec1'},
             workspace=os.environ['TEMP_WORKSPACE'],
             name='exec1',
             needs=['first'],
-            when={'tags__type': {'$eq': 1}})
-            .add(
+            when={'tags__type': {'$eq': 1}},
+        )
+        .add(
             uses=ConditionDumpExecutor,
             workspace=os.environ['TEMP_WORKSPACE'],
             uses_metas={'name': 'exec2'},
             name='exec2',
             needs='first',
-            when={'tags__type': {'$gt': 1}})
-            .needs_all('joiner', uses=JoinerExec)
+            when={'tags__type': {'$gt': 1}},
+        )
+        .needs_all('joiner', uses=JoinerExec)
     )
 
     with f:
@@ -345,10 +568,14 @@ def test_condition_feature(protocol, temp_workspace, tmpdir):
 
         assert types_set == {1, 2}
 
-        with open(os.path.join(str(tmpdir), 'exec1', '0', f'exec1.txt'), 'r', encoding='utf-8') as fp:
+        with open(
+            os.path.join(str(tmpdir), 'exec1', '0', f'exec1.txt'), 'r', encoding='utf-8'
+        ) as fp:
             assert fp.read() == 'type1'
 
-        with open(os.path.join(str(tmpdir), 'exec2', '0', f'exec2.txt'), 'r', encoding='utf-8') as fp:
+        with open(
+            os.path.join(str(tmpdir), 'exec2', '0', f'exec2.txt'), 'r', encoding='utf-8'
+        ) as fp:
             assert fp.read() == 'type2'
 
 
@@ -372,7 +599,7 @@ def test_endpoints_target_executors_combinations(protocol):
         docs = f.post(
             '/hello',
             inputs=DocList[TextDoc]([TextDoc(text='')]),
-            return_type=DocList[TextDoc]
+            return_type=DocList[TextDoc],
         )
         assert len(docs) == 1
         for doc in docs:
@@ -381,7 +608,7 @@ def test_endpoints_target_executors_combinations(protocol):
             '/hello',
             target_executor='p1',
             inputs=DocList[TextDoc]([TextDoc(text='')]),
-            return_type=DocList[TextDoc]
+            return_type=DocList[TextDoc],
         )
         assert len(docs) == 1
         for doc in docs:
@@ -398,7 +625,9 @@ def test_floating_executors(protocol, tmpdir):
             self.file_name = file_name
 
         @requests
-        def foo(self, docs: DocList[LegacyDocument], **kwargs) -> DocList[LegacyDocument]:
+        def foo(
+            self, docs: DocList[LegacyDocument], **kwargs
+        ) -> DocList[LegacyDocument]:
             time.sleep(TIME_SLEEP_FLOATING)
             with open(self.file_name, 'a+', encoding='utf-8') as f:
                 f.write('here ')
@@ -412,8 +641,8 @@ def test_floating_executors(protocol, tmpdir):
 
     f = (
         Flow(protocol=protocol)
-            .add(name='first')
-            .add(
+        .add(name='first')
+        .add(
             name='second',
             floating=True,
             uses=FloatingTestExecutor,
@@ -424,11 +653,13 @@ def test_floating_executors(protocol, tmpdir):
     with f:
         for j in range(NUM_REQ):
             start_time = time.time()
-            ret = f.post(on='/default', inputs=DocList[LegacyDocument]([LegacyDocument(text='')]))
+            ret = f.post(
+                on='/default', inputs=DocList[LegacyDocument]([LegacyDocument(text='')])
+            )
             end_time = time.time()
             assert (
-                           end_time - start_time
-                   ) < TIME_SLEEP_FLOATING  # check that the response arrives before the
+                end_time - start_time
+            ) < TIME_SLEEP_FLOATING  # check that the response arrives before the
             # Floating Executor finishes
             assert len(ret) == 1
             assert ret[0].text == ''
@@ -483,7 +714,10 @@ def test_input_output_with_shaped_tensor(protocol, ctxt_manager):
         ctxt_mgr = Deployment(protocol=protocol, uses=Foo)
 
     with ctxt_mgr:
-        ret = ctxt_mgr.post(on='/hello', inputs=DocList[MyDoc]([MyDoc(text='', embedding=np.random.rand(128))]))
+        ret = ctxt_mgr.post(
+            on='/hello',
+            inputs=DocList[MyDoc]([MyDoc(text='', embedding=np.random.rand(128))]),
+        )
         assert len(ret) == 1
 
 
@@ -505,7 +739,11 @@ def test_send_parameters(protocol, ctxt_manager):
         ctxt_mgr = Deployment(protocol=protocol, uses=Foo)
 
     with ctxt_mgr:
-        ret = ctxt_mgr.post(on='/hello', parameters={'param': '5'}, inputs=DocList[TextDoc]([TextDoc(text='')]))
+        ret = ctxt_mgr.post(
+            on='/hello',
+            parameters={'param': '5'},
+            inputs=DocList[TextDoc]([TextDoc(text='')]),
+        )
         assert len(ret) == 1
         assert ret[0].text == 'Processed by foo with 5'
 
@@ -527,15 +765,21 @@ def test_get_parameters_back(protocol, ctxt_manager):
         ctxt_mgr = Deployment(protocol=protocol, uses=Foo, name='foo')
 
     with ctxt_mgr:
-        ret = ctxt_mgr.post(on='/hello', parameters={'param': '5'}, return_responses=True)
+        ret = ctxt_mgr.post(
+            on='/hello', parameters={'param': '5'}, return_responses=True
+        )
         assert len(ret) == 1
-        assert ret[0].parameters == {'param': '5', '__results__': {'foo/rep-0': {'back': {'param': '5'}}}}
+        assert ret[0].parameters == {
+            'param': '5',
+            '__results__': {'foo/rep-0': {'back': {'param': '5'}}},
+        }
 
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http'])
 @pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
 def test_raise_exception(protocol, ctxt_manager):
     from jina.excepts import BadServer
+
     if ctxt_manager == 'deployment' and protocol == 'websocket':
         return
 
@@ -552,19 +796,25 @@ def test_raise_exception(protocol, ctxt_manager):
     with ctxt_mgr:
         if protocol == 'http':
             with pytest.raises(ValueError) as excinfo:
-                ctxt_mgr.post(on='/hello', parameters={'param': '5'}, return_responses=True)
-            assert excinfo.value.args[0] == {'detail': "Exception('Raising some exception from Executor')"}
+                ctxt_mgr.post(
+                    on='/hello', parameters={'param': '5'}, return_responses=True
+                )
+            assert excinfo.value.args[0] == {
+                'detail': "Exception('Raising some exception from Executor')"
+            }
         elif protocol == 'grpc':
             with pytest.raises(BadServer):
-                ctxt_mgr.post(on='/hello', parameters={'param': '5'}, return_responses=True)
+                ctxt_mgr.post(
+                    on='/hello', parameters={'param': '5'}, return_responses=True
+                )
 
 
 def test_custom_gateway():
     from docarray import DocList
     from docarray.documents.text import TextDoc
 
+    from jina import Executor, Flow, requests
     from jina.serve.runtimes.gateway.http import FastAPIBaseGateway
-    from jina import Flow, Executor, requests
 
     PARAMETERS = {'dog': 'woof'}
 
@@ -577,15 +827,53 @@ def test_custom_gateway():
 
             @app.get('/endpoint_executor')
             async def get_executor(text: str):
-                docs = DocList[TextDoc]([TextDoc(text=f'executor {text}'), TextDoc(text=f'executor {text}'.upper())])
-                resp = await self.executor['executor1'].post(on='/', inputs=docs, parameters=PARAMETERS,
-                                                             return_type=DocList[TextDoc])
+                docs = DocList[TextDoc](
+                    [
+                        TextDoc(text=f'executor {text}'),
+                        TextDoc(text=f'executor {text}'.upper()),
+                    ]
+                )
+                resp = await self.executor['executor1'].post(
+                    on='/',
+                    inputs=docs,
+                    parameters=PARAMETERS,
+                    return_type=DocList[TextDoc],
+                )
+                assert resp.doc_type is TextDoc
                 return {'result': [doc.text for doc in resp]}
+
+            @app.get('/endpoint_stream_docs')
+            async def get_endpoint_stream_docs(text: str):
+                docs = DocList[TextDoc](
+                    [
+                        TextDoc(text=f'stream {text}'),
+                        TextDoc(text=f'stream {text}'.upper()),
+                    ]
+                )
+                async for resp in self.streamer.stream_docs(
+                    docs,
+                    parameters=PARAMETERS,
+                    target_executor='executor1',
+                    return_type=DocList[TextDoc],
+                ):
+                    assert resp.doc_type is TextDoc
+                    return {'result': [doc.text for doc in resp]}
 
             @app.get('/endpoint_stream')
             async def get_endpoint_stream(text: str):
-                docs = DocList[TextDoc]([TextDoc(text=f'stream {text}'), TextDoc(text=f'stream {text}'.upper())])
-                async for resp in self.streamer.stream_docs(docs, parameters=PARAMETERS, target_executor='executor1'):
+                docs = DocList[TextDoc](
+                    [
+                        TextDoc(text=f'stream {text}'),
+                        TextDoc(text=f'stream {text}'.upper()),
+                    ]
+                )
+                async for resp, _ in self.streamer.stream(
+                    docs,
+                    parameters=PARAMETERS,
+                    target_executor='executor1',
+                    return_type=DocList[TextDoc],
+                ):
+                    assert resp.doc_type is TextDoc
                     return {'result': [doc.text for doc in resp]}
 
             return app
@@ -598,20 +886,34 @@ def test_custom_gateway():
 
     class SecondExec(Executor):
         @requests
-        def func(self, docs: DocList[TextDoc], parameters, **kwargs) -> DocList[TextDoc]:
+        def func(
+            self, docs: DocList[TextDoc], parameters, **kwargs
+        ) -> DocList[TextDoc]:
             for doc in docs:
                 doc.text += f' Second(parameters={str(parameters)})'
 
-    with Flow().config_gateway(uses=MyGateway, protocol='http').add(uses=FirstExec, name='executor0').add(
-            uses=SecondExec, name='executor1') as flow:
+    with Flow().config_gateway(uses=MyGateway, protocol='http').add(
+        uses=FirstExec, name='executor0'
+    ).add(uses=SecondExec, name='executor1') as flow:
         import requests
+
         r = requests.get(f'http://localhost:{flow.port}/endpoint_executor?text=meow')
-        assert r.json()['result'] == [f'executor meow Second(parameters={str(PARAMETERS)})',
-                                      f'EXECUTOR MEOW Second(parameters={str(PARAMETERS)})']
+        assert r.json()['result'] == [
+            f'executor meow Second(parameters={str(PARAMETERS)})',
+            f'EXECUTOR MEOW Second(parameters={str(PARAMETERS)})',
+        ]
+
+        r = requests.get(f'http://localhost:{flow.port}/endpoint_stream_docs?text=meow')
+        assert r.json()['result'] == [
+            f'stream meow Second(parameters={str(PARAMETERS)})',
+            f'STREAM MEOW Second(parameters={str(PARAMETERS)})',
+        ]
 
         r = requests.get(f'http://localhost:{flow.port}/endpoint_stream?text=meow')
-        assert r.json()['result'] == [f'stream meow Second(parameters={str(PARAMETERS)})',
-                                      f'STREAM MEOW Second(parameters={str(PARAMETERS)})']
+        assert r.json()['result'] == [
+            f'stream meow Second(parameters={str(PARAMETERS)})',
+            f'STREAM MEOW Second(parameters={str(PARAMETERS)})',
+        ]
 
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
@@ -637,6 +939,23 @@ def test_any_endpoint(protocol, ctxt_manager):
         assert ret[0].text == 'Foo'
 
 
+def test_flow_compatible_with_default():
+    class FirstCompatible(Executor):
+        @requests
+        def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[ImageDoc]:
+            pass
+
+    class SecondCompatible(Executor):
+        @requests(on=['/index'])
+        def foo(self, docs: DocList[ImageDoc], **kwargs) -> DocList[ImageDoc]:
+            pass
+
+    f = Flow().add(uses=FirstCompatible).add(uses=SecondCompatible)
+
+    with f:
+        pass
+
+
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_flow_incompatible_linear(protocol):
     class First(Executor):
@@ -657,6 +976,57 @@ def test_flow_incompatible_linear(protocol):
 
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+def test_flow_compatible_different_exact_schema(protocol):
+    from pydantic import Field
+    class MyFirstDoc(BaseDoc):
+        a: str = Field(default='My first default')
+
+    class MySecondDoc(BaseDoc):
+        a: str = Field(default='My second default')
+    class FirstTestComp(Executor):
+        @requests
+        def foo(self, docs: DocList[MyFirstDoc], **kwargs) -> DocList[MyFirstDoc]:
+            pass
+
+    class SecondTestComp(Executor):
+        @requests
+        def foo(self, docs: DocList[MySecondDoc], **kwargs) -> DocList[MySecondDoc]:
+            pass
+
+    f = Flow(protocol=protocol).add(uses=FirstTestComp).add(uses=SecondTestComp)
+
+    with f:
+        pass
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+@pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
+def test_wrong_schemas(ctxt_manager, protocol):
+    if ctxt_manager == 'deployment' and protocol == 'websocket':
+        return
+    with pytest.raises(RuntimeError):
+
+        class MyExec(Executor):
+            @requests
+            def foo(self, docs: TextDoc, **kwargs) -> DocList[TextDoc]:
+                pass
+
+    if ctxt_manager == 'flow':
+        ctxt_mgr = Flow(protocol=protocol).add(
+            uses='tests.integration.docarray_v2.wrong_schema_executor.WrongSchemaExec'
+        )
+    else:
+        ctxt_mgr = Deployment(
+            protocol=protocol,
+            uses='tests.integration.docarray_v2.wrong_schema_executor.WrongSchemaExec',
+        )
+
+    with pytest.raises(RuntimeFailToStart):
+        with ctxt_mgr:
+            pass
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_flow_incompatible_bifurcation(protocol):
     class First(Executor):
         @requests
@@ -673,8 +1043,13 @@ def test_flow_incompatible_bifurcation(protocol):
         def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
             pass
 
-    f = Flow(protocol=protocol).add(uses=Previous, name='previous').add(uses=First, name='first', needs='previous').add(
-        uses=Second, name='second', needs='previous').needs_all()
+    f = (
+        Flow(protocol=protocol)
+        .add(uses=Previous, name='previous')
+        .add(uses=First, name='first', needs='previous')
+        .add(uses=Second, name='second', needs='previous')
+        .needs_all()
+    )
 
     with pytest.raises(RuntimeFailToStart):
         with f:
@@ -743,7 +1118,7 @@ class MyExternalExecutor(Executor):
 @pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_flow_with_external_deployment(
-        external_deployment, external_deployment_args, input_docs, num_shards, protocol
+    external_deployment, external_deployment_args, input_docs, num_shards, protocol
 ):
     with external_deployment:
         external_args = vars(external_deployment_args)
@@ -796,11 +1171,12 @@ def test_deployments(protocols, replicas):
 
 @pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['grpc', 'http']])
 @pytest.mark.parametrize('replicas', [1, 3])
-def test_deployments_complex_model(protocols, replicas):
-    class InputDoc(BaseDoc):
+@pytest.mark.parametrize('ctxt_manager', ['deployment', 'flow'])
+def test_serve_complex_model(protocols, replicas, ctxt_manager):
+    class InputComplexDoc(BaseDoc):
         img: ImageDoc
 
-    class OutputDoc(BaseDoc):
+    class OutputComplexDoc(BaseDoc):
         tensor: Optional[AnyTensor]
         url: ImageUrl
         lll: List[List[List[int]]] = [[[5]]]
@@ -811,25 +1187,48 @@ def test_deployments_complex_model(protocols, replicas):
         u: Union[str, int]
         lu: List[Union[str, int]] = [0, 1, 2]
 
-    class MyExec(Executor):
+    class MyComplexServeExec(Executor):
         @requests(on='/bar')
-        def bar(self, docs: DocList[InputDoc], **kwargs) -> DocList[OutputDoc]:
-            docs_return = DocList[OutputDoc](
-                [OutputDoc(url='photo.jpg', lll=[[[40]]], fff=[[[40.2]]], d={'b': 'a'},
-                           texts=DocList[TextDoc]([TextDoc(text='hey ha', embedding=np.zeros(3))]),
-                           single_text=TextDoc(text='single hey ha', embedding=np.zeros(2)), u='a', lu=[3, 4]) for _ in
-                 range(len(docs))]
+        def bar(
+            self, docs: DocList[InputComplexDoc], **kwargs
+        ) -> DocList[OutputComplexDoc]:
+            docs_return = DocList[OutputComplexDoc](
+                [
+                    OutputComplexDoc(
+                        url='photo.jpg',
+                        lll=[[[40]]],
+                        fff=[[[40.2]]],
+                        d={'b': 'a'},
+                        texts=DocList[TextDoc](
+                            [TextDoc(text='hey ha', embedding=np.zeros(3))]
+                        ),
+                        single_text=TextDoc(
+                            text='single hey ha', embedding=np.zeros(2)
+                        ),
+                        u='a',
+                        lu=[3, 4],
+                    )
+                    for _ in range(len(docs))
+                ]
             )
             return docs_return
 
     ports = [random_port() for _ in protocols]
-    with Deployment(port=ports, protocol=protocols, replicas=replicas, uses=MyExec):
+    if ctxt_manager == 'flow':
+        ctxt = Flow(port=ports, protocol=protocols).add(
+            replicas=replicas, uses=MyComplexServeExec
+        )
+    else:
+        ctxt = Deployment(
+            port=ports, protocol=protocols, replicas=replicas, uses=MyComplexServeExec
+        )
+    with ctxt:
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             docs = c.post(
                 on='/bar',
-                inputs=InputDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
-                return_type=DocList[OutputDoc],
+                inputs=InputComplexDoc(img=ImageDoc(tensor=np.zeros((3, 224, 224)))),
+                return_type=DocList[OutputComplexDoc],
             )
             assert docs[0].url == 'photo.jpg'
             assert docs[0].lll == [[[40]]]
@@ -846,8 +1245,8 @@ def test_deployments_complex_model(protocols, replicas):
 
 
 def test_deployments_with_shards_one_shard_fails():
-    from docarray.documents import TextDoc
     from docarray import DocList
+    from docarray.documents import TextDoc
 
     class TextDocWithId(TextDoc):
         id: str
@@ -860,12 +1259,16 @@ def test_deployments_with_shards_one_shard_fails():
             self._docs_dict = {}
 
         @requests(on=['/index'])
-        def index(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[TextDocWithId]:
+        def index(
+            self, docs: DocList[TextDocWithId], **kwargs
+        ) -> DocList[TextDocWithId]:
             for doc in docs:
                 self._docs_dict[doc.id] = doc
 
         @requests(on=['/search'])
-        def search(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[TextDocWithId]:
+        def search(
+            self, docs: DocList[TextDocWithId], **kwargs
+        ) -> DocList[TextDocWithId]:
             for doc in docs:
                 doc.text = self._docs_dict[doc.id].text
 
@@ -874,7 +1277,9 @@ def test_deployments_with_shards_one_shard_fails():
             [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(100)]
         )
         dep.index(inputs=index_da, request_size=1, return_type=DocList[TextDocWithId])
-        responses = dep.search(inputs=index_da, request_size=1, return_type=DocList[TextDocWithId])
+        responses = dep.search(
+            inputs=index_da, request_size=1, return_type=DocList[TextDocWithId]
+        )
         for q, r in zip(index_da, responses):
             assert q.text == r.text
 
@@ -882,9 +1287,10 @@ def test_deployments_with_shards_one_shard_fails():
 @pytest.mark.parametrize('reduce', [True, False])
 @pytest.mark.parametrize('sleep_time', [0.1, 5])
 def test_deployments_with_shards_all_shards_return(reduce, sleep_time):
-    from docarray.documents import TextDoc
-    from docarray import DocList, BaseDoc
     from typing import List
+
+    from docarray import BaseDoc, DocList
+    from docarray.documents import TextDoc
 
     class TextDocWithId(TextDoc):
         id: str
@@ -904,24 +1310,35 @@ def test_deployments_with_shards_all_shards_return(reduce, sleep_time):
             time.sleep(sleep_time)
 
         @requests(on=['/index'])
-        def index(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[TextDocWithId]:
+        def index(
+            self, docs: DocList[TextDocWithId], **kwargs
+        ) -> DocList[TextDocWithId]:
             for doc in docs:
                 self._docs.append(doc)
 
         @requests(on=['/search'])
-        def search(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[ResultTestDoc]:
+        def search(
+            self, docs: DocList[TextDocWithId], **kwargs
+        ) -> DocList[ResultTestDoc]:
             resp = DocList[ResultTestDoc]()
             for q in docs:
                 res = ResultTestDoc(id=q.id, matches=self._docs[0:3])
                 resp.append(res)
             return resp
 
-    with Deployment(uses=SimilarityTestIndexer, uses_with={'sleep_time': sleep_time}, shards=2, reduce=reduce) as dep:
+    with Deployment(
+        uses=SimilarityTestIndexer,
+        uses_with={'sleep_time': sleep_time},
+        shards=2,
+        reduce=reduce,
+    ) as dep:
         index_da = DocList[TextDocWithId](
             [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(10)]
         )
         dep.index(inputs=index_da, request_size=1, return_type=DocList[TextDocWithId])
-        responses = dep.search(inputs=index_da[0:1], request_size=1, return_type=DocList[ResultTestDoc])
+        responses = dep.search(
+            inputs=index_da[0:1], request_size=1, return_type=DocList[ResultTestDoc]
+        )
         assert len(responses) == 1 if reduce else 2
         for r in responses:
             assert r.l[0] == 3
@@ -930,13 +1347,16 @@ def test_deployments_with_shards_all_shards_return(reduce, sleep_time):
                 assert 'ID' in match.text
 
 
-@pytest.mark.parametrize('protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']])
+@pytest.mark.parametrize(
+    'protocols', [['grpc'], ['http'], ['websocket'], ['grpc', 'http', 'websocket']]
+)
 @pytest.mark.parametrize('reduce', [True, False])
 @pytest.mark.parametrize('sleep_time', [0.1, 5])
 def test_flow_with_shards_all_shards_return(protocols, reduce, sleep_time):
-    from docarray.documents import TextDoc
-    from docarray import DocList, BaseDoc
     from typing import List
+
+    from docarray import BaseDoc, DocList
+    from docarray.documents import TextDoc
 
     class TextDocWithId(TextDoc):
         id: str
@@ -956,12 +1376,16 @@ def test_flow_with_shards_all_shards_return(protocols, reduce, sleep_time):
             time.sleep(sleep_time)
 
         @requests(on=['/index'])
-        def index(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[TextDocWithId]:
+        def index(
+            self, docs: DocList[TextDocWithId], **kwargs
+        ) -> DocList[TextDocWithId]:
             for doc in docs:
                 self._docs.append(doc)
 
         @requests(on=['/search'])
-        def search(self, docs: DocList[TextDocWithId], **kwargs) -> DocList[ResultTestDoc]:
+        def search(
+            self, docs: DocList[TextDocWithId], **kwargs
+        ) -> DocList[ResultTestDoc]:
             resp = DocList[ResultTestDoc]()
             for q in docs:
                 res = ResultTestDoc(id=q.id, matches=self._docs[0:3])
@@ -969,21 +1393,28 @@ def test_flow_with_shards_all_shards_return(protocols, reduce, sleep_time):
             return resp
 
     ports = [random_port() for _ in protocols]
-    with Flow(protocol=protocols, port=ports).add(uses=SimilarityTestIndexer, uses_with={'sleep_time': sleep_time},
-                                                  shards=2, reduce=reduce):
+    with Flow(protocol=protocols, port=ports).add(
+        uses=SimilarityTestIndexer,
+        uses_with={'sleep_time': sleep_time},
+        shards=2,
+        reduce=reduce,
+    ):
         for port, protocol in zip(ports, protocols):
             c = Client(port=port, protocol=protocol)
             index_da = DocList[TextDocWithId](
                 [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(10)]
             )
             c.index(inputs=index_da, request_size=1, return_type=DocList[TextDocWithId])
-            responses = c.search(inputs=index_da[0:1], request_size=1, return_type=DocList[ResultTestDoc])
+            responses = c.search(
+                inputs=index_da[0:1], request_size=1, return_type=DocList[ResultTestDoc]
+            )
             assert len(responses) == 1 if reduce else 2
             for r in responses:
                 assert r.l[0] == 3
                 assert len(r.matches) == 6
                 for match in r.matches:
                     assert 'ID' in match.text
+
 
 def test_issue_shards_missmatch_endpoint_and_shard_with_lists():
     class MyDoc(BaseDoc):
@@ -995,19 +1426,31 @@ def test_issue_shards_missmatch_endpoint_and_shard_with_lists():
         scores: List[float]
 
     class MyExec(Executor):
-
         @requests(on='/search')
-        def foo(self, docs: DocList[MyDoc], **kwargs) -> DocList[MyDocWithMatchesAndScores]:
+        def foo(
+            self, docs: DocList[MyDoc], **kwargs
+        ) -> DocList[MyDocWithMatchesAndScores]:
             res = DocList[MyDocWithMatchesAndScores]()
             for doc in docs:
-                new_doc = MyDocWithMatchesAndScores(id=doc.id, text=doc.text, embedding=doc.embedding, matches=[MyDoc(text='m', embedding=np.random.rand(128) )],
-                                                    scores=[1.0 for _ in docs])
+                new_doc = MyDocWithMatchesAndScores(
+                    id=doc.id,
+                    text=doc.text,
+                    embedding=doc.embedding,
+                    matches=[MyDoc(text='m', embedding=np.random.rand(128))],
+                    scores=[1.0 for _ in docs],
+                )
                 res.append(new_doc)
             return res
 
     d = Deployment(uses=MyExec, shards=2)
     with d:
-        res = d.post(on='/search', inputs=DocList[MyDoc]([MyDoc(text='hey ha', embedding=np.random.rand(128))]), return_type=DocList[MyDocWithMatchesAndScores])
+        res = d.post(
+            on='/search',
+            inputs=DocList[MyDoc](
+                [MyDoc(text='hey ha', embedding=np.random.rand(128))]
+            ),
+            return_type=DocList[MyDocWithMatchesAndScores],
+        )
         assert len(res) == 1
         for doc in res:
             assert len(doc.scores) == 2
@@ -1017,7 +1460,6 @@ def test_issue_shards_missmatch_endpoint_and_shard_with_lists():
 @pytest.mark.parametrize('protocol', ['grpc', 'http'])
 def test_closing_executor(tmpdir, protocol):
     class ClosingExec(Executor):
-
         def __init__(self, file_path, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self._file_path = file_path
@@ -1027,7 +1469,9 @@ def test_closing_executor(tmpdir, protocol):
                 f.write('I closed')
 
     file_path = f'{str(tmpdir)}/file.txt'
-    d = Deployment(uses=ClosingExec, uses_with={'file_path': file_path}, protocol=protocol)
+    d = Deployment(
+        uses=ClosingExec, uses_with={'file_path': file_path}, protocol=protocol
+    )
     with d:
         pass
 
@@ -1040,17 +1484,12 @@ def test_issue_dict_docs_http():
     class AuxDoc(BaseDoc):
         a: str
 
-
     class TagsDoc(BaseDoc):
         tags: Dict[str, Any] = dict()
         aux: AuxDoc
 
-
     class TagsDocExecutor(Executor):
-        def __init__(
-                self,
-                **kwargs
-        ):
+        def __init__(self, **kwargs):
             super().__init__(**kwargs)
 
         @requests(on=['/index'])
@@ -1059,7 +1498,6 @@ def test_issue_dict_docs_http():
                 doc.aux.a = 'b'
                 doc.tags = {'a': {'b': 1}}
             return docs
-
 
     f = Flow(protocol='http').add(uses=TagsDocExecutor)
     doc1 = TagsDoc(aux=AuxDoc(a='a'))
@@ -1070,3 +1508,107 @@ def test_issue_dict_docs_http():
         for doc in res:
             assert doc.aux.a == 'b'
             assert doc.tags == {'a': {'b': 1}}
+
+
+def test_issue_with_monitoring():
+    class InputDocMonitor(BaseDoc):
+        text: str
+
+    class OutputDocMonitor(BaseDoc):
+        price: int
+
+    class MonitorExecTest(Executor):
+        @requests
+        def foo(
+            self, docs: DocList[InputDocMonitor], **kwargs
+        ) -> DocList[OutputDocMonitor]:
+            ret = DocList[OutputDocMonitor]()
+            for doc in docs:
+                ret.append(OutputDocMonitor(price=2))
+            return ret
+
+    f = Flow(monitoring=True).add(uses=MonitorExecTest, monitoring=True)
+    with f:
+        ret = f.post(
+            on='/',
+            inputs=DocList[InputDocMonitor]([InputDocMonitor(text='2')]),
+            return_type=DocList[OutputDocMonitor],
+        )
+        assert len(ret) == 1
+        assert ret[0].price == 2
+
+
+@pytest.mark.parametrize('ctxt_manager', ['flow', 'deployment'])
+@pytest.mark.parametrize('include_gateway', [False, True])
+def test_doc_with_examples(ctxt_manager, include_gateway):
+    if ctxt_manager == 'flow' and include_gateway:
+        return
+    import random
+    import string
+
+    random_example = ''.join(random.choices(string.ascii_letters, k=10))
+    random_description = ''.join(random.choices(string.ascii_letters, k=10))
+    from pydantic.fields import Field
+
+    class MyDocWithExample(BaseDoc):
+        """This test should be in description"""
+
+        t: str = Field(examples=[random_example], description=random_description)
+
+        class Config:
+            title: str = 'MyDocWithExampleTitle'
+            schema_extra: Dict = {'extra_key': 'extra_value'}
+
+    class MyExecDocWithExample(Executor):
+        @requests
+        def foo(
+            self, docs: DocList[MyDocWithExample], **kwargs
+        ) -> DocList[MyDocWithExample]:
+            pass
+
+    port = random_port()
+
+    if ctxt_manager == 'flow':
+        ctxt = Flow(protocol='http', port=port).add(uses=MyExecDocWithExample)
+    else:
+        ctxt = Deployment(
+            uses=MyExecDocWithExample,
+            protocol='http',
+            port=port,
+            include_gateway=include_gateway,
+        )
+
+    with ctxt:
+        import requests as general_requests
+
+        resp = general_requests.get(f'http://localhost:{port}/openapi.json')
+        resp_str = str(resp.json())
+        assert random_example in resp_str
+        assert random_description in resp_str
+        assert 'This test should be in description' in resp_str
+        assert 'MyDocWithExampleTitle' in resp_str
+        assert 'extra_key' in resp_str
+
+
+def test_issue_fastapi_multiple_models_same_name():
+    class MyRandomModel(BaseDoc):
+        a: str
+
+    class MyInputModel(BaseDoc):
+        b: Optional[MyRandomModel] = None
+
+    class MyFailingExecutor(Executor):
+        @requests(on='/generate')
+        def generate(
+            self, docs: DocList[MyInputModel], **kwargs
+        ) -> DocList[MyRandomModel]:
+            return DocList[MyRandomModel]([doc.b for doc in docs])
+
+    with Flow(protocol='http').add(uses=MyFailingExecutor) as f:
+        input_doc = MyRandomModel(a='hello world')
+        res = f.post(
+            on='/generate',
+            inputs=[MyInputModel(b=MyRandomModel(a='hey'))],
+            return_type=DocList[MyRandomModel],
+        )
+        assert res[0].a == 'hey'

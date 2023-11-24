@@ -60,7 +60,7 @@ def test_log_level(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
-def test_grpc_fork_support_false(monkeypatch):
+def test_grpc_fork_support_true(monkeypatch):
     monkeypatch.setenv('GRPC_ENABLE_FORK_SUPPORT', 'true')
 
 
@@ -88,3 +88,10 @@ def event_loop(request):
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()
+
+@pytest.fixture(autouse=True)
+def set_test_pip_version() -> None:
+    os.environ['JINA_GATEWAY_IMAGE'] = 'jinaai/jina:test-pip'
+    yield
+    if 'JINA_GATEWAY_IMAGE' in os.environ: # maybe another fixture has already removed
+        del os.environ['JINA_GATEWAY_IMAGE']
