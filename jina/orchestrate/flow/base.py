@@ -1962,7 +1962,6 @@ class Flow(
                         task.cancel()
 
             class StatusThread(threading.Thread):
-
                 def run(self):
                     return super(StatusThread, self).run()
 
@@ -1998,9 +1997,9 @@ class Flow(
             else:
                 # TODO: the same logic that one fails all other fail should be done also here
                 class WaitThread(threading.Thread):
-
                     def run(self):
                         return super(WaitThread, self).run()
+
                 for k, v in self:
                     wait_ready_threads.append(
                         WaitThread(target=_wait_ready, args=(k, v), daemon=True)
