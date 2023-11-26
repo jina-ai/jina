@@ -71,12 +71,13 @@ class DeploymentType(type(ExitStack), type(JAMLCompatible)):
 def _call_add_voters(leader, voters, replica_ids, name, event_signal=None):
     # this method needs to be run in multiprocess, importing jraft in main process
     # makes it impossible to do tests sequentially
+    logger = JinaLogger(f'add_voter-{name}')
+
     print(f'add_voter-{name}: call add voters started', flush=True)
     import jraft
 
     print(f'add_voter-{name}: jraft imported', flush=True)
     print(f'add_voter-{name}: Replica IDS {replica_ids}', flush=True)
-    logger = JinaLogger(context=f'add_voter-{name}', name=f'add_voter-{name}')
     print(f'add_voter-{name}: logger instantiated', flush=True)
     logger.debug(f'Trying to add {len(replica_ids)} voters to leader {leader}')
     for voter_address, replica_id in zip(voters, replica_ids):
