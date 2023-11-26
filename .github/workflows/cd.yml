@@ -158,10 +158,69 @@ jobs:
         timeout-minutes: 45
         env:
           JINA_AUTH_TOKEN: "${{ secrets.JINA_AUTH_TOKEN }}"
+      - name: Check codecov file
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "coverage.xml"
+      - name: Upload coverage from test to Codecov
+        uses: codecov/codecov-action@v3.1.1
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.8'
+        with:
+          file: coverage.xml
+          name: ${{ matrix.test-path }}-codecov
+          flags: ${{ steps.test.outputs.codecov_flag }}
+          fail_ci_if_error: false
+
+  stateful-docarray-v-two-test:
+    needs: prep-testbed
+    runs-on: ubuntu-latest
+    env:
+      JINA_RANDOM_PORT_MIN: 16384
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.8]
+        protobuf-version: ['==3.19.6', '']
+    steps:
+      - uses: actions/checkout@v2.5.0
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Set up Golang
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.19.5
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel
+          pip install git+https://github.com/jina-ai/setuptools-golang.git@feat-align-with-alaeddine-code
+          pip install cibuildwheel
+
+      - name: Build wheels with setuptools-golang-build-manylinux-wheel
+        run: |
+          setuptools-golang-build-manylinux-wheels --pythons cp38-cp38
+      - name: Prepare environment
+        run: |
+          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          python -m pip install --upgrade pip
+          python -m pip install wheel
+          WHEEL_FILE=$(ls dist/*whl)
+          pip install "$WHEEL_FILE[common,devel,test]" --no-cache-dir
+          if [[ "${{ matrix.protobuf-version }}" == "==3.19.6" ]]; then
+            pip install -U protobuf${{ matrix.protobuf-version }} grpcio==1.47.5 grpcio-reflection==1.47.5 grpcio-health-checking==1.47.5
+          else
+            pip install -U protobuf${{ matrix.protobuf-version }}
+          fi
+          jina
+          export JINA_LOG_LEVEL="ERROR"
       - name: Test stateful
         id: test_stateful
         run: |
-          JINA_LOG_LEVEL=DEBUG JINA_RANDOM_PORT_MAX="60535" pytest --suppress-no-test-exit-code --force-flaky --maxfail 1 --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/stateful
+          JINA_LOG_LEVEL=DEBUG JINA_RANDOM_PORT_MAX="60535" pytest --suppress-no-test-exit-code --maxfail 1 --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/stateful
           echo "flag it as jina for codeoverage"
           echo "codecov_flag=jina" >> $GITHUB_OUTPUT
         timeout-minutes: 30
@@ -816,7 +875,7 @@ jobs:
   # just for blocking the merge until all parallel core-test are successful
   success-all-steps:
     runs-on: ubuntu-latest
-    needs: [core-test, docarray-v-two-test, import-test, hub-test, k8s-flow-test, k8s-deployment-test, k8s-graceful-test, k8s-failures-test, k8s-otel-test, docker-compose-test, docker-image-test, benchmark-pre-release, update-schema, update-docker] #, pre-release]
+    needs: [core-test, docarray-v-two-test, stateful-docarray-v-two-test, import-test, hub-test, k8s-flow-test, k8s-deployment-test, k8s-graceful-test, k8s-failures-test, k8s-otel-test, docker-compose-test, docker-image-test, benchmark-pre-release, update-schema, update-docker] #, pre-release]
     if: always()
     steps:
       - uses: technote-space/workflow-conclusion-action@v2
