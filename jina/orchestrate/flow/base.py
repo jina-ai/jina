@@ -1961,8 +1961,13 @@ class Flow(
                     for task in pending:
                         task.cancel()
 
+            class StatusThread(threading.Thread):
+
+                def run(self):
+                    return super(StatusThread, self).run()
+
             # kick off spinner thread
-            polling_status_thread = threading.Thread(
+            polling_status_thread = StatusThread(
                 target=_polling_status,
                 args=(len(wait_for_ready_coros),),
                 daemon=True,
@@ -1992,9 +1997,13 @@ class Flow(
                 asyncio.get_event_loop().run_until_complete(_async_wait_all())
             else:
                 # TODO: the same logic that one fails all other fail should be done also here
+                class WaitThread(threading.Thread):
+
+                    def run(self):
+                        return super(WaitThread, self).run()
                 for k, v in self:
                     wait_ready_threads.append(
-                        threading.Thread(target=_wait_ready, args=(k, v), daemon=True)
+                        WaitThread(target=_wait_ready, args=(k, v), daemon=True)
                     )
                 for t in wait_ready_threads:
                     t.start()
