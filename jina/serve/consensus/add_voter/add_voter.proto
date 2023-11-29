@@ -1,0 +1,28 @@
+syntax = "proto3";
+package add_voter;
+
+
+service RaftAdmin {
+  rpc AddVoter(AddVoterRequest) returns (Future) {}
+
+  rpc Await(Future) returns (AwaitResponse) {}
+  rpc Forget(Future) returns (ForgetResponse) {}
+}
+
+message AwaitResponse {
+  string error = 1;
+  uint64 index = 2;
+}
+
+message ForgetResponse {
+}
+
+message Future {
+  string operation_token = 1;
+}
+
+message AddVoterRequest {
+  string id = 1;
+  string address = 2;
+  uint64 previous_index = 3;
+}
