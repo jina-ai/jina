@@ -32,11 +32,11 @@ note: you need to be in the root of the repo to do the following steps
 ``` cmd
 docker run -it -v $(pwd)/jina/serve/consensus/add_voter:/jina/serve/consensus/add_voter --entrypoint=/bin/bash jinaai/protogen:local
 cd /jina/serve/consensus/add_voter
-bash build-add-voter-proto.sh  /builder/grpc/cmake/build/grpc_python_plugin pb2
+bash build-add-voter-proto.sh /builder/grpc/cmake/build/grpc_python_plugin pb2
 ```
 
 ``` 
 docker run -it -v $(pwd)/jina/serve/consensus/add_voter:/jina/serve/consensus/add_voter --entrypoint=/bin/bash jinaai/protogen-3.21:local
 cd /jina/serve/consensus/add_voter
-bash build-add-voter-proto.sh  /builder/grpc/cmake/build/grpc_python_plugin pb
+bash build-add-voter-proto.sh /builder/grpc/cmake/build/grpc_python_plugin pb
 ```

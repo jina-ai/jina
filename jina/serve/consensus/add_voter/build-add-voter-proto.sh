@@ -37,5 +37,5 @@ PLUGIN_PATH=${1}  # /Volumes/TOSHIBA-4T/Documents/grpc/bins/opt/grpc_python_plug
 printf "\e[1;33mgenerating protobuf and grpc python interface\e[0m\n"
 
 protoc -I ${SRC_DIR} --python_out="${SRC_DIR}${OUT_FOLDER}" --grpc_python_out="${SRC_DIR}${OUT_FOLDER}" --plugin=protoc-gen-grpc_python=${PLUGIN_PATH} ${SRC_DIR}${SRC_NAME}
-
+sed -i 's/import add_voter_pb2 as add__voter__pb2/from . import add_voter_pb2 as add__voter__pb2/' "${PB_NAME}/add_voter_pb2_grpc.py"
 printf "\e[1;32mAll done!\e[0m\n"

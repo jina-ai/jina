@@ -1,6 +1,4 @@
 syntax = "proto3";
-package add_voter;
-
 
 service RaftAdmin {
   rpc AddVoter(AddVoterRequest) returns (Future) {}

@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import add_voter_pb2 as add__voter__pb2
+from . import add_voter_pb2 as add__voter__pb2
 
 
 class RaftAdminStub(object):
@@ -15,17 +15,17 @@ class RaftAdminStub(object):
             channel: A grpc.Channel.
         """
         self.AddVoter = channel.unary_unary(
-                '/add_voter.RaftAdmin/AddVoter',
+                '/RaftAdmin/AddVoter',
                 request_serializer=add__voter__pb2.AddVoterRequest.SerializeToString,
                 response_deserializer=add__voter__pb2.Future.FromString,
                 )
         self.Await = channel.unary_unary(
-                '/add_voter.RaftAdmin/Await',
+                '/RaftAdmin/Await',
                 request_serializer=add__voter__pb2.Future.SerializeToString,
                 response_deserializer=add__voter__pb2.AwaitResponse.FromString,
                 )
         self.Forget = channel.unary_unary(
-                '/add_voter.RaftAdmin/Forget',
+                '/RaftAdmin/Forget',
                 request_serializer=add__voter__pb2.Future.SerializeToString,
                 response_deserializer=add__voter__pb2.ForgetResponse.FromString,
                 )
@@ -72,7 +72,7 @@ def add_RaftAdminServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'add_voter.RaftAdmin', rpc_method_handlers)
+            'RaftAdmin', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
@@ -91,7 +91,7 @@ class RaftAdmin(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/add_voter.RaftAdmin/AddVoter',
+        return grpc.experimental.unary_unary(request, target, '/RaftAdmin/AddVoter',
             add__voter__pb2.AddVoterRequest.SerializeToString,
             add__voter__pb2.Future.FromString,
             options, channel_credentials,
@@ -108,7 +108,7 @@ class RaftAdmin(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/add_voter.RaftAdmin/Await',
+        return grpc.experimental.unary_unary(request, target, '/RaftAdmin/Await',
             add__voter__pb2.Future.SerializeToString,
             add__voter__pb2.AwaitResponse.FromString,
             options, channel_credentials,
@@ -125,7 +125,7 @@ class RaftAdmin(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/add_voter.RaftAdmin/Forget',
+        return grpc.experimental.unary_unary(request, target, '/RaftAdmin/Forget',
             add__voter__pb2.Future.SerializeToString,
             add__voter__pb2.ForgetResponse.FromString,
             options, channel_credentials,
