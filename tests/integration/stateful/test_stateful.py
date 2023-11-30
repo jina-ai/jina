@@ -112,11 +112,13 @@ def test_stateful_index_search(executor_cls, shards, tmpdir, stateful_exec_docke
         for doc in docs:
             assert doc.text == 'similarity'
             assert len(doc.l) == len(index_da)  # good merging of results
+        time.sleep(10)
 
 
 @pytest.mark.timeout(240)
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
 @pytest.mark.parametrize('shards', [2, 1])
+#@pytest.mark.skip()
 @pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
 def test_stateful_index_search_restore(executor_cls, shards, tmpdir, stateful_exec_docker_image_built,
                                        kill_all_children):
@@ -152,6 +154,7 @@ def test_stateful_index_search_restore(executor_cls, shards, tmpdir, stateful_ex
         # checking against the main read replica
         assert_is_indexed(dep, search_da)
         assert_all_replicas_indexed(dep, search_da)
+        time.sleep(10)
 
     # test restoring
     with dep:
@@ -162,6 +165,7 @@ def test_stateful_index_search_restore(executor_cls, shards, tmpdir, stateful_ex
         time.sleep(20)
         search_da = DocumentArray[TextDocWithId]([TextDocWithId(id=f'{i}') for i in range(200)])
         assert_all_replicas_indexed(dep, search_da)
+        time.sleep(10)
 
 
 @pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
@@ -200,6 +204,7 @@ def test_stateful_index_search_container(shards, tmpdir, stateful_exec_docker_im
         # checking against the main read replica
         assert_is_indexed(dep, search_da)
         assert_all_replicas_indexed(dep, search_da, key='num')
+        time.sleep(10)
 
     # test restoring
     with dep:
@@ -210,6 +215,7 @@ def test_stateful_index_search_container(shards, tmpdir, stateful_exec_docker_im
         time.sleep(10)
         search_da = DocumentArray[TextDocWithId]([TextDocWithId(id=f'{i}') for i in range(200)])
         assert_all_replicas_indexed(dep, search_da, key='num')
+        time.sleep(10)
 
 
 @pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
@@ -280,3 +286,4 @@ def test_add_new_replica(executor_cls, tmpdir):
             search_da = DocumentArray[TextDocWithId]([TextDocWithId(id=f'{i}') for i in range(200)])
             client = Client(port=new_replica_port)
             assert_is_indexed(client, search_da=search_da)
+            time.sleep(10)

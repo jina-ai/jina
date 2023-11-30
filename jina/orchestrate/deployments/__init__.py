@@ -74,6 +74,7 @@ def _call_add_voters(leader, voters, replica_ids, logger):
     from jina.serve.consensus.add_voter.call_add_voter import call_add_voter
 
     logger.debug(f'Trying to add {len(replica_ids)} voters to leader {leader}')
+    success_lists = []
     for voter_address, replica_id in zip(voters, replica_ids):
         logger.debug(
             f'Trying to add replica-{str(replica_id)} as voter with address {voter_address} to leader at {leader}'
@@ -81,7 +82,7 @@ def _call_add_voters(leader, voters, replica_ids, logger):
         success = False
         for i in range(5):
             logger.debug(f'Trying {i}th time')
-            success = call_add_voter(leader, str(replica_id), voter_address, logger)
+            success = call_add_voter(leader, str(replica_id), voter_address)
             if success:
                 logger.debug(f'Trying {i}th time succeeded')
                 break
@@ -89,6 +90,7 @@ def _call_add_voters(leader, voters, replica_ids, logger):
                 logger.debug(f'Trying {i}th failed. Wait 2 seconds for next try')
                 time.sleep(2.0)
 
+        success_lists.append(success)
         if not success:
             logger.warning(
                 f'Failed to add {str(replica_id)} as voter with address {voter_address} to leader at {leader}. This could be because {leader} is not the leader, '
@@ -99,7 +101,7 @@ def _call_add_voters(leader, voters, replica_ids, logger):
                 f'Replica-{str(replica_id)} successfully added as voter with address {voter_address} to leader at {leader}'
             )
     logger.debug('Adding voters to leader finished')
-    return success
+    return all(success_lists)
 
 
 async def _async_call_add_voters(leader, voters, replica_ids, logger):
@@ -108,6 +110,7 @@ async def _async_call_add_voters(leader, voters, replica_ids, logger):
     from jina.serve.consensus.add_voter.call_add_voter import async_call_add_voter
 
     logger.debug(f'Trying to add {len(replica_ids)} voters to leader {leader}')
+    success_lists = []
     for voter_address, replica_id in zip(voters, replica_ids):
         logger.debug(
             f'Trying to add replica-{str(replica_id)} as voter with address {voter_address} to leader at {leader}'
@@ -116,7 +119,7 @@ async def _async_call_add_voters(leader, voters, replica_ids, logger):
         for i in range(5):
             logger.debug(f'Trying {i}th time')
             success = await async_call_add_voter(
-                leader, str(replica_id), voter_address, logger
+                leader, str(replica_id), voter_address
             )
             if success:
                 logger.debug(f'Trying {i}th time succeeded')
@@ -124,7 +127,7 @@ async def _async_call_add_voters(leader, voters, replica_ids, logger):
             else:
                 logger.debug(f'Trying {i}th failed. Wait 2 seconds for next try')
                 time.sleep(2.0)
-
+        success_lists.append(success)
         if not success:
             logger.warning(
                 f'Failed to add {str(replica_id)} as voter with address {voter_address} to leader at {leader}. This could be because {leader} is not the leader, '
@@ -135,7 +138,7 @@ async def _async_call_add_voters(leader, voters, replica_ids, logger):
                 f'Replica-{str(replica_id)} successfully added as voter with address {voter_address} to leader at {leader}'
             )
     logger.debug('Adding voters to leader finished')
-    return success
+    return all(success_lists)
 
 
 class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=DeploymentType):
