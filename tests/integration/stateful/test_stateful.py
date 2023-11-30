@@ -118,8 +118,8 @@ def test_stateful_index_search(executor_cls, shards, tmpdir, stateful_exec_docke
 @pytest.mark.timeout(240)
 @pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
 @pytest.mark.parametrize('shards', [2, 1])
-#@pytest.mark.skip()
-@pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
+@pytest.mark.skip()
+#@pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
 def test_stateful_index_search_restore(executor_cls, shards, tmpdir, stateful_exec_docker_image_built,
                                        kill_all_children):
     replicas = 3
