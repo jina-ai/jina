@@ -27,3 +27,27 @@ def call_add_voter(target, replica_id, voter_address, logger):
         except Exception as e:
             logger.error(f'2-Exception {e}')
             return False
+
+async def async_call_add_voter(target, replica_id, voter_address, logger):
+    logger.error(f'JOAN HERE HEY LEADER {target} add {voter_address} for ID {replica_id}')
+    async with grpc.aio.insecure_channel(target) as channel:
+        stub = RaftAdminStub(channel)
+
+        req = AddVoterRequest(
+            id=replica_id,
+            address=voter_address,
+            previous_index=0,
+        )
+
+        try:
+            future = await stub.AddVoter(req)
+            add_voter_result = await stub.Await(future)
+            _ = await stub.Forget(future)
+            if not add_voter_result.error:
+                logger.error(f'SUCCESFULLY ADDED VOTER {voter_address} to leader {target} for ID {replica_id}')
+                return True
+            else:
+                return False
+        except Exception as e:
+            logger.error(f'2-Exception {e}')
+            return False
