@@ -118,9 +118,7 @@ async def _async_call_add_voters(leader, voters, replica_ids, logger):
         success = False
         for i in range(5):
             logger.debug(f'Trying {i}th time')
-            success = await async_call_add_voter(
-                leader, str(replica_id), voter_address
-            )
+            success = await async_call_add_voter(leader, str(replica_id), voter_address)
             if success:
                 logger.debug(f'Trying {i}th time succeeded')
                 break
