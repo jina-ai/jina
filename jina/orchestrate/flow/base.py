@@ -1965,14 +1965,14 @@ class Flow(
                 def run(self):
                     return super(StatusThread, self).run()
 
-            # kick off spinner thread
-            polling_status_thread = StatusThread(
-                target=_polling_status,
-                args=(len(wait_for_ready_coros),),
-                daemon=True,
-            )
-
-            polling_status_thread.start()
+            # # kick off spinner thread
+            # polling_status_thread = StatusThread(
+            #     target=_polling_status,
+            #     args=(len(wait_for_ready_coros),),
+            #     daemon=True,
+            # )
+            #
+            # polling_status_thread.start()
 
             # kick off all deployments wait-ready tasks
 
@@ -2007,7 +2007,7 @@ class Flow(
                 for t in wait_ready_threads:
                     t.start()
 
-            polling_status_thread.join()
+            #polling_status_thread.join()
             for t in wait_ready_threads:
                 t.join()
 
