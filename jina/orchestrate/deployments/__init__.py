@@ -176,9 +176,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 logger=self.logger,
             )
             if res:
-                self.logger.debug('Add Voters process finished')
+                self.logger.debug('Finished adding voters')
             else:
-                self.logger.error('Add Voters process did not finish successfully')
+                self.logger.error('Adding Voters did not finish successfully')
 
         async def _async_add_voter_to_leader(self):
             leader_address = f'{self._pods[0].runtime_ctrl_address}'
@@ -192,9 +192,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 logger=self.logger,
             )
             if res:
-                self.logger.debug('Add Voters process finished')
+                self.logger.debug('Finished adding voters')
             else:
-                self.logger.error('Add Voters process did not finish successfully')
+                self.logger.error('Adding Voters did not finish successfully')
 
         @property
         def is_ready(self):
