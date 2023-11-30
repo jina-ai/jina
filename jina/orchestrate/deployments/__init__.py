@@ -106,6 +106,7 @@ async def _async_call_add_voters(leader, voters, replica_ids, logger):
     # this method needs to be run in multiprocess, importing jraft in main process
     # makes it impossible to do tests sequentially
     from jina.serve.consensus.add_voter.call_add_voter import async_call_add_voter
+
     logger.debug(f'Trying to add {len(replica_ids)} voters to leader {leader}')
     for voter_address, replica_id in zip(voters, replica_ids):
         logger.debug(
@@ -114,7 +115,9 @@ async def _async_call_add_voters(leader, voters, replica_ids, logger):
         success = False
         for i in range(5):
             logger.debug(f'Trying {i}th time')
-            success = await async_call_add_voter(leader, str(replica_id), voter_address, logger)
+            success = await async_call_add_voter(
+                leader, str(replica_id), voter_address, logger
+            )
             if success:
                 logger.debug(f'Trying {i}th time succeeded')
                 break
@@ -133,6 +136,7 @@ async def _async_call_add_voters(leader, voters, replica_ids, logger):
             )
     logger.debug('Adding voters to leader finished')
     return success
+
 
 class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=DeploymentType):
     """A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.
@@ -181,11 +185,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             replica_ids = [pod.args.replica_id for pod in self._pods[1:]]
             self.logger.debug('Starting process to call Add Voters')
             res = await _async_call_add_voters(
-                        leader=leader_address,
-                        voters=voter_addresses,
-                        replica_ids=replica_ids,
-                        logger=self.logger,
-                    )
+                leader=leader_address,
+                voters=voter_addresses,
+                replica_ids=replica_ids,
+                logger=self.logger,
+            )
             if res:
                 self.logger.debug('Add Voters process finished')
             else:
