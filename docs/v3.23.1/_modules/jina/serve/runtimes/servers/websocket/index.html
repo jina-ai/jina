@@ -1,0 +1,599 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
+        <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/servers/websocket.html" />
+
+    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
+        <title>jina.serve.runtimes.servers.websocket - Jina 3.23.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/main.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/docbot.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  --color-brand-primary: #009191;
+  --color-brand-content: #009191;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+    <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+    <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+    <header class="mobile-header">
+        <div class="header-left">
+            <label class="nav-overlay-icon" for="__navigation">
+                <div class="visually-hidden">Toggle site navigation sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-menu"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+        <div class="header-center">
+            <a href="../../../../../../">
+                <div class="brand">Jina 3.23.1 documentation</div>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle-container theme-toggle-header">
+                <button class="theme-toggle">
+                    <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                    <svg class="theme-icon-when-auto">
+                        <use href="#svg-sun-half"></use>
+                    </svg>
+                    <svg class="theme-icon-when-dark">
+                        <use href="#svg-moon"></use>
+                    </svg>
+                    <svg class="theme-icon-when-light">
+                        <use href="#svg-sun"></use>
+                    </svg>
+                </button>
+            </div>
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+                <div class="visually-hidden">Toggle table of contents sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-toc"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+    </header>
+    <aside class="sidebar-drawer">
+        <div class="sidebar-container">
+            
+            <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../../../../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../../../../../../_static/logo-dark.svg" alt="Dark Logo" />
+  </div>
+  
+  
+</a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../../../../../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../get-started/install/"><svg aria-hidden="true" class="sd-octicon sd-octicon-desktop-download" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4.927 5.427l2.896 2.896a.25.25 0 00.354 0l2.896-2.896A.25.25 0 0010.896 5H8.75V.75a.75.75 0 10-1.5 0V5H5.104a.25.25 0 00-.177.427z"></path><path d="M1.573 2.573a.25.25 0 00-.073.177v7.5a.25.25 0 00.25.25h12.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-3a.75.75 0 110-1.5h3A1.75 1.75 0 0116 2.75v7.5A1.75 1.75 0 0114.25 12h-3.727c.099 1.041.52 1.872 1.292 2.757A.75.75 0 0111.25 16h-6.5a.75.75 0 01-.565-1.243c.772-.885 1.192-1.716 1.292-2.757H1.75A1.75 1.75 0 010 10.25v-7.5A1.75 1.75 0 011.75 1h3a.75.75 0 010 1.5h-3a.25.25 0 00-.177.073zM6.982 12a5.72 5.72 0 01-.765 2.5h3.566a5.72 5.72 0 01-.765-2.5H6.982z"></path></svg> Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../get-started/install/docker/">Via Docker Image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../get-started/install/apple-silicon-m1-m2/">On Apple Silicon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../get-started/install/windows/">On Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../get-started/install/troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../get-started/create-app/"><span class="fas fa-folder-plus"></span> Create First Project</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../concepts/preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/preliminaries/coding-in-python-yaml/">Coding in Python/YAML</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../concepts/serving/"><span class="fas fa-gears"></span> Serving</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../concepts/serving/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/create/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/add-endpoints/">Add Endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/serve/">Serve</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/dynamic-batching/">Dynamic Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/health-check/">Health Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/hot-reload/">Hot Reload</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/file-structure/">File Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/containerize/">Containerize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../concepts/serving/gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/gateway/health-check/">Health Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/gateway/rate-limit/">Rate Limit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/gateway/customize-http-endpoints/">Customize HTTP endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/gateway/customization/">Customization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/gateway/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../concepts/orchestration/"><span class="fas fa-network-wired"></span> Orchestration</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/orchestration/deployment/">Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/orchestration/flow/">Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/orchestration/add-executors/">Add Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/orchestration/scale-out/">Scale Out</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/orchestration/hot-reload/">Hot Reload</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/orchestration/handle-exceptions/">Handle Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/orchestration/readiness/">Readiness</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/orchestration/health-check/">Health Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/orchestration/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/orchestration/troubleshooting-on-multiprocess/">Troubleshooting on Multiprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/orchestration/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../concepts/client/"><span class="fas fa-laptop-code"></span> Client</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-receive-data/">Send &amp; Receive Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/transient-errors/">Transient Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/callbacks/">Callbacks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../concepts/client/third-party-clients/">Third-party clients</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cloud Native</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../cloud-nativeness/k8s/"><span class="fas fa-dharmachakra"></span> Kubernetes Support</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../cloud-nativeness/kubernetes/">Deploy on Kubernetes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../cloud-nativeness/docker-compose/"><span class="fab fa-docker"></span> Docker Compose Support</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../cloud-nativeness/opentelemetry/"><svg aria-hidden="true" class="sd-octicon sd-octicon-telescope-fill" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M8.531 10.21a.75.75 0 01.944.253l2.644 3.864a.75.75 0 11-1.238.847L9 12.424v2.826a.75.75 0 01-1.5 0v-2.826l-1.881 2.75a.75.75 0 01-1.238-.848l2.048-2.992a.75.75 0 01.293-.252l1.81-.871zM11.905.42a1.5 1.5 0 012.144.49l1.692 2.93a1.5 1.5 0 01-.649 2.102L2.895 11.815a1.5 1.5 0 01-1.95-.602l-.68-1.176a1.5 1.5 0 01.455-1.99L11.905.422zM3.279 8.119l.835 1.445 1.355-.653-.947-1.64-1.243.848zm7.728-1.874L9.6 3.808l1.243-.848 1.52 2.631-1.356.653z" fill-rule="evenodd"></path></svg> OpenTelemetry Support</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../cloud-nativeness/opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../cloud-nativeness/monitoring/">Prometheus/Grafana Support (Legacy)</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../concepts/serving/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/serving/executor/hub/debug-executor/">Debug</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../concepts/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../concepts/jcloud/configuration/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> Configuration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML Specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../docarray-support/">DocArray support</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../tutorials/deploy-model/">Deploy a model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../tutorials/llm-serve/">Build a Streaming API for a Large Language Model</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
+</ul>
+
+    <p class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+    <ul>
+        <li class="toctree-l1">
+            <a class="reference internal" href="#">
+                <img class="sidebar-ecosys-logo only-light-line" src="../../../../../../_static/search-light.svg">
+                <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../../_static/search-dark.svg">
+                Jina</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://cloud.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../../../_static/hub-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../../_static/hub-dark.svg">
+            Jina Hub</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://finetuner.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../../../_static/finetuner-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../../_static/finetuner-dark.svg">
+            Finetuner</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../../../_static/docarray-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../../_static/docarray-dark.svg">
+            DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../../../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jcloud">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../../../_static/JCloud-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../../_static/JCloud-dark.svg">
+            JCloud</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://now.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../../../_static/now-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../../_static/now-dark.svg">
+            NOW</a></li>
+    </ul>
+</div>
+
+</div>
+
+            </div>
+            
+        </div>
+    </aside>
+    <div class="main">
+        <div class="content">
+            <div class="article-container">
+                <a href="#" class="back-to-top muted-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+                    </svg>
+                    <span>Back to top</span>
+                </a>
+                <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+                        <button class="theme-toggle">
+                            <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                            <svg class="theme-icon-when-auto">
+                                <use href="#svg-sun-half"></use>
+                            </svg>
+                            <svg class="theme-icon-when-dark">
+                                <use href="#svg-moon"></use>
+                            </svg>
+                            <svg class="theme-icon-when-light">
+                                <use href="#svg-sun"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <label class="toc-overlay-icon toc-content-icon no-toc"
+                           for="__toc">
+                        <div class="visually-hidden">Toggle table of contents sidebar</div>
+                        <i class="icon">
+                            <svg>
+                                <use href="#svg-toc"></use>
+                            </svg>
+                        </i>
+                    </label>
+                </div>
+                <article role="main">
+                    <h1>Source code for jina.serve.runtimes.servers.websocket</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.servers</span> <span class="kn">import</span> <span class="n">BaseServer</span>
+
+<span class="kn">from</span> <span class="nn">jina._docarray</span> <span class="kn">import</span> <span class="n">docarray_v2</span>
+
+
+<div class="viewcode-block" id="WebSocketServer"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.servers.websocket/#jina.serve.runtimes.servers.websocket.WebSocketServer">[docs]</a><span class="k">class</span> <span class="nc">WebSocketServer</span><span class="p">(</span><span class="n">BaseServer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;WebSocket Server implementation&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">ssl_keyfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">ssl_certfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">uvicorn_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the gateway</span>
+<span class="sd">        :param ssl_keyfile: the path to the key file</span>
+<span class="sd">        :param ssl_certfile: the path to the certificate file</span>
+<span class="sd">        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server</span>
+<span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables, otherwise, it will unset</span>
+<span class="sd">            these proxy variables before start. gRPC seems to prefer no proxy</span>
+<span class="sd">        :param kwargs: keyword args</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ssl_keyfile</span> <span class="o">=</span> <span class="n">ssl_keyfile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ssl_certfile</span> <span class="o">=</span> <span class="n">ssl_certfile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uvicorn_kwargs</span> <span class="o">=</span> <span class="n">uvicorn_kwargs</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">proxy</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;nt&#39;</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s1">&#39;http_proxy&#39;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s1">&#39;https_proxy&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WebSocketServer.setup_server"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.servers.websocket/#jina.serve.runtimes.servers.websocket.WebSocketServer.setup_server">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">setup_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setup WebSocket Server</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Setting up Websocket server&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">docarray_v2</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.request_handling</span> <span class="kn">import</span> <span class="n">GatewayRequestHandler</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="p">,</span> <span class="n">GatewayRequestHandler</span><span class="p">):</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">_get_endpoints_input_output_models</span><span class="p">(</span><span class="n">is_cancel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">_validate_flow_docarray_compatibility</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="o">.</span><span class="n">_websocket_fastapi_default_app</span><span class="p">(</span><span class="n">tracing</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tracing</span><span class="p">,</span> <span class="n">tracer_provider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tracer_provider</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">uvicorn</span> <span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">Server</span>
+
+        <span class="k">class</span> <span class="nc">UviServer</span><span class="p">(</span><span class="n">Server</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;The uvicorn server.&quot;&quot;&quot;</span>
+
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sockets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Setup uvicorn server.</span>
+
+<span class="sd">                :param sockets: sockets of server.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">loaded</span><span class="p">:</span>
+                    <span class="n">config</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lifespan</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">lifespan_class</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">startup</span><span class="p">(</span><span class="n">sockets</span><span class="o">=</span><span class="n">sockets</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_exit</span><span class="p">:</span>
+                    <span class="k">return</span>
+
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">serve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Start the server.</span>
+
+<span class="sd">                :param kwargs: keyword arguments</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_loop</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">&#39;CICD_JINA_DISABLE_HEALTHCHECK_LOGS&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+
+            <span class="k">class</span> <span class="nc">_EndpointFilter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Filter</span><span class="p">):</span>
+                <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+                    <span class="c1"># NOTE: space is important after `GET /`, else all logs will be disabled.</span>
+                    <span class="k">return</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;GET / &quot;</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
+
+            <span class="c1"># Filter out healthcheck endpoint `GET /`</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;uvicorn.access&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">addFilter</span><span class="p">(</span><span class="n">_EndpointFilter</span><span class="p">())</span>
+
+        <span class="n">uvicorn_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uvicorn_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl_keyfile</span> <span class="ow">and</span> <span class="s1">&#39;ssl_keyfile&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">uvicorn_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">uvicorn_kwargs</span><span class="p">[</span><span class="s1">&#39;ssl_keyfile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl_keyfile</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl_certfile</span> <span class="ow">and</span> <span class="s1">&#39;ssl_certfile&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">uvicorn_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">uvicorn_kwargs</span><span class="p">[</span><span class="s1">&#39;ssl_certfile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl_certfile</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">UviServer</span><span class="p">(</span>
+            <span class="n">config</span><span class="o">=</span><span class="n">Config</span><span class="p">(</span>
+                <span class="n">app</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">,</span>
+                <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+                <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+                <span class="n">ws_max_size</span><span class="o">=</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>
+                <span class="n">log_level</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;JINA_LOG_LEVEL&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+                <span class="o">**</span><span class="n">uvicorn_kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;UviServer server setup&#39;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Websocket server setup successful&#39;</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_should_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Property describing if server is ready to exit</span>
+<span class="sd">        :return: boolean indicating if Server ready to exit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">should_exit</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">should_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Property describing if server is ready to exit</span>
+<span class="sd">        :return: boolean indicating if Server ready to exit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_should_exit</span>
+
+<div class="viewcode-block" id="WebSocketServer.shutdown"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.servers.websocket/#jina.serve.runtimes.servers.websocket.WebSocketServer.shutdown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Free other resources allocated with the server, e.g, gateway object, ...&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Shutting down server&#39;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">should_exit</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Server shutdown finished&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="WebSocketServer.run_server"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.servers.websocket/#jina.serve.runtimes.servers.websocket.WebSocketServer.run_server">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run WebSocket server forever&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">serve</span><span class="p">()</span></div></div>
+</pre></div>
+                </article>
+            </div>
+            <footer>
+                
+                <div class="related-pages">
+                    
+                    
+                </div>
+                <div class="bottom-of-page">
+                    <div class="left-details">
+                        <div class="copyright">
+                            Copyright &#169; Jina AI Limited. All rights reserved.
+                        </div><div class="last-updated">
+                            Last updated on Dec 01, 2023</div>
+                    </div>
+                    <div class="right-details">
+                        <div class="social-btns">
+                            <a class='social-btn' href="https://github.com/jina-ai/jina" aria-label="GitHub"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                            <a class='social-btn' href="https://discord.jina.ai" aria-label="Discord" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-discord"></i></a>
+                            <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                            <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                            <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+        <aside class="toc-drawer no-toc">
+            
+            
+            
+        </aside>
+    </div>
+</div>
+<img referrerpolicy="no-referrer-when-downgrade"
+     src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script src="../../../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../../../_static/scripts/furo.js"></script>
+    <script src="../../../../../../_static/clipboard.min.js"></script>
+    <script src="../../../../../../_static/copybutton.js"></script>
+    <script src="../../../../../../_static/tabs.js"></script>
+    <script src="../../../../../../_static/design-tabs.js"></script>
+    </body>
+</html>
