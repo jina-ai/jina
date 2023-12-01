@@ -32,9 +32,9 @@ type executorFSM struct {
 }
 
 
-func NewExecutorFSM(target string, LogLevel string, raftID string) *executorFSM {
+func NewExecutorFSM(target string, LogLevel string, name string, raftID string) *executorFSM {
     fsm_logger := hclog.New(&hclog.LoggerOptions{
-                    Name:   "executorFSM-" + raftID,
+                    Name:   "FSM-" + name,
                     Level:  hclog.LevelFromString(LogLevel),
                 })
     executor := &executor{

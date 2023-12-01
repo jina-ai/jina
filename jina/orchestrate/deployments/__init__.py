@@ -68,30 +68,29 @@ class DeploymentType(type(ExitStack), type(JAMLCompatible)):
     pass
 
 
-def _call_add_voters(leader, voters, replica_ids, name, event_signal=None):
+def _call_add_voters(leader, voters, replica_ids, logger):
     # this method needs to be run in multiprocess, importing jraft in main process
     # makes it impossible to do tests sequentially
+    from jina.serve.consensus.add_voter.call_add_voter import call_add_voter
 
-    import jraft
-
-    logger = JinaLogger(context=f'add_voter-{name}', name=f'add_voter-{name}')
     logger.debug(f'Trying to add {len(replica_ids)} voters to leader {leader}')
+    success_lists = []
     for voter_address, replica_id in zip(voters, replica_ids):
         logger.debug(
             f'Trying to add replica-{str(replica_id)} as voter with address {voter_address} to leader at {leader}'
         )
         success = False
         for i in range(5):
-            try:
-                logger.debug(f'Trying {i}th time')
-                jraft.add_voter(leader, str(replica_id), voter_address)
+            logger.debug(f'Trying {i}th time')
+            success = call_add_voter(leader, str(replica_id), voter_address)
+            if success:
                 logger.debug(f'Trying {i}th time succeeded')
-                success = True
                 break
-            except ValueError:
+            else:
                 logger.debug(f'Trying {i}th failed. Wait 2 seconds for next try')
                 time.sleep(2.0)
 
+        success_lists.append(success)
         if not success:
             logger.warning(
                 f'Failed to add {str(replica_id)} as voter with address {voter_address} to leader at {leader}. This could be because {leader} is not the leader, '
@@ -102,8 +101,42 @@ def _call_add_voters(leader, voters, replica_ids, name, event_signal=None):
                 f'Replica-{str(replica_id)} successfully added as voter with address {voter_address} to leader at {leader}'
             )
     logger.debug('Adding voters to leader finished')
-    if event_signal:
-        event_signal.set()
+    return all(success_lists)
+
+
+async def _async_call_add_voters(leader, voters, replica_ids, logger):
+    # this method needs to be run in multiprocess, importing jraft in main process
+    # makes it impossible to do tests sequentially
+    from jina.serve.consensus.add_voter.call_add_voter import async_call_add_voter
+
+    logger.debug(f'Trying to add {len(replica_ids)} voters to leader {leader}')
+    success_lists = []
+    for voter_address, replica_id in zip(voters, replica_ids):
+        logger.debug(
+            f'Trying to add replica-{str(replica_id)} as voter with address {voter_address} to leader at {leader}'
+        )
+        success = False
+        for i in range(5):
+            logger.debug(f'Trying {i}th time')
+            success = await async_call_add_voter(leader, str(replica_id), voter_address)
+            if success:
+                logger.debug(f'Trying {i}th time succeeded')
+                break
+            else:
+                logger.debug(f'Trying {i}th failed. Wait 2 seconds for next try')
+                time.sleep(2.0)
+        success_lists.append(success)
+        if not success:
+            logger.warning(
+                f'Failed to add {str(replica_id)} as voter with address {voter_address} to leader at {leader}. This could be because {leader} is not the leader, '
+                f'and maybe the cluster is restoring from a previous cluster state'
+            )
+        else:
+            logger.success(
+                f'Replica-{str(replica_id)} successfully added as voter with address {voter_address} to leader at {leader}'
+            )
+    logger.debug('Adding voters to leader finished')
+    return all(success_lists)
 
 
 class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=DeploymentType):
@@ -135,66 +168,33 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             leader_address = f'{self._pods[0].runtime_ctrl_address}'
             voter_addresses = [pod.runtime_ctrl_address for pod in self._pods[1:]]
             replica_ids = [pod.args.replica_id for pod in self._pods[1:]]
-            event_signal = multiprocessing.Event()
             self.logger.debug('Starting process to call Add Voters')
-            process = multiprocessing.Process(
-                target=_call_add_voters,
-                kwargs={
-                    'leader': leader_address,
-                    'voters': voter_addresses,
-                    'replica_ids': replica_ids,
-                    'name': self.name,
-                    'event_signal': event_signal,
-                },
+            res = _call_add_voters(
+                leader=leader_address,
+                voters=voter_addresses,
+                replica_ids=replica_ids,
+                logger=self.logger,
             )
-            process.start()
-            start = time.time()
-            properly_closed = False
-            while time.time() - start < 20 * len(replica_ids):
-                if event_signal.is_set():
-                    properly_closed = True
-                    break
-                else:
-                    time.sleep(1.0)
-            if properly_closed:
-                self.logger.debug('Add Voters process finished')
-                process.terminate()
+            if res:
+                self.logger.debug('Finished adding voters')
             else:
-                self.logger.error('Add Voters process did not finish successfully')
-                process.kill()
-            self.logger.debug('Add Voters process finished')
+                self.logger.error('Adding Voters did not finish successfully')
 
         async def _async_add_voter_to_leader(self):
             leader_address = f'{self._pods[0].runtime_ctrl_address}'
             voter_addresses = [pod.runtime_ctrl_address for pod in self._pods[1:]]
             replica_ids = [pod.args.replica_id for pod in self._pods[1:]]
-            event_signal = multiprocessing.Event()
             self.logger.debug('Starting process to call Add Voters')
-            process = multiprocessing.Process(
-                target=_call_add_voters,
-                kwargs={
-                    'leader': leader_address,
-                    'voters': voter_addresses,
-                    'replica_ids': replica_ids,
-                    'name': self.name,
-                    'event_signal': event_signal,
-                },
+            res = await _async_call_add_voters(
+                leader=leader_address,
+                voters=voter_addresses,
+                replica_ids=replica_ids,
+                logger=self.logger,
             )
-            process.start()
-            start = time.time()
-            properly_closed = False
-            while time.time() - start < 20 * len(replica_ids):
-                if event_signal.is_set():
-                    properly_closed = True
-                    break
-                else:
-                    await asyncio.sleep(1.0)
-            if properly_closed:
-                self.logger.debug('Add Voters process finished')
-                process.terminate()
+            if res:
+                self.logger.debug('Finished adding voters')
             else:
-                self.logger.error('Add Voters process did not finish successfully')
-                process.kill()
+                self.logger.error('Adding Voters did not finish successfully')
 
         @property
         def is_ready(self):

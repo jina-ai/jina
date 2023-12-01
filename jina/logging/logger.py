@@ -129,7 +129,6 @@ class JinaLogger:
 
         if not name:
             name = os.getenv('JINA_DEPLOYMENT_NAME', context)
-
         self.logger = logging.getLogger(context)
         self.logger.propagate = False
 
@@ -138,7 +137,6 @@ class JinaLogger:
             'uptime': __uptime__,
             'context': context,
         }
-
         self.add_handlers(log_config, **context_vars)
         self.debug = self.logger.debug
         self.warning = self.logger.warning

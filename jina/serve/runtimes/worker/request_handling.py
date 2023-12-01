@@ -1262,6 +1262,7 @@ class WorkerRequestHandler:
         else:
             self._restore = self._create_restore_status()
             self._did_restore_raise_exception = threading.Event()
+
             self._restore_thread = threading.Thread(
                 target=self._executor._run_restore,
                 args=(request.snapshot_file, self._did_restore_raise_exception),

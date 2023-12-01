@@ -112,6 +112,7 @@ def test_stateful_index_search(executor_cls, shards, tmpdir, stateful_exec_docke
         for doc in docs:
             assert doc.text == 'similarity'
             assert len(doc.l) == len(index_da)  # good merging of results
+        time.sleep(10)
 
 
 @pytest.mark.timeout(240)
@@ -152,19 +153,37 @@ def test_stateful_index_search_restore(executor_cls, shards, tmpdir, stateful_ex
         # checking against the main read replica
         assert_is_indexed(dep, search_da)
         assert_all_replicas_indexed(dep, search_da)
+        time.sleep(10)
 
     # test restoring
-    with dep:
+    dep_restore = Deployment(
+        uses=executor_cls,
+        replicas=replicas,
+        workspace=tmpdir,
+        stateful=True,
+        raft_configuration={
+            'snapshot_interval': 10,
+            'snapshot_threshold': 5,
+            'trailing_logs': 10,
+            'LogLevel': 'INFO',
+        },
+        shards=shards,
+        volumes=[str(tmpdir) + ':' + '/workspace'],
+        peer_ports=peer_ports,
+        polling={'/index': 'ANY', '/search': 'ALL', '/similarity': 'ALL'}
+    )
+    with dep_restore:
         index_da = DocumentArray[TextDocWithId](
             [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(100, 200)]
         )
-        dep.index(inputs=index_da, request_size=1, return_type=DocumentArray[TextDocWithId])
+        dep_restore.index(inputs=index_da, request_size=1, return_type=DocumentArray[TextDocWithId])
         time.sleep(20)
         search_da = DocumentArray[TextDocWithId]([TextDocWithId(id=f'{i}') for i in range(200)])
-        assert_all_replicas_indexed(dep, search_da)
+        assert_all_replicas_indexed(dep_restore, search_da)
+        time.sleep(10)
 
 
-@pytest.mark.skip('Not sure how containerization will work with docarray v2')
+@pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
 @pytest.mark.parametrize('shards', [1, 2])
 def test_stateful_index_search_container(shards, tmpdir, stateful_exec_docker_image_built):
     replicas = 3
@@ -196,34 +215,57 @@ def test_stateful_index_search_container(shards, tmpdir, stateful_exec_docker_im
         dep.index(inputs=index_da, request_size=1, return_type=DocumentArray[TextDocWithId])
 
         # allowing some time for the state to be replicated
-        time.sleep(10)
+        time.sleep(20)
         # checking against the main read replica
         assert_is_indexed(dep, search_da)
-        assert_all_replicas_indexed(dep, search_da, key='random_num')
-
-    # test restoring
-    with dep:
-        index_da = DocumentArray[TextDocWithId](
-            [Document(id=f'{i}', text=f'ID {i}') for i in range(100, 200)]
-        )
-        dep.index(inputs=index_da, request_size=1, return_type=DocumentArray[TextDocWithId])
+        assert_all_replicas_indexed(dep, search_da, key='num')
         time.sleep(10)
+
+    dep_restore = Deployment(
+        uses='docker://stateful-exec',
+        replicas=replicas,
+        stateful=True,
+        raft_configuration={
+            'snapshot_interval': 10,
+            'snapshot_threshold': 5,
+            'trailing_logs': 10,
+            'LogLevel': 'INFO',
+        },
+        shards=shards,
+        workspace='/workspace/tmp',
+        volumes=[str(tmpdir) + ':' + '/workspace/tmp'],
+        peer_ports=peer_ports,
+        polling={'/index': 'ANY', '/search': 'ALL', '/similarity': 'ALL'}
+    )
+    # test restoring
+    with dep_restore:
+        index_da = DocumentArray[TextDocWithId](
+            [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(100, 200)]
+        )
+        dep_restore.index(inputs=index_da, request_size=1, return_type=DocumentArray[TextDocWithId])
+        time.sleep(20)
         search_da = DocumentArray[TextDocWithId]([TextDocWithId(id=f'{i}') for i in range(200)])
-        assert_all_replicas_indexed(dep, search_da, key='random_num')
+        assert_all_replicas_indexed(dep_restore, search_da, key='num')
+        time.sleep(10)
 
 
-@pytest.mark.skip()
-@pytest.mark.parametrize('executor_cls', [MyStateExecutor, MyStateExecutorNoSnapshot])
+@pytest.mark.skipif(not docarray_v2, reason='tests support for docarray>=0.30')
+@pytest.mark.parametrize('executor_cls', [MyStateExecutor])
 def test_add_new_replica(executor_cls, tmpdir):
     from jina.parsers import set_pod_parser
     from jina.orchestrate.pods.factory import PodFactory
     gateway_port = random_port()
+    replicas = 3
+    peer_ports = {}
+    for shard in range(1):
+        peer_ports[shard] = [random_port() for _ in range(replicas)]
 
     ctx_mngr = Flow(port=gateway_port).add(
         uses=executor_cls,
-        replicas=3,
+        replicas=replicas,
         workspace=tmpdir,
         stateful=True,
+        peer_ports=peer_ports,
         raft_configuration={
             'snapshot_interval': 10,
             'snapshot_threshold': 5,
@@ -233,7 +275,7 @@ def test_add_new_replica(executor_cls, tmpdir):
     )
     with ctx_mngr:
         index_da = DocumentArray[TextDocWithId](
-            [Document(id=f'{i}', text=f'ID {i}') for i in range(100)]
+            [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(100)]
         )
         ctx_mngr.index(inputs=index_da, request_size=1)
         # allowing sometime for snapshots
@@ -241,38 +283,34 @@ def test_add_new_replica(executor_cls, tmpdir):
 
         new_replica_port = random_port()
         args = set_pod_parser().parse_args([])
+        args.name = 'new-replica'
         args.host = args.host[0]
         args.port = [new_replica_port]
         args.stateful = True
         args.workspace = str(tmpdir)
         args.uses = executor_cls.__name__
-        args.replica_id = '4'
-        with PodFactory.build_pod(args) as p:
-            import psutil
-            current_pid = os.getpid()
-            ports = set()
-            for proc in psutil.process_iter(['pid', 'ppid', 'name']):
-                if proc.info['ppid'] == current_pid and proc.info['pid'] != current_pid:
-                    for conn in proc.connections():
-                        if conn.status == 'LISTEN':
-                            ports.add(conn.laddr.port)
-            for port in ports:
-                try:
-                    leader_address = f'0.0.0.0:{port}'  # detect the Pods addresses of the original Flow
-                    voter_address = f'0.0.0.0:{new_replica_port}'
-                    import jraft
-                    jraft.add_voter(
-                        leader_address, '4', voter_address
-                    )
+        args.replica_id = str(replicas + 1)
+        with PodFactory.build_pod(args):
+            for port in peer_ports[0]:
+                leader_address = f'127.0.0.1:{port}'  # detect the Pods addresses of the original Flow
+                voter_address = f'127.0.0.1:{new_replica_port}'
+
+                from jina.serve.consensus.add_voter.call_add_voter import call_add_voter
+
+                ret = call_add_voter(leader_address, '4', voter_address)
+                if ret is True:
                     break
-                except:
-                    pass
+
             time.sleep(10)
+
+
             index_da = DocumentArray[TextDocWithId](
                 [TextDocWithId(id=f'{i}', text=f'ID {i}') for i in range(100, 200)]
             )
             ctx_mngr.index(inputs=index_da, request_size=1, return_type=DocumentArray[TextDocWithId])
-            time.sleep(10)
+
+            time.sleep(20)
             search_da = DocumentArray[TextDocWithId]([TextDocWithId(id=f'{i}') for i in range(200)])
             client = Client(port=new_replica_port)
             assert_is_indexed(client, search_da=search_da)
+            time.sleep(10)

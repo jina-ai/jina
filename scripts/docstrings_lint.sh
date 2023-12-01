@@ -16,6 +16,7 @@ for changed_file in $CHANGED_FILES; do
     jina/helloworld/* | \
     jina/proto/* | \
     jina/resources/* | \
+    jina/serve/consensus/add_voter/* | \
     docs/* | \
     setup.py | \
     fastentrypoints.py)
