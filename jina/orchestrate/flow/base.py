@@ -1961,7 +1961,6 @@ class Flow(
                     for task in pending:
                         task.cancel()
 
-
             if 'GITHUB_WORKFLOW' not in os.environ:
                 # kick off spinner thread
                 polling_status_thread = threading.Thread(
