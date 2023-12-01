@@ -1201,13 +1201,7 @@ class WorkerRequestHandler:
                 self._snapshot_parent_directory,
             )
             self._did_snapshot_raise_exception = threading.Event()
-
-            class SnapShotThread(threading.Thread):
-
-                def run(self):
-                    return super(SnapShotThread, self).run()
-
-            self._snapshot_thread = SnapShotThread(
+            self._snapshot_thread = threading.Thread(
                 target=self._executor._run_snapshot,
                 args=(self._snapshot.snapshot_file, self._did_snapshot_raise_exception),
             )
@@ -1269,12 +1263,7 @@ class WorkerRequestHandler:
             self._restore = self._create_restore_status()
             self._did_restore_raise_exception = threading.Event()
 
-            class RestoreThread(threading.Thread):
-
-                def run(self):
-                    return super(RestoreThread, self).run()
-
-            self._restore_thread = RestoreThread(
+            self._restore_thread = threading.Thread(
                 target=self._executor._run_restore,
                 args=(request.snapshot_file, self._did_restore_raise_exception),
             )

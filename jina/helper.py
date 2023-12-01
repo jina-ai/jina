@@ -1661,12 +1661,7 @@ def send_telemetry_event(event: str, obj_cls_name: Any, **kwargs) -> None:
         except:
             pass
 
-    class TelemetryThread(threading.Thread):
-
-        def run(self):
-            return super(TelemetryThread, self).run()
-
-    TelemetryThread(target=_telemetry, daemon=True).start()
+    threading.Thread(target=_telemetry, daemon=True).start()
 
 
 def is_generator(func):
