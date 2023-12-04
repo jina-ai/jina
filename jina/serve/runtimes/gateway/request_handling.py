@@ -170,6 +170,7 @@ class GatewayRequestHandler:
                 async with _RequestContextManager(
                     session._request(request.method, target_url, **request_kwargs)
                 ) as response:
+                    # Looking for application/octet-stream, text/event-stream, text/stream
                     if request.content_type.endswith('stream'):
 
                         # Create a StreamResponse with the same headers and status as the target response
@@ -188,13 +189,12 @@ class GatewayRequestHandler:
                         # Close the stream response once all chunks are sent
                         await stream_response.write_eof()
                         return stream_response
-                    else:
-                        content = await response.read()
-                        return web.Response(
-                            body=content,
-                            status=response.status,
-                            content_type=response.content_type,
-                        )
+                    content = await response.read()
+                    return web.Response(
+                        body=content,
+                        status=response.status,
+                        content_type=response.content_type,
+                    )
         except aiohttp.ClientError as e:
             return web.Response(text=f'Error: {str(e)}', status=500)
 
