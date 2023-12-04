@@ -261,6 +261,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -650,6 +651,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.22.3`)](#release-note-3223)
 - [Release Note (`3.22.4`)](#release-note-3224)
 - [Release Note (`3.23.0`)](#release-note-3230)
+- [Release Note (`3.23.1`)](#release-note-3231)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -16410,4 +16412,30 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```891ee1af```](https://github.com/jina-ai/jina/commit/891ee1afe59e39de62e192797b8ba37a408d5bce)] __-__ update version to 3.23.0 (#6113) (*Joan Fontanals*)
  - [[```46c06384```](https://github.com/jina-ai/jina/commit/46c06384e122dbd3659cb237e41d9a4149b388c4)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```bf6f4767```](https://github.com/jina-ai/jina/commit/bf6f4767f8c6534081fc4fdc5daf3ede96729bbf)] __-__ __version__: the next version will be 3.22.5 (*Jina Dev Bot*)
+
+<a name=release-note-3-23-1></a>
+## Release Note (`3.23.1`)
+
+> Release time: 2023-12-01 09:24:22
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```2a560689```](https://github.com/jina-ai/jina/commit/2a5606897b37585b0a970ecdcfc4d53969332b2e)] __-__ fix dependency with opentelemetry-exporter-prometheus (#6118) (*Joan Fontanals*)
+
+### 🧼 Code Refactoring
+
+ - [[```ed707976```](https://github.com/jina-ai/jina/commit/ed707976790d6f2e203f02fdf095179db0fd9644)] __-__ fix run stateful in docker (#6116) (*Joan Fontanals*)
+ - [[```7aab7e62```](https://github.com/jina-ai/jina/commit/7aab7e62418b819ddc414ccd7758936ec1d49255)] __-__ use asyncio Events over threading Events (#6115) (*Joan Fontanals*)
+ - [[```6cd33114```](https://github.com/jina-ai/jina/commit/6cd3311427d367cd134df062c7e2a4bc18b62a6c)] __-__ remove warmup (#6114) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```bbf21de0```](https://github.com/jina-ai/jina/commit/bbf21de0bb973d49c7b04e35391a747a53876ad3)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```a2d29a73```](https://github.com/jina-ai/jina/commit/a2d29a7360cea4a7b14a68f7137f6d525a4580dc)] __-__ __version__: the next version will be 3.23.1 (*Jina Dev Bot*)
 
