@@ -159,11 +159,14 @@ class GatewayRequestHandler:
         try:
             async with aiohttp.ClientSession() as session:
 
-                request_kwargs = {}
+                request_kwargs = {
+                    'headers': request.headers,
+                    'params': request.query,
+                }
                 try:
-                    payload = await request.json()
+                    payload = await request.content.read()
                     if payload:
-                        request_kwargs['json'] = payload
+                        request_kwargs['data'] = payload
                 except Exception:
                     self.logger.debug('No JSON payload found in request')
 
@@ -171,7 +174,7 @@ class GatewayRequestHandler:
                     session._request(request.method, target_url, **request_kwargs)
                 ) as response:
                     # Looking for application/octet-stream, text/event-stream, text/stream
-                    if request.content_type.endswith('stream'):
+                    if response.content_type.endswith('stream'):
 
                         # Create a StreamResponse with the same headers and status as the target response
                         stream_response = web.StreamResponse(
