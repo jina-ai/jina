@@ -170,8 +170,8 @@ class GatewayRequestHandler:
                 except Exception:
                     self.logger.debug('No JSON payload found in request')
 
-                async with _RequestContextManager(
-                    session._request(request.method, target_url, **request_kwargs)
+                async with session.request(
+                    request.method, target_url, **request_kwargs
                 ) as response:
                     # Looking for application/octet-stream, text/event-stream, text/stream
                     if response.content_type.endswith('stream'):
@@ -197,6 +197,7 @@ class GatewayRequestHandler:
                         body=content,
                         status=response.status,
                         content_type=response.content_type,
+                        headers=response.headers,
                     )
         except aiohttp.ClientError as e:
             return web.Response(text=f'Error: {str(e)}', status=500)
