@@ -64,7 +64,7 @@ pytest-mock:                test
 pytest-cov==3.0.0:          test
 coverage==6.2:              test
 pytest-repeat:              test
-pytest-asyncio:             test
+pytest-asyncio<0.23.0:      test
 pytest-reraise:             test
 flaky:                      test
 mock:                       test
