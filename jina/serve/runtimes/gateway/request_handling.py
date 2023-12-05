@@ -1,4 +1,5 @@
 import itertools
+import json
 from typing import TYPE_CHECKING, AsyncIterator, Dict
 
 from aiohttp.client import _RequestContextManager
@@ -164,9 +165,9 @@ class GatewayRequestHandler:
                     'params': request.query,
                 }
                 try:
-                    payload = await request.content.read()
+                    payload = await request.read()
                     if payload:
-                        request_kwargs['data'] = payload
+                        request_kwargs['json'] = json.loads(payload.decode())
                 except Exception:
                     self.logger.debug('No JSON payload found in request')
 
