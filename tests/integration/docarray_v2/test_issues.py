@@ -178,7 +178,7 @@ async def test_issue_6090_get_params(streaming_deployment):
 
     docs = []
     url = (
-        f"htto://localhost:{streaming_deployment.port}/stream-simple?text=my_input_text"
+        f"http://localhost:{streaming_deployment.port}/stream-simple?text=my_input_text"
     )
     async with aiohttp.ClientSession() as session:
 
