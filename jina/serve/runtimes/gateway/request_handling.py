@@ -2,8 +2,6 @@ import itertools
 import json
 from typing import TYPE_CHECKING, AsyncIterator, Dict
 
-from aiohttp.client import _RequestContextManager
-
 from jina.enums import ProtocolType
 from jina.helper import get_full_version
 from jina.proto import jina_pb2
@@ -159,11 +157,7 @@ class GatewayRequestHandler:
 
         try:
             async with aiohttp.ClientSession() as session:
-
-                request_kwargs = {
-                    'headers': request.headers,
-                    'params': request.query,
-                }
+                request_kwargs = {}
                 try:
                     payload = await request.read()
                     if payload:
@@ -172,34 +166,27 @@ class GatewayRequestHandler:
                     self.logger.debug('No JSON payload found in request')
 
                 async with session.request(
-                    request.method, target_url, **request_kwargs
+                    request.method,
+                    url=target_url,
+                    headers=request.headers,
+                    **request_kwargs,
                 ) as response:
-                    # Looking for application/octet-stream, text/event-stream, text/stream
-                    if response.content_type.endswith('stream'):
-
-                        # Create a StreamResponse with the same headers and status as the target response
-                        stream_response = web.StreamResponse(
-                            status=response.status,
-                            headers=response.headers,
-                        )
-
-                        # Prepare the response to send headers
-                        await stream_response.prepare(request)
-
-                        # Stream the response from the target server to the client
-                        async for chunk in response.content.iter_any():
-                            await stream_response.write(chunk)
-
-                        # Close the stream response once all chunks are sent
-                        await stream_response.write_eof()
-                        return stream_response
-                    content = await response.read()
-                    return web.Response(
-                        body=content,
+                    # Create a StreamResponse with the same headers and status as the target response
+                    stream_response = web.StreamResponse(
                         status=response.status,
-                        content_type=response.content_type,
                         headers=response.headers,
                     )
+
+                    # Prepare the response to send headers
+                    await stream_response.prepare(request)
+
+                    # Stream the response from the target server to the client
+                    async for chunk in response.content.iter_any():
+                        await stream_response.write(chunk)
+
+                    # Close the stream response once all chunks are sent
+                    await stream_response.write_eof()
+                    return stream_response
         except aiohttp.ClientError as e:
             return web.Response(text=f'Error: {str(e)}', status=500)
 
