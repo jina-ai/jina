@@ -178,19 +178,17 @@ async def test_issue_6090_get_params(streaming_deployment):
 
     docs = []
     url = (
-        f"htto://localhost:{streaming_deployment.port}/stream-simple?text=my_input_text"
+        f"http://localhost:{streaming_deployment.port}/stream-simple?text=my_input_text"
     )
     async with aiohttp.ClientSession() as session:
 
         async with session.get(url) as resp:
             async for chunk in resp.content.iter_any():
-                print(chunk)
                 events = chunk.split(b'event: ')[1:]
                 for event in events:
                     if event.startswith(b'update'):
-                        parsed = event[HTTPClientlet.UPDATE_EVENT_PREFIX:].decode()
+                        parsed = event[HTTPClientlet.UPDATE_EVENT_PREFIX :].decode()
                         parsed = SimpleInput.parse_raw(parsed)
-                        print(parsed)
                         docs.append(parsed)
                     elif event.startswith(b'end'):
                         pass
