@@ -166,7 +166,10 @@ class GatewayRequestHandler:
                     self.logger.debug('No JSON payload found in request')
 
                 async with session.request(
-                    request.method, url=target_url, **request_kwargs
+                    request.method,
+                    url=target_url,
+                    auto_decompress=False,
+                    **request_kwargs,
                 ) as response:
                     # Create a StreamResponse with the same headers and status as the target response
                     stream_response = web.StreamResponse(
