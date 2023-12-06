@@ -1,5 +1,4 @@
 import itertools
-import json
 from typing import TYPE_CHECKING, AsyncIterator, Dict
 
 from jina.enums import ProtocolType
@@ -157,19 +156,17 @@ class GatewayRequestHandler:
 
         try:
             async with aiohttp.ClientSession() as session:
+
                 request_kwargs = {}
                 try:
-                    payload = await request.read()
+                    payload = await request.json()
                     if payload:
-                        request_kwargs['json'] = json.loads(payload.decode())
+                        request_kwargs['json'] = payload
                 except Exception:
                     self.logger.debug('No JSON payload found in request')
 
                 async with session.request(
-                    request.method,
-                    url=target_url,
-                    headers=request.headers,
-                    **request_kwargs,
+                    request.method, url=target_url, **request_kwargs
                 ) as response:
                     # Create a StreamResponse with the same headers and status as the target response
                     stream_response = web.StreamResponse(
@@ -187,6 +184,7 @@ class GatewayRequestHandler:
                     # Close the stream response once all chunks are sent
                     await stream_response.write_eof()
                     return stream_response
+
         except aiohttp.ClientError as e:
             return web.Response(text=f'Error: {str(e)}', status=500)
 
