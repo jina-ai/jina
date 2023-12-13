@@ -157,48 +157,37 @@ class GatewayRequestHandler:
         try:
             async with aiohttp.ClientSession() as session:
 
-                if request.method == 'GET':
-                    request_kwargs = {}
-                    try:
-                        payload = await request.json()
-                        if payload:
-                            request_kwargs['json'] = payload
-                    except Exception:
-                        self.logger.debug('No JSON payload found in request')
+                request_kwargs = {}
+                try:
+                    payload = await request.json()
+                    if payload:
+                        request_kwargs['json'] = payload
+                except Exception:
+                    self.logger.debug('No JSON payload found in request')
 
-                    async with session.get(
-                        url=target_url, **request_kwargs
-                    ) as response:
-                        # Create a StreamResponse with the same headers and status as the target response
-                        stream_response = web.StreamResponse(
-                            status=response.status,
-                            headers=response.headers,
-                        )
+                async with session.request(
+                    request.method,
+                    url=target_url,
+                    auto_decompress=False,
+                    **request_kwargs,
+                ) as response:
+                    # Create a StreamResponse with the same headers and status as the target response
+                    stream_response = web.StreamResponse(
+                        status=response.status,
+                        headers=response.headers,
+                    )
 
-                        # Prepare the response to send headers
-                        await stream_response.prepare(request)
+                    # Prepare the response to send headers
+                    await stream_response.prepare(request)
 
-                        # Stream the response from the target server to the client
-                        async for chunk in response.content.iter_any():
-                            await stream_response.write(chunk)
+                    # Stream the response from the target server to the client
+                    async for chunk in response.content.iter_any():
+                        await stream_response.write(chunk)
 
-                        # Close the stream response once all chunks are sent
-                        await stream_response.write_eof()
-                        return stream_response
+                    # Close the stream response once all chunks are sent
+                    await stream_response.write_eof()
+                    return stream_response
 
-                elif request.method == 'POST':
-                    d = await request.read()
-                    import json
-
-                    async with session.post(
-                        url=target_url, json=json.loads(d.decode())
-                    ) as response:
-                        content = await response.read()
-                        return web.Response(
-                            body=content,
-                            status=response.status,
-                            content_type=response.content_type,
-                        )
         except aiohttp.ClientError as e:
             return web.Response(text=f'Error: {str(e)}', status=500)
 
