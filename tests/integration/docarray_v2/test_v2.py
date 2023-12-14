@@ -1634,7 +1634,7 @@ def test_exception_handling_in_dynamic_batch():
     depl = Deployment(uses=SlowExecutorWithException)
 
     with depl:
-        da = DocList[TextDoc]([TextDoc(text='good') for _ in range(50)])
+        da = DocList[TextDoc]([TextDoc(text=f'good-{i}') for i in range(50)])
         da[4].text = 'fail'
         responses = depl.post(on='/foo', inputs=da, request_size=1, return_responses=True, continue_on_error=True, results_in_order=True)
         assert len(responses) == 50  # 1 request per input
