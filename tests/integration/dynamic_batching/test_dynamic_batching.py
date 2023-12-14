@@ -14,6 +14,7 @@ from jina import (
     DocumentArray,
     Executor,
     Flow,
+    Deployment,
     dynamic_batching,
     requests,
 )
@@ -21,6 +22,7 @@ from jina.clients.request import request_generator
 from jina.serve.networking.utils import send_request_sync
 from jina.serve.runtimes.servers import BaseServer
 from jina_cli.api import executor_native
+from jina.proto import jina_pb2
 from tests.helper import _generate_pod_args
 
 cur_dir = os.path.dirname(__file__)
@@ -311,6 +313,7 @@ def test_preferred_batch_size(add_parameters, use_stream):
             assert time_taken < TIMEOUT_TOLERANCE
 
 
+@pytest.mark.repeat(10)
 @pytest.mark.parametrize('use_stream', [False, True])
 def test_correctness(use_stream):
     f = Flow().add(uses=PlaceholderExecutor)
@@ -492,6 +495,7 @@ def test_param_correctness(use_stream):
             ]
             assert [doc.text for doc in results[2]] == [f'D{str(PARAM1)}']
 
+
 @pytest.mark.parametrize(
     'uses',
     [
@@ -622,3 +626,29 @@ def test_failure_propagation():
                 '/wronglennone',
                 inputs=DocumentArray([Document(text=str(i)) for i in range(8)]),
             )
+
+
+@pytest.mark.repeat(10)
+def test_exception_handling_in_dynamic_batch():
+    class SlowExecutorWithException(Executor):
+
+        @dynamic_batching(preferred_batch_size=3, timeout=1000)
+        @requests(on='/foo')
+        def foo(self, docs, **kwargs):
+            for doc in docs:
+                if doc.text == 'fail':
+                    raise Exception('Fail is in the Batch')
+
+    depl = Deployment(uses=SlowExecutorWithException)
+
+    with depl:
+        da = DocumentArray([Document(text='good') for _ in range(50)])
+        da[4].text = 'fail'
+        responses = depl.post(on='/foo', inputs=da, request_size=1, return_responses=True, continue_on_error=True, results_in_order=True)
+        assert len(responses) == 50  # 1 request per input
+        num_failed_requests = 0
+        for r in responses:
+            if r.header.status.code == jina_pb2.StatusProto.StatusCode.ERROR:
+                num_failed_requests += 1
+
+        assert 1 <= num_failed_requests <= 3 # 3 requests in the dynamic batch failing
