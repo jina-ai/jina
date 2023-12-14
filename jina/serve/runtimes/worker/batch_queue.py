@@ -72,17 +72,15 @@ class BatchQueue:
     def _start_timer(self):
         self._cancel_timer_if_pending()
         self._timer_task = asyncio.create_task(
-            self._sleep_then_set(self._flush_trigger)
+            self._sleep_then_set()
         )
         self._timer_started = True
 
-    async def _sleep_then_set(self, event: Event):
+    async def _sleep_then_set(self):
         """Sleep and then set the event
-
-        :param event: event to set
         """
         await asyncio.sleep(self._timeout / 1000)
-        event.set()
+        self._flush_trigger.set()
 
     async def push(self, request: DataRequest) -> asyncio.Queue:
         """Append request to the the list of requests to be processed.
@@ -220,7 +218,6 @@ class BatchQueue:
             # communicate that the request has been processed properly. At this stage the data_lock is ours and
             # therefore noone can add requests to this list.
             self._flush_trigger: Event = Event()
-            self._cancel_timer_if_pending()
             self._timer_task = None
             try:
                 if not docarray_v2:
@@ -274,7 +271,7 @@ class BatchQueue:
                             await request_full.put(exc)
                     else:
                         # We need to attribute the docs to their requests
-                        non_assigned_to_response_docs.extend(batch_res_docs)
+                        non_assigned_to_response_docs.extend(batch_res_docs or docs_inner_batch)
                         non_assigned_to_response_request_idxs.extend(req_idxs)
                         num_assigned_docs = await _assign_results(
                             non_assigned_to_response_docs,

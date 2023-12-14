@@ -811,7 +811,6 @@ def test_raise_exception(protocol, ctxt_manager):
 
 def test_custom_gateway():
     from docarray import DocList
-    from docarray.documents.text import TextDoc
 
     from jina import Executor, Flow, requests
     from jina.serve.runtimes.gateway.http import FastAPIBaseGateway
@@ -1612,3 +1611,36 @@ def test_issue_fastapi_multiple_models_same_name():
             return_type=DocList[MyRandomModel],
         )
         assert res[0].a == 'hey'
+
+
+@pytest.mark.repeat(10)
+def test_exception_handling_in_dynamic_batch():
+    from jina.proto import jina_pb2
+    class DummyEmbeddingDoc(BaseDoc):
+        lf: List[float] = []
+
+    class SlowExecutorWithException(Executor):
+
+        @dynamic_batching(preferred_batch_size=3, timeout=1000)
+        @requests(on='/foo')
+        def foo(self, docs: DocList[TextDoc], **kwargs) -> DocList[DummyEmbeddingDoc]:
+            ret = DocList[DummyEmbeddingDoc]()
+            for doc in docs:
+                if doc.text == 'fail':
+                    raise Exception('Fail is in the Batch')
+                ret.append(DummyEmbeddingDoc(lf=[0.1, 0.2, 0.3]))
+            return ret
+
+    depl = Deployment(uses=SlowExecutorWithException)
+
+    with depl:
+        da = DocList[TextDoc]([TextDoc(text='good') for _ in range(50)])
+        da[4].text = 'fail'
+        responses = depl.post(on='/foo', inputs=da, request_size=1, return_responses=True, continue_on_error=True, results_in_order=True)
+        assert len(responses) == 50  # 1 request per input
+        num_failed_requests = 0
+        for r in responses:
+            if r.header.status.code == jina_pb2.StatusProto.StatusCode.ERROR:
+                num_failed_requests += 1
+
+        assert 1 <= num_failed_requests <= 3 # 3 requests in the dynamic batch failing
