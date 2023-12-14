@@ -227,6 +227,7 @@ class BatchQueue:
                     non_assigned_to_response_docs: DocumentArray = DocumentArray.empty()
                 else:
                     non_assigned_to_response_docs = self._response_docarray_cls()
+
                 non_assigned_to_response_request_idxs = []
                 sum_from_previous_first_req_idx = 0
                 for docs_inner_batch, req_idxs in batch(
@@ -271,33 +272,25 @@ class BatchQueue:
                             involved_requests_min_indx : involved_requests_max_indx + 1
                         ]:
                             await request_full.put(exc)
-                        pass
+                    else:
+                        # We need to attribute the docs to their requests
+                        non_assigned_to_response_docs.extend(batch_res_docs)
+                        non_assigned_to_response_request_idxs.extend(req_idxs)
+                        num_assigned_docs = await _assign_results(
+                            non_assigned_to_response_docs,
+                            non_assigned_to_response_request_idxs,
+                            sum_from_previous_first_req_idx,
+                        )
 
-                    # If there has been an exception, this will be docs_inner_batch
-                    output_executor_docs = (
-                        batch_res_docs
-                        if batch_res_docs is not None
-                        else docs_inner_batch
-                    )
-
-                    # We need to attribute the docs to their requests
-                    non_assigned_to_response_docs.extend(output_executor_docs)
-                    non_assigned_to_response_request_idxs.extend(req_idxs)
-                    num_assigned_docs = await _assign_results(
-                        non_assigned_to_response_docs,
-                        non_assigned_to_response_request_idxs,
-                        sum_from_previous_first_req_idx,
-                    )
-
-                    sum_from_previous_first_req_idx = (
-                        len(non_assigned_to_response_docs) - num_assigned_docs
-                    )
-                    non_assigned_to_response_docs = non_assigned_to_response_docs[
-                        num_assigned_docs:
-                    ]
-                    non_assigned_to_response_request_idxs = (
-                        non_assigned_to_response_request_idxs[num_assigned_docs:]
-                    )
+                        sum_from_previous_first_req_idx = (
+                            len(non_assigned_to_response_docs) - num_assigned_docs
+                        )
+                        non_assigned_to_response_docs = non_assigned_to_response_docs[
+                            num_assigned_docs:
+                        ]
+                        non_assigned_to_response_request_idxs = (
+                            non_assigned_to_response_request_idxs[num_assigned_docs:]
+                        )
                 if len(non_assigned_to_response_request_idxs) > 0:
                     _ = await _assign_results(
                         non_assigned_to_response_docs,
