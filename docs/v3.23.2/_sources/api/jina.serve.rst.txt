@@ -1,0 +1,32 @@
+jina.serve package
+==================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   jina.serve.consensus
+   jina.serve.executors
+   jina.serve.instrumentation
+   jina.serve.networking
+   jina.serve.runtimes
+   jina.serve.stream
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   jina.serve.helper
+   jina.serve.monitoring
+
+Module contents
+---------------
+
+.. automodule:: jina.serve
+   :members:
+   :undoc-members:
+   :show-inheritance:
