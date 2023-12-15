@@ -262,6 +262,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -652,6 +653,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.22.4`)](#release-note-3224)
 - [Release Note (`3.23.0`)](#release-note-3230)
 - [Release Note (`3.23.1`)](#release-note-3231)
+- [Release Note (`3.23.2`)](#release-note-3232)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -16438,4 +16440,34 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```bbf21de0```](https://github.com/jina-ai/jina/commit/bbf21de0bb973d49c7b04e35391a747a53876ad3)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```a2d29a73```](https://github.com/jina-ai/jina/commit/a2d29a7360cea4a7b14a68f7137f6d525a4580dc)] __-__ __version__: the next version will be 3.23.1 (*Jina Dev Bot*)
+
+<a name=release-note-3-23-2></a>
+## Release Note (`3.23.2`)
+
+> Release time: 2023-12-14 15:28:24
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Narek Amirbekian,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```48e4437f```](https://github.com/jina-ai/jina/commit/48e4437f156678c8013441dbd6ca9edf924f65f5)] __-__ do not assign results if Exception (#6128) (*Joan Fontanals*)
+ - [[```129b7b39```](https://github.com/jina-ai/jina/commit/129b7b39a5b02d220927732f3819ee36cee0c629)] __-__ loadbalance stream based on response (#6122) (*Narek Amirbekian*)
+
+### 🧼 Code Refactoring
+
+ - [[```9eb4d09c```](https://github.com/jina-ai/jina/commit/9eb4d09cc344da846c6b2b7fca1bec7fd5ce96ca)] __-__ small timer refactor (#6130) (*Joan Fontanals*)
+ - [[```ae399adf```](https://github.com/jina-ai/jina/commit/ae399adf3f712074ffdc2e7a27261ee109a81b31)] __-__ use new grpc version (#6110) (*Joan Fontanals*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```1c2a7c23```](https://github.com/jina-ai/jina/commit/1c2a7c236711a2a39dd0e664b905b0dd439215a3)] __-__ fix pytest-asyncio version (#6124) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```3ec48182```](https://github.com/jina-ai/jina/commit/3ec481824ba9248886ddbd094e78b46853471d6c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```8a1e6b0a```](https://github.com/jina-ai/jina/commit/8a1e6b0a7ea6fb0b48f9dc9a02300a5615335ee8)] __-__ __version__: the next version will be 3.23.2 (*Jina Dev Bot*)
 

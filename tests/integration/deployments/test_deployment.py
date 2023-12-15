@@ -458,12 +458,14 @@ def served_depl(request: FixtureRequest, exposed_port):
     t.join()
 
 
+@pytest.mark.repeat(10)
 @pytest.mark.parametrize('served_depl', [False, True], indirect=True)
 def test_deployment_dynamic_batching(served_depl, exposed_port):
     docs = Client(port=exposed_port).post(on='/bar', inputs=DocumentArray.empty(5))
     assert docs.texts == ['bar' for _ in docs]
 
 
+@pytest.mark.repeat(10)
 @pytest.mark.parametrize('enable_dynamic_batching', [False, True])
 def test_deployment_client_dynamic_batching(enable_dynamic_batching):
     kwargs = {'port': random_port()}
