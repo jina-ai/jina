@@ -522,12 +522,18 @@ class BazExecutor(Executor):
         docs.append(TextDoc(text=f'baz was here and got {len(docs)} document'))
 
 
+class MergeExecutor(Executor):
+    @requests
+    async def merge(self, docs: DocList[TextDoc], **kwargs) -> DocList[TextDoc]:
+        return docs
+
+
 f = (
     Flow()
     .add(uses=FooExecutor, name='fooExecutor')
     .add(uses=BarExecutor, name='barExecutor', needs='fooExecutor')
     .add(uses=BazExecutor, name='bazExecutor', needs='fooExecutor')
-    .add(needs=['barExecutor', 'bazExecutor'])
+    .add(uses=MergeExecutor, needs=['barExecutor', 'bazExecutor'])
 )
 ```
 
