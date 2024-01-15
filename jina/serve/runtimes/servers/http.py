@@ -297,3 +297,40 @@ class SagemakerHTTPServer(FastAPIBaseServer):
             cors=self.cors,
             logger=self.logger,
         )
+
+
+class GCPHTTPServer(FastAPIBaseServer):
+    """
+    :class:`GCPHTTPServer` is a FastAPIBaseServer that uses a custom FastAPI app for GCP endpoints
+
+    """
+
+    @property
+    def port(self):
+        """Get the port for the GCP server
+        :return: Return the port for the GCP server, always 8080"""
+        return 8080
+
+    @property
+    def ports(self):
+        """Get the port for the GCP server
+        :return: Return the port for the GCP server, always 8080"""
+        return [8080]
+
+    @property
+    def app(self):
+        """Get the GCP fastapi app
+        :return: Return a FastAPI app for the GCP container
+        """
+        return self._request_handler._http_fastapi_gcp_app(
+            title=self.title,
+            description=self.description,
+            no_crud_endpoints=self.no_crud_endpoints,
+            no_debug_endpoints=self.no_debug_endpoints,
+            expose_endpoints=self.expose_endpoints,
+            expose_graphql_endpoint=self.expose_graphql_endpoint,
+            tracing=self.tracing,
+            tracer_provider=self.tracer_provider,
+            cors=self.cors,
+            logger=self.logger,
+        )

@@ -1,0 +1,8 @@
+jtype: SampleExecutor
+py_modules:
+  - executor.py
+metas:
+  name: SampleExecutor
+  description: 
+  url: 
+  keywords: []
