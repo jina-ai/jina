@@ -41,7 +41,7 @@ def get_fastapi_app(
     from jina.serve.runtimes.gateway.models import _to_camel_case
 
     if not docarray_v2:
-        logger.warning('Only docarray v2 is supported with Sagemaker. ')
+        logger.warning('Only docarray v2 is supported with GCP. ')
         return
 
     class Header(BaseModel):
@@ -129,7 +129,6 @@ def get_fastapi_app(
                 raise HTTPException(status_code=499, detail=status.description)
             else:
                 return {"predictions": resp.docs}
-                return output_model(predictions=resp.docs)
 
         @app.api_route(**app_kwargs)
         async def post(request: Request):
@@ -175,7 +174,7 @@ def get_fastapi_app(
 
     from jina.serve.runtimes.gateway.health_model import JinaHealthModel
 
-    # `/ping` route is required by AWS Sagemaker
+    # `/ping` route is required by GCP
     @app.get(
         path='/ping',
         summary='Get the health of Jina Executor service',

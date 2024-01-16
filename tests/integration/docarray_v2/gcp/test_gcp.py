@@ -70,5 +70,25 @@ def test_provider_gcp_pod_inference():
             assert resp.status_code == 200
             resp_json = resp.json()
             assert len(resp_json['predictions']) == 2
-            print(resp_json)
 
+
+def test_provider_gcp_deployment_inference():
+    with chdir(os.path.join(os.path.dirname(__file__), 'SampleExecutor')):
+        dep_port = random_port()
+        with Deployment(uses='config.yml', provider='gcp', port=dep_port):
+            # Test the `GET /ping` endpoint (added by jina for gcp)
+            resp = requests.get(f'http://localhost:{dep_port}/ping')
+            assert resp.status_code == 200
+            assert resp.json() == {}
+
+            # Test the `POST /invocations` endpoint
+            # Note: this endpoint is not implemented in the sample executor
+            resp = requests.post(
+                f'http://localhost:{dep_port}/invocations',
+                json={
+                    'instances': ["hello world", "good apple"]
+                },
+            )
+            assert resp.status_code == 200
+            resp_json = resp.json()
+            assert len(resp_json['predictions']) == 2
