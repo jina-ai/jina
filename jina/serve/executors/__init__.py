@@ -606,7 +606,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if (
             not hasattr(self, 'runtime_args')
             or not hasattr(self.runtime_args, 'provider')
-            or self.runtime_args.provider not in (ProviderType.SAGEMAKER.value, ProviderType.GCP.value)
+            or self.runtime_args.provider
+            not in (ProviderType.SAGEMAKER.value, ProviderType.GCP.value)
         ):
             return
 
