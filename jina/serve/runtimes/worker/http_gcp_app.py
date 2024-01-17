@@ -79,6 +79,7 @@ def get_fastapi_app(
         input_model,
         output_model,
         input_doc_list_model=None,
+        output_doc_list_model=None,
     ):
         from docarray.base_doc.docarray_response import DocArrayResponse
 
@@ -128,7 +129,7 @@ def get_fastapi_app(
             if status.code == jina_pb2.StatusProto.ERROR:
                 raise HTTPException(status_code=499, detail=status.description)
             else:
-                return {"predictions": resp.docs}
+                return VertexAIResponse(predictions=output_model(data=resp.docs, parameters=resp.parameters))
 
         @app.api_route(**app_kwargs)
         async def post(request: Request):
@@ -151,6 +152,7 @@ def get_fastapi_app(
     for endpoint, input_output_map in request_models_map.items():
         if endpoint != '_jina_dry_run_':
             input_doc_model = input_output_map['input']['model']
+            output_doc_model = input_output_map['output']['model']
             parameters_model = input_output_map['parameters']['model'] or Optional[Dict]
             default_parameters = (
                 ... if input_output_map['parameters']['model'] else None
@@ -165,11 +167,19 @@ def get_fastapi_app(
                 __config__=_config,
             )
 
+            endpoint_output_model = pydantic.create_model(
+                f'{endpoint.strip("/")}_output_model',
+                data=(Union[List[output_doc_model], output_doc_model], ...),
+                parameters=(Optional[Dict], None),
+                __config__=_config,
+            )
+
             add_post_route(
                 endpoint,
                 input_model=endpoint_input_model,
-                output_model=VertexAIResponse,
+                output_model=endpoint_output_model,
                 input_doc_list_model=input_doc_model,
+                output_doc_list_model=VertexAIResponse,
             )
 
     from jina.serve.runtimes.gateway.health_model import JinaHealthModel
