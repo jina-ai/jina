@@ -79,7 +79,6 @@ def get_fastapi_app(
         input_model,
         output_model,
         input_doc_list_model=None,
-        output_doc_list_model=None,
     ):
         from docarray.base_doc.docarray_response import DocArrayResponse
 
@@ -87,7 +86,7 @@ def get_fastapi_app(
             path=f'/{endpoint_path.strip("/")}',
             methods=['POST'],
             summary=f'Endpoint {endpoint_path}',
-            response_model=Union[output_model, List[output_model]],
+            response_model=VertexAIResponse,
             response_class=DocArrayResponse,
         )
 
@@ -129,7 +128,7 @@ def get_fastapi_app(
             if status.code == jina_pb2.StatusProto.ERROR:
                 raise HTTPException(status_code=499, detail=status.description)
             else:
-                return VertexAIResponse(predictions=output_model(data=resp.docs, parameters=resp.parameters))
+                return VertexAIResponse(predictions=req.data.docs)
 
         @app.api_route(**app_kwargs)
         async def post(request: Request):
@@ -140,7 +139,7 @@ def get_fastapi_app(
                 return await process(input_model(**transformed_json_body))
 
             elif content_type in ('text/csv', 'application/csv'):
-                # TODO: fix here
+                # TODO: fix here for batch transform
                 return await process(input_model(data=[]))
             else:
                 raise HTTPException(
@@ -179,7 +178,6 @@ def get_fastapi_app(
                 input_model=endpoint_input_model,
                 output_model=endpoint_output_model,
                 input_doc_list_model=input_doc_model,
-                output_doc_list_model=VertexAIResponse,
             )
 
     from jina.serve.runtimes.gateway.health_model import JinaHealthModel
