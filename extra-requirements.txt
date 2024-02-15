@@ -58,7 +58,7 @@ aiofiles:                   standard,devel
 aiohttp:                    standard,devel
 scipy>=1.6.1:               test
 Pillow:                     test
-pytest:                     test
+pytest<8.0.0:               test
 pytest-timeout:             test
 pytest-mock:                test
 pytest-cov==3.0.0:          test

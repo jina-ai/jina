@@ -44,15 +44,15 @@ def test_split_key_executor_name(full_key, key, executor):
     'param, parsed_param, executor_name',
     [
         (
-            {'key': 1, 'executor__key': 2, 'wrong_executor__key': 3},
-            {'key': 2},
-            'executor',
+                {'key': 1, 'executor__key': 2, 'wrong_executor__key': 3},
+                {'key': 2},
+                'executor',
         ),
         ({'executor__key': 2, 'wrong_executor__key': 3}, {'key': 2}, 'executor'),
         (
-            {'a': 1, 'executor__key': 2, 'wrong_executor__key': 3},
-            {'key': 2, 'a': 1},
-            'executor',
+                {'a': 1, 'executor__key': 2, 'wrong_executor__key': 3},
+                {'key': 2, 'a': 1},
+                'executor',
         ),
         ({'key_1': 0, 'exec2__key_2': 1}, {'key_1': 0}, 'executor'),
     ],
@@ -69,8 +69,8 @@ def test_get_name_from_replicas(name_w_replicas, name):
 
 
 def _custom_grpc_options(
-    call_recording_mock: Mock,
-    additional_options: Optional[Union[list, Dict[str, Any]]] = None,
+        call_recording_mock: Mock,
+        additional_options: Optional[Union[list, Dict[str, Any]]] = None,
 ) -> List[Tuple[str, Any]]:
     call_recording_mock()
     expected_grpc_option_keys = [
@@ -355,3 +355,29 @@ def test_create_empty_doc_list_from_schema(transformation):
 
     assert len(original_back) == 0
     assert len(custom_da) == 0
+
+
+def test_dynamic_class_creation_multiple_doclist_nested():
+    from docarray import BaseDoc, DocList
+    from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list
+    from jina.serve.runtimes.helper import _create_pydantic_model_from_schema
+
+    class MyTextDoc(BaseDoc):
+        text: str
+
+    class QuoteFile(BaseDoc):
+        texts: DocList[MyTextDoc]
+
+    class SearchResult(BaseDoc):
+        results: DocList[QuoteFile] = None
+
+    textlist = DocList[MyTextDoc]([MyTextDoc(text='hey')])
+    models_created_by_name = {}
+    SearchResult_aux = _create_aux_model_doc_list_to_list(SearchResult)
+    _ = _create_pydantic_model_from_schema(SearchResult_aux.schema(), 'SearchResult',
+                                           models_created_by_name)
+    QuoteFile_reconstructed_in_gateway_from_Search_results = models_created_by_name['QuoteFile']
+
+    reconstructed_in_gateway_from_Search_results = QuoteFile_reconstructed_in_gateway_from_Search_results(
+        texts=textlist)
+    assert reconstructed_in_gateway_from_Search_results.texts[0].text == 'hey'

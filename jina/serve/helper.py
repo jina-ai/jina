@@ -129,7 +129,7 @@ def get_default_grpc_options() -> List[Tuple[str, Any]]:
         # keepalive ping time out after 4 seconds, default is 20 seconds
         ('grpc.keepalive_permit_without_calls', True),
         # allow keepalive pings when there's no gRPC calls
-        ('grpc.http1.max_pings_without_data', 1),
+        ('grpc.http1.max_pings_without_data', 0),
         # allow unlimited amount of keepalive pings without data
         ('grpc.http1.min_time_between_pings_ms', 10000),
         # allow grpc pings from client every 9 seconds
