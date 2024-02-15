@@ -108,7 +108,8 @@ if docarray_v2:
             try:
                 if issubclass(field, DocList):
                     t: Any = field.doc_type
-                    fields[field_name] = (List[t], field_info)
+                    t_aux = _create_aux_model_doc_list_to_list(t)
+                    fields[field_name] = (List[t_aux], field_info)
                 else:
                     fields[field_name] = (field, field_info)
             except TypeError:
@@ -272,7 +273,6 @@ if docarray_v2:
     ) -> type:
         if not definitions:
             definitions = schema.get('definitions', {})
-
         cached_models = cached_models if cached_models is not None else {}
         fields: Dict[str, Any] = {}
         if model_name in cached_models:
