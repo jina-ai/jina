@@ -357,6 +357,7 @@ def test_create_empty_doc_list_from_schema(transformation):
     assert len(custom_da) == 0
 
 
+@pytest.mark.skipif(not docarray_v2, reason='Test only working with docarray v2')
 def test_dynamic_class_creation_multiple_doclist_nested():
     from docarray import BaseDoc, DocList
     from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list

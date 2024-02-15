@@ -2,8 +2,8 @@ from docarray import DocList, BaseDoc
 from docarray.documents.text import TextDoc
 from jina import Executor, requests, Flow
 
-def test_issue():
 
+def test_issue():
     class QuoteFile(BaseDoc):
         quote_file_id: int = None
         texts: DocList[TextDoc] = None
