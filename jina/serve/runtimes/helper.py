@@ -99,7 +99,9 @@ if docarray_v2:
         'default',
     ]
 
+
     def _create_aux_model_doc_list_to_list(model):
+        cached_models = set()
         fields: Dict[str, Any] = {}
         for field_name, field in model.__annotations__.items():
             if field_name not in model.__fields__:
@@ -108,8 +110,12 @@ if docarray_v2:
             try:
                 if issubclass(field, DocList):
                     t: Any = field.doc_type
-                    t_aux = _create_aux_model_doc_list_to_list(t)
-                    fields[field_name] = (List[t_aux], field_info)
+                    if t.__name__ in cached_models:
+                        fields[field_name] = (List[t], field_info)
+                    else:
+                        t_aux = _create_aux_model_doc_list_to_list(t)
+                        fields[field_name] = (List[t_aux], field_info)
+                        cached_models.add(t.__name__)
                 else:
                     fields[field_name] = (field, field_info)
             except TypeError:
@@ -120,6 +126,7 @@ if docarray_v2:
             __validators__=model.__validators__,
             **fields,
         )
+
 
     def _get_field_from_type(
         field_schema,
@@ -263,6 +270,7 @@ if docarray_v2:
                     f"Unknown field type: {field_type} for field_name {field_name}"
                 )
         return ret
+
 
     def _create_pydantic_model_from_schema(
         schema: Dict[str, any],
