@@ -1002,7 +1002,7 @@ class WorkerRequestHandler:
         endpoints_proto.write_endpoints.extend(list(self._executor.write_endpoints))
         schemas = self._executor._get_endpoint_models_dict()
         if docarray_v2:
-            cached_aux_models = set()
+            cached_aux_models = {}
             from docarray.documents.legacy import LegacyDocument
 
             from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list

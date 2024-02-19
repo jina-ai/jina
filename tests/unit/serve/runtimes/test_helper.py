@@ -382,3 +382,28 @@ def test_dynamic_class_creation_multiple_doclist_nested():
     reconstructed_in_gateway_from_Search_results = QuoteFile_reconstructed_in_gateway_from_Search_results(
         texts=textlist)
     assert reconstructed_in_gateway_from_Search_results.texts[0].text == 'hey'
+
+
+@pytest.mark.skipif(not docarray_v2, reason='Test only working with docarray v2')
+def test_create_aux_model_with_multiple_doclists_of_same_type():
+    from docarray import DocList, BaseDoc
+    from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list
+
+    class MyTextDoc(BaseDoc):
+        text: str
+
+    class QuoteFile(BaseDoc):
+        texts: DocList[MyTextDoc]
+
+    class QuoteFileType(BaseDoc):
+        """
+            QuoteFileType class.
+        """
+        id: str = None  # same as name, compatibility reasons for a generic, shared `id` field
+        name: str = None
+        total_count: int = None
+        docs: DocList[QuoteFile] = None
+        chunks: DocList[QuoteFile] = None
+
+    new_model = _create_aux_model_doc_list_to_list(QuoteFileType)
+    new_model.schema()
