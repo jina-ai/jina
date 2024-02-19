@@ -100,8 +100,8 @@ if docarray_v2:
     ]
 
 
-    def _create_aux_model_doc_list_to_list(model):
-        cached_models = set()
+    def _create_aux_model_doc_list_to_list(model, cached_models = None):
+        cached_models = cached_models or set()
         fields: Dict[str, Any] = {}
         for field_name, field in model.__annotations__.items():
             if field_name not in model.__fields__:
@@ -120,12 +120,14 @@ if docarray_v2:
                     fields[field_name] = (field, field_info)
             except TypeError:
                 fields[field_name] = (field, field_info)
-        return create_model(
+        new_model = create_model(
             model.__name__,
             __base__=model,
             __validators__=model.__validators__,
-            **fields,
-        )
+            **fields)
+        cached_models.add(new_model.__name__)
+
+        return new_model
 
 
     def _get_field_from_type(

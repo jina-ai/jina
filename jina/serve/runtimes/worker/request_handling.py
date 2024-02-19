@@ -178,6 +178,7 @@ class WorkerRequestHandler:
             ]
 
             return self.process_single_data(request, None, is_generator=is_generator)
+
         app = get_fastapi_app(
             request_models_map=request_models_map, caller=call_handle, **kwargs
         )
@@ -1001,6 +1002,7 @@ class WorkerRequestHandler:
         endpoints_proto.write_endpoints.extend(list(self._executor.write_endpoints))
         schemas = self._executor._get_endpoint_models_dict()
         if docarray_v2:
+            cached_aux_models = set()
             from docarray.documents.legacy import LegacyDocument
 
             from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list
@@ -1011,16 +1013,14 @@ class WorkerRequestHandler:
                     inner_dict['input']['model'] = legacy_doc_schema
                 else:
                     inner_dict['input']['model'] = _create_aux_model_doc_list_to_list(
-                        inner_dict['input']['model']
+                        inner_dict['input']['model'], cached_aux_models
                     ).schema()
-
                 if inner_dict['output']['model'].schema() == legacy_doc_schema:
                     inner_dict['output']['model'] = legacy_doc_schema
                 else:
                     inner_dict['output']['model'] = _create_aux_model_doc_list_to_list(
-                        inner_dict['output']['model']
+                        inner_dict['output']['model'], cached_aux_models
                     ).schema()
-
                 if inner_dict['parameters']['model'] is not None:
                     inner_dict['parameters']['model'] = inner_dict['parameters'][
                         'model'
@@ -1031,6 +1031,7 @@ class WorkerRequestHandler:
                 inner_dict['output']['model'] = inner_dict['output']['model'].schema()
                 inner_dict['parameters'] = {}
         json_format.ParseDict(schemas, endpoints_proto.schemas)
+        self.logger.debug('return an endpoint discovery request')
         return endpoints_proto
 
     def _extract_tracing_context(
