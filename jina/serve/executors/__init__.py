@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import weakref
 import asyncio
 import contextlib
 import copy
@@ -223,11 +224,11 @@ class _FunctionWithSchema(NamedTuple):
                     )
 
     @staticmethod
-    def get_function_with_schema(fn: Callable) -> T:
+    def get_function_with_schema(fn: Callable, fn_annotations) -> T:
         # if it's not a generator function, infer the type annotation from the docs parameter
         # otherwise, infer from the doc parameter (since generator endpoints expect only 1 document as input)
         is_generator = getattr(fn, '__is_generator__', False)
-        is_singleton_doc = 'doc' in fn.__annotations__
+        is_singleton_doc = 'doc' in fn_annotations
         is_batch_docs = (
             not is_singleton_doc
         )  # some tests just use **kwargs and should work as before
@@ -237,11 +238,11 @@ class _FunctionWithSchema(NamedTuple):
         assert not (
             is_generator and is_batch_docs
         ), f'Cannot specify the `docs` parameter if the endpoint {fn.__name__} is a generator'
-        docs_annotation = fn.__annotations__.get(
-            'docs', fn.__annotations__.get('doc', None)
+        docs_annotation =fn_annotations.get(
+            'docs', fn_annotations.get('doc', None)
         )
         parameters_model = (
-            fn.__annotations__.get('parameters', None) if docarray_v2 else None
+            fn_annotations.get('parameters', None) if docarray_v2 else None
         )
         parameters_is_pydantic_model = False
         if parameters_model is not None and docarray_v2:
@@ -279,7 +280,7 @@ class _FunctionWithSchema(NamedTuple):
             )
             docs_annotation = None
 
-        return_annotation = fn.__annotations__.get('return', None)
+        return_annotation = fn_annotations.get('return', None)
 
         if return_annotation is None:
             pass
@@ -400,7 +401,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if __dry_run_endpoint__ not in self.requests:
             self.requests[
                 __dry_run_endpoint__
-            ] = _FunctionWithSchema.get_function_with_schema(self._dry_run_func)
+            ] = _FunctionWithSchema.get_function_with_schema(weakref.WeakMethod(self._dry_run_func), self._dry_run_func.__annotations__)
         else:
             self.logger.warning(
                 f' Endpoint {__dry_run_endpoint__} is defined by the Executor. Be aware that this endpoint is usually reserved to enable health checks from the Client through the gateway.'
@@ -409,7 +410,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if type(self) == BaseExecutor:
             self.requests[
                 __default_endpoint__
-            ] = _FunctionWithSchema.get_function_with_schema(self._dry_run_func)
+            ] = _FunctionWithSchema.get_function_with_schema(weakref.WeakMethod(self._dry_run_func), self._dry_run_func.__annotations__)
 
         self._lock = contextlib.AsyncExitStack()
         try:
@@ -588,12 +589,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     # the target function is not decorated with `@requests` yet
                     self.requests[
                         endpoint
-                    ] = _FunctionWithSchema.get_function_with_schema(_func)
+                    ] = _FunctionWithSchema.get_function_with_schema(weakref.WeakMethod(_func), _func.__annotations__)
                 elif typename(_func) == 'jina.executors.decorators.FunctionMapper':
                     # the target function is already decorated with `@requests`, need unwrap with `.fn`
                     self.requests[
                         endpoint
-                    ] = _FunctionWithSchema.get_function_with_schema(_func.fn)
+                    ] = _FunctionWithSchema.get_function_with_schema(weakref.WeakMethod(_func.fn), _func.fn.__annotations__)
                 else:
                     raise TypeError(
                         f'expect {typename(self)}.{func} to be a function, but receiving {typename(_func)}'

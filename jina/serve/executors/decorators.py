@@ -2,6 +2,7 @@
 import functools
 import inspect
 import os
+import weakref
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Sequence, Type, Union
 
@@ -347,7 +348,7 @@ def requests(
 
             from jina.serve.executors import _FunctionWithSchema
 
-            fn_with_schema = _FunctionWithSchema.get_function_with_schema(self.fn)
+            fn_with_schema = _FunctionWithSchema.get_function_with_schema(self.fn, self.fn.__annotations__)
 
             request_schema_arg = (
                 request_schema_arg
