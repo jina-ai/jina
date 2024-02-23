@@ -348,7 +348,7 @@ def requests(
 
             from jina.serve.executors import _FunctionWithSchema
 
-            fn_with_schema = _FunctionWithSchema.get_function_with_schema(self.fn, self.fn.__annotations__)
+            fn_with_schema = _FunctionWithSchema.get_function_with_schema(self.fn)
 
             request_schema_arg = (
                 request_schema_arg
