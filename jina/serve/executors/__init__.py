@@ -238,9 +238,7 @@ class _FunctionWithSchema(NamedTuple):
         assert not (
             is_generator and is_batch_docs
         ), f'Cannot specify the `docs` parameter if the endpoint {fn.__name__} is a generator'
-        docs_annotation =fn_annotations.get(
-            'docs', fn_annotations.get('doc', None)
-        )
+        docs_annotation = fn_annotations.get('docs', fn_annotations.get('doc', None))
         parameters_model = (
             fn_annotations.get('parameters', None) if docarray_v2 else None
         )
@@ -401,7 +399,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if __dry_run_endpoint__ not in self.requests:
             self.requests[
                 __dry_run_endpoint__
-            ] = _FunctionWithSchema.get_function_with_schema(weakref.WeakMethod(self._dry_run_func), self._dry_run_func.__annotations__)
+            ] = _FunctionWithSchema.get_function_with_schema(
+                weakref.WeakMethod(self._dry_run_func),
+                self._dry_run_func.__annotations__,
+            )
         else:
             self.logger.warning(
                 f' Endpoint {__dry_run_endpoint__} is defined by the Executor. Be aware that this endpoint is usually reserved to enable health checks from the Client through the gateway.'
@@ -410,7 +411,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if type(self) == BaseExecutor:
             self.requests[
                 __default_endpoint__
-            ] = _FunctionWithSchema.get_function_with_schema(weakref.WeakMethod(self._dry_run_func), self._dry_run_func.__annotations__)
+            ] = _FunctionWithSchema.get_function_with_schema(
+                weakref.WeakMethod(self._dry_run_func),
+                self._dry_run_func.__annotations__,
+            )
 
         self._lock = contextlib.AsyncExitStack()
         try:
@@ -589,12 +593,16 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     # the target function is not decorated with `@requests` yet
                     self.requests[
                         endpoint
-                    ] = _FunctionWithSchema.get_function_with_schema(weakref.WeakMethod(_func), _func.__annotations__)
+                    ] = _FunctionWithSchema.get_function_with_schema(
+                        weakref.WeakMethod(_func), _func.__annotations__
+                    )
                 elif typename(_func) == 'jina.executors.decorators.FunctionMapper':
                     # the target function is already decorated with `@requests`, need unwrap with `.fn`
                     self.requests[
                         endpoint
-                    ] = _FunctionWithSchema.get_function_with_schema(weakref.WeakMethod(_func.fn), _func.fn.__annotations__)
+                    ] = _FunctionWithSchema.get_function_with_schema(
+                        weakref.WeakMethod(_func.fn), _func.fn.__annotations__
+                    )
                 else:
                     raise TypeError(
                         f'expect {typename(self)}.{func} to be a function, but receiving {typename(_func)}'
