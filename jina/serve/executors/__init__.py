@@ -237,7 +237,9 @@ class _FunctionWithSchema(NamedTuple):
         assert not (
             is_generator and is_batch_docs
         ), f'Cannot specify the `docs` parameter if the endpoint {fn.__name__} is a generator'
-        docs_annotation = fn.__annotations__.get('docs', fn.__annotations__.get('doc', None))
+        docs_annotation = fn.__annotations__.get(
+            'docs', fn.__annotations__.get('doc', None)
+        )
         parameters_model = (
             fn.__annotations__.get('parameters', None) if docarray_v2 else None
         )
@@ -590,16 +592,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     # the target function is not decorated with `@requests` yet
                     self.requests[
                         endpoint
-                    ] = _FunctionWithSchema.get_function_with_schema(
-                        _func
-                    )
+                    ] = _FunctionWithSchema.get_function_with_schema(_func)
                 elif typename(_func) == 'jina.executors.decorators.FunctionMapper':
                     # the target function is already decorated with `@requests`, need unwrap with `.fn`
                     self.requests[
                         endpoint
-                    ] = _FunctionWithSchema.get_function_with_schema(
-                        _func.fn
-                    )
+                    ] = _FunctionWithSchema.get_function_with_schema(_func.fn)
                 else:
                     raise TypeError(
                         f'expect {typename(self)}.{func} to be a function, but receiving {typename(_func)}'
