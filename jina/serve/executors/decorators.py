@@ -2,11 +2,10 @@
 import functools
 import inspect
 import os
-import weakref
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Sequence, Type, Union
 
-from jina._docarray import Document, DocumentArray, docarray_v2
+from jina._docarray import Document, DocumentArray
 from jina.constants import __cache_path__
 from jina.helper import is_generator, iscoroutinefunction
 from jina.importer import ImportExtensions

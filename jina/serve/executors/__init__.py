@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import weakref
 import asyncio
 import contextlib
 import copy
@@ -592,14 +591,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     self.requests[
                         endpoint
                     ] = _FunctionWithSchema.get_function_with_schema(
-                        _func, _func.__annotations__
+                        _func
                     )
                 elif typename(_func) == 'jina.executors.decorators.FunctionMapper':
                     # the target function is already decorated with `@requests`, need unwrap with `.fn`
                     self.requests[
                         endpoint
                     ] = _FunctionWithSchema.get_function_with_schema(
-                        _func.fn, _func.fn.__annotations__
+                        _func.fn
                     )
                 else:
                     raise TypeError(
