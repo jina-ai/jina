@@ -1,0 +1,10 @@
+jina.serve.runtimes.gateway.http.fastapi package
+================================================
+
+Module contents
+---------------
+
+.. automodule:: jina.serve.runtimes.gateway.http.fastapi
+   :members:
+   :undoc-members:
+   :show-inheritance:
