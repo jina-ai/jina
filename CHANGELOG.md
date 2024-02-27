@@ -264,6 +264,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -16498,4 +16499,24 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```ec8c6149```](https://github.com/jina-ai/jina/commit/ec8c61492fc6b7ce9096b2a397cdf0794583efdc)] __-__ __deps__: bump gitpython from 3.1.37 to 3.1.41 in /docs (#6135) (*dependabot[bot]*)
  - [[```15a7b802```](https://github.com/jina-ai/jina/commit/15a7b802b2b4b30519a0502688e099e19c7ae932)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```1d212a1f```](https://github.com/jina-ai/jina/commit/1d212a1f874b3e699fe101cc6c8ac9331e1cc455)] __-__ __version__: the next version will be 3.23.3 (*Jina Dev Bot*)
+
+<a name=release-note-3-23-4></a>
+## Release Note (`3.23.4`)
+
+> Release time: 2024-02-27 09:36:35
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```af406ceb```](https://github.com/jina-ai/jina/commit/af406ceb78ed3821da99d3b128c77faff5e5ecbd)] __-__ use unbound method to link to `dry_run` endpoint (#6143) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```7fbbfcf1```](https://github.com/jina-ai/jina/commit/7fbbfcf1929c1118a53b28782e86d9bacb6a023a)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```9194228c```](https://github.com/jina-ai/jina/commit/9194228cf79d08dc8f4f221d5f46b49a84f30784)] __-__ __version__: the next version will be 3.23.4 (*Jina Dev Bot*)
 
