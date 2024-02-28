@@ -386,7 +386,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
         :param protocol: Communication protocol of the server exposed by the Executor. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
-        :param provider: If set, Executor is translated to a custom container compatible with the chosen provider. Choose the convenient providers from: ['NONE', 'SAGEMAKER'].
+        :param provider: If set, Executor is translated to a custom container compatible with the chosen provider. Choose the convenient providers from: ['NONE', 'SAGEMAKER', 'GCP'].
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your
@@ -476,21 +476,21 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
         self.args = args
         self._gateway_load_balancer = False
-        if self.args.provider == ProviderType.SAGEMAKER:
+        if self.args.provider in (ProviderType.SAGEMAKER, ProviderType.GCP):
             if self._gateway_kwargs.get('port', 0) == 8080:
                 raise ValueError(
-                    'Port 8080 is reserved for Sagemaker deployment. '
+                    'Port 8080 is reserved for CSP deployment. '
                     'Please use another port'
                 )
             if self.args.port != [8080]:
                 warnings.warn(
-                    'Port is changed to 8080 for Sagemaker deployment. '
+                    'Port is changed to 8080 for CSP deployment. '
                     f'Port {self.args.port} is ignored'
                 )
                 self.args.port = [8080]
             if self.args.protocol != [ProtocolType.HTTP]:
                 warnings.warn(
-                    'Protocol is changed to HTTP for Sagemaker deployment. '
+                    'Protocol is changed to HTTP for CSP deployment. '
                     f'Protocol {self.args.protocol} is ignored'
                 )
                 self.args.protocol = [ProtocolType.HTTP]

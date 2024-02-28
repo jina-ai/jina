@@ -393,7 +393,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._add_dynamic_batching(dynamic_batching)
         self._add_runtime_args(runtime_args)
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.runtime_args))
-        self._validate_sagemaker()
+        self._validate_csp()
         self._init_instrumentation(runtime_args)
         self._init_monitoring()
         self._init_workspace = workspace
@@ -603,14 +603,15 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                         f'expect {typename(self)}.{func} to be a function, but receiving {typename(_func)}'
                     )
 
-    def _validate_sagemaker(self):
-        # sagemaker expects the POST /invocations endpoint to be defined.
+    def _validate_csp(self):
+        # csp (sagemaker/azure/gcp) expects the POST /invocations endpoint to be defined.
         # if it is not defined, we check if there is only one endpoint defined,
         # and if so, we use it as the POST /invocations endpoint, or raise an error
         if (
             not hasattr(self, 'runtime_args')
             or not hasattr(self.runtime_args, 'provider')
-            or self.runtime_args.provider != ProviderType.SAGEMAKER.value
+            or self.runtime_args.provider
+            not in (ProviderType.SAGEMAKER.value, ProviderType.GCP.value)
         ):
             return
 
@@ -1088,7 +1089,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
         :param protocol: Communication protocol of the server exposed by the Executor. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
-        :param provider: If set, Executor is translated to a custom container compatible with the chosen provider. Choose the convenient providers from: ['NONE', 'SAGEMAKER'].
+        :param provider: If set, Executor is translated to a custom container compatible with the chosen provider. Choose the convenient providers from: ['NONE', 'SAGEMAKER', 'GCP'].
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your
