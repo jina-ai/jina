@@ -77,7 +77,11 @@ def get_fastapi_app(
         output_doc_list_model=None,
     ):
         import json
-        from typing import List, Type, Union, get_args, get_origin
+        from typing import List, Type, Union
+        try:
+            from typing import get_args, get_origin
+        except ImportError:
+            from typing_extensions import get_args, get_origin
 
         from docarray.base_doc.docarray_response import DocArrayResponse
         from pydantic import BaseModel, ValidationError, parse_obj_as
