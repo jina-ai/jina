@@ -77,6 +77,15 @@ def get_fastapi_app(
         output_doc_list_model=None,
     ):
         from docarray.base_doc.docarray_response import DocArrayResponse
+        from typing import (
+            Union,
+            List,
+            Type,
+            get_args,
+            get_origin,
+        )
+        from pydantic import BaseModel, ValidationError, parse_raw_as, parse_obj_as
+        import json
 
         app_kwargs = dict(
             path=f'/{endpoint_path.strip("/")}',
@@ -145,6 +154,47 @@ def get_fastapi_app(
                         detail='Invalid CSV input. Please check your input.',
                     )
 
+                def construct_model_from_line(
+                    model: Type[BaseModel], line: List[str]
+                ) -> BaseModel:
+                    parsed_fields = {}
+                    model_fields = model.__fields__
+
+                    for field_name, field_str, field_info in zip(
+                        model_fields.keys(), line, model_fields.values()
+                    ):
+                        field_type = field_info.outer_type_
+
+                        # Handle Union types by attempting to arse each potential type
+                        if get_origin(field_type) is Union:
+                            for possible_type in get_args(field_type):
+                                if possible_type is str:
+                                    parsed_fields[field_name] = field_str
+                                    break
+                                else:
+                                    try:
+                                        parsed_fields[field_name] = parse_obj_as(
+                                            possible_type, json.loads(field_str)
+                                        )
+                                        break
+                                    except (json.JSONDecodeError, ValidationError):
+                                        continue
+                        # Handle list of nested models
+                        elif get_origin(field_type) is list:
+                            list_item_type = get_args(field_type)[0]
+                            parsed_list = json.loads(field_str)
+                            if issubclass(list_item_type, BaseModel):
+                                parsed_fields[field_name] = parse_obj_as(
+                                    List[list_item_type], parsed_list
+                                )
+                            else:
+                                parsed_fields[field_name] = parsed_list
+                        # Handle direct assignment for basic types
+                        else:
+                            parsed_fields[field_name] = field_info.type_(field_str)
+
+                    return model(**parsed_fields)
+
                 # NOTE: Sagemaker only supports csv files without header, so we enforce
                 # the header by getting the field names from the input model.
                 # This will also enforce the order of the fields in the csv file.
@@ -165,7 +215,7 @@ def get_fastapi_app(
                             detail=f'Invalid CSV format. Line {line} doesn\'t match '
                             f'the expected field order {field_names}.',
                         )
-                    data.append(input_doc_list_model(**dict(zip(field_names, line))))
+                    data.append(construct_model_from_line(input_doc_list_model, line))
 
                 return await process(input_model(data=data))
 
