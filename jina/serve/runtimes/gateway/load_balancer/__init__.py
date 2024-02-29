@@ -8,4 +8,5 @@ class LoadBalancerGateway(LoadBalancingServer, BaseGateway):
     """
     :class:`LoadBalancerGateway`
     """
+
     pass

@@ -23,15 +23,15 @@ class _ReplicaList:
     """
 
     def __init__(
-            self,
-            metrics: _NetworkingMetrics,
-            histograms: _NetworkingHistograms,
-            logger,
-            runtime_name: str,
-            aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
-            tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
-            deployment_name: str = '',
-            channel_options: Optional[Union[list, Dict[str, Any]]] = None,
+        self,
+        metrics: _NetworkingMetrics,
+        histograms: _NetworkingHistograms,
+        logger,
+        runtime_name: str,
+        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
+        tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
+        deployment_name: str = '',
+        channel_options: Optional[Union[list, Dict[str, Any]]] = None,
     ):
         self.runtime_name = runtime_name
         self._connections = []
@@ -59,8 +59,8 @@ class _ReplicaList:
         parsed_address = urlparse(address)
         resolved_address = parsed_address.netloc if parsed_address.netloc else address
         if (
-                resolved_address in self._address_to_connection_idx
-                and self._address_to_connection_idx[resolved_address] is not None
+            resolved_address in self._address_to_connection_idx
+            and self._address_to_connection_idx[resolved_address] is not None
         ):
             # remove connection:
             # in contrast to remove_connection(), we don't 'shorten' the data structures below, instead
@@ -117,7 +117,9 @@ class _ReplicaList:
                     self._address_to_connection_idx[a] -= 1
 
     def _create_connection(self, address, deployment_name: str):
-        self._logger.debug(f'create_connection connection for {deployment_name} to {address}')
+        self._logger.debug(
+            f'create_connection connection for {deployment_name} to {address}'
+        )
         parsed_address = urlparse(address)
         address = parsed_address.netloc if parsed_address.netloc else address
         use_tls = parsed_address.scheme in TLS_PROTOCOL_SCHEMES

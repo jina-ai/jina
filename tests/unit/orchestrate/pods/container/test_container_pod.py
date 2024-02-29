@@ -159,6 +159,7 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
 
     def _mock_is_ready(*args, **kwargs):
         return True
+
     monkeypatch.setattr(
         servers.BaseServer,
         'is_ready',
@@ -182,7 +183,7 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
 
             def stop(self, *args, **kwargs):
                 pass
-        
+
         def __init__(self):
             pass
 

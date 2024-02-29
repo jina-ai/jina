@@ -8,4 +8,5 @@ class CompositeGateway(CompositeServer, BaseGateway):
     """
     :class:`CompositeGateway` is a CompositeServer that can be loaded from YAML as any other Gateway
     """
+
     pass

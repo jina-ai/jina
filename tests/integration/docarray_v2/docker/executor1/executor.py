@@ -4,6 +4,7 @@ from docarray.typing import NdArray
 from jina import Executor, requests
 import numpy as np
 
+
 class MyDoc(BaseDoc):
     text: str
     embedding: Optional[NdArray] = None
@@ -11,9 +12,9 @@ class MyDoc(BaseDoc):
 
 class Encoder(Executor):
     def __init__(
-            self,
-            *args,
-            **kwargs,
+        self,
+        *args,
+        **kwargs,
     ):
         super().__init__(*args, **kwargs)
 

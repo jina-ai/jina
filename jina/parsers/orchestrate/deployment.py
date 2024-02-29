@@ -1,4 +1,5 @@
 """Argparser module for Deployment runtimes"""
+
 import argparse
 
 from jina.enums import DeploymentRoleType
@@ -58,9 +59,11 @@ def mixin_base_deployment_parser(parser):
         '--deployment-role',
         type=DeploymentRoleType.from_string,
         choices=list(DeploymentRoleType),
-        help='The role of this deployment in the flow'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
+        help=(
+            'The role of this deployment in the flow'
+            if _SHOW_ALL_ARGS
+            else argparse.SUPPRESS
+        ),
     )
 
     gp.add_argument(

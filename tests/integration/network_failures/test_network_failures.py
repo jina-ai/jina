@@ -13,7 +13,10 @@ from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 from tests.helper import _generate_pod_args
 
-from tests.integration.runtimes.test_runtimes import _create_gateway_runtime, _create_head_runtime
+from tests.integration.runtimes.test_runtimes import (
+    _create_gateway_runtime,
+    _create_head_runtime,
+)
 
 
 class DummyExec(Executor):
@@ -489,7 +492,9 @@ async def test_runtimes_replicas(
             p.join()
 
 
-@pytest.mark.parametrize('terminate_head', [True]) # option with False times out because backoffs accumulate
+@pytest.mark.parametrize(
+    'terminate_head', [True]
+)  # option with False times out because backoffs accumulate
 @pytest.mark.parametrize('protocol', ['http', 'grpc', 'websocket'])
 @pytest.mark.asyncio
 async def test_runtimes_headful_topology(port_generator, protocol, terminate_head):
@@ -608,7 +613,8 @@ def _create_gqlgateway_runtime(graph_description, pod_addresses, port):
                 '--protocol',
                 'http',
             ]
-        ), req_handler_cls=GatewayRequestHandler
+        ),
+        req_handler_cls=GatewayRequestHandler,
     ) as runtime:
         runtime.run_forever()
 

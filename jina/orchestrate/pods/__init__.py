@@ -32,7 +32,12 @@ class BasePod(ABC):
     def __init__(self, args: 'argparse.Namespace'):
         self.args = args
         if self.args.pod_role == PodRoleType.GATEWAY:
-            _update_gateway_args(self.args, gateway_load_balancer=getattr(self.args, 'gateway_load_balancer', False))
+            _update_gateway_args(
+                self.args,
+                gateway_load_balancer=getattr(
+                    self.args, 'gateway_load_balancer', False
+                ),
+            )
         self.args.parallel = getattr(self.args, 'shards', 1)
         self.name = self.args.name or self.__class__.__name__
         self.logger = JinaLogger(self.name, **vars(self.args))
@@ -71,7 +76,7 @@ class BasePod(ABC):
                 self.logger.debug(f'terminate')
                 self._terminate()
                 if not self.is_shutdown.wait(
-                        timeout=self._timeout_ctrl if not __windows__ else 1.0
+                    timeout=self._timeout_ctrl if not __windows__ else 1.0
                 ):
                     if not __windows__:
                         raise Exception(
@@ -83,10 +88,12 @@ class BasePod(ABC):
                         )
             except Exception as ex:
                 self.logger.error(
-                    f'{ex!r} during {self.close!r}'
-                    + f'\n add "--quiet-error" to suppress the exception details'
-                    if not self.args.quiet_error
-                    else '',
+                    (
+                        f'{ex!r} during {self.close!r}'
+                        + f'\n add "--quiet-error" to suppress the exception details'
+                        if not self.args.quiet_error
+                        else ''
+                    ),
                     exc_info=not self.args.quiet_error,
                 )
         else:
@@ -95,7 +102,9 @@ class BasePod(ABC):
                 f'{"shutdown is already set" if self.is_shutdown.is_set() else "Runtime was never started"}. Runtime will end gracefully on its own'
             )
             if not self.is_shutdown.is_set():
-                self.is_signal_handlers_installed.wait(timeout=self._timeout_ctrl if not __windows__ else 1.0) # waiting for is_signal_handlers_installed will make sure signal handlers are installed
+                self.is_signal_handlers_installed.wait(
+                    timeout=self._timeout_ctrl if not __windows__ else 1.0
+                )  # waiting for is_signal_handlers_installed will make sure signal handlers are installed
             self._terminate()
         self.is_shutdown.set()
         self.logger.debug(__stop_msg__)
@@ -115,6 +124,7 @@ class BasePod(ABC):
             .. # noqa: DAR201
         """
         from jina.serve.runtimes.servers import BaseServer
+
         return BaseServer.wait_for_ready_or_shutdown(
             timeout=timeout,
             ready_or_shutdown_event=self.ready_or_shutdown.event,
@@ -187,7 +197,9 @@ class BasePod(ABC):
         check_protocol = getattr(self.args, 'protocol', ["grpc"])[0]
 
         async def check_readiness_server():
-            self.logger.debug(f'Checking readiness to {self.runtime_ctrl_address} with protocol {check_protocol}')
+            self.logger.debug(
+                f'Checking readiness to {self.runtime_ctrl_address} with protocol {check_protocol}'
+            )
             ready = await BaseServer.async_is_ready(
                 ctrl_address=self.runtime_ctrl_address,
                 timeout=_timeout,
@@ -196,21 +208,23 @@ class BasePod(ABC):
                 # Executor does not have protocol yet
             )
             if ready:
-                self.logger.debug(f'Server on {self.runtime_ctrl_address} with protocol {check_protocol} is ready')
+                self.logger.debug(
+                    f'Server on {self.runtime_ctrl_address} with protocol {check_protocol} is ready'
+                )
             else:
-                self.logger.debug(f'Server on {self.runtime_ctrl_address} with protocol {check_protocol} is not yet ready')
+                self.logger.debug(
+                    f'Server on {self.runtime_ctrl_address} with protocol {check_protocol} is not yet ready'
+                )
             return ready
 
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
             if (
-                    self.ready_or_shutdown.event.is_set()
-                    and (  # submit the health check to the pod, if it is
+                self.ready_or_shutdown.event.is_set()
+                and (  # submit the health check to the pod, if it is
                     self.is_shutdown.is_set()  # a worker and not shutdown
                     or not self.args.pod_role == PodRoleType.WORKER
-                    or (
-                            await check_readiness_server()
-                    )
-            )
+                    or (await check_readiness_server())
+                )
             ):
                 self._check_failed_to_start()
                 self.logger.debug(__ready_msg__)
@@ -235,8 +249,7 @@ class BasePod(ABC):
         ...
 
     @abstractmethod
-    def _terminate(self):
-        ...
+    def _terminate(self): ...
 
     @abstractmethod
     def join(self, *args, **kwargs):

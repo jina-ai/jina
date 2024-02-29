@@ -11,12 +11,10 @@ from . import get_metric_values
 def executor():
     class DummyExecutor(Executor):
         @requests(on='/foo')
-        def foo(self, docs, **kwargs):
-            ...
+        def foo(self, docs, **kwargs): ...
 
         @requests(on='/bar')
-        def bar(self, docs, **kwargs):
-            ...
+        def bar(self, docs, **kwargs): ...
 
     return DummyExecutor
 

@@ -7,8 +7,7 @@ from jina import Executor, Flow, requests
 def get_executor():
     class DummyExecutor(Executor):
         @requests(on='/foo')
-        def foo(self, docs, **kwargs):
-            ...
+        def foo(self, docs, **kwargs): ...
 
     return DummyExecutor
 

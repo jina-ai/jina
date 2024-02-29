@@ -22,7 +22,9 @@ def export_kubernetes(args):
             output_base_path=args.outpath, k8s_namespace=args.k8s_namespace
         )
     else:
-        raise NotImplementedError(f'Object of class {obj.__class__.__name__} cannot be exported to Kubernetes')
+        raise NotImplementedError(
+            f'Object of class {obj.__class__.__name__} cannot be exported to Kubernetes'
+        )
 
 
 def export_docker_compose(args):
@@ -40,7 +42,9 @@ def export_docker_compose(args):
             output_path=args.outpath, network_name=args.network_name
         )
     else:
-        raise NotImplementedError(f'Object of class {obj.__class__.__name__} cannot be exported to Docker Compose')
+        raise NotImplementedError(
+            f'Object of class {obj.__class__.__name__} cannot be exported to Docker Compose'
+        )
 
 
 def export_flowchart(args):
@@ -59,6 +63,7 @@ def export_schema(args):
     :param args: args from CLI
     """
     from jina import __version__
+
     if args.yaml_path:
         dump_api = api_to_dict()
         for yp in args.yaml_path:

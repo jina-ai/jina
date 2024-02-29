@@ -11,30 +11,30 @@ PERIOD_SECONDS = 5
 
 
 def get_template_yamls(
-        name: str,
-        namespace: str,
-        image_name: str,
-        container_cmd: str,
-        container_args: str,
-        replicas: int,
-        pull_policy: str,
-        jina_deployment_name: str,
-        pod_type: str,
-        shard_id: Optional[int] = None,
-        env: Optional[Dict] = None,
-        env_from_secret: Optional[Dict] = None,
-        image_pull_secrets: Optional[List] = None,
-        gpus: Optional[Union[int, str]] = None,
-        image_name_uses_before: Optional[str] = None,
-        image_name_uses_after: Optional[str] = None,
-        container_cmd_uses_before: Optional[str] = None,
-        container_cmd_uses_after: Optional[str] = None,
-        container_args_uses_before: Optional[str] = None,
-        container_args_uses_after: Optional[str] = None,
-        monitoring: bool = False,
-        protocol: Optional[Union[str, List[str]]] = None,
-        volumes: Optional[List[str]] = None,
-        timeout_ready: int = 600000,
+    name: str,
+    namespace: str,
+    image_name: str,
+    container_cmd: str,
+    container_args: str,
+    replicas: int,
+    pull_policy: str,
+    jina_deployment_name: str,
+    pod_type: str,
+    shard_id: Optional[int] = None,
+    env: Optional[Dict] = None,
+    env_from_secret: Optional[Dict] = None,
+    image_pull_secrets: Optional[List] = None,
+    gpus: Optional[Union[int, str]] = None,
+    image_name_uses_before: Optional[str] = None,
+    image_name_uses_after: Optional[str] = None,
+    container_cmd_uses_before: Optional[str] = None,
+    container_cmd_uses_after: Optional[str] = None,
+    container_args_uses_before: Optional[str] = None,
+    container_args_uses_after: Optional[str] = None,
+    monitoring: bool = False,
+    protocol: Optional[Union[str, List[str]]] = None,
+    volumes: Optional[List[str]] = None,
+    timeout_ready: int = 600000,
 ) -> List[Dict]:
     """Get the yaml description of a service on Kubernetes
 
@@ -68,7 +68,11 @@ def get_template_yamls(
     """
     # we can always assume the ports are the same for all executors since they run on different k8s pods
     # port expose can be defined by the user
-    port = [GrpcConnectionPool.K8S_PORT + i for i in range(len(protocol))] if isinstance(protocol, list) else GrpcConnectionPool.K8S_PORT  # TODO: This cannot happen
+    port = (
+        [GrpcConnectionPool.K8S_PORT + i for i in range(len(protocol))]
+        if isinstance(protocol, list)
+        else GrpcConnectionPool.K8S_PORT
+    )  # TODO: This cannot happen
     port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
 
     # we cast port to list of ports and protocol to list of protocols
@@ -215,4 +219,3 @@ def get_template_yamls(
         yamls.append(service_monitor_yaml)
 
     return yamls
-

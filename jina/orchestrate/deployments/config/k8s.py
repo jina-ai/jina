@@ -30,15 +30,15 @@ class K8sDeploymentConfig:
 
     class _K8sDeployment:
         def __init__(
-                self,
-                name: str,
-                version: str,
-                pod_type: PodRoleType,
-                jina_deployment_name: str,
-                shard_id: Optional[int],
-                common_args: Union['Namespace', Dict],
-                deployment_args: Union['Namespace', Dict],
-                k8s_namespace: str,
+            self,
+            name: str,
+            version: str,
+            pod_type: PodRoleType,
+            jina_deployment_name: str,
+            shard_id: Optional[int],
+            common_args: Union['Namespace', Dict],
+            deployment_args: Union['Namespace', Dict],
+            k8s_namespace: str,
         ):
             self.name = name
             self.dns_name = to_compatible_name(name)
@@ -52,7 +52,7 @@ class K8sDeploymentConfig:
             self.k8s_namespace = k8s_namespace
 
         def get_gateway_yamls(
-                self,
+            self,
         ) -> List[Dict]:
             cargs = copy.copy(self.deployment_args)
             from jina.helper import ArgNamespace
@@ -112,9 +112,7 @@ class K8sDeploymentConfig:
                 cargs, uses_metas, uses_with, pod_type
             )
 
-        def get_runtime_yamls(
-                self
-        ) -> List[Dict]:
+        def get_runtime_yamls(self) -> List[Dict]:
             cargs = copy.copy(self.deployment_args)
 
             image_name = resolve_image_name(cargs.uses)
@@ -198,9 +196,9 @@ class K8sDeploymentConfig:
             )
 
     def __init__(
-            self,
-            args: Union['Namespace', Dict],
-            k8s_namespace: Optional[str] = None,
+        self,
+        args: Union['Namespace', Dict],
+        k8s_namespace: Optional[str] = None,
     ):
         # External Deployments should be ignored in a K8s based Flow
         assert not (hasattr(args, 'external') and args.external)
@@ -240,17 +238,15 @@ class K8sDeploymentConfig:
                     shard_id=i,
                     common_args=self.args,
                     deployment_args=args,
-                    pod_type=PodRoleType.WORKER
-                    if name != 'gateway'
-                    else PodRoleType.GATEWAY,
+                    pod_type=(
+                        PodRoleType.WORKER if name != 'gateway' else PodRoleType.GATEWAY
+                    ),
                     jina_deployment_name=self.name,
                     k8s_namespace=self.k8s_namespace,
                 )
             )
 
-    def _get_deployment_args(
-            self, args
-    ):
+    def _get_deployment_args(self, args):
         parsed_args = {
             'head_deployment': None,
             'deployments': [],
@@ -267,9 +263,9 @@ class K8sDeploymentConfig:
                 )
                 parsed_args['head_deployment'].gpus = None
                 parsed_args['head_deployment'].port = GrpcConnectionPool.K8S_PORT
-                parsed_args[
-                    'head_deployment'
-                ].port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
+                parsed_args['head_deployment'].port_monitoring = (
+                    GrpcConnectionPool.K8S_PORT_MONITORING
+                )
                 parsed_args['head_deployment'].uses = None
                 parsed_args['head_deployment'].uses_metas = None
                 parsed_args['head_deployment'].uses_with = None
@@ -283,24 +279,20 @@ class K8sDeploymentConfig:
                         if shards > 1
                         else f'{to_compatible_name(self.name)}'
                     )
-                    connection_list[
-                        str(i)
-                    ] = f'{name}.{self.k8s_namespace}.svc:{GrpcConnectionPool.K8S_PORT}'
+                    connection_list[str(i)] = (
+                        f'{name}.{self.k8s_namespace}.svc:{GrpcConnectionPool.K8S_PORT}'
+                    )
 
                 parsed_args['head_deployment'].connection_list = json.dumps(
                     connection_list
                 )
 
                 if uses_before:
-                    parsed_args[
-                        'head_deployment'
-                    ].uses_before_address = (
+                    parsed_args['head_deployment'].uses_before_address = (
                         f'127.0.0.1:{GrpcConnectionPool.K8S_PORT_USES_BEFORE}'
                     )
                 if uses_after:
-                    parsed_args[
-                        'head_deployment'
-                    ].uses_after_address = (
+                    parsed_args['head_deployment'].uses_after_address = (
                         f'127.0.0.1:{GrpcConnectionPool.K8S_PORT_USES_AFTER}'
                     )
 
@@ -310,7 +302,9 @@ class K8sDeploymentConfig:
             cargs.shard_id = i
             cargs.uses_before = None
             cargs.uses_after = None
-            cargs.port = [GrpcConnectionPool.K8S_PORT + i for i in range(len(cargs.protocol))]
+            cargs.port = [
+                GrpcConnectionPool.K8S_PORT + i for i in range(len(cargs.protocol))
+            ]
             cargs.port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
 
             cargs.uses_before_address = None
@@ -324,7 +318,7 @@ class K8sDeploymentConfig:
         return parsed_args
 
     def to_kubernetes_yaml(
-            self,
+        self,
     ) -> List[Tuple[str, List[Dict]]]:
         """
         Return a list of dictionary configurations. One for each deployment in this Deployment

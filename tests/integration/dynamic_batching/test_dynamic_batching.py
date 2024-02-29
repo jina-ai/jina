@@ -573,7 +573,8 @@ async def test_sigterm_handling(signal, uses_with):
         with mp.Pool(3) as p:
             results = [
                 p.apply_async(
-                    _assert_all_docs_processed, (args.port[0], req_size, '/long_timeout')
+                    _assert_all_docs_processed,
+                    (args.port[0], req_size, '/long_timeout'),
                 )
                 for req_size in [10, 20, 30]
             ]
@@ -644,11 +645,18 @@ def test_exception_handling_in_dynamic_batch():
     with depl:
         da = DocumentArray([Document(text='good') for _ in range(50)])
         da[4].text = 'fail'
-        responses = depl.post(on='/foo', inputs=da, request_size=1, return_responses=True, continue_on_error=True, results_in_order=True)
+        responses = depl.post(
+            on='/foo',
+            inputs=da,
+            request_size=1,
+            return_responses=True,
+            continue_on_error=True,
+            results_in_order=True,
+        )
         assert len(responses) == 50  # 1 request per input
         num_failed_requests = 0
         for r in responses:
             if r.header.status.code == jina_pb2.StatusProto.StatusCode.ERROR:
                 num_failed_requests += 1
 
-        assert 1 <= num_failed_requests <= 3 # 3 requests in the dynamic batch failing
+        assert 1 <= num_failed_requests <= 3  # 3 requests in the dynamic batch failing

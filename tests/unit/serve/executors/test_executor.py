@@ -306,7 +306,9 @@ def test_workspace_not_exists(tmpdir):
             super().__init__(*args, **kwargs)
 
         def do(self, *args, **kwargs):
-            with open(os.path.join(self.workspace, 'text.txt'), 'w', encoding='utf-8') as f:
+            with open(
+                os.path.join(self.workspace, 'text.txt'), 'w', encoding='utf-8'
+            ) as f:
                 f.write('here!')
 
     e = MyExec(metas={'workspace': tmpdir})
@@ -451,7 +453,9 @@ def test_to_k8s_yaml(tmpdir, exec_type, uses):
         executor_type=exec_type,
     )
 
-    with open(os.path.join(tmpdir, 'executor0', 'executor0.yml'), encoding='utf-8') as f:
+    with open(
+        os.path.join(tmpdir, 'executor0', 'executor0.yml'), encoding='utf-8'
+    ) as f:
         exec_yaml = list(yaml.safe_load_all(f))[-1]
         assert exec_yaml['spec']['template']['spec']['containers'][0][
             'image'
@@ -467,7 +471,9 @@ def test_to_k8s_yaml(tmpdir, exec_type, uses):
             'gateway',
         }
 
-        with open(os.path.join(tmpdir, 'gateway', 'gateway.yml'), encoding='utf-8') as f:
+        with open(
+            os.path.join(tmpdir, 'gateway', 'gateway.yml'), encoding='utf-8'
+        ) as f:
             gatewayyaml = list(yaml.safe_load_all(f))[-1]
             assert (
                 gatewayyaml['spec']['template']['spec']['containers'][0]['ports'][0][
@@ -533,7 +539,9 @@ async def test_blocking_sync_exec():
     cancel_event = multiprocessing.Event()
 
     def start_runtime(args, cancel_event):
-        with AsyncNewLoopRuntime(args, cancel_event=cancel_event, req_handler_cls=WorkerRequestHandler) as runtime:
+        with AsyncNewLoopRuntime(
+            args, cancel_event=cancel_event, req_handler_cls=WorkerRequestHandler
+        ) as runtime:
             runtime.run_forever()
 
     runtime_thread = Process(
@@ -686,8 +694,6 @@ def test_write_decorator():
         @requests(on='/update')
         def update(self, **kwargs):
             pass
-
-
 
         @requests(on='/search')
         def search(self, **kwargs):

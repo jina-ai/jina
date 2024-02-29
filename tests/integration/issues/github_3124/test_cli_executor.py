@@ -28,4 +28,3 @@ def test_executor_cli_docker(docker_image):
     poll = process.poll()
     process.terminate()
     assert poll is None
-

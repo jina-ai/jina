@@ -262,7 +262,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         return lines
 
 
-def _get_gateway_class(protocol, works_as_load_balancer = False):
+def _get_gateway_class(protocol, works_as_load_balancer=False):
     from jina.serve.runtimes.gateway.grpc import GRPCGateway
     from jina.serve.runtimes.gateway.http import HTTPGateway
     from jina.serve.runtimes.gateway.websocket import WebSocketGateway
@@ -274,6 +274,7 @@ def _get_gateway_class(protocol, works_as_load_balancer = False):
     }
     if protocol == ProtocolType.HTTP and works_as_load_balancer:
         from jina.serve.runtimes.gateway.load_balancer import LoadBalancerGateway
+
         return LoadBalancerGateway
     else:
         return gateway_dict[protocol]
@@ -286,6 +287,7 @@ def _set_gateway_uses(args: 'argparse.Namespace', gateway_load_balancer: bool = 
         elif len(args.protocol) > len(args.port):
             if len(args.port) == 1:
                 from jina.helper import random_port
+
                 args.port = []
                 for _ in range(len(args.protocol)):
                     args.port.append(random_port())
@@ -295,9 +297,11 @@ def _set_gateway_uses(args: 'argparse.Namespace', gateway_load_balancer: bool = 
                 )
         if len(args.protocol) > 1:
             from jina.serve.runtimes.gateway.composite import CompositeGateway
+
             args.uses = CompositeGateway.__name__
         elif gateway_load_balancer:
             from jina.serve.runtimes.gateway.load_balancer import LoadBalancerGateway
+
             args.uses = LoadBalancerGateway.__name__
 
 
@@ -341,6 +345,7 @@ class CastPeerPorts(argparse.Action):
         :param option_string: inherited, not used
         """
         import json
+
         d = {0: []}
         for value in values:
             if isinstance(value, str):

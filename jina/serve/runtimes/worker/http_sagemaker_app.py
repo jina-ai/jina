@@ -78,6 +78,7 @@ def get_fastapi_app(
     ):
         import json
         from typing import List, Type, Union
+
         try:
             from typing import get_args, get_origin
         except ImportError:

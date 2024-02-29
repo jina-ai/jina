@@ -68,18 +68,22 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         action=KVAppendAction,
         metavar='KEY: VALUE',
         nargs='*',
-        help='The map of environment variables that are read from kubernetes cluster secrets'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
+        help=(
+            'The map of environment variables that are read from kubernetes cluster secrets'
+            if _SHOW_ALL_ARGS
+            else argparse.SUPPRESS
+        ),
     )
     gp.add_argument(
         '--image-pull-secrets',
         type=str,
         nargs='+',
         default=None,
-        help='List of ImagePullSecrets that the Kubernetes Pods need to have access to in order to pull the image. Used in `to_kubernetes_yaml`'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
+        help=(
+            'List of ImagePullSecrets that the Kubernetes Pods need to have access to in order to pull the image. Used in `to_kubernetes_yaml`'
+            if _SHOW_ALL_ARGS
+            else argparse.SUPPRESS
+        ),
     )
 
     # hidden CLI used for internal only
@@ -88,9 +92,11 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         '--shard-id',
         type=int,
         default=0,
-        help='defines the shard identifier for the executor. It is used as suffix for the workspace path of the executor`'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
+        help=(
+            'defines the shard identifier for the executor. It is used as suffix for the workspace path of the executor`'
+            if _SHOW_ALL_ARGS
+            else argparse.SUPPRESS
+        ),
     )
 
     gp.add_argument(
@@ -98,19 +104,23 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         type=PodRoleType.from_string,
         choices=list(PodRoleType),
         default=POD_PARAMS_MAPPING[pod_type].role_type,
-        help='The role of this Pod in a Deployment'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
+        help=(
+            'The role of this Pod in a Deployment'
+            if _SHOW_ALL_ARGS
+            else argparse.SUPPRESS
+        ),
     )
 
     gp.add_argument(
         '--noblock-on-start',
         action='store_true',
         default=False,
-        help='If set, starting a Pod/Deployment does not block the thread/process. It then relies on '
-        '`wait_start_success` at outer function for the postpone check.'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
+        help=(
+            'If set, starting a Pod/Deployment does not block the thread/process. It then relies on '
+            '`wait_start_success` at outer function for the postpone check.'
+            if _SHOW_ALL_ARGS
+            else argparse.SUPPRESS
+        ),
     )
 
     gp.add_argument(
@@ -125,9 +135,11 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         '--replica-id',
         type=int,
         default=0,
-        help='defines the replica identifier for the executor. It is used when `stateful` is set to true'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
+        help=(
+            'defines the replica identifier for the executor. It is used when `stateful` is set to true'
+            if _SHOW_ALL_ARGS
+            else argparse.SUPPRESS
+        ),
     )
 
     if pod_type != 'gateway':

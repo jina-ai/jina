@@ -12,12 +12,12 @@ class WebSocketServer(BaseServer):
     """WebSocket Server implementation"""
 
     def __init__(
-            self,
-            ssl_keyfile: Optional[str] = None,
-            ssl_certfile: Optional[str] = None,
-            uvicorn_kwargs: Optional[dict] = None,
-            proxy: Optional[bool] = None,
-            **kwargs
+        self,
+        ssl_keyfile: Optional[str] = None,
+        ssl_certfile: Optional[str] = None,
+        uvicorn_kwargs: Optional[dict] = None,
+        proxy: Optional[bool] = None,
+        **kwargs,
     ):
         """Initialize the gateway
         :param ssl_keyfile: the path to the key file
@@ -42,11 +42,18 @@ class WebSocketServer(BaseServer):
         """
         self.logger.debug(f'Setting up Websocket server')
         if docarray_v2:
-            from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+            from jina.serve.runtimes.gateway.request_handling import (
+                GatewayRequestHandler,
+            )
+
             if isinstance(self._request_handler, GatewayRequestHandler):
-                await self._request_handler.streamer._get_endpoints_input_output_models(is_cancel=self.is_cancel)
+                await self._request_handler.streamer._get_endpoints_input_output_models(
+                    is_cancel=self.is_cancel
+                )
                 self._request_handler.streamer._validate_flow_docarray_compatibility()
-        self.app = self._request_handler._websocket_fastapi_default_app(tracing=self.tracing, tracer_provider=self.tracer_provider)
+        self.app = self._request_handler._websocket_fastapi_default_app(
+            tracing=self.tracing, tracer_provider=self.tracer_provider
+        )
 
         with ImportExtensions(required=True):
             from uvicorn import Config, Server

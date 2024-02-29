@@ -1,4 +1,5 @@
 """A module for the websockets-based Client for Jina."""
+
 import asyncio
 from contextlib import AsyncExitStack
 from typing import TYPE_CHECKING, Dict, Optional, Tuple
@@ -131,9 +132,9 @@ class WebSocketBaseClient(BaseClient):
                 )
             )
 
-            request_buffer: Dict[
-                str, asyncio.Future
-            ] = dict()  # maps request_ids to futures (tasks)
+            request_buffer: Dict[str, asyncio.Future] = (
+                dict()
+            )  # maps request_ids to futures (tasks)
 
             def _result_handler(result):
                 return result

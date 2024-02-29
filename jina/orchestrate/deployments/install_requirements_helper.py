@@ -137,9 +137,7 @@ def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jin
     return install_reqs, install_options
 
 
-def _is_requirements_installed(
-        requirements_file: 'Path'
-) -> bool:
+def _is_requirements_installed(requirements_file: 'Path') -> bool:
     """Return True if requirements.txt is installed locally
     :param requirements_file: the requirements.txt file
     :return: True or False if not satisfied
@@ -160,6 +158,7 @@ def _is_requirements_installed(
         pkg_resources.require('\n'.join(install_reqs))
     except (DistributionNotFound, VersionConflict, RequirementParseError) as ex:
         import warnings
+
         warnings.warn(repr(ex))
         return isinstance(ex, VersionConflict)
     return True
@@ -172,6 +171,7 @@ def _install_requirements(requirements_file: 'Path', timeout: int = 1000):
     """
     import subprocess
     import sys
+
     if _is_requirements_installed(requirements_file):
         return
 
@@ -191,9 +191,7 @@ def _install_requirements(requirements_file: 'Path', timeout: int = 1000):
     )
 
 
-def install_package_dependencies(
-        pkg_path: Optional['Path']
-) -> None:
+def install_package_dependencies(pkg_path: Optional['Path']) -> None:
     """
 
     :param pkg_path: package path
@@ -205,15 +203,19 @@ def install_package_dependencies(
         if requirements_file.exists():
             _install_requirements(requirements_file)
 
+
 def _get_package_path_from_uses(uses: str) -> Optional['Path']:
     if isinstance(uses, str) and os.path.exists(uses):
         from pathlib import Path
+
         return Path(os.path.dirname(os.path.abspath(uses)))
     else:
         from hubble.executor.helper import is_valid_huburi
+
         if not is_valid_huburi(uses):
             from jina.logging.predefined import default_logger
-            
+
             default_logger.warning(
-                f'Error getting the directory name from {uses}. `--install-requirements` option is only valid when `uses` is a configuration file.')
+                f'Error getting the directory name from {uses}. `--install-requirements` option is only valid when `uses` is a configuration file.'
+            )
         return None

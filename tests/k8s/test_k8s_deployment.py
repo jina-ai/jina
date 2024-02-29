@@ -207,7 +207,7 @@ async def test_deployment_serve_k8s(
     indirect=True,
 )
 async def test_deployment_with_multiple_protocols(
-        logger, docker_images, tmpdir, k8s_cluster
+    logger, docker_images, tmpdir, k8s_cluster
 ):
     from kubernetes import client
 
@@ -241,13 +241,25 @@ async def test_deployment_with_multiple_protocols(
         grpc_port = GrpcConnectionPool.K8S_PORT
         http_port = GrpcConnectionPool.K8S_PORT + 1
 
-        with shell_portforward(k8s_cluster._cluster.kubectl_path, pod_or_service='service/test-executor-1-http', port1=http_port, port2=http_port, namespace=namespace):
+        with shell_portforward(
+            k8s_cluster._cluster.kubectl_path,
+            pod_or_service='service/test-executor-1-http',
+            port1=http_port,
+            port2=http_port,
+            namespace=namespace,
+        ):
             import requests
 
             resp = requests.get(f'http://localhost:{http_port}').json()
             assert resp == {}
 
-        with shell_portforward(k8s_cluster._cluster.kubectl_path, pod_or_service='service/test-executor', port1=grpc_port, port2=grpc_port, namespace=namespace):
+        with shell_portforward(
+            k8s_cluster._cluster.kubectl_path,
+            pod_or_service='service/test-executor',
+            port1=grpc_port,
+            port2=grpc_port,
+            namespace=namespace,
+        ):
             grpc_client = Client(protocol='grpc', port=grpc_port, asyncio=True)
             async for _ in grpc_client.post('/', inputs=DocumentArray.empty(5)):
                 pass

@@ -25,9 +25,9 @@ class DataRequest(Request):
 
     class _DataContent:
         def __init__(
-                self,
-                content: 'jina_pb2.DataRequestProto.DataContentProto',
-                document_array_cls: Type[DocumentArray],
+            self,
+            content: 'jina_pb2.DataRequestProto.DataContentProto',
+            document_array_cls: Type[DocumentArray],
         ):
             self._content = content
             self._loaded_doc_array = None
@@ -59,7 +59,7 @@ class DataRequest(Request):
             self.set_docs_convert_arrays(value)
 
         def set_docs_convert_arrays(
-                self, value: DocumentArray, ndarray_type: Optional[str] = None
+            self, value: DocumentArray, ndarray_type: Optional[str] = None
         ):
             """Convert embedding and tensor to given type, then set DocumentArray
             :param value: a DocumentArray
@@ -107,8 +107,8 @@ class DataRequest(Request):
     """
 
     def __init__(
-            self,
-            request: Optional[RequestSourceType] = None,
+        self,
+        request: Optional[RequestSourceType] = None,
     ):
         self.buffer = None
         self._pb_body = None
@@ -184,7 +184,7 @@ class DataRequest(Request):
 
     @property
     def proto_wo_data(
-            self,
+        self,
     ) -> Union['jina_pb2.DataRequestProtoWoData', 'jina_pb2.DataRequestProto']:
         """
         Transform the current buffer to a :class:`jina_pb2.DataRequestProtoWoData` unless the full proto has already
@@ -198,7 +198,7 @@ class DataRequest(Request):
 
     @property
     def proto(
-            self,
+        self,
     ) -> Union['jina_pb2.DataRequestProto', 'jina_pb2.DataRequestProtoWoData']:
         """
         Cast ``self`` to a :class:`jina_pb2.DataRequestProto` or a :class:`jina_pb2.DataRequestProto`. Laziness will be broken and serialization will be recomputed when calling.
@@ -212,7 +212,7 @@ class DataRequest(Request):
 
     @property
     def proto_with_data(
-            self,
+        self,
     ) -> 'jina_pb2.DataRequestProto':
         """
         Cast ``self`` to a :class:`jina_pb2.DataRequestProto`. Laziness will be broken and serialization will be recomputed when calling.
@@ -309,6 +309,7 @@ class DataRequest(Request):
         parameters = value
         if docarray_v2:
             from pydantic import BaseModel
+
             if isinstance(value, BaseModel):
                 parameters = dict(value)
         self.proto_wo_data.parameters.update(parameters)
@@ -403,9 +404,9 @@ class SingleDocumentRequest(Request):
 
     class _DataContent:
         def __init__(
-                self,
-                content,
-                document_cls: Type['Document'],
+            self,
+            content,
+            document_cls: Type['Document'],
         ):
             self._content = content
             self._loaded_document = None
@@ -417,9 +418,7 @@ class SingleDocumentRequest(Request):
 
             .. # noqa: DAR201"""
             if not self._loaded_document:
-                self._loaded_document = self.document_cls.from_protobuf(
-                    self._content
-                )
+                self._loaded_document = self.document_cls.from_protobuf(self._content)
 
             return self._loaded_document
 
@@ -434,8 +433,8 @@ class SingleDocumentRequest(Request):
                 self._content.CopyFrom(value.to_protobuf())
 
     def __init__(
-            self,
-            request: Optional[jina_pb2.SingleDocumentRequestProto] = None,
+        self,
+        request: Optional[jina_pb2.SingleDocumentRequestProto] = None,
     ):
         self.buffer = None
         self._pb_body = None
@@ -512,8 +511,10 @@ class SingleDocumentRequest(Request):
 
     @property
     def proto_wo_data(
-            self,
-    ) -> Union['jina_pb2.DataRequestProtoWoData', 'jina_pb2.SingleDocumentRequestProto']:
+        self,
+    ) -> Union[
+        'jina_pb2.DataRequestProtoWoData', 'jina_pb2.SingleDocumentRequestProto'
+    ]:
         """
         Transform the current buffer to a :class:`jina_pb2.DataRequestProtoWoData` unless the full proto has already
         been initialized or . Laziness will be broken and serialization will be recomputed when
@@ -526,8 +527,10 @@ class SingleDocumentRequest(Request):
 
     @property
     def proto(
-            self,
-    ) -> Union['jina_pb2.SingleDocumentRequestProto', 'jina_pb2.DataRequestProtoWoData']:
+        self,
+    ) -> Union[
+        'jina_pb2.SingleDocumentRequestProto', 'jina_pb2.DataRequestProtoWoData'
+    ]:
         """
         Cast ``self`` to a :class:`jina_pb2.DataRequestProto` or a :class:`jina_pb2.DataRequestProto`. Laziness will be broken and serialization will be recomputed when calling.
         it returns the underlying proto if it already exists (even if he is loaded without data) or creates a new one.
@@ -540,7 +543,7 @@ class SingleDocumentRequest(Request):
 
     @property
     def proto_with_data(
-            self,
+        self,
     ) -> 'jina_pb2.SingleDocumentRequestProto':
         """
         Cast ``self`` to a :class:`jina_pb2.DataRequestProto`. Laziness will be broken and serialization will be recomputed when calling.
@@ -663,6 +666,7 @@ class SingleDocumentRequest(Request):
         parameters = value
         if docarray_v2:
             from pydantic import BaseModel
+
             if isinstance(value, BaseModel):
                 parameters = dict(value)
         self.proto_wo_data.parameters.update(parameters)

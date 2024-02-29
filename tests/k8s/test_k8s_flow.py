@@ -124,6 +124,7 @@ async def create_all_flow_deployments_and_wait_ready(
 async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_size=100):
     # start port forwarding
     from jina.clients import Client
+
     port = GrpcConnectionPool.K8S_PORT
 
     gateway_pod_name = (
@@ -136,9 +137,7 @@ async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_si
     config_path = os.environ['KUBECONFIG']
     import portforward
 
-    with portforward.forward(
-        namespace, gateway_pod_name, port, port, config_path
-    ):
+    with portforward.forward(namespace, gateway_pod_name, port, port, config_path):
         client_kwargs = dict(
             host='localhost',
             port=port,
@@ -965,7 +964,9 @@ async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
     [['jinaai/jina']],
     indirect=True,
 )
-async def test_flow_with_metadata_k8s_deployment(logger, grpc_metadata, docker_images, tmpdir):
+async def test_flow_with_metadata_k8s_deployment(
+    logger, grpc_metadata, docker_images, tmpdir
+):
     from kubernetes import client
 
     namespace = 'test-flow-with-metadata-k8s-deployment'.lower()
@@ -1448,7 +1449,10 @@ async def test_flow_with_stateful_executor(
     app_client = client.AppsV1Api(api_client=api_client)
     try:
         dump_path = os.path.join(str(tmpdir), 'test-flow-with-volumes')
-        flow = Flow(name='test-flow-with-volumes', protocol='http',).add(
+        flow = Flow(
+            name='test-flow-with-volumes',
+            protocol='http',
+        ).add(
             name='statefulexecutor',
             uses=f'docker://{docker_images[0]}',
             workspace=f'{str(tmpdir)}/workspace_path',
@@ -1551,7 +1555,9 @@ async def test_really_slow_executor_liveness_probe_works(docker_images, tmpdir, 
 
     try:
         dump_path = os.path.join(str(tmpdir), 'test-flow-slow-process-executor')
-        flow = Flow(name='test-flow-slow-process-executor',).add(
+        flow = Flow(
+            name='test-flow-slow-process-executor',
+        ).add(
             name='slow_process_executor',
             uses=f'docker://{docker_images[0]}',
             uses_with={'time_sleep': 20},

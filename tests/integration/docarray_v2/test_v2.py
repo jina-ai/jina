@@ -977,11 +977,13 @@ def test_flow_incompatible_linear(protocol):
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_flow_compatible_different_exact_schema(protocol):
     from pydantic import Field
+
     class MyFirstDoc(BaseDoc):
         a: str = Field(default='My first default')
 
     class MySecondDoc(BaseDoc):
         a: str = Field(default='My second default')
+
     class FirstTestComp(Executor):
         @requests
         def foo(self, docs: DocList[MyFirstDoc], **kwargs) -> DocList[MyFirstDoc]:
@@ -1616,6 +1618,7 @@ def test_issue_fastapi_multiple_models_same_name():
 @pytest.mark.repeat(10)
 def test_exception_handling_in_dynamic_batch():
     from jina.proto import jina_pb2
+
     class DummyEmbeddingDoc(BaseDoc):
         lf: List[float] = []
 
@@ -1636,11 +1639,18 @@ def test_exception_handling_in_dynamic_batch():
     with depl:
         da = DocList[TextDoc]([TextDoc(text=f'good-{i}') for i in range(50)])
         da[4].text = 'fail'
-        responses = depl.post(on='/foo', inputs=da, request_size=1, return_responses=True, continue_on_error=True, results_in_order=True)
+        responses = depl.post(
+            on='/foo',
+            inputs=da,
+            request_size=1,
+            return_responses=True,
+            continue_on_error=True,
+            results_in_order=True,
+        )
         assert len(responses) == 50  # 1 request per input
         num_failed_requests = 0
         for r in responses:
             if r.header.status.code == jina_pb2.StatusProto.StatusCode.ERROR:
                 num_failed_requests += 1
 
-        assert 1 <= num_failed_requests <= 3 # 3 requests in the dynamic batch failing
+        assert 1 <= num_failed_requests <= 3  # 3 requests in the dynamic batch failing

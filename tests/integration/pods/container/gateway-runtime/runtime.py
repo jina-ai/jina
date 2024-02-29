@@ -10,7 +10,9 @@ def run(*args, **kwargs):
     runtime_args = set_gateway_parser().parse_args(args)
     _update_gateway_args(runtime_args)
 
-    with AsyncNewLoopRuntime(runtime_args, req_handler_cls=GatewayRequestHandler) as runtime:
+    with AsyncNewLoopRuntime(
+        runtime_args, req_handler_cls=GatewayRequestHandler
+    ) as runtime:
         runtime.run_forever()
 
 

@@ -61,7 +61,10 @@ def mixin_base_io_parser(parser):
 
     """
     parser.add_argument(
-        'config_path', type=str, metavar='INPUT', help='The input file path of a Flow or Deployment YAML '
+        'config_path',
+        type=str,
+        metavar='INPUT',
+        help='The input file path of a Flow or Deployment YAML ',
     )
     parser.add_argument(
         'outpath',

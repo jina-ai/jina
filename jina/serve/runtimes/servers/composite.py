@@ -10,12 +10,13 @@ if TYPE_CHECKING:
 
 class CompositeBaseServer(BaseServer):
     """Composite Base Server implementation from which u can inherit a specific custom composite one"""
+
     servers: List['BaseServer']
     logger: 'JinaLogger'
 
     def __init__(
-            self,
-            **kwargs,
+        self,
+        **kwargs,
     ):
         """Initialize the gateway
         :param kwargs: keyword args
@@ -41,7 +42,9 @@ class CompositeBaseServer(BaseServer):
             )
             runtime_args.port = port
             runtime_args.protocol = protocol
-            server_kwargs = {k: v for k, v in self._kwargs.items() if k != 'runtime_args'}
+            server_kwargs = {
+                k: v for k, v in self._kwargs.items() if k != 'runtime_args'
+            }
             server_kwargs['runtime_args'] = dict(vars(runtime_args))
             server_kwargs['req_handler'] = self._request_handler
             ret.append(server_kwargs)
@@ -107,8 +110,8 @@ class CompositeServer(CompositeBaseServer):
     """Composite Server implementation"""
 
     def __init__(
-            self,
-            **kwargs,
+        self,
+        **kwargs,
     ):
         """Initialize the gateway
         :param kwargs: keyword args
@@ -118,8 +121,10 @@ class CompositeServer(CompositeBaseServer):
 
         self.servers: List[BaseServer] = []
         for server_kwargs in self._server_kwargs:
-            server_cls = _get_gateway_class(server_kwargs['runtime_args']['protocol'],
-                                            works_as_load_balancer=self.works_as_load_balancer)
+            server_cls = _get_gateway_class(
+                server_kwargs['runtime_args']['protocol'],
+                works_as_load_balancer=self.works_as_load_balancer,
+            )
             server = server_cls(**server_kwargs)
             self.servers.append(server)
         self.gateways = self.servers  # for backwards compatibility

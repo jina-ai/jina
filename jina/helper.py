@@ -1666,4 +1666,5 @@ def send_telemetry_event(event: str, obj_cls_name: Any, **kwargs) -> None:
 
 def is_generator(func):
     import inspect
+
     return inspect.isgeneratorfunction(func) or inspect.isasyncgenfunction(func)

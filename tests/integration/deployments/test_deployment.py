@@ -373,8 +373,7 @@ async def async_inputs():
 
 class DummyExecutor(Executor):
     @requests(on='/foo')
-    def foo(self, docs, **kwargs):
-        ...
+    def foo(self, docs, **kwargs): ...
 
 
 @pytest.mark.parametrize(
@@ -490,9 +489,9 @@ def test_deployment_shards_replicas(shards, replicas):
         @requests
         def foo(self, docs, **kwargs):
             import os
+
             for doc in docs:
                 doc.tags['pid'] = os.getpid()
-
 
     dep = Deployment(uses=PIDExecutor, shards=shards, replicas=replicas)
 

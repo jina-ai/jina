@@ -8,4 +8,5 @@ class WebSocketGateway(WebSocketServer, BaseGateway):
     """
     :class:`WebSocketGateway` is a WebSocketServer that can be loaded from YAML as any other Gateway
     """
+
     pass

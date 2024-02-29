@@ -24,12 +24,11 @@ def set_pod_parser(parser=None, default_name=None):
 
     from jina.parsers.orchestrate.base import mixin_scalable_deployment_parser
     from jina.parsers.orchestrate.pod import mixin_pod_parser
-    from jina.parsers.orchestrate.runtimes.container import \
-        mixin_container_runtime_parser
-    from jina.parsers.orchestrate.runtimes.remote import \
-        mixin_remote_runtime_parser
-    from jina.parsers.orchestrate.runtimes.worker import \
-        mixin_worker_runtime_parser
+    from jina.parsers.orchestrate.runtimes.container import (
+        mixin_container_runtime_parser,
+    )
+    from jina.parsers.orchestrate.runtimes.remote import mixin_remote_runtime_parser
+    from jina.parsers.orchestrate.runtimes.worker import mixin_worker_runtime_parser
 
     mixin_scalable_deployment_parser(parser, default_name=default_name)
     mixin_worker_runtime_parser(parser)
@@ -55,8 +54,7 @@ def set_deployment_parser(parser=None):
 
     set_pod_parser(parser, default_name='executor')
 
-    from jina.parsers.orchestrate.deployment import \
-        mixin_base_deployment_parser
+    from jina.parsers.orchestrate.deployment import mixin_base_deployment_parser
 
     mixin_base_deployment_parser(parser)
 
@@ -139,10 +137,14 @@ def set_client_cli_parser(parser=None):
 
         parser = set_base_parser()
 
-    from jina.parsers.client import (mixin_client_features_parser,
-                                     mixin_client_protocol_parser)
+    from jina.parsers.client import (
+        mixin_client_features_parser,
+        mixin_client_protocol_parser,
+    )
     from jina.parsers.orchestrate.runtimes.remote import (
-        mixin_client_gateway_parser, mixin_prefetch_parser)
+        mixin_client_gateway_parser,
+        mixin_prefetch_parser,
+    )
 
     mixin_client_gateway_parser(parser)
     mixin_client_features_parser(parser)

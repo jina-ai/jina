@@ -32,9 +32,7 @@ def test_provider_sagemaker_pod_inference():
     args, _ = set_pod_parser().parse_known_args(
         [
             '--uses',
-            os.path.join(
-                os.path.dirname(__file__), "SampleExecutor", "config.yml"
-            ),
+            os.path.join(os.path.dirname(__file__), "SampleExecutor", "config.yml"),
             '--provider',
             'sagemaker',
             'serve',  # This is added by sagemaker
@@ -73,9 +71,7 @@ def test_provider_sagemaker_pod_batch_transform_valid(filename):
     args, _ = set_pod_parser().parse_known_args(
         [
             '--uses',
-            os.path.join(
-                os.path.dirname(__file__), "SampleExecutor", "config.yml"
-            ),
+            os.path.join(os.path.dirname(__file__), "SampleExecutor", "config.yml"),
             '--provider',
             'sagemaker',
             'serve',  # This is added by sagemaker
@@ -88,10 +84,10 @@ def test_provider_sagemaker_pod_batch_transform_valid(filename):
             csv_data = f.read()
 
         for line in csv.reader(
-                io.StringIO(csv_data),
-                delimiter=",",
-                quoting=csv.QUOTE_NONE,
-                escapechar="\\",
+            io.StringIO(csv_data),
+            delimiter=",",
+            quoting=csv.QUOTE_NONE,
+            escapechar="\\",
         ):
             texts.append(line[1])
 
@@ -115,9 +111,7 @@ def test_provider_sagemaker_pod_batch_transform_invalid():
     args, _ = set_pod_parser().parse_known_args(
         [
             '--uses',
-            os.path.join(
-                os.path.dirname(__file__), "SampleExecutor", "config.yml"
-            ),
+            os.path.join(os.path.dirname(__file__), "SampleExecutor", "config.yml"),
             '--provider',
             'sagemaker',
             'serve',  # This is added by sagemaker
@@ -126,7 +120,7 @@ def test_provider_sagemaker_pod_batch_transform_invalid():
     with Pod(args):
         # Test `POST /invocations` endpoint for batch-transform with invalid input
         with open(
-                os.path.join(os.path.dirname(__file__), 'invalid_input.csv'), 'r'
+            os.path.join(os.path.dirname(__file__), 'invalid_input.csv'), 'r'
         ) as f:
             csv_data = f.read()
 
@@ -140,17 +134,19 @@ def test_provider_sagemaker_pod_batch_transform_invalid():
         )
         assert resp.status_code == 400
         assert (
-                resp.json()['detail']
-                == "Invalid CSV format. Line ['abcd'] doesn't match the expected field "
-                   "order ['id', 'text']."
+            resp.json()['detail']
+            == "Invalid CSV format. Line ['abcd'] doesn't match the expected field "
+            "order ['id', 'text']."
         )
 
 
 def test_provider_sagemaker_deployment_inference():
     dep_port = random_port()
-    with Deployment(uses=os.path.join(
-            os.path.dirname(__file__), "SampleExecutor", "config.yml"
-    ), provider='sagemaker', port=dep_port):
+    with Deployment(
+        uses=os.path.join(os.path.dirname(__file__), "SampleExecutor", "config.yml"),
+        provider='sagemaker',
+        port=dep_port,
+    ):
         # Test the `GET /ping` endpoint (added by jina for sagemaker)
         rsp = requests.get(f'http://localhost:{dep_port}/ping')
         assert rsp.status_code == 200
@@ -175,7 +171,7 @@ def test_provider_sagemaker_deployment_inference():
 def test_provider_sagemaker_deployment_inference_docker(replica_docker_image_built):
     dep_port = random_port()
     with Deployment(
-            uses='docker://sampler-executor', provider='sagemaker', port=dep_port
+        uses='docker://sampler-executor', provider='sagemaker', port=dep_port
     ):
         # Test the `GET /ping` endpoint (added by jina for sagemaker)
         rsp = requests.get(f'http://localhost:{dep_port}/ping')
@@ -201,13 +197,13 @@ def test_provider_sagemaker_deployment_inference_docker(replica_docker_image_bui
 @pytest.mark.skip('Sagemaker with Deployment for batch-transform is not supported yet')
 def test_provider_sagemaker_deployment_batch():
     dep_port = random_port()
-    with Deployment(uses=os.path.join(
-            os.path.dirname(__file__), "SampleExecutor", "config.yml"
-    ), provider='sagemaker', port=dep_port):
+    with Deployment(
+        uses=os.path.join(os.path.dirname(__file__), "SampleExecutor", "config.yml"),
+        provider='sagemaker',
+        port=dep_port,
+    ):
         # Test the `POST /invocations` endpoint for batch-transform
-        with open(
-                os.path.join(os.path.dirname(__file__), 'valid_input.csv'), 'r'
-        ) as f:
+        with open(os.path.join(os.path.dirname(__file__), 'valid_input.csv'), 'r') as f:
             csv_data = f.read()
 
         rsp = requests.post(
@@ -229,7 +225,11 @@ def test_provider_sagemaker_deployment_wrong_port():
     # Sagemaker executor would start on 8080.
     # If we use the same port for deployment, it should raise an error.
     with pytest.raises(ValueError):
-        with Deployment(uses=os.path.join(
+        with Deployment(
+            uses=os.path.join(
                 os.path.dirname(__file__), "SampleExecutor", "config.yml"
-        ), provider='sagemaker', port=8080):
+            ),
+            provider='sagemaker',
+            port=8080,
+        ):
             pass

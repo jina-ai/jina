@@ -23,10 +23,13 @@ class MyExecutor(Executor):
 @pytest.mark.parametrize('prefetch', [1, 10])
 @pytest.mark.parametrize('concurrent', [15])
 @pytest.mark.parametrize('use_stream', [False, True])
-def test_concurrent_clients(concurrent, protocol, shards, polling, prefetch, reraise, use_stream):
+def test_concurrent_clients(
+    concurrent, protocol, shards, polling, prefetch, reraise, use_stream
+):
 
     if not use_stream and protocol != 'grpc':
         return
+
     def pong(peer_hash, queue, resp: Response):
         for d in resp.docs:
             queue.put((peer_hash, d.text))
@@ -39,7 +42,7 @@ def test_concurrent_clients(concurrent, protocol, shards, polling, prefetch, rer
                 Document(text=peer_hash),
                 on_done=lambda r: pong(peer_hash, queue, r),
                 return_responses=True,
-                stream=use_stream
+                stream=use_stream,
             )
 
     f = Flow(protocol=protocol, prefetch=prefetch).add(

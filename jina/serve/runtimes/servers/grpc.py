@@ -111,7 +111,9 @@ class GRPCServer(BaseServer):
             jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaGatewayDryRunRPC'].full_name,
-            jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDocumentRequestRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name[
+                'JinaSingleDocumentRequestRPC'
+            ].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDiscoverEndpointsRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaInfoRPC'].full_name,
             reflection.SERVICE_NAME,

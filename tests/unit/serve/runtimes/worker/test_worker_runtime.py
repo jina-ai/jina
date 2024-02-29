@@ -313,12 +313,10 @@ async def test_decorator_monitoring(port_generator):
             self.process_2(docs)
 
         @monitor(name='metrics_name', documentation='metrics description')
-        def _proces(self, docs):
-            ...
+        def _proces(self, docs): ...
 
         @monitor()
-        def process_2(self, docs):
-            ...
+        def process_2(self, docs): ...
 
     port = port_generator()
     args = _generate_pod_args(
@@ -377,11 +375,9 @@ async def test_decorator_monitoring(port_generator):
             ):
                 self.process_2(docs)
 
-        def _proces(self, docs):
-            ...
+        def _proces(self, docs): ...
 
-        def process_2(self, docs):
-            ...
+        def process_2(self, docs): ...
 
     port = port_generator()
     args = _generate_pod_args(

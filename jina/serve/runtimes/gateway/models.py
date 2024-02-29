@@ -177,9 +177,11 @@ def protobuf_to_pydantic_model(
 
         all_fields[field_name] = (
             field_type,
-            Field(default_factory=default_factory)
-            if default_factory
-            else Field(default=default_value),
+            (
+                Field(default_factory=default_factory)
+                if default_factory
+                else Field(default=default_value)
+            ),
         )
 
     # Post-processing (Handle oneof fields)
@@ -227,6 +229,7 @@ def _to_camel_case(snake_str: str) -> str:
     # with the 'title' method and join them together.
     return components[0] + ''.join(x.title() for x in components[1:])
 
+
 if not docarray_v2:
     from docarray.document.pydantic_model import PydanticDocument, PydanticDocumentArray
 
@@ -265,7 +268,6 @@ if not docarray_v2:
             alias_generator = _to_camel_case
             allow_population_by_field_name = True
 
-
     class JinaResponseModel(BaseModel):
         """
         Jina HTTP Response model. Only `request_id` and `data` are preserved.
@@ -279,7 +281,6 @@ if not docarray_v2:
         class Config:
             alias_generator = _to_camel_case
             allow_population_by_field_name = True
-
 
     class JinaEndpointRequestModel(JinaRequestModel):
         """

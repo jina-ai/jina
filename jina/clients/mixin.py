@@ -401,6 +401,7 @@ class PostMixin:
             inferred_return_type = return_type
             if docarray_v2:
                 from docarray import DocList
+
                 if not issubclass(return_type, DocList):
                     is_singleton = True
                     inferred_return_type = DocList[return_type]
@@ -530,6 +531,7 @@ class AsyncPostMixin:
             is_singleton = False
             if docarray_v2:
                 from docarray import DocList
+
                 if issubclass(return_type, DocList):
                     result.document_array_cls = return_type
                 else:

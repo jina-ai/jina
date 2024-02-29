@@ -477,9 +477,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 'is_generator': _is_generator,
                 'is_singleton_doc': _is_singleton_doc,
                 'parameters': {
-                    'name': _parameters_model.__name__
-                    if _parameters_model is not None
-                    else None,
+                    'name': (
+                        _parameters_model.__name__
+                        if _parameters_model is not None
+                        else None
+                    ),
                     'model': _parameters_model,
                 },
             }

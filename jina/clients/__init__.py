@@ -1,4 +1,5 @@
 """Module wrapping the Client of Jina."""
+
 import argparse
 from typing import TYPE_CHECKING, List, Optional, Union, overload
 

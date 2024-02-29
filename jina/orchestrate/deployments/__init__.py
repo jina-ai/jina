@@ -605,9 +605,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             # there is no head, add the worker connection information instead
             ports = self.ports
             hosts = [
-                __docker_host__
-                if host_is_local(host) and in_docker() and self._is_docker
-                else host
+                (
+                    __docker_host__
+                    if host_is_local(host) and in_docker() and self._is_docker
+                    else host
+                )
                 for host in self.hosts
             ]
             return [
@@ -1133,9 +1135,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 deployment_args=self.args,
                 args=self.pod_args['pods'][shard_id],
                 head_pod=self.head_pod,
-                name=f'{self.name}-replica-set-{shard_id}'
-                if num_shards > 1
-                else f'{self.name}-replica-set',
+                name=(
+                    f'{self.name}-replica-set-{shard_id}'
+                    if num_shards > 1
+                    else f'{self.name}-replica-set'
+                ),
             )
             self.enter_context(self.shards[shard_id])
 

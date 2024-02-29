@@ -122,16 +122,18 @@ def test_reload_with_inheritance(tmpdir):
 
 
 def test_reload_from_config(tmpdir):
-    f = Flow().add(uses=os.path.join(cur_dir, os.path.join('exec4', 'config.yml')), reload=True)
+    f = Flow().add(
+        uses=os.path.join(cur_dir, os.path.join('exec4', 'config.yml')), reload=True
+    )
     with f:
         res = f.post(on='/', inputs=DocumentArray.empty(10))
         assert len(res) == 10
         for doc in res:
             assert doc.text == 'MyExecutorBeforeReload'
         with _update_file(
-                os.path.join(cur_dir, 'my_executor_4_new.py'),
-                os.path.join(cur_dir, 'exec4/my_executor4.py'),
-                str(tmpdir),
+            os.path.join(cur_dir, 'my_executor_4_new.py'),
+            os.path.join(cur_dir, 'exec4/my_executor4.py'),
+            str(tmpdir),
         ):
             res = f.post(on='/', inputs=DocumentArray.empty(10))
             assert len(res) == 10

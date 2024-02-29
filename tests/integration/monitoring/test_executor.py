@@ -38,12 +38,10 @@ def test_decorator_interface(port_generator):
             self.process_2(docs)
 
         @monitor(name='metrics_name', documentation='metrics description')
-        def _process(self, docs):
-            ...
+        def _process(self, docs): ...
 
         @monitor()
-        def process_2(self, docs):
-            ...
+        def process_2(self, docs): ...
 
     port = port_generator()
     with Flow(monitoring=True, port_monitoring=port_generator()).add(
@@ -76,11 +74,9 @@ def test_context_manager_interface(port_generator):
             ):
                 self.process_2(docs)
 
-        def _process(self, docs):
-            ...
+        def _process(self, docs): ...
 
-        def process_2(self, docs):
-            ...
+        def process_2(self, docs): ...
 
     port = port_generator()
     with Flow(monitoring=True, port_monitoring=port_generator()).add(

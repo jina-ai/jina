@@ -275,13 +275,13 @@ class DockerComposeConfig:
                     shard_id=i,
                     common_args=self.args,
                     service_args=args,
-                    pod_type=PodRoleType.WORKER
-                    if name != 'gateway'
-                    else PodRoleType.GATEWAY,
+                    pod_type=(
+                        PodRoleType.WORKER if name != 'gateway' else PodRoleType.GATEWAY
+                    ),
                     jina_deployment_name=self.name,
-                    deployments_addresses=self.deployments_addresses
-                    if name == 'gateway'
-                    else None,
+                    deployments_addresses=(
+                        self.deployments_addresses if name == 'gateway' else None
+                    ),
                 )
             )
 
@@ -342,9 +342,7 @@ class DockerComposeConfig:
             uses_before_cargs.pod_role = PodRoleType.WORKER
             uses_before_cargs.polling = None
             parsed_args['uses_before_service'] = uses_before_cargs
-            parsed_args[
-                'head_service'
-            ].uses_before_address = (
+            parsed_args['head_service'].uses_before_address = (
                 f'{to_compatible_name(uses_before_cargs.name)}:{uses_before_cargs.port}'
             )
         if uses_after and shards > 1:
@@ -366,9 +364,7 @@ class DockerComposeConfig:
             uses_after_cargs.pod_role = PodRoleType.WORKER
             uses_after_cargs.polling = None
             parsed_args['uses_after_service'] = uses_after_cargs
-            parsed_args[
-                'head_service'
-            ].uses_after_address = (
+            parsed_args['head_service'].uses_after_address = (
                 f'{to_compatible_name(uses_after_cargs.name)}:{uses_after_cargs.port}'
             )
 

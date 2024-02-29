@@ -34,7 +34,8 @@ def _create_gateway_runtime(graph_description, pod_addresses, port, protocol='gr
                 '--protocol',
                 protocol,
             ]
-        ), req_handler_cls=GatewayRequestHandler
+        ),
+        req_handler_cls=GatewayRequestHandler,
     ) as runtime:
         runtime.run_forever()
 

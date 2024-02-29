@@ -661,9 +661,11 @@ class Flow(
                 deployment_role=DeploymentRoleType.GATEWAY,
                 expose_endpoints=json.dumps(self._endpoints_mapping),
                 env=self.env,
-                log_config=kwargs.get('log_config')
-                if 'log_config' in kwargs
-                else self.args.log_config,
+                log_config=(
+                    kwargs.get('log_config')
+                    if 'log_config' in kwargs
+                    else self.args.log_config
+                ),
             )
         )
 
@@ -1246,9 +1248,11 @@ class Flow(
                 dict(
                     name=deployment_name,
                     deployment_role=deployment_role,
-                    log_config=kwargs.get('log_config')
-                    if 'log_config' in kwargs
-                    else self.args.log_config,
+                    log_config=(
+                        kwargs.get('log_config')
+                        if 'log_config' in kwargs
+                        else self.args.log_config
+                    ),
                 )
             )
             parser = set_deployment_parser()
@@ -1741,9 +1745,11 @@ class Flow(
             # but not those inspect related node
             if op_flow.args.inspect.is_keep:
                 deployment.needs = set(
-                    ep
-                    if deployment.role.is_inspect
-                    else op_flow._inspect_deployments.get(ep, ep)
+                    (
+                        ep
+                        if deployment.role.is_inspect
+                        else op_flow._inspect_deployments.get(ep, ep)
+                    )
                     for ep in deployment.needs
                 )
             else:

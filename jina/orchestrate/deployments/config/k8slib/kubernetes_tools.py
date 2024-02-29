@@ -87,7 +87,10 @@ def _get_deployment_with_device_plugins(deployment: Dict, params: Dict) -> Dict:
 
 def _get_deployment_with_env_secret(deployment: Dict, params: Dict) -> Dict:
     for k, v in params['env_from_secret'].items():
-        env_var = {'name': k, 'valueFrom': {'secretKeyRef': {'name': v['name'], 'key': v['key']}}}
+        env_var = {
+            'name': k,
+            'valueFrom': {'secretKeyRef': {'name': v['name'], 'key': v['key']}},
+        }
 
         deployment['spec']['template']['spec']['containers'][0]['env'].append(env_var)
 
@@ -97,7 +100,5 @@ def _get_deployment_with_env_secret(deployment: Dict, params: Dict) -> Dict:
 def _get_deployment_with_image_pull_secrets(deployment: Dict, params: Dict) -> Dict:
     image_pull_secrets = params['image_pull_secrets']
     image_pull_secrets_dict = [{'name': secret} for secret in image_pull_secrets]
-    deployment['spec']['template']['spec'][
-        'imagePullSecrets'
-    ] = image_pull_secrets_dict
+    deployment['spec']['template']['spec']['imagePullSecrets'] = image_pull_secrets_dict
     return deployment

@@ -161,7 +161,9 @@ def test_load_flow_from_cli():
 
 
 def test_load_flow_from_yaml():
-    with open(cur_dir.parent.parent.parent / 'yaml' / 'test-flow.yml', encoding='utf-8') as fp:
+    with open(
+        cur_dir.parent.parent.parent / 'yaml' / 'test-flow.yml', encoding='utf-8'
+    ) as fp:
         _ = Flow.load_config(fp)
 
 

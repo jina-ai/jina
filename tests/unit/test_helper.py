@@ -386,8 +386,10 @@ def yield_generator_func():
     yield 1
     yield 2
 
+
 async def async_yield_generator_func():
     import asyncio
+
     for _ in range(10):
         # no yield
         pass
@@ -404,10 +406,12 @@ def normal_func():
 
 async def async_normal_func():
     import asyncio
+
     await asyncio.sleep(0.5)
     for _ in range(10):
         # no yield
         pass
+
 
 def yield_from_generator_func():
     for _ in range(10):

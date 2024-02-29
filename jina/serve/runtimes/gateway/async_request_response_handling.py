@@ -201,9 +201,11 @@ class AsyncRequestResponseHandler(MonitoringRequestMixin):
                 asyncio.ensure_future(
                     _process_results_at_end_gateway(responding_tasks, request_graph)
                 ),
-                asyncio.ensure_future(asyncio.gather(*floating_tasks))
-                if len(floating_tasks) > 0
-                else None,
+                (
+                    asyncio.ensure_future(asyncio.gather(*floating_tasks))
+                    if len(floating_tasks) > 0
+                    else None
+                ),
             )
 
         return _handle_request

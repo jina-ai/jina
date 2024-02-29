@@ -122,11 +122,13 @@ class _ConnectionStubs:
             nbytes, self.stub_specific_labels
         )
 
-    async def send_single_doc_request(self,
-                                      request: SingleDocumentRequest,
-                                      metadata,
-                                      compression,
-                                      timeout: Optional[float] = None):
+    async def send_single_doc_request(
+        self,
+        request: SingleDocumentRequest,
+        metadata,
+        compression,
+        timeout: Optional[float] = None,
+    ):
         """
         Send requests and uses the appropriate grpc stub for this
         Stub is chosen based on availability and type of requests
@@ -147,10 +149,10 @@ class _ConnectionStubs:
 
             with timer:
                 async for response in self.stream_doc_stub.stream_doc(
-                        request,
-                        compression=compression,
-                        timeout=timeout,
-                        metadata=metadata,
+                    request,
+                    compression=compression,
+                    timeout=timeout,
+                    metadata=metadata,
                 ):
                     self._record_received_bytes_metric(response.nbytes)
                     yield response, None

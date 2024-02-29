@@ -7,10 +7,7 @@ class LoadBalancingServer(BaseServer):
     implementing the `app` property. This property should return a fastapi app. The base Gateway will handle starting
     a server and serving the application using that server."""
 
-    def __init__(
-            self,
-            **kwargs
-    ):
+    def __init__(self, **kwargs):
         """Initialize the LoadBalancingServer
         :param kwargs: keyword args
         """

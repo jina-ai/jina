@@ -50,7 +50,9 @@ async def test_asyncio_bad_input_generator2():
             yield 42
 
     with pytest.raises(TypeError):
-        async for req in request_generator(exec_endpoint='/', data=input_function(), request_size=REQUEST_SIZE):
+        async for req in request_generator(
+            exec_endpoint='/', data=input_function(), request_size=REQUEST_SIZE
+        ):
             print(req.docs.summary())
 
     async def input_function():
@@ -58,5 +60,7 @@ async def test_asyncio_bad_input_generator2():
         yield 42
 
     with pytest.raises(ValueError):
-        async for req in request_generator(exec_endpoint='/', data=input_function(), request_size=REQUEST_SIZE):
+        async for req in request_generator(
+            exec_endpoint='/', data=input_function(), request_size=REQUEST_SIZE
+        ):
             print(req.docs.summary())
