@@ -30,9 +30,7 @@ def cuda_visible_devices(request):
 
 @pytest.mark.parametrize(
     'cuda_total_devices, cuda_visible_devices, env',
-    [
-        [3, 'RR', None], [3, None, {'CUDA_VISIBLE_DEVICES': 'RR'}]
-    ],
+    [[3, 'RR', None], [3, None, {'CUDA_VISIBLE_DEVICES': 'RR'}]],
     indirect=['cuda_total_devices', 'cuda_visible_devices'],
 )
 def test_cuda_assignment(cuda_total_devices, cuda_visible_devices, env):
@@ -43,7 +41,13 @@ def test_cuda_assignment(cuda_total_devices, cuda_visible_devices, env):
 
         @requests
         def foo(self, **kwargs):
-            return DocumentArray([Document(tags={'cuda_visible_devices': str(self.cuda_visible_devices)})])
+            return DocumentArray(
+                [
+                    Document(
+                        tags={'cuda_visible_devices': str(self.cuda_visible_devices)}
+                    )
+                ]
+            )
 
     f = Flow().add(uses=MyCUDAUserExecutor, env=env or {}, replicas=3)
     with f:
@@ -51,6 +55,3 @@ def test_cuda_assignment(cuda_total_devices, cuda_visible_devices, env):
         cuda_visible_devices = set([doc.tags['cuda_visible_devices'] for doc in ret])
 
     assert cuda_visible_devices == {'0', '1', '2'}
-
-
-

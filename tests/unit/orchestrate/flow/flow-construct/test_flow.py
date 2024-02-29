@@ -73,7 +73,9 @@ def test_simple_flow(protocol):
 
 @pytest.mark.slow
 def test_flow_identical(tmpdir):
-    with open(os.path.join(cur_dir, '../../../yaml/test-flow.yml'), encoding='utf-8') as fp:
+    with open(
+        os.path.join(cur_dir, '../../../yaml/test-flow.yml'), encoding='utf-8'
+    ) as fp:
         a = Flow.load_config(fp)
 
     b = (
@@ -657,7 +659,9 @@ def _validate_flow(f):
 def test_set_port_deployment(port_generator):
     port = port_generator()
     with Flow().add(uses=Executor, port=port) as f:
-        assert int(f._deployment_nodes['executor0'].pod_args['pods'][0][0].port[0]) == port
+        assert (
+            int(f._deployment_nodes['executor0'].pod_args['pods'][0][0].port[0]) == port
+        )
         f.index(inputs=[])
 
 

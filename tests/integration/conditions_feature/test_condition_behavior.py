@@ -12,7 +12,9 @@ class ConditionDumpExecutor(Executor):
     @requests
     def foo(self, docs, **kwargs):
         with open(
-            os.path.join(str(self.workspace), f'{self.metas.name}.txt'), 'w', encoding='utf-8'
+            os.path.join(str(self.workspace), f'{self.metas.name}.txt'),
+            'w',
+            encoding='utf-8',
         ) as fp:
             for doc in docs:
                 fp.write(doc.text)
@@ -112,10 +114,14 @@ def test_conditions_filtering(tmpdir, flow):
 
         assert types_set == {1, 2}
 
-    with open(os.path.join(str(tmpdir), 'exec1', '0', f'exec1.txt'), 'r', encoding='utf-8') as fp:
+    with open(
+        os.path.join(str(tmpdir), 'exec1', '0', f'exec1.txt'), 'r', encoding='utf-8'
+    ) as fp:
         assert fp.read() == 'type1'
 
-    with open(os.path.join(str(tmpdir), 'exec2', '0', f'exec2.txt'), 'r', encoding='utf-8') as fp:
+    with open(
+        os.path.join(str(tmpdir), 'exec2', '0', f'exec2.txt'), 'r', encoding='utf-8'
+    ) as fp:
         assert fp.read() == 'type2'
 
 
@@ -153,13 +159,15 @@ def test_conditions_filtering_on_joiner(tmpdir):
 
     with open(
         os.path.join(str(tmpdir), 'joiner_test_exec1', '0', f'joiner_test_exec1.txt'),
-        'r', encoding='utf-8',
+        'r',
+        encoding='utf-8',
     ) as fp:
         assert fp.read() == 'type1type2'
 
     with open(
         os.path.join(str(tmpdir), 'joiner_test_exec2', '0', f'joiner_test_exec2.txt'),
-        'r', encoding='utf-8',
+        'r',
+        encoding='utf-8',
     ) as fp:
         assert fp.read() == 'type1type2'
 

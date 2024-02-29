@@ -31,22 +31,23 @@ def _create_gateway_runtime(port, uses, uses_with, worker_port):
     pod_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
     deployments_metadata = '{"pod0": {"key1": "value1", "key2": "value2"}}'
     with AsyncNewLoopRuntime(
-            set_gateway_parser().parse_args(
-                [
-                    '--port',
-                    str(port),
-                    '--uses',
-                    uses,
-                    '--uses-with',
-                    json.dumps(uses_with),
-                    '--graph-description',
-                    graph_description,
-                    '--deployments-addresses',
-                    pod_addresses,
-                    '--deployments-metadata',
-                    deployments_metadata,
-                ]
-            ), req_handler_cls=GatewayRequestHandler
+        set_gateway_parser().parse_args(
+            [
+                '--port',
+                str(port),
+                '--uses',
+                uses,
+                '--uses-with',
+                json.dumps(uses_with),
+                '--graph-description',
+                graph_description,
+                '--deployments-addresses',
+                pod_addresses,
+                '--deployments-metadata',
+                deployments_metadata,
+            ]
+        ),
+        req_handler_cls=GatewayRequestHandler,
     ) as runtime:
         runtime.run_forever()
 
@@ -89,59 +90,59 @@ def _start_worker_runtime(uses):
     [
         ('DummyGateway', {}, {'arg1': None, 'arg2': None, 'arg3': 'default-arg3'}),
         (
-                'DummyGatewayGetStreamer',
-                {},
-                {'arg1': None, 'arg2': None, 'arg3': 'default-arg3'},
+            'DummyGatewayGetStreamer',
+            {},
+            {'arg1': None, 'arg2': None, 'arg3': 'default-arg3'},
         ),
         (
-                _dummy_gateway_yaml_path,
-                {},
-                {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'},
+            _dummy_gateway_yaml_path,
+            {},
+            {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'},
         ),
         (
-                _dummy_fastapi_gateway_yaml_path,
-                {},
-                {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'},
+            _dummy_fastapi_gateway_yaml_path,
+            {},
+            {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'},
         ),
         (
-                'DummyGateway',
-                {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
-                {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+            'DummyGateway',
+            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
         ),
         (
-                'DummyGatewayGetStreamer',
-                {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
-                {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+            'DummyGatewayGetStreamer',
+            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
         ),
         (
-                _dummy_gateway_yaml_path,
-                {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
-                {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+            _dummy_gateway_yaml_path,
+            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
         ),
         (
-                _dummy_fastapi_gateway_yaml_path,
-                {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
-                {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+            _dummy_fastapi_gateway_yaml_path,
+            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
         ),
         (
-                'DummyGateway',
-                {'arg1': 'arg1'},
-                {'arg1': 'arg1', 'arg2': None, 'arg3': 'default-arg3'},
+            'DummyGateway',
+            {'arg1': 'arg1'},
+            {'arg1': 'arg1', 'arg2': None, 'arg3': 'default-arg3'},
         ),
         (
-                'DummyGatewayGetStreamer',
-                {'arg1': 'arg1'},
-                {'arg1': 'arg1', 'arg2': None, 'arg3': 'default-arg3'},
+            'DummyGatewayGetStreamer',
+            {'arg1': 'arg1'},
+            {'arg1': 'arg1', 'arg2': None, 'arg3': 'default-arg3'},
         ),
         (
-                _dummy_gateway_yaml_path,
-                {'arg1': 'arg1'},
-                {'arg1': 'arg1', 'arg2': 'world', 'arg3': 'default-arg3'},
+            _dummy_gateway_yaml_path,
+            {'arg1': 'arg1'},
+            {'arg1': 'arg1', 'arg2': 'world', 'arg3': 'default-arg3'},
         ),
         (
-                _dummy_fastapi_gateway_yaml_path,
-                {'arg1': 'arg1'},
-                {'arg1': 'arg1', 'arg2': 'world', 'arg3': 'default-arg3'},
+            _dummy_fastapi_gateway_yaml_path,
+            {'arg1': 'arg1'},
+            {'arg1': 'arg1', 'arg2': 'world', 'arg3': 'default-arg3'},
         ),
     ],
 )
@@ -178,8 +179,13 @@ def test_stream_individual_executor_simple():
 
             @app.get('/endpoint')
             async def get(text: str):
-                docs = await self.executor['executor1'].post(on='/', inputs=DocumentArray(
-                    [Document(text=text), Document(text=text.upper())]), parameters=PARAMETERS)
+                docs = await self.executor['executor1'].post(
+                    on='/',
+                    inputs=DocumentArray(
+                        [Document(text=text), Document(text=text.upper())]
+                    ),
+                    parameters=PARAMETERS,
+                )
                 return {'result': docs.texts}
 
             return app
@@ -196,12 +202,16 @@ def test_stream_individual_executor_simple():
             for doc in docs:
                 doc.text += f' Second(parameters={str(parameters)})'
 
-    with Flow().config_gateway(uses=MyGateway, protocol='http').add(uses=FirstExec, name='executor0').add(
-            uses=SecondExec, name='executor1') as flow:
+    with Flow().config_gateway(uses=MyGateway, protocol='http').add(
+        uses=FirstExec, name='executor0'
+    ).add(uses=SecondExec, name='executor1') as flow:
         import requests
+
         r = requests.get(f'http://localhost:{flow.port}/endpoint?text=meow')
-        assert r.json()['result'] == [f'meow Second(parameters={str(PARAMETERS)})',
-                                      f'MEOW Second(parameters={str(PARAMETERS)})']
+        assert r.json()['result'] == [
+            f'meow Second(parameters={str(PARAMETERS)})',
+            f'MEOW Second(parameters={str(PARAMETERS)})',
+        ]
 
 
 @pytest.mark.parametrize(
@@ -210,7 +220,7 @@ def test_stream_individual_executor_simple():
         (2, 1),
         (1, 2),
         (2, 2),
-    ]
+    ],
 )
 def test_stream_individual_executor_multirequest(n_replicas: int, n_shards: int):
     N_DOCS: int = 100
@@ -233,9 +243,14 @@ def test_stream_individual_executor_multirequest(n_replicas: int, n_shards: int)
 
             @app.get('/endpoint')
             async def get(text: str):
-                docs = await self.executor['executor1'].post(on='/', inputs=DocumentArray(
-                    [Document(text=f'{text} {i}') for i in range(N_DOCS)]), parameters=PARAMETERS,
-                                                             request_size=BATCH_SIZE)
+                docs = await self.executor['executor1'].post(
+                    on='/',
+                    inputs=DocumentArray(
+                        [Document(text=f'{text} {i}') for i in range(N_DOCS)]
+                    ),
+                    parameters=PARAMETERS,
+                    request_size=BATCH_SIZE,
+                )
                 pids = set([doc.tags['pid'] for doc in docs])
                 return {'result': docs.texts, 'pids': pids}
 
@@ -254,13 +269,18 @@ def test_stream_individual_executor_multirequest(n_replicas: int, n_shards: int)
                 doc.text += f' Second(parameters={str(parameters)})'
                 doc.tags['pid'] = os.getpid()
 
-    with Flow().config_gateway(uses=MyGateway, protocol='http').add(uses=FirstExec, name='executor0').add(
-            uses=SecondExec, name='executor1', replicas=n_replicas, shards=n_shards
+    with Flow().config_gateway(uses=MyGateway, protocol='http').add(
+        uses=FirstExec, name='executor0'
+    ).add(
+        uses=SecondExec, name='executor1', replicas=n_replicas, shards=n_shards
     ) as flow:
         import requests
+
         r = requests.get(f'http://localhost:{flow.port}/endpoint?text=meow')
 
         # Make sure the results are correct
-        assert set(r.json()['result']) == set([f'meow {i} Second(parameters={str(PARAMETERS)})' for i in range(N_DOCS)])
+        assert set(r.json()['result']) == set(
+            [f'meow {i} Second(parameters={str(PARAMETERS)})' for i in range(N_DOCS)]
+        )
         # Make sure we are sending to all replicas and shards
         assert len(r.json()['pids']) == n_replicas * n_shards

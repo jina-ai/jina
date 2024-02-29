@@ -207,7 +207,8 @@ def create_runtime(
                 '--protocol',
                 protocol,
             ]
-        ), req_handler_cls=GatewayRequestHandler
+        ),
+        req_handler_cls=GatewayRequestHandler,
     ) as runtime:
         runtime.run_forever()
 

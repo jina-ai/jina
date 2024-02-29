@@ -138,7 +138,9 @@ def send_requests(
     'docker_images', [['slow-process-executor', 'jinaai/jina']], indirect=True
 )
 async def test_no_message_lost_during_scaling(logger, docker_images, tmpdir):
-    flow = Flow(name='test-flow-slow-process-executor',).add(
+    flow = Flow(
+        name='test-flow-slow-process-executor',
+    ).add(
         name='slow_process_executor',
         uses=f'docker://{docker_images[0]}',
         replicas=3,
@@ -241,7 +243,9 @@ async def test_no_message_lost_during_scaling(logger, docker_images, tmpdir):
     'docker_images', [['slow-process-executor', 'jinaai/jina']], indirect=True
 )
 async def test_no_message_lost_during_kill(logger, docker_images, tmpdir):
-    flow = Flow(name='test-flow-slow-process-executor',).add(
+    flow = Flow(
+        name='test-flow-slow-process-executor',
+    ).add(
         name='slow_process_executor',
         uses=f'docker://{docker_images[0]}',
         replicas=3,
@@ -350,7 +354,9 @@ async def test_no_message_lost_during_kill(logger, docker_images, tmpdir):
     'docker_images', [['slow-process-executor', 'jinaai/jina']], indirect=True
 )
 async def test_linear_processing_time_scaling(docker_images, logger, tmpdir):
-    flow = Flow(name='test-flow-slow-process-executor',).add(
+    flow = Flow(
+        name='test-flow-slow-process-executor',
+    ).add(
         name='slow_process_executor',
         uses=f'docker://{docker_images[0]}',
         replicas=3,

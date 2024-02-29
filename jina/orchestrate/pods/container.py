@@ -28,12 +28,12 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 def _docker_run(
-        client: 'DockerClient',
-        args: 'argparse.Namespace',
-        container_name: str,
-        envs: Dict,
-        net_mode: Optional[str],
-        logger: 'JinaLogger',
+    client: 'DockerClient',
+    args: 'argparse.Namespace',
+    container_name: str,
+    envs: Dict,
+    net_mode: Optional[str],
+    logger: 'JinaLogger',
 ):
     # important to notice, that client is not assigned as instance member to avoid potential
     # heavy copy into new process memory space
@@ -114,7 +114,7 @@ def _docker_run(
 
     _volumes = {}
     if not getattr(args, 'disable_auto_volume', None) and not getattr(
-            args, 'volumes', None
+        args, 'volumes', None
     ):
         (
             generated_volumes,
@@ -175,16 +175,16 @@ def _docker_run(
 
 
 def run(
-        args: 'argparse.Namespace',
-        name: str,
-        container_name: str,
-        net_mode: Optional[str],
-        runtime_ctrl_address: str,
-        envs: Dict,
-        is_started: Union['multiprocessing.Event', 'threading.Event'],
-        is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
-        is_ready: Union['multiprocessing.Event', 'threading.Event'],
-        is_signal_handlers_installed: Union['multiprocessing.Event', 'threading.Event'],
+    args: 'argparse.Namespace',
+    name: str,
+    container_name: str,
+    net_mode: Optional[str],
+    runtime_ctrl_address: str,
+    envs: Dict,
+    is_started: Union['multiprocessing.Event', 'threading.Event'],
+    is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
+    is_ready: Union['multiprocessing.Event', 'threading.Event'],
+    is_signal_handlers_installed: Union['multiprocessing.Event', 'threading.Event'],
 ):
     """Method to be run in a process that stream logs from a Container
 
@@ -235,9 +235,9 @@ def run(
             )
     else:
         with ImportExtensions(
-                required=True,
-                logger=logger,
-                help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
+            required=True,
+            logger=logger,
+            help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
                 If you're using conda, please use the command `conda install -c anaconda pywin32`''',
         ):
             import win32api
@@ -260,8 +260,10 @@ def run(
 
         def _is_ready():
             from jina.serve.runtimes.servers import BaseServer
+
             return BaseServer.is_ready(
-                ctrl_address=runtime_ctrl_address, protocol=getattr(args, 'protocol', ["grpc"])[0]
+                ctrl_address=runtime_ctrl_address,
+                protocol=getattr(args, 'protocol', ["grpc"])[0],
             )
 
         def _is_container_alive(container) -> bool:
@@ -274,11 +276,7 @@ def run(
             return True
 
         async def _check_readiness(container):
-            while (
-                    _is_container_alive(container)
-                    and not _is_ready()
-                    and not cancel
-            ):
+            while _is_container_alive(container) and not _is_ready() and not cancel:
                 await asyncio.sleep(0.1)
             if _is_container_alive(container):
                 is_started.set()
@@ -288,11 +286,7 @@ def run(
 
         async def _stream_starting_logs(container):
             for line in container.logs(stream=True):
-                if (
-                        not is_started.is_set()
-                        and not fail_to_start
-                        and not cancel
-                ):
+                if not is_started.is_set() and not fail_to_start and not cancel:
                     await asyncio.sleep(0.01)
                 msg = line.decode().rstrip()  # type: str
                 logger.debug(re.sub(r'\u001b\[.*?[@-~]', '', msg))
@@ -321,9 +315,9 @@ class ContainerPod(BasePod):
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
         if (
-                self.args.docker_kwargs
-                and 'extra_hosts' in self.args.docker_kwargs
-                and __docker_host__ in self.args.docker_kwargs['extra_hosts']
+            self.args.docker_kwargs
+            and 'extra_hosts' in self.args.docker_kwargs
+            and __docker_host__ in self.args.docker_kwargs['extra_hosts']
         ):
             self.args.docker_kwargs.pop('extra_hosts')
         self._net_mode = None
@@ -339,9 +333,9 @@ class ContainerPod(BasePod):
             network = get_docker_network(client)
 
             if (
-                    self.args.docker_kwargs
-                    and 'extra_hosts' in self.args.docker_kwargs
-                    and __docker_host__ in self.args.docker_kwargs['extra_hosts']
+                self.args.docker_kwargs
+                and 'extra_hosts' in self.args.docker_kwargs
+                and __docker_host__ in self.args.docker_kwargs['extra_hosts']
             ):
                 ctrl_host = __docker_host__
             elif network:
@@ -372,7 +366,10 @@ class ContainerPod(BasePod):
         # Related to potential docker-in-docker communication. If `Runtime` lives already inside a container.
         # it will need to communicate using the `bridge` network.
         # In WSL, we need to set ports explicitly
-        net_mode, runtime_ctrl_address = getattr(self.args, 'force_network_mode', DockerNetworkMode.AUTO), ctrl_address
+        net_mode, runtime_ctrl_address = (
+            getattr(self.args, 'force_network_mode', DockerNetworkMode.AUTO),
+            ctrl_address,
+        )
         if sys.platform in ('linux', 'linux2') and 'microsoft' not in uname().release:
             if net_mode == DockerNetworkMode.AUTO:
                 net_mode = DockerNetworkMode.HOST

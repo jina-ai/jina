@@ -308,6 +308,7 @@ class SingleDocumentRequestProto:
         # noqa: DAR201
         """
         import os
+
         if x:
             os.environ['JINA_GRPC_RECV_BYTES'] = str(
                 len(x) + int(os.environ.get('JINA_GRPC_RECV_BYTES', 0))
@@ -315,4 +316,3 @@ class SingleDocumentRequestProto:
             return SingleDocumentRequest(x)
         else:
             return SingleDocumentRequest()
-

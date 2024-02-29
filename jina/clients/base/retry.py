@@ -33,13 +33,14 @@ def _raise_last_attempt(err, attempt):
         raise err
 
 
-def sync_wait_or_raise_err(attempt: int,
-                           err: Exception,
-                           max_attempts: float,
-                           backoff_multiplier: float,
-                           initial_backoff: float,
-                           max_backoff: float,
-                           ):
+def sync_wait_or_raise_err(
+    attempt: int,
+    err: Exception,
+    max_attempts: float,
+    backoff_multiplier: float,
+    initial_backoff: float,
+    max_backoff: float,
+):
     """
     Accepts retry parameters and the underlying. The error is raised if the max_attempts has been reached otherwise the
     method waits based on the backoff calculations.
@@ -53,16 +54,18 @@ def sync_wait_or_raise_err(attempt: int,
     if attempt == max_attempts:
         _raise_last_attempt(err, attempt)
     else:
-        time.sleep(_wait_time(attempt, backoff_multiplier, initial_backoff, max_backoff))
+        time.sleep(
+            _wait_time(attempt, backoff_multiplier, initial_backoff, max_backoff)
+        )
 
 
 async def wait_or_raise_err(
-        attempt: int,
-        err: Exception,
-        max_attempts: float,
-        backoff_multiplier: float,
-        initial_backoff: float,
-        max_backoff: float,
+    attempt: int,
+    err: Exception,
+    max_attempts: float,
+    backoff_multiplier: float,
+    initial_backoff: float,
+    max_backoff: float,
 ):
     """
     Accepts retry parameters and the underlying. The error is raised if the max_attempts has been reached otherwise the
@@ -78,7 +81,9 @@ async def wait_or_raise_err(
     if attempt == max_attempts:
         _raise_last_attempt(err, attempt)
     else:
-        await asyncio.sleep(_wait_time(attempt, backoff_multiplier, initial_backoff, max_backoff))
+        await asyncio.sleep(
+            _wait_time(attempt, backoff_multiplier, initial_backoff, max_backoff)
+        )
 
 
 def _wait_time(attempt, backoff_multiplier, initial_backoff, max_backoff):

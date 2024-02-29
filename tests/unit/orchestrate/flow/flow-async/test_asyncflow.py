@@ -42,15 +42,15 @@ def documents(start_index, end_index):
 )
 @pytest.mark.parametrize('use_stream', [False, True])
 async def test_run_async_flow(
-        protocol, mocker, flow_cls, return_responses, return_class, use_stream
+    protocol, mocker, flow_cls, return_responses, return_class, use_stream
 ):
     r_val = mocker.Mock()
     with flow_cls(protocol=protocol, asyncio=True).add() as f:
         async for r in f.index(
-                from_ndarray(np.random.random([num_docs, 4])),
-                on_done=r_val,
-                return_responses=return_responses,
-                stream=use_stream
+            from_ndarray(np.random.random([num_docs, 4])),
+            on_done=r_val,
+            return_responses=return_responses,
+            stream=use_stream,
         ):
             assert isinstance(r, return_class)
     validate_callback(r_val, validate)
@@ -101,8 +101,8 @@ class Wait5s(Executor):
 
 async def run_async_flow_5s(flow):
     async for r in flow.index(
-            from_ndarray(np.random.random([num_docs, 4])),
-            on_done=validate,
+        from_ndarray(np.random.random([num_docs, 4])),
+        on_done=validate,
     ):
         assert isinstance(r, DocumentArray)
 
@@ -157,7 +157,9 @@ async def test_run_async_flow_other_task_concurrent(protocol):
 @pytest.mark.parametrize('use_stream', [False, True])
 async def test_return_results_async_flow(protocol, flow_cls, use_stream):
     with flow_cls(protocol=protocol, asyncio=True).add() as f:
-        async for r in f.index(from_ndarray(np.random.random([10, 2])), stream=use_stream):
+        async for r in f.index(
+            from_ndarray(np.random.random([10, 2])), stream=use_stream
+        ):
             assert isinstance(r, DocumentArray)
 
 
@@ -184,5 +186,7 @@ class MyExec(Executor):
 @pytest.mark.parametrize('use_stream', [False, True])
 async def test_async_flow_empty_data(flow_cls, use_stream):
     with flow_cls(asyncio=True).add(uses=MyExec) as f:
-        async for r in f.post('/hello', parameters={'hello': 'world'}, stream=use_stream):
+        async for r in f.post(
+            '/hello', parameters={'hello': 'world'}, stream=use_stream
+        ):
             assert isinstance(r, DocumentArray)

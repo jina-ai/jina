@@ -31,9 +31,7 @@ class MonitoringMixin:
         if monitoring:
             from prometheus_client import start_http_server
 
-            start_http_server(
-                int(port_monitoring), registry=self.metrics_registry
-            )
+            start_http_server(int(port_monitoring), registry=self.metrics_registry)
 
 
 class MonitoringRequestMixin:

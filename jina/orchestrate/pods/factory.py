@@ -19,7 +19,9 @@ class PodFactory:
     """
 
     @staticmethod
-    def build_pod(args: 'Namespace', gateway_load_balancer: bool = False) -> Type['BasePod']:
+    def build_pod(
+        args: 'Namespace', gateway_load_balancer: bool = False
+    ) -> Type['BasePod']:
         """Build an implementation of a `BasePod` interface
 
         :param args: deployment arguments parsed from the CLI.

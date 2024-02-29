@@ -32,8 +32,8 @@ def test_floating_executors(tmpdir, protocol):
 
     f = (
         Flow(protocol=protocol)
-            .add(name='first')
-            .add(
+        .add(name='first')
+        .add(
             name='second',
             floating=True,
             uses=FloatingTestExecutor,
@@ -47,8 +47,8 @@ def test_floating_executors(tmpdir, protocol):
             ret = f.post(on=__default_endpoint__, inputs=DocumentArray.empty(1))
             end_time = time.time()
             assert (
-                           end_time - start_time
-                   ) < TIME_SLEEP_FLOATING  # check that the response arrives before the
+                end_time - start_time
+            ) < TIME_SLEEP_FLOATING  # check that the response arrives before the
             # Floating Executor finishes
             assert len(ret) == 1
             assert ret[0].text == ''
@@ -67,8 +67,8 @@ def test_floating_executors_right_after_gateway(tmpdir, protocol):
 
     f = (
         Flow(protocol=protocol)
-            .add(name='first')
-            .add(
+        .add(name='first')
+        .add(
             name='second',
             floating=True,
             uses=FloatingTestExecutor,
@@ -83,8 +83,8 @@ def test_floating_executors_right_after_gateway(tmpdir, protocol):
             ret = f.post(on=__default_endpoint__, inputs=DocumentArray.empty(1))
             end_time = time.time()
             assert (
-                           end_time - start_time
-                   ) < TIME_SLEEP_FLOATING  # check that the response arrives before the
+                end_time - start_time
+            ) < TIME_SLEEP_FLOATING  # check that the response arrives before the
             # Floating Executor finishes
             assert len(ret) == 1
             assert ret[0].text == ''
@@ -104,14 +104,14 @@ def test_multiple_floating_points(tmpdir, protocol):
 
     f = (
         Flow(protocol=protocol)
-            .add(name='first')
-            .add(
+        .add(name='first')
+        .add(
             name='second',
             floating=True,
             uses=FloatingTestExecutor,
             uses_with={'file_name': file_name1},
         )
-            .add(
+        .add(
             name='third',
             floating=True,
             uses=FloatingTestExecutor,
@@ -125,8 +125,8 @@ def test_multiple_floating_points(tmpdir, protocol):
             ret = f.post(on=__default_endpoint__, inputs=DocumentArray.empty(1))
             end_time = time.time()
             assert (
-                           end_time - start_time
-                   ) < TIME_SLEEP_FLOATING  # check that the response arrives before the
+                end_time - start_time
+            ) < TIME_SLEEP_FLOATING  # check that the response arrives before the
             assert len(ret) == 1
             assert ret[0].text == ''
 
@@ -150,27 +150,27 @@ def test_complex_flow(tmpdir, protocol):
 
     f = (
         Flow(protocol=protocol)
-            .add(name='pod0')
-            .add(name='pod4', needs=['gateway'])
-            .add(
+        .add(name='pod0')
+        .add(name='pod4', needs=['gateway'])
+        .add(
             name='floating_pod6',
             needs=['gateway'],
             floating=True,
             uses=FloatingTestExecutor,
             uses_with={'file_name': file_name2},
         )
-            .add(
+        .add(
             name='floating_pod1',
             needs=['pod0'],
             floating=True,
             uses=FloatingTestExecutor,
             uses_with={'file_name': file_name1},
         )
-            .add(name='pod2', needs=['pod0'])
-            .add(name='pod3', needs=['pod2'])
-            .add(name='pod5', needs=['pod4'])
-            .add(name='merger', needs=['pod5', 'pod3'])
-            .add(name='pod_last', needs=['merger'])
+        .add(name='pod2', needs=['pod0'])
+        .add(name='pod3', needs=['pod2'])
+        .add(name='pod5', needs=['pod4'])
+        .add(name='merger', needs=['pod5', 'pod3'])
+        .add(name='pod_last', needs=['merger'])
     )
 
     with f:
@@ -179,8 +179,8 @@ def test_complex_flow(tmpdir, protocol):
             ret = f.post(on=__default_endpoint__, inputs=DocumentArray.empty(1))
             end_time = time.time()
             assert (
-                           end_time - start_time
-                   ) < TIME_SLEEP_FLOATING  # check that the response arrives before the
+                end_time - start_time
+            ) < TIME_SLEEP_FLOATING  # check that the response arrives before the
             assert len(ret) == 1
             assert ret[0].text == ''
 
@@ -209,8 +209,8 @@ def test_floating_needs(needs, tmpdir):
 
     f = (
         Flow()
-            .add(name='executor0', uses=FastChangingExecutor)
-            .add(
+        .add(name='executor0', uses=FastChangingExecutor)
+        .add(
             name='floating_executor',
             uses=FloatingTestExecutor,
             uses_with={'file_name': file_name},
@@ -275,16 +275,16 @@ def test_floating_needs_more_complex(needs, tmpdir):
 
     f = (
         Flow()
-            .add(name='executor0', uses=FastChangingExecutor)
-            .add(name='executor1', uses=FastAddExecutor, needs=['executor0'])
-            .add(
+        .add(name='executor0', uses=FastChangingExecutor)
+        .add(name='executor1', uses=FastAddExecutor, needs=['executor0'])
+        .add(
             name='floating_executor',
             uses=FloatingTestExecutorWriteDocs,
             uses_with={'file_name': file_name1},
             needs=[needs],
             floating=True,
         )
-            .add(
+        .add(
             name='floating_executor_2',
             uses=FloatingTestExecutorWriteDocs,
             uses_with={'file_name': file_name2},
@@ -328,8 +328,12 @@ def test_flow_all_floating(protocol, tmpdir):
             with open(self.file_name, 'a+', encoding='utf-8') as f:
                 f.write(str(len(docs)))
 
-    flow = Flow(protocol=protocol).add(name='A', floating=True, uses=FloatingTestExecutorWriteDocs,
-                                    uses_with={'file_name': file_name})
+    flow = Flow(protocol=protocol).add(
+        name='A',
+        floating=True,
+        uses=FloatingTestExecutorWriteDocs,
+        uses_with={'file_name': file_name},
+    )
     with flow:
         flow.post(on='/', inputs=DocumentArray.empty(1))
 

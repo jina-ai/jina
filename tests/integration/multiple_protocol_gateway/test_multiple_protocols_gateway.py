@@ -38,7 +38,9 @@ def multi_port_gateway_docker_image_built():
     ],
 )
 @pytest.mark.parametrize('use_stream', [False, True])
-def test_multiple_protocols_gateway(multi_port_gateway_docker_image_built, uses, use_stream):
+def test_multiple_protocols_gateway(
+    multi_port_gateway_docker_image_built, uses, use_stream
+):
     http_port = random_port()
     grpc_port = random_port()
     flow = Flow().config_gateway(

@@ -35,7 +35,7 @@ def _ignore_google_warnings():
         'ignore',
         category=DeprecationWarning,
         message='Deprecated call to `pkg_resources.declare_namespace(\'google\')`.',
-        append=True
+        append=True,
     )
 
 

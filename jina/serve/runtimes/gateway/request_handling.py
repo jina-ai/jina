@@ -70,9 +70,11 @@ class GatewayRequestHandler:
             meter=meter,
             aio_tracing_client_interceptors=aio_tracing_client_interceptors,
             tracing_client_interceptor=tracing_client_interceptor,
-            grpc_channel_options=self.runtime_args.grpc_channel_options
-            if hasattr(self.runtime_args, 'grpc_channel_options')
-            else None,
+            grpc_channel_options=(
+                self.runtime_args.grpc_channel_options
+                if hasattr(self.runtime_args, 'grpc_channel_options')
+                else None
+            ),
         )
 
         GatewayStreamer._set_env_streamer_args(

@@ -21,10 +21,10 @@ async def run_test(port, endpoint, num_docs=10, request_size=10, protocol='grpc'
     client.show_progress = True
     responses = []
     async for resp in client.post(
-            endpoint,
-            inputs=[Document() for _ in range(num_docs)],
-            request_size=request_size,
-            return_responses=True,
+        endpoint,
+        inputs=[Document() for _ in range(num_docs)],
+        request_size=request_size,
+        return_responses=True,
     ):
         responses.append(resp)
 
@@ -119,13 +119,20 @@ async def test_deployment_monitoring(tmpdir, docker_images, port_generator):
     indirect=True,
 )
 @pytest.mark.parametrize('polling', ['ANY', 'ALL'])
-async def test_deployment_with_replicas_with_sharding(deployment_with_replicas_with_sharding, polling, tmpdir):
-    dump_path = os.path.join(str(tmpdir), 'docker-compose-deployment-with-replicas-with-sharding.yml')
+async def test_deployment_with_replicas_with_sharding(
+    deployment_with_replicas_with_sharding, polling, tmpdir
+):
+    dump_path = os.path.join(
+        str(tmpdir), 'docker-compose-deployment-with-replicas-with-sharding.yml'
+    )
     deployment_with_replicas_with_sharding.to_docker_compose_yaml(dump_path)
 
     with DockerComposeServices(dump_path):
         resp = await run_test(
-            port=deployment_with_replicas_with_sharding.port, endpoint='/debug', num_docs=10, request_size=1
+            port=deployment_with_replicas_with_sharding.port,
+            endpoint='/debug',
+            num_docs=10,
+            request_size=1,
         )
 
     assert len(resp) == 10
@@ -171,13 +178,20 @@ async def test_deployment_with_replicas_with_sharding(deployment_with_replicas_w
     indirect=True,
 )
 @pytest.mark.parametrize('polling', ['ANY', 'ALL'])
-async def test_deployment_without_replicas_with_sharding(deployment_without_replicas_with_sharding, polling, tmpdir):
-    dump_path = os.path.join(str(tmpdir), 'docker-compose-deployment-without-replicas-with-sharding.yml')
+async def test_deployment_without_replicas_with_sharding(
+    deployment_without_replicas_with_sharding, polling, tmpdir
+):
+    dump_path = os.path.join(
+        str(tmpdir), 'docker-compose-deployment-without-replicas-with-sharding.yml'
+    )
     deployment_without_replicas_with_sharding.to_docker_compose_yaml(dump_path)
 
     with DockerComposeServices(dump_path):
         resp = await run_test(
-            port=deployment_without_replicas_with_sharding.port, endpoint='/debug', num_docs=10, request_size=1
+            port=deployment_without_replicas_with_sharding.port,
+            endpoint='/debug',
+            num_docs=10,
+            request_size=1,
         )
 
     assert len(resp) == 10
@@ -215,13 +229,20 @@ async def test_deployment_without_replicas_with_sharding(deployment_without_repl
     [['test-executor', 'jinaai/jina']],
     indirect=True,
 )
-async def test_deployment_with_replicas_without_sharding(deployment_with_replicas_without_sharding, tmpdir):
-    dump_path = os.path.join(str(tmpdir), 'docker-compose-deployment-with-replicas-without-sharding.yml')
+async def test_deployment_with_replicas_without_sharding(
+    deployment_with_replicas_without_sharding, tmpdir
+):
+    dump_path = os.path.join(
+        str(tmpdir), 'docker-compose-deployment-with-replicas-without-sharding.yml'
+    )
     deployment_with_replicas_without_sharding.to_docker_compose_yaml(dump_path)
 
     with DockerComposeServices(dump_path):
         resp = await run_test(
-            port=deployment_with_replicas_without_sharding.port, endpoint='/debug', num_docs=10, request_size=1
+            port=deployment_with_replicas_without_sharding.port,
+            endpoint='/debug',
+            num_docs=10,
+            request_size=1,
         )
 
     assert len(resp) == 10
@@ -253,13 +274,20 @@ async def test_deployment_with_replicas_without_sharding(deployment_with_replica
     [['test-executor', 'jinaai/jina']],
     indirect=True,
 )
-async def test_deployment_without_replicas_without_sharding(deployment_without_replicas_without_sharding, tmpdir):
-    dump_path = os.path.join(str(tmpdir), 'docker-compose-deployment-without-replicas-without-sharding.yml')
+async def test_deployment_without_replicas_without_sharding(
+    deployment_without_replicas_without_sharding, tmpdir
+):
+    dump_path = os.path.join(
+        str(tmpdir), 'docker-compose-deployment-without-replicas-without-sharding.yml'
+    )
     deployment_without_replicas_without_sharding.to_docker_compose_yaml(dump_path)
 
     with DockerComposeServices(dump_path):
         resp = await run_test(
-            port=deployment_without_replicas_without_sharding.port, endpoint='/debug', num_docs=10, request_size=1
+            port=deployment_without_replicas_without_sharding.port,
+            endpoint='/debug',
+            num_docs=10,
+            request_size=1,
         )
 
     assert len(resp) == 10
@@ -281,7 +309,6 @@ async def test_deployment_without_replicas_without_sharding(deployment_without_r
                 runtimes_to_visit.remove(executor)
 
     assert len(runtimes_to_visit) == 0
-
 
 
 @pytest.mark.timeout(3600)

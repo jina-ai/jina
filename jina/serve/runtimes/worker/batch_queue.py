@@ -73,13 +73,10 @@ class BatchQueue:
 
     def _start_timer(self):
         self._cancel_timer_if_pending()
-        self._timer_task = asyncio.create_task(
-            self._sleep_then_set()
-        )
+        self._timer_task = asyncio.create_task(self._sleep_then_set())
 
     async def _sleep_then_set(self):
-        """Sleep and then set the event
-        """
+        """Sleep and then set the event"""
         self._timer_finished = False
         await asyncio.sleep(self._timeout / 1000)
         self._flush_trigger.set()
@@ -275,7 +272,9 @@ class BatchQueue:
                             await request_full.put(exc)
                     else:
                         # We need to attribute the docs to their requests
-                        non_assigned_to_response_docs.extend(batch_res_docs or docs_inner_batch)
+                        non_assigned_to_response_docs.extend(
+                            batch_res_docs or docs_inner_batch
+                        )
                         non_assigned_to_response_request_idxs.extend(req_idxs)
                         num_assigned_docs = await _assign_results(
                             non_assigned_to_response_docs,

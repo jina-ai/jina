@@ -1,4 +1,5 @@
 """Decorators and wrappers designed for wrapping :class:`BaseExecutor` functions. """
+
 import functools
 import inspect
 import os
@@ -368,7 +369,7 @@ def requests(
                 parameters_is_pydantic_model=fn_with_schema.parameters_is_pydantic_model,
                 parameters_model=fn_with_schema.parameters_model,
                 request_schema=request_schema_arg,
-                response_schema=response_schema_arg
+                response_schema=response_schema_arg,
             )
             fn_with_schema.validate()
 

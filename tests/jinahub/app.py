@@ -1,5 +1,6 @@
 from jina import Flow
 import os
+
 os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
 
 if __name__ == '__main__':

@@ -1,4 +1,5 @@
 """Argparser module for container runtimes"""
+
 import argparse
 
 from jina.enums import DockerNetworkMode
@@ -74,7 +75,8 @@ Note,
             type=DockerNetworkMode.from_string,
             choices=list(DockerNetworkMode),
             default=DockerNetworkMode.AUTO,
-            help=f'''
+            help=(
+                f'''
     Force the use of the specified docker network mode (default: auto). 
 
     Valid options are,
@@ -83,6 +85,7 @@ Note,
     - {str(DockerNetworkMode.BRIDGE)}: Use a user-defined bridge network.
     - {str(DockerNetworkMode.NONE)}: Use no network (equivalent to the --network=none option).
         '''
-            if _SHOW_ALL_ARGS
-            else argparse.SUPPRESS,
+                if _SHOW_ALL_ARGS
+                else argparse.SUPPRESS
+            ),
         )

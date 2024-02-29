@@ -5,9 +5,7 @@ from jina.orchestrate.pods.factory import PodFactory
 from jina.parsers import set_pod_parser
 
 
-@pytest.mark.parametrize(
-    'uses', ['jinaai+docker://jina-ai/DummyExecutor']
-)
+@pytest.mark.parametrize('uses', ['jinaai+docker://jina-ai/DummyExecutor'])
 def test_container_pod(mocker, monkeypatch, uses):
     mock = mocker.Mock()
 

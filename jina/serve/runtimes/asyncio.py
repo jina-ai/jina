@@ -337,10 +337,12 @@ class AsyncNewLoopRuntime:
             self.logger.debug(f'{self!r} is interrupted by user')
         elif exc_type and issubclass(exc_type, Exception):
             self.logger.error(
-                f'{exc_val!r} during {self.run_forever!r}'
-                + f'\n add "--quiet-error" to suppress the exception details'
-                if not self.args.quiet_error
-                else '',
+                (
+                    f'{exc_val!r} during {self.run_forever!r}'
+                    + f'\n add "--quiet-error" to suppress the exception details'
+                    if not self.args.quiet_error
+                    else ''
+                ),
                 exc_info=not self.args.quiet_error,
             )
         try:
@@ -350,10 +352,12 @@ class AsyncNewLoopRuntime:
             pass
         except Exception as ex:
             self.logger.error(
-                f'{ex!r} during {self.teardown!r}'
-                + f'\n add "--quiet-error" to suppress the exception details'
-                if not self.args.quiet_error
-                else '',
+                (
+                    f'{ex!r} during {self.teardown!r}'
+                    + f'\n add "--quiet-error" to suppress the exception details'
+                    if not self.args.quiet_error
+                    else ''
+                ),
                 exc_info=not self.args.quiet_error,
             )
 

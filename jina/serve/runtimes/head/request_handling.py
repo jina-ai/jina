@@ -17,6 +17,7 @@ from jina.serve.runtimes.monitoring import MonitoringRequestMixin
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from jina.types.request.data import DataRequest, Response
 from jina._docarray import docarray_v2
+
 if docarray_v2:
     from jina.serve.runtimes.helper import _create_pydantic_model_from_schema
     from docarray import DocList
@@ -42,15 +43,15 @@ class HeaderRequestHandler(MonitoringRequestMixin):
     DEFAULT_POLLING = PollingType.ANY
 
     def __init__(
-            self,
-            args: 'argparse.Namespace',
-            logger: 'JinaLogger',
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            meter=None,
-            runtime_name: Optional[str] = None,
-            aio_tracing_client_interceptors=None,
-            tracing_client_interceptor=None,
-            **kwargs,
+        self,
+        args: 'argparse.Namespace',
+        logger: 'JinaLogger',
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        meter=None,
+        runtime_name: Optional[str] = None,
+        aio_tracing_client_interceptors=None,
+        tracing_client_interceptor=None,
+        **kwargs,
     ):
         if args.name is None:
             args.name = ''
@@ -147,7 +148,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
                     connection_pool=self.connection_pool,
                     name=self._deployment_name,
                     retries=self._retries,
-                    stop_event=self.endpoints_discovery_stop_event
+                    stop_event=self.endpoints_discovery_stop_event,
                 )
             )
 
@@ -158,13 +159,13 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         )
 
     async def _gather_worker_tasks(
-            self,
-            requests,
-            connection_pool,
-            deployment_name,
-            polling_type,
-            timeout_send,
-            retries,
+        self,
+        requests,
+        connection_pool,
+        deployment_name,
+        polling_type,
+        timeout_send,
+        retries,
     ):
         worker_send_tasks = connection_pool.send_requests(
             requests=requests,
@@ -193,11 +194,11 @@ class HeaderRequestHandler(MonitoringRequestMixin):
 
     @staticmethod
     def _merge_metadata(
-            metadata,
-            uses_after_metadata,
-            uses_before_metadata,
-            total_shards,
-            failed_shards,
+        metadata,
+        uses_after_metadata,
+        uses_before_metadata,
+        total_shards,
+        failed_shards,
     ):
         merged_metadata = {}
         if uses_before_metadata:
@@ -215,17 +216,17 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         return merged_metadata
 
     async def _handle_data_request(
-            self,
-            requests,
-            connection_pool,
-            uses_before_address,
-            uses_after_address,
-            timeout_send,
-            retries,
-            reduce,
-            polling_type,
-            deployment_name,
-            endpoint
+        self,
+        requests,
+        connection_pool,
+        uses_before_address,
+        uses_after_address,
+        timeout_send,
+        retries,
+        reduce,
+        polling_type,
+        deployment_name,
+        endpoint,
     ) -> Tuple['DataRequest', Dict]:
         for req in requests:
             if docarray_v2:
@@ -325,13 +326,18 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         self._update_end_request_metrics(response_request)
         return response_request, merged_metadata
 
-    def _get_endpoints_from_workers(self, connection_pool: GrpcConnectionPool, name: str, retries: int,
-                                    stop_event):
+    def _get_endpoints_from_workers(
+        self, connection_pool: GrpcConnectionPool, name: str, retries: int, stop_event
+    ):
         from google.protobuf import json_format
         from docarray.documents.legacy import LegacyDocument
+
         legacy_doc_schema = LegacyDocument.schema()
+
         async def task():
-            self.logger.debug(f'starting get endpoints from workers task for deployment {name}')
+            self.logger.debug(
+                f'starting get endpoints from workers task for deployment {name}'
+            )
             while not stop_event.is_set():
                 try:
                     endpoints = await connection_pool.send_discover_endpoint(
@@ -349,27 +355,37 @@ class HeaderRequestHandler(MonitoringRequestMixin):
                             output_model_schema = inner_dict['output']['model']
 
                             if input_model_schema == legacy_doc_schema:
-                                models_created_by_name[input_model_name] = LegacyDocument
+                                models_created_by_name[input_model_name] = (
+                                    LegacyDocument
+                                )
                             elif input_model_name not in models_created_by_name:
-                                input_model = _create_pydantic_model_from_schema(input_model_schema, input_model_name, {})
+                                input_model = _create_pydantic_model_from_schema(
+                                    input_model_schema, input_model_name, {}
+                                )
                                 models_created_by_name[input_model_name] = input_model
 
                             if output_model_name == legacy_doc_schema:
-                                models_created_by_name[output_model_name] = LegacyDocument
+                                models_created_by_name[output_model_name] = (
+                                    LegacyDocument
+                                )
                             elif output_model_name not in models_created_by_name:
-                                output_model = _create_pydantic_model_from_schema(output_model_schema, output_model_name, {})
+                                output_model = _create_pydantic_model_from_schema(
+                                    output_model_schema, output_model_name, {}
+                                )
                                 models_created_by_name[output_model_name] = output_model
 
                             self._pydantic_models_by_endpoint[endpoint] = {
                                 'input': models_created_by_name[input_model_name],
-                                'output': models_created_by_name[output_model_name]
+                                'output': models_created_by_name[output_model_name],
                             }
                         stop_event.set()
                         return
                     else:
                         await asyncio.sleep(0.1)
                 except Exception as exc:
-                    self.logger.debug(f'Exception raised from sending discover endpoint {exc}')
+                    self.logger.debug(
+                        f'Exception raised from sending discover endpoint {exc}'
+                    )
                     await asyncio.sleep(0.1)
 
         return task()
@@ -385,7 +401,9 @@ class HeaderRequestHandler(MonitoringRequestMixin):
                     self.endpoints_discovery_stop_event.set()  # this event is useless if simply cancel
                     self.endpoints_discovery_task.cancel()
             except Exception as ex:
-                self.logger.debug(f'exception during endpoint discovery task cancellation: {ex}')
+                self.logger.debug(
+                    f'exception during endpoint discovery task cancellation: {ex}'
+                )
                 pass
 
     async def close(self):
@@ -446,22 +464,27 @@ class HeaderRequestHandler(MonitoringRequestMixin):
                 timeout_send=self.timeout_send,
                 polling_type=self._polling[endpoint],
                 deployment_name=self._deployment_name,
-                endpoint=endpoint
+                endpoint=endpoint,
             )
             context.set_trailing_metadata(metadata.items())
             return response
-        except InternalNetworkError as err:  # can't connect, Flow broken, interrupt the streaming through gRPC error mechanism
+        except (
+            InternalNetworkError
+        ) as err:  # can't connect, Flow broken, interrupt the streaming through gRPC error mechanism
             return self._handle_internalnetworkerror(
                 err=err, context=context, response=Response()
             )
         except (
-                RuntimeError,
-                Exception,
+            RuntimeError,
+            Exception,
         ) as ex:  # some other error, keep streaming going just add error info
             self.logger.error(
-                f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
-                if not self.args.quiet_error
-                else '',
+                (
+                    f'{ex!r}'
+                    + f'\n add "--quiet-error" to suppress the exception details'
+                    if not self.args.quiet_error
+                    else ''
+                ),
                 exc_info=not self.args.quiet_error,
             )
             requests[0].add_exception(ex, executor=None)
@@ -501,7 +524,9 @@ class HeaderRequestHandler(MonitoringRequestMixin):
             )
             response.endpoints.extend(worker_response.endpoints)
             response.schemas.update(worker_response.schemas)
-        except InternalNetworkError as err:  # can't connect, Flow broken, interrupt the streaming through gRPC error mechanism
+        except (
+            InternalNetworkError
+        ) as err:  # can't connect, Flow broken, interrupt the streaming through gRPC error mechanism
             return self._handle_internalnetworkerror(
                 err=err, context=context, response=response
             )
@@ -526,7 +551,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         return infoProto
 
     async def stream(
-            self, request_iterator, context=None, *args, **kwargs
+        self, request_iterator, context=None, *args, **kwargs
     ) -> AsyncIterator['Request']:
         """
         stream requests from client iterator and stream responses back.

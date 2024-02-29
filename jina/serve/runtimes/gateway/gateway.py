@@ -52,5 +52,6 @@ class Gateway(BaseServer, BaseGateway):
     """
     The class for where to inherit when you want to customize your Gateway. Important to provide backwards compatibility
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

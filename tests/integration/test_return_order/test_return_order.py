@@ -21,14 +21,22 @@ def test_return_order_in_client(protocol, stream):
     with f:
         for _ in range(5):
             result_flow = f.post(
-                '/', inputs=input_da, request_size=10, results_in_order=True, stream=stream
+                '/',
+                inputs=input_da,
+                request_size=10,
+                results_in_order=True,
+                stream=stream,
             )
             for input, output in zip(input_da, result_flow):
                 assert input.text == output.text
         c = Client(port=f.port, protocol=str(f.protocol))
         for _ in range(5):
             result_client = c.post(
-                '/', inputs=input_da, request_size=10, results_in_order=True, stream=stream
+                '/',
+                inputs=input_da,
+                request_size=10,
+                results_in_order=True,
+                stream=stream,
             )
             for input, output in zip(input_da, result_client):
                 assert input.text == output.text

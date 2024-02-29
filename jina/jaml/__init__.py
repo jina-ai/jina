@@ -680,9 +680,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :return: :class:`JAMLCompatible` object
         """
         if runtime_args:
-            kwargs[
-                'runtimes_args'
-            ] = (
+            kwargs['runtimes_args'] = (
                 dict()
             )  # when we have runtime args it is needed to have an empty runtime args session in the yam config
 
@@ -741,9 +739,11 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 _extra_search_paths = extra_search_paths or []
                 load_py_modules(
                     no_tag_yml,
-                    extra_search_paths=(_extra_search_paths + [os.path.dirname(s_path)])
-                    if s_path
-                    else _extra_search_paths,
+                    extra_search_paths=(
+                        (_extra_search_paths + [os.path.dirname(s_path)])
+                        if s_path
+                        else _extra_search_paths
+                    ),
                 )
 
             from jina.enums import DeploymentRoleType

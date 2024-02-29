@@ -89,9 +89,10 @@ def event_loop(request):
     yield loop
     loop.close()
 
+
 @pytest.fixture(autouse=True)
 def set_test_pip_version() -> None:
     os.environ['JINA_GATEWAY_IMAGE'] = 'jinaai/jina:test-pip'
     yield
-    if 'JINA_GATEWAY_IMAGE' in os.environ: # maybe another fixture has already removed
+    if 'JINA_GATEWAY_IMAGE' in os.environ:  # maybe another fixture has already removed
         del os.environ['JINA_GATEWAY_IMAGE']

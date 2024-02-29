@@ -1,4 +1,5 @@
 """Base argparser module for Pod and Deployment runtime"""
+
 import argparse
 import os
 
@@ -63,11 +64,13 @@ def mixin_essential_parser(parser, default_name=None):
         '--workspace-id',
         type=str,
         default=random_identity(),
-        help='the UUID for identifying the workspace. When not given a random id will be assigned.'
-        'Multiple Pod/Deployment/Flow will work under the same workspace if they share the same '
-        '`workspace-id`.'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
+        help=(
+            'the UUID for identifying the workspace. When not given a random id will be assigned.'
+            'Multiple Pod/Deployment/Flow will work under the same workspace if they share the same '
+            '`workspace-id`.'
+            if _SHOW_ALL_ARGS
+            else argparse.SUPPRESS
+        ),
     )
 
 
@@ -89,9 +92,11 @@ def mixin_base_deployment_parser(parser, title='Base Deployment', default_name=N
         type=str,
         default=[],
         nargs='*',
-        help='Extra search paths to be used when loading modules and finding YAML config files.'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
+        help=(
+            'Extra search paths to be used when loading modules and finding YAML config files.'
+            if _SHOW_ALL_ARGS
+            else argparse.SUPPRESS
+        ),
     )
 
     gp.add_argument(
@@ -104,9 +109,11 @@ def mixin_base_deployment_parser(parser, title='Base Deployment', default_name=N
     gp.add_argument(
         '--k8s-namespace',
         type=str,
-        help='Name of the namespace where Kubernetes deployment should be deployed, to be filled by flow name'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
+        help=(
+            'Name of the namespace where Kubernetes deployment should be deployed, to be filled by flow name'
+            if _SHOW_ALL_ARGS
+            else argparse.SUPPRESS
+        ),
     )
 
     return gp

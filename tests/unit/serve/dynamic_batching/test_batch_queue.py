@@ -61,6 +61,7 @@ async def test_batch_queue_timeout():
 @pytest.mark.asyncio
 async def test_batch_queue_timeout_does_not_wait_previous_batch():
     batches_lengths_computed = []
+
     async def foo(docs, **kwargs):
         await asyncio.sleep(4)
         batches_lengths_computed.append(len(docs))
@@ -88,6 +89,7 @@ async def test_batch_queue_timeout_does_not_wait_previous_batch():
         _ = await q.get()
         q.task_done()
         return req
+
     init_time = time.time()
     tasks = [asyncio.create_task(process_request(req)) for req in data_requests]
     tasks.append(asyncio.create_task(process_request(extra_data_request, sleep=2)))
@@ -161,7 +163,9 @@ async def test_exception():
 
     data_requests = [DataRequest() for _ in range(35)]
     for i, req in enumerate(data_requests):
-        req.data.docs = DocumentArray(Document(text=f'{i}' if i not in BAD_REQUEST_IDX else 'Bad'))
+        req.data.docs = DocumentArray(
+            Document(text=f'{i}' if i not in BAD_REQUEST_IDX else 'Bad')
+        )
 
     async def process_request(req):
         q = await bq.push(req)
@@ -209,7 +213,9 @@ async def test_exception_more_complex():
 
     data_requests = [DataRequest() for _ in range(35)]
     for i, req in enumerate(data_requests):
-        req.data.docs = DocumentArray(Document(text='' if i not in TRIGGER_BAD_REQUEST_IDX else 'Bad'))
+        req.data.docs = DocumentArray(
+            Document(text='' if i not in TRIGGER_BAD_REQUEST_IDX else 'Bad')
+        )
 
     async def process_request(req):
         q = await bq.push(req)
@@ -303,7 +309,12 @@ async def test_return_proper_assignment(num_requests, preferred_batch_size, time
     for i, req in enumerate(data_requests):
         len_request = random.randint(2, 27)
         len_requests.append(len_request)
-        req.data.docs = DocumentArray([Document(text=f'Text {j} from request {i} with len {len_request}') for j in range(len_request)])
+        req.data.docs = DocumentArray(
+            [
+                Document(text=f'Text {j} from request {i} with len {len_request}')
+                for j in range(len_request)
+            ]
+        )
 
     async def process_request(req):
         q = await bq.push(req)

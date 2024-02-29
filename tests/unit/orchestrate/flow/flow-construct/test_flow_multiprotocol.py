@@ -110,7 +110,9 @@ def test_flow_multiprotocol_yaml():
 
 
 def test_flow_multiprotocol_ports_protocols_mismatch():
-    flow = Flow().config_gateway(port=[random_port(), random_port()], protocol=['grpc', 'http', 'websocket'])
+    flow = Flow().config_gateway(
+        port=[random_port(), random_port()], protocol=['grpc', 'http', 'websocket']
+    )
     with pytest.raises(ValueError) as err_info:
         with flow:
             pass

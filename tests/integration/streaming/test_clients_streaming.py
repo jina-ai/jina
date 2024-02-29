@@ -124,7 +124,7 @@ def test_disable_prefetch_slow_client_fast_executor(protocol, inputs, use_stream
             inputs=inputs,
             request_size=1,
             on_done=lambda response: on_done(response, final_da),
-            stream=use_stream
+            stream=use_stream,
         )
 
     assert len(final_da) == INPUT_LEN
@@ -168,7 +168,7 @@ def test_disable_prefetch_fast_client_slow_executor(protocol, inputs, use_stream
             inputs=inputs,
             request_size=1,
             on_done=lambda response: on_done(response, final_da),
-            stream=use_stream
+            stream=use_stream,
         )
 
     assert len(final_da) == INPUT_LEN
@@ -242,7 +242,11 @@ def test_multiple_clients(prefetch, protocol, info_log_level, use_stream):
 
     def client(gen, port):
         Client(protocol=protocol, port=port, prefetch=prefetch).post(
-            on='/index', inputs=gen, request_size=1, return_responses=True, stream=use_stream
+            on='/index',
+            inputs=gen,
+            request_size=1,
+            return_responses=True,
+            stream=use_stream,
         )
 
     pool: List[Process] = []
@@ -271,7 +275,12 @@ def test_multiple_clients(prefetch, protocol, info_log_level, use_stream):
 
         order_of_ids = list(
             Client(protocol=protocol, port=f.port, prefetch=prefetch)
-            .post(on='/status', inputs=[Document()], return_responses=True, stream=use_stream)[0]
+            .post(
+                on='/status',
+                inputs=[Document()],
+                return_responses=True,
+                stream=use_stream,
+            )[0]
             .docs[0]
             .tags['ids']
         )
@@ -291,7 +300,9 @@ def test_multiple_clients(prefetch, protocol, info_log_level, use_stream):
 
     When there are no rules, badguy wins! With rule, you find balance in the world.        
     """
-    if prefetch == 5 and use_stream: # if stream is False the prefetch is controleed by each client and then it applies per client
+    if (
+        prefetch == 5 and use_stream
+    ):  # if stream is False the prefetch is controleed by each client and then it applies per client
         assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'badguy'}
     elif prefetch == 0:
         assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'goodguy'}

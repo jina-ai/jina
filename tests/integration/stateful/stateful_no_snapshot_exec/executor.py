@@ -26,14 +26,18 @@ class MyStateExecutorNoSnapshot(Executor):
 
     @requests(on=['/index'])
     @write
-    def index(self, docs: DocumentArray[TextDocWithId], **kwargs) -> DocumentArray[TextDocWithId]:
+    def index(
+        self, docs: DocumentArray[TextDocWithId], **kwargs
+    ) -> DocumentArray[TextDocWithId]:
         for doc in docs:
             self.logger.debug(f'Indexing doc {doc.text} with ID {doc.id}')
             self._docs.append(doc)
             self._docs_dict[doc.id] = doc
 
     @requests(on=['/search'])
-    def search(self, docs: DocumentArray[TextDocWithId], **kwargs) -> DocumentArray[TextDocWithId]:
+    def search(
+        self, docs: DocumentArray[TextDocWithId], **kwargs
+    ) -> DocumentArray[TextDocWithId]:
         for doc in docs:
             self.logger.debug(f'Searching against {len(self._docs)} documents')
             doc.text = self._docs_dict[doc.id].text
@@ -41,8 +45,12 @@ class MyStateExecutorNoSnapshot(Executor):
             doc.tags['num'] = random_num
 
     @requests(on=['/similarity'])
-    def search_similarity(self, docs: DocumentArray[TextDocWithId], **kwargs) -> DocumentArray[TextDocWithId]:
+    def search_similarity(
+        self, docs: DocumentArray[TextDocWithId], **kwargs
+    ) -> DocumentArray[TextDocWithId]:
         for doc in docs:
-            self.logger.debug(f'Searching similarity against {len(self._docs)} documents')
+            self.logger.debug(
+                f'Searching similarity against {len(self._docs)} documents'
+            )
             doc.text = 'similarity'
             doc.l = [doc.id for doc in self._docs]

@@ -29,11 +29,11 @@ class AsyncRequestsIterator:
     """Iterator to allow async iteration of blocking/non-blocking iterator from the Client"""
 
     def __init__(
-            self,
-            iterator: Union[Iterator, AsyncIterator],
-            request_counter: Optional[_RequestsCounter] = None,
-            prefetch: int = 0,
-            iterate_sync_in_thread: bool = True,
+        self,
+        iterator: Union[Iterator, AsyncIterator],
+        request_counter: Optional[_RequestsCounter] = None,
+        prefetch: int = 0,
+        iterate_sync_in_thread: bool = True,
     ) -> None:
         """Async request iterator
 
@@ -70,6 +70,7 @@ class AsyncRequestsIterator:
             """
 
             if not self._iterate_sync_in_thread:
+
                 async def _get_next():
                     try:
                         req = self.iterator.__next__()

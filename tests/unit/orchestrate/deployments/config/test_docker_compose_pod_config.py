@@ -376,14 +376,18 @@ def test_worker_services(name: str, shards: str):
         (['12345', '12344', '12343'], ['grpc', 'http', 'websocket']),
     ],
 )
-@pytest.mark.parametrize('custom_gateway', ['jinaai+docker://jina/custom-gateway', None])
-def test_docker_compose_gateway(monkeypatch, deployments_addresses, custom_gateway, port, protocol):
+@pytest.mark.parametrize(
+    'custom_gateway', ['jinaai+docker://jina/custom-gateway', None]
+)
+def test_docker_compose_gateway(
+    monkeypatch, deployments_addresses, custom_gateway, port, protocol
+):
     from hubble.executor.hubio import HubExecutor, HubIO
 
     def _mock_fetch(
-            name,
-            *args,
-            **kwargs,
+        name,
+        *args,
+        **kwargs,
     ):
         return (
             HubExecutor(
@@ -527,10 +531,7 @@ def test_docker_compose_yaml_regular_deployment(
     if shards > 1:
         head_name, head_config = yaml_configs[0]
         assert head_name == 'executor-head'
-        assert (
-            head_config['image']
-            == f'jinaai/jina:test-pip'
-        )
+        assert head_config['image'] == f'jinaai/jina:test-pip'
         assert head_config['entrypoint'] == ['jina']
         head_args = head_config['command']
         assert head_args[0] == 'executor'

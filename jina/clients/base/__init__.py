@@ -1,4 +1,5 @@
 """Module containing the Base Client for Jina."""
+
 import abc
 import argparse
 import inspect
@@ -48,9 +49,11 @@ class BaseClient(InstrumentationMixin, ABC):
             os.unsetenv('https_proxy')
         self._inputs = None
         self._setup_instrumentation(
-            name=self.args.name
-            if hasattr(self.args, 'name')
-            else self.__class__.__name__,
+            name=(
+                self.args.name
+                if hasattr(self.args, 'name')
+                else self.__class__.__name__
+            ),
             tracing=self.args.tracing,
             traces_exporter_host=self.args.traces_exporter_host,
             traces_exporter_port=self.args.traces_exporter_port,
@@ -180,8 +183,7 @@ class BaseClient(InstrumentationMixin, ABC):
         on_error: Optional['CallbackFnType'] = None,
         on_always: Optional['CallbackFnType'] = None,
         **kwargs,
-    ):
-        ...
+    ): ...
 
     @abc.abstractmethod
     def _is_flow_ready(self, **kwargs) -> bool:

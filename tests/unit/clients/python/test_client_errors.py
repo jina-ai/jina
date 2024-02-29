@@ -41,7 +41,10 @@ def test_grpc_stream_transient_error_iterable_input(port_generator, mocker):
     random_port = port_generator()
     stop_event = multiprocessing.Event()
     start_event = multiprocessing.Event()
-    t = multiprocessing.Process(target=_start_runtime, args=('grpc', random_port, 'flow', stop_event, start_event))
+    t = multiprocessing.Process(
+        target=_start_runtime,
+        args=('grpc', random_port, 'flow', stop_event, start_event),
+    )
     t.start()
     start_event.wait(5)
     max_attempts = 5
@@ -66,12 +69,14 @@ def test_grpc_stream_transient_error_iterable_input(port_generator, mocker):
 
                 on_error_mock.assert_not_called()
             except ConnectionError as err:
-                sync_wait_or_raise_err(attempt=attempt,
-                                       err=err,
-                                       max_attempts=max_attempts,
-                                       backoff_multiplier=backoff_multiplier,
-                                       initial_backoff=initial_backoff,
-                                       max_backoff=max_backoff)
+                sync_wait_or_raise_err(
+                    attempt=attempt,
+                    err=err,
+                    max_attempts=max_attempts,
+                    backoff_multiplier=backoff_multiplier,
+                    initial_backoff=initial_backoff,
+                    max_backoff=max_backoff,
+                )
     finally:
         stop_event.set()
         t.join(5)
@@ -81,13 +86,15 @@ def test_grpc_stream_transient_error_iterable_input(port_generator, mocker):
 @pytest.mark.timeout(90)
 @pytest.mark.parametrize('flow_or_deployment', ['deployment', 'flow'])
 def test_grpc_stream_transient_error_docarray_input(
-        flow_or_deployment, port_generator, mocker
+    flow_or_deployment, port_generator, mocker
 ):
     random_port = port_generator()
     stop_event = multiprocessing.Event()
     start_event = multiprocessing.Event()
-    t = multiprocessing.Process(target=_start_runtime,
-                                args=('grpc', random_port, flow_or_deployment, stop_event, start_event))
+    t = multiprocessing.Process(
+        target=_start_runtime,
+        args=('grpc', random_port, flow_or_deployment, stop_event, start_event),
+    )
     t.start()
     start_event.wait(5)
     num_docs = 10
@@ -121,13 +128,15 @@ def test_grpc_stream_transient_error_docarray_input(
 @pytest.mark.parametrize('flow_or_deployment', ['deployment', 'flow'])
 @pytest.mark.ignore
 async def test_async_grpc_stream_transient_error(
-        flow_or_deployment, port_generator, mocker
+    flow_or_deployment, port_generator, mocker
 ):
     random_port = port_generator()
     stop_event = multiprocessing.Event()
     start_event = multiprocessing.Event()
-    t = multiprocessing.Process(target=_start_runtime,
-                                args=('grpc', random_port, flow_or_deployment, stop_event, start_event))
+    t = multiprocessing.Process(
+        target=_start_runtime,
+        args=('grpc', random_port, flow_or_deployment, stop_event, start_event),
+    )
     t.start()
     start_event.wait(5)
     max_attempts = 5
@@ -173,7 +182,7 @@ async def test_async_grpc_stream_transient_error(
 @pytest.mark.parametrize('flow_or_deployment', ['flow', 'deployment'])
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_sync_clients_max_attempts_transient_error(
-        mocker, flow_or_deployment, protocol, port_generator
+    mocker, flow_or_deployment, protocol, port_generator
 ):
     if flow_or_deployment == 'deployment' and protocol in ['websocket', 'http']:
         return
@@ -181,8 +190,10 @@ def test_sync_clients_max_attempts_transient_error(
     client = Client(host=f'{protocol}://localhost:{random_port}')
     stop_event = multiprocessing.Event()
     start_event = multiprocessing.Event()
-    t = multiprocessing.Process(target=_start_runtime,
-                                args=(protocol, random_port, flow_or_deployment, stop_event, start_event))
+    t = multiprocessing.Process(
+        target=_start_runtime,
+        args=(protocol, random_port, flow_or_deployment, stop_event, start_event),
+    )
     t.start()
     start_event.wait(5)
     try:

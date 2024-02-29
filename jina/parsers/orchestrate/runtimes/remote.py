@@ -21,8 +21,8 @@ def mixin_remote_runtime_parser(parser):
         default=[__default_host__],
         action=CastHostAction,
         help=f'The host of the Gateway, which the client should connect to, by default it is {__default_host__}.'
-             ' In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts. '
-             ' Then, every resulting address will be considered as one replica of the Executor.',
+        ' In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts. '
+        ' Then, every resulting address will be considered as one replica of the Executor.',
     )
 
 
@@ -100,7 +100,7 @@ def mixin_gateway_streamer_parser(arg_group):
         '--compression',
         choices=['NoCompression', 'Deflate', 'Gzip'],
         help='The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, '
-             'check https://grpc.github.io/grpc/python/grpc.html#compression.',
+        'check https://grpc.github.io/grpc/python/grpc.html#compression.',
     )
 
     arg_group.add_argument(
@@ -190,8 +190,8 @@ def _add_proxy(arg_group):
         action='store_true',
         default=False,
         help='If set, respect the http_proxy and https_proxy environment variables. '
-             'otherwise, it will unset these proxy variables before start. '
-             'gRPC seems to prefer no proxy',
+        'otherwise, it will unset these proxy variables before start. '
+        'gRPC seems to prefer no proxy',
     )
 
 

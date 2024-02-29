@@ -8,7 +8,9 @@ from jina import Flow, Executor
 
 class SlowExecutor(Executor):
     def close(self) -> None:
-        with open(os.path.join(self.metas.workspace, 'test'), 'w', encoding='utf-8') as f:
+        with open(
+            os.path.join(self.metas.workspace, 'test'), 'w', encoding='utf-8'
+        ) as f:
             time.sleep(10)
             f.write('x')
 

@@ -39,18 +39,20 @@ class ImportExtensions:
 
     def __enter__(self):
         return self
-    
+
     def _check_v(self, v, missing_module):
         if (
-                v.strip()
-                and not v.startswith('#')
-                and v.startswith(missing_module)
-                and ':' in v
-            ):
+            v.strip()
+            and not v.startswith('#')
+            and v.startswith(missing_module)
+            and ':' in v
+        ):
             return True
 
     def _find_missing_module_in_extra_req(self, missing_module):
-        with open(os.path.join(__resources_path__, 'extra-requirements.txt'), encoding='utf-8') as fp:
+        with open(
+            os.path.join(__resources_path__, 'extra-requirements.txt'), encoding='utf-8'
+        ) as fp:
             for v in fp:
                 if self._check_v(v, missing_module):
                     missing_module, install_tags = v.split(':')
@@ -62,7 +64,6 @@ class ImportExtensions:
         missing_module = self._pkg_name or exc_val.name
         missing_module = self._find_missing_module_in_extra_req(missing_module)
         return missing_module
-
 
     def _err_msg(self, exc_val, missing_module):
         if self._tags:
@@ -84,7 +85,7 @@ class ImportExtensions:
         else:
             err_msg = f'{exc_val.msg}'
         return err_msg
-    
+
     def _log_critical(self, err_msg):
         if self._verbose and self._logger:
             self._logger.critical(err_msg)
@@ -95,7 +96,7 @@ class ImportExtensions:
         if self._verbose and self._logger:
             self._logger.warning(err_msg)
             if self._help_text:
-                self._logger.info(self._help_text)   
+                self._logger.info(self._help_text)
 
     def _raise_or_supress(self, err_msg, exc_val):
         if self._verbose and not self._logger:
@@ -107,14 +108,12 @@ class ImportExtensions:
             self._log_warning(err_msg)
             return True  # suppress the error
 
-
     def __exit__(self, exc_type, exc_val, traceback):
         if exc_type != ModuleNotFoundError:
             return
         missing_module = self._find_missing_module(exc_val)
         err_msg = self._err_msg(exc_val, missing_module)
         return self._raise_or_supress(err_msg, exc_val)
-        
 
 
 def _path_import(absolute_path: str):

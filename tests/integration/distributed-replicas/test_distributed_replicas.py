@@ -132,7 +132,9 @@ def test_distributed_replicas_hosts_mismatch(input_docs):
     'use_stream',
     [True, False],
 )
-def test_distributed_replicas_host_parsing(input_docs, hosts_as_list, ports_as_list, use_stream):
+def test_distributed_replicas_host_parsing(
+    input_docs, hosts_as_list, ports_as_list, use_stream
+):
     port1, port2 = random_port(), random_port()
     args1, args2 = _external_deployment_args(
         num_shards=1, port=port1

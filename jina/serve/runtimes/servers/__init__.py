@@ -24,13 +24,13 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
     """
 
     def __init__(
-            self,
-            name: Optional[str] = 'gateway',
-            runtime_args: Optional[Dict] = None,
-            req_handler_cls=None,
-            req_handler=None,
-            is_cancel=None,
-            **kwargs,
+        self,
+        name: Optional[str] = 'gateway',
+        runtime_args: Optional[Dict] = None,
+        req_handler_cls=None,
+        req_handler=None,
+        is_cancel=None,
+        **kwargs,
     ):
         self.name = name or ''
         self.runtime_args = runtime_args
@@ -40,6 +40,7 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         except:
             # in some unit tests we instantiate the server without an asyncio Loop
             import threading
+
             self.is_cancel = threading.Event()
         if isinstance(runtime_args, Dict):
             self.works_as_load_balancer = runtime_args.get(
@@ -192,11 +193,11 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
 
     @staticmethod
     def is_ready(
-            ctrl_address: str,
-            protocol: Optional[str] = 'grpc',
-            timeout: float = 1.0,
-            logger=None,
-            **kwargs,
+        ctrl_address: str,
+        protocol: Optional[str] = 'grpc',
+        timeout: float = 1.0,
+        logger=None,
+        **kwargs,
     ) -> bool:
         """
         Check if status is ready.
@@ -219,11 +220,11 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
 
     @staticmethod
     async def async_is_ready(
-            ctrl_address: str,
-            protocol: Optional[str] = 'grpc',
-            timeout: float = 1.0,
-            logger=None,
-            **kwargs,
+        ctrl_address: str,
+        protocol: Optional[str] = 'grpc',
+        timeout: float = 1.0,
+        logger=None,
+        **kwargs,
     ) -> bool:
         """
         Check if status is ready.
@@ -246,12 +247,14 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
 
     @classmethod
     def wait_for_ready_or_shutdown(
-            cls,
-            timeout: Optional[float],
-            ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event', 'asyncio.Event'],
-            ctrl_address: str,
-            health_check: bool = False,
-            **kwargs,
+        cls,
+        timeout: Optional[float],
+        ready_or_shutdown_event: Union[
+            'multiprocessing.Event', 'threading.Event', 'asyncio.Event'
+        ],
+        ctrl_address: str,
+        health_check: bool = False,
+        **kwargs,
     ):
         """
         Check if the runtime has successfully started

@@ -11,6 +11,7 @@ from tests.k8s_otel.kind_wrapper import KindClusterWrapperV2
 # This can and probably should be put in env variable actually.
 cluster.KIND_VERSION = 'v0.11.1'
 
+
 # TODO: Can we get jina image to build here as well?
 @pytest.fixture(scope='session', autouse=True)
 def build_and_load_images(k8s_cluster_v2: KindClusterWrapperV2) -> None:
@@ -21,7 +22,7 @@ def build_and_load_images(k8s_cluster_v2: KindClusterWrapperV2) -> None:
     k8s_cluster_v2.load_docker_image(image_name='jinaai/jina', tag='test-pip')
     os.environ['JINA_GATEWAY_IMAGE'] = 'jinaai/jina:test-pip'
     yield
-    if 'JINA_GATEWAY_IMAGE' in os.environ: # maybe another fixture has already removed
+    if 'JINA_GATEWAY_IMAGE' in os.environ:  # maybe another fixture has already removed
         del os.environ['JINA_GATEWAY_IMAGE']
     k8s_cluster_v2.remove_docker_image('test-instrumentation', 'test-pip')
 

@@ -37,21 +37,29 @@ def test_flow_with_docker(executor_images_built, protocol):
         matches: DocList[MyDoc] = []
         scores: List[float] = []
 
-    f = Flow(protocol=protocol).add(uses='docker://encoder-executor').add(uses='docker://indexer-executor')
+    f = (
+        Flow(protocol=protocol)
+        .add(uses='docker://encoder-executor')
+        .add(uses='docker://indexer-executor')
+    )
 
     with f:
         if protocol == 'http':
             resp = general_requests.get(f'http://localhost:{f.port}/openapi.json')
             resp.json()
 
-        sentences = ['This framework generates embeddings for each input sentence',
-                     'Sentences are passed as a list of string.',
-                     'The quick brown fox jumps over the lazy dog.']
+        sentences = [
+            'This framework generates embeddings for each input sentence',
+            'Sentences are passed as a list of string.',
+            'The quick brown fox jumps over the lazy dog.',
+        ]
 
         inputs = DocList[MyDoc]([MyDoc(text=sentence) for sentence in sentences])
         f.post(on='/index', inputs=inputs)
         queries = inputs[0:2]
-        search_results = f.post(on='/search', inputs=queries, return_type=DocList[MyDocWithMatches])
+        search_results = f.post(
+            on='/search', inputs=queries, return_type=DocList[MyDocWithMatches]
+        )
 
         assert len(search_results) == len(queries)
         for result in search_results:

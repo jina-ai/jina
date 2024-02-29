@@ -14,8 +14,8 @@ if TYPE_CHECKING:
 
 
 def run_raft(
-        args: 'argparse.Namespace',
-        is_ready: Union['multiprocessing.Event', 'threading.Event'],
+    args: 'argparse.Namespace',
+    is_ready: Union['multiprocessing.Event', 'threading.Event'],
 ):
     """Method to run the RAFT
 
@@ -72,15 +72,15 @@ def run_raft(
 
 
 def run(
-        args: 'argparse.Namespace',
-        name: str,
-        runtime_cls: Type[AsyncNewLoopRuntime],
-        envs: Dict[str, str],
-        is_started: Union['multiprocessing.Event', 'threading.Event'],
-        is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
-        is_ready: Union['multiprocessing.Event', 'threading.Event'],
-        is_signal_handlers_installed: Union['multiprocessing.Event', 'threading.Event'],
-        jaml_classes: Optional[Dict] = None,
+    args: 'argparse.Namespace',
+    name: str,
+    runtime_cls: Type[AsyncNewLoopRuntime],
+    envs: Dict[str, str],
+    is_started: Union['multiprocessing.Event', 'threading.Event'],
+    is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
+    is_ready: Union['multiprocessing.Event', 'threading.Event'],
+    is_signal_handlers_installed: Union['multiprocessing.Event', 'threading.Event'],
+    jaml_classes: Optional[Dict] = None,
 ):
     """Method representing the :class:`BaseRuntime` activity.
 
@@ -116,12 +116,15 @@ def run(
     req_handler_cls = None
     if runtime_cls == 'GatewayRuntime':
         from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
+
         req_handler_cls = GatewayRequestHandler
     elif runtime_cls == 'WorkerRuntime':
         from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
+
         req_handler_cls = WorkerRequestHandler
     elif runtime_cls == 'HeadRuntime':
         from jina.serve.runtimes.head.request_handling import HeaderRequestHandler
+
         req_handler_cls = HeaderRequestHandler
 
     logger = JinaLogger(name, **vars(args))
@@ -142,14 +145,16 @@ def run(
             args=args,
             req_handler_cls=req_handler_cls,
             gateway_load_balancer=getattr(args, 'gateway_load_balancer', False),
-            signal_handlers_installed_event=is_signal_handlers_installed
+            signal_handlers_installed_event=is_signal_handlers_installed,
         )
     except Exception as ex:
         logger.error(
-            f'{ex!r} during {runtime_cls!r} initialization'
-            + f'\n add "--quiet-error" to suppress the exception details'
-            if not args.quiet_error
-            else '',
+            (
+                f'{ex!r} during {runtime_cls!r} initialization'
+                + f'\n add "--quiet-error" to suppress the exception details'
+                if not args.quiet_error
+                else ''
+            ),
             exc_info=not args.quiet_error,
         )
     else:
@@ -165,10 +170,12 @@ def run(
         logger.debug('process terminated')
 
 
-def run_stateful(args: 'argparse.Namespace',
-                 name: str,
-                 runtime_cls: Type[AsyncNewLoopRuntime],
-                 envs: Dict[str, str]):
+def run_stateful(
+    args: 'argparse.Namespace',
+    name: str,
+    runtime_cls: Type[AsyncNewLoopRuntime],
+    envs: Dict[str, str],
+):
     """
     Method to be called in Docker containers when Stateful Executor is required. This will start
     2 processes in the Docker container.
@@ -179,6 +186,7 @@ def run_stateful(args: 'argparse.Namespace',
     """
     import signal
     from jina.jaml import JAML
+
     is_ready = multiprocessing.Event()
     is_shutdown = multiprocessing.Event()
     is_started = multiprocessing.Event()

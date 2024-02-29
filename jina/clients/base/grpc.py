@@ -142,7 +142,9 @@ class GRPCBaseClient(BaseClient):
                                     compression=self.compression,
                                     **kwargs,
                                 )
-                                async for response in stream_rpc.stream_rpc_with_retry():
+                                async for (
+                                    response
+                                ) in stream_rpc.stream_rpc_with_retry():
                                     yield response
                             else:
                                 unary_rpc = UnaryRpc(
@@ -257,9 +259,7 @@ class GRPCBaseClient(BaseClient):
         req.header.exec_endpoint = on
         req.document_cls = inputs.__class__
         req.data.doc = inputs
-        async for response in self.stream_doc_endpoint(
-            request=req, timeout=timeout
-        ):
+        async for response in self.stream_doc_endpoint(request=req, timeout=timeout):
             yield return_type.from_protobuf(response.document)
 
 

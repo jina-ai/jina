@@ -24,10 +24,10 @@ def _fits_ws_close_msg(msg: str):
 
 
 def get_fastapi_app(
-        streamer: 'GatewayStreamer',
-        logger: 'JinaLogger',
-        tracing: Optional[bool] = None,
-        tracer_provider: Optional['trace.TracerProvider'] = None,
+    streamer: 'GatewayStreamer',
+    logger: 'JinaLogger',
+    tracing: Optional[bool] = None,
+    tracer_provider: Optional['trace.TracerProvider'] = None,
 ):
     """
     Get the app from FastAPI as the Websocket interface.
@@ -105,7 +105,7 @@ def get_fastapi_app(
                 pass
 
         async def send(
-                self, websocket: WebSocket, data: Union[DataRequest, StatusMessage]
+            self, websocket: WebSocket, data: Union[DataRequest, StatusMessage]
         ) -> None:
             subprotocol = self.protocol_dict[self.get_client(websocket)]
             if subprotocol == WebsocketSubProtocols.JSON:
@@ -159,7 +159,7 @@ def get_fastapi_app(
 
     @app.websocket('/')
     async def websocket_endpoint(
-            websocket: WebSocket, response: Response
+        websocket: WebSocket, response: Response
     ):  # 'response' is a FastAPI response, not a Jina response
         await manager.connect(websocket)
 
@@ -172,16 +172,25 @@ def get_fastapi_app(
                         # NOTE: Helps in converting camelCase to snake_case
                         # you can't do `yield from` inside an async function
                         if not docarray_v2:
-                            req_generator_input = JinaEndpointRequestModel(**request).dict()
+                            req_generator_input = JinaEndpointRequestModel(
+                                **request
+                            ).dict()
                             req_generator_input['data_type'] = DataInputType.DICT
-                            if request['data'] is not None and 'docs' in request['data']:
-                                req_generator_input['data'] = req_generator_input['data'][
-                                    'docs'
-                                ]
-                            for data_request in request_generator(**req_generator_input):
+                            if (
+                                request['data'] is not None
+                                and 'docs' in request['data']
+                            ):
+                                req_generator_input['data'] = req_generator_input[
+                                    'data'
+                                ]['docs']
+                            for data_request in request_generator(
+                                **req_generator_input
+                            ):
                                 yield data_request
                         else:
-                            raise RuntimeError(f' DocArray v2 is not compatible with {WebsocketSubProtocols.JSON} subprotocol')
+                            raise RuntimeError(
+                                f' DocArray v2 is not compatible with {WebsocketSubProtocols.JSON} subprotocol'
+                            )
                 elif isinstance(request, bytes):
                     if request == bytes(True):
                         break
@@ -238,7 +247,7 @@ def get_fastapi_app(
     @app.get(
         path='/dry_run',
         summary='Get the readiness of Jina Flow service, sends an empty DocumentArray to the complete Flow to '
-                'validate connectivity',
+        'validate connectivity',
         response_model=PROTO_TO_PYDANTIC_MODELS.StatusProto,
     )
     async def _dry_run_http():
@@ -270,7 +279,7 @@ def get_fastapi_app(
 
     @app.websocket('/dry_run')
     async def websocket_endpoint(
-            websocket: WebSocket, response: Response
+        websocket: WebSocket, response: Response
     ):  # 'response' is a FastAPI response, not a Jina response
         from jina.proto import jina_pb2
         from jina.serve.executors import __dry_run_endpoint__
@@ -283,11 +292,11 @@ def get_fastapi_app(
 
         try:
             async for _ in streamer.rpc_stream(
-                    request_iterator=request_generator(
-                        exec_endpoint=__dry_run_endpoint__,
-                        data=da,
-                        data_type=DataInputType.DOCUMENT,
-                    )
+                request_iterator=request_generator(
+                    exec_endpoint=__dry_run_endpoint__,
+                    data=da,
+                    data_type=DataInputType.DOCUMENT,
+                )
             ):
                 pass
             status_message = StatusMessage()
