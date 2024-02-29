@@ -265,6 +265,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -16520,4 +16521,24 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```7fbbfcf1```](https://github.com/jina-ai/jina/commit/7fbbfcf1929c1118a53b28782e86d9bacb6a023a)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```9194228c```](https://github.com/jina-ai/jina/commit/9194228cf79d08dc8f4f221d5f46b49a84f30784)] __-__ __version__: the next version will be 3.23.4 (*Jina Dev Bot*)
+
+<a name=release-note-3-23-5></a>
+## Release Note (`3.23.5`)
+
+> Release time: 2024-02-29 14:36:02
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Zac Li,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```8a58dfa9```](https://github.com/jina-ai/jina/commit/8a58dfa90cdc3d26f457cddf3b6a1bd8097cffe1)] __-__ batch transform update for sagemaker reranker integration (#6145) (*Zac Li*)
+
+### 🍹 Other Improvements
+
+ - [[```f008ab5f```](https://github.com/jina-ai/jina/commit/f008ab5f24866bcdd3af7865c24ccf5f5d944a1a)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```c4688f9d```](https://github.com/jina-ai/jina/commit/c4688f9de3caeff538ac35dea51a4f2931b25498)] __-__ __version__: the next version will be 3.23.5 (*Jina Dev Bot*)
 
