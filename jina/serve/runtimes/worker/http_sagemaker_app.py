@@ -76,16 +76,11 @@ def get_fastapi_app(
         input_doc_list_model=None,
         output_doc_list_model=None,
     ):
-        from docarray.base_doc.docarray_response import DocArrayResponse
-        from typing import (
-            Union,
-            List,
-            Type,
-            get_args,
-            get_origin,
-        )
-        from pydantic import BaseModel, ValidationError, parse_raw_as, parse_obj_as
         import json
+        from typing import List, Type, Union, get_args, get_origin
+
+        from docarray.base_doc.docarray_response import DocArrayResponse
+        from pydantic import BaseModel, ValidationError, parse_obj_as
 
         app_kwargs = dict(
             path=f'/{endpoint_path.strip("/")}',
@@ -160,8 +155,8 @@ def get_fastapi_app(
                     parsed_fields = {}
                     model_fields = model.__fields__
 
-                    for field_name, field_str, field_info in zip(
-                        model_fields.keys(), line, model_fields.values()
+                    for field_str, (field_name, field_info) in zip(
+                        line, model_fields.items()
                     ):
                         field_type = field_info.outer_type_
 
