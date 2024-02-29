@@ -68,7 +68,10 @@ def is_pydantic_model(annotation: Type) -> bool:
     :param annotation: The annotation from which to extract PydantiModel.
     :return: boolean indicating if a Pydantic model is inside the annotation
     """
-    from typing import get_args, get_origin
+    try:
+        from typing import get_args, get_origin
+    except ImportError:
+        from typing_extensions import get_args, get_origin
 
     from pydantic import BaseModel
 
