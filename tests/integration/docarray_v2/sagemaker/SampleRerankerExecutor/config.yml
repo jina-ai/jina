@@ -1,0 +1,8 @@
+jtype: SampleRerankerExecutor
+py_modules:
+  - executor.py
+metas:
+  name: SampleRerankerExecutor
+  description: 
+  url: 
+  keywords: []
