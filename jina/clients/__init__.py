@@ -73,7 +73,9 @@ def Client(
     # overload_inject_end_client
 
 
-def Client(args: Optional['argparse.Namespace'] = None, **kwargs) -> Union[
+def Client(
+    args: Optional['argparse.Namespace'] = None, **kwargs
+) -> Union[
     'AsyncWebSocketClient',
     'WebSocketClient',
     'AsyncGRPCClient',
