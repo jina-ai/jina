@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from jina._docarray import docarray_v2
+from jina._docarray import docarray_v2, is_pydantic_v2
 from jina.serve.helper import get_default_grpc_options
 from jina.serve.runtimes.helper import (
     _get_name_from_replicas_name,
@@ -96,10 +96,11 @@ def test_create_pydantic_model_from_schema(transformation):
     from docarray.documents import TextDoc
     from docarray.typing import AnyTensor, ImageUrl
 
-    from jina.serve.runtimes.helper import (
-        _create_aux_model_doc_list_to_list,
-        _create_pydantic_model_from_schema,
-    )
+    if not is_pydantic_v2:
+        from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list as create_pure_python_type_model
+        from jina.serve.runtimes.helper import _create_pydantic_model_from_schema as create_base_doc_from_schema
+    else:
+        from docarray.utils.create_dynamic_doc_class import create_pure_python_type_model, create_base_doc_from_schema
 
     class Nested2Doc(BaseDoc):
         value: str
@@ -124,8 +125,8 @@ def test_create_pydantic_model_from_schema(transformation):
         nested: Nested1Doc
         classvar: ClassVar[str] = 'classvar'
 
-    CustomDocCopy = _create_aux_model_doc_list_to_list(CustomDoc)
-    new_custom_doc_model = _create_pydantic_model_from_schema(
+    CustomDocCopy = create_pure_python_type_model(CustomDoc)
+    new_custom_doc_model = create_base_doc_from_schema(
         CustomDocCopy.schema(), 'CustomDoc', {}
     )
 
@@ -199,8 +200,8 @@ def test_create_pydantic_model_from_schema(transformation):
     class TextDocWithId(BaseDoc):
         ia: str
 
-    TextDocWithIdCopy = _create_aux_model_doc_list_to_list(TextDocWithId)
-    new_textdoc_with_id_model = _create_pydantic_model_from_schema(
+    TextDocWithIdCopy = create_pure_python_type_model(TextDocWithId)
+    new_textdoc_with_id_model = create_base_doc_from_schema(
         TextDocWithIdCopy.schema(), 'TextDocWithId', {}
     )
 
@@ -229,8 +230,8 @@ def test_create_pydantic_model_from_schema(transformation):
     class ResultTestDoc(BaseDoc):
         matches: DocList[TextDocWithId]
 
-    ResultTestDocCopy = _create_aux_model_doc_list_to_list(ResultTestDoc)
-    new_result_test_doc_with_id_model = _create_pydantic_model_from_schema(
+    ResultTestDocCopy = create_pure_python_type_model(ResultTestDoc)
+    new_result_test_doc_with_id_model = create_base_doc_from_schema(
         ResultTestDocCopy.schema(), 'ResultTestDoc', {}
     )
     result_test_docs = DocList[ResultTestDoc](
@@ -268,10 +269,11 @@ def test_create_empty_doc_list_from_schema(transformation):
     from docarray.documents import TextDoc
     from docarray.typing import AnyTensor, ImageUrl
 
-    from jina.serve.runtimes.helper import (
-        _create_aux_model_doc_list_to_list,
-        _create_pydantic_model_from_schema,
-    )
+    if not is_pydantic_v2:
+        from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list as create_pure_python_type_model
+        from jina.serve.runtimes.helper import _create_pydantic_model_from_schema as create_base_doc_from_schema
+    else:
+        from docarray.utils.create_dynamic_doc_class import create_pure_python_type_model, create_base_doc_from_schema
 
     class CustomDoc(BaseDoc):
         tensor: Optional[AnyTensor]
@@ -288,8 +290,8 @@ def test_create_empty_doc_list_from_schema(transformation):
         tags: Optional[Dict[str, Any]] = None
         lf: List[float] = [3.0, 4.1]
 
-    CustomDocCopy = _create_aux_model_doc_list_to_list(CustomDoc)
-    new_custom_doc_model = _create_pydantic_model_from_schema(
+    CustomDocCopy = create_pure_python_type_model(CustomDoc)
+    new_custom_doc_model = create_base_doc_from_schema(
         CustomDocCopy.schema(), 'CustomDoc', {}
     )
 
@@ -313,8 +315,8 @@ def test_create_empty_doc_list_from_schema(transformation):
     class TextDocWithId(BaseDoc):
         ia: str
 
-    TextDocWithIdCopy = _create_aux_model_doc_list_to_list(TextDocWithId)
-    new_textdoc_with_id_model = _create_pydantic_model_from_schema(
+    TextDocWithIdCopy = create_pure_python_type_model(TextDocWithId)
+    new_textdoc_with_id_model = create_base_doc_from_schema(
         TextDocWithIdCopy.schema(), 'TextDocWithId', {}
     )
 
@@ -336,8 +338,8 @@ def test_create_empty_doc_list_from_schema(transformation):
     class ResultTestDoc(BaseDoc):
         matches: DocList[TextDocWithId]
 
-    ResultTestDocCopy = _create_aux_model_doc_list_to_list(ResultTestDoc)
-    new_result_test_doc_with_id_model = _create_pydantic_model_from_schema(
+    ResultTestDocCopy = create_pure_python_type_model(ResultTestDoc)
+    new_result_test_doc_with_id_model = create_base_doc_from_schema(
         ResultTestDocCopy.schema(), 'ResultTestDoc', {}
     )
     result_test_docs = DocList[ResultTestDoc]()
@@ -360,8 +362,11 @@ def test_create_empty_doc_list_from_schema(transformation):
 @pytest.mark.skipif(not docarray_v2, reason='Test only working with docarray v2')
 def test_dynamic_class_creation_multiple_doclist_nested():
     from docarray import BaseDoc, DocList
-    from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list
-    from jina.serve.runtimes.helper import _create_pydantic_model_from_schema
+    if not is_pydantic_v2:
+        from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list as create_pure_python_type_model
+        from jina.serve.runtimes.helper import _create_pydantic_model_from_schema as create_base_doc_from_schema
+    else:
+        from docarray.utils.create_dynamic_doc_class import create_pure_python_type_model, create_base_doc_from_schema
 
     class MyTextDoc(BaseDoc):
         text: str
@@ -374,8 +379,8 @@ def test_dynamic_class_creation_multiple_doclist_nested():
 
     textlist = DocList[MyTextDoc]([MyTextDoc(text='hey')])
     models_created_by_name = {}
-    SearchResult_aux = _create_aux_model_doc_list_to_list(SearchResult)
-    _ = _create_pydantic_model_from_schema(
+    SearchResult_aux = create_pure_python_type_model(SearchResult)
+    _ = create_base_doc_from_schema(
         SearchResult_aux.schema(), 'SearchResult', models_created_by_name
     )
     QuoteFile_reconstructed_in_gateway_from_Search_results = models_created_by_name[

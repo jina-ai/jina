@@ -7,7 +7,7 @@ from typing import Dict, List, Optional, Tuple, Type
 
 import grpc.aio
 
-from jina._docarray import DocumentArray, docarray_v2
+from jina._docarray import DocumentArray, docarray_v2, is_pydantic_v2
 from jina.constants import __default_endpoint__
 from jina.excepts import InternalNetworkError
 from jina.logging.logger import JinaLogger
@@ -20,7 +20,11 @@ if docarray_v2:
     from docarray import DocList
     from docarray.documents.legacy import LegacyDocument
 
-    from jina.serve.runtimes.helper import _create_pydantic_model_from_schema
+    if not is_pydantic_v2:
+        from jina.serve.runtimes.helper import _create_pydantic_model_from_schema as create_base_doc_from_schema
+    else:
+        from docarray.utils.create_dynamic_doc_class import create_base_doc_from_schema
+
 
     legacy_doc_schema = LegacyDocument.schema()
 
@@ -239,7 +243,7 @@ class TopologyGraph:
                                             input_model = LegacyDocument
                                         else:
                                             input_model = (
-                                                _create_pydantic_model_from_schema(
+                                                create_base_doc_from_schema(
                                                     input_model_schema,
                                                     input_model_name,
                                                     models_created_by_name,
@@ -269,7 +273,7 @@ class TopologyGraph:
                                             output_model = LegacyDocument
                                         else:
                                             output_model = (
-                                                _create_pydantic_model_from_schema(
+                                                create_base_doc_from_schema(
                                                     output_model_schema,
                                                     output_model_name,
                                                     models_created_by_name,
@@ -306,7 +310,7 @@ class TopologyGraph:
                                             from pydantic import BaseModel
 
                                             parameters_model = (
-                                                _create_pydantic_model_from_schema(
+                                                create_base_doc_from_schema(
                                                     parameters_model_schema,
                                                     parameters_model_name,
                                                     models_created_by_name,

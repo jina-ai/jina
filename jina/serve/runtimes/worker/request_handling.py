@@ -20,7 +20,7 @@ from typing import (
 
 from google.protobuf.struct_pb2 import Struct
 
-from jina._docarray import DocumentArray, docarray_v2
+from jina._docarray import DocumentArray, docarray_v2, is_pydantic_v2
 from jina.constants import __default_endpoint__
 from jina.excepts import BadConfigSource, RuntimeTerminated
 from jina.helper import get_full_version
@@ -1013,21 +1013,24 @@ class WorkerRequestHandler:
         if docarray_v2:
             from docarray.documents.legacy import LegacyDocument
 
-            from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list
+            if not is_pydantic_v2:
+                from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list as create_pure_python_type_model
+            else:
+                from docarray.utils.create_dynamic_doc_class import create_pure_python_type_model
 
             legacy_doc_schema = LegacyDocument.schema()
             for endpoint_name, inner_dict in schemas.items():
                 if inner_dict['input']['model'].schema() == legacy_doc_schema:
                     inner_dict['input']['model'] = legacy_doc_schema
                 else:
-                    inner_dict['input']['model'] = _create_aux_model_doc_list_to_list(
+                    inner_dict['input']['model'] = create_pure_python_type_model(
                         inner_dict['input']['model']
                     ).schema()
 
                 if inner_dict['output']['model'].schema() == legacy_doc_schema:
                     inner_dict['output']['model'] = legacy_doc_schema
                 else:
-                    inner_dict['output']['model'] = _create_aux_model_doc_list_to_list(
+                    inner_dict['output']['model'] = create_pure_python_type_model(
                         inner_dict['output']['model']
                     ).schema()
 
