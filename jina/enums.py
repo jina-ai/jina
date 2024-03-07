@@ -271,6 +271,14 @@ class ProviderType(BetterEnum):
     SAGEMAKER = 1  #: AWS SageMaker
 
 
+class ProviderEndpointType(BetterEnum):
+    """Provider endpoint type."""
+
+    NONE = 0
+    RANK = 1
+    ENCODE = 2
+
+
 def replace_enum_to_str(obj):
     """
     Transform BetterEnum type into string.
