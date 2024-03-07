@@ -622,7 +622,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if '/invocations' in self.requests:
             return
 
-        if hasattr(self.runtime_args, 'provider_endpoint'):
+        if hasattr(self.runtime_args, 'provider_endpoint') and self.runtime_args.provider_endpoint != ProviderEndpointType.NONE:
             endpoint_to_use = ('/' + self.runtime_args.provider_endpoint.name).lower()
             if (
                 endpoint_to_use in list(self.requests.keys())
@@ -1002,8 +1002,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         port_monitoring: Optional[int] = None,
         prefer_platform: Optional[str] = None,
         protocol: Optional[Union[str, List[str]]] = ['GRPC'],
-        provider: Optional[str] = ['NONE'],
-        provider_endpoint: Optional[str] = ['NONE'],
+        provider: Optional[str] = 'NONE',
+        provider_endpoint: Optional[str] = 'NONE',
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
