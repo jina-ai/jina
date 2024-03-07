@@ -26,6 +26,10 @@ if docarray_v2:
     from docarray import DocList
     from docarray.base_doc.any_doc import AnyDoc
 
+    from jina._docarray import LegacyDocumentJina
+
+    legacy_doc_schema = LegacyDocumentJina.schema()
+
 
 if TYPE_CHECKING:  # pragma: no cover
     from prometheus_client import CollectorRegistry
@@ -333,9 +337,6 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         self, connection_pool: GrpcConnectionPool, name: str, retries: int, stop_event
     ):
         from google.protobuf import json_format
-        from docarray.documents.legacy import LegacyDocument
-
-        legacy_doc_schema = LegacyDocument.schema()
 
         async def task():
             self.logger.debug(
@@ -359,7 +360,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
 
                             if input_model_schema == legacy_doc_schema:
                                 models_created_by_name[input_model_name] = (
-                                    LegacyDocument
+                                    LegacyDocumentJina
                                 )
                             elif input_model_name not in models_created_by_name:
                                 input_model = create_base_doc_from_schema(
@@ -369,7 +370,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
 
                             if output_model_name == legacy_doc_schema:
                                 models_created_by_name[output_model_name] = (
-                                    LegacyDocument
+                                    LegacyDocumentJina
                                 )
                             elif output_model_name not in models_created_by_name:
                                 output_model = create_base_doc_from_schema(

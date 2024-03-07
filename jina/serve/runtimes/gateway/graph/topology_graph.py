@@ -18,7 +18,7 @@ from jina.types.request.data import DataRequest, SingleDocumentRequest
 
 if docarray_v2:
     from docarray import DocList
-    from docarray.documents.legacy import LegacyDocument
+    from jina._docarray import LegacyDocumentJina
 
     if not is_pydantic_v2:
         from jina.serve.runtimes.helper import _create_pydantic_model_from_schema as create_base_doc_from_schema
@@ -26,7 +26,7 @@ if docarray_v2:
         from docarray.utils.create_dynamic_doc_class import create_base_doc_from_schema
 
 
-    legacy_doc_schema = LegacyDocument.schema()
+    legacy_doc_schema = LegacyDocumentJina.schema()
 
 
 class TopologyGraph:
@@ -222,8 +222,6 @@ class TopologyGraph:
                         endp, _ = endpoints_proto
                         self.endpoints = endp.endpoints
                         if docarray_v2:
-                            from docarray.documents.legacy import LegacyDocument
-
                             schemas = json_format.MessageToDict(endp.schemas)
                             self._pydantic_models_by_endpoint = {}
                             models_created_by_name = {}
@@ -240,7 +238,7 @@ class TopologyGraph:
                                 else:
                                     if input_model_name not in models_created_by_name:
                                         if input_model_schema == legacy_doc_schema:
-                                            input_model = LegacyDocument
+                                            input_model = LegacyDocumentJina
                                         else:
                                             input_model = (
                                                 create_base_doc_from_schema(
@@ -270,7 +268,7 @@ class TopologyGraph:
                                 else:
                                     if output_model_name not in models_created_by_name:
                                         if output_model_name == legacy_doc_schema:
-                                            output_model = LegacyDocument
+                                            output_model = LegacyDocumentJina
                                         else:
                                             output_model = (
                                                 create_base_doc_from_schema(

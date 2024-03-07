@@ -33,6 +33,9 @@ from jina.types.request.data import DataRequest, SingleDocumentRequest
 
 if docarray_v2:
     from docarray import DocList
+    from jina._docarray import LegacyDocumentJina
+    legacy_doc_schema = LegacyDocumentJina.schema()
+
 
 if TYPE_CHECKING:  # pragma: no cover
     import grpc
@@ -1011,14 +1014,12 @@ class WorkerRequestHandler:
         endpoints_proto.write_endpoints.extend(list(self._executor.write_endpoints))
         schemas = self._executor._get_endpoint_models_dict()
         if docarray_v2:
-            from docarray.documents.legacy import LegacyDocument
-
             if not is_pydantic_v2:
                 from jina.serve.runtimes.helper import _create_aux_model_doc_list_to_list as create_pure_python_type_model
             else:
                 from docarray.utils.create_dynamic_doc_class import create_pure_python_type_model
 
-            legacy_doc_schema = LegacyDocument.schema()
+
             for endpoint_name, inner_dict in schemas.items():
                 if inner_dict['input']['model'].schema() == legacy_doc_schema:
                     inner_dict['input']['model'] = legacy_doc_schema

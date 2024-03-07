@@ -4,6 +4,8 @@ try:
 
     docarray_v2 = True
 
+    from jina._docarray_legacy import LegacyDocumentJina
+
 except ImportError:
     from docarray import Document, DocumentArray
 
