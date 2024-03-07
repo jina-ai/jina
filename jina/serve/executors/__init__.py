@@ -622,15 +622,18 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if '/invocations' in self.requests:
             return
 
-        if (
-            hasattr(self.runtime_args, 'provider_endpoint')
-            and self.runtime_args.provider_endpoint in list(self.requests.keys())
-            and self.runtime_args.provider_endpoint in ProviderEndpointType.__members__
-        ):
-            endpoint = self.runtime_args.provider_endpoint
-            self.logger.warning(f'Using "{endpoint}" as "/invocations" route')
-            self.requests['/invocations'] = endpoint
-            return
+        if hasattr(self.runtime_args, 'provider_endpoint'):
+            endpoint_to_use = ('/' + self.runtime_args.provider_endpoint.name).lower()
+            if (
+                endpoint_to_use in list(self.requests.keys())
+                and self.runtime_args.provider_endpoint.name
+                in ProviderEndpointType._member_names_
+            ):
+                self.logger.warning(
+                    f'Using "{endpoint_to_use}" as "/invocations" route'
+                )
+                self.requests['/invocations'] = self.requests[endpoint_to_use]
+                return
 
         if len(self.requests) == 1:
             route = list(self.requests.keys())[0]

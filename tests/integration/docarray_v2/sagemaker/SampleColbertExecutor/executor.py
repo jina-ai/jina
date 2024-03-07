@@ -1,4 +1,6 @@
+import numpy as np
 from docarray import BaseDoc, DocList
+from docarray.typing import NdArray
 from pydantic import Field
 from typing import Union, Optional, List
 from jina import Executor, requests
@@ -21,6 +23,10 @@ class RankedObjectOutput(BaseDoc):
     document: Optional[TextDoc]
 
     relevance_score: float
+
+
+class EmbeddingResponseModel(TextDoc):
+    embeddings: NdArray
 
 
 class RankedOutput(BaseDoc):
@@ -51,3 +57,16 @@ class SampleColbertExecutor(Executor):
                 )
             )
         return DocList[RankedOutput](ret)
+
+    @requests(on="/encode")
+    def bar(self, docs: DocList[TextDoc], **kwargs) -> DocList[EmbeddingResponseModel]:
+        ret = []
+        for doc in docs:
+            ret.append(
+                EmbeddingResponseModel(
+                    id=doc.id,
+                    text=doc.text,
+                    embeddings=np.random.random((1, 64)),
+                )
+            )
+        return DocList[EmbeddingResponseModel](ret)
