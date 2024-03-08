@@ -4,7 +4,7 @@ import argparse
 from dataclasses import dataclass
 from typing import Dict
 
-from jina.enums import PodRoleType, ProtocolType, ProviderEndpointType, ProviderType
+from jina.enums import PodRoleType, ProtocolType, ProviderType
 from jina.helper import random_port
 from jina.parsers.helper import (
     _SHOW_ALL_ARGS,
@@ -219,10 +219,9 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
 
     arg_group.add_argument(
         '--provider-endpoint',
-        type=ProviderEndpointType.from_string,
-        choices=list(ProviderEndpointType),
-        default=[ProviderEndpointType.NONE],
-        help=f'If set, Executor endpoint will be explicitly chosen used in the custom container operated by the provider. Choose the convenient provider endpoints from: {[provider_endpoint.to_string() for provider_endpoint in list(ProviderEndpointType)]}.',
+        type=str,
+        default=None,
+        help=f'If set, Executor endpoint will be explicitly chosen and used in the custom container operated by the provider.',
     )
 
     arg_group.add_argument(
