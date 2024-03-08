@@ -389,6 +389,7 @@ class WorkerRequestHandler:
                     'replicas': self.args.replicas,
                     'name': self.args.name,
                     'provider': self.args.provider,
+                    'provider_endpoint': self.args.provider_endpoint,
                     'metrics_registry': metrics_registry,
                     'tracer_provider': tracer_provider,
                     'meter_provider': meter_provider,
