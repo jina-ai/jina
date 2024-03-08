@@ -287,6 +287,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         prefer_platform: Optional[str] = None,
         protocol: Optional[Union[str, List[str]]] = ['GRPC'],
         provider: Optional[str] = ['NONE'],
+        provider_endpoint: Optional[str] = None,
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
@@ -387,6 +388,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
         :param protocol: Communication protocol of the server exposed by the Executor. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param provider: If set, Executor is translated to a custom container compatible with the chosen provider. Choose the convenient providers from: ['NONE', 'SAGEMAKER'].
+        :param provider_endpoint: If set, Executor endpoint will be explicitly chosen and used in the custom container operated by the provider.
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your

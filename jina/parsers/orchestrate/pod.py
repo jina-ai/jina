@@ -218,6 +218,13 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
     )
 
     arg_group.add_argument(
+        '--provider-endpoint',
+        type=str,
+        default=None,
+        help=f'If set, Executor endpoint will be explicitly chosen and used in the custom container operated by the provider.',
+    )
+
+    arg_group.add_argument(
         '--monitoring',
         action='store_true',
         default=False,

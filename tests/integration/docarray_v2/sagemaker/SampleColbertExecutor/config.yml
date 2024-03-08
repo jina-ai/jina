@@ -1,0 +1,8 @@
+jtype: SampleColbertExecutor
+py_modules:
+  - executor.py
+metas:
+  name: SampleColbertExecutor
+  description: 
+  url: 
+  keywords: []
