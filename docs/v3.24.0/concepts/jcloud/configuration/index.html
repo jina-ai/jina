@@ -1,0 +1,1134 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<meta property="og:title" content=" Configuration" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://docs.jina.ai/concepts/jcloud/configuration/" />
+<meta property="og:site_name" content="Jina 3.24.0 Documentation" />
+<meta property="og:description" content="Configuration: JCloud extends Jina’s Flow YAML specification by introducing the special field jcloud. This lets you define resources and scaling policies for each Executor and Gateway. Here’s a Flow with two Executors that have specific resource needs: indexer requires a 10 GB ebs disk, whereas e..." />
+<meta property="og:image" content="https://docs.jina.ai/_images/expose-executor.png" />
+<meta property="og:image:alt" content="Jina 3.24.0 Documentation" />
+<meta name="description" content="Configuration: JCloud extends Jina’s Flow YAML specification by introducing the special field jcloud. This lets you define resources and scaling policies for each Executor and Gateway. Here’s a Flow with two Executors that have specific resource needs: indexer requires a 10 GB ebs disk, whereas e..." />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@JinaAI_">
+<meta name="twitter:creator" content="@JinaAI_">
+<meta name="description" content="Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · Cloud Native · MLOps">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-48ZDWC8GT6');
+</script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+    
+<link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Python API" href="../../../api-rst/" /><link rel="prev" title="Jina AI Cloud Hosting" href="../" />
+        <link rel="canonical" href="https://docs.jina.ai/concepts/jcloud/configuration.html" />
+
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
+        <title>Configuration - Jina 3.24.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/docbot.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  --color-brand-primary: #009191;
+  --color-brand-content: #009191;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+    <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+    <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+    <header class="mobile-header">
+        <div class="header-left">
+            <label class="nav-overlay-icon" for="__navigation">
+                <div class="visually-hidden">Toggle site navigation sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-menu"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+        <div class="header-center">
+            <a href="../../../">
+                <div class="brand">Jina 3.24.0 documentation</div>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle-container theme-toggle-header">
+                <button class="theme-toggle">
+                    <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                    <svg class="theme-icon-when-auto">
+                        <use href="#svg-sun-half"></use>
+                    </svg>
+                    <svg class="theme-icon-when-dark">
+                        <use href="#svg-moon"></use>
+                    </svg>
+                    <svg class="theme-icon-when-light">
+                        <use href="#svg-sun"></use>
+                    </svg>
+                </button>
+            </div>
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+                <div class="visually-hidden">Toggle table of contents sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-toc"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+    </header>
+    <aside class="sidebar-drawer">
+        <div class="sidebar-container">
+            
+            <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../../../_static/logo-dark.svg" alt="Dark Logo" />
+  </div>
+  
+  
+</a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../get-started/install/"><svg aria-hidden="true" class="sd-octicon sd-octicon-desktop-download" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4.927 5.427l2.896 2.896a.25.25 0 00.354 0l2.896-2.896A.25.25 0 0010.896 5H8.75V.75a.75.75 0 10-1.5 0V5H5.104a.25.25 0 00-.177.427z"></path><path d="M1.573 2.573a.25.25 0 00-.073.177v7.5a.25.25 0 00.25.25h12.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-3a.75.75 0 110-1.5h3A1.75 1.75 0 0116 2.75v7.5A1.75 1.75 0 0114.25 12h-3.727c.099 1.041.52 1.872 1.292 2.757A.75.75 0 0111.25 16h-6.5a.75.75 0 01-.565-1.243c.772-.885 1.192-1.716 1.292-2.757H1.75A1.75 1.75 0 010 10.25v-7.5A1.75 1.75 0 011.75 1h3a.75.75 0 010 1.5h-3a.25.25 0 00-.177.073zM6.982 12a5.72 5.72 0 01-.765 2.5h3.566a5.72 5.72 0 01-.765-2.5H6.982z"></path></svg> Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/docker/">Via Docker Image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/apple-silicon-m1-m2/">On Apple Silicon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/windows/">On Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get-started/create-app/"><span class="fas fa-folder-plus"></span> Create First Project</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../preliminaries/"><span class="fas fa-egg"></span> Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../preliminaries/coding-in-python-yaml/">Coding in Python/YAML</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../serving/"><span class="fas fa-gears"></span> Serving</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../serving/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/create/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/add-endpoints/">Add Endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/serve/">Serve</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/dynamic-batching/">Dynamic Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/health-check/">Health Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/hot-reload/">Hot Reload</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/file-structure/">File Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/containerize/">Containerize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../serving/gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/gateway/health-check/">Health Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/gateway/rate-limit/">Rate Limit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/gateway/customize-http-endpoints/">Customize HTTP endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/gateway/customization/">Customization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/gateway/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../orchestration/"><span class="fas fa-network-wired"></span> Orchestration</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../orchestration/deployment/">Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../orchestration/flow/">Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../orchestration/add-executors/">Add Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../orchestration/scale-out/">Scale Out</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../orchestration/hot-reload/">Hot Reload</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../orchestration/handle-exceptions/">Handle Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../orchestration/readiness/">Readiness</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../orchestration/health-check/">Health Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../orchestration/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../orchestration/troubleshooting-on-multiprocess/">Troubleshooting on Multiprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../orchestration/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../client/"><span class="fas fa-laptop-code"></span> Client</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../client/send-receive-data/">Send &amp; Receive Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/send-parameters/">Send Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/transient-errors/">Transient Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/callbacks/">Callbacks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/rate-limit/">Rate Limit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/third-party-clients/">Third-party clients</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cloud Native</span></p>
+<ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../cloud-nativeness/k8s/"><span class="fas fa-dharmachakra"></span> Kubernetes Support</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../cloud-nativeness/kubernetes/">Deploy on Kubernetes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cloud-nativeness/docker-compose/"><span class="fab fa-docker"></span> Docker Compose Support</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../cloud-nativeness/opentelemetry/"><svg aria-hidden="true" class="sd-octicon sd-octicon-telescope-fill" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M8.531 10.21a.75.75 0 01.944.253l2.644 3.864a.75.75 0 11-1.238.847L9 12.424v2.826a.75.75 0 01-1.5 0v-2.826l-1.881 2.75a.75.75 0 01-1.238-.848l2.048-2.992a.75.75 0 01.293-.252l1.81-.871zM11.905.42a1.5 1.5 0 012.144.49l1.692 2.93a1.5 1.5 0 01-.649 2.102L2.895 11.815a1.5 1.5 0 01-1.95-.602l-.68-1.176a1.5 1.5 0 01.455-1.99L11.905.422zM3.279 8.119l.835 1.445 1.355-.653-.947-1.64-1.243.848zm7.728-1.874L9.6 3.808l1.243-.848 1.52 2.631-1.356.653z" fill-rule="evenodd"></path></svg> OpenTelemetry Support</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../cloud-nativeness/opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cloud-nativeness/monitoring/">Prometheus/Grafana Support (Legacy)</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../serving/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../serving/executor/hub/debug-executor/">Debug</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../">Jina AI Cloud Hosting</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> Configuration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML Specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../envs/"><svg aria-hidden="true" class="sd-octicon sd-octicon-list-unordered" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z" fill-rule="evenodd"></path></svg> Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../telemetry/"><span class="fas fa-tower-cell"></span> Telemetry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../docarray-support/">DocArray support</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/deploy-model/">Deploy a model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/gpu-executor/">Build a GPU Executor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/llm-serve/">Build a Streaming API for a Large Language Model</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
+</ul>
+
+    <p class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+    <ul>
+        <li class="toctree-l1">
+            <a class="reference internal" href="#">
+                <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/search-light.svg">
+                <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/search-dark.svg">
+                Jina</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://cloud.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/hub-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/hub-dark.svg">
+            Jina Hub</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://finetuner.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/finetuner-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/finetuner-dark.svg">
+            Finetuner</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://docs.docarray.org">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/docarray-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/docarray-dark.svg">
+            DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jcloud">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/JCloud-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/JCloud-dark.svg">
+            JCloud</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://now.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/now-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/now-dark.svg">
+            NOW</a></li>
+    </ul>
+</div>
+
+</div>
+
+            </div>
+            
+        </div>
+    </aside>
+    <div class="main">
+        <div class="content">
+            <div class="article-container">
+                <a href="#" class="back-to-top muted-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+                    </svg>
+                    <span>Back to top</span>
+                </a>
+                <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+                        <button class="theme-toggle">
+                            <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                            <svg class="theme-icon-when-auto">
+                                <use href="#svg-sun-half"></use>
+                            </svg>
+                            <svg class="theme-icon-when-dark">
+                                <use href="#svg-moon"></use>
+                            </svg>
+                            <svg class="theme-icon-when-light">
+                                <use href="#svg-sun"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <label class="toc-overlay-icon toc-content-icon"
+                           for="__toc">
+                        <div class="visually-hidden">Toggle table of contents sidebar</div>
+                        <i class="icon">
+                            <svg>
+                                <use href="#svg-toc"></use>
+                            </svg>
+                        </i>
+                    </label>
+                </div>
+                <article role="main">
+                    <section id="configuration">
+<span id="jcloud-configuration"></span><h1><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-file-code" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z"></path></svg> Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading">#</a></h1>
+<p>JCloud extends Jina’s <a class="reference internal" href="../../orchestration/yaml-spec/#flow-yaml-spec"><span class="std std-ref">Flow YAML specification</span></a> by introducing the special field <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>. This lets you define resources and scaling policies for each Executor and Gateway.</p>
+<p>Here’s a Flow with two Executors that have specific resource needs: <code class="docutils literal notranslate"><span class="pre">indexer</span></code> requires a 10 GB <code class="docutils literal notranslate"><span class="pre">ebs</span></code> disk, whereas <code class="docutils literal notranslate"><span class="pre">encoder</span></code> requires a G4 instance, which implies that two cores and 4 GB RAM are used. See the below sections for further information about instance types.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Encoder</span>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">      </span><span class="nt">resources</span><span class="p">:</span>
+</span><span class="hll"><span class="w">        </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">C4</span>
+</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Indexer</span>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">      </span><span class="nt">resources</span><span class="p">:</span>
+</span><span class="hll"><span class="w">        </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span>
+</span><span class="hll"><span class="w">          </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ebs</span>
+</span><span class="hll"><span class="w">          </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10G</span>
+</span></pre></div>
+</div>
+<section id="allocate-executor-resources">
+<h2>Allocate Executor resources<a class="headerlink" href="#allocate-executor-resources" title="Permalink to this heading">#</a></h2>
+<p>Since each Executor has its own business logic, it may require different cloud resources. One Executor might need more RAM, whereas another might need a bigger disk.</p>
+<p>In JCloud, you can pass highly customizable, finely-grained resource requests for each Executor using the <code class="docutils literal notranslate"><span class="pre">jcloud.resources</span></code> argument in your Flow YAML.</p>
+<section id="instance">
+<h3>Instance<a class="headerlink" href="#instance" title="Permalink to this heading">#</a></h3>
+<p>JCloud uses the concept of an “instance” to represent a specific set of hardware specifications.
+In the above example, a C4 instance type represents two cores and 4 GB RAM based on the CPU tiers instance definition table below.</p>
+<div class="note admonition">
+<p class="admonition-title">Note</p>
+<p>We will translate the raw numbers from input to instance tier that fits most closely if you are still using the legacy resource specification interface, such as:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jcloud</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">resources</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
+<span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8G</span>
+</pre></div>
+</div>
+<p>There are circumstances in the instance tier where they don’t exactly fulfill the CPU cores and memory you need, like in the above example.
+In cases like this we “ceil” the requests to the lowest tier that satisfies all the specifications.
+In this case, <code class="docutils literal notranslate"><span class="pre">C6</span></code> would be considered, as <code class="docutils literal notranslate"><span class="pre">C5</span></code>’s <code class="docutils literal notranslate"><span class="pre">Cores</span></code> are lower than what’s being requested (4 vs 8).</p>
+</div>
+<p>There are also two types of instance tiers, one for CPU instances, one for GPU.</p>
+<section id="pricing">
+<span id="jcloud-pricing"></span><h4>Pricing<a class="headerlink" href="#pricing" title="Permalink to this heading">#</a></h4>
+<p>Each instance has a fixed <code class="docutils literal notranslate"><span class="pre">Credits</span> <span class="pre">Per</span> <span class="pre">Hour</span></code> number, indicating how many credits JCloud will charge
+if a certain instance is used. For example, if an Executor uses <code class="docutils literal notranslate"><span class="pre">C3</span></code>, it implies that <code class="docutils literal notranslate"><span class="pre">10</span></code> credits will be spent
+from the operating user account. Other important facts to note:</p>
+<ul class="simple">
+<li><p>If the Flow is powering other App(s) you create, you will be charged by the App(s), not the underlying Flow.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Credits</span> <span class="pre">Per</span> <span class="pre">Hour</span></code> is on an Executor/Gateway basis, the total <code class="docutils literal notranslate"><span class="pre">Credits</span> <span class="pre">Per</span> <span class="pre">Hour</span></code> of a Flow is the sum of all the credits
+each components cost.</p></li>
+<li><p>If shards/replicas are used in an Executor/Gateway, the same instance type will be used, so <code class="docutils literal notranslate"><span class="pre">Credits</span> <span class="pre">Per</span> <span class="pre">Hour</span></code> will be multiplied.
+For example, if an Executor uses <code class="docutils literal notranslate"><span class="pre">C3</span></code> and it has two replicas, the <code class="docutils literal notranslate"><span class="pre">Credits</span> <span class="pre">Per</span> <span class="pre">Hour</span></code> for the Executor would double to <code class="docutils literal notranslate"><span class="pre">20</span></code>.
+The only exception is when sharding is used. In that case <code class="docutils literal notranslate"><span class="pre">C1</span></code> would be used for the shards head, regardless of what instance type has been entered for the shared Executor.</p></li>
+</ul>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Please visit <a class="reference external" href="https://cloud.jina.ai/pricing/">Jina AI Cloud Pricing</a> for more information about billing and credits.</p>
+</div>
+</section>
+<section id="cpu-tiers">
+<h4>CPU tiers<a class="headerlink" href="#cpu-tiers" title="Permalink to this heading">#</a></h4>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Instance</p></th>
+<th class="head"><p>Cores</p></th>
+<th class="head"><p>Memory</p></th>
+<th class="head"><p>Credits per hour</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>C1</p></td>
+<td><p>0.1</p></td>
+<td><p>0.2 GB</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>C2</p></td>
+<td><p>0.5</p></td>
+<td><p>1 GB</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>C3</p></td>
+<td><p>1</p></td>
+<td><p>2 GB</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-odd"><td><p>C4</p></td>
+<td><p>2</p></td>
+<td><p>4 GB</p></td>
+<td><p>20</p></td>
+</tr>
+<tr class="row-even"><td><p>C5</p></td>
+<td><p>4</p></td>
+<td><p>8 GB</p></td>
+<td><p>40</p></td>
+</tr>
+<tr class="row-odd"><td><p>C6</p></td>
+<td><p>8</p></td>
+<td><p>16 GB</p></td>
+<td><p>80</p></td>
+</tr>
+<tr class="row-even"><td><p>C7</p></td>
+<td><p>16</p></td>
+<td><p>32 GB</p></td>
+<td><p>160</p></td>
+</tr>
+<tr class="row-odd"><td><p>C8</p></td>
+<td><p>32</p></td>
+<td><p>64 GB</p></td>
+<td><p>320</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>By default, C1 is allocated to each Executor and Gateway.</p>
+<p>JCloud offers the general Intel Xeon processor (Skylake 8175M or Cascade Lake 8259CL) for the CPU instances.</p>
+</section>
+<section id="gpu-tiers">
+<h4>GPU tiers<a class="headerlink" href="#gpu-tiers" title="Permalink to this heading">#</a></h4>
+<p>JCloud supports GPU workloads with two different usages: <code class="docutils literal notranslate"><span class="pre">shared</span></code> or <code class="docutils literal notranslate"><span class="pre">dedicated</span></code>.</p>
+<p>If GPU is enabled, JCloud will provide NVIDIA A10G Tensor Core GPUs with 24 GB memory for workloads in both usage types.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>When using GPU resources, it may take a few extra minutes before all Executors are ready to serve traffic.</p>
+</div>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Instance</p></th>
+<th class="head"><p>GPU</p></th>
+<th class="head"><p>Memory</p></th>
+<th class="head"><p>Credits per hour</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>G1</p></td>
+<td><p>shared</p></td>
+<td><p>14 GB</p></td>
+<td><p>100</p></td>
+</tr>
+<tr class="row-odd"><td><p>G2</p></td>
+<td><p>1</p></td>
+<td><p>14 GB</p></td>
+<td><p>125</p></td>
+</tr>
+<tr class="row-even"><td><p>G3</p></td>
+<td><p>2</p></td>
+<td><p>24 GB</p></td>
+<td><p>250</p></td>
+</tr>
+<tr class="row-odd"><td><p>G4</p></td>
+<td><p>4</p></td>
+<td><p>56 GB</p></td>
+<td><p>500</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="shared-gpu">
+<h5>Shared GPU<a class="headerlink" href="#shared-gpu" title="Permalink to this heading">#</a></h5>
+<p>An Executor using a <code class="docutils literal notranslate"><span class="pre">shared</span></code> GPU shares this GPU with up to four other Executors.
+This enables time-slicing, which allows workloads that land on oversubscribed GPUs to interleave with one another.</p>
+<p>To use <code class="docutils literal notranslate"><span class="pre">shared</span></code> GPU, <code class="docutils literal notranslate"><span class="pre">G1</span></code> needs to be specified as the instance type.</p>
+<p>The tradeoffs with a <code class="docutils literal notranslate"><span class="pre">shared</span></code> GPU are increased latency, jitter, and potential out-of-memory (OOM) conditions when many different applications are time-slicing on the GPU. If your application is consuming a lot of memory, we suggest using a dedicated GPU.</p>
+</section>
+<section id="dedicated-gpu">
+<h5>Dedicated GPU<a class="headerlink" href="#dedicated-gpu" title="Permalink to this heading">#</a></h5>
+<p>Using a dedicated GPU is the default way to provision a GPU for an Executor. This automatically creates nodes or assigns the Executor to a GPU node. In this case, the Executor owns the whole GPU.</p>
+<p>To use a <code class="docutils literal notranslate"><span class="pre">dedicated</span></code> GPU, <code class="docutils literal notranslate"><span class="pre">G2</span></code>/ <code class="docutils literal notranslate"><span class="pre">G3</span></code> / <code class="docutils literal notranslate"><span class="pre">G4</span></code> needs to be specified as instance type.</p>
+</section>
+</section>
+</section>
+<section id="storage">
+<h3>Storage<a class="headerlink" href="#storage" title="Permalink to this heading">#</a></h3>
+<p>JCloud supports three kinds of storage: ephemeral (default), <a class="reference external" href="https://aws.amazon.com/efs/">efs</a> (network file storage) and <a class="reference external" href="https://aws.amazon.com/ebs/">ebs</a> (block device).</p>
+<p><code class="docutils literal notranslate"><span class="pre">ephemeral</span></code> storage will assign space to an Executor when it is created. Data in <code class="docutils literal notranslate"><span class="pre">ephemeral</span></code> storage is deleted permanently if Executors are restarted or rescheduled.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>By default, we assign <code class="docutils literal notranslate"><span class="pre">ephemeral</span></code> storage to all Executors in a Flow. This lets the storage resize dynamically, so you don’t need to shrink/grow volumes manually.</p>
+<p>If your Executor needs to share data with other Executors and retain data persistency, consider using <code class="docutils literal notranslate"><span class="pre">efs</span></code>. Note that:</p>
+<ul class="simple">
+<li><p>IO performance is slower compared to <code class="docutils literal notranslate"><span class="pre">ebs</span></code> or <code class="docutils literal notranslate"><span class="pre">ephemeral</span></code></p></li>
+<li><p>The disk can be shared with other Executors or Flows.</p></li>
+<li><p>Default storage size is 5 GB.</p></li>
+</ul>
+<p>If your Executor needs high IO, you can use <code class="docutils literal notranslate"><span class="pre">ebs</span></code> instead. Note that:</p>
+<ul class="simple">
+<li><p>The disk cannot be shared with other Executors or Flows.</p></li>
+<li><p>Default storage size is 5 GB.</p></li>
+</ul>
+</div>
+<p>JCloud also supports retaining the data that a Flow was using while it was active. You can set the <code class="docutils literal notranslate"><span class="pre">retain</span></code> argument to <code class="docutils literal notranslate"><span class="pre">true</span></code> to enable this feature.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">      </span><span class="nt">resources</span><span class="p">:</span>
+</span><span class="hll"><span class="w">        </span><span class="nt">storage</span><span class="p">:</span>
+</span><span class="hll"><span class="w">          </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ebs</span>
+</span><span class="hll"><span class="w">          </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10G</span>
+</span><span class="hll"><span class="w">          </span><span class="nt">retain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor2</span>
+<span class="hll"><span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor2</span>
+</span><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">resources</span><span class="p">:</span>
+<span class="hll"><span class="w">        </span><span class="nt">storage</span><span class="p">:</span>
+</span><span class="w">          </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">efs</span>
+</pre></div>
+</div>
+<section id="id1">
+<h4>Pricing<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h4>
+<p>Here are the numbers in terms of credits per GB per month for the three kinds of storage described above.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Instance</p></th>
+<th class="head"><p>Credits per GB per month</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Ephemeral</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>EBS</p></td>
+<td><p>30</p></td>
+</tr>
+<tr class="row-even"><td><p>EFS</p></td>
+<td><p>75</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For example, using 10 GB of EBS storage for a month costs <code class="docutils literal notranslate"><span class="pre">30</span></code> credits.
+If shards/replicas are used, we will multiply credits further by the number of storages created.</p>
+</section>
+</section>
+</section>
+<section id="scale-out-executors">
+<h2>Scale out Executors<a class="headerlink" href="#scale-out-executors" title="Permalink to this heading">#</a></h2>
+<p>On JCloud, demand-based autoscaling functionality is naturally offered thanks to the underlying Kubernetes architecture. This means that you can maintain <a class="reference external" href="https://en.wikipedia.org/wiki/Serverless_computing">serverless</a> deployments in a cost-effective way with no headache of setting the <a class="reference external" href="https://docs.jina.ai/how-to/scale-out/#scale-out-your-executor">right number of replicas</a> anymore!</p>
+<section id="autoscaling-with-jinaai-serverless">
+<h3>Autoscaling with <code class="docutils literal notranslate"><span class="pre">jinaai+serverless://</span></code><a class="headerlink" href="#autoscaling-with-jinaai-serverless" title="Permalink to this heading">#</a></h3>
+<p>The easiest way to scale out your Executor is to use a Serverless Executor. This can be enabled by using <code class="docutils literal notranslate"><span class="pre">jinaai+serverless://</span></code> instead of <code class="docutils literal notranslate"><span class="pre">jinaai+docker://</span></code> in Executor’s <code class="docutils literal notranslate"><span class="pre">uses</span></code>, such as:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span>
+<span class="hll"><span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+serverless://&lt;username&gt;/Executor1</span>
+</span></pre></div>
+</div>
+<p>JCloud autoscaling leverages <a class="reference external" href="https://knative.dev/docs/">Knative</a> behind the scenes, and <code class="docutils literal notranslate"><span class="pre">jinahub+serverless</span></code> uses a set of Knative configurations as defaults.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>For more information about the Knative autoscaling configurations, please visit <a class="reference external" href="https://knative.dev/docs/serving/autoscaling/">Knative autoscaling</a>.</p>
+</div>
+</section>
+<section id="autoscaling-with-custom-args">
+<h3>Autoscaling with custom args<a class="headerlink" href="#autoscaling-with-custom-args" title="Permalink to this heading">#</a></h3>
+<p>If <code class="docutils literal notranslate"><span class="pre">jinaai+serverless://</span></code> doesn’t meet your requirements, you can further customize autoscaling configurations by using the <code class="docutils literal notranslate"><span class="pre">autoscale</span></code> argument on a per-Executor basis in the Flow YAML, such as:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">      </span><span class="nt">autoscale</span><span class="p">:</span>
+</span><span class="hll"><span class="w">        </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+</span><span class="hll"><span class="w">        </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+</span><span class="hll"><span class="w">        </span><span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rps</span>
+</span><span class="hll"><span class="w">        </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50</span>
+</span></pre></div>
+</div>
+<p>Below are the defaults and requirements for the configurations:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Allowed</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>min</p></td>
+<td><p>1</p></td>
+<td><p>int</p></td>
+<td><p>Minimum number of replicas (<code class="docutils literal notranslate"><span class="pre">0</span></code> means serverless)</p></td>
+</tr>
+<tr class="row-odd"><td><p>max</p></td>
+<td><p>2</p></td>
+<td><p>int, up to 5</p></td>
+<td><p>Maximum number of replicas</p></td>
+</tr>
+<tr class="row-even"><td><p>metric</p></td>
+<td><p>concurrency</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">concurrency</span></code> / <code class="docutils literal notranslate"><span class="pre">rps</span></code> / <code class="docutils literal notranslate"><span class="pre">cpu</span></code> / <code class="docutils literal notranslate"><span class="pre">memory</span></code></p></td>
+<td><p>Metric for scaling</p></td>
+</tr>
+<tr class="row-odd"><td><p>scale_down_delay</p></td>
+<td><p>30s</p></td>
+<td><p>str, <code class="docutils literal notranslate"><span class="pre">0s</span></code> &lt;= value &lt;= <code class="docutils literal notranslate"><span class="pre">1h</span></code></p></td>
+<td><p>Time window which must pass at reduced concurrency before a scaling down</p></td>
+</tr>
+<tr class="row-even"><td><p>target</p></td>
+<td><p>100</p></td>
+<td><p>int</p></td>
+<td><p>Target number the replicas try to maintain.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The unit of <code class="docutils literal notranslate"><span class="pre">target</span></code> depends of the metric specified. Refer to the table below:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Metric</p></th>
+<th class="head"><p>Target</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">concurrency</span></code></p></td>
+<td><p>Number of concurrent requests processed at any given time.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rps</span></code></p></td>
+<td><p>Number of requests processed per second per replica.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cpu</span></code></p></td>
+<td><p>Average % CPU utilization of each pod<br>(e.g. <code class="docutils literal notranslate"><span class="pre">60</span></code> means replicas will be scaled up when pods on average reach 60% CPU utilization)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">memory</span></code></p></td>
+<td><p>Average mebibytes of memory used by each pod<br>(e.g. <code class="docutils literal notranslate"><span class="pre">200</span></code> means replicas will be scaled up when the average pods’ memory consumption exceeds 200MiB).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>After you make a JCloud deployment using the autoscaling configuration, the Flow serving part is just the same: the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you can deal with the code!</p>
+<p>Note, that if <code class="docutils literal notranslate"><span class="pre">metric</span></code> is <code class="docutils literal notranslate"><span class="pre">cpu</span></code> or <code class="docutils literal notranslate"><span class="pre">memory</span></code>, <code class="docutils literal notranslate"><span class="pre">min</span></code> will be reset to 1 if user sets it to set to 0.</p>
+</section>
+<section id="id2">
+<h3>Pricing<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<p>At present, pricing for autoscaled Executor/Gateway largely follows the same <a class="reference internal" href="#jcloud-pricing"><span class="std std-ref">JCloud pricing rules</span></a> as other Jina AI services.
+We track the minimum number of replicas in autoscale configurations and use it as a multiplier for the replicas used when calculating the
+<code class="docutils literal notranslate"><span class="pre">Credits</span> <span class="pre">Per</span> <span class="pre">Hour</span></code>.</p>
+</section>
+<section id="restrictions">
+<h3>Restrictions<a class="headerlink" href="#restrictions" title="Permalink to this heading">#</a></h3>
+<div class="admonition-restrictions admonition">
+<p class="admonition-title"><strong>Restrictions</strong></p>
+<ul class="simple">
+<li><p>Autoscale does not currently allow the use of <code class="docutils literal notranslate"><span class="pre">ebs</span></code> as a storage type in combination. Please use <code class="docutils literal notranslate"><span class="pre">efs</span></code> and <code class="docutils literal notranslate"><span class="pre">ephemeral</span></code> instead.</p></li>
+<li><p>Autoscale is not supported for multi-protocol Gateways.</p></li>
+</ul>
+</div>
+</section>
+</section>
+<section id="configure-availability-tolerance">
+<h2>Configure availability tolerance<a class="headerlink" href="#configure-availability-tolerance" title="Permalink to this heading">#</a></h2>
+<p>If service issues cause disruption of Executors, JCloud lets you specify a tolerance level for number of replicas that stay up or go down.</p>
+<p>The JCloud parameters <code class="docutils literal notranslate"><span class="pre">minAvailable</span></code> and <code class="docutils literal notranslate"><span class="pre">maxUnavailable</span></code> ensure that Executors will stay up even if a certain number of replicas go down.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Name</p></th>
+<th class="head text-center"><p>Default</p></th>
+<th class="head text-center"><p>Allowed</p></th>
+<th class="head text-left"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">minAvailable</span></code></p></td>
+<td class="text-center"><p>N/A</p></td>
+<td class="text-center"><p>Lower than number of <a class="reference external" href="https://docs.jina.ai/concepts/flow/scale-out/#scale-out">replicas</a></p></td>
+<td class="text-left"><p>Minimum number of replicas available during disruption</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">maxUnavailable</span></code></p></td>
+<td class="text-center"><p>N/A</p></td>
+<td class="text-center"><p>Lower than numbers of <a class="reference external" href="https://docs.jina.ai/concepts/flow/scale-out/#scale-out">replicas</a></p></td>
+<td class="text-left"><p>Maximum number of replicas unavailable during disruption</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
+<span class="w">    </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">      </span><span class="nt">minAvailable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+</span></pre></div>
+</div>
+<p>In case of disruption, ensure at least two replicas will still be available, while three may be down.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
+<span class="w">    </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">      </span><span class="nt">maxUnavailable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+</span></pre></div>
+</div>
+<p>In case of disruption, ensure that if a maximum of two replicas are down, at least three replicas will still be available.</p>
+</section>
+<section id="configure-gateway">
+<h2>Configure Gateway<a class="headerlink" href="#configure-gateway" title="Permalink to this heading">#</a></h2>
+<p>The Gateway can be customized just like an Executor.</p>
+<section id="set-timeout">
+<h3>Set timeout<a class="headerlink" href="#set-timeout" title="Permalink to this heading">#</a></h3>
+<p>By default, the Gateway will close connections that have been idle for over 600 seconds. If you want a longer connection timeout threshold, change the <code class="docutils literal notranslate"><span class="pre">timeout</span></code> parameter under <code class="docutils literal notranslate"><span class="pre">gateway.jcloud</span></code>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="hll"><span class="nt">gateway</span><span class="p">:</span>
+</span><span class="hll"><span class="w">  </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">    </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">800</span>
+</span><span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
+</pre></div>
+</div>
+</section>
+<section id="control-gateway-resources">
+<h3>Control Gateway resources<a class="headerlink" href="#control-gateway-resources" title="Permalink to this heading">#</a></h3>
+<p>To customize the Gateway’s CPU or memory, specify the instance type under <code class="docutils literal notranslate"><span class="pre">gateway.jcloud.resources</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="hll"><span class="nt">gateway</span><span class="p">:</span>
+</span><span class="hll"><span class="w">  </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">    </span><span class="nt">resources</span><span class="p">:</span>
+</span><span class="hll"><span class="w">      </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">C3</span>
+</span><span class="hll"><span class="nt">executors</span><span class="p">:</span>
+</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Encoder</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="expose-executors">
+<h2>Expose Executors<a class="headerlink" href="#expose-executors" title="Permalink to this heading">#</a></h2>
+<p>A Flow deployment without a Gateway is often used for <a class="reference internal" href="../../orchestration/add-executors/#external-executors"><span class="std std-ref">Use external Executors</span></a>, which can be shared between different Flows. You can expose an Executor by setting <code class="docutils literal notranslate"><span class="pre">expose:</span> <span class="pre">true</span></code> (and un-expose the Gateway by setting <code class="docutils literal notranslate"><span class="pre">expose:</span> <span class="pre">false</span></code>):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="hll"><span class="nt">gateway</span><span class="p">:</span>
+</span><span class="hll"><span class="w">  </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">    </span><span class="nt">expose</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w">       </span><span class="c1"># don&#39;t expose the Gateway</span>
+</span><span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/CustomExecutor</span>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">      </span><span class="nt">expose</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">    </span><span class="c1"># expose the Executor</span>
+</span></pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../../_images/expose-executor.png"><img alt="../../../_images/expose-executor.png" src="../../../_images/expose-executor.png" style="width: 70%;" /></a>
+</figure>
+<p>You can expose the Gateway along with Executors:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="hll"><span class="nt">gateway</span><span class="p">:</span>
+</span><span class="hll"><span class="w">  </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">    </span><span class="nt">expose</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/CustomExecutor1</span>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">      </span><span class="nt">expose</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">    </span><span class="c1"># expose the Executor</span>
+</span></pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../../_images/gateway-and-executors.png"><img alt="../../../_images/gateway-and-executors.png" src="../../../_images/gateway-and-executors.png" style="width: 70%;" /></a>
+</figure>
+</section>
+<section id="other-deployment-options">
+<h2>Other deployment options<a class="headerlink" href="#other-deployment-options" title="Permalink to this heading">#</a></h2>
+<section id="customize-flow-name">
+<h3>Customize Flow name<a class="headerlink" href="#customize-flow-name" title="Permalink to this heading">#</a></h3>
+<p>You can use the <code class="docutils literal notranslate"><span class="pre">name</span></code> argument to specify the Flow name in the Flow YAML:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="hll"><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-name</span>
+</span><span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
+</pre></div>
+</div>
+</section>
+<section id="specify-jina-version">
+<h3>Specify Jina version<a class="headerlink" href="#specify-jina-version" title="Permalink to this heading">#</a></h3>
+<p>To control Jina’s version while deploying a Flow to <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>, you can pass the <code class="docutils literal notranslate"><span class="pre">version</span></code> argument in the Flow YAML:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="hll"><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.10.0</span>
+</span><span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
+</pre></div>
+</div>
+</section>
+<section id="add-labels">
+<h3>Add Labels<a class="headerlink" href="#add-labels" title="Permalink to this heading">#</a></h3>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">labels</span></code> (as key-value pairs) to attach metadata to your Flows and Executors:</p>
+<p>Flow level <code class="docutils literal notranslate"><span class="pre">labels</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="hll"><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"> </span>
+</span><span class="hll"><span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">johndoe</span>
+</span><span class="hll"><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fashion-search</span>
+</span><span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
+</pre></div>
+</div>
+<p>Executor level <code class="docutils literal notranslate"><span class="pre">labels</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">      </span><span class="nt">labels</span><span class="p">:</span>
+</span><span class="hll"><span class="w">        </span><span class="nt">index</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">partial</span>
+</span><span class="hll"><span class="w">        </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">backend</span>
+</span></pre></div>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Keys in <code class="docutils literal notranslate"><span class="pre">labels</span></code> have the following restrictions:</p>
+<ul class="simple">
+<li><p>Must be 63 characters or fewer.</p></li>
+<li><p>Must begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between.</p></li>
+<li><p>The following keys are skipped if passed in the Flow YAML.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">user</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">jina</span></code>-version</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="monitoring">
+<h3>Monitoring<a class="headerlink" href="#monitoring" title="Permalink to this heading">#</a></h3>
+<p>To enable <a class="reference external" href="https://docs.jina.ai/cloud-nativeness/opentelemetry/">tracing support</a> in Flows, you can pass <code class="docutils literal notranslate"><span class="pre">enable:</span> <span class="pre">true</span></code> argument in the Flow YAML. (Tracing support is not enabled by default in JCloud)</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="hll"><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">  </span><span class="nt">monitor</span><span class="p">:</span>
+</span><span class="hll"><span class="w">    </span><span class="nt">traces</span><span class="p">:</span>
+</span><span class="hll"><span class="w">      </span><span class="nt">enable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
+</pre></div>
+</div>
+<p>You can pass the <code class="docutils literal notranslate"><span class="pre">enable:</span> <span class="pre">true</span></code> argument to <code class="docutils literal notranslate"><span class="pre">gateway</span></code> to only enable tracing support in the Gateway:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="hll"><span class="nt">gateway</span><span class="p">:</span>
+</span><span class="hll"><span class="w">  </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">      </span><span class="nt">monitor</span><span class="p">:</span>
+</span><span class="hll"><span class="w">        </span><span class="nt">traces</span><span class="p">:</span>
+</span><span class="hll"><span class="w">          </span><span class="nt">enable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
+</pre></div>
+</div>
+<p>You can also only enable tracing support in <code class="docutils literal notranslate"><span class="pre">executor1</span></code>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+</span><span class="hll"><span class="w">      </span><span class="nt">monitor</span><span class="p">:</span>
+</span><span class="hll"><span class="w">        </span><span class="nt">traces</span><span class="p">:</span>
+</span><span class="hll"><span class="w">          </span><span class="nt">enable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+</section>
+
+                </article>
+            </div>
+            <footer>
+                
+                <div class="related-pages">
+                    <a class="next-page" href="../../../api-rst/">
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Next</span>
+                            </div>
+                            <div class="title"><span class="fab fa-python"></span> Python API</div>
+                        </div>
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+                    </a>
+                    <a class="prev-page" href="../">
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Previous</span>
+                            </div>
+                            
+                            <div class="title">Jina AI Cloud Hosting</div>
+                            
+                        </div>
+                    </a>
+                </div>
+                <div class="bottom-of-page">
+                    <div class="left-details">
+                        <div class="copyright">
+                            Copyright &#169; Jina AI Limited. All rights reserved.
+                        </div><div class="last-updated">
+                            Last updated on Mar 11, 2024</div>
+                    </div>
+                    <div class="right-details">
+                        <div class="social-btns">
+                            <a class='social-btn' href="https://github.com/jina-ai/jina" aria-label="GitHub"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                            <a class='social-btn' href="https://discord.jina.ai" aria-label="Discord" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-discord"></i></a>
+                            <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                            <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                            <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+        <aside class="toc-drawer">
+            
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-file-code" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z"></path></svg> Configuration</a><ul>
+<li><a class="reference internal" href="#allocate-executor-resources">Allocate Executor resources</a><ul>
+<li><a class="reference internal" href="#instance">Instance</a><ul>
+<li><a class="reference internal" href="#pricing">Pricing</a></li>
+<li><a class="reference internal" href="#cpu-tiers">CPU tiers</a></li>
+<li><a class="reference internal" href="#gpu-tiers">GPU tiers</a><ul>
+<li><a class="reference internal" href="#shared-gpu">Shared GPU</a></li>
+<li><a class="reference internal" href="#dedicated-gpu">Dedicated GPU</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#storage">Storage</a><ul>
+<li><a class="reference internal" href="#id1">Pricing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#scale-out-executors">Scale out Executors</a><ul>
+<li><a class="reference internal" href="#autoscaling-with-jinaai-serverless">Autoscaling with <code class="docutils literal notranslate"><span class="pre">jinaai+serverless://</span></code></a></li>
+<li><a class="reference internal" href="#autoscaling-with-custom-args">Autoscaling with custom args</a></li>
+<li><a class="reference internal" href="#id2">Pricing</a></li>
+<li><a class="reference internal" href="#restrictions">Restrictions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configure-availability-tolerance">Configure availability tolerance</a></li>
+<li><a class="reference internal" href="#configure-gateway">Configure Gateway</a><ul>
+<li><a class="reference internal" href="#set-timeout">Set timeout</a></li>
+<li><a class="reference internal" href="#control-gateway-resources">Control Gateway resources</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#expose-executors">Expose Executors</a></li>
+<li><a class="reference internal" href="#other-deployment-options">Other deployment options</a><ul>
+<li><a class="reference internal" href="#customize-flow-name">Customize Flow name</a></li>
+<li><a class="reference internal" href="#specify-jina-version">Specify Jina version</a></li>
+<li><a class="reference internal" href="#add-labels">Add Labels</a></li>
+<li><a class="reference internal" href="#monitoring">Monitoring</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
+            
+            
+        </aside>
+    </div>
+</div>
+<img referrerpolicy="no-referrer-when-downgrade"
+     src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script src="../../../_static/tabs.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
+    </body>
+</html>
