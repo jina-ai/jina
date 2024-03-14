@@ -162,10 +162,21 @@ def get_fastapi_app(
             input_doc_model = input_output_map['input']['model']
             output_doc_model = input_output_map['output']['model']
             is_generator = input_output_map['is_generator']
-            parameters_model = input_output_map['parameters']['model'] or Optional[Dict]
-            default_parameters = (
-                ... if input_output_map['parameters']['model'] else None
-            )
+            parameters_model = input_output_map['parameters']['model']
+            parameters_model_needed = parameters_model is not None
+            if parameters_model_needed:
+                try:
+                    _ = parameters_model()
+                    parameters_model_needed = False
+                except:
+                    parameters_model_needed = True
+                parameters_model = parameters_model if parameters_model_needed else Optional[parameters_model]
+                default_parameters = (
+                    ... if parameters_model_needed else None
+                )
+            else:
+                parameters_model = Optional[Dict]
+                default_parameters = None
 
             if docarray_v2:
                 _config = inherit_config(InnerConfig, BaseDoc.__config__)
