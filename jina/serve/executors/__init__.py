@@ -619,7 +619,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         ):
             return
 
+        remove_keys = set()
+        for k in self.requests.keys():
+            if k != '/invocations':
+                remove_keys.add(k)
+
         if '/invocations' in self.requests:
+            for k in remove_keys:
+                self.requests.pop(k)
             return
 
         if (
@@ -632,12 +639,16 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     f'Using "{endpoint_to_use}" as "/invocations" route'
                 )
                 self.requests['/invocations'] = self.requests[endpoint_to_use]
+                for k in remove_keys:
+                    self.requests.pop(k)
                 return
 
         if len(self.requests) == 1:
             route = list(self.requests.keys())[0]
             self.logger.warning(f'Using "{route}" as "/invocations" route')
             self.requests['/invocations'] = self.requests[route]
+            for k in remove_keys:
+                self.requests.pop(k)
             return
 
         raise ValueError('Cannot identify the endpoint to use for "/invocations"')

@@ -12,11 +12,11 @@ if docarray_v2:
 
 
 def get_fastapi_app(
-    request_models_map: Dict,
-    caller: Callable,
-    logger: 'JinaLogger',
-    cors: bool = False,
-    **kwargs,
+        request_models_map: Dict,
+        caller: Callable,
+        logger: 'JinaLogger',
+        cors: bool = False,
+        **kwargs,
 ):
     """
     Get the app from FastAPI as the REST interface.
@@ -70,11 +70,11 @@ def get_fastapi_app(
         logger.warning('CORS is enabled. This service is accessible from any website!')
 
     def add_post_route(
-        endpoint_path,
-        input_model,
-        output_model,
-        input_doc_list_model=None,
-        output_doc_list_model=None,
+            endpoint_path,
+            input_model,
+            output_model,
+            input_doc_list_model=None,
+            output_doc_list_model=None,
     ):
         import json
         from typing import List, Type, Union
@@ -155,13 +155,13 @@ def get_fastapi_app(
                     )
 
                 def construct_model_from_line(
-                    model: Type[BaseModel], line: List[str]
+                        model: Type[BaseModel], line: List[str]
                 ) -> BaseModel:
                     parsed_fields = {}
                     model_fields = model.__fields__
 
                     for field_str, (field_name, field_info) in zip(
-                        line, model_fields.items()
+                            line, model_fields.items()
                     ):
                         field_type = field_info.outer_type_
 
@@ -204,16 +204,16 @@ def get_fastapi_app(
                 field_names = [f for f in input_doc_list_model.__fields__]
                 data = []
                 for line in csv.reader(
-                    StringIO(csv_body),
-                    delimiter=',',
-                    quoting=csv.QUOTE_NONE,
-                    escapechar='\\',
+                        StringIO(csv_body),
+                        delimiter=',',
+                        quoting=csv.QUOTE_NONE,
+                        escapechar='\\',
                 ):
                     if len(line) != len(field_names):
                         raise HTTPException(
                             status_code=400,
                             detail=f'Invalid CSV format. Line {line} doesn\'t match '
-                            f'the expected field order {field_names}.',
+                                   f'the expected field order {field_names}.',
                         )
                     data.append(construct_model_from_line(input_doc_list_model, line))
 
@@ -223,17 +223,28 @@ def get_fastapi_app(
                 raise HTTPException(
                     status_code=400,
                     detail=f'Invalid content-type: {content_type}. '
-                    f'Please use either application/json or text/csv.',
+                           f'Please use either application/json or text/csv.',
                 )
 
     for endpoint, input_output_map in request_models_map.items():
         if endpoint != '_jina_dry_run_':
             input_doc_model = input_output_map['input']['model']
             output_doc_model = input_output_map['output']['model']
-            parameters_model = input_output_map['parameters']['model'] or Optional[Dict]
-            default_parameters = (
-                ... if input_output_map['parameters']['model'] else None
-            )
+            parameters_model = input_output_map['parameters']['model']
+            parameters_model_needed = parameters_model is not None
+            if parameters_model_needed:
+                try:
+                    _ = parameters_model()
+                    parameters_model_needed = False
+                except:
+                    parameters_model_needed = True
+                parameters_model = parameters_model if parameters_model_needed else Optional[parameters_model]
+                default_parameters = (
+                    ... if parameters_model_needed else None
+                )
+            else:
+                parameters_model = Optional[Dict]
+                default_parameters = None
 
             _config = inherit_config(InnerConfig, BaseDoc.__config__)
             endpoint_input_model = pydantic.create_model(
