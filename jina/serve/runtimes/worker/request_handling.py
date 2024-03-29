@@ -213,6 +213,28 @@ class WorkerRequestHandler:
 
         return app
 
+    def _http_fastapi_azure_app(self, **kwargs):
+        from jina.serve.runtimes.worker.http_azure_app import get_fastapi_app
+
+        request_models_map = self._executor._get_endpoint_models_dict()
+
+        def call_handle(request):
+            is_generator = request_models_map[request.header.exec_endpoint][
+                'is_generator'
+            ]
+
+            return self.process_single_data(request, None, is_generator=is_generator)
+
+        app = get_fastapi_app(
+            request_models_map=request_models_map, caller=call_handle, **kwargs
+        )
+
+        @app.on_event('shutdown')
+        async def _shutdown():
+            await self.close()
+
+        return app
+
     async def _hot_reload(self):
         import inspect
 

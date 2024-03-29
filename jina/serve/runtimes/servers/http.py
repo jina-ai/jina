@@ -297,3 +297,40 @@ class SagemakerHTTPServer(FastAPIBaseServer):
             cors=self.cors,
             logger=self.logger,
         )
+
+
+class AzureHTTPServer(FastAPIBaseServer):
+    """
+    :class:`AzureHTTPServer` is a FastAPIBaseServer that uses a custom FastAPI app for azure endpoints
+
+    """
+
+    @property
+    def port(self):
+        """Get the port for the azure server
+        :return: Return the port for the azure server, always 8080"""
+        return 8080
+
+    @property
+    def ports(self):
+        """Get the port for the azure server
+        :return: Return the port for the azure server, always 8080"""
+        return [8080]
+
+    @property
+    def app(self):
+        """Get the azure fastapi app
+        :return: Return a FastAPI app for the azure container
+        """
+        return self._request_handler._http_fastapi_azure_app(
+            title=self.title,
+            description=self.description,
+            no_crud_endpoints=self.no_crud_endpoints,
+            no_debug_endpoints=self.no_debug_endpoints,
+            expose_endpoints=self.expose_endpoints,
+            expose_graphql_endpoint=self.expose_graphql_endpoint,
+            tracing=self.tracing,
+            tracer_provider=self.tracer_provider,
+            cors=self.cors,
+            logger=self.logger,
+        )
