@@ -41,7 +41,7 @@ def get_fastapi_app(
     from jina.serve.runtimes.gateway.models import _to_camel_case
 
     if not docarray_v2:
-        logger.warning('Only docarray v2 is supported with Sagemaker. ')
+        logger.warning('Only docarray v2 is supported with CSP. ')
         return
 
     class Header(BaseModel):

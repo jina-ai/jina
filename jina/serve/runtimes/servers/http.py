@@ -285,7 +285,7 @@ class SagemakerHTTPServer(FastAPIBaseServer):
         """Get the sagemaker fastapi app
         :return: Return a FastAPI app for the sagemaker container
         """
-        return self._request_handler._http_fastapi_sagemaker_app(
+        return self._request_handler._http_fastapi_csp_app(
             title=self.title,
             description=self.description,
             no_crud_endpoints=self.no_crud_endpoints,
@@ -322,7 +322,7 @@ class AzureHTTPServer(FastAPIBaseServer):
         """Get the azure fastapi app
         :return: Return a FastAPI app for the azure container
         """
-        return self._request_handler._http_fastapi_azure_app(
+        return self._request_handler._http_fastapi_csp_app(
             title=self.title,
             description=self.description,
             no_crud_endpoints=self.no_crud_endpoints,
