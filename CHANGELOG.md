@@ -267,6 +267,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -662,6 +663,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.23.4`)](#release-note-3234)
 - [Release Note (`3.23.5`)](#release-note-3235)
 - [Release Note (`3.24.0`)](#release-note-3240)
+- [Release Note (`3.24.1`)](#release-note-3241)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -16566,4 +16568,28 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```69bf8f64```](https://github.com/jina-ai/jina/commit/69bf8f64be7bcb5877628aaab908c83b6812b3f0)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```d3aecc07```](https://github.com/jina-ai/jina/commit/d3aecc0703ec0b6413ee25f6aa8813f73620182e)] __-__ blackify (#6146) (*Joan Fontanals*)
  - [[```8762e003```](https://github.com/jina-ai/jina/commit/8762e003ecc5e12f54cf71921a93f5f19a44febe)] __-__ __version__: the next version will be 3.23.6 (*Jina Dev Bot*)
+
+<a name=release-note-3-24-1></a>
+## Release Note (`3.24.1`)
+
+> Release time: 2024-03-20 09:35:52
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```ade90842```](https://github.com/jina-ai/jina/commit/ade90842be6cd7c4fa14d07529888d3aa2bc436e)] __-__ fix issue with float (#6155) (*Joan Fontanals*)
+
+### 🧼 Code Refactoring
+
+ - [[```b5793f0b```](https://github.com/jina-ai/jina/commit/b5793f0b044256fb70c60fa5741d54cc9dd9d54c)] __-__ keep only sagemaker endpoint (#6152) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```64a01157```](https://github.com/jina-ai/jina/commit/64a0115753edec2860ece436d1a2822b434ffa98)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```e315f408```](https://github.com/jina-ai/jina/commit/e315f408d24e11ef7e1ff8ee53354819469b9528)] __-__ __version__: the next version will be 3.24.1 (*Jina Dev Bot*)
 
