@@ -1,0 +1,19 @@
+jina.serve.consensus.add\_voter.pb package
+==========================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   jina.serve.consensus.add_voter.pb.add_voter_pb2
+   jina.serve.consensus.add_voter.pb.add_voter_pb2_grpc
+
+Module contents
+---------------
+
+.. automodule:: jina.serve.consensus.add_voter.pb
+   :members:
+   :undoc-members:
+   :show-inheritance:
