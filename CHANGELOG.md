@@ -268,6 +268,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -664,6 +665,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.23.5`)](#release-note-3235)
 - [Release Note (`3.24.0`)](#release-note-3240)
 - [Release Note (`3.24.1`)](#release-note-3241)
+- [Release Note (`3.25.0`)](#release-note-3250)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -16592,4 +16594,25 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```64a01157```](https://github.com/jina-ai/jina/commit/64a0115753edec2860ece436d1a2822b434ffa98)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```e315f408```](https://github.com/jina-ai/jina/commit/e315f408d24e11ef7e1ff8ee53354819469b9528)] __-__ __version__: the next version will be 3.24.1 (*Jina Dev Bot*)
+
+<a name=release-note-3-25-0></a>
+## Release Note (`3.25.0`)
+
+> Release time: 2024-04-02 13:02:31
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Zac Li,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```b04f750a```](https://github.com/jina-ai/jina/commit/b04f750a7cf249e33cc8da0dd3c4b82b07e72918)] __-__ executor to azure custom container (#6159) (*Zac Li*)
+
+### 🍹 Other Improvements
+
+ - [[```05ea6ce5```](https://github.com/jina-ai/jina/commit/05ea6ce5b6a32c43e7b0d6ca2a15ef0901485591)] __-__ upgrade ver (#6160) (*Joan Fontanals*)
+ - [[```a3fb8e1b```](https://github.com/jina-ai/jina/commit/a3fb8e1b04c32fa0cccc3a71e992cbcf068bcf6e)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```5dec7992```](https://github.com/jina-ai/jina/commit/5dec79924bb3b423d5e0cb21e6e5ff1c74782b61)] __-__ __version__: the next version will be 3.24.2 (*Jina Dev Bot*)
 
