@@ -619,7 +619,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         ):
             return
 
+        remove_keys = set()
+        for k in self.requests.keys():
+            if k != '/invocations':
+                remove_keys.add(k)
+
         if '/invocations' in self.requests:
+            for k in remove_keys:
+                self.requests.pop(k)
             return
 
         if (
@@ -632,12 +639,16 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     f'Using "{endpoint_to_use}" as "/invocations" route'
                 )
                 self.requests['/invocations'] = self.requests[endpoint_to_use]
+                for k in remove_keys:
+                    self.requests.pop(k)
                 return
 
         if len(self.requests) == 1:
             route = list(self.requests.keys())[0]
             self.logger.warning(f'Using "{route}" as "/invocations" route')
             self.requests['/invocations'] = self.requests[route]
+            for k in remove_keys:
+                self.requests.pop(k)
             return
 
         raise ValueError('Cannot identify the endpoint to use for "/invocations"')
@@ -1102,7 +1113,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
         :param protocol: Communication protocol of the server exposed by the Executor. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
-        :param provider: If set, Executor is translated to a custom container compatible with the chosen provider. Choose the convenient providers from: ['NONE', 'SAGEMAKER'].
+        :param provider: If set, Executor is translated to a custom container compatible with the chosen provider. Choose the convenient providers from: ['NONE', 'SAGEMAKER', 'AZURE'].
         :param provider_endpoint: If set, Executor endpoint will be explicitly chosen and used in the custom container operated by the provider.
         :param py_modules: The customized python modules need to be imported before loading the executor
 
