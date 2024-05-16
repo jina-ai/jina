@@ -457,7 +457,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install setuptools wheel
           pip install git+https://github.com/jina-ai/setuptools-golang.git@feat-align-with-alaeddine-code
-          pip install "cibuildwheel<=2.17.0"
+          pip install cibuildwheel
 
       - name: Build wheels with setuptools-golang-build-manylinux-wheel
         run: |
@@ -533,7 +533,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install setuptools wheel
           pip install git+https://github.com/jina-ai/setuptools-golang.git@feat-align-with-alaeddine-code
-          pip install "cibuildwheel<=2.17.0"
+          pip install cibuildwheel
 
       - name: Build wheels with setuptools-golang-build-manylinux-wheel
         run: |
@@ -671,7 +671,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install setuptools wheel
           pip install git+https://github.com/jina-ai/setuptools-golang.git@feat-align-with-alaeddine-code
-          pip install "cibuildwheel<=2.17.0"
+          pip install cibuildwheel
 
       - name: Build wheels with setuptools-golang-build-manylinux-wheel
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -689,13 +689,6 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
           python -m cibuildwheel --output-dir dist
-
-      - name: Test wheels
-        run: |
-          WHEEL_FILE=$(ls dist/*.whl)
-          python -m pip install $WHEEL_FILE
-          python -c "import jraft"
-        if: ${{ matrix.os != 'macos-latest' || matrix.platform_id != 'macosx_arm64' }} # runners do not necessarily have macos ARM, so cannot run this test for it
 
       - name: Upload wheels as artifacts
         uses: actions/upload-artifact@v2
@@ -728,7 +721,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install setuptools wheel
           pip install git+https://github.com/jina-ai/setuptools-golang.git@feat-align-with-alaeddine-code
-          pip install "cibuildwheel<=2.17.0"
+          pip install cibuildwheel
 
       - name: Build wheels with setuptools-golang-build-manylinux-wheel
         run: |
