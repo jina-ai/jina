@@ -144,10 +144,10 @@ perf_deps = all_deps['perf'].union(core_deps)
 standard_deps = all_deps['standard'].union(core_deps).union(perf_deps)
 
 # uvloop is not supported on windows
-perf_deps = {i+";platform_system!='Windows'" if i.startswith('uvloop') else i for i in perf_deps}
-standard_deps = {i+";platform_system!='Windows'" if i.startswith('uvloop') else i for i in standard_deps}
+perf_deps = {i + ";platform_system!='Windows'" if i.startswith('uvloop') else i for i in perf_deps}
+standard_deps = {i + ";platform_system!='Windows'" if i.startswith('uvloop') else i for i in standard_deps}
 for k in ['all', 'devel', 'cicd']:
-    all_deps[k] = {i+";platform_system!='Windows'" if i.startswith('uvloop') else i for i in all_deps[k]}
+    all_deps[k] = {i + ";platform_system!='Windows'" if i.startswith('uvloop') else i for i in all_deps[k]}
 
 # by default, final deps is the standard deps, unless specified by env otherwise
 final_deps = standard_deps
@@ -193,11 +193,11 @@ setup(
     version=__version__,
     include_package_data=True,
     description='Multimodal AI services & pipelines with cloud-native stack: gRPC, Kubernetes, Docker, OpenTelemetry, Prometheus, Jaeger, etc.',
-    author= AUTHOR_NAME,
-    author_email= AUTHOR_EMAIL,
-    license= LICENSE,
-    url= GITHUB_REPO,
-    download_url= DOWNLOAD_URL,
+    author=AUTHOR_NAME,
+    author_email=AUTHOR_EMAIL,
+    license=LICENSE,
+    url=GITHUB_REPO,
+    download_url=DOWNLOAD_URL,
     long_description=_long_description,
     long_description_content_type='text/markdown',
     zip_safe=False,
@@ -244,6 +244,6 @@ setup(
         'Tracker': TRACKER,
     },
     keywords='jina cloud-native cross-modal multimodal neural-search query search index elastic neural-network encoding '
-    'embedding serving docker container image video audio deep-learning mlops',
+             'embedding serving docker container image video audio deep-learning mlops',
     **extra_golang_kw,
 )
