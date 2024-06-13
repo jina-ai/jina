@@ -189,9 +189,14 @@ def get_fastapi_app(
                                 )
                             else:
                                 parsed_fields[field_name] = parsed_list
-                        # Handle direct assignment for basic types
+                        # General parsing attempt for other types
                         else:
-                            parsed_fields[field_name] = field_info.type_(field_str)
+                            if field_str:
+                                try:
+                                    parsed_fields[field_name] = field_info.type_(field_str)
+                                except (ValueError, TypeError):
+                                    # Fallback to parse_obj_as when type is more complex, e., AnyUrl or ImageBytes
+                                    parsed_fields[field_name] = parse_obj_as(field_info.type_, field_str)
 
                     return model(**parsed_fields)
 
