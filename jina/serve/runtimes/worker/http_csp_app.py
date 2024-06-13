@@ -117,7 +117,7 @@ def get_fastapi_app(
             if body.parameters is not None:
                 req.parameters = body.parameters
             req.header.exec_endpoint = endpoint_path
-            req.document_array_cls = DocList[input_doc_model]
+            req.document_array_cls = DocList[input_doc_list_model]
 
             data = body.data
             if isinstance(data, list):

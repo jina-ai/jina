@@ -269,6 +269,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -666,6 +667,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.24.0`)](#release-note-3240)
 - [Release Note (`3.24.1`)](#release-note-3241)
 - [Release Note (`3.25.0`)](#release-note-3250)
+- [Release Note (`3.25.1`)](#release-note-3251)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -16615,4 +16617,26 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```05ea6ce5```](https://github.com/jina-ai/jina/commit/05ea6ce5b6a32c43e7b0d6ca2a15ef0901485591)] __-__ upgrade ver (#6160) (*Joan Fontanals*)
  - [[```a3fb8e1b```](https://github.com/jina-ai/jina/commit/a3fb8e1b04c32fa0cccc3a71e992cbcf068bcf6e)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```5dec7992```](https://github.com/jina-ai/jina/commit/5dec79924bb3b423d5e0cb21e6e5ff1c74782b61)] __-__ __version__: the next version will be 3.24.2 (*Jina Dev Bot*)
+
+<a name=release-note-3-25-1></a>
+## Release Note (`3.25.1`)
+
+> Release time: 2024-04-10 14:39:02
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  dependabot[bot],  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```1ba90ee5```](https://github.com/jina-ai/jina/commit/1ba90ee5fe86fb447d92330743cded9b7a2277d4)] __-__ fix usage of input model (#6163) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```f091fd68```](https://github.com/jina-ai/jina/commit/f091fd687a9f62ccef82a5ebae47267c4379cd8a)] __-__ update black dependency (#6162) (*Joan Fontanals*)
+ - [[```95906b02```](https://github.com/jina-ai/jina/commit/95906b029b887715b0dd7d7e599fa388eeb3503e)] __-__ __deps__: bump google.golang.org/protobuf from 1.30.0 to 1.33.0 in /jina/serve/consensus (#6153) (*dependabot[bot]*)
+ - [[```49461515```](https://github.com/jina-ai/jina/commit/49461515622b6addc66e15f6da922f01451fb93e)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```8c9df630```](https://github.com/jina-ai/jina/commit/8c9df6306e71aaae98a82b890c1b820a72ecd361)] __-__ __version__: the next version will be 3.25.1 (*Jina Dev Bot*)
 
