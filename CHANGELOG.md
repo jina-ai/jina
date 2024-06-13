@@ -270,6 +270,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -16639,4 +16640,30 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```95906b02```](https://github.com/jina-ai/jina/commit/95906b029b887715b0dd7d7e599fa388eeb3503e)] __-__ __deps__: bump google.golang.org/protobuf from 1.30.0 to 1.33.0 in /jina/serve/consensus (#6153) (*dependabot[bot]*)
  - [[```49461515```](https://github.com/jina-ai/jina/commit/49461515622b6addc66e15f6da922f01451fb93e)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```8c9df630```](https://github.com/jina-ai/jina/commit/8c9df6306e71aaae98a82b890c1b820a72ecd361)] __-__ __version__: the next version will be 3.25.1 (*Jina Dev Bot*)
+
+<a name=release-note-3-25-2></a>
+## Release Note (`3.25.2`)
+
+> Release time: 2024-06-13 16:32:38
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Zac Li,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```ae142c00```](https://github.com/jina-ai/jina/commit/ae142c00e582db021e6dcd12c8ec645fe3115074)] __-__ update force-release.yml (#6172) (*Joan Fontanals*)
+ - [[```98429b05```](https://github.com/jina-ai/jina/commit/98429b055a8e2f4cfc97819cdf516ada2a23725d)] __-__ support sagemaker batch transform for clip (#6171) (*Zac Li*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```7e2247d2```](https://github.com/jina-ai/jina/commit/7e2247d277ac9169863c5ad10606c6605cdc7ed3)] __-__ update force-release.yml (#6173) (*Joan Fontanals*)
+ - [[```12e2a945```](https://github.com/jina-ai/jina/commit/12e2a945ec1c9b1090597163f94092b9d53abc10)] __-__ test ci (#6169) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```9dcd0c18```](https://github.com/jina-ai/jina/commit/9dcd0c1889904307387b58481bec79a808de40a9)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```287fa618```](https://github.com/jina-ai/jina/commit/287fa61873d761187b965eeb44d09ad471a97f7b)] __-__ __version__: the next version will be 3.25.2 (*Jina Dev Bot*)
 
