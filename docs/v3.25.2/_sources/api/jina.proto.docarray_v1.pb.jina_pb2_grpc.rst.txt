@@ -1,0 +1,7 @@
+jina.proto.docarray\_v1.pb.jina\_pb2\_grpc module
+=================================================
+
+.. automodule:: jina.proto.docarray_v1.pb.jina_pb2_grpc
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+jina.serve.runtimes.servers.websocket module
+============================================
+
+.. automodule:: jina.serve.runtimes.servers.websocket
+   :members:
+   :undoc-members:
+   :show-inheritance:
