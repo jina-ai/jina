@@ -89,7 +89,7 @@ def test_provider_sagemaker_pod_inference_parameters():
                     'data': [
                         {'text': 'hello world'},
                     ],
-                    'parameters': {'emb_dim': 64}
+                    'parameters': {'emb_dim': emb_dim}
                 },
             )
             assert resp.status_code == 200
@@ -284,7 +284,9 @@ def test_provider_sagemaker_deployment_wrong_port():
 def test_provider_sagemaker_deployment_wrong_dynamic_batching():
     # Sagemaker executor would start on 8080.
     # If we use the same port for deployment, it should raise an error.
-    with pytest.raises(ValueError):
+    from jina.excepts import RuntimeFailToStart
+
+    with pytest.raises(RuntimeFailToStart) as exc:
         with Deployment(
             uses=os.path.join(
                 os.path.dirname(__file__), "SampleExecutor", "config.yml"
@@ -292,6 +294,5 @@ def test_provider_sagemaker_deployment_wrong_dynamic_batching():
             provider='sagemaker',
             provider_endpoint='encode_parameter',
             uses_dynamic_batching={'/encode_parameter': {'preferred_batch_size': 20, 'timeout': 50}},
-            port=8080,
         ):
             pass

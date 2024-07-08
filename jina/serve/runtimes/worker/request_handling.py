@@ -268,7 +268,7 @@ class WorkerRequestHandler:
             request_models_map = self._executor._get_endpoint_models_dict()
 
             for key, dbatch_config in self._executor.dynamic_batching.items():
-                if request_models_map.get(key)['parameters']['model'] is not None:
+                if request_models_map.get(key, {}).get('parameters', {}).get('model', None) is not None:
                     error_msg = f'Executor Dynamic Batching cannot be used for endpoint {key} because it depends on parameters.'
                     self.logger.error(
                         error_msg

@@ -39,7 +39,7 @@ class SampleExecutor(Executor):
         return DocList[EmbeddingResponseModel](ret)
 
     @requests(on="/encode_parameter")
-    def foo(self, docs: DocList[TextDoc], parameters: Parameters, **kwargs) -> DocList[EmbeddingResponseModel]:
+    def bar(self, docs: DocList[TextDoc], parameters: Parameters, **kwargs) -> DocList[EmbeddingResponseModel]:
         ret = []
         for doc in docs:
             ret.append(
