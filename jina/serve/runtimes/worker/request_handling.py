@@ -265,11 +265,17 @@ class WorkerRequestHandler:
             # Endpoints allow specific configurations while functions allow configs to be applied to all endpoints of the function
             dbatch_endpoints = []
             dbatch_functions = []
+            request_models_map = self._executor._get_endpoint_models_dict()
+
             for key, dbatch_config in self._executor.dynamic_batching.items():
-                if key.startswith('/'):
-                    dbatch_endpoints.append((key, dbatch_config))
-                else:
-                    dbatch_functions.append((key, dbatch_config))
+                if request_models_map.get(key)['parameters']['model'] is not None:
+                    error_msg = f'Executor Dynamic Batching cannot be used for endpoint {key} because it depends on parameters.'
+                    self.logger.error(
+                        error_msg
+                    )
+                    raise Exception(error_msg)
+
+                dbatch_endpoints.append((key, dbatch_config))
 
             # Specific endpoint configs take precedence over function configs
             for endpoint, dbatch_config in dbatch_endpoints:

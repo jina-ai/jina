@@ -279,3 +279,19 @@ def test_provider_sagemaker_deployment_wrong_port():
             port=8080,
         ):
             pass
+
+
+def test_provider_sagemaker_deployment_wrong_dynamic_batching():
+    # Sagemaker executor would start on 8080.
+    # If we use the same port for deployment, it should raise an error.
+    with pytest.raises(ValueError):
+        with Deployment(
+            uses=os.path.join(
+                os.path.dirname(__file__), "SampleExecutor", "config.yml"
+            ),
+            provider='sagemaker',
+            provider_endpoint='encode_parameter',
+            uses_dynamic_batching={'/encode_parameter': {'preferred_batch_size': 20, 'timeout': 50}},
+            port=8080,
+        ):
+            pass
