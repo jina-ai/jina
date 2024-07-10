@@ -24,7 +24,7 @@ class HTTPBaseClient(BaseClient):
         super().__init__(*args, **kwargs)
         self._endpoints = []
 
-    async def _get_endpoints_from_openapi(self):
+    async def _get_endpoints_from_openapi(self, **kwargs):
         def extract_paths_by_method(spec):
             paths_by_method = {}
             for path, methods in spec['paths'].items():
@@ -39,10 +39,15 @@ class HTTPBaseClient(BaseClient):
 
         import aiohttp
 
+        session_kwargs = {}
+        if 'headers' in kwargs:
+            session_kwargs = {'headers': kwargs['headers']}
+
         proto = 'https' if self.args.tls else 'http'
         target_url = f'{proto}://{self.args.host}:{self.args.port}/openapi.json'
         try:
-            async with aiohttp.ClientSession() as session:
+
+            async with aiohttp.ClientSession(**session_kwargs) as session:
                 async with session.get(target_url) as response:
                     content = await response.read()
                     openapi_response = json.loads(content.decode())
@@ -129,7 +134,7 @@ class HTTPBaseClient(BaseClient):
         request_iterator = self._get_requests(**kwargs)
         on = kwargs.get('on', '/post')
         if len(self._endpoints) == 0:
-            await self._get_endpoints_from_openapi()
+            await self._get_endpoints_from_openapi(**kwargs)
 
         async with AsyncExitStack() as stack:
             cm1 = ProgressBar(
