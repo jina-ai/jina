@@ -634,24 +634,25 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             and self.runtime_args.provider_endpoint
         ):
             endpoint_to_use = ('/' + self.runtime_args.provider_endpoint).lower()
-            if endpoint_to_use in list(self.requests.keys()):
-                self.logger.warning(
-                    f'Using "{endpoint_to_use}" as "/invocations" route'
-                )
-                self.requests['/invocations'] = self.requests[endpoint_to_use]
-                for k in remove_keys:
-                    self.requests.pop(k)
-                return
+        elif len(self.requests) == 1:
+            endpoint_to_use = list(self.requests.keys())[0]
+        else:
+            raise ValueError('Cannot identify the endpoint to use for "/invocations"')
 
-        if len(self.requests) == 1:
-            route = list(self.requests.keys())[0]
-            self.logger.warning(f'Using "{route}" as "/invocations" route')
-            self.requests['/invocations'] = self.requests[route]
+        if endpoint_to_use in list(self.requests.keys()):
+            self.logger.warning(f'Using "{endpoint_to_use}" as "/invocations" route')
+            self.requests['/invocations'] = self.requests[endpoint_to_use]
+            if (
+                getattr(self, 'dynamic_batching', {}).get(endpoint_to_use, None)
+                is not None
+            ):
+                self.dynamic_batching['/invocations'] = self.dynamic_batching[
+                    endpoint_to_use
+                ]
+                self.dynamic_batching.pop(endpoint_to_use)
             for k in remove_keys:
                 self.requests.pop(k)
             return
-
-        raise ValueError('Cannot identify the endpoint to use for "/invocations"')
 
     def _add_dynamic_batching(self, _dynamic_batching: Optional[Dict]):
         if _dynamic_batching:
