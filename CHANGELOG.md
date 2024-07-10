@@ -271,6 +271,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -16667,4 +16668,33 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```9dcd0c18```](https://github.com/jina-ai/jina/commit/9dcd0c1889904307387b58481bec79a808de40a9)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```287fa618```](https://github.com/jina-ai/jina/commit/287fa61873d761187b965eeb44d09ad471a97f7b)] __-__ __version__: the next version will be 3.25.2 (*Jina Dev Bot*)
+
+<a name=release-note-3-26-0></a>
+## Release Note (`3.26.0`)
+
+> Release time: 2024-07-10 17:04:59
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Martinez,  Joan Fontanals,  Janus,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```58e0397b```](https://github.com/jina-ai/jina/commit/58e0397be1c4a953e1da3d928a979c037cb15593)] __-__ add Python official Logging rotating handlers support (#6167) (*Janus*)
+
+### 🐞 Bug fixes
+
+ - [[```09bd7655```](https://github.com/jina-ai/jina/commit/09bd76552a6f4e3abb71b0f1aada95f6184381fa)] __-__ pass header kwargs to get openapi endpoints (#6177) (*Joan Fontanals*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```e3ea29fa```](https://github.com/jina-ai/jina/commit/e3ea29fa73949e5939e4b09392a32e3d7d1f139d)] __-__ test CSP parameters (#6176) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```ecf1dad5```](https://github.com/jina-ai/jina/commit/ecf1dad5ac9d5305298750de44fa882f4ab80509)] __-__ upgrade ver (*Joan Martinez*)
+ - [[```53ec704f```](https://github.com/jina-ai/jina/commit/53ec704fb62f6b07c5e7fae1f567b412cc07c624)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```faa8bd7d```](https://github.com/jina-ai/jina/commit/faa8bd7d6fa13a9af17d5f727066cc95ce5645b6)] __-__ __version__: the next version will be 3.25.3 (*Jina Dev Bot*)
 
