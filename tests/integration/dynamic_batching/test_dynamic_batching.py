@@ -629,11 +629,17 @@ def test_failure_propagation():
             )
 
 
-@pytest.mark.repeat(10)
-def test_exception_handling_in_dynamic_batch():
+@pytest.mark.parametrize(
+    'flush_all',
+    [
+        False,
+        True
+    ],
+)
+def test_exception_handling_in_dynamic_batch(flush_all):
     class SlowExecutorWithException(Executor):
 
-        @dynamic_batching(preferred_batch_size=3, timeout=1000)
+        @dynamic_batching(preferred_batch_size=3, timeout=5000, flush_all=flush_all)
         @requests(on='/foo')
         def foo(self, docs, **kwargs):
             for doc in docs:
@@ -659,4 +665,50 @@ def test_exception_handling_in_dynamic_batch():
             if r.header.status.code == jina_pb2.StatusProto.StatusCode.ERROR:
                 num_failed_requests += 1
 
-        assert 1 <= num_failed_requests <= 3  # 3 requests in the dynamic batch failing
+        if not flush_all:
+            assert 1 <= num_failed_requests <= 3  # 3 requests in the dynamic batch failing
+        else:
+            assert 1 <= num_failed_requests <= len(da)  # 3 requests in the dynamic batch failing
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    'flush_all',
+    [
+        False,
+        True
+    ],
+)
+async def test_num_docs_processed_in_exec(flush_all):
+    class DynBatchProcessor(Executor):
+
+        @dynamic_batching(preferred_batch_size=5, timeout=5000, flush_all=flush_all)
+        @requests(on='/foo')
+        def foo(self, docs, **kwargs):
+            for doc in docs:
+                doc.text = f"{len(docs)}"
+
+    depl = Deployment(uses=DynBatchProcessor, protocol='http')
+
+    with depl:
+        da = DocumentArray([Document(text='good') for _ in range(50)])
+        cl = Client(protocol=depl.protocol, port=depl.port, asyncio=True)
+        res = []
+        async for r in cl.post(
+            on='/foo',
+            inputs=da,
+            request_size=7,
+            continue_on_error=True,
+            results_in_order=True,
+        ):
+            res.extend(r)
+        assert len(res) == 50  # 1 request per input
+        if not flush_all:
+            for d in res:
+                assert int(d.text) <= 5
+        else:
+            larger_than_5 = 0
+            for d in res:
+                if int(d.text) > 5:
+                    larger_than_5 += 1
+                assert int(d.text) >= 5
+            assert larger_than_5 > 0

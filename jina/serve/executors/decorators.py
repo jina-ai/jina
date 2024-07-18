@@ -416,6 +416,7 @@ def dynamic_batching(
     *,
     preferred_batch_size: Optional[int] = None,
     timeout: Optional[float] = 10_000,
+    flush_all: bool = False
 ):
     """
     `@dynamic_batching` defines the dynamic batching behavior of an Executor.
@@ -426,11 +427,13 @@ def dynamic_batching(
 
     :param func: the method to decorate
     :param preferred_batch_size: target number of Documents in a batch. The batcher will collect requests until `preferred_batch_size` is reached,
-        or until `timeout` is reached. Therefore, the actual batch size can be smaller or larger than `preferred_batch_size`.
+        or until `timeout` is reached. Therefore, the actual batch size can be smaller or equal to `preferred_batch_size`, except if `flush_all` is set to True
     :param timeout: maximum time in milliseconds to wait for a request to be assigned to a batch.
         If the oldest request in the queue reaches a waiting time of `timeout`, the batch will be passed to the Executor,
         even if it contains fewer than `preferred_batch_size` Documents.
         Default is 10_000ms (10 seconds).
+    :param flush_all: Determines if once the batches is triggered by timeout or preferred_batch_size, the function will receive everything that the batcher has accumulated or not.
+        If this is true, `preferred_batch_size` is used as a trigger mechanism.
     :return: decorated function
     """
 
@@ -476,6 +479,7 @@ def dynamic_batching(
                 'preferred_batch_size'
             ] = preferred_batch_size
             owner.dynamic_batching[fn_name]['timeout'] = timeout
+            owner.dynamic_batching[fn_name]['flush_all'] = flush_all
             setattr(owner, name, self.fn)
 
         def __set_name__(self, owner, name):

@@ -23,6 +23,7 @@ class BatchQueue:
         response_docarray_cls,
         output_array_type: Optional[str] = None,
         params: Optional[Dict] = None,
+        flush_all: bool = False,
         preferred_batch_size: int = 4,
         timeout: int = 10_000,
     ) -> None:
@@ -35,6 +36,7 @@ class BatchQueue:
         self.params = params
         self._request_docarray_cls = request_docarray_cls
         self._response_docarray_cls = response_docarray_cls
+        self._flush_all = flush_all
         self._preferred_batch_size: int = preferred_batch_size
         self._timeout: int = timeout
         self._reset()
@@ -205,7 +207,10 @@ class BatchQueue:
 
             return num_assigned_docs
 
-        def batch(iterable_1, iterable_2, n=1):
+        def batch(iterable_1, iterable_2, n:Optional[int] = 1):
+            if n is None:
+                yield iterable_1, iterable_2
+                return
             items = len(iterable_1)
             for ndx in range(0, items, n):
                 yield iterable_1[ndx : min(ndx + n, items)], iterable_2[
@@ -229,7 +234,7 @@ class BatchQueue:
                 non_assigned_to_response_request_idxs = []
                 sum_from_previous_first_req_idx = 0
                 for docs_inner_batch, req_idxs in batch(
-                    self._big_doc, self._request_idxs, self._preferred_batch_size
+                    self._big_doc, self._request_idxs, self._preferred_batch_size if not self._flush_all else None
                 ):
                     involved_requests_min_indx = req_idxs[0]
                     involved_requests_max_indx = req_idxs[-1]
