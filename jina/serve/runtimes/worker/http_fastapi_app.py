@@ -7,6 +7,7 @@ from jina.importer import ImportExtensions
 from jina.serve.networking.sse import EventSourceResponse
 from jina.types.request.data import DataRequest
 
+
 if TYPE_CHECKING:
     from jina.logging.logger import JinaLogger
 
@@ -88,7 +89,6 @@ def get_fastapi_app(
 
         @app.api_route(**app_kwargs)
         async def post(body: input_model, response: Response):
-
             req = DataRequest()
             if body.header is not None:
                 req.header.request_id = body.header.request_id
@@ -122,7 +122,9 @@ def get_fastapi_app(
                     docs_response = resp.docs.to_dict()
                 else:
                     docs_response = resp.docs
+
                 ret = output_model(data=docs_response, parameters=resp.parameters)
+
                 return ret
 
     def add_streaming_routes(
