@@ -272,6 +272,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -16698,4 +16699,25 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```ecf1dad5```](https://github.com/jina-ai/jina/commit/ecf1dad5ac9d5305298750de44fa882f4ab80509)] __-__ upgrade ver (*Joan Martinez*)
  - [[```53ec704f```](https://github.com/jina-ai/jina/commit/53ec704fb62f6b07c5e7fae1f567b412cc07c624)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```faa8bd7d```](https://github.com/jina-ai/jina/commit/faa8bd7d6fa13a9af17d5f727066cc95ce5645b6)] __-__ __version__: the next version will be 3.25.3 (*Jina Dev Bot*)
+
+<a name=release-note-3-27-0></a>
+## Release Note (`3.27.0`)
+
+> Release time: 2024-07-18 17:00:58
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Martinez,  Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```cf7284f8```](https://github.com/jina-ai/jina/commit/cf7284f8064c62c2f4e47012b63b5bf26f3d009e)] __-__ add flush all option to dynamic batching configuration (#6179) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```93139c3a```](https://github.com/jina-ai/jina/commit/93139c3ae90ff33b6aec4b3d99d4360faff0c461)] __-__ upgrade ver (*Joan Martinez*)
+ - [[```e0f620dc```](https://github.com/jina-ai/jina/commit/e0f620dc6a8a74bd79b315b76dc4570d10cb82a7)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```5ccbb80e```](https://github.com/jina-ai/jina/commit/5ccbb80e4f027b60ea1ba3ae0c46ae81f9426ed9)] __-__ __version__: the next version will be 3.26.1 (*Jina Dev Bot*)
 
