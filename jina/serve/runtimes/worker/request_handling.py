@@ -704,8 +704,9 @@ class WorkerRequestHandler:
                     **self._batchqueue_config[exec_endpoint],
                 )
             # This is necessary because push might need to await for the queue to be emptied
+            # the batch queue will change the request in-place
             queue = await self._batchqueue_instances[exec_endpoint][param_key].push(
-                requests[0]
+                requests[0], http=http
             )
             item = await queue.get()
             queue.task_done()
