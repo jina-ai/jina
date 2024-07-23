@@ -438,6 +438,7 @@ class PostMixin:
             results_in_order=results_in_order,
             stream=stream,
             prefetch=prefetch,
+            return_type=return_type,
             on=on,
             **kwargs,
         )
@@ -507,7 +508,6 @@ class AsyncPostMixin:
         c.continue_on_error = continue_on_error
 
         parameters = _include_results_field_in_param(parameters)
-
         async for result in c._get_results(
             on=on,
             inputs=inputs,
