@@ -145,7 +145,7 @@ class GRPCBaseClient(BaseClient):
                                 async for (
                                     response
                                 ) in stream_rpc.stream_rpc_with_retry():
-                                    yield response
+                                    yield response, None
                             else:
                                 unary_rpc = UnaryRpc(
                                     channel=channel,
@@ -169,7 +169,7 @@ class GRPCBaseClient(BaseClient):
                                     **kwargs,
                                 )
                                 async for response in unary_rpc.unary_rpc_with_retry():
-                                    yield response
+                                    yield response, None
                         except (grpc.aio.AioRpcError, InternalNetworkError) as err:
                             await self._handle_error_and_metadata(err)
         except KeyboardInterrupt:

@@ -412,10 +412,11 @@ class PostMixin:
                 if return_results:
                     resp.document_array_cls = inferred_return_type
                     if return_responses:
-                        resp.data.docs = da
+                        if da is not None:
+                            resp.data.docs = da
                         result.append(resp)
                     else:
-                        result.extend(da)
+                        result.extend(da if da is not None else resp.data.docs)
 
             if return_results:
                 if not return_responses and is_singleton and len(result) == 1:
@@ -540,13 +541,14 @@ class AsyncPostMixin:
                     is_singleton = True
                     result.document_array_cls = DocList[return_type]
             if not return_responses:
-                ret_docs = da
+                ret_docs = da if da is not None else result.data.docs
                 if is_singleton and len(ret_docs) == 1:
                     yield ret_docs[0]
                 else:
                     yield ret_docs
             else:
-                result.data.docs = da
+                if da is not None:
+                    result.data.docs = da
                 yield result
 
     async def stream_doc(
