@@ -419,7 +419,7 @@ class PostMixin:
                     if return_responses:
                         result.append(resp)
                     else:
-                        result.extend(resp.data.docs)
+                        result.extend(resp.docs)
 
             _end = timeit.default_timer()
             print(f'######## {_end} => I AM GETTING RESULTS took {_end - _start}s')
@@ -446,6 +446,7 @@ class PostMixin:
             results_in_order=results_in_order,
             stream=stream,
             prefetch=prefetch,
+            return_type=return_type,
             on=on,
             **kwargs,
         )
@@ -518,7 +519,6 @@ class AsyncPostMixin:
         c.continue_on_error = continue_on_error
 
         parameters = _include_results_field_in_param(parameters)
-
         async for result in c._get_results(
             on=on,
             inputs=inputs,
@@ -549,7 +549,7 @@ class AsyncPostMixin:
                     is_singleton = True
                     result.document_array_cls = DocList[return_type]
             if not return_responses:
-                ret_docs = result.data.docs
+                ret_docs = result.docs
                 if is_singleton and len(ret_docs) == 1:
                     yield ret_docs[0]
                 else:

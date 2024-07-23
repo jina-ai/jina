@@ -27,7 +27,7 @@ async def test_batch_queue_timeout(flush_all):
     three_data_requests = [DataRequest() for _ in range(3)]
     for req in three_data_requests:
         req.data.docs = DocumentArray.empty(1)
-        assert req.data.docs[0].text == ''
+        assert req.docs[0].text == ''
 
     async def process_request(req):
         q = await bq.push(req)
@@ -42,12 +42,12 @@ async def test_batch_queue_timeout(flush_all):
     assert time_spent >= 2000
     # Test that since no more docs arrived, the function was triggerred after timeout
     for resp in responses:
-        assert resp.data.docs[0].text == 'Done'
+        assert resp.docs[0].text == 'Done'
 
     four_data_requests = [DataRequest() for _ in range(4)]
     for req in four_data_requests:
         req.data.docs = DocumentArray.empty(1)
-        assert req.data.docs[0].text == ''
+        assert req.docs[0].text == ''
     init_time = time.time()
     tasks = [asyncio.create_task(process_request(req)) for req in four_data_requests]
     responses = await asyncio.gather(*tasks)
@@ -55,7 +55,7 @@ async def test_batch_queue_timeout(flush_all):
     assert time_spent < 2000
     # Test that since no more docs arrived, the function was triggerred after timeout
     for resp in responses:
-        assert resp.data.docs[0].text == 'Done'
+        assert resp.docs[0].text == 'Done'
 
     await bq.close()
 
@@ -135,7 +135,7 @@ async def test_batch_queue_req_length_larger_than_preferred(flush_all):
     data_requests = [DataRequest() for _ in range(3)]
     for req in data_requests:
         req.data.docs = DocumentArray.empty(10)  # 30 docs in total
-        assert req.data.docs[0].text == ''
+        assert req.docs[0].text == ''
 
     async def process_request(req):
         q = await bq.push(req)
@@ -150,7 +150,7 @@ async def test_batch_queue_req_length_larger_than_preferred(flush_all):
     assert time_spent < 2000
     # Test that since no more docs arrived, the function was triggerred after timeout
     for resp in responses:
-        assert resp.data.docs[0].text == 'Done'
+        assert resp.docs[0].text == 'Done'
 
     await bq.close()
 
@@ -196,9 +196,9 @@ async def test_exception():
             assert isinstance(item, Exception)
     for i, req in enumerate(data_requests):
         if i not in BAD_REQUEST_IDX:
-            assert req.data.docs[0].text == f'{i} Processed'
+            assert req.docs[0].text == f'{i} Processed'
         else:
-            assert req.data.docs[0].text == 'Bad'
+            assert req.docs[0].text == 'Bad'
 
 
 @pytest.mark.asyncio
@@ -246,11 +246,11 @@ async def test_exception_more_complex():
             assert isinstance(item, Exception)
     for i, req in enumerate(data_requests):
         if i not in EXPECTED_BAD_REQUESTS:
-            assert req.data.docs[0].text == 'Processed'
+            assert req.docs[0].text == 'Processed'
         elif i in TRIGGER_BAD_REQUEST_IDX:
-            assert req.data.docs[0].text == 'Bad'
+            assert req.docs[0].text == 'Bad'
         else:
-            assert req.data.docs[0].text == ''
+            assert req.docs[0].text == ''
 
 
 @pytest.mark.asyncio

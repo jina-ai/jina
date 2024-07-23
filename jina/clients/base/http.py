@@ -243,9 +243,9 @@ class HTTPBaseClient(BaseClient):
                 _e2 = timeit.default_timer()
                 print(f'Create DataRequest from r_str took {_e2 - _e}s')
                 if da is not None:
-                    resp.data.docs = da
+                    resp.direct_docs = da
                 _e3 = timeit.default_timer()
-                print(f'Setting resp.data.docs took {_e3 - _e2}s')
+                print(f'Setting direct_docs took {_e3 - _e2}s')
 
                 callback_exec(
                     response=resp,
