@@ -10,7 +10,7 @@ from jina.clients.base.retry import wait_or_raise_err
 from jina.excepts import InternalNetworkError
 from jina.helper import deprecate_by, get_or_reuse_loop, run_async
 from jina.importer import ImportExtensions
-
+import timeit
 if TYPE_CHECKING:  # pragma: no cover
     from pydantic import BaseModel
     from jina.clients.base import CallbackFnType, InputType
@@ -387,8 +387,10 @@ class PostMixin:
         .. warning::
             ``target_executor`` uses ``re.match`` for checking if the pattern is matched. ``target_executor=='foo'`` will match both deployments with the name ``foo`` and ``foo_what_ever_suffix``.
         """
-
+        print(f'##### I AM POSTING')
+        _post_start = timeit.default_timer()
         c = self.client
+        _cl = timeit.default_timer()
         c.show_progress = show_progress
         c.continue_on_error = continue_on_error
 
@@ -397,6 +399,9 @@ class PostMixin:
         return_results = (on_always is None) and (on_done is None)
 
         async def _get_results(*args, **kwargs):
+            _start = timeit.default_timer()
+            print(f'{_start} ######## I AM GETTING RESULTS')
+
             is_singleton = False
             inferred_return_type = return_type
             if docarray_v2:
@@ -415,13 +420,16 @@ class PostMixin:
                         result.append(resp)
                     else:
                         result.extend(resp.data.docs)
+
+            _end = timeit.default_timer()
+            print(f'######## {_end} => I AM GETTING RESULTS took {_end - _start}s')
             if return_results:
                 if not return_responses and is_singleton and len(result) == 1:
                     return result[0]
                 else:
                     return result
 
-        return self._with_retry(
+        res = self._with_retry(
             func=_get_results,
             inputs=inputs,
             on_done=on_done,
@@ -441,6 +449,9 @@ class PostMixin:
             on=on,
             **kwargs,
         )
+        _post_end = timeit.default_timer()
+        print(f'##### I AM POSTING took {_post_end - _post_start}s')
+        return res
 
     # ONLY CRUD, for other request please use `.post`
     index = partialmethod(post, '/index')

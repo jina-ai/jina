@@ -15,7 +15,7 @@ from jina.importer import ImportExtensions
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
 from jina.types.request.status import StatusMessage
-
+import timeit
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry import trace
 
@@ -122,8 +122,11 @@ class AioHttpClientlet(ABC):
 
         :return: start self
         """
-        return await self.start()
-
+        _start = timeit.default_timer()
+        res = await self.start()
+        _end = timeit.default_timer()
+        print(f'ASYNC ENTER {_end - _start}s')
+        return res
     async def start(self):
         """Create ClientSession and enter context
 
@@ -139,7 +142,11 @@ class AioHttpClientlet(ABC):
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self.close(exc_type, exc_val, exc_tb)
+        _start = timeit.default_timer()
+        res = await self.close(exc_type, exc_val, exc_tb)
+        _end = timeit.default_timer()
+        print(f'ASYNC EXIT {_end - _start}s')
+        return res
 
     async def close(self, *args, **kwargs):
         """Close ClientSession
@@ -160,12 +167,15 @@ class HTTPClientlet(AioHttpClientlet):
         :param request: request as dict
         :return: send post message
         """
+        _start = timeit.default_timer()
+        print(f'{_start} => HTTPClient send message lets start')
         req_dict = request.to_dict()
         req_dict['exec_endpoint'] = req_dict['header']['exec_endpoint']
         if 'target_executor' in req_dict['header']:
             req_dict['target_executor'] = req_dict['header']['target_executor']
         for attempt in range(1, self.max_attempts + 1):
             try:
+                _start_req = timeit.default_timer()
                 request_kwargs = {'url': self.url}
                 if not docarray_v2:
                     request_kwargs['json'] = req_dict
@@ -173,12 +183,16 @@ class HTTPClientlet(AioHttpClientlet):
                     from docarray.base_doc.io.json import orjson_dumps
 
                     request_kwargs['data'] = JinaJsonPayload(value=req_dict)
+                _end_req = timeit.default_timer()
+                print(f'{_end_req} => HTTPClient prepare request took {_end_req - _start_req}s')
                 response = await self.session.post(**request_kwargs).__aenter__()
                 try:
                     r_str = await response.json()
                 except aiohttp.ContentTypeError:
                     r_str = await response.text()
                 handle_response_status(response.status, r_str, self.url)
+                _end = timeit.default_timer()
+                print(f'{_end} => HTTPClient send_message total took {_end - _start}s')
                 return response
             except (ValueError, ConnectionError, BadClient, aiohttp.ClientError) as err:
                 await retry.wait_or_raise_err(

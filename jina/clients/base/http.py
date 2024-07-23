@@ -12,6 +12,7 @@ from jina.logging.profile import ProgressBar
 from jina.serve.stream import RequestStreamer
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
+import timeit
 
 if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
@@ -96,20 +97,20 @@ class HTTPBaseClient(BaseClient):
         return False
 
     async def _get_results(
-        self,
-        inputs: 'InputType',
-        on_done: 'CallbackFnType',
-        on_error: Optional['CallbackFnType'] = None,
-        on_always: Optional['CallbackFnType'] = None,
-        max_attempts: int = 1,
-        initial_backoff: float = 0.5,
-        max_backoff: float = 0.1,
-        backoff_multiplier: float = 1.5,
-        results_in_order: bool = False,
-        prefetch: Optional[int] = None,
-        timeout: Optional[int] = None,
-        return_type: Type[DocumentArray] = DocumentArray,
-        **kwargs,
+            self,
+            inputs: 'InputType',
+            on_done: 'CallbackFnType',
+            on_error: Optional['CallbackFnType'] = None,
+            on_always: Optional['CallbackFnType'] = None,
+            max_attempts: int = 1,
+            initial_backoff: float = 0.5,
+            max_backoff: float = 0.1,
+            backoff_multiplier: float = 1.5,
+            results_in_order: bool = False,
+            prefetch: Optional[int] = None,
+            timeout: Optional[int] = None,
+            return_type: Type[DocumentArray] = DocumentArray,
+            **kwargs,
     ):
         """
         :param inputs: the callable
@@ -130,17 +131,24 @@ class HTTPBaseClient(BaseClient):
         with ImportExtensions(required=True):
             pass
 
+        _start_total = timeit.default_timer()
+        print(f'## {_start_total} => I AM in _get_results')
+
         self.inputs = inputs
+        _aada = timeit.default_timer()
+        print(f'Setting inputs took {_aada - _start_total}s')
         request_iterator = self._get_requests(**kwargs)
+        _aada2 = timeit.default_timer()
+        print(f'Getting req_it {_aada2 - _aada}s')
         on = kwargs.get('on', '/post')
         if len(self._endpoints) == 0:
             await self._get_endpoints_from_openapi(**kwargs)
 
         async with AsyncExitStack() as stack:
-            cm1 = ProgressBar(
-                total_length=self._inputs_length, disable=not self.show_progress
-            )
-            p_bar = stack.enter_context(cm1)
+            # cm1 = ProgressBar(
+            #     total_length=self._inputs_length, disable=not self.show_progress
+            # )
+            # p_bar = stack.enter_context(cm1)
             proto = 'https' if self.args.tls else 'http'
             endpoint = on.strip('/')
             has_default_endpoint = 'default' in self._endpoints
@@ -167,7 +175,7 @@ class HTTPBaseClient(BaseClient):
             )
 
             def _request_handler(
-                request: 'Request', **kwargs
+                    request: 'Request', **kwargs
             ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
                 """
                 For HTTP Client, for each request in the iterator, we `send_message` using
@@ -176,7 +184,8 @@ class HTTPBaseClient(BaseClient):
                 :param kwargs: kwargs
                 :return: asyncio Task for sending message
                 """
-                return asyncio.ensure_future(iolet.send_message(request=request)), None
+                res = asyncio.ensure_future(iolet.send_message(request=request)), None
+                return res
 
             def _result_handler(result):
                 return result
@@ -184,19 +193,31 @@ class HTTPBaseClient(BaseClient):
             streamer_args = vars(self.args)
             if prefetch:
                 streamer_args['prefetch'] = prefetch
+
+            _start_streamer = timeit.default_timer()
+            print(f'## {_start_streamer} => I AM creating streamer')
             streamer = RequestStreamer(
                 request_handler=_request_handler,
                 result_handler=_result_handler,
                 logger=self.logger,
                 **streamer_args,
             )
+
+            _start = timeit.default_timer()
+            print(f'## Streamer created in {_start - _start_streamer}s')
+
             async for response in streamer.stream(
-                request_iterator=request_iterator, results_in_order=results_in_order
+                    request_iterator=request_iterator, results_in_order=results_in_order
             ):
+
                 r_status = response.status
 
                 r_str = await response.json()
+                _end = timeit.default_timer()
+                print(f'{_end} => GETTING RESPONSE from streamer took {_end - _start}s')
+                _start = timeit.default_timer()
                 handle_response_status(r_status, r_str, url)
+                _st = timeit.default_timer()
 
                 da = None
                 if 'data' in r_str and r_str['data'] is not None:
@@ -216,10 +237,15 @@ class HTTPBaseClient(BaseClient):
                                 [return_type(**v) for v in r_str['data']]
                             )
                     del r_str['data']
-
+                _e = timeit.default_timer()
+                print(f'Create DocList took {_e - _st}s')
                 resp = DataRequest(r_str)
+                _e2 = timeit.default_timer()
+                print(f'Create DataRequest from r_str took {_e2 - _e}s')
                 if da is not None:
                     resp.data.docs = da
+                _e3 = timeit.default_timer()
+                print(f'Setting resp.data.docs took {_e3 - _e2}s')
 
                 callback_exec(
                     response=resp,
@@ -229,18 +255,25 @@ class HTTPBaseClient(BaseClient):
                     on_always=on_always,
                     continue_on_error=self.continue_on_error,
                 )
-                if self.show_progress:
-                    p_bar.update()
+                _e4 = timeit.default_timer()
+                print(f'Calling callback took {_e4 - _e3}s')
+                # if self.show_progress:
+                #     p_bar.update()
+                _end = timeit.default_timer()
+                print(f'{_end} => YIELD RESPONSE TOOK {_end - _start}s')
                 yield resp
 
+        _end_total = timeit.default_timer()
+        print(f'## {_end_total} => I AM in _get_results took {_end_total - _start_total}s')
+
     async def _get_streaming_results(
-        self,
-        on: str,
-        inputs: 'Document',
-        parameters: Optional[Dict] = None,
-        return_type: Type[Document] = Document,
-        timeout: Optional[int] = None,
-        **kwargs,
+            self,
+            on: str,
+            inputs: 'Document',
+            parameters: Optional[Dict] = None,
+            return_type: Type[Document] = Document,
+            timeout: Optional[int] = None,
+            **kwargs,
     ):
         proto = 'https' if self.args.tls else 'http'
         endpoint = on.strip('/')

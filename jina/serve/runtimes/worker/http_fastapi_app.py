@@ -87,8 +87,11 @@ def get_fastapi_app(
 
             app_kwargs['response_class'] = DocArrayResponse
 
+        from timeit import default_timer
+
         @app.api_route(**app_kwargs)
         async def post(body: input_model, response: Response):
+            _start = default_timer()
             req = DataRequest()
             if body.header is not None:
                 req.header.request_id = body.header.request_id
@@ -111,8 +114,19 @@ def get_fastapi_app(
                     req.data.docs = DocList[input_doc_list_model]([data])
                 if body.header is None:
                     req.header.request_id = req.docs[0].id
+            _end = default_timer()
 
+            logger.info(
+                f'Creating Request took {_end - _start}s'
+            )
+            _start = default_timer()
             resp = await caller(req)
+            _end = default_timer()
+
+            logger.info(
+                f'Respon to Request took {_end - _start}s'
+            )
+            _start = default_timer()
             status = resp.header.status
 
             if status.code == jina_pb2.StatusProto.ERROR:
@@ -124,7 +138,10 @@ def get_fastapi_app(
                     docs_response = resp.docs
 
                 ret = output_model(data=docs_response, parameters=resp.parameters)
-
+                _end = default_timer()
+                logger.info(
+                    f'Extra time {_end - _start}s'
+                )
                 return ret
 
     def add_streaming_routes(
