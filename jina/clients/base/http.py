@@ -219,7 +219,7 @@ class HTTPBaseClient(BaseClient):
 
                 resp = DataRequest(r_str)
                 if da is not None:
-                    resp.data.docs = da
+                    resp.direct_docs = da
 
                 callback_exec(
                     response=resp,

@@ -99,16 +99,16 @@ def get_fastapi_app(
             data = body.data
             if isinstance(data, list):
                 if not docarray_v2:
-                    req.data.docs = DocumentArray.from_pydantic_model(data)
+                    req.direct_docs = DocumentArray.from_pydantic_model(data)
                 else:
                     req.document_array_cls = DocList[input_doc_model]
-                    req.data.docs = DocList[input_doc_list_model](data)
+                    req.direct_docs = DocList[input_doc_list_model](data)
             else:
                 if not docarray_v2:
-                    req.data.docs = DocumentArray([Document.from_pydantic_model(data)])
+                    req.direct_docs = DocumentArray([Document.from_pydantic_model(data)])
                 else:
                     req.document_array_cls = DocList[input_doc_model]
-                    req.data.docs = DocList[input_doc_list_model]([data])
+                    req.direct_docs = DocList[input_doc_list_model]([data])
                 if body.header is None:
                     req.header.request_id = req.docs[0].id
 
@@ -152,10 +152,10 @@ def get_fastapi_app(
             req = DataRequest()
             req.header.exec_endpoint = endpoint_path
             if not docarray_v2:
-                req.data.docs = DocumentArray([body])
+                req.direct_docs = DocumentArray([body])
             else:
                 req.document_array_cls = DocList[input_doc_model]
-                req.data.docs = DocList[input_doc_model]([body])
+                req.direct_docs = DocList[input_doc_model]([body])
             event_generator = _gen_dict_documents(await caller(req))
             return EventSourceResponse(event_generator)
 
