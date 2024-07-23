@@ -177,7 +177,7 @@ class WorkerRequestHandler:
                 'is_generator'
             ]
 
-            return self.process_single_data(request, None, is_generator=is_generator)
+            return self.process_single_data(request, None, http=True, is_generator=is_generator)
 
         app = get_fastapi_app(
             request_models_map=request_models_map, caller=call_handle, **kwargs
@@ -201,7 +201,7 @@ class WorkerRequestHandler:
                 'is_generator'
             ]
 
-            return self.process_single_data(request, None, is_generator=is_generator)
+            return self.process_single_data(request, None, http=True, is_generator=is_generator)
 
         app = get_fastapi_app(
             request_models_map=request_models_map, caller=call_handle, **kwargs
@@ -548,7 +548,7 @@ class WorkerRequestHandler:
                 requests[0].nbytes, attributes=attributes
             )
 
-    def _set_result(self, requests, return_data, docs):
+    def _set_result(self, requests, return_data, docs, http=False):
         # assigning result back to request
         if return_data is not None:
             if isinstance(return_data, DocumentArray):
@@ -568,10 +568,12 @@ class WorkerRequestHandler:
                     f'The return type must be DocList / Dict / `None`, '
                     f'but getting {return_data!r}'
                 )
-
-        WorkerRequestHandler.replace_docs(
-            requests[0], docs, self.args.output_array_type
-        )
+        if not http:
+            WorkerRequestHandler.replace_docs(
+                requests[0], docs, self.args.output_array_type
+            )
+        else:
+            requests[0].direct_docs = docs
         return docs
 
     def _setup_req_doc_array_cls(self, requests, exec_endpoint, is_response=False):
@@ -659,11 +661,12 @@ class WorkerRequestHandler:
         )
 
     async def handle(
-        self, requests: List['DataRequest'], tracing_context: Optional['Context'] = None
+        self, requests: List['DataRequest'], http=False, tracing_context: Optional['Context'] = None
     ) -> DataRequest:
         """Initialize private parameters and execute private loading functions.
 
         :param requests: The messages to handle containing a DataRequest
+        :param http: Flag indicating if it is used by the HTTP server for some optims
         :param tracing_context: Optional OpenTelemetry tracing context from the originating request.
         :returns: the processed message
         """
@@ -721,7 +724,7 @@ class WorkerRequestHandler:
                 docs_map=docs_map,
                 tracing_context=tracing_context,
             )
-            _ = self._set_result(requests, return_data, docs)
+            _ = self._set_result(requests, return_data, docs, http=http)
 
         for req in requests:
             req.add_executor(self.deployment_name)
@@ -909,18 +912,19 @@ class WorkerRequestHandler:
 
     # serving part
     async def process_single_data(
-        self, request: DataRequest, context, is_generator: bool = False
+        self, request: DataRequest, context, http: bool = False, is_generator: bool = False
     ) -> DataRequest:
         """
         Process the received requests and return the result as a new request
 
         :param request: the data request to process
         :param context: grpc context
+        :param http: Flag indicating if it is used by the HTTP server for some optims
         :param is_generator: whether the request should be handled with streaming
         :returns: the response request
         """
         self.logger.debug('recv a process_single_data request')
-        return await self.process_data([request], context, is_generator=is_generator)
+        return await self.process_data([request], context, http=http, is_generator=is_generator)
 
     async def stream_doc(
         self, request: SingleDocumentRequest, context: 'grpc.aio.ServicerContext'
@@ -1065,13 +1069,14 @@ class WorkerRequestHandler:
         return None
 
     async def process_data(
-        self, requests: List[DataRequest], context, is_generator: bool = False
+        self, requests: List[DataRequest], context, http=False, is_generator: bool = False
     ) -> DataRequest:
         """
         Process the received requests and return the result as a new request
 
         :param requests: the data requests to process
         :param context: grpc context
+        :param http: Flag indicating if it is used by the HTTP server for some optims
         :param is_generator: whether the request should be handled with streaming
         :returns: the response request
         """
@@ -1094,11 +1099,11 @@ class WorkerRequestHandler:
 
                 if is_generator:
                     result = await self.handle_generator(
-                        requests=requests, tracing_context=tracing_context
+                        requests=requests,tracing_context=tracing_context
                     )
                 else:
                     result = await self.handle(
-                        requests=requests, tracing_context=tracing_context
+                        requests=requests, http=http, tracing_context=tracing_context
                     )
 
                 if self._successful_requests_metrics:

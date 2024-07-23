@@ -528,7 +528,7 @@ def _assert_all_docs_processed(port, num_docs, endpoint):
         target=f'0.0.0.0:{port}',
         endpoint=endpoint,
     )
-    docs = resp.data.docs
+    docs = resp.docs
     assert docs.texts == ['long timeout' for _ in range(num_docs)]
 
 
