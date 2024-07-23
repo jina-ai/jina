@@ -58,6 +58,7 @@ def _safe_callback(func: Callable, continue_on_error: bool, logger) -> Callable:
 def callback_exec(
     response,
     logger: JinaLogger,
+    docs: Optional = None,
     on_done: Optional[Callable] = None,
     on_error: Optional[Callable] = None,
     on_always: Optional[Callable] = None,
@@ -66,20 +67,28 @@ def callback_exec(
     """Execute the callback with the response.
 
     :param response: the response
+    :param logger: a logger instance
+    :param docs: the docs to attach lazily to response if needed
     :param on_done: the on_done callback
     :param on_error: the on_error callback
     :param on_always: the on_always callback
     :param continue_on_error: whether to continue on error
-    :param logger: a logger instance
     """
     if response.header.status.code >= jina_pb2.StatusProto.ERROR:
         if on_error:
+            if docs is not None:
+                # response.data.docs is expensive and not always needed.
+                response.data.docs = docs
             _safe_callback(on_error, continue_on_error, logger)(response)
         elif continue_on_error:
             logger.error(f'Server error: {response.header}')
         else:
             raise BadServer(response.header)
     elif on_done and response.header.status.code == jina_pb2.StatusProto.SUCCESS:
+        if docs is not None:
+            response.data.docs = docs
         _safe_callback(on_done, continue_on_error, logger)(response)
     if on_always:
+        if docs is not None:
+            response.data.docs = docs
         _safe_callback(on_always, continue_on_error, logger)(response)

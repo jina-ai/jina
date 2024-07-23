@@ -218,12 +218,13 @@ class HTTPBaseClient(BaseClient):
                     del r_str['data']
 
                 resp = DataRequest(r_str)
-                if da is not None:
-                    resp.data.docs = da
+                #if da is not None:
+                #    resp.data.docs = da
 
                 callback_exec(
                     response=resp,
                     logger=self.logger,
+                    docs=da,
                     on_error=on_error,
                     on_done=on_done,
                     on_always=on_always,
@@ -231,7 +232,7 @@ class HTTPBaseClient(BaseClient):
                 )
                 if self.show_progress:
                     p_bar.update()
-                yield resp
+                yield resp, da
 
     async def _get_streaming_results(
         self,

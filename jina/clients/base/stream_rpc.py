@@ -58,6 +58,7 @@ class StreamRpc:
             callback_exec(
                 response=resp,
                 logger=self.logger,
+                docs=None,
                 on_error=self.on_error,
                 on_done=self.on_done,
                 on_always=self.on_always,

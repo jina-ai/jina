@@ -209,6 +209,7 @@ class WebSocketBaseClient(BaseClient):
                     callback_exec(
                         response=response,
                         logger=self.logger,
+                        docs=None,
                         on_error=on_error,
                         on_done=on_done,
                         on_always=on_always,
@@ -216,7 +217,7 @@ class WebSocketBaseClient(BaseClient):
                     )
                     if self.show_progress:
                         p_bar.update()
-                    yield response
+                    yield response, None
             except Exception as ex:
                 exception_raised = ex
                 try:
