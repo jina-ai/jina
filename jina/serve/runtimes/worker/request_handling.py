@@ -30,6 +30,7 @@ from jina.serve.executors import BaseExecutor
 from jina.serve.instrumentation import MetricsTimer
 from jina.serve.runtimes.worker.batch_queue import BatchQueue
 from jina.types.request.data import DataRequest, SingleDocumentRequest
+from timeit import default_timer
 
 if docarray_v2:
     from docarray import DocList
@@ -671,6 +672,7 @@ class WorkerRequestHandler:
         :returns: the processed message
         """
         # skip executor if endpoints mismatch
+        _start = default_timer()
         exec_endpoint: str = requests[0].header.exec_endpoint
         if exec_endpoint not in self._executor.requests:
             if __default_endpoint__ in self._executor.requests:
@@ -717,6 +719,8 @@ class WorkerRequestHandler:
             docs_matrix, docs_map = WorkerRequestHandler._get_docs_matrix_from_request(
                 requests
             )
+            _end = default_timer()
+            print(f'EXTRA BEFORE EXECUTOR TOOK {_end - _start}s')
             return_data = await self._executor.__acall__(
                 req_endpoint=exec_endpoint,
                 docs=docs,
@@ -725,6 +729,7 @@ class WorkerRequestHandler:
                 docs_map=docs_map,
                 tracing_context=tracing_context,
             )
+            _start = default_timer()
             _ = self._set_result(requests, return_data, docs, http=http)
 
         for req in requests:
@@ -736,7 +741,8 @@ class WorkerRequestHandler:
         except AttributeError:
             pass
         self._record_response_size_monitoring(requests)
-
+        _end = default_timer()
+        print(f'EXTRA AFTER EXECUTOR TOOK {_end - _start}s')
         return requests[0]
 
     @staticmethod

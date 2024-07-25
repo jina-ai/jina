@@ -38,7 +38,7 @@ from typing import (
 from rich.console import Console
 
 from jina.constants import __windows__
-
+import timeit
 __all__ = [
     'batch_iterator',
     'parse_arg',
@@ -1316,6 +1316,8 @@ def run_async(func, *args, **kwargs):
                 'something wrong when running the eventloop, result can not be retrieved'
             )
     else:
+
+        print(f'{timeit.default_timer()} ==> HEY HERE ASYNCIO RUN {func.__name__}')
         return asyncio.run(func(*args, **kwargs))
 
 

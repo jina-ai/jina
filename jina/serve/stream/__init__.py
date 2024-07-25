@@ -20,7 +20,7 @@ __all__ = ['RequestStreamer']
 
 from jina._docarray import DocumentArray
 from jina.types.request.data import Response
-
+import timeit
 if TYPE_CHECKING:  # pragma: no cover
     from jina.types.request import Request
 
@@ -178,6 +178,8 @@ class RequestStreamer:
         :param args: positional arguments
         :yield: responses from Executors
         """
+        _start_streaming = timeit.default_timer()
+        print(f'## {_start_streaming} Start streaming')
         prefetch = prefetch or self._prefetch
         if context is not None:
             for metadatum in context.invocation_metadata():
@@ -197,6 +199,8 @@ class RequestStreamer:
                 return_type=return_type,
             )
             async for response in async_iter:
+                _first_resp_streaming = timeit.default_timer()
+                print(f'## {_first_resp_streaming} Got first response in {_first_resp_streaming - _start_streaming}s')
                 yield response
         except InternalNetworkError as err:
             if (
