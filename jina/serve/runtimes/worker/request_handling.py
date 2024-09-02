@@ -399,6 +399,7 @@ class WorkerRequestHandler:
                     'metrics_registry': metrics_registry,
                     'tracer_provider': tracer_provider,
                     'meter_provider': meter_provider,
+                    'allow_concurrent': self.args.allow_concurrent,
                 },
                 py_modules=self.args.py_modules,
                 extra_search_paths=self.args.extra_search_paths,
