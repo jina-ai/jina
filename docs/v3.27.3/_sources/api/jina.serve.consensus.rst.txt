@@ -1,0 +1,18 @@
+jina.serve.consensus package
+============================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   jina.serve.consensus.add_voter
+
+Module contents
+---------------
+
+.. automodule:: jina.serve.consensus
+   :members:
+   :undoc-members:
+   :show-inheritance:

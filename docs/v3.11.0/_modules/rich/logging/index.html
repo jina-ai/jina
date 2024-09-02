@@ -423,11 +423,13 @@
 <span class="sd">        markup (bool, optional): Enable console markup in log messages. Defaults to False.</span>
 <span class="sd">        rich_tracebacks (bool, optional): Enable rich tracebacks with syntax highlighting and formatting. Defaults to False.</span>
 <span class="sd">        tracebacks_width (Optional[int], optional): Number of characters used to render tracebacks, or None for full width. Defaults to None.</span>
+<span class="sd">        tracebacks_code_width (int, optional): Number of code characters used to render tracebacks, or None for full width. Defaults to 88.</span>
 <span class="sd">        tracebacks_extra_lines (int, optional): Additional lines of code to render tracebacks, or None for full width. Defaults to None.</span>
 <span class="sd">        tracebacks_theme (str, optional): Override pygments theme used in traceback.</span>
 <span class="sd">        tracebacks_word_wrap (bool, optional): Enable word wrapping of long tracebacks lines. Defaults to True.</span>
 <span class="sd">        tracebacks_show_locals (bool, optional): Enable display of locals in tracebacks. Defaults to False.</span>
 <span class="sd">        tracebacks_suppress (Sequence[Union[str, ModuleType]]): Optional sequence of modules or paths to exclude from traceback.</span>
+<span class="sd">        tracebacks_max_frames (int, optional): Optional maximum number of frames returned by traceback.</span>
 <span class="sd">        locals_max_length (int, optional): Maximum length of containers before abbreviating, or None for no abbreviation.</span>
 <span class="sd">            Defaults to 10.</span>
 <span class="sd">        locals_max_string (int, optional): Maximum length of string before truncating, or None to disable. Defaults to 80.</span>
@@ -461,11 +463,13 @@
         <span class="n">markup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">rich_tracebacks</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">tracebacks_width</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tracebacks_code_width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">88</span><span class="p">,</span>
         <span class="n">tracebacks_extra_lines</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
         <span class="n">tracebacks_theme</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tracebacks_word_wrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">tracebacks_show_locals</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">tracebacks_suppress</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ModuleType</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span>
+        <span class="n">tracebacks_max_frames</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
         <span class="n">locals_max_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
         <span class="n">locals_max_string</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">80</span><span class="p">,</span>
         <span class="n">log_time_format</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FormatTimeCallable</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">%x</span><span class="s2"> </span><span class="si">%X</span><span class="s2">]&quot;</span><span class="p">,</span>
@@ -491,6 +495,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tracebacks_word_wrap</span> <span class="o">=</span> <span class="n">tracebacks_word_wrap</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tracebacks_show_locals</span> <span class="o">=</span> <span class="n">tracebacks_show_locals</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tracebacks_suppress</span> <span class="o">=</span> <span class="n">tracebacks_suppress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tracebacks_max_frames</span> <span class="o">=</span> <span class="n">tracebacks_max_frames</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tracebacks_code_width</span> <span class="o">=</span> <span class="n">tracebacks_code_width</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">locals_max_length</span> <span class="o">=</span> <span class="n">locals_max_length</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">locals_max_string</span> <span class="o">=</span> <span class="n">locals_max_string</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="n">keywords</span>
@@ -527,6 +533,7 @@
                 <span class="n">exc_value</span><span class="p">,</span>
                 <span class="n">exc_traceback</span><span class="p">,</span>
                 <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tracebacks_width</span><span class="p">,</span>
+                <span class="n">code_width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tracebacks_code_width</span><span class="p">,</span>
                 <span class="n">extra_lines</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tracebacks_extra_lines</span><span class="p">,</span>
                 <span class="n">theme</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tracebacks_theme</span><span class="p">,</span>
                 <span class="n">word_wrap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tracebacks_word_wrap</span><span class="p">,</span>
@@ -534,6 +541,7 @@
                 <span class="n">locals_max_length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">locals_max_length</span><span class="p">,</span>
                 <span class="n">locals_max_string</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">locals_max_string</span><span class="p">,</span>
                 <span class="n">suppress</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tracebacks_suppress</span><span class="p">,</span>
+                <span class="n">max_frames</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tracebacks_max_frames</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">message</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatter</span><span class="p">:</span>
@@ -688,7 +696,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 23, 2024</div>
+                            Last updated on Sep 02, 2024</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
