@@ -117,7 +117,7 @@ class BatchQueue:
             self._requests.append(request)
             queue = asyncio.Queue()
             self._requests_completed.append(queue)
-            if self._custom_metric is not None:
+            if self._custom_metric is None:
                 if len(self._big_doc) >= self._preferred_batch_size:
                     self._flush_trigger.set()
             else:
