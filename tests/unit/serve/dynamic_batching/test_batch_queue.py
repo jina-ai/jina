@@ -64,11 +64,13 @@ async def test_batch_queue_timeout(flush_all):
 @pytest.mark.parametrize('flush_all', [False, True])
 async def test_batch_queue_timeout_does_not_wait_previous_batch(flush_all):
     batches_lengths_computed = []
+    lock = asyncio.Lock()
 
     async def foo(docs, **kwargs):
-        await asyncio.sleep(4)
-        batches_lengths_computed.append(len(docs))
-        return DocumentArray([Document(text='Done') for _ in docs])
+        async with lock:
+            await asyncio.sleep(4)
+            batches_lengths_computed.append(len(docs))
+            return DocumentArray([Document(text='Done') for _ in docs])
 
     bq: BatchQueue = BatchQueue(
         foo,
@@ -109,7 +111,7 @@ async def test_batch_queue_timeout_does_not_wait_previous_batch(flush_all):
         assert time_spent >= 8000
         assert time_spent <= 8500
     if flush_all is False:
-        assert batches_lengths_computed == [5, 1, 2]
+        assert batches_lengths_computed == [5, 2, 1]
     else:
         assert batches_lengths_computed == [6, 2]
 
