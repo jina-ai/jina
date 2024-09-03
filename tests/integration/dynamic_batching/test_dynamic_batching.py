@@ -636,7 +636,14 @@ def test_failure_propagation():
         True
     ],
 )
-def test_exception_handling_in_dynamic_batch(flush_all):
+@pytest.mark.parametrize(
+    'allow_concurrent',
+    [
+        False,
+        True
+    ],
+)
+def test_exception_handling_in_dynamic_batch(flush_all, allow_concurrent):
     class SlowExecutorWithException(Executor):
 
         @dynamic_batching(preferred_batch_size=3, timeout=5000, flush_all=flush_all)
@@ -646,7 +653,7 @@ def test_exception_handling_in_dynamic_batch(flush_all):
                 if doc.text == 'fail':
                     raise Exception('Fail is in the Batch')
 
-    depl = Deployment(uses=SlowExecutorWithException)
+    depl = Deployment(uses=SlowExecutorWithException, allow_concurrent=allow_concurrent)
 
     with depl:
         da = DocumentArray([Document(text='good') for _ in range(50)])
@@ -669,6 +676,7 @@ def test_exception_handling_in_dynamic_batch(flush_all):
             assert 1 <= num_failed_requests <= 3  # 3 requests in the dynamic batch failing
         else:
             assert 1 <= num_failed_requests <= len(da)  # 3 requests in the dynamic batch failing
+
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
@@ -694,11 +702,11 @@ async def test_num_docs_processed_in_exec(flush_all):
         cl = Client(protocol=depl.protocol, port=depl.port, asyncio=True)
         res = []
         async for r in cl.post(
-            on='/foo',
-            inputs=da,
-            request_size=7,
-            continue_on_error=True,
-            results_in_order=True,
+                on='/foo',
+                inputs=da,
+                request_size=7,
+                continue_on_error=True,
+                results_in_order=True,
         ):
             res.extend(r)
         assert len(res) == 50  # 1 request per input
@@ -707,8 +715,11 @@ async def test_num_docs_processed_in_exec(flush_all):
                 assert int(d.text) <= 5
         else:
             larger_than_5 = 0
+            smaller_than_5 = 0
             for d in res:
                 if int(d.text) > 5:
                     larger_than_5 += 1
-                assert int(d.text) >= 5
+                if int(d.text) < 5:
+                    smaller_than_5 += 1
+            assert smaller_than_5 == 1
             assert larger_than_5 > 0
