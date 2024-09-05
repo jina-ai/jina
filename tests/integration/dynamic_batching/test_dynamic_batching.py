@@ -218,7 +218,9 @@ def call_api_with_params(req: RequestStructParams):
     ],
 )
 @pytest.mark.parametrize('use_stream', [False, True])
-def test_timeout(add_parameters, use_stream):
+@pytest.mark.parametrize('allow_concurrent', [False, True])
+def test_timeout(add_parameters, use_stream, allow_concurrent):
+    add_parameters['allow_concurrent'] = allow_concurrent
     f = Flow().add(**add_parameters)
     with f:
         start_time = time.time()
@@ -265,7 +267,9 @@ def test_timeout(add_parameters, use_stream):
     ],
 )
 @pytest.mark.parametrize('use_stream', [False, True])
-def test_preferred_batch_size(add_parameters, use_stream):
+@pytest.mark.parametrize('allow_concurrent', [False, True])
+def test_preferred_batch_size(add_parameters, use_stream, allow_concurrent):
+    add_parameters['allow_concurrent'] = allow_concurrent
     f = Flow().add(**add_parameters)
     with f:
         with mp.Pool(2) as p:
@@ -315,8 +319,9 @@ def test_preferred_batch_size(add_parameters, use_stream):
 
 @pytest.mark.repeat(10)
 @pytest.mark.parametrize('use_stream', [False, True])
-def test_correctness(use_stream):
-    f = Flow().add(uses=PlaceholderExecutor)
+@pytest.mark.parametrize('allow_concurrent', [False, True])
+def test_correctness(use_stream, allow_concurrent):
+    f = Flow().add(uses=PlaceholderExecutor, allow_concurrent=allow_concurrent)
     with f:
         with mp.Pool(2) as p:
             results = list(
@@ -686,7 +691,14 @@ def test_exception_handling_in_dynamic_batch(flush_all, allow_concurrent):
         True
     ],
 )
-async def test_num_docs_processed_in_exec(flush_all):
+@pytest.mark.parametrize(
+    'allow_concurrent',
+    [
+        False,
+        True
+    ],
+)
+async def test_num_docs_processed_in_exec(flush_all, allow_concurrent):
     class DynBatchProcessor(Executor):
 
         @dynamic_batching(preferred_batch_size=5, timeout=5000, flush_all=flush_all)
@@ -695,7 +707,7 @@ async def test_num_docs_processed_in_exec(flush_all):
             for doc in docs:
                 doc.text = f"{len(docs)}"
 
-    depl = Deployment(uses=DynBatchProcessor, protocol='http')
+    depl = Deployment(uses=DynBatchProcessor, protocol='http', allow_concurrent=allow_concurrent)
 
     with depl:
         da = DocumentArray([Document(text='good') for _ in range(50)])
@@ -721,5 +733,6 @@ async def test_num_docs_processed_in_exec(flush_all):
                     larger_than_5 += 1
                 if int(d.text) < 5:
                     smaller_than_5 += 1
-            assert smaller_than_5 == 1
+
+            assert smaller_than_5 == (1 if allow_concurrent else 0)
             assert larger_than_5 > 0
