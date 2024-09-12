@@ -142,7 +142,7 @@ jobs:
           python -m cibuildwheel --output-dir dist
           
       - name: Upload wheels as artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           path: dist/*.whl
 
