@@ -173,13 +173,16 @@ class HTTPClientlet(AioHttpClientlet):
                     from docarray.base_doc.io.json import orjson_dumps
 
                     request_kwargs['data'] = JinaJsonPayload(value=req_dict)
+                self.logger.debug(f'POST request to {self.url}')
                 async with self.session.post(**request_kwargs) as response:
+                    self.logger.debug(f'Got a response')
                     try:
                         r_str = await response.json()
                     except aiohttp.ContentTypeError:
                         r_str = await response.text()
                     r_status = response.status
-                    handle_response_status(response.status, r_str, self.url)
+                    self.logger.debug(f'Response status: {r_status}')
+                    handle_response_status(r_status, r_str, self.url)
                     return r_status, r_str
             except (ValueError, ConnectionError, BadClient, aiohttp.ClientError, aiohttp.ClientConnectionError) as err:
                 self.logger.debug(f'Got an error: {err} sending POST to {self.url} in attempt {attempt}/{self.max_attempts}')

@@ -89,6 +89,7 @@ def get_fastapi_app(
 
         @app.api_route(**app_kwargs)
         async def post(body: input_model, response: Response):
+            logger.debug(f'Got a POST request at {endpoint_path}')
             req = DataRequest()
             if body.header is not None:
                 req.header.request_id = body.header.request_id
@@ -123,7 +124,7 @@ def get_fastapi_app(
                 else:
                     docs_response = resp.docs
                 ret = output_model(data=docs_response, parameters=resp.parameters)
-
+                logger.debug(f'Return output model')
                 return ret
 
     def add_streaming_routes(

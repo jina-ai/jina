@@ -194,6 +194,7 @@ class HTTPBaseClient(BaseClient):
                 request_iterator=request_iterator, results_in_order=results_in_order
             ):
                 r_status, r_str = response
+                self.logger.debug(f'Got from streamer response with status: {r_status}')
                 handle_response_status(r_status, r_str, url)
 
                 da = None

@@ -356,6 +356,7 @@ class RequestStreamer:
                     future = await result_queue.get()
                 else:
                     future = await future_queue.get()
+                    self.logger.error(f'Awaiting future in order')
                     await future
                 result = future.result()
                 if isinstance(result, self._EndOfStreaming):
