@@ -178,8 +178,9 @@ class HTTPClientlet(AioHttpClientlet):
                         r_str = await response.json()
                     except aiohttp.ContentTypeError:
                         r_str = await response.text()
+                    r_status = response.status
                     handle_response_status(response.status, r_str, self.url)
-                    return response
+                    return r_status, r_str
             except (ValueError, ConnectionError, BadClient, aiohttp.ClientError, aiohttp.ClientConnectionError) as err:
                 self.logger.debug(f'Got an error: {err} sending POST to {self.url} in attempt {attempt}/{self.max_attempts}')
                 await retry.wait_or_raise_err(

@@ -193,9 +193,7 @@ class HTTPBaseClient(BaseClient):
             async for response in streamer.stream(
                 request_iterator=request_iterator, results_in_order=results_in_order
             ):
-                r_status = response.status
-
-                r_str = await response.json()
+                r_status, r_str = response
                 handle_response_status(r_status, r_str, url)
 
                 da = None
