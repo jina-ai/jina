@@ -10,7 +10,8 @@ from jina.types.request.data import DataRequest
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('flush_all', [False, True])
-async def test_batch_queue_timeout(flush_all):
+@pytest.mark.parametrize('allow_concurrent', [False, True])
+async def test_batch_queue_timeout(flush_all, allow_concurrent):
     async def foo(docs, **kwargs):
         await asyncio.sleep(0.1)
         return DocumentArray([Document(text='Done') for _ in docs])
@@ -22,6 +23,7 @@ async def test_batch_queue_timeout(flush_all):
         preferred_batch_size=4,
         timeout=2000,
         flush_all=flush_all,
+        allow_concurrent=allow_concurrent,
     )
 
     three_data_requests = [DataRequest() for _ in range(3)]
@@ -62,8 +64,10 @@ async def test_batch_queue_timeout(flush_all):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('flush_all', [False, True])
-async def test_batch_queue_timeout_does_not_wait_previous_batch(flush_all):
+@pytest.mark.parametrize('allow_concurrent', [False, True])
+async def test_batch_queue_timeout_does_not_wait_previous_batch(flush_all, allow_concurrent):
     batches_lengths_computed = []
+    lock = asyncio.Lock()
 
     async def foo(docs, **kwargs):
         await asyncio.sleep(4)
@@ -76,7 +80,8 @@ async def test_batch_queue_timeout_does_not_wait_previous_batch(flush_all):
         response_docarray_cls=DocumentArray,
         preferred_batch_size=5,
         timeout=3000,
-        flush_all=flush_all
+        flush_all=flush_all,
+        allow_concurrent=allow_concurrent
     )
 
     data_requests = [DataRequest() for _ in range(3)]
@@ -106,8 +111,11 @@ async def test_batch_queue_timeout_does_not_wait_previous_batch(flush_all):
         assert time_spent >= 12000
         assert time_spent <= 12500
     else:
-        assert time_spent >= 8000
-        assert time_spent <= 8500
+        if not allow_concurrent:
+            assert time_spent >= 8000
+            assert time_spent <= 8500
+        else:
+            assert time_spent < 8000
     if flush_all is False:
         assert batches_lengths_computed == [5, 1, 2]
     else:
@@ -118,7 +126,8 @@ async def test_batch_queue_timeout_does_not_wait_previous_batch(flush_all):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('flush_all', [False, True])
-async def test_batch_queue_req_length_larger_than_preferred(flush_all):
+@pytest.mark.parametrize('allow_concurrent', [False, True])
+async def test_batch_queue_req_length_larger_than_preferred(flush_all, allow_concurrent):
     async def foo(docs, **kwargs):
         await asyncio.sleep(0.1)
         return DocumentArray([Document(text='Done') for _ in docs])
@@ -130,6 +139,7 @@ async def test_batch_queue_req_length_larger_than_preferred(flush_all):
         preferred_batch_size=4,
         timeout=2000,
         flush_all=flush_all,
+        allow_concurrent=allow_concurrent,
     )
 
     data_requests = [DataRequest() for _ in range(3)]
@@ -156,7 +166,8 @@ async def test_batch_queue_req_length_larger_than_preferred(flush_all):
 
 
 @pytest.mark.asyncio
-async def test_exception():
+@pytest.mark.parametrize('allow_concurrent', [False, True])
+async def test_exception(allow_concurrent):
     BAD_REQUEST_IDX = [2, 6]
 
     async def foo(docs, **kwargs):
@@ -173,6 +184,8 @@ async def test_exception():
         response_docarray_cls=DocumentArray,
         preferred_batch_size=1,
         timeout=500,
+        flush_all=False,
+        allow_concurrent=allow_concurrent
     )
 
     data_requests = [DataRequest() for _ in range(35)]
@@ -202,7 +215,8 @@ async def test_exception():
 
 
 @pytest.mark.asyncio
-async def test_exception_more_complex():
+@pytest.mark.parametrize('allow_concurrent', [False, True])
+async def test_exception_more_complex(allow_concurrent):
     TRIGGER_BAD_REQUEST_IDX = [2, 6]
     EXPECTED_BAD_REQUESTS = [2, 3, 6, 7]
 
@@ -223,6 +237,8 @@ async def test_exception_more_complex():
         response_docarray_cls=DocumentArray,
         preferred_batch_size=2,
         timeout=500,
+        flush_all=False,
+        allow_concurrent=allow_concurrent
     )
 
     data_requests = [DataRequest() for _ in range(35)]
@@ -255,7 +271,8 @@ async def test_exception_more_complex():
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('flush_all', [False, True])
-async def test_exception_all(flush_all):
+@pytest.mark.parametrize('allow_concurrent', [False, True])
+async def test_exception_all(flush_all, allow_concurrent):
     async def foo(docs, **kwargs):
         raise AssertionError
 
@@ -266,6 +283,7 @@ async def test_exception_all(flush_all):
         preferred_batch_size=2,
         flush_all=flush_all,
         timeout=500,
+        allow_concurrent=allow_concurrent
     )
 
     data_requests = [DataRequest() for _ in range(10)]
@@ -304,8 +322,9 @@ async def test_repr_and_str():
 @pytest.mark.parametrize('preferred_batch_size', [7, 61, 100])
 @pytest.mark.parametrize('timeout', [0.3, 500])
 @pytest.mark.parametrize('flush_all', [False, True])
+@pytest.mark.parametrize('allow_concurrent', [False, True])
 @pytest.mark.asyncio
-async def test_return_proper_assignment(num_requests, preferred_batch_size, timeout, flush_all):
+async def test_return_proper_assignment(num_requests, preferred_batch_size, timeout, flush_all, allow_concurrent):
     import random
 
     async def foo(docs, **kwargs):
@@ -324,6 +343,7 @@ async def test_return_proper_assignment(num_requests, preferred_batch_size, time
         preferred_batch_size=preferred_batch_size,
         flush_all=flush_all,
         timeout=timeout,
+        allow_concurrent=allow_concurrent
     )
 
     data_requests = [DataRequest() for _ in range(num_requests)]

@@ -2851,9 +2851,9 @@ class Flow(
             yaml.dump(docker_compose_dict, fp, sort_keys=False)
 
         command = (
-            'docker-compose up'
+            'docker compose up'
             if output_path is None
-            else f'docker-compose -f {output_path} up'
+            else f'docker compose -f {output_path} up'
         )
 
         self.logger.info(

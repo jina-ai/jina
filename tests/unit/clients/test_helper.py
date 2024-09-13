@@ -37,8 +37,8 @@ async def test_http_clientlet():
         ) as iolet:
             request = _new_data_request('/', None, {'a': 'b'})
             assert request.header.target_executor == ''
-            r = await iolet.send_message(request)
-            response = DataRequest(await r.json())
+            r_status, r_json = await iolet.send_message(request)
+            response = DataRequest(r_json)
     assert response.header.exec_endpoint == '/'
     assert response.parameters == {'a': 'b'}
 
@@ -55,7 +55,8 @@ async def test_http_clientlet_target():
             request = _new_data_request('/', 'nothing', {'a': 'b'})
             assert request.header.target_executor == 'nothing'
             r = await iolet.send_message(request)
-            response = DataRequest(await r.json())
+            r_status, r_json = r
+            response = DataRequest(r_json)
     assert response.header.exec_endpoint == '/'
     assert response.parameters == {'a': 'b'}
 

@@ -173,14 +173,16 @@ class HTTPClientlet(AioHttpClientlet):
                     from docarray.base_doc.io.json import orjson_dumps
 
                     request_kwargs['data'] = JinaJsonPayload(value=req_dict)
-                response = await self.session.post(**request_kwargs).__aenter__()
-                try:
-                    r_str = await response.json()
-                except aiohttp.ContentTypeError:
-                    r_str = await response.text()
-                handle_response_status(response.status, r_str, self.url)
-                return response
-            except (ValueError, ConnectionError, BadClient, aiohttp.ClientError) as err:
+                async with self.session.post(**request_kwargs) as response:
+                    try:
+                        r_str = await response.json()
+                    except aiohttp.ContentTypeError:
+                        r_str = await response.text()
+                    r_status = response.status
+                    handle_response_status(response.status, r_str, self.url)
+                    return r_status, r_str
+            except (ValueError, ConnectionError, BadClient, aiohttp.ClientError, aiohttp.ClientConnectionError) as err:
+                self.logger.debug(f'Got an error: {err} sending POST to {self.url} in attempt {attempt}/{self.max_attempts}')
                 await retry.wait_or_raise_err(
                     attempt=attempt,
                     err=err,
@@ -189,6 +191,10 @@ class HTTPClientlet(AioHttpClientlet):
                     initial_backoff=self.initial_backoff,
                     max_backoff=self.max_backoff,
                 )
+            except Exception as exc:
+                self.logger.debug(
+                    f'Got a non-retried error: {exc} sending POST to {self.url}')
+                raise exc
 
     async def send_streaming_message(self, doc: 'Document', on: str):
         """Sends a GET SSE request to the server
