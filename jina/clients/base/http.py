@@ -23,6 +23,12 @@ class HTTPBaseClient(BaseClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._endpoints = []
+        self.iolet = None
+
+    async def close(self):
+        await super().close()
+        if self.iolet is not None:
+            await self.iolet.__aexit__()
 
     async def _get_endpoints_from_openapi(self, **kwargs):
         def extract_paths_by_method(spec):
@@ -69,14 +75,24 @@ class HTTPBaseClient(BaseClient):
             try:
                 proto = 'https' if self.args.tls else 'http'
                 url = f'{proto}://{self.args.host}:{self.args.port}/dry_run'
-                iolet = await stack.enter_async_context(
-                    HTTPClientlet(
-                        url=url,
+
+                if self.iolet is not None and self.args.reuse_session:
+                    iolet = self.iolet
+                else:
+                    iolet = HTTPClientlet(
                         logger=self.logger,
                         tracer_provider=self.tracer_provider,
                         **kwargs,
                     )
-                )
+
+                if self.args.reuse_session and self.iolet is None:
+                    self.iolet = iolet
+                    await self.iolet.__aenter__()
+
+                if not self.args.reuse_session:
+                    iolet = await stack.enter_async_context(
+                        iolet
+                    )
 
                 response = await iolet.send_dry_run(**kwargs)
                 r_status = response.status
@@ -152,9 +168,10 @@ class HTTPBaseClient(BaseClient):
             else:
                 url = f'{proto}://{self.args.host}:{self.args.port}/post'
 
-            iolet = await stack.enter_async_context(
-                HTTPClientlet(
-                    url=url,
+            if self.iolet is not None and self.args.reuse_session:
+                iolet = self.iolet
+            else:
+                iolet = HTTPClientlet(
                     logger=self.logger,
                     tracer_provider=self.tracer_provider,
                     max_attempts=max_attempts,
@@ -164,7 +181,14 @@ class HTTPBaseClient(BaseClient):
                     timeout=timeout,
                     **kwargs,
                 )
-            )
+            if self.args.reuse_session and self.iolet is None:
+                self.iolet = iolet
+                await self.iolet.__aenter__()
+
+            if not self.args.reuse_session:
+                iolet = await stack.enter_async_context(
+                    iolet
+                )
 
             def _request_handler(
                 request: 'Request', **kwargs
@@ -176,7 +200,7 @@ class HTTPBaseClient(BaseClient):
                 :param kwargs: kwargs
                 :return: asyncio Task for sending message
                 """
-                return asyncio.ensure_future(iolet.send_message(request=request)), None
+                return asyncio.ensure_future(iolet.send_message(url=url, request=request)), None
 
             def _result_handler(result):
                 return result
@@ -250,7 +274,6 @@ class HTTPBaseClient(BaseClient):
             url = f'{proto}://{self.args.host}:{self.args.port}/default'
 
         iolet = HTTPClientlet(
-            url=url,
             logger=self.logger,
             tracer_provider=self.tracer_provider,
             timeout=timeout,
@@ -258,7 +281,7 @@ class HTTPBaseClient(BaseClient):
         )
 
         async with iolet:
-            async for doc in iolet.send_streaming_message(doc=inputs, on=on):
+            async for doc in iolet.send_streaming_message(url=url, doc=inputs, on=on):
                 if not docarray_v2:
                     yield Document.from_dict(json.loads(doc))
                 else:

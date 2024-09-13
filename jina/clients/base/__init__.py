@@ -29,9 +29,9 @@ class BaseClient(InstrumentationMixin, ABC):
     """
 
     def __init__(
-        self,
-        args: Optional['argparse.Namespace'] = None,
-        **kwargs,
+            self,
+            args: Optional['argparse.Namespace'] = None,
+            **kwargs,
     ):
         if args and isinstance(args, argparse.Namespace):
             self.args = args
@@ -62,6 +62,11 @@ class BaseClient(InstrumentationMixin, ABC):
             metrics_exporter_port=self.args.metrics_exporter_port,
         )
         send_telemetry_event(event='start', obj_cls_name=self.__class__.__name__)
+
+    async def close(self):
+        """Closes the potential resources of the Client.
+        """
+        return self.teardown_instrumentation()
 
     def teardown_instrumentation(self):
         """Shut down the OpenTelemetry tracer and meter if available. This ensures that the daemon threads for
@@ -118,7 +123,7 @@ class BaseClient(InstrumentationMixin, ABC):
             raise BadClientInput from ex
 
     def _get_requests(
-        self, **kwargs
+            self, **kwargs
     ) -> Union[Iterator['Request'], AsyncIterator['Request']]:
         """
         Get request in generator.
@@ -177,13 +182,14 @@ class BaseClient(InstrumentationMixin, ABC):
 
     @abc.abstractmethod
     async def _get_results(
-        self,
-        inputs: 'InputType',
-        on_done: 'CallbackFnType',
-        on_error: Optional['CallbackFnType'] = None,
-        on_always: Optional['CallbackFnType'] = None,
-        **kwargs,
-    ): ...
+            self,
+            inputs: 'InputType',
+            on_done: 'CallbackFnType',
+            on_error: Optional['CallbackFnType'] = None,
+            on_always: Optional['CallbackFnType'] = None,
+            **kwargs,
+    ):
+        ...
 
     @abc.abstractmethod
     def _is_flow_ready(self, **kwargs) -> bool:
