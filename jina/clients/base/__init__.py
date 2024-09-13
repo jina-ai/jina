@@ -65,6 +65,7 @@ class BaseClient(InstrumentationMixin, ABC):
 
     async def close(self):
         """Closes the potential resources of the Client.
+        :return: Return whatever a close method may return
         """
         return self.teardown_instrumentation()
 

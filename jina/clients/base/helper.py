@@ -128,7 +128,6 @@ class AioHttpClientlet(ABC):
         """
         with ImportExtensions(required=True):
             import aiohttp
-
         self.session = aiohttp.ClientSession(
             **self._session_kwargs, trace_configs=self._trace_config
         )
@@ -154,6 +153,7 @@ class HTTPClientlet(AioHttpClientlet):
     async def send_message(self, url, request: 'Request'):
         """Sends a POST request to the server
 
+        :param url: the URL where to send the message
         :param request: request as dict
         :return: send post message
         """
@@ -170,14 +170,15 @@ class HTTPClientlet(AioHttpClientlet):
                     from docarray.base_doc.io.json import orjson_dumps
 
                     request_kwargs['data'] = JinaJsonPayload(value=req_dict)
+
                 async with self.session.post(**request_kwargs) as response:
                     try:
                         r_str = await response.json()
                     except aiohttp.ContentTypeError:
                         r_str = await response.text()
                     r_status = response.status
-                    handle_response_status(response.status, r_str, url)
-                    return r_status, r_str
+                    handle_response_status(r_status, r_str, url)
+                return r_status, r_str
             except (ValueError, ConnectionError, BadClient, aiohttp.ClientError, aiohttp.ClientConnectionError) as err:
                 self.logger.debug(f'Got an error: {err} sending POST to {url} in attempt {attempt}/{self.max_attempts}')
                 await retry.wait_or_raise_err(
@@ -196,6 +197,7 @@ class HTTPClientlet(AioHttpClientlet):
     async def send_streaming_message(self, url, doc: 'Document', on: str):
         """Sends a GET SSE request to the server
 
+        :param url: the URL where to send the message
         :param doc: Request Document
         :param on: Request endpoint
         :yields: responses
@@ -218,6 +220,7 @@ class HTTPClientlet(AioHttpClientlet):
 
     async def send_dry_run(self, url, **kwargs):
         """Query the dry_run endpoint from Gateway
+        :param url: the URL where to send the message
         :param kwargs: keyword arguments to make sure compatible API with other clients
         :return: send get message
         """
@@ -264,8 +267,9 @@ class WsResponseIter:
 class WebsocketClientlet(AioHttpClientlet):
     """Websocket Client to be used with the streamer"""
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, url, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self.url = url
         self.websocket = None
         self.response_iter = None
 
