@@ -1,0 +1,7 @@
+jina.serve.runtimes.servers.http module
+=======================================
+
+.. automodule:: jina.serve.runtimes.servers.http
+   :members:
+   :undoc-members:
+   :show-inheritance:
