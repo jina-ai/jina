@@ -33,11 +33,11 @@ async def test_http_clientlet():
     port = random_port()
     with Flow(port=port, protocol='http').add():
         async with HTTPClientlet(
-            url=f'http://localhost:{port}/post', logger=logger
+            logger=logger
         ) as iolet:
             request = _new_data_request('/', None, {'a': 'b'})
             assert request.header.target_executor == ''
-            r_status, r_json = await iolet.send_message(request)
+            r_status, r_json = await iolet.send_message(url=f'http://localhost:{port}/post', request=request)
             response = DataRequest(r_json)
     assert response.header.exec_endpoint == '/'
     assert response.parameters == {'a': 'b'}
@@ -50,11 +50,11 @@ async def test_http_clientlet_target():
     port = random_port()
     with Flow(port=port, protocol='http').add():
         async with HTTPClientlet(
-            url=f'http://localhost:{port}/post', logger=logger
+            logger=logger
         ) as iolet:
             request = _new_data_request('/', 'nothing', {'a': 'b'})
             assert request.header.target_executor == 'nothing'
-            r = await iolet.send_message(request)
+            r = await iolet.send_message(url=f'http://localhost:{port}/post', request=request)
             r_status, r_json = r
             response = DataRequest(r_json)
     assert response.header.exec_endpoint == '/'
