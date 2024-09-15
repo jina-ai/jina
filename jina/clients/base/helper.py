@@ -48,7 +48,6 @@ class AioHttpClientlet(ABC):
 
     def __init__(
         self,
-        url: str,
         logger: 'JinaLogger',
         max_attempts: int = 1,
         initial_backoff: float = 0.5,
@@ -59,7 +58,6 @@ class AioHttpClientlet(ABC):
     ) -> None:
         """HTTP Client to be used with the streamer
 
-        :param url: url to send http/websocket request to
         :param logger: jina logger
         :param max_attempts: Number of sending attempts, including the original request.
         :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
@@ -68,7 +66,6 @@ class AioHttpClientlet(ABC):
         :param tracer_provider: Optional tracer_provider that will be used to configure aiohttp tracing.
         :param kwargs: kwargs  which will be forwarded to the `aiohttp.Session` instance. Used to pass headers to requests
         """
-        self.url = url
         self.logger = logger
         self.msg_recv = 0
         self.msg_sent = 0
@@ -131,7 +128,6 @@ class AioHttpClientlet(ABC):
         """
         with ImportExtensions(required=True):
             import aiohttp
-
         self.session = aiohttp.ClientSession(
             **self._session_kwargs, trace_configs=self._trace_config
         )
@@ -154,9 +150,10 @@ class HTTPClientlet(AioHttpClientlet):
 
     UPDATE_EVENT_PREFIX = 14  # the update event has the following format: "event: update: {document_json}"
 
-    async def send_message(self, request: 'Request'):
+    async def send_message(self, url, request: 'Request'):
         """Sends a POST request to the server
 
+        :param url: the URL where to send the message
         :param request: request as dict
         :return: send post message
         """
@@ -166,23 +163,24 @@ class HTTPClientlet(AioHttpClientlet):
             req_dict['target_executor'] = req_dict['header']['target_executor']
         for attempt in range(1, self.max_attempts + 1):
             try:
-                request_kwargs = {'url': self.url}
+                request_kwargs = {'url': url}
                 if not docarray_v2:
                     request_kwargs['json'] = req_dict
                 else:
                     from docarray.base_doc.io.json import orjson_dumps
 
                     request_kwargs['data'] = JinaJsonPayload(value=req_dict)
+
                 async with self.session.post(**request_kwargs) as response:
                     try:
                         r_str = await response.json()
                     except aiohttp.ContentTypeError:
                         r_str = await response.text()
                     r_status = response.status
-                    handle_response_status(response.status, r_str, self.url)
-                    return r_status, r_str
+                    handle_response_status(r_status, r_str, url)
+                return r_status, r_str
             except (ValueError, ConnectionError, BadClient, aiohttp.ClientError, aiohttp.ClientConnectionError) as err:
-                self.logger.debug(f'Got an error: {err} sending POST to {self.url} in attempt {attempt}/{self.max_attempts}')
+                self.logger.debug(f'Got an error: {err} sending POST to {url} in attempt {attempt}/{self.max_attempts}')
                 await retry.wait_or_raise_err(
                     attempt=attempt,
                     err=err,
@@ -193,19 +191,20 @@ class HTTPClientlet(AioHttpClientlet):
                 )
             except Exception as exc:
                 self.logger.debug(
-                    f'Got a non-retried error: {exc} sending POST to {self.url}')
+                    f'Got a non-retried error: {exc} sending POST to {url}')
                 raise exc
 
-    async def send_streaming_message(self, doc: 'Document', on: str):
+    async def send_streaming_message(self, url, doc: 'Document', on: str):
         """Sends a GET SSE request to the server
 
+        :param url: the URL where to send the message
         :param doc: Request Document
         :param on: Request endpoint
         :yields: responses
         """
         req_dict = doc.to_dict() if hasattr(doc, "to_dict") else doc.dict()
         request_kwargs = {
-            'url': self.url,
+            'url': url,
             'headers': {'Accept': 'text/event-stream'},
             'json': req_dict,
         }
@@ -219,13 +218,14 @@ class HTTPClientlet(AioHttpClientlet):
                     elif event.startswith(b'end'):
                         pass
 
-    async def send_dry_run(self, **kwargs):
+    async def send_dry_run(self, url, **kwargs):
         """Query the dry_run endpoint from Gateway
+        :param url: the URL where to send the message
         :param kwargs: keyword arguments to make sure compatible API with other clients
         :return: send get message
         """
         return await self.session.get(
-            url=self.url, timeout=kwargs.get('timeout', None)
+            url=url, timeout=kwargs.get('timeout', None)
         ).__aenter__()
 
     async def recv_message(self):
@@ -267,8 +267,9 @@ class WsResponseIter:
 class WebsocketClientlet(AioHttpClientlet):
     """Websocket Client to be used with the streamer"""
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, url, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self.url = url
         self.websocket = None
         self.response_iter = None
 
