@@ -180,6 +180,7 @@ class HTTPBaseClient(BaseClient):
                     HTTPClientlet(
                         logger=self.logger,
                         tracer_provider=self.tracer_provider,
+                        timeout=timeout,
                         **kwargs,
                     )
                 )
@@ -189,6 +190,7 @@ class HTTPBaseClient(BaseClient):
                         self.iolet = HTTPClientlet(
                             logger=self.logger,
                             tracer_provider=self.tracer_provider,
+                            timeout=timeout,
                             **kwargs,
                         )
                         self.iolet = await self.iolet.__aenter__()
