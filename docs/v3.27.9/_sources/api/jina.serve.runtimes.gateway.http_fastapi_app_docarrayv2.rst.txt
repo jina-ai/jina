@@ -1,0 +1,7 @@
+jina.serve.runtimes.gateway.http\_fastapi\_app\_docarrayv2 module
+=================================================================
+
+.. automodule:: jina.serve.runtimes.gateway.http_fastapi_app_docarrayv2
+   :members:
+   :undoc-members:
+   :show-inheritance:
