@@ -1,0 +1,7 @@
+jina.clients.base.retry module
+==============================
+
+.. automodule:: jina.clients.base.retry
+   :members:
+   :undoc-members:
+   :show-inheritance:
