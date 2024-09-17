@@ -281,6 +281,8 @@
 
 
 
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -689,6 +691,8 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.27.5`)](#release-note-3275)
 - [Release Note (`3.27.6`)](#release-note-3276)
 - [Release Note (`3.27.7`)](#release-note-3277)
+- [Release Note (`3.27.8`)](#release-note-3278)
+- [Release Note (`3.27.9`)](#release-note-3279)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -16899,4 +16903,43 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```a62b85e7```](https://github.com/jina-ai/jina/commit/a62b85e76bab95c379410eab5f91af5db026ab34)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```f9f08da5```](https://github.com/jina-ai/jina/commit/f9f08da535433dcd8f13a041a9e69c739db8e21d)] __-__ __version__: the next version will be 3.27.8 (*Jina Dev Bot*)
+
+<a name=release-note-3-27-9></a>
+## Release Note (`3.27.9`)
+
+> Release time: 2024-09-15 19:37:06
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```ef11cf70```](https://github.com/jina-ai/jina/commit/ef11cf705795cbf71ad172044c2e060fc4b6331c)] __-__ readd timeout (#6199) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```50e34ca5```](https://github.com/jina-ai/jina/commit/50e34ca56be6ff2b59a4b135a8adcae4b060f9ac)] __-__ __version__: the next version will be 3.27.9 (*Jina Dev Bot*)
+
+<a name=release-note-3-27-10></a>
+## Release Note (`3.27.10`)
+
+> Release time: 2024-09-17 12:00:15
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```be385a50```](https://github.com/jina-ai/jina/commit/be385a5009e2ee348f3fb4f963dac3a4db0aa613)] __-__ pass params to iolet (#6200) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```3223ce9f```](https://github.com/jina-ai/jina/commit/3223ce9fe4433238efae75f2e14df88527d07a48)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```be20ea83```](https://github.com/jina-ai/jina/commit/be20ea830ebd16f25a581bb844c762390d8f87c5)] __-__ __version__: the next version will be 3.27.10 (*Jina Dev Bot*)
 
