@@ -181,6 +181,10 @@ class HTTPBaseClient(BaseClient):
                         logger=self.logger,
                         tracer_provider=self.tracer_provider,
                         timeout=timeout,
+                        max_attempts=max_attempts,
+                        initial_backoff=initial_backoff,
+                        max_backoff=max_backoff,
+                        backoff_multiplier=backoff_multiplier,
                         **kwargs,
                     )
                 )
@@ -191,6 +195,10 @@ class HTTPBaseClient(BaseClient):
                             logger=self.logger,
                             tracer_provider=self.tracer_provider,
                             timeout=timeout,
+                            max_attempts=max_attempts,
+                            initial_backoff=initial_backoff,
+                            max_backoff=max_backoff,
+                            backoff_multiplier=backoff_multiplier,
                             **kwargs,
                         )
                         self.iolet = await self.iolet.__aenter__()
