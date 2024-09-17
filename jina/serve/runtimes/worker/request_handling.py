@@ -702,6 +702,7 @@ class WorkerRequestHandler:
                     ].response_schema,
                     output_array_type=self.args.output_array_type,
                     params=params,
+                    allow_concurrent=self.args.allow_concurrent,
                     **self._batchqueue_config[exec_endpoint],
                 )
             # This is necessary because push might need to await for the queue to be emptied

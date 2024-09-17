@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v2.5.0
         with:
           fetch-depth: 0
-      - uses: wagoid/commitlint-github-action@v4
+      - uses: wagoid/commitlint-github-action@v3
 
   lint-flake-8:
     runs-on: ubuntu-latest
@@ -691,7 +691,7 @@ jobs:
           python -m cibuildwheel --output-dir dist
 
       - name: Upload wheels as artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           path: dist/*.whl
 
