@@ -658,10 +658,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         import collections
 
         def deep_update(source, overrides):
-            """
-            Update a nested dictionary or similar mapping.
-            Modify ``source`` in place.
-            """
             for key, value in overrides.items():
                 if isinstance(value, collections.Mapping) and value:
                     returned = deep_update(source.get(key, {}), value)
@@ -669,9 +665,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 else:
                     source[key] = overrides[key]
             return source
+
         if _dynamic_batching:
             self.dynamic_batching = getattr(self, 'dynamic_batching', {})
-            self.dynamic_batching = deep_update(self.dynamic_batching, _dynamic_batching)
+            self.dynamic_batching = deep_update(
+                self.dynamic_batching, _dynamic_batching
+            )
 
     def _add_metas(self, _metas: Optional[Dict]):
         from jina.serve.executors.metas import get_default_metas
