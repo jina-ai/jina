@@ -247,7 +247,7 @@ class BatchQueue:
             if n is None:
                 yield iterable_1, iterable_2
                 return
-            if n is not None and iterable_metrics is None:
+            elif iterable_metrics is None:
                 items = len(iterable_1)
                 for ndx in range(0, items, n):
                     yield iterable_1[ndx: min(ndx + n, items)], iterable_2[
