@@ -33,7 +33,7 @@ class BatchQueue:
         if allow_concurrent and flush_all:
             self._data_lock = contextlib.AsyncExitStack()
         else:
-            self._data_lock = asyncio.Lock()
+            self._data_lock = contextlib.AsyncExitStack()
         self.func = func
         if params is None:
             params = dict()
@@ -59,7 +59,7 @@ class BatchQueue:
     def _reset(self) -> None:
         """Set all events and reset the batch queue."""
         self._requests: List[DataRequest] = []
-        # a list of every request ID
+        # a list of every request idx inside self._requests
         self._request_idxs: List[int] = []
         self._request_lens: List[int] = []
         self._requests_completed: List[asyncio.Queue] = []
@@ -337,6 +337,7 @@ class BatchQueue:
                     requests_in_batch,
                     requests_completed_in_batch,
                 )
+
 
     async def close(self):
         """Closes the batch queue by flushing pending requests."""
