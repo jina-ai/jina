@@ -244,7 +244,7 @@ class BatchQueue:
             return num_assigned_docs
 
         def batch(iterable_1, iterable_2, n: Optional[int] = 1, iterable_metrics: Optional = None):
-            if n is None and iterable_metrics is None:
+            if n is None:
                 yield iterable_1, iterable_2
                 return
             if n is not None and iterable_metrics is None:
@@ -262,7 +262,7 @@ class BatchQueue:
 
                     if batch_weight >= n:
                         yield iterable_1[batch_idx: i + 1], iterable_2[batch_idx: i + 1]
-                        batch_idx = i
+                        batch_idx = i + 1
                         batch_weight = 0
 
                 # Yield any remaining items
