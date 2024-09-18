@@ -1,0 +1,18 @@
+jina.serve.runtimes.gateway.http package
+========================================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   jina.serve.runtimes.gateway.http.fastapi
+
+Module contents
+---------------
+
+.. automodule:: jina.serve.runtimes.gateway.http
+   :members:
+   :undoc-members:
+   :show-inheritance:
