@@ -655,11 +655,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             return
 
     def _add_dynamic_batching(self, _dynamic_batching: Optional[Dict]):
-        import collections
+        from collections.abc import Mapping
 
         def deep_update(source, overrides):
             for key, value in overrides.items():
-                if isinstance(value, collections.Mapping) and value:
+                if isinstance(value, Mapping) and value:
                     returned = deep_update(source.get(key, {}), value)
                     source[key] = returned
                 else:
