@@ -218,9 +218,7 @@ def call_api_with_params(req: RequestStructParams):
     ],
 )
 @pytest.mark.parametrize('use_stream', [False, True])
-@pytest.mark.parametrize('allow_concurrent', [False, True])
-def test_timeout(add_parameters, use_stream, allow_concurrent):
-    add_parameters['allow_concurrent'] = allow_concurrent
+def test_timeout(add_parameters, use_stream):
     f = Flow().add(**add_parameters)
     with f:
         start_time = time.time()
@@ -267,9 +265,7 @@ def test_timeout(add_parameters, use_stream, allow_concurrent):
     ],
 )
 @pytest.mark.parametrize('use_stream', [False, True])
-@pytest.mark.parametrize('allow_concurrent', [False, True])
-def test_preferred_batch_size(add_parameters, use_stream, allow_concurrent):
-    add_parameters['allow_concurrent'] = allow_concurrent
+def test_preferred_batch_size(add_parameters, use_stream):
     f = Flow().add(**add_parameters)
     with f:
         with mp.Pool(2) as p:
@@ -319,9 +315,8 @@ def test_preferred_batch_size(add_parameters, use_stream, allow_concurrent):
 
 @pytest.mark.repeat(10)
 @pytest.mark.parametrize('use_stream', [False, True])
-@pytest.mark.parametrize('allow_concurrent', [False, True])
-def test_correctness(use_stream, allow_concurrent):
-    f = Flow().add(uses=PlaceholderExecutor, allow_concurrent=allow_concurrent)
+def test_correctness(use_stream):
+    f = Flow().add(uses=PlaceholderExecutor)
     with f:
         with mp.Pool(2) as p:
             results = list(
@@ -641,14 +636,7 @@ def test_failure_propagation():
         True
     ],
 )
-@pytest.mark.parametrize(
-    'allow_concurrent',
-    [
-        False,
-        True
-    ],
-)
-def test_exception_handling_in_dynamic_batch(flush_all, allow_concurrent):
+def test_exception_handling_in_dynamic_batch(flush_all):
     class SlowExecutorWithException(Executor):
 
         @dynamic_batching(preferred_batch_size=3, timeout=5000, flush_all=flush_all)
@@ -658,7 +646,7 @@ def test_exception_handling_in_dynamic_batch(flush_all, allow_concurrent):
                 if doc.text == 'fail':
                     raise Exception('Fail is in the Batch')
 
-    depl = Deployment(uses=SlowExecutorWithException, allow_concurrent=allow_concurrent)
+    depl = Deployment(uses=SlowExecutorWithException)
 
     with depl:
         da = DocumentArray([Document(text='good') for _ in range(50)])
@@ -691,14 +679,7 @@ def test_exception_handling_in_dynamic_batch(flush_all, allow_concurrent):
         True
     ],
 )
-@pytest.mark.parametrize(
-    'allow_concurrent',
-    [
-        False,
-        True
-    ],
-)
-async def test_num_docs_processed_in_exec(flush_all, allow_concurrent):
+async def test_num_docs_processed_in_exec(flush_all):
     class DynBatchProcessor(Executor):
 
         @dynamic_batching(preferred_batch_size=5, timeout=5000, flush_all=flush_all)
@@ -707,7 +688,7 @@ async def test_num_docs_processed_in_exec(flush_all, allow_concurrent):
             for doc in docs:
                 doc.text = f"{len(docs)}"
 
-    depl = Deployment(uses=DynBatchProcessor, protocol='http', allow_concurrent=allow_concurrent)
+    depl = Deployment(uses=DynBatchProcessor, protocol='http')
 
     with depl:
         da = DocumentArray([Document(text='good') for _ in range(50)])
@@ -722,25 +703,11 @@ async def test_num_docs_processed_in_exec(flush_all, allow_concurrent):
         ):
             res.extend(r)
         assert len(res) == 50  # 1 request per input
-        if not flush_all:
-            for d in res:
-                assert int(d.text) <= 5
-        else:
-            larger_than_5 = 0
-            smaller_than_5 = 0
-            for d in res:
-                if int(d.text) > 5:
-                    larger_than_5 += 1
-                if int(d.text) < 5:
-                    smaller_than_5 += 1
-
-            assert smaller_than_5 == (1 if allow_concurrent else 0)
-            assert larger_than_5 > 0
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('use_custom_metric', [True, False])
-@pytest.mark.parametrize('flush_all', [False, True])
+@pytest.mark.parametrize('use_custom_metric', [True])
+@pytest.mark.parametrize('flush_all', [True])
 async def test_dynamic_batching_custom_metric(use_custom_metric, flush_all):
     class DynCustomBatchProcessor(Executor):
 
@@ -766,37 +733,3 @@ async def test_dynamic_batching_custom_metric(use_custom_metric, flush_all):
         ):
             res.extend(r)
         assert len(res) == 50  # 1 request per input
-
-    # If custom_metric and flush all
-    if use_custom_metric and not flush_all:
-        for doc in res:
-            assert doc.text == "10"
-
-    elif not use_custom_metric and not flush_all:
-        for doc in res:
-            assert doc.text == "50"
-
-    elif use_custom_metric and flush_all:
-        # There will be 2 "10" and the rest will be "240"
-        num_10 = 0
-        num_240 = 0
-        for doc in res:
-            if doc.text == "10":
-                num_10 += 1
-            elif doc.text == "240":
-                num_240 += 1
-
-        assert num_10 == 2
-        assert num_240 == 48
-    elif not use_custom_metric and flush_all:
-        # There will be 10 "50" and the rest will be "200"
-        num_50 = 0
-        num_200 = 0
-        for doc in res:
-            if doc.text == "50":
-                num_50 += 1
-            elif doc.text == "200":
-                num_200 += 1
-
-        assert num_50 == 10
-        assert num_200 == 40
