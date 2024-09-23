@@ -419,6 +419,7 @@ def dynamic_batching(
     flush_all: bool = False,
     custom_metric: Optional[Callable[['DocumentArray'], Union[float, int]]] = None,
     use_custom_metric: bool = False,
+    use_dynamic_batching: bool = True,
 ):
     """
     `@dynamic_batching` defines the dynamic batching behavior of an Executor.
@@ -438,6 +439,7 @@ def dynamic_batching(
         If this is true, `preferred_batch_size` is used as a trigger mechanism.
     :param custom_metric: Potential lambda function to measure the "weight" of each request.
     :param use_custom_metric: Determines if we need to use the `custom_metric` to determine preferred_batch_size.
+    :param use_dynamic_batching: Determines if we should apply dynamic batching for this method.
     :return: decorated function
     """
 
@@ -486,6 +488,7 @@ def dynamic_batching(
             owner.dynamic_batching[fn_name]['flush_all'] = flush_all
             owner.dynamic_batching[fn_name]['use_custom_metric'] = use_custom_metric
             owner.dynamic_batching[fn_name]['custom_metric'] = custom_metric
+            owner.dynamic_batching[fn_name]['use_dynamic_batching'] = use_dynamic_batching
             setattr(owner, name, self.fn)
 
         def __set_name__(self, owner, name):

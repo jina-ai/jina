@@ -706,8 +706,8 @@ async def test_num_docs_processed_in_exec(flush_all):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('use_custom_metric', [True])
-@pytest.mark.parametrize('flush_all', [True])
+@pytest.mark.parametrize('use_custom_metric', [True, False])
+@pytest.mark.parametrize('flush_all', [True, False])
 async def test_dynamic_batching_custom_metric(use_custom_metric, flush_all):
     class DynCustomBatchProcessor(Executor):
 
@@ -719,7 +719,9 @@ async def test_dynamic_batching_custom_metric(use_custom_metric, flush_all):
             for doc in docs:
                 doc.text = f"{total_len}"
 
-    depl = Deployment(uses=DynCustomBatchProcessor, uses_dynamic_batching={'foo': {"preferred_batch_size": 10, "timeout": 2000, "use_custom_metric": use_custom_metric, "flush_all": flush_all}})
+    depl = Deployment(uses=DynCustomBatchProcessor, uses_dynamic_batching={
+        'foo': {"preferred_batch_size": 10, "timeout": 2000, "use_custom_metric": use_custom_metric,
+                "flush_all": flush_all}})
     da = DocumentArray([Document(text='aaaaa') for i in range(50)])
     with depl:
         cl = Client(protocol=depl.protocol, port=depl.port, asyncio=True)
@@ -733,3 +735,44 @@ async def test_dynamic_batching_custom_metric(use_custom_metric, flush_all):
         ):
             res.extend(r)
         assert len(res) == 50  # 1 request per input
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('use_dynamic_batching', [True, False])
+async def test_use_dynamic_batching(use_dynamic_batching):
+    class UseDynBatchProcessor(Executor):
+
+        @dynamic_batching(preferred_batch_size=10)
+        @requests(on='/foo')
+        def foo(self, docs, **kwargs):
+            print(f'len docs {len(docs)}')
+            for doc in docs:
+                doc.text = f"{len(docs)}"
+
+    depl = Deployment(uses=UseDynBatchProcessor, uses_dynamic_batching={
+        'foo': {"preferred_batch_size": 10, "timeout": 2000, "use_dynamic_batching": use_dynamic_batching,
+                "flush_all": False}})
+    da = DocumentArray([Document(text='aaaaa') for _ in range(50)])
+    with depl:
+        cl = Client(protocol=depl.protocol, port=depl.port, asyncio=True)
+        res = []
+        async for r in cl.post(
+                on='/foo',
+                inputs=da,
+                request_size=1,
+                continue_on_error=True,
+                results_in_order=True,
+        ):
+            res.extend(r)
+        assert len(res) == 50  # 1 request per input
+        for doc in res:
+            num_10 = 0
+            if doc.text == "10":
+                num_10 += 1
+            if not use_dynamic_batching:
+                assert doc.text == "1"
+
+        if use_dynamic_batching:
+            assert num_10 > 0
+        else:
+            assert num_10 == 0
