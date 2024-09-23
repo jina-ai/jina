@@ -1,0 +1,7 @@
+jina.serve.runtimes.servers.composite module
+============================================
+
+.. automodule:: jina.serve.runtimes.servers.composite
+   :members:
+   :undoc-members:
+   :show-inheritance:
