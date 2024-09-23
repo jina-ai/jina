@@ -29,6 +29,7 @@ class BatchQueue:
             timeout: int = 10_000,
             custom_metric: Optional[Callable[['DocumentArray'], Union[int, float]]] = None,
             use_custom_metric: bool = False,
+            **kwargs,
     ) -> None:
         # To keep old user behavior, we use data lock when flush_all is true and no allow_concurrent
         self.func = func
@@ -285,7 +286,8 @@ class BatchQueue:
         sum_from_previous_first_req_idx = 0
         for docs_inner_batch, req_idxs in batch(
                 big_doc_in_batch, requests_idxs_in_batch,
-                self._preferred_batch_size if not self._flush_all else None, docs_metrics_in_batch if self._custom_metric is not None else None
+                self._preferred_batch_size if not self._flush_all else None,
+                docs_metrics_in_batch if self._custom_metric is not None else None
         ):
             involved_requests_min_indx = req_idxs[0]
             involved_requests_max_indx = req_idxs[-1]
@@ -359,7 +361,6 @@ class BatchQueue:
                 requests_in_batch,
                 requests_completed_in_batch,
             )
-
 
     async def close(self):
         """Closes the batch queue by flushing pending requests."""

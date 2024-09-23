@@ -48,6 +48,7 @@ class BaseClient(InstrumentationMixin, ABC):
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
         self._inputs = None
+        self._inputs_length = None
         self._setup_instrumentation(
             name=(
                 self.args.name
@@ -143,8 +144,6 @@ class BaseClient(InstrumentationMixin, ABC):
             total_docs = _kwargs['total_docs']
         else:
             total_docs = None
-
-        self._inputs_length = None
 
         if total_docs:
             self._inputs_length = max(1, total_docs / _kwargs['request_size'])

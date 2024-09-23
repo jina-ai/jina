@@ -275,10 +275,11 @@ class WorkerRequestHandler:
                     )
                     raise Exception(error_msg)
 
-                if key.startswith('/'):
-                    dbatch_endpoints.append((key, dbatch_config))
-                else:
-                    dbatch_functions.append((key, dbatch_config))
+                if dbatch_config.get("use_dynamic_batching", True):
+                    if key.startswith('/'):
+                        dbatch_endpoints.append((key, dbatch_config))
+                    else:
+                        dbatch_functions.append((key, dbatch_config))
 
             # Specific endpoint configs take precedence over function configs
             for endpoint, dbatch_config in dbatch_endpoints:
